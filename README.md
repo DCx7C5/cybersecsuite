@@ -1,18 +1,20 @@
 # CyberSecSuite
 
-Cybersecurity forensics platform with multi-agent AI orchestration, multi-provider AI routing, 29 MCP tools, and a PostgreSQL-backed threat intelligence database.
+Full-stack cybersecurity forensics platform with multi-agent AI orchestration, multi-provider AI routing, 36 MCP tools, and a PostgreSQL-backed threat intelligence database.
 
 ---
 
 ## Features
 
-- **A2A Agent Protocol** — Google Agent-to-Agent JSON-RPC 2.0 server with 32 specialist agents
+- **A2A Agent Protocol** — Google Agent-to-Agent JSON-RPC 2.0 server with 34 specialist agents
 - **AI Proxy** — OpenAI-compatible `/v1/*` endpoint routing across 60 providers with 13 strategies
-- **29 MCP Tools** — FastMCP stdio server for Claude integration (findings, IOCs, cases, intel, routing, cache)
-- **PostgreSQL Threat Intel** — 50 ORM models: MITRE ATT&CK, CVE, CWE, CAPEC, findings, IOCs, cases
-- **Crypto Suite** — Ed25519 artifact signing, BLAKE2b checksums, Argon2id KDF, AES-256-GCM encryption
-- **Live Dashboard** — REST + SSE monitoring UI with 16 API endpoints
-- **32 Claude Agents** — Haiku/Sonnet/Opus analysts, developers, and forensics specialists
+- **36 MCP Tools** — 31 cybersec tools + 5 crypto tools (findings, IOCs, cases, intel, routing, cache, signing)
+- **PostgreSQL Threat Intel** — 82 ORM models: MITRE ATT&CK, CVE, CWE, CAPEC, NIST CSF/AI RMF, findings, IOCs, cases
+- **Crypto Suite** — Ed25519 artifact signing, BLAKE2b-256 checksums, Argon2id KDF, AES-256-GCM encryption
+- **Live Dashboard** — 15-tab SPA with renderTable, 36 REST/SSE routes, database explorer, agent query bridge
+- **34 Claude Agents** — 33 specialists + AGENT_FACTORY, organized in blue/red/purple team modes
+- **933 Skills** — SKILL.md taxonomy across 26 domains with Anthropic integration
+- **10 Lifecycle Hooks** — SessionStart, PreToolUse, PostToolUse, SubagentStart/Stop, PreCompact/PostCompact, and more
 
 ---
 
@@ -27,7 +29,7 @@ make setup
 
 # Start the ASGI server (A2A + AI proxy + dashboard)
 make serve
-# → http://localhost:8000
+# → http://localhost:8000/dashboard
 
 # Start the MCP server (for Claude Desktop / Claude Code)
 make mcp
@@ -42,6 +44,24 @@ See [docs/quickstart.md](docs/quickstart.md) for the full setup guide.
 
 ---
 
+## Architecture
+
+```
+Claude Code / claude-agent-sdk query()
+        │  ANTHROPIC_BASE_URL=http://localhost:8000/v1
+        ▼
+  ASGI /v1/* (AI Proxy — 60 providers, 13 strategies)
+        │
+  ┌─────┴──────┐
+  │ MCP (stdio)│  csmcp.cybersec.server (31 tools)
+  │            │  csmcp.dystopian_server (5 tools)
+  │ A2A (/a2a) │  OrchestratorAgent → 33 sub-agents
+  │ Dashboard  │  /dashboard/* → 36 REST + SSE endpoints
+  └────────────┘
+```
+
+---
+
 ## Documentation
 
 | Doc                                            | Description                            |
@@ -50,8 +70,9 @@ See [docs/quickstart.md](docs/quickstart.md) for the full setup guide.
 | [docs/quickstart.md](docs/quickstart.md)       | Full setup guide from scratch          |
 | [docs/configuration.md](docs/configuration.md) | All env vars and settings              |
 | [docs/api.md](docs/api.md)                     | REST + A2A API reference               |
-| [docs/mcp-tools.md](docs/mcp-tools.md)         | All 29 MCP tools reference             |
-| [docs/agents.md](docs/agents.md)               | All 32 agents catalog                  |
+| [docs/mcp-tools.md](docs/mcp-tools.md)         | All 36 MCP tools reference             |
+| [docs/agents.md](docs/agents.md)               | All 34 agents catalog                  |
+| [docs/teams.md](docs/teams.md)                 | Blue/Red/Purple team modes             |
 | [docs/deployment.md](docs/deployment.md)       | Docker, TLS, production setup          |
 | [docs/contributing.md](docs/contributing.md)   | Development workflow                   |
 
