@@ -40,7 +40,7 @@ opts = ClaudeAgentOptions(
 ### settings.json (`.claude/settings.json`) — 12 sections
 ```json
 {
-  "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
+  "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1", ... },
   "agent": "cybersec-agent",
   "version": "0.1.0",
   "asgi": { "host": "127.0.0.1", "port": 8000, "alt_port": 8080, "tls_port": 8433 },
@@ -51,11 +51,17 @@ opts = ClaudeAgentOptions(
   "artifacts": { "checksum_algorithm": "blake2b", "signature_log_enabled": true },
   "keys": { "directory": "/etc/dystopian-crypto/keys" },
   "cache": { "integrity_key": "cache_integrity", "default_ttl_hours": 24 },
-  "security": { "min_password_length": 16, "audit_logging": true }
+  "security": { "min_password_length": 32, "audit_logging": true },
+  "hooks_dir": "hooks/",
+  "hooks": {
+    "PreToolUse":  [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 .../hooks/pre_tool_call.py"}] }],
+    "PostToolUse": [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 .../hooks/post_tool_use.py"}] }],
+    "Stop":        [{ "hooks": [{"type":"command","command":"python3 .../hooks/session_end.py"}] }]
+  }
 }
 ```
 
-`"agent": "cybersec-agent"` → Claude Code auto-loads `.claude/agents/cybersec-agent.md` as orchestrator.
+**Hooks**: Only 4 real Claude Code events exist: `PreToolUse`, `PostToolUse`, `Notification`, `Stop`. Old settings.json had 18 fake event names (FirstInit, AgentStart, PhaseStart, etc.) — **removed in Phase H**. The other hook scripts in `hooks/` (session_start.py, ioc_discovered.py, etc.) remain usable as manual utilities or called from the wired hooks.
 
 ### Ports
 | Port | What                | Status                        |
@@ -72,7 +78,7 @@ opts = ClaudeAgentOptions(
 ### Root
 | File                 | Lines | Purpose                                                                |
 |----------------------|-------|------------------------------------------------------------------------|
-| `mcp.json`           | 83    | 5 MCP servers for Claude Code CLI                                      |
+| `mcp.json`           | ~60   | 3 MCP servers for Claude Code CLI (2 project + 1 external)             |
 | `pyproject.toml`     | —     | Python 3.14, uv, all deps                                              |
 | `Makefile`           | —     | `make serve`, `make test`, etc.                                        |
 | `docker-compose.yml` | —     | ASGI + PostgreSQL + Redis, YAML anchors `&common`/`&db-env`/`&ai-keys` |
@@ -88,17 +94,24 @@ opts = ClaudeAgentOptions(
 | `src/csmcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 36 tools        |
 
 ### src/csmcp/ (renamed from src/mcp/ — Phase H)
-**Critical**: `src/mcp/` was renamed to `src/csmcp/` to resolve naming conflict with pip's `mcp` v1.26.0 package (needed by `claude_agent_sdk`). The original `src/mcp/` shadowed pip's `mcp` when `PYTHONPATH=src` was set.
-| File                          | Lines | Purpose                                                        |
-|-------------------------------|-------|----------------------------------------------------------------|
-| `cybersec/__init__.py`        | ~80   | Assembles 29 cybersec tools → `cybersec_server` (McpSdkServerConfig) |
-| `cybersec/server.py`          | 30    | Slim stdio entry point — replaces deleted `mcp_server.py`      |
-| `cybersec/{findings,db,...}.py`| —    | 29 tools split into 8 submodules                               |
-| `dystopian.py`                | ~200  | 5 crypto tools (Ed25519/Argon2id/AES-256-GCM)                 |
-| `dystopian_server.py`         | 30    | Slim stdio entry point for dystopian tools                     |
-| `_sdk_compat.py`              | ~80   | `@tool` shim — resilience if `claude_agent_sdk` unavailable    |
-
-`mcp_server.py` (1288L FastMCP duplicate) → **DELETED** in Phase H.
+**Critical**: `src/mcp/` was renamed to `src/csmcp/` to resolve naming conflict with pip's `mcp` v1.26.0 package (needed by `claude_agent_sdk`). The original `src/mcp/` shadowed pip's `mcp` when `PYTHONPATH=src` was set. `mcp_server.py` (1288L FastMCP duplicate) was **DELETED** in Phase H.
+| File                            | Lines | Purpose                                                             |
+|---------------------------------|-------|---------------------------------------------------------------------|
+| `__init__.py`                   | ~30   | `all_servers()` → 2 servers; `allowed_tools()` → 36 tool names     |
+| `_sdk_compat.py`                | ~80   | `@tool` shim — resilience if `claude_agent_sdk` unavailable         |
+| `cybersec/__init__.py`          | ~80   | Assembles 31 cybersec tools → `cybersec_server` (McpSdkServerConfig)|
+| `cybersec/server.py`            | 30    | Slim stdio entry point (`python -m csmcp.cybersec.server`)          |
+| `cybersec/findings.py`          | —     | add_finding, add_ioc, query_findings, update_risk_register (4)      |
+| `cybersec/db.py`                | —     | db_healthcheck, bootstrap_intelligence (2)                          |
+| `cybersec/intelligence.py`      | —     | suggest_mitre, get_project_memory (2)                               |
+| `cybersec/layers.py`            | —     | share_to_layers, get_layer_value (2)                                |
+| `cybersec/cache.py`             | —     | cache_lookup, cache_store, cache_analytics, cache_invalidate (4)    |
+| `cybersec/proxy.py`             | —     | proxy_chat, proxy_providers, proxy_models, proxy_usage, proxy_cost, simulate_route, set_budget_guard, get_circuit_breakers, explain_route, routing_strategies (10) |
+| `cybersec/session.py`           | —     | session_snapshot, agent_registry, best_provider (3)                 |
+| `cybersec/cases.py`             | —     | case_open, case_status (2)                                          |
+| `cybersec/poc.py`               | —     | add_poc, query_pocs (2)                                             |
+| `dystopian.py`                  | ~200  | 5 crypto tools (Ed25519/Argon2id/AES-256-GCM)                      |
+| `dystopian_server.py`           | 30    | Slim stdio entry point (`python -m csmcp.dystopian_server`)         |
 
 ### src/agent/ (new — Phase H)
 High-level Claude Agent SDK integration package.
@@ -121,20 +134,20 @@ async for chunk in runner.stream("What are the top threats?"):
 ```
 
 ### src/a2a/
-| File                | Lines | Purpose                                                              |
-|---------------------|-------|----------------------------------------------------------------------|
+| File                | Lines | Purpose                                                                              |
+|---------------------|-------|--------------------------------------------------------------------------------------|
 | `agent_sdk.py`      | ~250  | SDK bridge — `build_agent_options()` → 36 MCP tools (29+7) via `csmcp.all_servers()` |
-| `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards                             |
-| `orchestrator.py`   | 365   | A2A task orchestration                                               |
-| `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)                                        |
-| `cybersec_agent.py` | 350   | CybersecAgent (SDK-wired ✅)                                          |
-| `server.py`         | 236   | A2A JSON-RPC server                                                  |
-| `client.py`         | 205   | A2A client                                                           |
-| `registry.py`       | 257   | AgentRegistry — remote A2A discovery                                 |
-| `task_store.py`     | 157   | In-memory + DB task store                                            |
-| `models.py`         | 215   | A2A Pydantic models                                                  |
-| `enums.py`          | —     | A2A enums                                                            |
-| `agent.py`          | —     | BaseA2AAgent                                                         |
+| `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards                                             |
+| `orchestrator.py`   | 365   | A2A task orchestration                                                               |
+| `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)                                                        |
+| `cybersec_agent.py` | 350   | CybersecAgent (SDK-wired ✅)                                                          |
+| `server.py`         | 236   | A2A JSON-RPC server                                                                  |
+| `client.py`         | 205   | A2A client                                                                           |
+| `registry.py`       | 257   | AgentRegistry — remote A2A discovery                                                 |
+| `task_store.py`     | 157   | In-memory + DB task store                                                            |
+| `models.py`         | 215   | A2A Pydantic models                                                                  |
+| `enums.py`          | —     | A2A enums                                                                            |
+| `agent.py`          | —     | BaseA2AAgent                                                                         |
 
 ### src/ai_proxy/
 | File                        | Lines | Purpose                                                   |
