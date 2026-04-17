@@ -1,6 +1,7 @@
 ---
 name: email
 description: Test web application email functionality for SMTP header injection vulnerabilities that allow attackers to inject
+action: email
   additional email headers, modify recipients, and abuse contact forms for spam relay.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - contact-form
 - email-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

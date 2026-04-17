@@ -1,6 +1,7 @@
 ---
 name: beyondcorpmodel
 description: 'Implementing Google''s BeyondCorp zero trust access model to eliminate implicit trust from the network perimeter,
+action: beyondcorpmodel
   enforce identity-aware access controls using IAP, Access Context Manager, and Chrome Enterprise Premium for VPN-less secure
   application access.
 
@@ -16,7 +17,7 @@ tags:
 - ztna
 - access-context-manager
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

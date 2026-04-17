@@ -1,6 +1,7 @@
 ---
 name: shadow
 description: Discover and inventory shadow API endpoints that operate outside documented specifications using traffic analysis,
+action: shadow
   code scanning, and API discovery platforms.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - attack-surface-management
 - api-governance
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

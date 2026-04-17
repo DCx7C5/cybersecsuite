@@ -1,6 +1,7 @@
 ---
 name: post
 description: Facilitate structured post-incident reviews to identify root causes, document what worked and failed, and produce
+action: post
   actionable recommendations to improve future incident response.
 domain: cybersecurity
 subdomain: incident-response
@@ -15,7 +16,7 @@ mitre_attack:
 - T1566
 - T1078
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

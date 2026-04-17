@@ -1,6 +1,7 @@
 ---
 name: soc
 description: Build a structured SOC escalation matrix defining severity tiers, response SLAs, escalation paths, and notification
+action: soc
   procedures for security incidents.
 domain: cybersecurity
 subdomain: soc-operations
@@ -13,7 +14,7 @@ tags:
 - triage
 - tiered-soc
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

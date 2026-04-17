@@ -1,6 +1,7 @@
 ---
 name: aitm
 description: Detect and respond to Adversary-in-the-Middle (AiTM) phishing attacks that use reverse proxy kits like EvilProxy,
+action: aitm
   Evilginx, and Tycoon 2FA to bypass MFA and steal session tokens.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -14,7 +15,7 @@ tags:
 - reverse-proxy
 - credential-theft
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AT-01

@@ -1,6 +1,7 @@
 ---
 name: purdue
 description: 'Implement network segmentation based on the Purdue Enterprise Reference Architecture (PERA) model to separate
+action: purdue
   industrial control system networks into hierarchical security zones from Level 0 physical process through Level 5 enterprise,
   enforcing strict traffic control between OT and IT domains.
 
@@ -17,7 +18,7 @@ tags:
 - dmz
 - scada
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

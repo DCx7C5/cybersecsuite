@@ -1,6 +1,7 @@
 ---
 name: kubernetes
 description: Audit Kubernetes cluster security posture against CIS benchmarks using kube-bench with automated checks for control
+action: hardening-kubernetes
   plane, worker nodes, and RBAC.
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - hardening
 - aquasecurity
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

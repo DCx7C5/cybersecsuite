@@ -1,6 +1,7 @@
 ---
 name: security
 description: 'Performs initial triage of security incidents to determine severity, scope, and required response actions using
+action: security
   the NIST SP 800-61r3 and SANS PICERL frameworks. Classifies incidents by type, assigns priority based on business impact,
   and routes to appropriate response teams. Activates for requests involving incident triage, security alert classification,
   severity assessment, incident prioritization, or initial incident analysis.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1078
 - T1059
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

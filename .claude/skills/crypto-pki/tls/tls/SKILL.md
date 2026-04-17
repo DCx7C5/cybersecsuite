@@ -1,6 +1,7 @@
 ---
 name: tls
 description: TLS 1.3 (RFC 8446) is the latest version of the Transport Layer Security protocol, providing significant improvements
+action: tls
   over TLS 1.2 in both security and performance. It reduces handshake latency to 1-R
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - transport-security
 - network-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

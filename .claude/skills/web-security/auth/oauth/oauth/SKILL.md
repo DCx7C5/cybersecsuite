@@ -1,6 +1,7 @@
 ---
 name: oauth
 description: Configure secure OAuth 2.0 authorization flows including Authorization Code with PKCE, Client Credentials, and
+action: oauth
   Device Authorization Grant. This skill covers flow selection, PKCE implementation, token
 domain: cybersecurity
 subdomain: identity-access-management
@@ -14,7 +15,7 @@ tags:
 - oidc
 - pkce
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

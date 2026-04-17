@@ -1,6 +1,7 @@
 ---
 name: process
 description: Detect process hollowing (T1055.012) by analyzing memory-mapped sections, hollowed process indicators, and parent-child
+action: process
   process anomalies in EDR telemetry.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - t1055
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Platform Monitoring

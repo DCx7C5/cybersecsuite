@@ -1,6 +1,7 @@
 ---
 name: soar
 description: 'Implements Security Orchestration, Automation, and Response (SOAR) workflows using Splunk SOAR (formerly Phantom)
+action: soar
   to automate alert triage, IOC enrichment, containment actions, and incident response playbooks. Use when SOC teams need
   to reduce manual analyst work, standardize response procedures, or integrate multiple security tools into automated workflows.
 
@@ -21,7 +22,7 @@ mitre_attack:
 - T1059
 - T1078
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

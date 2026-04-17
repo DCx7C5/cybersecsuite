@@ -1,6 +1,7 @@
 ---
 name: insider
 description: Detect insider threat behavioral indicators including unusual data access, off-hours activity, mass file downloads,
+action: insider
   privilege abuse, and resignation-correlated data theft.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - ueba
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Access

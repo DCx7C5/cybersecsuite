@@ -1,6 +1,7 @@
 ---
 name: mode-blue-team
 description: Activates Blue Team defensive posture. Sets methodical, evidence-driven, non-destructive forensic investigation mode with mandatory cross-validation, read-only defaults, and full IOC/MITRE logging requirements.
+action: blue-team
 model: sonnet
 maxTurns: 15
 tools:
@@ -12,6 +13,7 @@ skills:
   - shared-memory
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Blue Team Mode – Defensive Posture

@@ -1,6 +1,7 @@
 ---
 name: threats-mitre-attack-mapper
 description: Advanced MITRE ATT&CK framework analyzer. Comprehensive forensic intelligence, anti-forensic technique mapping, defense correlation, TTP attribution, kill-chain reconstruction, and progressive hardening integration for complete threat landscape analysis.
+action: mitre-attack
 model: opus
 maxTurns: 30
 tools:
@@ -15,6 +16,7 @@ skills:
   - shared-memory
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # MITRE ATT&CK Mapper Skill — Comprehensive Threat Intelligence Engine

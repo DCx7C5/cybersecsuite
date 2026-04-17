@@ -1,6 +1,7 @@
 ---
 name: aicorrelation
 description: Use AI and LLM-based reasoning to correlate findings across multiple OSINT sources—username enumeration, email
+action: aicorrelation
   lookups, social media profiles, domain records, breach databases, and dark-web mentions—into unified intelligence profiles
   with confidence scoring and link analysis.
 domain: cybersecurity
@@ -17,7 +18,7 @@ tags:
 - spiderfoot
 - maltego
 version: '1.0'
-author: juliosuas
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0051

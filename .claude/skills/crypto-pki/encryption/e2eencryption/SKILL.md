@@ -1,6 +1,7 @@
 ---
 name: e2eencryption
 description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary
+action: e2eencryption
   (including the server) able to decrypt them. This skill implements a simplified version
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - messaging
 - signal-protocol
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

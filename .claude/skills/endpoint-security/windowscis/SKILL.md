@@ -1,6 +1,7 @@
 ---
 name: windowscis
 description: 'Hardens Windows endpoints using CIS (Center for Internet Security) Benchmark recommendations to reduce attack
+action: windowscis
   surface, enforce security baselines, and meet compliance requirements. Use when deploying new Windows workstations or servers,
   remediating audit findings, or establishing organization-wide security baselines. Activates for requests involving Windows
   hardening, CIS benchmarks, GPO security baselines, or endpoint configuration compliance.
@@ -16,7 +17,7 @@ tags:
 - GPO
 - baseline-configuration
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

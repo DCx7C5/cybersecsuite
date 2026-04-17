@@ -1,6 +1,7 @@
 ---
 name: firewall
 description: Bypass Web Application Firewall protections using encoding techniques, HTTP method manipulation, parameter pollution,
+action: firewall
   and payload obfuscation to deliver SQL injection, XSS, and other attack payloads past WAF detection rules.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - encoding-bypass
 - web-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

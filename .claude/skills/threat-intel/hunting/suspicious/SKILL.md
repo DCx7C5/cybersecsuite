@@ -1,6 +1,7 @@
 ---
 name: suspicious
 description: Detect suspicious PowerShell execution patterns including encoded commands, download cradles, AMSI bypass attempts,
+action: suspicious
   and constrained language mode evasion.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - amsi
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

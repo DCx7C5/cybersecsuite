@@ -1,6 +1,7 @@
 ---
 name: credential
 description: Detect LSASS credential dumping, SAM database extraction, and NTDS.dit theft using Sysmon Event ID 10, Windows
+action: detection-credential
   Security logs, and SIEM correlation rules
 domain: cybersecurity
 subdomain: threat-detection
@@ -13,7 +14,7 @@ tags:
 - windows-security
 - defense-evasion
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

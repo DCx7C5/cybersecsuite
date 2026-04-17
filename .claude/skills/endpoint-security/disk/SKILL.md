@@ -1,6 +1,7 @@
 ---
 name: disk
 description: 'Implements full disk encryption using Microsoft BitLocker on Windows endpoints to protect data at rest from
+action: disk
   unauthorized access in case of device loss or theft. Use when deploying encryption for compliance requirements, securing
   mobile workstations, or implementing data protection controls across the enterprise. Activates for requests involving BitLocker
   encryption, disk encryption, TPM configuration, or data-at-rest protection.
@@ -16,7 +17,7 @@ tags:
 - data-protection
 - windows-security
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: kubernetes
 description: Implement Kubernetes network segmentation using Calico NetworkPolicy and GlobalNetworkPolicy for zero-trust pod-to-pod
+action: network-kubernetes
   communication.
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - zero-trust
 - cni
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

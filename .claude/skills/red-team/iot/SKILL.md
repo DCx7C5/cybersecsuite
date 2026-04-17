@@ -1,6 +1,7 @@
 ---
 name: iot
 description: 'Performs comprehensive security assessments of IoT devices and their ecosystems by testing hardware interfaces,
+action: iot
   firmware, network communications, cloud APIs, and companion mobile applications. The tester uses firmware extraction and
   analysis, hardware debugging via UART and JTAG, network protocol analysis, and runtime exploitation to identify vulnerabilities
   across all layers of the IoT stack. Activates for requests involving IoT security testing, embedded device assessment, firmware
@@ -16,7 +17,7 @@ tags:
 - hardware-hacking
 - UART-JTAG
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

@@ -1,6 +1,7 @@
 ---
 name: kerneldev-forensic
 description: Advanced Linux Kernel Module development for cybersecurity forensics. Custom LKM creation for rootkit detection, real-time syscall monitoring, kernel-space threat detection, eBPF forensics, and kerneldev-mcp integration.
+action: kerneldev-forensic
 model: opus
 maxTurns: 30
 tools:
@@ -16,6 +17,7 @@ skills:
 mcpServers:
   - cybersec
   - kerneldev
+author: dcx7c5
 ---
 
 # KernelDev Forensic — Advanced Kernel Development for Cybersecurity

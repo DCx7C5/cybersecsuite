@@ -1,6 +1,7 @@
 ---
 name: volcombined
 description: 'Performs memory forensics analysis using Volatility 3 to extract evidence of malware execution, process injection,
+action: volcombined
   network connections, and credential theft from RAM dumps captured during incident response. Covers memory acquisition, process
   analysis, DLL inspection, and malware detection. Activates for requests involving memory forensics, RAM analysis, Volatility
   framework, memory dump investigation, volatile evidence analysis, or live memory acquisition.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1620
 - T1574
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

@@ -1,6 +1,7 @@
 ---
 name: living
 description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse
+action: living
   of Azure, AWS, GCP services, and SaaS platforms.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - saas
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

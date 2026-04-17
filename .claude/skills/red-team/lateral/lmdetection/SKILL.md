@@ -1,6 +1,7 @@
 ---
 name: lmdetection
 description: 'Detects lateral movement techniques including Pass-the-Hash, PsExec, WMI execution, RDP pivoting, and SMB-based
+action: lmdetection
   spreading using SIEM correlation of Windows event logs, network flow data, and endpoint telemetry mapped to MITRE ATT&CK
   Lateral Movement (TA0008) techniques.
 
@@ -18,7 +19,7 @@ tags:
 - smb
 - detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

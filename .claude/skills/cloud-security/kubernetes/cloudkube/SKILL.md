@@ -1,6 +1,7 @@
 ---
 name: cloudkube
 description: 'This skill covers hardening managed Kubernetes clusters on EKS, AKS, and GKE by implementing Pod Security Standards,
+action: cloudkube
   network policies, workload identity, RBAC scoping, image admission controls, and runtime security monitoring. It addresses
   cloud-specific security features including IRSA for EKS, Workload Identity for GKE, and Managed Identities for AKS.
 
@@ -15,7 +16,7 @@ tags:
 - pod-security-standards
 - container-runtime
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

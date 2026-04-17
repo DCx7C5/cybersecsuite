@@ -1,6 +1,7 @@
 ---
 name: ebpf
 description: 'Implements eBPF-based security monitoring using Cilium Tetragon for real-time process execution tracking, network
+action: ebpf
   connection observability, file access auditing, and runtime enforcement. Covers TracingPolicy CRD authoring with kprobe/tracepoint
   hooks, in-kernel filtering via matchArgs/matchBinaries selectors, JSON event export, and integration with SIEM pipelines.
   Use when building kernel-level runtime security observability for Linux hosts or Kubernetes clusters.
@@ -18,7 +19,7 @@ tags:
 - runtime
 - observability
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

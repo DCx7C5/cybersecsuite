@@ -1,6 +1,7 @@
 ---
 name: stixfeed
 description: 'Processes STIX 2.1 threat intelligence bundles delivered via TAXII 2.1 servers, normalizing objects into platform-native
+action: stixfeed
   schemas and routing them to appropriate consuming systems. Use when onboarding new TAXII collection endpoints, automating
   bi-directional intelligence sharing with ISACs, or building pipeline validation for malformed STIX bundles. Activates for
   requests involving OASIS STIX, TAXII server configuration, MISP TAXII, or Cortex XSOAR feed integrations.
@@ -18,7 +19,7 @@ tags:
 - threat-intelligence
 - NIST-SP-800-150
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

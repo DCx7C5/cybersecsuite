@@ -1,6 +1,7 @@
 ---
 name: kpimetrics
 description: 'Builds SOC performance metrics and KPI tracking dashboards measuring Mean Time to Detect (MTTD), Mean Time to
+action: kpimetrics
   Respond (MTTR), alert quality ratios, analyst productivity, and detection coverage using SIEM data. Use when SOC leadership
   needs operational visibility, continuous improvement tracking, or executive-level reporting on security operations effectiveness.
 
@@ -17,7 +18,7 @@ tags:
 - reporting
 - continuous-improvement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

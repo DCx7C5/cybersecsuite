@@ -1,6 +1,7 @@
 ---
 name: zscaler
 description: 'Configuring Zscaler Private Access (ZPA) to replace traditional VPN with zero trust network access by deploying
+action: zscaler
   App Connectors, defining application segments, configuring access policies based on user identity and device posture, and
   integrating with IdPs.
 
@@ -16,7 +17,7 @@ tags:
 - access-policy
 - sase
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

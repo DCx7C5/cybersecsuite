@@ -1,6 +1,7 @@
 ---
 name: timesketch
 description: Build collaborative forensic incident timelines using Timesketch to ingest, normalize, and analyze multi-source
+action: timesketch
   event data for attack chain reconstruction and investigation documentation.
 domain: cybersecurity
 subdomain: incident-response
@@ -17,7 +18,7 @@ mitre_attack:
 - T1059
 - T1053
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

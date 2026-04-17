@@ -1,6 +1,7 @@
 ---
 name: dll
 description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack
+action: dll
   execution flow for defense evasion.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - edr
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

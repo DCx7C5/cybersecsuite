@@ -44,27 +44,27 @@ See [docs/quickstart.md](docs/quickstart.md) for the full setup guide.
 
 ## Documentation
 
-| Doc | Description |
-|-----|-------------|
-| [docs/architecture.md](docs/architecture.md) | System diagram, module map, data flows |
-| [docs/quickstart.md](docs/quickstart.md) | Full setup guide from scratch |
-| [docs/configuration.md](docs/configuration.md) | All env vars and settings |
-| [docs/api.md](docs/api.md) | REST + A2A API reference |
-| [docs/mcp-tools.md](docs/mcp-tools.md) | All 29 MCP tools reference |
-| [docs/agents.md](docs/agents.md) | All 32 agents catalog |
-| [docs/deployment.md](docs/deployment.md) | Docker, TLS, production setup |
-| [docs/contributing.md](docs/contributing.md) | Development workflow |
+| Doc                                            | Description                            |
+|------------------------------------------------|----------------------------------------|
+| [docs/architecture.md](docs/architecture.md)   | System diagram, module map, data flows |
+| [docs/quickstart.md](docs/quickstart.md)       | Full setup guide from scratch          |
+| [docs/configuration.md](docs/configuration.md) | All env vars and settings              |
+| [docs/api.md](docs/api.md)                     | REST + A2A API reference               |
+| [docs/mcp-tools.md](docs/mcp-tools.md)         | All 29 MCP tools reference             |
+| [docs/agents.md](docs/agents.md)               | All 32 agents catalog                  |
+| [docs/deployment.md](docs/deployment.md)       | Docker, TLS, production setup          |
+| [docs/contributing.md](docs/contributing.md)   | Development workflow                   |
 
 ### Module docs
 
-| Module | Description |
-|--------|-------------|
-| [src/a2a/README.md](src/a2a/README.md) | A2A protocol implementation |
-| [src/ai_proxy/README.md](src/ai_proxy/README.md) | Multi-provider AI routing |
-| [src/crypto/README.md](src/crypto/README.md) | Cryptographic utilities |
-| [src/dashboard/README.md](src/dashboard/README.md) | Monitoring dashboard |
-| [src/db/README.md](src/db/README.md) | Database layer (Tortoise ORM) |
-| [src/proxy/README.md](src/proxy/README.md) | ASGI application |
+| Module                                             | Description                   |
+|----------------------------------------------------|-------------------------------|
+| [src/a2a/README.md](src/a2a/README.md)             | A2A protocol implementation   |
+| [src/ai_proxy/README.md](src/ai_proxy/README.md)   | Multi-provider AI routing     |
+| [src/crypto/README.md](src/crypto/README.md)       | Cryptographic utilities       |
+| [src/dashboard/README.md](src/dashboard/README.md) | Monitoring dashboard          |
+| [src/db/README.md](src/db/README.md)               | Database layer (Tortoise ORM) |
+| [src/proxy/README.md](src/proxy/README.md)         | ASGI application              |
 
 ---
 

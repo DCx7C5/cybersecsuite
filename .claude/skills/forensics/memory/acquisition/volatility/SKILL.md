@@ -1,6 +1,7 @@
 ---
 name: volatility
 description: 'Performs Linux memory acquisition using LiME (Linux Memory Extractor) kernel module and analysis with Volatility
+action: acquisition-volatility
   3 framework. Extracts process lists, network connections, bash history, loaded kernel modules, and injected code from Linux
   memory images. Use when performing incident response on compromised Linux systems.
 
@@ -13,7 +14,7 @@ tags:
 - forensics
 - with
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

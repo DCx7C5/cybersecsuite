@@ -1,6 +1,7 @@
 ---
 name: dbus-alerts
 description: D-Bus security monitoring and IPC forensics. Detects suspicious service activations, polkit authentication bypasses, DBUS_SESSION_BUS_ADDRESS hijacking, and lateral movement via session/system bus event monitoring.
+action: alerts
 model: sonnet
 maxTurns: 20
 tools:
@@ -14,6 +15,7 @@ skills:
   - threats/mitre-attack-mapper
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # D-Bus Alerts

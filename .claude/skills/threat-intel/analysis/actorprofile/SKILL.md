@@ -1,6 +1,7 @@
 ---
 name: actorprofile
 description: 'Develops comprehensive threat actor profiles for APT groups, criminal organizations, and hacktivist collectives
+action: actorprofile
   by aggregating TTP documentation, historical campaign data, tooling fingerprints, and attribution indicators from multiple
   intelligence sources. Use when briefing executives on sector-specific threats, updating threat model assumptions, or prioritizing
   defensive controls against specific adversaries. Activates for requests involving MITRE ATT&CK Groups, Mandiant APT profiles,
@@ -19,7 +20,7 @@ tags:
 - kill-chain
 - NIST-CSF
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

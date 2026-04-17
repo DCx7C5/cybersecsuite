@@ -1,6 +1,7 @@
 ---
 name: mobile
 description: 'Implements Mobile Application Management (MAM) policies to protect enterprise data on managed and unmanaged
+action: mobile
   mobile devices through app-level controls including data loss prevention, selective wipe, app configuration, and containerization.
   Use when securing corporate apps on BYOD devices, implementing Intune App Protection Policies, or enforcing data separation
   between personal and work apps. Activates for requests involving MAM deployment, app protection policies, mobile containerization,
@@ -9,7 +10,7 @@ description: 'Implements Mobile Application Management (MAM) policies to protect
   '
 domain: cybersecurity
 subdomain: mobile-security
-author: mahipal
+author: dcx7c5
 tags:
 - mobile-security
 - android
@@ -56,11 +57,11 @@ Use this skill when:
 
 Classify data sensitivity and define protection tiers:
 
-| Tier | Data Type | Controls |
-|------|-----------|----------|
-| Tier 1 - Basic | General corporate email | Require PIN, block screenshots |
-| Tier 2 - Enhanced | Financial data, HR records | Encrypt app data, restrict cut/copy/paste |
-| Tier 3 - High | PII, healthcare, legal | Selective wipe, offline access limits, DLP |
+| Tier              | Data Type                  | Controls                                   |
+|-------------------|----------------------------|--------------------------------------------|
+| Tier 1 - Basic    | General corporate email    | Require PIN, block screenshots             |
+| Tier 2 - Enhanced | Financial data, HR records | Encrypt app data, restrict cut/copy/paste  |
+| Tier 3 - High     | PII, healthcare, legal     | Selective wipe, offline access limits, DLP |
 
 ### Step 2: Configure Intune App Protection Policies
 
@@ -156,13 +157,13 @@ Configure MAM monitoring dashboards:
 
 ## Key Concepts
 
-| Term | Definition |
-|------|-----------|
-| **MAM** | Mobile Application Management - app-level policies without requiring full device enrollment |
-| **App Protection Policy** | Set of rules enforcing data protection at the app level (encryption, DLP, access controls) |
-| **Selective Wipe** | Removing only corporate data from managed apps while preserving personal data |
-| **App Wrapping** | Post-build process applying MAM SDK policies to apps without source code modification |
-| **Containerization** | Isolating corporate app data in an encrypted container separate from personal apps |
+| Term                      | Definition                                                                                  |
+|---------------------------|---------------------------------------------------------------------------------------------|
+| **MAM**                   | Mobile Application Management - app-level policies without requiring full device enrollment |
+| **App Protection Policy** | Set of rules enforcing data protection at the app level (encryption, DLP, access controls)  |
+| **Selective Wipe**        | Removing only corporate data from managed apps while preserving personal data               |
+| **App Wrapping**          | Post-build process applying MAM SDK policies to apps without source code modification       |
+| **Containerization**      | Isolating corporate app data in an encrypted container separate from personal apps          |
 
 ## Tools & Systems
 

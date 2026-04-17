@@ -1,6 +1,7 @@
 ---
 name: opencti
 description: OpenCTI is an open-source platform for managing cyber threat intelligence knowledge, built on STIX 2.1 as its
+action: opencti
   native data model. This skill covers building an automated IOC enrichment pipeline using O
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - enrichment
 - virustotal
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

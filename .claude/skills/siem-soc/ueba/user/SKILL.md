@@ -1,6 +1,7 @@
 ---
 name: user
 description: 'Performs User and Entity Behavior Analytics (UEBA) to detect anomalous user activities including impossible
+action: user
   travel, unusual access patterns, privilege abuse, and insider threats using SIEM-based behavioral baselines and statistical
   analysis. Use when SOC teams need to identify compromised accounts or insider threats through deviation from established
   behavioral norms.
@@ -17,7 +18,7 @@ tags:
 - splunk
 - baseline
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

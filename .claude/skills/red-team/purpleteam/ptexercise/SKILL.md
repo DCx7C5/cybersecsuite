@@ -1,6 +1,7 @@
 ---
 name: ptexercise
 description: 'Performs purple team exercises by coordinating red team adversary emulation with blue team detection validation
+action: ptexercise
   using MITRE ATT&CK-mapped attack scenarios, real-time detection testing, and collaborative gap remediation. Use when SOC
   teams need to validate detection capabilities, improve analyst skills, and close detection gaps through structured offensive-defensive
   collaboration.
@@ -17,7 +18,7 @@ tags:
 - adversary-emulation
 - detection-validation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

@@ -1,6 +1,7 @@
 ---
 name: registry
 description: Extract and analyze Windows Registry hives to uncover user activity, installed software, autostart entries, and
+action: registry
   evidence of system compromise.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - registry-explorer
 - evidence-collection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

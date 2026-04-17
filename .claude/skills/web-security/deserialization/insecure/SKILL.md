@@ -1,6 +1,7 @@
 ---
 name: insecure
 description: Identifying and exploiting insecure deserialization vulnerabilities in Java, PHP, Python, and .NET applications
+action: insecure
   to achieve remote code execution during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - web-security
 - ysoserial
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: mimikatz
 description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory
+action: mimikatz
   detection of known modules.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - t1003
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Execution Isolation

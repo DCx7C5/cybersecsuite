@@ -1,6 +1,7 @@
 ---
 name: conditional
 description: Configure Microsoft Entra ID (Azure AD) Conditional Access policies for zero trust access control. Covers signal-based
+action: conditional
   policy design, device compliance requirements, risk-based authentication, named l
 domain: cybersecurity
 subdomain: identity-access-management
@@ -13,7 +14,7 @@ tags:
 - conditional-access
 - zero-trust
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

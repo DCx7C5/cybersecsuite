@@ -1,6 +1,7 @@
 ---
 name: dcfldd
 description: Create forensically sound bit-for-bit disk images using dd and dcfldd while preserving evidence integrity through
+action: dcfldd
   hash verification.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - dcfldd
 - hash-verification
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

@@ -1,6 +1,7 @@
 ---
 name: cloud
 description: Execute cloud-native incident containment across AWS, Azure, and GCP by isolating compromised resources, revoking
+action: cloud
   credentials, preserving forensic evidence, and applying security group restrictions to prevent lateral movement.
 domain: cybersecurity
 subdomain: incident-response
@@ -20,7 +21,7 @@ mitre_attack:
 - T1525
 - T1098
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Access

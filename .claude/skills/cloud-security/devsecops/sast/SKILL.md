@@ -1,6 +1,7 @@
 ---
 name: sast
 description: 'This skill covers integrating Static Application Security Testing (SAST) tools—CodeQL and Semgrep—into GitHub
+action: sast
   Actions CI/CD pipelines. It addresses configuring automated code scanning on pull requests and pushes, tuning rules to reduce
   false positives, uploading SARIF results to GitHub Advanced Security, and establishing quality gates that block merges when
   high-severity vulnerabilities are detected.
@@ -16,7 +17,7 @@ tags:
 - semgrep
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

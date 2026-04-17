@@ -1,6 +1,7 @@
 ---
 name: eventlogs
 description: Extract, parse, and analyze Windows Event Logs (EVTX) using Chainsaw, Hayabusa, and EvtxECmd to detect lateral
+action: eventlogs
   movement, persistence, and privilege escalation.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -13,7 +14,7 @@ tags:
 - sigma-rules
 - incident-response
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

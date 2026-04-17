@@ -1,6 +1,7 @@
 ---
 name: active
 description: 'Executes containment strategies to stop active adversary operations and prevent lateral movement during a confirmed
+action: active
   security breach. Implements short-term and long-term containment using network segmentation, endpoint isolation, credential
   revocation, and access control modifications. Activates for requests involving breach containment, lateral movement prevention,
   network isolation, active threat containment, or live incident response.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1210
 - T1072
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

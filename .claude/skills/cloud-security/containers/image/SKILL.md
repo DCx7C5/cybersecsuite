@@ -1,6 +1,7 @@
 ---
 name: image
 description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations,
+action: image
   and Kubernetes admission enforcement.
 domain: cybersecurity
 subdomain: container-security
@@ -13,7 +14,7 @@ tags:
 - keyless
 - slsa
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

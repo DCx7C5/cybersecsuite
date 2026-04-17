@@ -1,6 +1,7 @@
 ---
 name: dns
 description: 'Analyzes DNS query logs to detect data exfiltration via DNS tunneling, DGA domain communication, and covert
+action: dns
   C2 channels using entropy analysis, query volume anomalies, and subdomain length detection in SIEM platforms. Use when SOC
   teams need to identify DNS-based threats that bypass traditional network security controls.
 
@@ -17,7 +18,7 @@ tags:
 - splunk
 - threat-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0024

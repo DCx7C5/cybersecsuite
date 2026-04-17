@@ -1,6 +1,7 @@
 ---
 name: llm
 description: 'Implements input and output validation guardrails for LLM-powered applications to prevent prompt injection,
+action: llm
   data leakage, toxic content generation, and hallucinated outputs. Builds a security validation pipeline using NVIDIA NeMo
   Guardrails Colang definitions, custom Python validators for PII detection and content policy enforcement, and the Guardrails
   AI framework for structured output validation. The guardrails system intercepts both user inputs (blocking injection attempts,
@@ -18,7 +19,7 @@ tags:
 - output-filtering
 - AI-safety
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0051

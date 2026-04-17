@@ -1,6 +1,7 @@
 ---
 name: security
 description: 'Implements security chaos engineering experiments that deliberately disable or degrade security controls to
+action: security
   verify detection and response capabilities. Tests WAF bypass, firewall rule removal, log pipeline disruption, and EDR disablement
   scenarios using boto3 and subprocess. Use when validating SOC detection coverage and resilience.
 
@@ -13,7 +14,7 @@ tags:
 - chaos
 - engineering
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

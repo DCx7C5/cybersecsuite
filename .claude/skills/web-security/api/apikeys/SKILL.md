@@ -1,6 +1,7 @@
 ---
 name: apikeys
 description: 'Implements secure API key generation, storage, rotation, and revocation controls to protect API authentication
+action: apikeys
   credentials from leakage, brute force, and abuse. The engineer designs API key formats with sufficient entropy, implements
   secure hashing for storage, enforces per-key scoping and rate limiting, monitors for leaked keys in public repositories,
   and builds key rotation workflows. Activates for requests involving API key management, API key security, key rotation policy,
@@ -16,7 +17,7 @@ tags:
 - key-rotation
 - secret-management
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

@@ -1,6 +1,7 @@
 ---
 name: stego
 description: Detect and extract hidden data embedded in images, audio, and other media files using steganalysis tools to uncover
+action: stego
   covert communication channels.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - covert-channels
 - image-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

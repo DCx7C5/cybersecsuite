@@ -1,6 +1,7 @@
 ---
 name: windows
 description: 'Configures Windows Event Logging with advanced audit policies to generate high-fidelity security events for
+action: windows-windows
   threat detection and forensic investigation. Use when enabling audit policies for logon events, process creation, privilege
   use, and object access to feed SIEM detection rules. Activates for requests involving Windows audit policy, event log configuration,
   security logging, or detection-oriented logging.
@@ -15,7 +16,7 @@ tags:
 - audit-policy
 - detection-engineering
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

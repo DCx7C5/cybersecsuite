@@ -1,6 +1,7 @@
 ---
 name: prototype
 description: Detect and exploit JavaScript prototype pollution vulnerabilities on both client-side and server-side applications
+action: prototype
   to achieve XSS, RCE, and authentication bypass through property injection.
 domain: cybersecurity
 subdomain: web-application-security
@@ -14,7 +15,7 @@ tags:
 - dom-xss
 - server-side-pollution
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

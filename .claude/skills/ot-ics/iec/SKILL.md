@@ -1,6 +1,7 @@
 ---
 name: iec
 description: 'This skill covers designing and implementing security zones and conduits for industrial automation and control
+action: iec
   systems (IACS) per IEC 62443-3-2. It addresses zone partitioning based on risk assessment, assigning Security Level targets
   (SL-T), designing conduit security controls, implementing microsegmentation with industrial firewalls, and validating zone
   architecture through traffic analysis and penetration testing against the Purdue Reference Model.
@@ -17,7 +18,7 @@ tags:
 - network-segmentation
 - zones-conduits
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

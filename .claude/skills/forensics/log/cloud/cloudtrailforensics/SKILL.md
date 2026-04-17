@@ -1,6 +1,7 @@
 ---
 name: cloudtrailforensics
 description: Perform forensic investigation of AWS environments using CloudTrail logs to reconstruct attacker activity, identify
+action: cloudtrailforensics
   compromised credentials, and analyze API call patterns.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - boto3
 - s3
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

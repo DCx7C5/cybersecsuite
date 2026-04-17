@@ -1,6 +1,7 @@
 ---
 name: ioccollect
 description: 'Systematically collects, categorizes, and distributes indicators of compromise (IOCs) during and after security
+action: ioccollect
   incidents to enable detection, blocking, and threat intelligence sharing. Covers network, host, email, and behavioral indicators
   using STIX/TAXII formats and threat intelligence platforms. Activates for requests involving IOC collection, indicator extraction,
   threat indicator sharing, compromise indicators, STIX export, or IOC enrichment.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1547
 - T1053
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

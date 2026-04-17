@@ -1,6 +1,7 @@
 ---
 name: xml
 description: Test web applications for XML injection vulnerabilities including XXE, XPath injection, and XML entity attacks
+action: xml
   to identify data exposure and server-side request forgery risks.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - entity-injection
 - dtd-attack
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

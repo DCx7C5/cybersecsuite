@@ -1,6 +1,7 @@
 ---
 name: splunk
 description: 'Analyzes Windows Security, System, and Sysmon event logs in Splunk to detect authentication attacks, privilege
+action: splunk
   escalation, persistence mechanisms, and lateral movement using SPL queries mapped to MITRE ATT&CK techniques. Use when SOC
   analysts need to investigate Windows-based threats, build detection queries, or perform forensic timeline analysis of Windows
   endpoints and domain controllers.
@@ -17,7 +18,7 @@ tags:
 - mitre-attack
 - active-directory
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Access

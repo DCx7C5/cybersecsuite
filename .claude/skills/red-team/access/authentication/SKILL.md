@@ -1,6 +1,7 @@
 ---
 name: authentication
 description: Discovering and accessing unprotected pages, APIs, and administrative interfaces by enumerating URLs and bypassing
+action: authentication
   authentication controls during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - directory-enumeration
 - owasp
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

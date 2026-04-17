@@ -1,6 +1,7 @@
 ---
 name: dashboard
 description: Generates a self-contained static HTML dashboard showing DB health, active mode (blue/red/purple), intel table counts, session overview, active skills, and settings summary. Run generate_dashboard.py or manage.py dashboard to produce index.html.
+action: dashboard
 model: sonnet
 maxTurns: 10
 tools:
@@ -11,6 +12,7 @@ tools:
   - Grep
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Dashboard Skill — CyberSec Health & Status Monitor

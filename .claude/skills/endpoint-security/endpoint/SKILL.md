@@ -1,6 +1,7 @@
 ---
 name: endpoint
 description: 'Implements endpoint Data Loss Prevention (DLP) controls to detect and prevent sensitive data exfiltration through
+action: endpoint
   email, USB, cloud storage, and printing. Use when deploying DLP agents, creating content inspection policies, or preventing
   unauthorized data movement from endpoints. Activates for requests involving DLP, data exfiltration prevention, content inspection,
   or sensitive data protection on endpoints.
@@ -15,7 +16,7 @@ tags:
 - data-protection
 - content-inspection
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0024

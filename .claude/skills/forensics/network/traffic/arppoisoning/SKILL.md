@@ -1,6 +1,7 @@
 ---
 name: arppoisoning
 description: Detect and prevent ARP spoofing attacks using ARPWatch, Dynamic ARP Inspection, Wireshark analysis, and custom
+action: arppoisoning
   monitoring scripts to protect against man-in-the-middle interception.
 domain: cybersecurity
 subdomain: network-security
@@ -14,7 +15,7 @@ tags:
 - man-in-the-middle
 - layer-2-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

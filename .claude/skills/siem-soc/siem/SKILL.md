@@ -1,6 +1,7 @@
 ---
 name: siem
 description: Write multi-event correlation rules that detect APT lateral movement by chaining Windows authentication events,
+action: siem-soc-siem
   process execution telemetry, and network connection logs across hosts. Uses Splunk SPL and Sigma rule format to correlate
   Event IDs 4624, 4648, 4688, and Sysmon Events 1/3 within sliding time windows to surface attack sequences invisible to single-event
   detections.
@@ -12,7 +13,7 @@ tags:
 - correlation
 - rules
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

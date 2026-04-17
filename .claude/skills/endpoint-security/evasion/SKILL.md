@@ -1,6 +1,7 @@
 ---
 name: evasion
 description: 'Detects defense evasion techniques used by adversaries in endpoint logs including log tampering, timestomping,
+action: evasion
   process injection, and security tool disabling. Use when investigating suspicious endpoint behavior, building detection
   rules for evasion tactics, or conducting threat hunting for stealthy adversary activity. Activates for requests involving
   evasion detection, defense evasion analysis, log tampering detection, or MITRE ATT&CK TA0005.
@@ -16,7 +17,7 @@ tags:
 - MITRE-ATT&CK
 - detection-engineering
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

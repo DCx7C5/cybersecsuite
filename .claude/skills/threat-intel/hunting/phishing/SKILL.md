@@ -1,6 +1,7 @@
 ---
 name: phishing
 description: Hunt for spearphishing campaign indicators across email logs, endpoint telemetry, and network data to detect
+action: phishing
   targeted email attacks.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - t1566
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

@@ -1,6 +1,7 @@
 ---
 name: guardduty
 description: Automate AWS GuardDuty threat detection findings processing using EventBridge and Lambda to enable real-time
+action: guardduty
   incident response, automatic quarantine of compromised resources, and security notification workflows.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - incident-response
 - siem
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

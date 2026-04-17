@@ -1,6 +1,7 @@
 ---
 name: living
 description: 'Detect abuse of legitimate Windows binaries (LOLBins) used for living off the land attacks. Monitors process
+action: living
   creation, command-line arguments, and parent-child relationships to identify suspicious LOLBin execution patterns.
 
   '
@@ -12,7 +13,7 @@ tags:
 - fileless-attacks
 - process-monitoring
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

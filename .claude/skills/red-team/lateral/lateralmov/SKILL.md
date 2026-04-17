@@ -1,6 +1,7 @@
 ---
 name: lateralmov
 description: Detect lateral movement in Azure AD/Entra ID environments using Microsoft Graph API audit logs, Azure Sentinel
+action: lateralmov
   KQL hunting queries, and sign-in anomaly correlation to identify privilege escalation, token theft, and cross-tenant pivoting.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - cloud-security
 - threat-hunting
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

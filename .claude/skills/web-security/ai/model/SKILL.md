@@ -1,6 +1,7 @@
 ---
 name: model
 description: 'Detects prompt injection attacks targeting LLM-based applications using a multi-layered defense combining regex
+action: model
   pattern matching for known attack signatures, heuristic scoring for structural anomalies, and transformer-based classification
   with DeBERTa models. The detector analyzes user inputs before they reach the LLM, flagging direct injections (system prompt
   overrides, role-play escapes, instruction hijacking) and indirect injections (encoded payloads, multi-language obfuscation,
@@ -18,7 +19,7 @@ tags:
 - NLP-classification
 - input-validation
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0051

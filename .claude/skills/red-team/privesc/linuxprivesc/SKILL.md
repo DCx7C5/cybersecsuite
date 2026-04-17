@@ -1,6 +1,7 @@
 ---
 name: linuxprivesc
 description: Linux privilege escalation involves elevating from a low-privilege user account to root access on a compromised
+action: linuxprivesc
   system. Red teams exploit misconfigurations, vulnerable services, kernel exploits, and w
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - privilege-escalation
 - linux
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Object

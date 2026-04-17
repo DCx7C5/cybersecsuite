@@ -1,6 +1,7 @@
 ---
 name: policy
 description: 'This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes
+action: policy
   and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller,
   testing policies in development, and integrating policy evaluation into deployment pipelines.
 
@@ -16,7 +17,7 @@ tags:
 - kubernetes
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1

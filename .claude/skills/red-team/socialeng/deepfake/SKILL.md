@@ -1,6 +1,7 @@
 ---
 name: deepfake
 description: 'Detects AI-generated deepfake audio used in voice phishing (vishing) attacks by extracting spectral features
+action: deepfake
   (MFCC, spectral centroid, spectral contrast, zero-crossing rate) and classifying samples with machine learning models. Supports
   batch analysis of audio files, generates confidence scores, and produces forensic reports. Activates for requests involving
   deepfake voice detection, vishing investigation, AI-generated speech analysis, voice cloning detection, or audio authenticity
@@ -17,7 +18,7 @@ tags:
 - spectral-analysis
 - voice-cloning
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0088

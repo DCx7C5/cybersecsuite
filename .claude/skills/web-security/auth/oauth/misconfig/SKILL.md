@@ -1,6 +1,7 @@
 ---
 name: misconfig
 description: Identifying and exploiting OAuth 2.0 and OpenID Connect misconfigurations including redirect URI manipulation,
+action: misconfig
   token leakage, and authorization code theft during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - web-security
 - authorization
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

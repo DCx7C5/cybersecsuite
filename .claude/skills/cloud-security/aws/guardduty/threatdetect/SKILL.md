@@ -1,6 +1,7 @@
 ---
 name: threatdetect
 description: 'This skill teaches security teams how to deploy and operationalize Amazon GuardDuty for continuous threat detection
+action: threatdetect
   across AWS accounts and workloads. It covers enabling protection plans for S3, EKS, EC2 runtime monitoring, and Lambda,
   interpreting finding severity levels, and building automated response workflows using EventBridge and Lambda.
 
@@ -14,7 +15,7 @@ tags:
 - runtime-monitoring
 - cloud-soc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

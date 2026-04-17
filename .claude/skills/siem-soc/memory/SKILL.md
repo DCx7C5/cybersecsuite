@@ -1,6 +1,7 @@
 ---
 name: memory
 description: 'Uses Rekall memory forensics framework to analyze memory dumps for process hollowing, injected code via VAD
+action: memory
   anomalies, hidden processes, and rootkit detection. Applies plugins like pslist, psscan, vadinfo, malfind, and dlllist to
   extract forensic artifacts from Windows memory images. Use during incident response memory analysis.
 
@@ -13,7 +14,7 @@ tags:
 - artifacts
 - with
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

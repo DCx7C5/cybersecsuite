@@ -1,6 +1,7 @@
 ---
 name: cellebrite
 description: Acquire and analyze mobile device data using Cellebrite UFED and open-source tools to extract communications,
+action: cellebrite
   location data, and application artifacts.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - ios-forensics
 - android-forensics
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

@@ -1,6 +1,7 @@
 ---
 name: guardicore
 description: 'Implementing microsegmentation using Akamai Guardicore Segmentation to map application dependencies, create
+action: guardicore
   granular network policies, visualize east-west traffic flows, and enforce least-privilege communication between workloads
   across data centers and cloud.
 
@@ -16,7 +17,7 @@ tags:
 - network-segmentation
 - lateral-movement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

@@ -1,6 +1,7 @@
 ---
 name: k8snetpol
 description: Kubernetes NetworkPolicies provide pod-level network segmentation by defining ingress and egress rules that control
+action: k8snetpol
   traffic flow between pods, namespaces, and external endpoints. Combined with CNI plu
 domain: cybersecurity
 subdomain: container-security
@@ -11,7 +12,7 @@ tags:
 - network-policies
 - microsegmentation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: threatdragon
 description: Use OWASP Threat Dragon to create data flow diagrams, identify threats using STRIDE and LINDDUN methodologies,
+action: threatdragon
   and generate threat model reports for secure design review.
 domain: cybersecurity
 subdomain: devsecops
@@ -14,7 +15,7 @@ tags:
 - dfd
 - data-flow
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

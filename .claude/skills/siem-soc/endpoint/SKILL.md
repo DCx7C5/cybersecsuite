@@ -1,6 +1,7 @@
 ---
 name: endpoint
 description: Deploy and configure Wazuh SIEM/XDR for endpoint detection including agent management, custom decoder and rule
+action: endpoint
   XML creation, alert querying via the Wazuh REST API, and automated response actions.
 domain: cybersecurity
 subdomain: security-operations
@@ -12,7 +13,7 @@ tags:
 - custom-rules
 - incident-response
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1

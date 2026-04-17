@@ -1,6 +1,7 @@
 ---
 name: webshell
 description: Hunt for web shell deployments on internet-facing servers by analyzing file creation in web directories, suspicious
+action: webshell
   process spawning from web servers, and anomalous HTTP patterns.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - t1505
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

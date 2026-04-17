@@ -1,6 +1,7 @@
 ---
 name: tshark
 description: Automate network traffic analysis using tshark and pyshark for protocol statistics, suspicious flow detection,
+action: tshark
   DNS anomaly identification, and IOC extraction from PCAP files
 domain: cybersecurity
 subdomain: network-security
@@ -13,7 +14,7 @@ tags:
 - wireshark
 - traffic-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

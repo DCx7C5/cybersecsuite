@@ -1,6 +1,7 @@
 ---
 name: cloud
 description: Hunt for threats in AWS environments using Detective behavior graphs, entity investigation timelines, GuardDuty
+action: cloud
   finding correlation, and automated entity profiling across IAM users, EC2 instances, and IP addresses.
 domain: cybersecurity
 subdomain: cloud-security
@@ -15,7 +16,7 @@ tags:
 - ec2
 - incident-investigation
 version: '1.0'
-author: juliosuas
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

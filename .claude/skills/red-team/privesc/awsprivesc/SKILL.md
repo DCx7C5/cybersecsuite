@@ -1,6 +1,7 @@
 ---
 name: awsprivesc
 description: 'Performing authorized privilege escalation assessments in AWS environments to identify IAM misconfigurations
+action: awsprivesc
   that allow users or roles to elevate their permissions using Pacu, CloudFox, Principal Mapper, and manual IAM policy analysis
   techniques.
 
@@ -15,7 +16,7 @@ tags:
 - pacu
 - offensive-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

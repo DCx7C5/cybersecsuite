@@ -1,6 +1,7 @@
 ---
 name: quishing
 description: Detect and prevent QR code phishing (quishing) attacks that bypass traditional email security by embedding malicious
+action: quishing
   URLs in QR code images within emails.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -13,7 +14,7 @@ tags:
 - ocr
 - mobile-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0052

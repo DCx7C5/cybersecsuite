@@ -1,6 +1,7 @@
 ---
 name: feedaggr
 description: Deploy MISP (Malware Information Sharing Platform) to aggregate, correlate, and distribute threat intelligence
+action: feedaggr
   feeds from multiple sources for centralized IOC management and automated SIEM integration.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - siem-integration
 - threat-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

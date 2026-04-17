@@ -1,6 +1,7 @@
 ---
 name: s7comm
 description: 'Perform security analysis of Siemens S7comm and S7CommPlus protocols used by SIMATIC S7 PLCs to identify vulnerabilities
+action: s7comm
   including replay attacks, integrity bypass, unauthorized CPU stop commands, and program download manipulation exploiting
   weaknesses in S7-300, S7-400, S7-1200, and S7-1500 controllers.
 
@@ -17,7 +18,7 @@ tags:
 - scada
 - vulnerability-assessment
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

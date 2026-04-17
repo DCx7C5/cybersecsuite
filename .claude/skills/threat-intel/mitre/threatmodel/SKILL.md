@@ -1,6 +1,7 @@
 ---
 name: threatmodel
 description: 'Implements threat modeling using the MITRE ATT&CK framework to map adversary TTPs against organizational assets,
+action: threatmodel
   assess detection coverage gaps, and prioritize defensive investments. Use when SOC teams need to align detection engineering
   with threat landscape, conduct threat assessments for new environments, or justify security tool procurement.
 
@@ -16,7 +17,7 @@ tags:
 - attack-navigator
 - risk-assessment
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

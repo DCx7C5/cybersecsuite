@@ -1,6 +1,7 @@
 ---
 name: certificates
 description: 'Queries Certificate Transparency logs via crt.sh and pycrtsh to detect phishing domains, unauthorized certificate
+action: certificates
   issuance, and shadow IT. Monitors newly issued certificates for typosquatting and brand impersonation using Levenshtein
   distance. Use for proactive phishing domain detection and certificate monitoring.
 
@@ -13,7 +14,7 @@ tags:
 - certificate
 - transparency
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0073

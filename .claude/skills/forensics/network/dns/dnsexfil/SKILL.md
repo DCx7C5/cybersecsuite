@@ -1,6 +1,7 @@
 ---
 name: dnsexfil
 description: Detect data exfiltration through DNS tunneling by analyzing query entropy, subdomain length, query volume, TXT
+action: dns-dnsexfil
   record abuse, and response payload sizes using passive DNS monitoring.
 domain: cybersecurity
 subdomain: network-security
@@ -15,7 +16,7 @@ tags:
 - iodine
 - dnscat2
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

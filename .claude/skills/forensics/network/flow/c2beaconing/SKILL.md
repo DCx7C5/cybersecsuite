@@ -1,6 +1,7 @@
 ---
 name: c2beaconing
 description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation
+action: c2beaconing
   to identify compromised endpoints communicating with adversary infrastructure.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - network-analysis
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

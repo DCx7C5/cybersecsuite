@@ -1,6 +1,7 @@
 ---
 name: xxe
 description: Discovering and exploiting XML External Entity injection vulnerabilities to read server files, perform SSRF,
+action: xxe
   and exfiltrate data during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - web-security
 - burpsuite
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: api
 description: 'Parses API Gateway access logs (AWS API Gateway, Kong, Nginx) to detect BOLA/IDOR attacks, rate limit bypass,
+action: api
   credential scanning, and injection attempts. Uses pandas for statistical analysis of request patterns and anomaly detection.
   Use when investigating API abuse or building API-specific threat detection rules.
 
@@ -13,7 +14,7 @@ tags:
 - gateway
 - access
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

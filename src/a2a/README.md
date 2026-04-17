@@ -136,31 +136,31 @@ async with A2AClient("http://localhost:9000") as client:
 
 ### `PythonDeveloper` (:8001)
 
-| Skill ID | Tags | Triggered by |
-|----------|------|-------------|
-| `python-write` | python, code, script | write, create, implement |
-| `python-review` | python, audit, security | review, audit, check |
-| `python-debug` | python, debug, error | debug, fix, traceback |
-| `python-test` | python, pytest, coverage | test, pytest, spec |
+| Skill ID        | Tags                     | Triggered by             |
+|-----------------|--------------------------|--------------------------|
+| `python-write`  | python, code, script     | write, create, implement |
+| `python-review` | python, audit, security  | review, audit, check     |
+| `python-debug`  | python, debug, error     | debug, fix, traceback    |
+| `python-test`   | python, pytest, coverage | test, pytest, spec       |
 
 ### `CppDeveloper` (:8002)
 
-| Skill ID | Tags | Triggered by |
-|----------|------|-------------|
-| `cpp-write` | cpp, c++, develop | write, implement, build |
-| `cpp-review` | cpp, memory, security | review, audit, memory, leak |
-| `cpp-debug` | cpp, segfault, asan | debug, crash, segfault |
-| `cpp-optimize` | cpp, perf, simd | optimize, performance, fast |
+| Skill ID       | Tags                  | Triggered by                |
+|----------------|-----------------------|-----------------------------|
+| `cpp-write`    | cpp, c++, develop     | write, implement, build     |
+| `cpp-review`   | cpp, memory, security | review, audit, memory, leak |
+| `cpp-debug`    | cpp, segfault, asan   | debug, crash, segfault      |
+| `cpp-optimize` | cpp, perf, simd       | optimize, performance, fast |
 
 ### `CybersecAgent` (:8000)
 
-| Skill ID | Tags | Triggered by |
-|----------|------|-------------|
-| `cve-lookup` | cve, vulnerability | cve-, vulnerability |
-| `ioc-analysis` | ioc, threat-intel | ioc, ip, hash, domain |
-| `mitre-attack` | mitre, ttp | mitre, att&ck, t1 |
-| `artifact-sign` | artifact, signing | sign, verify, artifact |
-| `threat-model` | threat-model, risk | threat model, risk |
+| Skill ID        | Tags               | Triggered by           |
+|-----------------|--------------------|------------------------|
+| `cve-lookup`    | cve, vulnerability | cve-, vulnerability    |
+| `ioc-analysis`  | ioc, threat-intel  | ioc, ip, hash, domain  |
+| `mitre-attack`  | mitre, ttp         | mitre, att&ck, t1      |
+| `artifact-sign` | artifact, signing  | sign, verify, artifact |
+| `threat-model`  | threat-model, risk | threat model, risk     |
 
 ---
 
@@ -168,12 +168,12 @@ async with A2AClient("http://localhost:9000") as client:
 
 ### `a2a/enums.py`
 
-| Enum | Values |
-|------|--------|
-| `TaskState` | `submitted`, `working`, `input-required`, `completed`, `failed`, `canceled` |
-| `MessageRole` | `user`, `agent` |
-| `PartType` | `text`, `file`, `data` |
-| `AuthScheme` | `none`, `ed25519`, `bearer`, `api_key` |
+| Enum          | Values                                                                      |
+|---------------|-----------------------------------------------------------------------------|
+| `TaskState`   | `submitted`, `working`, `input-required`, `completed`, `failed`, `canceled` |
+| `MessageRole` | `user`, `agent`                                                             |
+| `PartType`    | `text`, `file`, `data`                                                      |
+| `AuthScheme`  | `none`, `ed25519`, `bearer`, `api_key`                                      |
 
 ---
 
@@ -181,11 +181,11 @@ async with A2AClient("http://localhost:9000") as client:
 
 #### Message Parts
 
-| Model | Description |
-|-------|-------------|
-| `TextPart` | Plain text — `{type: "text", text: "..."}` |
-| `FilePart` | File attachment — `{type: "file", file: {name, mime_type, bytes|uri}}` |
-| `DataPart` | Structured JSON — `{type: "data", data: {...}}` |
+| Model      | Description                                                     |
+|------------|-----------------------------------------------------------------|
+| `TextPart` | Plain text — `{type: "text", text: "..."}`                      |
+| `FilePart` | File attachment — `{type: "file", file: {name, mime_type, bytes |uri}}` |
+| `DataPart` | Structured JSON — `{type: "data", data: {...}}`                 |
 
 #### Core Models
 
@@ -276,37 +276,37 @@ class MyAgent(BaseA2AAgent):
 
 ASGI router. Mounts three endpoints:
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/.well-known/agent.json` | GET | Serve `AgentCard` |
-| `/a2a` | POST | JSON-RPC dispatch |
-| `/a2a/stream/{task_id}` | GET | SSE streaming |
+| Endpoint                  | Method | Description       |
+|---------------------------|--------|-------------------|
+| `/.well-known/agent.json` | GET    | Serve `AgentCard` |
+| `/a2a`                    | POST   | JSON-RPC dispatch |
+| `/a2a/stream/{task_id}`   | GET    | SSE streaming     |
 
 #### JSON-RPC Methods
 
-| Method | Params | Returns |
-|--------|--------|---------|
-| `tasks/send` | `TaskSendParams` | `Task` |
-| `tasks/get` | `TaskQueryParams` | `Task` |
-| `tasks/cancel` | `TaskIdParams` | `Task` |
-| `tasks/pushNotification/set` | `TaskPushNotificationConfig` | config |
-| `tasks/pushNotification/get` | `TaskIdParams` | config |
-| `tasks/resubscribe` | `TaskIdParams` | `Task` |
+| Method                       | Params                       | Returns |
+|------------------------------|------------------------------|---------|
+| `tasks/send`                 | `TaskSendParams`             | `Task`  |
+| `tasks/get`                  | `TaskQueryParams`            | `Task`  |
+| `tasks/cancel`               | `TaskIdParams`               | `Task`  |
+| `tasks/pushNotification/set` | `TaskPushNotificationConfig` | config  |
+| `tasks/pushNotification/get` | `TaskIdParams`               | config  |
+| `tasks/resubscribe`          | `TaskIdParams`               | `Task`  |
 
 #### Error Codes
 
-| Code | Name |
-|------|------|
-| `-32700` | Parse error |
-| `-32600` | Invalid request |
-| `-32601` | Method not found |
-| `-32602` | Invalid params |
-| `-32603` | Internal error |
-| `-32001` | Task not found |
-| `-32002` | Task not cancelable |
+| Code     | Name                             |
+|----------|----------------------------------|
+| `-32700` | Parse error                      |
+| `-32600` | Invalid request                  |
+| `-32601` | Method not found                 |
+| `-32602` | Invalid params                   |
+| `-32603` | Internal error                   |
+| `-32001` | Task not found                   |
+| `-32002` | Task not cancelable              |
 | `-32003` | Push notifications not supported |
-| `-32004` | Unsupported operation |
-| `-32006` | Auth required |
+| `-32004` | Unsupported operation            |
+| `-32006` | Auth required                    |
 
 ---
 
@@ -353,13 +353,13 @@ async with A2AClient(
 
 Concrete cybersecurity agent. Skill routing is keyword-based on message text.
 
-| Keyword trigger | Skill | Handler |
-|-----------------|-------|---------|
-| `cve-`, `cve `, `vulnerability` | CVE Lookup | `_handle_cve` |
-| `ioc`, `ip `, `hash`, `domain`, `url` | IOC Analysis | `_handle_ioc` |
-| `mitre`, `att&ck`, `technique`, `t1` | MITRE ATT&CK | `_handle_mitre` |
-| `sign`, `verify`, `artifact` | Artifact Signing | `_handle_artifact` |
-| `threat model`, `attack surface`, `risk` | Threat Modeling | `_handle_threat_model` |
+| Keyword trigger                          | Skill            | Handler                |
+|------------------------------------------|------------------|------------------------|
+| `cve-`, `cve `, `vulnerability`          | CVE Lookup       | `_handle_cve`          |
+| `ioc`, `ip `, `hash`, `domain`, `url`    | IOC Analysis     | `_handle_ioc`          |
+| `mitre`, `att&ck`, `technique`, `t1`     | MITRE ATT&CK     | `_handle_mitre`        |
+| `sign`, `verify`, `artifact`             | Artifact Signing | `_handle_artifact`     |
+| `threat model`, `attack surface`, `risk` | Threat Modeling  | `_handle_threat_model` |
 
 **Wire in database models to complete each skill handler:**
 

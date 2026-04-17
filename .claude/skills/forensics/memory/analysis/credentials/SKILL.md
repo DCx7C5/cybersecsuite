@@ -1,6 +1,7 @@
 ---
 name: credentials
 description: Extract cached credentials, password hashes, Kerberos tickets, and authentication tokens from memory dumps using
+action: credentials
   Volatility and Mimikatz for forensic investigation.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -17,7 +18,7 @@ mitre_attack:
 - T1558
 - T1552
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

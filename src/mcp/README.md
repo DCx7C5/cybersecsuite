@@ -39,15 +39,15 @@ result = await run_agent_query("investigate this IOC", options=options)
 
 ## Tool Categories (29 tools in `mcp_server.py`)
 
-| Category | Tools | Count |
-|----------|-------|-------|
-| Scope | `set_scope`, `get_scope`, `reset_scope`, `scope_summary` | 4 |
-| Cases | `case_open`, `case_status`, `case_close` | 3 |
-| Findings + IOCs | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`, `get_project_memory` | 5 |
-| Intelligence | `db_healthcheck`, `bootstrap_intelligence`, `suggest_mitre`, `share_to_layers`, `get_layer_value` | 5 |
-| AI Proxy | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies`, `best_provider` | 11 |
-| Cache | `cache_lookup`, `cache_store`, `cache_analytics`, `cache_invalidate` | 4 |
-| Agents | `session_snapshot`, `agent_registry` | 2 |
+| Category        | Tools                                                                                                                                                                                              | Count |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| Scope           | `set_scope`, `get_scope`, `reset_scope`, `scope_summary`                                                                                                                                           | 4     |
+| Cases           | `case_open`, `case_status`, `case_close`                                                                                                                                                           | 3     |
+| Findings + IOCs | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`, `get_project_memory`                                                                                                           | 5     |
+| Intelligence    | `db_healthcheck`, `bootstrap_intelligence`, `suggest_mitre`, `share_to_layers`, `get_layer_value`                                                                                                  | 5     |
+| AI Proxy        | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies`, `best_provider` | 11    |
+| Cache           | `cache_lookup`, `cache_store`, `cache_analytics`, `cache_invalidate`                                                                                                                               | 4     |
+| Agents          | `session_snapshot`, `agent_registry`                                                                                                                                                               | 2     |
 
 Total: 39 tools across `mcp_server.py` (some counted above differ from the exposed 29 — exact count in `docs/mcp-tools.md`).
 

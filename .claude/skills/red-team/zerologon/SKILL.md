@@ -1,6 +1,7 @@
 ---
 name: zerologon
 description: Exploit the Zerologon vulnerability (CVE-2020-1472) in the Netlogon Remote Protocol to achieve domain controller
+action: zerologon
   compromise by resetting the machine account password to empty.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - active-directory
 - ms-nrpc
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Platform Monitoring
@@ -59,12 +60,12 @@ Zerologon (CVE-2020-1472) is a critical elevation of privilege vulnerability (CV
 
 ## MITRE ATT&CK Mapping
 
-| Technique ID | Name | Tactic |
-|---|---|---|
-| T1068 | Exploitation for Privilege Escalation | Privilege Escalation |
-| T1210 | Exploitation of Remote Services | Lateral Movement |
-| T1003.006 | OS Credential Dumping: DCSync | Credential Access |
-| T1078.002 | Valid Accounts: Domain Accounts | Persistence |
+| Technique ID | Name                                  | Tactic               |
+|--------------|---------------------------------------|----------------------|
+| T1068        | Exploitation for Privilege Escalation | Privilege Escalation |
+| T1210        | Exploitation of Remote Services       | Lateral Movement     |
+| T1003.006    | OS Credential Dumping: DCSync         | Credential Access    |
+| T1078.002    | Valid Accounts: Domain Accounts       | Persistence          |
 
 ## Vulnerability Technical Details
 

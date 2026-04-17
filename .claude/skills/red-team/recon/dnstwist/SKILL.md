@@ -1,6 +1,7 @@
 ---
 name: dnstwist
 description: Detect typosquatting, homograph phishing, and brand impersonation domains using dnstwist to generate domain permutations
+action: dnstwist
   and identify registered lookalike domains targeting your organization.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - dns
 - threat-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0073

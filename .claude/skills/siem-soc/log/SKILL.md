@@ -1,6 +1,7 @@
 ---
 name: log
 description: Configure Fluentd and Fluent Bit for centralized log aggregation, routing, filtering, and enrichment across distributed
+action: log
   infrastructure
 domain: cybersecurity
 subdomain: security-operations
@@ -13,7 +14,7 @@ tags:
 - centralized-logging
 - observability
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

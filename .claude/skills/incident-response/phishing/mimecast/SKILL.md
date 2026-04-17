@@ -1,6 +1,7 @@
 ---
 name: mimecast
 description: Deploy Mimecast Targeted Threat Protection including URL Protect, Attachment Protect, Impersonation Protect,
+action: mimecast
   and Internal Email Protect to defend against advanced phishing and spearphishing attacks.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -13,7 +14,7 @@ tags:
 - attachment-sandboxing
 - phishing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AT-01

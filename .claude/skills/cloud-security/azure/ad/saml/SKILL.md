@@ -1,6 +1,7 @@
 ---
 name: saml
 description: Establish SAML 2.0 identity federation between on-premises Active Directory and Azure AD (Microsoft Entra ID)
+action: saml
   for seamless cross-domain authentication and SSO to cloud applications.
 domain: cybersecurity
 subdomain: identity-access-management
@@ -14,7 +15,7 @@ tags:
 - adfs
 - hybrid-identity
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

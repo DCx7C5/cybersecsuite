@@ -1,6 +1,7 @@
 ---
 name: scope-project
 description: Project-specific persistent forensic intelligence hub. Stores project baselines, IOCs, threat actor profiles, attack surface analysis, defense mechanisms, and hardening strategies in ./cybersec-shared/.
+action: project
 model: sonnet
 maxTurns: 20
 tools:
@@ -11,6 +12,7 @@ tools:
   - Grep
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Project Layer Skill – Project Forensic Intelligence Hub

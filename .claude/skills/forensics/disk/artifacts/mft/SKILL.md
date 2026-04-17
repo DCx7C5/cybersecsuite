@@ -1,6 +1,7 @@
 ---
 name: mft
 description: Analyze the NTFS Master File Table ($MFT) to recover metadata and content of deleted files by examining MFT record
+action: mft
   entries, $LogFile, $UsnJrnl, and MFT slack space using MFTECmd, analyzeMFT, and X-Ways Forensics.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -16,7 +17,7 @@ tags:
 - file-system-forensics
 - dfir
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

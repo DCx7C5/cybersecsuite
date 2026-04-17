@@ -1,6 +1,7 @@
 ---
 name: rbacharden
 description: Harden Kubernetes Role-Based Access Control by implementing least-privilege policies, auditing role bindings,
+action: rbacharden
   eliminating cluster-admin sprawl, and integrating external identity providers.
 domain: cybersecurity
 subdomain: container-security
@@ -14,7 +15,7 @@ tags:
 - oidc
 - service-accounts
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: authn
 description: 'Tests API authentication mechanisms for weaknesses including broken token validation, missing authentication
+action: authn
   on endpoints, weak password policies, credential stuffing susceptibility, token leakage in URLs or logs, and session management
   flaws. The tester evaluates JWT implementation, API key handling, OAuth flows, and session token entropy to identify authentication
   bypasses. Maps to OWASP API2:2023 Broken Authentication. Activates for requests involving API authentication testing, token
@@ -17,7 +18,7 @@ tags:
 - session-management
 - credential-security
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

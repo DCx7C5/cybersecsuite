@@ -1,6 +1,7 @@
 ---
 name: aws
 description: 'Systematically audit AWS S3 bucket permissions to identify publicly accessible buckets, overly permissive ACLs,
+action: aws-aws
   misconfigured bucket policies, and missing encryption settings using AWS CLI, S3audit, and Prowler to enforce least-privilege
   data access controls.
 
@@ -15,7 +16,7 @@ tags:
 - data-protection
 - access-control
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

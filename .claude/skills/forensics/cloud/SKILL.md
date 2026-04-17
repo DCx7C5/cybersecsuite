@@ -1,6 +1,7 @@
 ---
 name: cloud
 description: Perform forensic acquisition and analysis of cloud storage services including Google Drive, OneDrive, Dropbox,
+action: forensics-cloud
   and Box by collecting both API-based remote data and local sync client artifacts from endpoint devices.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -16,7 +17,7 @@ tags:
 - endpoint-artifacts
 - magnet-axiom
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

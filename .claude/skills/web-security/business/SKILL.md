@@ -1,6 +1,7 @@
 ---
 name: business
 description: Identifying flaws in application business logic that allow price manipulation, workflow bypass, and privilege
+action: business
   escalation beyond what technical vulnerability scanners can detect.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - burpsuite
 - manual-testing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

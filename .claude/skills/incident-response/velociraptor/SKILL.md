@@ -1,6 +1,7 @@
 ---
 name: velociraptor
 description: Deploy and configure Velociraptor for scalable endpoint forensic artifact collection during incident response
+action: velociraptor
   using VQL queries, hunts, and pre-built artifact packs across Windows, Linux, and macOS environments.
 domain: cybersecurity
 subdomain: incident-response
@@ -19,7 +20,7 @@ mitre_attack:
 - T1070
 - T1547
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

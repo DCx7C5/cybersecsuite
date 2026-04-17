@@ -1,6 +1,7 @@
 ---
 name: security
 description: 'Create, validate, and share STIX 2.1 threat intelligence objects using the stix2 Python library. Covers indicators,
+action: security
   malware, campaigns, relationships, bundles, and TAXII 2.1 publishing.
 
   '
@@ -12,7 +13,7 @@ tags:
 - threat-sharing
 - intelligence-exchange
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

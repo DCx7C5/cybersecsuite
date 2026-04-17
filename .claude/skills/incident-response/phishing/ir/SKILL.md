@@ -1,6 +1,7 @@
 ---
 name: ir
 description: 'Responds to phishing incidents by analyzing reported emails, extracting indicators, assessing credential compromise,
+action: phishing-ir
   quarantining malicious messages across the organization, and remediating affected accounts. Covers email header analysis,
   URL/attachment sandboxing, and mailbox-wide purge operations. Activates for requests involving phishing response, email
   incident, credential phishing, spear phishing investigation, or phishing remediation.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1534
 - T1598
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

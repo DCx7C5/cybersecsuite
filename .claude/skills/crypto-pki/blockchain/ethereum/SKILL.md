@@ -1,6 +1,7 @@
 ---
 name: ethereum
 description: Perform static and symbolic analysis of Solidity smart contracts using Slither and Mythril to detect reentrancy,
+action: ethereum
   integer overflow, access control, and other vulnerability classes before deployment to Ethereum mainnet.
 domain: cybersecurity
 subdomain: blockchain-security
@@ -14,7 +15,7 @@ tags:
 - defi
 - audit
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

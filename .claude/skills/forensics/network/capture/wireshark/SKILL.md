@@ -1,6 +1,7 @@
 ---
 name: wireshark
 description: 'Captures and analyzes network packet data using Wireshark and tshark to identify malicious traffic patterns,
+action: wireshark
   diagnose protocol issues, extract artifacts, and support incident response investigations on authorized network segments.
 
   '
@@ -13,7 +14,7 @@ tags:
 - traffic-analysis
 - pcap
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

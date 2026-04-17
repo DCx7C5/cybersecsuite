@@ -1,6 +1,7 @@
 ---
 name: playbook
 description: Classify and prioritize security incidents using structured IR playbooks to determine severity, assign response
+action: triage-playbook
   teams, and initiate appropriate response procedures.
 domain: cybersecurity
 subdomain: incident-response
@@ -15,7 +16,7 @@ mitre_attack:
 - T1566
 - T1078
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

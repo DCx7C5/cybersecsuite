@@ -1,6 +1,7 @@
 ---
 name: landscape
 description: Conduct a sector-specific threat landscape assessment by analyzing threat actor targeting patterns, common attack
+action: landscape
   vectors, and industry-specific vulnerabilities to inform organizational risk management.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -13,7 +14,7 @@ tags:
 - cti
 - strategic-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

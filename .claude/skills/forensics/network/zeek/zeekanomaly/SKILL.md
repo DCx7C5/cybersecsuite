@@ -1,6 +1,7 @@
 ---
 name: zeekanomaly
 description: 'Deploys and configures Zeek (formerly Bro) network security monitor to passively analyze network traffic, generate
+action: zeekanomaly
   structured logs, detect anomalous behavior, and create custom detection scripts for threat hunting and incident response.
 
   '
@@ -13,7 +14,7 @@ tags:
 - anomaly-detection
 - threat-hunting
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

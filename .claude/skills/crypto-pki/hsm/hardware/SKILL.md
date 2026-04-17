@@ -1,6 +1,7 @@
 ---
 name: hardware
 description: Integrate Hardware Security Modules (HSMs) using PKCS#11 interface for cryptographic key management, signing
+action: hardware
   operations, and secure key storage with python-pkcs11, AWS CloudHSM, and YubiHSM2.
 domain: cybersecurity
 subdomain: cryptography
@@ -13,7 +14,7 @@ tags:
 - cryptographic-operations
 - hardware-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

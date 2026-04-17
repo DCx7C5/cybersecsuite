@@ -1,6 +1,7 @@
 ---
 name: lazagne
 description: Extract stored credentials from compromised endpoints using the LaZagne post-exploitation tool to recover passwords
+action: lazagne
   from browsers, databases, system vaults, and applications during authorized red team operations.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - credential-dumping
 - lateral-movement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

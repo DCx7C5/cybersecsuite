@@ -1,6 +1,7 @@
 ---
 name: msdefender
 description: 'This skill instructs security practitioners on deploying Microsoft Defender for Cloud as a cloud-native application
+action: msdefender
   protection platform for Azure, multi-cloud, and hybrid environments. It covers enabling Defender plans for servers, containers,
   storage, and databases, configuring security recommendations, managing Secure Score, and integrating with the unified Defender
   portal for centralized threat management.
@@ -15,7 +16,7 @@ tags:
 - secure-score
 - cloud-workload-protection
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

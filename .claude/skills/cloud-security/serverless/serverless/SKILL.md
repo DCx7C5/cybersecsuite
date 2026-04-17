@@ -1,6 +1,7 @@
 ---
 name: serverless
 description: 'Detects and prevents code injection attacks targeting serverless functions (AWS Lambda, Azure Functions, Google
+action: serverless
   Cloud Functions) through event source poisoning, malicious layer injection, runtime command execution, and IAM privilege
   escalation via function modification. The analyst combines static analysis of function code, CloudTrail event correlation,
   runtime behavior monitoring, and IAM policy auditing to identify injection vectors across the expanded serverless attack
@@ -19,7 +20,7 @@ tags:
 - IAM-escalation
 - CloudTrail
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

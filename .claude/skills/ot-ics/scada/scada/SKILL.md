@@ -1,6 +1,7 @@
 ---
 name: scada
 description: 'This skill covers detecting cyber attacks targeting Supervisory Control and Data Acquisition (SCADA) systems
+action: scada
   including man-in-the-middle attacks on industrial protocols, unauthorized command injection into PLCs, HMI compromise, historian
   data manipulation, and denial-of-service against control system communications. It leverages OT-specific intrusion detection
   systems, industrial protocol anomaly detection, and process data analytics to identify attacks that traditional IT security
@@ -18,7 +19,7 @@ tags:
 - intrusion-detection
 - threat-detection
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

@@ -1,6 +1,7 @@
 ---
 name: claroty
 description: 'Perform comprehensive ICS/OT asset discovery using Claroty xDome platform, leveraging passive monitoring, Claroty
+action: claroty
   Edge active queries, and integration ecosystem to gain full visibility into industrial control system assets including PLCs,
   RTUs, HMIs, and network infrastructure across Purdue Model levels.
 
@@ -17,7 +18,7 @@ tags:
 - network-visibility
 - iec62443
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

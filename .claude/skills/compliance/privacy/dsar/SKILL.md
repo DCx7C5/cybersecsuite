@@ -1,6 +1,7 @@
 ---
 name: dsar
 description: 'Automates GDPR Data Subject Access Request (DSAR) workflows including identity verification, PII discovery across
+action: dsar
   databases and files using regex and NER, data mapping, response templating per Article 15 requirements, deadline tracking,
   and audit logging. Covers ICO/EDPB guidance compliance, exemption handling, and scalable batch processing. Use when building
   or auditing DSAR response capabilities under GDPR/UK GDPR.
@@ -17,7 +18,7 @@ tags:
 - compliance
 - article-15
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - GV.PO-01

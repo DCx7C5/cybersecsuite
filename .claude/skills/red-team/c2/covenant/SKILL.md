@@ -1,6 +1,7 @@
 ---
 name: covenant
 description: Conduct red team operations using the Covenant C2 framework for authorized adversary simulation, including listener
+action: covenant
   setup, grunt deployment, task execution, and lateral movement tracking.
 domain: cybersecurity
 subdomain: red-team
@@ -11,7 +12,7 @@ tags:
 - adversary-simulation
 - penetration-testing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

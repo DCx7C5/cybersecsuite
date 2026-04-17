@@ -1,6 +1,7 @@
 ---
 name: attack
 description: 'Implements external attack surface management (EASM) using Shodan, Censys, and ProjectDiscovery tools (subfinder,
+action: attack
   httpx, nuclei) for asset discovery, subdomain enumeration, service fingerprinting, and exposure scoring. Includes a weighted
   risk scoring algorithm based on OWASP attack surface analysis methodology and the Relative Attack Surface Quotient (RSQ).
   Use when building continuous ASM programs or performing external reconnaissance for security assessments.
@@ -17,7 +18,7 @@ tags:
 - nuclei
 - asset-discovery
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

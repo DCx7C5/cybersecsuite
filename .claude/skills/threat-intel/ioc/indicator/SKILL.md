@@ -1,6 +1,7 @@
 ---
 name: indicator
 description: Indicator lifecycle management tracks IOCs from initial discovery through validation, enrichment, deployment,
+action: indicator
   monitoring, and eventual retirement. This skill covers implementing systematic processes f
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -13,7 +14,7 @@ tags:
 - indicator-lifecycle
 - ioc-management
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

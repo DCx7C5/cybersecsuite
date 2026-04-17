@@ -1,6 +1,7 @@
 ---
 name: shodan
 description: Analyze IP address reputation using the Shodan API to identify open ports, running services, known vulnerabilities,
+action: shodan
   and hosting context for threat intelligence enrichment and incident triage.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - api
 - internet-scanning
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

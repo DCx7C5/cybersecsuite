@@ -1,6 +1,7 @@
 ---
 name: bola
 description: 'Tests REST and GraphQL APIs for Broken Object Level Authorization (BOLA/IDOR) vulnerabilities where an authenticated
+action: bola
   user can access or modify resources belonging to other users by manipulating object identifiers in API requests. The tester
   intercepts API calls, identifies object ID parameters (numeric IDs, UUIDs, slugs), and systematically replaces them with
   IDs belonging to other users to determine if the server enforces per-object authorization. This is OWASP API Security Top
@@ -18,7 +19,7 @@ tags:
 - authorization
 - rest-security
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

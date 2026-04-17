@@ -1,6 +1,7 @@
 ---
 name: artifact-signing
 description: Ed25519 artifact signing, BLAKE2b-256 integrity verification, chain of custody, Argon2id key protection, AES-256-GCM encryption. Available to ALL agents as a core skill — not a standalone agent.
+action: signing
 model: sonnet
 maxTurns: 10
 tools:
@@ -12,6 +13,7 @@ skills:
   - shared-memory
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Artifact Signing — Ed25519 + BLAKE2b Integrity Skill

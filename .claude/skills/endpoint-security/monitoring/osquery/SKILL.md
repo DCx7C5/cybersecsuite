@@ -1,6 +1,7 @@
 ---
 name: osquery
 description: 'Deploys and configures osquery for real-time endpoint monitoring using SQL-based queries to inspect running
+action: osquery
   processes, open ports, installed software, and system configuration. Use when building visibility into endpoint state, threat
   hunting across fleet, or implementing compliance monitoring. Activates for requests involving osquery deployment, endpoint
   visibility, fleet management, or SQL-based endpoint querying.
@@ -22,7 +23,7 @@ mitre_attack:
 - T1548.001
 - T1552
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: disk
 description: 'Conducts disk forensics investigations using forensic imaging, file system analysis, artifact recovery, and
+action: disk
   timeline reconstruction to support incident response cases. Utilizes tools such as FTK Imager, Autopsy, and The Sleuth Kit
   for evidence acquisition, deleted file recovery, and artifact examination. Activates for requests involving disk forensics,
   hard drive analysis, forensic imaging, file recovery, evidence acquisition, or digital forensic investigation.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1036
 - T1564
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

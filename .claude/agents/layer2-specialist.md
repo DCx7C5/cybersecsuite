@@ -11,14 +11,13 @@ description: >
   changes. Never discuss IP routing or Layer 4+ unless as payload of a
   Layer 2 attack vector.
 model: sonnet
-maxTurns: 20
+maxTurns: 30
 tools:
   - Read
   - Bash
   - Glob
   - Grep
   - WebSearch
-disallowedTools:
   - Write
   - Edit
 skills:

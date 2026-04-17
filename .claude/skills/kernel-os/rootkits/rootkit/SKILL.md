@@ -1,6 +1,7 @@
 ---
 name: rootkit
 description: Detect kernel-level rootkits in Linux memory dumps using Volatility3 linux plugins (check_syscall, lsmod, hidden_modules),
+action: rootkit
   rkhunter system scanning, and /proc vs /sys discrepancy analysis to identify hooked syscalls, hidden kernel modules, and
   tampered system structures.
 domain: cybersecurity
@@ -15,7 +16,7 @@ tags:
 - rkhunter
 - forensics
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

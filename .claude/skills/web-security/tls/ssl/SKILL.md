@@ -1,6 +1,7 @@
 ---
 name: ssl
 description: 'Simulates SSL stripping attacks using sslstrip, Bettercap, and mitmproxy in authorized environments to test
+action: ssl
   HSTS enforcement, certificate validation, and HTTPS upgrade mechanisms that protect users from downgrade attacks on encrypted
   connections.
 
@@ -14,7 +15,7 @@ tags:
 - hsts
 - tls-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

@@ -1,6 +1,11 @@
 # ── Base image ────────────────────────────────────────────────────────────────
 FROM python:3.14-slim
 
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+ARG USER
+
 # ── Metadata ──────────────────────────────────────────────────────────────────
 LABEL maintainer="cybersec" \
       description="CyberSec Dashboard – live forensic web dashboard" \
@@ -28,12 +33,12 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # ── Python deps (layer-cached as long as requirements.txt is unchanged) ───────
-COPY requirements.txt ./
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN uv pip install --no-cache-dir -r requirements.txt
+
 
 # ── Application code ──────────────────────────────────────────────────────────
-COPY . .
+COPY --chmod=700 --chown="${USER}:${USER}" entrypoint.sh /entrypoint.sh
 
 # ── Entrypoint script (must be installed as root, before USER switch) ─────────
 COPY --chmod=755 .docker/dashboard/entrypoint.sh /usr/local/bin/entrypoint.sh

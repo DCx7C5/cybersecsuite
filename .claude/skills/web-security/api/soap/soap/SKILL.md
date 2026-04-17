@@ -1,6 +1,7 @@
 ---
 name: soap
 description: Perform security testing of SOAP web services by analyzing WSDL definitions and testing for XML injection, XXE,
+action: soap
   WS-Security bypass, and SOAPAction spoofing.
 domain: cybersecurity
 subdomain: api-security
@@ -15,7 +16,7 @@ tags:
 - soapaction-spoofing
 - xpath-injection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

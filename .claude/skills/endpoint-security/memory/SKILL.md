@@ -1,6 +1,7 @@
 ---
 name: memory
 description: 'Implements memory protection mechanisms including DEP (Data Execution Prevention), ASLR (Address Space Layout
+action: memory
   Randomization), CFG (Control Flow Guard), and other exploit mitigations to prevent memory corruption attacks. Use when hardening
   endpoints against buffer overflow exploits, ROP chains, and code injection. Activates for requests involving memory protection,
   exploit mitigation, DEP, ASLR, or CFG configuration.
@@ -16,7 +17,7 @@ tags:
 - exploit-mitigation
 - CFG
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

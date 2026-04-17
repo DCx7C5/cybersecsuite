@@ -1,6 +1,7 @@
 ---
 name: broken
 description: Discover and exploit broken link hijacking vulnerabilities by identifying references to expired domains, decommissioned
+action: web-security-broken
   cloud resources, and dead external services that can be claimed by an attacker.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - supply-chain
 - external-resource
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

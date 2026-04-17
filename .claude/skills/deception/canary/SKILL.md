@@ -1,6 +1,7 @@
 ---
 name: canary
 description: 'Deploys DNS, HTTP, and AWS API key canary tokens across network infrastructure to detect unauthorized access
+action: canary
   and lateral movement. Integrates with webhook alerting (Slack, Teams, email, generic HTTP) for real-time intrusion notifications.
   Provides automated token generation, placement strategies, and monitoring for enterprise network environments. Use when
   building deception-based network intrusion detection with Canarytokens.org and Thinkst Canary platforms.
@@ -16,7 +17,7 @@ tags:
 - honeytokens
 - breach-detection
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

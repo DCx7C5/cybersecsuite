@@ -1,6 +1,7 @@
 ---
 name: unusual
 description: Hunt for unusual network connections by analyzing outbound traffic patterns, rare destinations, non-standard
+action: unusual
   ports, and anomalous connection frequencies from endpoints.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - anomaly-detection
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

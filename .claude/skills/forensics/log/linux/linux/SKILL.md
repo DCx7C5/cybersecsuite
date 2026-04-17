@@ -1,6 +1,7 @@
 ---
 name: linux
 description: 'Uses the Linux Audit framework (auditd) with ausearch and aureport utilities to detect intrusion attempts, unauthorized
+action: linux-linux
   access, privilege escalation, and suspicious system activity. Covers audit rule configuration, log querying, timeline reconstruction,
   and integration with SIEM platforms. Activates for requests involving auditd analysis, Linux audit log investigation, ausearch
   queries, aureport summaries, or host-based intrusion detection on Linux.
@@ -17,7 +18,7 @@ tags:
 - HIDS
 - forensics
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

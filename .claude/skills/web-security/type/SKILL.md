@@ -1,6 +1,7 @@
 ---
 name: type
 description: Exploit PHP type juggling vulnerabilities caused by loose comparison operators to bypass authentication, circumvent
+action: type
   hash verification, and manipulate application logic through type coercion attacks.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - type-coercion
 - web-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

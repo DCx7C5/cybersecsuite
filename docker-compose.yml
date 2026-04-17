@@ -1,0 +1,77 @@
+services:
+  cybersec-postgres:
+    build:
+      context: .docker/postgres
+      dockerfile: Dockerfile
+    image: cybersec-postgres
+    container_name: cybersec-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB_PORT: 5432
+      POSTGRES_USER: ${CYBERSEC_DB_USER:-cybersec}
+      POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
+      POSTGRES_DB: ${CYBERSEC_DB_NAME:-cybersec_forensics}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_socket:/tmp
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
+        ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  cybersec-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cybersec-dashboard
+    container_name: cybersec-dashboard
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    depends_on:
+      cybersec-postgres:
+        condition: service_healthy
+    environment:
+      # Unix socket path – no TCP, no port needed
+      CYBERSEC_DB_HOST: /tmp/.s.PGSQL.
+      CYBERSEC_DB_PORT: 5432
+      CYBERSEC_DB_USER: ${CYBERSEC_DB_USER:-cybersec}
+      CYBERSEC_DB_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
+      CYBERSEC_DB_NAME: ${CYBERSEC_DB_NAME:-cybersec_forensics}
+      CYBERSEC_AUTO_CREATE_DB: "true"
+      # AI Proxy — provider API keys
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+    ports:
+      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8433:8433"
+    volumes:
+      - pg_socket:/tmp    # shared socket directory with postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fs http://localhost:8000/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+
+volumes:
+  pg_data:
+  pg_socket:

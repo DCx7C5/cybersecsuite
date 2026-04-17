@@ -1,6 +1,7 @@
 ---
 name: just
 description: Implement Just-In-Time (JIT) access provisioning to eliminate standing privileges by granting temporary, time-bound
+action: just
   access only when needed. This skill covers JIT architecture design, approval workflo
 domain: cybersecurity
 subdomain: identity-access-management
@@ -13,7 +14,7 @@ tags:
 - zero-trust
 - least-privilege
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

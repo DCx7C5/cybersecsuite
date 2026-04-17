@@ -1,6 +1,7 @@
 ---
 name: iam
 description: Configure IAM permission boundaries in AWS to delegate role creation to developers while enforcing maximum privilege
+action: aws-iam
   limits set by the security team.
 domain: cybersecurity
 subdomain: identity-access-management
@@ -12,7 +13,7 @@ tags:
 - delegation
 - cloud-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

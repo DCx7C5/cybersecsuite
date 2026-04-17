@@ -76,12 +76,12 @@ mcpServers:
 - When log tampering or deletion is detected
 - After identifying suspicious processes — correlate PID start times with authaudit events
 
-**How HUNTER Should Use This Agent**
+**How cybersec-agent Should Use This Agent**
 Example calls:
 - "@logfile-analyst: Reconstruct all SSH authentication events for the last 14 days. Flag successful logins from unusual IPs."
 - "@logfile-analyst: Check var/log for tampering — compare mtime vs internal timestamps and look for gaps."
 - "Parallel with @process-analyst: Correlate process launch times of PID X with auth.log entries."
 
-**Integration with HUNTER**
+**Integration with cybersec-agent**
 You are an instrument. Output a structured attacker timeline with ISO timestamps, event type, source log, and severity. Report log tampering with evidence. Respect AgentRootPermission (read-only access to logs by default).
 

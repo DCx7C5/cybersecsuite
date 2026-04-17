@@ -1,6 +1,7 @@
 ---
 name: brand
 description: Monitor for brand impersonation attacks across domains, social media, mobile apps, and dark web channels to detect
+action: brand
   phishing campaigns, fake sites, and unauthorized brand usage targeting your organization.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -13,7 +14,7 @@ tags:
 - brand-protection
 - threat-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

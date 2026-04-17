@@ -1,6 +1,7 @@
 ---
 name: splunk
 description: Detect adversary lateral movement across networks using Splunk SPL queries against Windows authentication logs,
+action: splunk
   SMB traffic, and remote service abuse.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - proactive-detection
 - ta0008
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

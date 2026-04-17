@@ -1,6 +1,7 @@
 ---
 name: defender
 description: 'Configures Microsoft Defender for Endpoint (MDE) advanced protection settings including attack surface reduction
+action: defender
   rules, controlled folder access, network protection, and exploit protection. Use when hardening Windows endpoints beyond
   default Defender settings, deploying enterprise-grade endpoint protection, or meeting compliance requirements for advanced
   malware defense. Activates for requests involving Windows Defender configuration, ASR rules, MDE tuning, or Microsoft endpoint
@@ -17,7 +18,7 @@ tags:
 - exploit-protection
 - MDE
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

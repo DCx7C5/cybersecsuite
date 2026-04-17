@@ -1,6 +1,7 @@
 ---
 name: okta
 description: 'This skill covers implementing Okta as a centralized identity provider for cloud environments, configuring SSO
+action: okta
   integration with AWS, Azure, and GCP, deploying phishing- resistant MFA with Okta FastPass, managing lifecycle automation
   for user provisioning and deprovisioning, and enforcing adaptive access policies based on device posture and risk signals.
 
@@ -14,7 +15,7 @@ tags:
 - phishing-resistant-mfa
 - identity-lifecycle
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

@@ -1,6 +1,7 @@
 ---
 name: devsecops
 description: Design and implement a comprehensive DevSecOps pipeline in GitLab CI/CD integrating SAST, DAST, container scanning,
+action: devsecops
   dependency scanning, and secret detection.
 domain: cybersecurity
 subdomain: devsecops
@@ -14,7 +15,7 @@ tags:
 - secret-detection
 - cicd-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

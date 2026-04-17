@@ -1,6 +1,7 @@
 ---
 name: full
 description: Plan and execute a comprehensive red team engagement covering reconnaissance through post-exploitation using
+action: full
   MITRE ATT&CK-aligned TTPs to evaluate an organization's detection and response capabilities.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - purple-team
 - ttp-mapping
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

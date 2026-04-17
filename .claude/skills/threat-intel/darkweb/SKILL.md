@@ -1,6 +1,7 @@
 ---
 name: darkweb
 description: 'Monitors dark web forums, marketplaces, paste sites, and ransomware leak sites for mentions of organizational
+action: threat-intel-darkweb
   assets, leaked credentials, threatened attacks, and threat actor communications to provide early warning intelligence. Use
   when establishing dark web monitoring coverage, investigating specific data breach claims, or enriching incident investigations
   with dark web context. Activates for requests involving dark web OSINT, leak site monitoring, credential exposure, Recorded
@@ -18,7 +19,7 @@ tags:
 - SpiderFoot
 - CTI
 version: 1.0.0
-author: team-cybersecurity
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

@@ -1,6 +1,7 @@
 ---
 name: remote
 description: 'This skill covers implementing secure remote access to OT/ICS environments for operators, engineers, and vendors
+action: remote
   while preventing unauthorized access that could compromise industrial operations. It addresses jump server architecture,
   multi-factor authentication, session recording, privileged access management, vendor remote access controls, and compliance
   with IEC 62443 and NERC CIP-005 remote access requirements.
@@ -18,7 +19,7 @@ tags:
 - jump-server
 - mfa
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

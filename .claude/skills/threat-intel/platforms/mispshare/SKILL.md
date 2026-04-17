@@ -1,6 +1,7 @@
 ---
 name: mispshare
 description: Use PyMISP to create, enrich, and share threat intelligence events on a MISP platform, including IOC management,
+action: mispshare
   feed integration, STIX export, and community sharing workflows.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - threat-feeds
 - information-sharing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

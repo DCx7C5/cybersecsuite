@@ -1,6 +1,7 @@
 ---
 name: post
 description: 'Assesses organizational readiness for post-quantum cryptography migration per NIST FIPS 203/204/205 standards.
+action: post
   Performs cryptographic inventory scanning to identify quantum-vulnerable algorithms (RSA, ECDH, ECDSA), evaluates hybrid
   TLS configurations with X25519MLKEM768, and validates CRYSTALS-Kyber (ML-KEM) and CRYSTALS-Dilithium (ML-DSA) readiness.
   Implements crypto-agility assessment using oqs-provider for OpenSSL. Use when planning or executing the transition from
@@ -20,7 +21,7 @@ tags:
 - hybrid-TLS
 - crypto-agility
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

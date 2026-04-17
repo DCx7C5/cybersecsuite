@@ -1,6 +1,7 @@
 ---
 name: file
 description: Configure AIDE (Advanced Intrusion Detection Environment) for file integrity monitoring including baseline creation,
+action: file
   scheduled integrity checks, change detection, and alerting
 domain: cybersecurity
 subdomain: endpoint-security
@@ -13,7 +14,7 @@ tags:
 - compliance
 - linux-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

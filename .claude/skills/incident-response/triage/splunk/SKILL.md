@@ -1,6 +1,7 @@
 ---
 name: splunk
 description: 'Triages security alerts in Splunk Enterprise Security by classifying severity, investigating notable events,
+action: splunk
   correlating related telemetry, and making escalation or closure decisions using SPL queries and the Incident Review dashboard.
   Use when SOC analysts face queued alerts from correlation searches, need to prioritize investigation order, or must document
   triage decisions for handoff to Tier 2/3 analysts.
@@ -17,7 +18,7 @@ tags:
 - correlation-search
 - incident-review
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

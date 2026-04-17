@@ -1,6 +1,7 @@
 ---
 name: threat
 description: MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics, techniques, and procedures (TTPs)
+action: mitre-threat
   based on real-world observations. This skill covers systematically mapping threat actor beh
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -13,7 +14,7 @@ tags:
 - ttp-analysis
 - threat-actors
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

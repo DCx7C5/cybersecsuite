@@ -1,6 +1,7 @@
 ---
 name: nonealgo
 description: Execute and test the JWT none algorithm attack to bypass signature verification by manipulating the alg header
+action: nonealgo
   field in JSON Web Tokens.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - owasp
 - web-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

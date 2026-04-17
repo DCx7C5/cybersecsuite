@@ -1,6 +1,7 @@
 ---
 name: browserisolation
 description: 'Deploys remote browser isolation (RBI) as a core component of a Zero Trust architecture. Implements isolation
+action: browserisolation
   policies with URL categorization and risk-based routing, content disarming and reconstruction (CDR) for file sanitization,
   data loss prevention controls within isolated sessions, and integration with Secure Web Gateway and ZTNA platforms. Based
   on Cloudflare Browser Isolation, Menlo Security, and Zscaler RBI approaches. Use when hardening web access against zero-day
@@ -18,7 +19,7 @@ tags:
 - content-disarming
 - secure-web-gateway
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

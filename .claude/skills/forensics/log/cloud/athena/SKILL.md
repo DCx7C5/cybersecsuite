@@ -1,6 +1,7 @@
 ---
 name: athena
 description: 'Uses AWS Athena to query CloudTrail, VPC Flow Logs, S3 access logs, and ALB logs for forensic investigation.
+action: athena
   Covers CREATE TABLE DDL with partition projection, forensic SQL queries for detecting unauthorized access, data exfiltration,
   lateral movement, and privilege escalation. Use when investigating AWS security incidents or building cloud-native forensic
   workflows at scale.
@@ -18,7 +19,7 @@ tags:
 - s3
 - alb
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

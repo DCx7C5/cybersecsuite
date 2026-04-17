@@ -1,6 +1,7 @@
 ---
 name: ir
 description: 'Responds to security incidents in cloud environments (AWS, Azure, GCP) by performing identity-based containment,
+action: cloud-ir
   cloud-native log analysis, resource isolation, and forensic evidence acquisition adapted for ephemeral cloud infrastructure.
   Activates for requests involving cloud incident response, AWS security incident, Azure compromise, GCP breach, cloud forensics,
   or cloud identity compromise.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1580
 - T1525
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

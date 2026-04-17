@@ -1,6 +1,7 @@
 ---
 name: threat
 description: Building a Threat Intelligence Platform (TIP) involves deploying and integrating multiple CTI tools into a unified
+action: platforms-threat
   system for collecting, analyzing, enriching, and disseminating threat intelligence. T
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - misp
 - opencti
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

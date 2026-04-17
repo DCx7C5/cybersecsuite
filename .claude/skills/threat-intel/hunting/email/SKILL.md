@@ -1,6 +1,7 @@
 ---
 name: email
 description: Detect malicious email forwarding rules created by adversaries to maintain persistent access to email communications
+action: email
   for intelligence collection and BEC attacks.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - t1114
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Object

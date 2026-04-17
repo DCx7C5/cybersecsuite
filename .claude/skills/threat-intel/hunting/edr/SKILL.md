@@ -1,6 +1,7 @@
 ---
 name: edr
 description: Detect OS credential dumping techniques targeting LSASS memory, SAM database, NTDS.dit, and cached credentials
+action: edr
   using EDR telemetry, Sysmon process access monitoring, and Windows security event correlation.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -14,7 +15,7 @@ tags:
 - ntds
 - sam-database
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

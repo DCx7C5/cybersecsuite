@@ -1,6 +1,7 @@
 ---
 name: pod
 description: Implement Kubernetes Pod Security Admission to enforce baseline and restricted security profiles at namespace
+action: pod
   level using built-in admission controller.
 domain: cybersecurity
 subdomain: container-security
@@ -11,7 +12,7 @@ tags:
 - pod-security-standards
 - admission-controller
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

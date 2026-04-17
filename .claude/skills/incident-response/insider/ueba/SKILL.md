@@ -1,6 +1,7 @@
 ---
 name: ueba
 description: Implement User and Entity Behavior Analytics using Elasticsearch/OpenSearch to build behavioral baselines, calculate
+action: ueba
   anomaly scores, perform peer group analysis, and detect insider threat indicators such as data exfiltration, privilege abuse,
   and unauthorized access patterns.
 domain: cybersecurity
@@ -14,7 +15,7 @@ tags:
 - machine-learning
 - siem
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

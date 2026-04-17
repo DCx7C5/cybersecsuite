@@ -1,6 +1,7 @@
 ---
 name: web
 description: Triage web application vulnerability findings from DAST/SAST scanners using OWASP risk rating methodology to
+action: web
   separate true positives from false positives and prioritize remediation.
 domain: cybersecurity
 subdomain: vulnerability-management
@@ -15,7 +16,7 @@ tags:
 - false-positive
 - risk-rating
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

@@ -1,6 +1,7 @@
 ---
 name: social
 description: Plan and execute authorized vishing (voice phishing) pretext calls to assess employee susceptibility to social
+action: social
   engineering and evaluate security awareness controls.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - phishing
 - human-risk
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0088

@@ -1,6 +1,7 @@
 ---
 name: cloud
 description: 'Implementing Cloud Data Loss Prevention (DLP) using Amazon Macie, Azure Information Protection, and Google Cloud
+action: privacy-cloud
   DLP API to discover, classify, and protect sensitive data across cloud storage, databases, and data pipelines.
 
   '
@@ -14,7 +15,7 @@ tags:
 - data-classification
 - privacy
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

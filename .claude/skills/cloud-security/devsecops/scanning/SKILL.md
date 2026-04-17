@@ -1,6 +1,7 @@
 ---
 name: scanning
 description: 'Integrates Static Application Security Testing (SAST), Dynamic Application Security Testing (DAST), and Software
+action: scanning
   Composition Analysis (SCA) into CI/CD pipelines using open-source tools. Covers Semgrep for SAST, Trivy for SCA and container
   scanning, OWASP ZAP for DAST, and Gitleaks for secrets detection. Activates for requests involving DevSecOps pipeline setup,
   automated security scanning in CI/CD, SAST/DAST/SCA integration, or shift-left security implementation.
@@ -20,7 +21,7 @@ tags:
 - CI-CD
 - shift-left
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

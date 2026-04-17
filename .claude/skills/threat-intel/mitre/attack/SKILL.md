@@ -1,6 +1,7 @@
 ---
 name: attack
 description: Extract and catalog attack patterns from cyber threat intelligence reports into a structured STIX-based library
+action: attack
   mapped to MITRE ATT&CK for detection engineering and threat-informed defense.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - nlp
 - extraction
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

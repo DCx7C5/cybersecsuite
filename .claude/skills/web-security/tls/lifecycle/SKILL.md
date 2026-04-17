@@ -1,6 +1,7 @@
 ---
 name: lifecycle
 description: SSL/TLS certificate lifecycle management encompasses the full process of requesting, issuing, deploying, monitoring,
+action: lifecycle
   renewing, and revoking X.509 certificates. Poor certificate management is a leading
 domain: cybersecurity
 subdomain: cryptography
@@ -12,7 +13,7 @@ tags:
 - tls
 - key-management
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

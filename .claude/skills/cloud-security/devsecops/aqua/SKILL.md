@@ -1,6 +1,7 @@
 ---
 name: aqua
 description: Deploy Aqua Security's Trivy scanner to detect vulnerabilities, misconfigurations, secrets, and license issues
+action: aqua
   in container images across CI/CD pipelines and registries.
 domain: cybersecurity
 subdomain: devsecops
@@ -13,7 +14,7 @@ tags:
 - image-security
 - supply-chain
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

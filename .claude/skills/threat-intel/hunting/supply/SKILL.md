@@ -1,6 +1,7 @@
 ---
 name: supply
 description: Hunt for supply chain compromise indicators including trojanized software updates, compromised dependencies,
+action: supply
   unauthorized code modifications, and tampered build artifacts.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - t1195
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Platform Hardening

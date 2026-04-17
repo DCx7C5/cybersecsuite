@@ -1,6 +1,7 @@
 ---
 name: usecase
 description: Tune SIEM detection rules to reduce false positives by analyzing alert volumes, creating whitelists, adjusting
+action: usecase
   thresholds, and measuring detection efficacy metrics in Splunk and Elastic
 domain: cybersecurity
 subdomain: security-operations
@@ -13,7 +14,7 @@ tags:
 - alert-tuning
 - soc
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

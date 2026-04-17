@@ -1,6 +1,7 @@
 ---
 name: redteamphish
 description: Automate GoPhish phishing simulation campaigns using the Python gophish library. Creates email templates with
+action: redteamphish
   tracking pixels, configures SMTP sending profiles, builds target groups from CSV, launches campaigns, and analyzes results
   including open rates, click rates, and credential submission statistics for security awareness assessment.
 domain: cybersecurity
@@ -11,7 +12,7 @@ tags:
 - team
 - phishing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

@@ -1,6 +1,7 @@
 ---
 name: anomalous
 description: 'Hunt for malicious PowerShell activity by analyzing Script Block Logging (Event 4104), Module Logging (Event
+action: anomalous
   4103), and process creation events. The analyst parses Windows Event Log EVTX files to detect obfuscated commands, AMSI
   bypass attempts, encoded payloads, credential dumping keywords, and suspicious download cradles. Activates for requests
   involving PowerShell threat hunting, script block analysis, encoded command detection, or AMSI bypass identification.
@@ -17,7 +18,7 @@ tags:
 - evtx
 - obfuscation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

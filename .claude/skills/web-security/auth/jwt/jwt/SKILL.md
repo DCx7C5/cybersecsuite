@@ -1,6 +1,7 @@
 ---
 name: jwt
 description: 'Exploits JWT algorithm confusion vulnerabilities where the server''s token verification library accepts the
+action: jwt
   algorithm specified in the JWT header rather than enforcing a fixed algorithm. The tester manipulates the alg header to
   switch from RS256 to HS256 (using the RSA public key as the HMAC secret), sets alg to none to bypass signature verification,
   or exploits kid/jku/x5u header injection to supply attacker-controlled keys. Activates for requests involving JWT algorithm
@@ -16,7 +17,7 @@ tags:
 - token-forgery
 - cryptographic-attack
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

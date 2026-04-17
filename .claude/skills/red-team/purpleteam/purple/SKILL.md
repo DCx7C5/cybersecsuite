@@ -1,6 +1,7 @@
 ---
 name: purple
 description: 'Executes Atomic Red Team tests mapped to MITRE ATT&CK techniques, performs coverage gap analysis across the
+action: purple
   ATT&CK matrix, and runs detection validation loops to measure blue team visibility. Covers Invoke-AtomicRedTeam PowerShell
   execution, ATT&CK Navigator layer generation for heatmaps, Sigma rule correlation, and continuous atomic testing pipelines.
   Activates for requests involving purple team exercises, atomic test execution, ATT&CK coverage assessment, detection engineering
@@ -16,7 +17,7 @@ tags:
 - detection-engineering
 - adversary-emulation
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

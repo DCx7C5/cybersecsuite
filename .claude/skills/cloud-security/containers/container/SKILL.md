@@ -1,6 +1,7 @@
 ---
 name: container
 description: Detect unauthorized modifications to running containers by monitoring for binary execution drift, file system
+action: containers-container
   changes, and configuration deviations from the original container image.
 domain: cybersecurity
 subdomain: container-security
@@ -14,7 +15,7 @@ tags:
 - drift-detection
 - microsoft-defender
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

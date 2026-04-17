@@ -1,6 +1,7 @@
 ---
 name: intelligence
 description: 'Manages the end-to-end cyber threat intelligence lifecycle from planning and direction through collection, processing,
+action: intelligence
   analysis, dissemination, and feedback to ensure intelligence products meet stakeholder requirements and continuously improve.
   Use when establishing or maturing a CTI program, defining intelligence requirements with business stakeholders, or building
   feedback loops between intelligence consumers and producers. Activates for requests involving CTI program maturity, intelligence
@@ -17,7 +18,7 @@ tags:
 - threat-intelligence-program
 - NIST-CSF
 version: 1.0.0
-author: team-cybersecurity
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

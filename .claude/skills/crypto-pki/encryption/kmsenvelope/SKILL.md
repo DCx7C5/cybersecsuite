@@ -1,6 +1,7 @@
 ---
 name: kmsenvelope
 description: Envelope encryption is a strategy where data is encrypted with a data encryption key (DEK), and the DEK itself
+action: kmsenvelope
   is encrypted with a master key (KEK) managed by AWS KMS. This approach allows encrypting
 domain: cybersecurity
 subdomain: cryptography
@@ -12,7 +13,7 @@ tags:
 - envelope-encryption
 - key-management
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

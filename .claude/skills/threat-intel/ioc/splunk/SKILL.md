@@ -1,6 +1,7 @@
 ---
 name: splunk
 description: Build automated threat intelligence enrichment pipelines in Splunk Enterprise Security using lookup tables, modular
+action: ioc-splunk
   inputs, and the Threat Intelligence Framework.
 domain: cybersecurity
 subdomain: soc-operations
@@ -14,7 +15,7 @@ tags:
 - soc
 - enterprise-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

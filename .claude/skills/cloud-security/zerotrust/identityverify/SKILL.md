@@ -1,6 +1,7 @@
 ---
 name: identityverify
 description: Implement continuous identity verification for zero trust using phishing-resistant MFA (FIDO2/WebAuthn), risk-based
+action: identityverify
   conditional access, and identity governance aligned with the CISA Zero Trust Maturity Model.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -11,7 +12,7 @@ tags:
 - mfa
 - identity-verification
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0052

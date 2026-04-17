@@ -1,6 +1,7 @@
 ---
 name: cloud
 description: 'Implementing Cloud Security Posture Management (CSPM) to continuously monitor multi-cloud environments for misconfigurations,
+action: cloud
   compliance violations, and security risks using Prowler, ScoutSuite, AWS Security Hub, Azure Defender, and GCP Security
   Command Center.
 
@@ -15,7 +16,7 @@ tags:
 - prowler
 - scoutsuite
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

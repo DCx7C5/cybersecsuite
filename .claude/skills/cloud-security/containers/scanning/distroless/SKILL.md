@@ -1,6 +1,7 @@
 ---
 name: distroless
 description: Reduce container attack surface by building application images on Google distroless base images that contain
+action: distroless
   only the application runtime with no shell, package manager, or unnecessary OS utilities.
 domain: cybersecurity
 subdomain: container-security
@@ -14,7 +15,7 @@ tags:
 - supply-chain
 - kubernetes
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: bac
 description: Systematically testing web applications for broken access control vulnerabilities including privilege escalation,
+action: bac
   missing function-level checks, and insecure direct object references.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - privilege-escalation
 - web-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

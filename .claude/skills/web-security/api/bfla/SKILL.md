@@ -1,6 +1,7 @@
 ---
 name: bfla
 description: 'Tests APIs for Broken Function Level Authorization (BFLA) vulnerabilities where regular users can invoke administrative
+action: bfla
   functions or access privileged API endpoints by directly calling them. The tester identifies admin and privileged endpoints,
   then attempts to access them with regular user credentials by manipulating HTTP methods, URL paths, and request parameters.
   Maps to OWASP API5:2023 Broken Function Level Authorization. Activates for requests involving BFLA testing, admin endpoint
@@ -17,7 +18,7 @@ tags:
 - privilege-escalation
 - access-control
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

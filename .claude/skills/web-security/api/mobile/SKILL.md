@@ -1,6 +1,7 @@
 ---
 name: mobile
 description: 'Tests authentication and authorization mechanisms in mobile application APIs to identify broken authentication,
+action: mobile
   insecure token management, session fixation, privilege escalation, and IDOR vulnerabilities. Use when performing API security
   assessments against mobile app backends, testing JWT implementations, evaluating OAuth flows, or assessing session management.
   Activates for requests involving mobile API auth testing, token security assessment, OAuth mobile flow testing, or API authorization
@@ -9,7 +10,7 @@ description: 'Tests authentication and authorization mechanisms in mobile applic
   '
 domain: cybersecurity
 subdomain: mobile-security
-author: mahipal
+author: dcx7c5
 tags:
 - mobile-security
 - android

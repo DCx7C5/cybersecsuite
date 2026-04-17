@@ -1,6 +1,7 @@
 ---
 name: supply
 description: Implement software supply chain integrity verification for container builds using the in-toto framework to create
+action: containers-supply
   cryptographically signed attestations across CI/CD pipeline steps.
 domain: cybersecurity
 subdomain: container-security
@@ -15,7 +16,7 @@ tags:
 - provenance
 - sbom
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

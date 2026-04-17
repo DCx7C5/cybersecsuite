@@ -1,6 +1,7 @@
 ---
 name: zero
 description: Zero-Knowledge Proofs (ZKPs) allow a prover to demonstrate knowledge of a secret (such as a password or private
+action: zero
   key) without revealing the secret itself. This skill implements the Schnorr identificati
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - privacy
 - zkp
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

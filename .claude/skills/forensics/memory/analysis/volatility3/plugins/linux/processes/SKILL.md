@@ -1,6 +1,7 @@
 ---
 name: processes-recon
 description: Process forensic reconnaissance. Parent-child tree anomalies, injected memory regions (RWX), deleted executables, LD_PRELOAD/VDSO abuse, ptrace attach state, capability audit, namespaces, and runtime behavior triage.
+action: processes
 model: sonnet
 maxTurns: 30
 tools:
@@ -14,6 +15,7 @@ skills:
   - threats/mitre-attack-mapper
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Process Recon

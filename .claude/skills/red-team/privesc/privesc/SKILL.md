@@ -1,6 +1,7 @@
 ---
 name: privesc
 description: Detect AWS IAM privilege escalation paths using boto3 and Cloudsplaining policy analysis to identify overly permissive
+action: privesc
   policies, dangerous permission combinations, and least-privilege violations
 domain: cybersecurity
 subdomain: cloud-security
@@ -13,7 +14,7 @@ tags:
 - policy-analysis
 - least-privilege
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

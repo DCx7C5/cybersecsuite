@@ -1,6 +1,7 @@
 ---
 name: physical
 description: Conduct authorized physical penetration testing using tailgating, badge cloning, lock bypassing, and rogue device
+action: physical
   deployment to evaluate facility security controls.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - rfid
 - physical-pentest
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Platform Hardening

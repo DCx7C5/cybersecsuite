@@ -6,8 +6,8 @@ AuditLog: immutable record of every lifecycle action.
 from tortoise.models import Model
 from tortoise import fields
 
-from skills.csdb.db.models.enums import AuditAction
-from skills.csdb.db.models.scope import ScopedEntry
+from db.models.enums import AuditAction
+from db.models.scope import ScopedEntry
 
 
 class SharedEntry(ScopedEntry):

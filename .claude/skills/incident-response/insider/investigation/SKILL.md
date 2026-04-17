@@ -1,6 +1,7 @@
 ---
 name: investigation
 description: 'Investigates insider threat incidents involving employees, contractors, or trusted partners who misuse authorized
+action: insider-investigation
   access to steal data, sabotage systems, or violate security policies. Combines digital forensics, user behavior analytics,
   and HR/legal coordination to build an evidence-based case. Activates for requests involving insider threat investigation,
   employee data theft, privilege misuse, user behavior anomaly, or internal threat detection.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1567
 - T1114
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

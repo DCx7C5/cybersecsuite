@@ -1,6 +1,7 @@
 ---
 name: cwpp
 description: 'Implements cloud workload protection using boto3 and google-cloud APIs for runtime security monitoring, process
+action: cwpp
   anomaly detection, and file integrity checking on EC2/GCE instances. Scans for cryptomining, reverse shells, and unauthorized
   binaries. Use when building runtime security controls for cloud compute workloads.
 
@@ -13,7 +14,7 @@ tags:
 - workload
 - protection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

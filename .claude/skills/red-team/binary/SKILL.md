@@ -1,6 +1,7 @@
 ---
 name: binary
 description: 'Analyze binary exploitation techniques including buffer overflows and ROP chains using pwntools Python library.
+action: binary
   Covers checksec analysis, gadget discovery with ROPgadget, and exploit development for CTF and authorized security assessments.
 
   '
@@ -12,7 +13,7 @@ tags:
 - rop-chains
 - buffer-overflow
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

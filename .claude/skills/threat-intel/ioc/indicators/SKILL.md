@@ -1,6 +1,7 @@
 ---
 name: indicators
 description: 'Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs, and email artifacts
+action: indicators
   to determine maliciousness confidence, campaign attribution, and blocking priority. Use when triaging IOCs from phishing
   emails, security alerts, or external threat feeds; enriching raw IOCs with multi-source intelligence; or making block/monitor/whitelist
   decisions. Activates for requests involving VirusTotal, AbuseIPDB, MalwareBazaar, MISP, or IOC enrichment pipelines.
@@ -18,7 +19,7 @@ tags:
 - STIX
 - NIST-CSF
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0052

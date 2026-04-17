@@ -1,6 +1,7 @@
 ---
 name: ghaworkflows
 description: 'This skill covers hardening GitHub Actions workflows against supply chain attacks, credential theft, and privilege
+action: ghaworkflows
   escalation. It addresses pinning actions to SHA digests, minimizing GITHUB_TOKEN permissions, protecting secrets from exfiltration,
   preventing script injection in workflow expressions, and implementing required reviewers for workflow changes.
 
@@ -15,7 +16,7 @@ tags:
 - workflow-security
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

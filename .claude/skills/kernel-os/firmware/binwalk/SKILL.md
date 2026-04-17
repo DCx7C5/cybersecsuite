@@ -1,6 +1,7 @@
 ---
 name: binwalk
 description: 'Performs firmware image extraction and analysis using binwalk to identify embedded filesystems, compressed archives,
+action: binwalk
   bootloaders, kernel images, and cryptographic material. Covers entropy analysis for detecting encrypted or compressed regions,
   recursive extraction of nested archives, SquashFS/CramFS/JFFS2 filesystem mounting, and string analysis for credential and
   configuration discovery. Activates for requests involving firmware reverse engineering, IoT device analysis, embedded system
@@ -17,7 +18,7 @@ tags:
 - IoT-security
 - reverse-engineering
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

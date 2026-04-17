@@ -1,6 +1,7 @@
 ---
 name: ttps
 description: 'Map advanced persistent threat (APT) group tactics, techniques, and procedures (TTPs) to the MITRE ATT&CK framework
+action: ttps
   using the ATT&CK Navigator and attackcti Python library. The analyst queries STIX/TAXII data for group-technique associations,
   generates Navigator layer files for visualization, and compares defensive coverage against adversary profiles. Activates
   for requests involving APT TTP mapping, ATT&CK Navigator layers, threat actor profiling, or MITRE technique coverage analysis.
@@ -17,7 +18,7 @@ tags:
 - stix
 - attackcti
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

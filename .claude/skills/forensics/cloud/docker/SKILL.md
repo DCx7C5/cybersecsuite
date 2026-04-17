@@ -1,6 +1,7 @@
 ---
 name: docker
 description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to
+action: docker
   identify malicious activity and evidence.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - image-analysis
 - runtime-investigation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

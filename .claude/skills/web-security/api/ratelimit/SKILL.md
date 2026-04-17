@@ -1,6 +1,7 @@
 ---
 name: ratelimit
 description: Implement API abuse detection using token bucket, sliding window, and adaptive rate limiting algorithms to prevent
+action: ratelimit
   DDoS, brute force, and credential stuffing attacks.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - api-abuse
 - api-gateway
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

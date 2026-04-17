@@ -1,6 +1,7 @@
 ---
 name: scapy
 description: Craft, send, sniff, and dissect network packets using Scapy for protocol analysis, network reconnaissance, and
+action: scapy
   traffic anomaly detection in authorized security testing
 domain: cybersecurity
 subdomain: network-security
@@ -12,7 +13,7 @@ tags:
 - pcap
 - traffic-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

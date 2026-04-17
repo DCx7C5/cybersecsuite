@@ -1,6 +1,7 @@
 ---
 name: ntlm
 description: 'Detect NTLM relay attacks through Windows Security Event correlation by analyzing Event 4624 LogonType 3 for
+action: ntlm
   IP-to-hostname mismatches, identifying Responder/LLMNR poisoning artifacts, auditing SMB and LDAP signing enforcement across
   the domain, and detecting NTLM downgrade attacks from NTLMv2 to NTLMv1 using event log analysis.
 
@@ -20,7 +21,7 @@ tags:
 - PetitPotam
 - Active-Directory
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0051

@@ -1,6 +1,7 @@
 ---
 name: sliver
 description: Build and configure a resilient command-and-control infrastructure using BishopFox's Sliver C2 framework with
+action: sliver
   redirectors, HTTPS listeners, and multi-operator support for authorized red team engagements.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - infrastructure
 - post-exploitation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

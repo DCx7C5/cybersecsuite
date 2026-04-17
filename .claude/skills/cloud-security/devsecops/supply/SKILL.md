@@ -1,6 +1,7 @@
 ---
 name: supply
 description: 'Scans GitHub Actions workflows and CI/CD pipeline configurations for supply chain attack vectors including unpinned
+action: devsecops-supply
   actions, script injection via expressions, dependency confusion, and secrets exposure. Uses PyGithub and YAML parsing for
   automated audit. Use when hardening CI/CD pipelines or investigating compromised build systems.
 
@@ -13,7 +14,7 @@ tags:
 - chain
 - attacks
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0010

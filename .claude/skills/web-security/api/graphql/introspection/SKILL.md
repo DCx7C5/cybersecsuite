@@ -1,6 +1,7 @@
 ---
 name: introspection
 description: 'Performs GraphQL introspection attacks to extract the full API schema including types, queries, mutations, subscriptions,
+action: introspection
   and field definitions from GraphQL endpoints. The tester uses introspection queries to map the attack surface, identifies
   sensitive fields and mutations, tests for query depth and complexity limits, and exploits GraphQL-specific vulnerabilities
   including batching attacks, alias-based brute force, and nested query DoS. Activates for requests involving GraphQL security
@@ -16,7 +17,7 @@ tags:
 - schema-extraction
 - query-abuse
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

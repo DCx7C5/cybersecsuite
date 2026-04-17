@@ -1,6 +1,7 @@
 ---
 name: posture
 description: Implement API Security Posture Management to continuously discover, classify, and score APIs based on risk while
+action: posture
   enforcing security policies across the API lifecycle.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - continuous-monitoring
 - api-inventory
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

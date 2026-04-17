@@ -1,6 +1,7 @@
 ---
 name: siem
 description: Perform systematic SIEM false positive reduction through rule tuning, threshold adjustment, correlation refinement,
+action: tuning-siem
   and threat intelligence enrichment to combat alert fatigue.
 domain: cybersecurity
 subdomain: soc-operations
@@ -13,7 +14,7 @@ tags:
 - soc
 - correlation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

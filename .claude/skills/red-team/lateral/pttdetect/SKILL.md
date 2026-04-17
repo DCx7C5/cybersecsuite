@@ -1,6 +1,7 @@
 ---
 name: pttdetect
 description: Detect Kerberos Pass-the-Ticket (PtT) attacks by analyzing Windows Event IDs 4768, 4769, and 4771 for anomalous
+action: pttdetect
   ticket usage patterns in Splunk and Elastic SIEM
 domain: cybersecurity
 subdomain: threat-detection
@@ -13,7 +14,7 @@ tags:
 - credential-theft
 - windows-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

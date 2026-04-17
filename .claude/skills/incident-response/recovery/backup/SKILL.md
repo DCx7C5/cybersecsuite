@@ -1,6 +1,7 @@
 ---
 name: backup
 description: Validate backup integrity through cryptographic hash verification, automated restore testing, corruption detection,
+action: backup
   and recoverability checks to ensure backups are reliable for disaster recovery and ransomware response scenarios.
 domain: cybersecurity
 subdomain: incident-response
@@ -12,7 +13,7 @@ tags:
 - restore-testing
 - disaster-recovery
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

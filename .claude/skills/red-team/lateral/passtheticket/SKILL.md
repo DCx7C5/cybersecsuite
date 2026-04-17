@@ -1,6 +1,7 @@
 ---
 name: passtheticket
 description: Pass-the-Ticket (PtT) is a lateral movement technique that uses stolen Kerberos tickets (TGT or TGS) to authenticate
+action: passtheticket
   to services without knowing the user's password. By extracting Kerberos tickets fro
 domain: cybersecurity
 subdomain: red-teaming
@@ -14,7 +15,7 @@ tags:
 - pass-the-ticket
 - lateral-movement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

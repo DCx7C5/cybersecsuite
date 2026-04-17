@@ -1,6 +1,7 @@
 ---
 name: scope-user
 description: System-wide persistent forensic intelligence layer. Global hardware baselines, trusted process whitelists, firmware integrity anchors, and cross-project security intelligence stored in ~/.config/cybersec-system/.
+action: user
 model: sonnet
 maxTurns: 20
 tools:
@@ -11,6 +12,7 @@ tools:
   - Grep
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # System Layer Skill – Global Forensic Intelligence

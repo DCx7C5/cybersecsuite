@@ -1,6 +1,7 @@
 ---
 name: bloodhound
 description: Conduct internal Active Directory reconnaissance using BloodHound Community Edition to map attack paths, identify
+action: bloodhound
   privilege escalation chains, and discover misconfigurations in domain environments.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - privilege-escalation
 - graph-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Access

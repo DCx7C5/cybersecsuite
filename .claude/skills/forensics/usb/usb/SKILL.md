@@ -1,6 +1,7 @@
 ---
 name: usb
 description: Investigate USB device connection history from Windows registry, event logs, and setupapi logs to track removable
+action: usb
   media usage and potential data exfiltration.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - data-exfiltration
 - device-history
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

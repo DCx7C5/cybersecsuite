@@ -1,6 +1,7 @@
 ---
 name: detectionuc
 description: 'Implements SIEM detection use cases by designing correlation rules, threshold alerts, and behavioral analytics
+action: detectionuc
   mapped to MITRE ATT&CK techniques across Splunk, Elastic, and Sentinel. Use when SOC teams need to expand detection coverage,
   formalize use case lifecycle management, or build a detection library aligned to organizational threat profile.
 
@@ -17,7 +18,7 @@ tags:
 - elastic
 - sentinel
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

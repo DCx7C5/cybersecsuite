@@ -1,6 +1,7 @@
 ---
 name: paste
 description: Monitor paste sites like Pastebin and GitHub Gists for leaked credentials, API keys, and sensitive data dumps
+action: paste
   using automated scraping and keyword matching to detect breaches early.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -13,7 +14,7 @@ tags:
 - osint
 - early-warning
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

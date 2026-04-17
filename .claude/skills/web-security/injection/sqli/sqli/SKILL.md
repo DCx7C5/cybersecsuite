@@ -1,6 +1,7 @@
 ---
 name: sqli
 description: Analyze WAF (ModSecurity/AWS WAF/Cloudflare) logs to detect SQL injection attack campaigns. Parses ModSecurity
+action: sqli
   audit logs and JSON WAF event logs to identify SQLi patterns (UNION SELECT, OR 1=1, SLEEP(), BENCHMARK()), tracks attack
   sources, correlates multi-stage injection attempts, and generates incident reports with OWASP classification.
 domain: cybersecurity
@@ -11,7 +12,7 @@ tags:
 - injection
 - via
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

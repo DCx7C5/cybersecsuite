@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Anthropic-Cybersecurity-Skills/.idea/Anthropic-Cybersecurity-Skills.iml" filepath="$PROJECT_DIR$/../Anthropic-Cybersecurity-Skills/.idea/Anthropic-Cybersecurity-Skills.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../OmniRoute/.idea/OmniRoute.iml" filepath="$PROJECT_DIR$/../OmniRoute/.idea/OmniRoute.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../AI/blueprints/.idea/blueprints.iml" filepath="$PROJECT_DIR$/../AI/blueprints/.idea/blueprints.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/playwright-stealth-mcp.iml" filepath="$PROJECT_DIR$/.idea/playwright-stealth-mcp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/token-optimization-mcp.iml" filepath="$PROJECT_DIR$/.idea/token-optimization-mcp.iml" />
     </modules>
   </component>
 </project>

@@ -1,6 +1,7 @@
 ---
 name: sensitive
 description: Identifying sensitive data exposure vulnerabilities including API key leakage, PII in responses, insecure storage,
+action: sensitive
   and unprotected data transmission during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - api-keys
 - secrets
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

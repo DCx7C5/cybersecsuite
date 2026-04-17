@@ -1,6 +1,7 @@
 ---
 name: linuxcis
 description: 'Hardens Linux endpoints using CIS Benchmark recommendations for Ubuntu, RHEL, and CentOS to reduce attack surface,
+action: linuxcis
   enforce security baselines, and meet compliance requirements. Use when deploying new Linux servers, remediating audit findings,
   or establishing security baselines for Linux infrastructure. Activates for requests involving Linux hardening, CIS benchmarks
   for Linux, server security baselines, or Linux configuration compliance.
@@ -16,7 +17,7 @@ tags:
 - Ubuntu
 - RHEL
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

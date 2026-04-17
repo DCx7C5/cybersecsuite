@@ -1,6 +1,7 @@
 ---
 name: sqlmap
 description: Detecting and exploiting SQL injection vulnerabilities using sqlmap to extract database contents during authorized
+action: sqlmap
   penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - database-security
 - web-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

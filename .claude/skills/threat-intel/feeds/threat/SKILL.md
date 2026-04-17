@@ -1,6 +1,7 @@
 ---
 name: threat
 description: 'Analyzes structured and unstructured threat intelligence feeds to extract actionable indicators, adversary tactics,
+action: feeds-threat
   and campaign context. Use when ingesting commercial or open-source CTI feeds, evaluating feed quality, normalizing data
   into STIX 2.1 format, or enriching existing IOCs with campaign attribution. Activates for requests involving ThreatConnect,
   Recorded Future, Mandiant Advantage, MISP, AlienVault OTX, or automated feed aggregation pipelines.
@@ -19,7 +20,7 @@ tags:
 - CTI
 - NIST-CSF
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

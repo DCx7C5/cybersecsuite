@@ -1,6 +1,7 @@
 ---
 name: tls
 description: Configure SSL/TLS inspection on network security devices to decrypt, inspect, and re-encrypt HTTPS traffic for
+action: tls
   threat detection while managing certificates, exemptions, and privacy compliance.
 domain: cybersecurity
 subdomain: network-security
@@ -14,7 +15,7 @@ tags:
 - network-security
 - forward-proxy
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

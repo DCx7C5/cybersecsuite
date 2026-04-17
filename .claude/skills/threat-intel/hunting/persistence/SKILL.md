@@ -1,6 +1,7 @@
 ---
 name: persistence
 description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI
+action: persistence
   consumer, filter, and binding creation events that execute malicious code triggered by system events.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - windows
 - endpoint-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

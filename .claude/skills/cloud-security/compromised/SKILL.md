@@ -1,6 +1,7 @@
 ---
 name: compromised
 description: 'Detecting compromised cloud credentials across AWS, Azure, and GCP by analyzing anomalous API activity, impossible
+action: compromised
   travel patterns, unauthorized resource provisioning, and credential abuse indicators using GuardDuty, Defender for Identity,
   and SCC Event Threat Detection.
 
@@ -15,7 +16,7 @@ tags:
 - incident-response
 - anomaly-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

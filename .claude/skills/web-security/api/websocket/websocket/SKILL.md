@@ -1,6 +1,7 @@
 ---
 name: websocket
 description: Testing WebSocket implementations for authentication bypass, cross-site hijacking, injection attacks, and insecure
+action: websocket
   message handling during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - real-time
 - burpsuite
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

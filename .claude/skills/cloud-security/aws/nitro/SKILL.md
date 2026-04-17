@@ -1,6 +1,7 @@
 ---
 name: nitro
 description: 'Implements AWS Nitro Enclave-based confidential computing environments with cryptographic attestation, KMS policy
+action: nitro
   integration using PCR-based condition keys, and secure vsock communication channels. The practitioner builds enclave images,
   configures attestation-aware KMS policies, validates attestation documents against the AWS Nitro PKI root of trust, and
   establishes isolated computation pipelines for processing sensitive data such as PII, cryptographic keys, and healthcare
@@ -19,7 +20,7 @@ tags:
 - vsock
 - PCR
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

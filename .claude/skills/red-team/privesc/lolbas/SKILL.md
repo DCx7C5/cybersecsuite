@@ -1,6 +1,7 @@
 ---
 name: lolbas
 description: Detect Living Off the Land Binaries (LOLBins/LOLBAS) abuse including certutil, regsvr32, mshta, and rundll32
+action: lolbas
   via process telemetry, Sigma rules, and parent-child process analysis
 domain: cybersecurity
 subdomain: threat-detection
@@ -13,7 +14,7 @@ tags:
 - endpoint-detection
 - threat-hunting
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

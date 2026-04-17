@@ -1,6 +1,7 @@
 ---
 name: beaconing
 description: Identify command-and-control beaconing patterns in network traffic by applying statistical frequency analysis,
+action: beaconing
   jitter calculation, and coefficient of variation scoring to detect periodic callbacks from compromised endpoints.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -14,7 +15,7 @@ tags:
 - jitter-detection
 - mitre-t1071
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

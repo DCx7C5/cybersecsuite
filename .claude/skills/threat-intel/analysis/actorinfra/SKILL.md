@@ -1,6 +1,7 @@
 ---
 name: actorinfra
 description: Threat actor infrastructure tracking involves monitoring and mapping adversary-controlled assets including command-and-control
+action: actorinfra
   (C2) servers, phishing domains, exploit kit hosts, bulletproof hosting, a
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -15,7 +16,7 @@ tags:
 - censys
 - passive-dns
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

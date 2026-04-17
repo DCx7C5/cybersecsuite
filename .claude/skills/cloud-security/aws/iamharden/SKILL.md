@@ -1,6 +1,7 @@
 ---
 name: iamharden
 description: 'This skill guides practitioners through hardening AWS Identity and Access Management configurations to enforce
+action: iamharden
   least privilege access across cloud accounts. It covers IAM policy scoping, permission boundaries, Access Analyzer integration,
   and credential rotation strategies to reduce the blast radius of compromised identities.
 
@@ -14,7 +15,7 @@ tags:
 - access-analyzer
 - cloud-identity
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

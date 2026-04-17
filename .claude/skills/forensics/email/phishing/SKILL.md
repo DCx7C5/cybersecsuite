@@ -1,6 +1,7 @@
 ---
 name: phishing
 description: Parse and analyze email headers to trace the origin of phishing emails, verify sender authenticity, and identify
+action: phishing
   spoofing through SPF, DKIM, and DMARC validation.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -13,7 +14,7 @@ tags:
 - dmarc
 - header-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0052

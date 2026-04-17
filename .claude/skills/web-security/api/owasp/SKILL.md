@@ -1,6 +1,7 @@
 ---
 name: owasp
 description: Systematically assessing REST and GraphQL API endpoints against the OWASP API Security Top 10 risks using automated
+action: api-owasp
   and manual testing techniques.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - burpsuite
 - postman
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

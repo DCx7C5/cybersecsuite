@@ -1,6 +1,7 @@
 ---
 name: aes
 description: AES (Advanced Encryption Standard) is a symmetric block cipher standardized by NIST (FIPS 197) used to protect
+action: aes
   classified and sensitive data. This skill covers implementing AES-256 encryption in GCM m
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - data-at-rest
 - symmetric-encryption
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

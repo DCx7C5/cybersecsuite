@@ -1,6 +1,7 @@
 ---
 name: osint
 description: Build comprehensive threat actor profiles using open-source intelligence (OSINT) techniques to document adversary
+action: osint
   motivations, capabilities, infrastructure, and TTPs for proactive defense.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - threat-intelligence
 - reconnaissance
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

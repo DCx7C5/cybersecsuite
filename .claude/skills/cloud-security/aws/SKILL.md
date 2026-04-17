@@ -1,6 +1,7 @@
 ---
 name: aws
 description: 'Detecting exposed AWS credentials in source code repositories, CI/CD pipelines, and configuration files using
+action: cloud-security-aws
   TruffleHog, git-secrets, and AWS-native detection mechanisms to prevent credential theft and unauthorized account access.
 
   '
@@ -14,7 +15,7 @@ tags:
 - secrets-detection
 - devsecops
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

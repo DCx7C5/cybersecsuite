@@ -1,6 +1,7 @@
 ---
 name: proofpoint
 description: Deploy and configure Proofpoint Email Protection as a secure email gateway to detect and block phishing, malware,
+action: proofpoint
   BEC, and spam before messages reach user inboxes.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -14,7 +15,7 @@ tags:
 - bec
 - email-filtering
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AT-01

@@ -1,6 +1,7 @@
 ---
 name: tlsassessment
 description: Assess SSL/TLS server configurations using the sslyze Python library to evaluate cipher suites, certificate chains,
+action: tlsassessment
   protocol versions, HSTS headers, and known vulnerabilities like Heartbleed and ROBOT.
 domain: cybersecurity
 subdomain: network-security
@@ -13,7 +14,7 @@ tags:
 - cipher-suites
 - vulnerability-assessment
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

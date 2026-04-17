@@ -1,6 +1,7 @@
 ---
 name: office365
 description: Parse Office 365 Unified Audit Logs via Microsoft Graph API to detect email forwarding rule creation, inbox delegation,
+action: office365
   suspicious OAuth app grants, and other indicators of account compromise.
 domain: cybersecurity
 subdomain: cloud-security
@@ -13,7 +14,7 @@ tags:
 - OAuth
 - BEC
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

@@ -1,6 +1,7 @@
 ---
 name: plc
 description: 'This skill covers analyzing Programmable Logic Controller (PLC) firmware for security vulnerabilities including
+action: plc
   hardcoded credentials, insecure update mechanisms, backdoor functions, memory corruption flaws, and undocumented debug interfaces.
   It addresses firmware extraction from common PLC platforms (Siemens S7, Allen-Bradley, Schneider Modicon), static analysis
   of firmware images, dynamic analysis in emulated environments, and comparison against known-good baselines to detect tampering.
@@ -17,7 +18,7 @@ tags:
 - firmware-analysis
 - plc-security
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

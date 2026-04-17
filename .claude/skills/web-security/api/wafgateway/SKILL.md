@@ -1,6 +1,7 @@
 ---
 name: wafgateway
 description: 'Securing API Gateway endpoints with AWS WAF by configuring managed rule groups for OWASP Top 10 protection,
+action: wafgateway
   creating custom rate limiting rules, implementing bot control, setting up IP reputation filtering, and monitoring WAF metrics
   for security effectiveness.
 
@@ -16,7 +17,7 @@ tags:
 - bot-protection
 - owasp
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

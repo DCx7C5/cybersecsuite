@@ -1,6 +1,7 @@
 ---
 name: falco
 description: Detect container escape attempts in real-time using Falco runtime security rules that monitor syscalls, file
+action: falco
   access, and privilege escalation.
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - kubernetes
 - detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

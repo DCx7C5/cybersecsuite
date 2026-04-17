@@ -1,6 +1,7 @@
 ---
 name: splunk
 description: Build effective detection rules using Splunk Search Processing Language (SPL) correlation searches to identify
+action: detection-splunk
   security threats in SOC environments.
 domain: cybersecurity
 subdomain: soc-operations
@@ -14,7 +15,7 @@ tags:
 - threat-detection
 - enterprise-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

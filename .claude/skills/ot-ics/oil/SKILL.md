@@ -1,6 +1,7 @@
 ---
 name: oil
 description: 'This skill covers conducting cybersecurity assessments specific to oil and gas facilities including upstream
+action: oil
   (exploration/production), midstream (pipeline/transport), and downstream (refining/distribution) operations. It addresses
   SCADA systems controlling pipeline operations, DCS for refinery process control, safety instrumented systems for hazardous
   processes, remote terminal units at unmanned wellhead sites, and compliance with API 1164, TSA Pipeline Security Directives,
@@ -19,7 +20,7 @@ tags:
 - pipeline-security
 - api1164
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

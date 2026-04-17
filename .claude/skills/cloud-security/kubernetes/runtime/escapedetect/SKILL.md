@@ -1,6 +1,7 @@
 ---
 name: escapedetect
 description: 'Detects container escape attempts by analyzing namespace configurations, privileged container checks, dangerous
+action: escapedetect
   capability assignments, and host path mounts using the kubernetes Python client. Identifies CVE-2022-0492 style escapes
   via cgroup abuse. Use when auditing container security posture or investigating escape attempts.
 
@@ -13,7 +14,7 @@ tags:
 - escape
 - detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

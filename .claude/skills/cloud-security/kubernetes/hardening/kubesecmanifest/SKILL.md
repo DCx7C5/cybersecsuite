@@ -1,6 +1,7 @@
 ---
 name: kubesecmanifest
 description: Perform security risk analysis on Kubernetes resource manifests using Kubesec to identify misconfigurations,
+action: kubesecmanifest
   privilege escalation risks, and deviations from security best practices.
 domain: cybersecurity
 subdomain: container-security
@@ -14,7 +15,7 @@ tags:
 - static-analysis
 - ci-cd
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

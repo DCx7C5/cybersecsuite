@@ -1,6 +1,7 @@
 ---
 name: supply
 description: Simulate and detect software supply chain attacks including typosquatting detection via Levenshtein distance,
+action: supply
   dependency confusion testing against private registries, package hash verification with pip, and known vulnerability scanning
   with pip-audit.
 domain: cybersecurity
@@ -14,7 +15,7 @@ tags:
 - PyPI
 - software-composition-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

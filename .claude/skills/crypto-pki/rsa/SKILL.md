@@ -1,6 +1,7 @@
 ---
 name: rsa
 description: RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic algorithm, used for digital
+action: rsa
   signatures, key exchange, and encryption. This skill covers generating, storing, rotating,
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - pki
 - asymmetric-encryption
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

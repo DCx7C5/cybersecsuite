@@ -1,6 +1,7 @@
 ---
 name: clarotyassess
 description: 'This skill covers performing vulnerability assessments in OT environments using the Claroty xDome platform for
+action: clarotyassess
   comprehensive asset discovery, risk scoring, vulnerability correlation, and remediation prioritization. It addresses passive
   vulnerability identification through traffic analysis, active safe querying of OT devices, integration with CVE databases
   and ICS-CERT advisories, and risk-based prioritization that accounts for operational impact and compensating controls.
@@ -17,7 +18,7 @@ tags:
 - vulnerability-assessment
 - claroty
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

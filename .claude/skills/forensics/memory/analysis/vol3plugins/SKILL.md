@@ -1,6 +1,7 @@
 ---
 name: vol3plugins
 description: Analyze memory dumps using Volatility3 plugins to detect injected code, rootkits, credential theft, and malware
+action: vol3plugins
   artifacts in Windows, Linux, and macOS memory images.
 domain: cybersecurity
 subdomain: malware-analysis
@@ -13,7 +14,7 @@ tags:
 - rootkit-detection
 - dfir
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

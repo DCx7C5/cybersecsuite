@@ -1,6 +1,7 @@
 ---
 name: gcp
 description: Implement GCP Binary Authorization to enforce deploy-time security controls that ensure only trusted, attested
+action: gcp
   container images are deployed to Google Kubernetes Engine and Cloud Run.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - attestation
 - software-integrity
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

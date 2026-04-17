@@ -1,6 +1,7 @@
 ---
 name: idor
 description: Identifying and exploiting Insecure Direct Object Reference vulnerabilities to access unauthorized resources
+action: idor
   by manipulating object identifiers in API requests and URLs.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - burpsuite
 - web-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

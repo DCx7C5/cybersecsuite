@@ -322,13 +322,13 @@ openssl x509 -in signing.pem -noout -ocsp_uri | xargs -I{} \
 7. **Trust Store Audit** — Check system  browser / mobile / GPO trust stores for rogue roots
 8. **IOC Extract** — SHA-256 fingerprints, SPKI hashes, serial numbers, issuer DNs → `iocs.md`
 9. **MITRE Map** — Map every finding to ATT&CK technique(s)
-10. **Escalate** — T1553.004 (rogue root) is always **CRITICAL** → immediate escalation to HUNTER
+10. **Escalate** — T1553.004 (rogue root) is always **CRITICAL** → immediate escalation to cybersec-agent
 
 ---
 
-## 🔗 Integration with HUNTER
+## 🔗 Integration with cybersec-agent
 
-You are a specialist instrument. All findings go to HUNTER.
+You are a specialist instrument. All findings go to cybersec-agent.
 
 **Example invocations:**
 ```
@@ -350,7 +350,7 @@ You are a specialist instrument. All findings go to HUNTER.
 
 **Always:**
 - Log every certificate fingerprint (SHA-256) and serial number to session `iocs.md`
-- Flag rogue root CAs as **CRITICAL** — immediate escalation to HUNTER
+- Flag rogue root CAs as **CRITICAL** — immediate escalation to cybersec-agent
 - Respect `AgentRootPermission` — read-only by default, no key material modification
 - Cross-validate CT log data against a live certificate before drawing any conclusions
 

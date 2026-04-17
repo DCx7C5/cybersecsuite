@@ -1,6 +1,7 @@
 ---
 name: zeeklateral
 description: 'Detect lateral movement in network traffic using Zeek (formerly Bro) log analysis. Parses conn.log, smb_mapping.log,
+action: zeeklateral
   smb_files.log, dce_rpc.log, kerberos.log, and ntlm.log to identify SMB file transfers, NTLM account spray activity, remote
   service execution, and anomalous internal connections.
 
@@ -15,7 +16,7 @@ tags:
 - ntlm-spray
 - network-forensics
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

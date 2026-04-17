@@ -1,6 +1,7 @@
 ---
 name: dcsync
 description: Detect DCSync attacks by analyzing Windows Event ID 4662 for unauthorized DS-Replication-Get-Changes requests
+action: dcsync
   from non-domain-controller accounts.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -14,7 +15,7 @@ tags:
 - windows
 - dfir
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

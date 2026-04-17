@@ -4,7 +4,34 @@
   },
 
   "agent": "cybersec-agent",
-  "version": "1.0.0",
+  "version": "0.1.0",
+
+  "asgi": {
+    "host": "127.0.0.1",
+    "port": 8000,
+    "alt_port": 8080,
+    "tls_port": 8433,
+    "tls_cert": "~/.omniroute/certs/cert.pem",
+    "tls_key": "~/.omniroute/certs/key.pem"
+  },
+
+  "mcp": {
+    "servers": ["cybersec", "dystopian"],
+    "tool_prefix": "mcp__"
+  },
+
+  "proxy": {
+    "enabled": true,
+    "default_strategy": "cost-optimized",
+    "prefer_free": false,
+    "max_cost_per_1k_usd": null,
+    "custom_providers_config": "~/.cybersecsuite/providers.yaml",
+    "browser_providers": {
+      "headless": true,
+      "stealth": true,
+      "profile_dir": null
+    }
+  },
 
   "crypto": {
     "algorithm": "Ed25519",

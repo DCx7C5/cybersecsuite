@@ -1,6 +1,7 @@
 ---
 name: container
 description: 'This skill covers hardening container images by minimizing attack surface, removing unnecessary packages, implementing
+action: scanning-container
   multi-stage builds, configuring non-root users, and applying CIS Docker Benchmark recommendations to produce secure production-ready
   images.
 
@@ -15,7 +16,7 @@ tags:
 - cis-benchmark
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

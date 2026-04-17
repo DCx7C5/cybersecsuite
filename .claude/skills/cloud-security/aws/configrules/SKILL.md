@@ -1,6 +1,7 @@
 ---
 name: configrules
 description: 'Implementing AWS Config rules for continuous compliance monitoring of AWS resources, deploying managed and custom
+action: configrules
   rules aligned to CIS and PCI DSS frameworks, configuring automatic remediation with SSM Automation, and aggregating compliance
   data across accounts.
 
@@ -15,7 +16,7 @@ tags:
 - automation
 - remediation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

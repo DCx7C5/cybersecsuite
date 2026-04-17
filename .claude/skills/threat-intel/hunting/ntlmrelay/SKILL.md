@@ -1,6 +1,7 @@
 ---
 name: ntlmrelay
 description: Detect NTLM relay attacks by analyzing Windows Event 4624 logon type 3 with NTLMSSP authentication, identifying
+action: ntlmrelay
   IP-to-hostname mismatches, Responder traffic signatures, SMB signing status, and suspicious authentication patterns across
   the domain.
 domain: cybersecurity
@@ -16,7 +17,7 @@ tags:
 - T1557.001
 - Active-Directory
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

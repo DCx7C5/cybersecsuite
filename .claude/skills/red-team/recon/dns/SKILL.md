@@ -1,6 +1,7 @@
 ---
 name: dns
 description: 'Enumerates DNS records, attempts zone transfers, brute-forces subdomains, and maps DNS infrastructure during
+action: dns
   authorized reconnaissance to identify attack surface, misconfigurations, and information disclosure in target domains.
 
   '
@@ -13,7 +14,7 @@ tags:
 - zone-transfer
 - reconnaissance
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

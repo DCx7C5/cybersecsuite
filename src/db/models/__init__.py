@@ -1,9 +1,51 @@
-"""csdb-mcp initial model registry — scope + core only."""
+"""Model registry — all Tortoise ORM model modules."""
 
 MODEL_MODULES: list[str] = [
-    "skills.csdb.db.models.scope",
-    "skills.csdb.db.models.core",
+    # Scope + core shared entry store
+    "db.models.scope",
+    "db.models.core",
+    # Enums (no models, but included for Tortoise enum registration)
+    # Intelligence
+    "db.models.cve",
+    "db.models.cve_entry",
+    "db.models.cwe",
+    "db.models.capec",
+    "db.models.mitre_technique",
+    "db.models.mitre_actor",
+    "db.models.mitre_software",
+    "db.models.references",
+    "db.models.feed_snapshot",
+    "db.models.ioc",
+    "db.models.ioc_entry",
+    "db.models.misp",
+    "db.models.opencti",
+    "db.models.threat_intel",
+    # Investigation + forensic
+    "db.models.investigation",
+    "db.models.forensic",
+    "db.models.baselines",
+    "db.models.network",
+    "db.models.kernel",
+    "db.models.machine",
+    "db.models.yara_rule",
+    "db.models.threat_profile_entry",
+    "db.models.intelligence",
+    # Compliance + audit
+    "db.models.compliance",
+    "db.models.audit",
+    "db.models.vulnerability",
+    "db.models.defense",
+    "db.models.layers",
+    "db.models.tag",
+    # Artifacts + crypto
+    "db.models.artifact",
+    "db.models.artifacts",
+    # A2A
+    "db.models.a2a_task",
+    # Phase 0 — Case Intake
+    "db.models.case_intake",
+    # API / system
+    "db.models.api_usage_log",
+    "db.models.update_log_entry",
+    "db.models.user_guidance",
 ]
-
-# Tables created: workspaces, projects, sessions, shared_entries, audit_logs
-

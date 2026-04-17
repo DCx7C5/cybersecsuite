@@ -1,6 +1,7 @@
 ---
 name: wmilateral
 description: Detect WMI-based lateral movement by analyzing Windows Event ID 4688 process creation and Sysmon Event ID 1 for
+action: wmilateral
   WmiPrvSE.exe child process patterns, remote process execution, and WMI event subscription persistence.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - mitre-attack
 - process-creation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

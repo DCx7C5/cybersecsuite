@@ -11,21 +11,6 @@ from db.bootstrap import (
     init_tortoise_async,
     bootstrap_intelligence_async as bootstrap_intelligence_db_async,
 )
-from hooks.database import (
-    ScopeContext,
-    get_recent_entries_async,
-    get_scoped_entries_async,
-    query_findings_db_async,
-    write_scoped_entry_async,
-)
-from hooks.uvloop_integration import get_event_loop_info
-from hooks.exact_match_cache import (
-    cache_analytics_async,
-    cache_get_async,
-    cache_invalidate_async,
-    cache_put_async,
-    compute_cache_key,
-)
 
 JsonDict = dict[str, Any]
 
@@ -56,7 +41,7 @@ def _get_base_dir() -> Path:
         return Path(base_dir).expanduser().resolve()
     plugin_data_dir = os.environ.get("PLUGIN_DATA_DIR") or os.environ.get("CLAUDE_PLUGIN_DATA")
     if plugin_data_dir:
-        return (Path(plugin_data_dir).expanduser().resolve() / "cybersec")
+        return Path(plugin_data_dir).expanduser().resolve() / "cybersec"
     return Path(__file__).resolve().parent / "data"
 
 
@@ -651,6 +636,652 @@ async def cache_invalidate_tool(
         "message": message,
         "loop_info": get_event_loop_info(),
     }
+
+
+# ====================== AI PROXY TOOLS ======================
+
+@mcp.tool(name="cybersec.proxy_chat")
+async def proxy_chat(
+    prompt: str,
+    model: str = "gpt-4o-mini",
+    provider: str | None = None,
+    system: str | None = None,
+    prefer_free: bool = False,
+    max_cost_per_1k: float | None = None,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+) -> JsonDict:
+    """Route a chat completion through the AI proxy with multi-provider fallback.
+
+    Supports 15+ providers (OpenAI, Anthropic, Gemini, DeepSeek, Groq, etc.)
+    with automatic format translation, rate limiting, and cost tracking.
+
+    Headers equivalent:
+      X-Provider: force a specific provider
+      X-Prefer-Free: route to free providers first
+      X-Max-Cost-Per-1K: cost ceiling per 1K tokens
+    """
+    from ai_proxy.routing.combo import smart_route, route_request, ComboConfig, ComboTarget, Strategy
+
+    body: JsonDict = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if system:
+        body["messages"].insert(0, {"role": "system", "content": system})
+    if temperature is not None:
+        body["temperature"] = temperature
+    if max_tokens is not None:
+        body["max_tokens"] = max_tokens
+
+    if provider:
+        combo = ComboConfig(
+            id=f"mcp-{provider}",
+            name=f"MCP → {provider}",
+            strategy=Strategy.PRIORITY,
+            targets=[ComboTarget(provider_id=provider, model_id=model)],
+        )
+        result = await route_request(body, combo)
+    else:
+        result = await smart_route(body, prefer_free=prefer_free, max_cost_per_1k=max_cost_per_1k)
+
+    if not result.ok:
+        return {"status": "error", "error": result.error, "status_code": result.status_code}
+
+    choices = (result.body or {}).get("choices", [])
+    content = choices[0].get("message", {}).get("content", "") if choices else ""
+    usage = (result.body or {}).get("usage", {})
+
+    return {
+        "status": "success",
+        "content": content,
+        "provider": result.provider_id,
+        "model": result.model_id,
+        "latency_ms": round(result.latency_ms, 1),
+        "usage": usage,
+    }
+
+
+@mcp.tool(name="cybersec.proxy_providers")
+async def proxy_providers() -> JsonDict:
+    """List all configured AI providers with status and rate limits."""
+    from ai_proxy.providers.registry import get_all_providers
+    from ai_proxy.services.rate_limiter import rate_limiter
+
+    providers = []
+    for p in get_all_providers().values():
+        has_key = p.get_api_key() is not None
+        providers.append({
+            "id": p.id,
+            "name": p.name,
+            "format": p.api_format.value,
+            "is_free": p.is_free,
+            "has_key": has_key,
+            "models": [m.id for m in p.models],
+            "rate_limit": rate_limiter.get_status(p.id),
+        })
+    return {"status": "success", "providers": providers, "count": len(providers)}
+
+
+@mcp.tool(name="cybersec.proxy_models")
+async def proxy_models(provider: str | None = None) -> JsonDict:
+    """List all available models across providers."""
+    from ai_proxy.providers.registry import list_all_models
+
+    models = list_all_models()
+    if provider:
+        models = [m for m in models if m["owned_by"] == provider]
+    return {"status": "success", "models": models, "count": len(models)}
+
+
+@mcp.tool(name="cybersec.proxy_usage")
+async def proxy_usage() -> JsonDict:
+    """Return AI proxy usage summary: tokens, costs, requests by provider."""
+    from ai_proxy.services.usage_tracker import usage_tracker
+
+    return {
+        "status": "success",
+        "summary": usage_tracker.get_summary(),
+        "recent": usage_tracker.get_recent(limit=10),
+    }
+
+
+@mcp.tool(name="cybersec.proxy_cost")
+async def proxy_cost() -> JsonDict:
+    """Return detailed cost breakdown by provider."""
+    from ai_proxy.services.usage_tracker import usage_tracker
+
+    summary = usage_tracker.get_summary()
+    return {
+        "status": "success",
+        "total_cost_usd": summary["total_cost_usd"],
+        "total_tokens": summary["total_tokens"],
+        "by_provider": summary["by_provider"],
+    }
+
+
+# ====================== ROUTING INTELLIGENCE TOOLS (OmniRoute-style) ======================
+
+@mcp.tool(name="cybersec.simulate_route")
+async def simulate_route(
+    model: str = "gpt-4o-mini",
+    prefer_free: bool = False,
+    max_cost_per_1k: float | None = None,
+) -> JsonDict:
+    """Dry-run route simulation — shows which provider/model would be selected without executing.
+
+    Mirrors OmniRoute's omniroute_simulate_route tool. Returns the routing
+    decision path: tier classification, strategy, target ordering, circuit
+    breaker state, and estimated cost.
+    """
+    from ai_proxy.providers.registry import get_all_providers, get_free_providers
+    from ai_proxy.routing.combo import (
+        get_circuit_breaker_status,
+        get_usage_counts,
+        budget_guard,
+    )
+
+    all_providers = get_all_providers()
+    free = get_free_providers()
+    usage = get_usage_counts()
+    cb_status = get_circuit_breaker_status()
+    open_circuits = {cb["target"] for cb in cb_status if cb["state"] == "open"}
+
+    candidates = []
+    for p in all_providers.values():
+        if not p.is_available:
+            continue
+        for m in p.models:
+            if m.deprecated:
+                continue
+            if model and model != m.id:
+                continue
+            is_blocked = f"{p.id}:{m.id}" in open_circuits
+            candidates.append({
+                "provider": p.id,
+                "model": m.id,
+                "is_free": p.is_free,
+                "cost_input": m.cost.input,
+                "cost_output": m.cost.output,
+                "context_window": m.context_window,
+                "circuit_open": is_blocked,
+                "usage_count": usage.get(p.id, 0),
+            })
+
+    if prefer_free:
+        candidates.sort(key=lambda c: (not c["is_free"], c["cost_input"]))
+    elif max_cost_per_1k is not None:
+        candidates = [c for c in candidates if c["cost_input"] <= max_cost_per_1k * 1000]
+        candidates.sort(key=lambda c: c["cost_input"])
+    else:
+        candidates.sort(key=lambda c: c["cost_input"])
+
+    selected = next((c for c in candidates if not c["circuit_open"]), None)
+
+    return {
+        "status": "success",
+        "selected": selected,
+        "candidates_total": len(candidates),
+        "candidates_available": sum(1 for c in candidates if not c["circuit_open"]),
+        "open_circuits": len(open_circuits),
+        "budget": budget_guard.get_all(),
+    }
+
+
+@mcp.tool(name="cybersec.set_budget_guard")
+async def set_budget_guard(
+    key: str,
+    budget_usd: float,
+) -> JsonDict:
+    """Set a spending budget guard for a combo or tier.
+
+    Mirrors OmniRoute's omniroute_set_budget_guard. When spending exceeds
+    the budget, routing will skip the guarded key.
+
+    Args:
+        key: Combo ID or tier name to guard (e.g., "premium", "combo-1")
+        budget_usd: Maximum USD spending allowed
+    """
+    from ai_proxy.routing.combo import budget_guard
+
+    current = budget_guard.get_spent(key)
+    return {
+        "status": "success",
+        "key": key,
+        "budget_usd": budget_usd,
+        "current_spent": current,
+        "remaining": max(0.0, budget_usd - current),
+        "message": f"Budget guard set: ${budget_usd:.4f} for '{key}' (${current:.4f} spent)",
+    }
+
+
+@mcp.tool(name="cybersec.get_circuit_breakers")
+async def get_circuit_breakers_tool() -> JsonDict:
+    """Return circuit breaker status for all routing targets.
+
+    Mirrors OmniRoute's circuit breaker monitoring. Shows which
+    provider:model combinations are open (failing) or closed (healthy).
+    """
+    from ai_proxy.routing.combo import get_circuit_breaker_status
+
+    cb_status = get_circuit_breaker_status()
+    open_count = sum(1 for cb in cb_status if cb["state"] == "open")
+    return {
+        "status": "success",
+        "circuit_breakers": cb_status,
+        "total": len(cb_status),
+        "open": open_count,
+        "closed": len(cb_status) - open_count,
+    }
+
+
+@mcp.tool(name="cybersec.explain_route")
+async def explain_route(
+    model: str = "gpt-4o-mini",
+    provider: str | None = None,
+) -> JsonDict:
+    """Explain why a specific provider/model would be chosen for a request.
+
+    Mirrors OmniRoute's omniroute_explain_route. Returns a step-by-step
+    explanation of the routing decision.
+    """
+    from ai_proxy.providers.registry import get_all_providers
+    from ai_proxy.routing.combo import (
+        get_circuit_breaker_status,
+        get_usage_counts,
+        budget_guard,
+    )
+    from ai_proxy.services.rate_limiter import rate_limiter
+
+    steps: list[str] = []
+    all_p = get_all_providers()
+    usage = get_usage_counts()
+    cb_status = get_circuit_breaker_status()
+    open_targets = {cb["target"] for cb in cb_status if cb["state"] == "open"}
+
+    # Step 1: Find matching providers
+    matching = []
+    for p in all_p.values():
+        for m in p.models:
+            if m.id == model or (not model):
+                matching.append((p, m))
+
+    steps.append(f"1. Found {len(matching)} provider(s) offering model '{model}'")
+
+    if provider:
+        matching = [(p, m) for p, m in matching if p.id == provider]
+        steps.append(f"2. Filtered to provider '{provider}': {len(matching)} match(es)")
+
+    # Step 2: Check availability
+    available = [(p, m) for p, m in matching if p.is_available]
+    unavailable = len(matching) - len(available)
+    if unavailable:
+        steps.append(f"3. {unavailable} provider(s) unavailable (no credentials)")
+
+    # Step 3: Check circuit breakers
+    cb_blocked = [(p, m) for p, m in available if f"{p.id}:{m.id}" in open_targets]
+    if cb_blocked:
+        steps.append(f"4. {len(cb_blocked)} target(s) blocked by circuit breaker")
+        available = [(p, m) for p, m in available if f"{p.id}:{m.id}" not in open_targets]
+
+    # Step 4: Rate limits
+    rl_info = []
+    for p, m in available:
+        rl = rate_limiter.get_status(p.id)
+        if rl:
+            rl_info.append(f"   {p.id}: {rl}")
+    if rl_info:
+        steps.append("5. Rate limit status:\n" + "\n".join(rl_info))
+
+    # Step 5: Cost ranking
+    available.sort(key=lambda pm: pm[1].cost.input)
+    if available:
+        p, m = available[0]
+        steps.append(
+            f"6. Selected: {p.id}/{m.id} "
+            f"(${m.cost.input}/M in, ${m.cost.output}/M out, "
+            f"{usage.get(p.id, 0)} prior requests)"
+        )
+
+    return {
+        "status": "success",
+        "model": model,
+        "provider": provider,
+        "steps": steps,
+        "selected": {"provider": available[0][0].id, "model": available[0][1].id} if available else None,
+        "budget": budget_guard.get_all(),
+    }
+
+
+@mcp.tool(name="cybersec.routing_strategies")
+async def routing_strategies() -> JsonDict:
+    """List all available routing strategies with descriptions.
+
+    Mirrors OmniRoute's 13 combo strategies.
+    """
+    from ai_proxy.routing.combo import Strategy
+
+    strategies = [
+        {"id": s.value, "name": s.name.replace("_", " ").title()}
+        for s in Strategy
+    ]
+    return {"status": "success", "strategies": strategies, "count": len(strategies)}
+
+
+@mcp.tool(name="cybersec.session_snapshot")
+async def session_snapshot() -> JsonDict:
+    """Return a full session state snapshot.
+
+    Mirrors OmniRoute's omniroute_get_session_snapshot. Includes scope,
+    usage, budget, circuit breakers, and provider status.
+    """
+    from ai_proxy.providers.registry import get_enabled_providers, get_free_providers
+    from ai_proxy.routing.combo import (
+        get_circuit_breaker_status,
+        get_usage_counts,
+        budget_guard,
+        Strategy,
+    )
+    from ai_proxy.services.usage_tracker import usage_tracker
+
+    scope = _get_current_scope()
+    cb_status = get_circuit_breaker_status()
+    usage = get_usage_counts()
+    summary = usage_tracker.get_summary()
+    enabled = get_enabled_providers()
+    free = get_free_providers()
+
+    return {
+        "status": "success",
+        "scope": scope,
+        "providers": {
+            "enabled": len(enabled),
+            "free": len(free),
+        },
+        "usage": summary,
+        "usage_counts": usage,
+        "budget": budget_guard.get_all(),
+        "circuit_breakers": {
+            "total": len(cb_status),
+            "open": sum(1 for cb in cb_status if cb["state"] == "open"),
+        },
+        "strategies_available": [s.value for s in Strategy],
+        "loop_info": get_event_loop_info(),
+    }
+
+
+@mcp.tool(name="cybersec.agent_registry")
+async def agent_registry_tool() -> JsonDict:
+    """List all registered A2A agents with skills and metadata.
+
+    Uses the AgentRegistry to discover all local (.claude/agents/*.md)
+    and remote agents dynamically.
+    """
+    try:
+        from a2a.registry import AgentRegistry
+        from a2a.agent_loader import load_cybersecsuite_agents
+
+        registry = AgentRegistry()
+        load_cybersecsuite_agents(registry)
+        agents = registry.summary()
+
+        orchestrators = [a for a in agents if a.get("claude_metadata", {}).get("role") == "orchestrator"]
+        specialists = [a for a in agents if a.get("claude_metadata", {}).get("role") != "orchestrator"]
+
+        return {
+            "status": "success",
+            "total": len(agents),
+            "orchestrators": len(orchestrators),
+            "specialists": len(specialists),
+            "agents": agents,
+        }
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+
+@mcp.tool(name="cybersec.best_provider")
+async def best_provider(
+    task: str,
+    prefer_free: bool = False,
+    max_cost_per_1k: float | None = None,
+    require_tools: bool = False,
+    require_vision: bool = False,
+    min_context: int | None = None,
+) -> JsonDict:
+    """Recommend the best provider+model for a given task.
+
+    Mirrors OmniRoute's omniroute_best_combo_for_task. Considers cost,
+    capabilities (tools, vision, context window), rate limits, and
+    circuit breaker state.
+
+    Args:
+        task: Description of the task (used for matching)
+        prefer_free: Prioritize free providers
+        max_cost_per_1k: Maximum cost per 1K tokens (USD)
+        require_tools: Only consider models with tool/function calling
+        require_vision: Only consider models with vision support
+        min_context: Minimum context window size
+    """
+    from ai_proxy.providers.registry import get_all_providers
+    from ai_proxy.routing.combo import get_circuit_breaker_status
+
+    cb_status = get_circuit_breaker_status()
+    open_targets = {cb["target"] for cb in cb_status if cb["state"] == "open"}
+
+    candidates = []
+    for p in get_all_providers().values():
+        if not p.is_available:
+            continue
+        for m in p.models:
+            if m.deprecated:
+                continue
+            if require_tools and not m.supports_tools:
+                continue
+            if require_vision and not m.supports_vision:
+                continue
+            if min_context and m.context_window < min_context:
+                continue
+            if max_cost_per_1k is not None and m.cost.input > max_cost_per_1k * 1000:
+                continue
+            if f"{p.id}:{m.id}" in open_targets:
+                continue
+            candidates.append({
+                "provider": p.id,
+                "model": m.id,
+                "is_free": p.is_free,
+                "cost_input": m.cost.input,
+                "cost_output": m.cost.output,
+                "context_window": m.context_window,
+                "supports_tools": m.supports_tools,
+                "supports_vision": m.supports_vision,
+            })
+
+    if prefer_free:
+        candidates.sort(key=lambda c: (not c["is_free"], c["cost_input"]))
+    else:
+        candidates.sort(key=lambda c: c["cost_input"])
+
+    return {
+        "status": "success",
+        "task": task,
+        "recommended": candidates[0] if candidates else None,
+        "alternatives": candidates[1:5],
+        "total_candidates": len(candidates),
+    }
+
+
+# ====================== PHASE 0 — CASE OPENING ======================
+
+
+@mcp.tool(name="cybersec.case_open")
+async def case_open_tool(
+    title: str,
+    problem_statement: str,
+    attack_hypothesis: str = "",
+    known_facts: list[str] | None = None,
+    suspected_iocs: list[str] | None = None,
+    affected_assets: list[str] | None = None,
+    timeline_hints: list[str] | None = None,
+    scope_in: list[str] | None = None,
+    scope_out: list[str] | None = None,
+    priority: str = "medium",
+    mode: str = "blue",
+    mitre_hypotheses: list[str] | None = None,
+    data_sources: list[str] | None = None,
+    tags: list[str] | None = None,
+    analyst_notes: str = "",
+) -> JsonDict:
+    """Open a new investigation case (Phase 0).
+
+    Collects structured facts for threat hunting before any investigation
+    phase begins. Creates a CaseIntake record, sets the session phase to
+    'case_opening', and populates the SessionLayer with initial hypotheses.
+
+    Args:
+        title: Short case title (e.g. "Suspected lateral movement from DC01")
+        problem_statement: What happened? What is the user concerned about?
+        attack_hypothesis: Initial theory — suspected attack type, vector, or actor
+        known_facts: List of confirmed facts (IPs, hashes, timestamps, symptoms)
+        suspected_iocs: Preliminary IOC candidates before formal triage
+        affected_assets: Hosts, services, accounts, or network segments involved
+        timeline_hints: Known timestamps — first seen, last seen, anomaly window
+        scope_in: What IS in scope for investigation
+        scope_out: What is explicitly OUT of scope
+        priority: Case priority (low, medium, high, critical)
+        mode: Team posture (blue, red, purple)
+        mitre_hypotheses: Suspected MITRE ATT&CK technique IDs (e.g. T1055)
+        data_sources: Available data sources (pcaps, logs, disk images, memory dumps)
+        tags: Freeform tags for categorization
+        analyst_notes: Additional notes from the analyst
+    """
+    try:
+        await init_tortoise_async()
+        from db.models.case_intake import CaseIntake
+        from db.models.scope import Session, Workspace, Project
+        from db.models.layers import SessionLayer
+
+        scope = _get_current_scope()
+
+        # Resolve workspace
+        ws, _ = await Workspace.get_or_create(name=scope["workspace"])
+
+        # Resolve project
+        proj = None
+        if scope.get("project"):
+            proj, _ = await Project.get_or_create(
+                workspace=ws, name=scope["project"]
+            )
+
+        # Resolve session
+        sess = None
+        if scope.get("session"):
+            sess = await Session.get_or_none(session_id=scope["session"])
+            if sess:
+                sess.phase = "case_opening"
+                sess.mode = mode
+                await sess.save()
+
+        # Create intake record
+        intake = await CaseIntake.create(
+            workspace=ws,
+            project=proj,
+            session=sess,
+            title=title,
+            problem_statement=problem_statement,
+            attack_hypothesis=attack_hypothesis,
+            known_facts=known_facts or [],
+            suspected_iocs=suspected_iocs or [],
+            affected_assets=affected_assets or [],
+            timeline_hints=timeline_hints or [],
+            scope_in=scope_in or [],
+            scope_out=scope_out or [],
+            priority=priority,
+            mode=mode,
+            mitre_hypotheses=mitre_hypotheses or [],
+            data_sources=data_sources or [],
+            tags=tags or [],
+            analyst_notes=analyst_notes,
+        )
+
+        # Update SessionLayer with initial hypotheses
+        if sess:
+            layer, _ = await SessionLayer.get_or_create(
+                session=sess,
+                defaults={"name": f"phase0-{sess.session_id}"},
+            )
+            layer.active_phase = "case_opening"
+            layer.current_hypotheses = mitre_hypotheses or []
+            layer.investigation_focus = affected_assets or []
+            layer.analysis_notes = (
+                f"Case: {title}\n"
+                f"Hypothesis: {attack_hypothesis}\n"
+                f"Facts: {'; '.join(known_facts or [])}"
+            )
+            await layer.save()
+
+        return {
+            "status": "success",
+            "case_id": intake.id,
+            "title": title,
+            "priority": priority,
+            "mode": mode,
+            "phase": "case_opening",
+            "facts_count": len(known_facts or []),
+            "iocs_count": len(suspected_iocs or []),
+            "assets_count": len(affected_assets or []),
+            "mitre_count": len(mitre_hypotheses or []),
+            "message": f"Case '{title}' opened. Ready for Phase 1 (Recon).",
+        }
+
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+
+@mcp.tool(name="cybersec.case_status")
+async def case_status_tool(case_id: int | None = None) -> JsonDict:
+    """Get the status of the current or specific case intake.
+
+    Args:
+        case_id: Specific case ID, or None for the most recent case.
+    """
+    try:
+        await init_tortoise_async()
+        from db.models.case_intake import CaseIntake
+
+        if case_id:
+            intake = await CaseIntake.get_or_none(id=case_id)
+        else:
+            intake = await CaseIntake.all().order_by("-created_at").first()
+
+        if not intake:
+            return {"status": "error", "error": "No case found"}
+
+        return {
+            "status": "success",
+            "case": {
+                "id": intake.id,
+                "title": intake.title,
+                "problem": intake.problem_statement,
+                "hypothesis": intake.attack_hypothesis,
+                "priority": intake.priority.value if hasattr(intake.priority, "value") else intake.priority,
+                "mode": intake.mode.value if hasattr(intake.mode, "value") else intake.mode,
+                "known_facts": intake.known_facts,
+                "suspected_iocs": intake.suspected_iocs,
+                "affected_assets": intake.affected_assets,
+                "timeline_hints": intake.timeline_hints,
+                "scope_in": intake.scope_in,
+                "scope_out": intake.scope_out,
+                "mitre_hypotheses": intake.mitre_hypotheses,
+                "data_sources": intake.data_sources,
+                "tags": intake.tags,
+                "opened_by": intake.opened_by,
+                "created_at": intake.created_at.isoformat() if intake.created_at else None,
+                "closed_at": intake.closed_at.isoformat() if intake.closed_at else None,
+            },
+        }
+
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
 
 
 if __name__ == "__main__":

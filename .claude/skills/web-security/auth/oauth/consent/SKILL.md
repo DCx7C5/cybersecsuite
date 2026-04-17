@@ -1,6 +1,7 @@
 ---
 name: consent
 description: Detect risky OAuth application consent grants in Azure AD / Microsoft Entra ID using Microsoft Graph API, audit
+action: consent
   logs, and permission analysis to identify illicit consent grant attacks.
 domain: cybersecurity
 subdomain: cloud-security
@@ -13,7 +14,7 @@ tags:
 - cloud-security
 - application-permissions
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

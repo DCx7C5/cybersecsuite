@@ -1,6 +1,7 @@
 ---
 name: kubernetes
 description: 'Parses Kubernetes API server audit logs (JSON lines) to detect exec-into-pod, secret access, RBAC modifications,
+action: kubernetes
   privileged pod creation, and anonymous API access. Builds threat detection rules from audit event patterns. Use when investigating
   Kubernetes cluster compromise or building k8s-specific SIEM detection rules.
 
@@ -13,7 +14,7 @@ tags:
 - audit
 - logs
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

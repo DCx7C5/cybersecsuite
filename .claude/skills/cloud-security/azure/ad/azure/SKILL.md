@@ -1,6 +1,7 @@
 ---
 name: azure
 description: 'Auditing Microsoft Entra ID (Azure Active Directory) configuration to identify risky authentication policies,
+action: ad-azure
   overly permissive role assignments, stale accounts, conditional access gaps, and guest user risks using AzureAD PowerShell,
   Microsoft Graph API, and ScoutSuite.
 
@@ -15,7 +16,7 @@ tags:
 - iam-audit
 - conditional-access
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

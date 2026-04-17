@@ -1,6 +1,7 @@
 ---
 name: insiderindicators
 description: 'Investigates insider threat indicators including data exfiltration attempts, unauthorized access patterns, policy
+action: insiderindicators
   violations, and pre-departure behaviors using SIEM analytics, DLP alerts, and HR data correlation. Use when SOC teams receive
   insider threat referrals from HR, detect anomalous data movement by employees, or need to build investigation timelines
   for potential insider threats.
@@ -17,7 +18,7 @@ tags:
 - investigation
 - hr-correlation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

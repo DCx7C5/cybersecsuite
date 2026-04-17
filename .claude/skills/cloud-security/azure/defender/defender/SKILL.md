@@ -1,6 +1,7 @@
 ---
 name: defender
 description: 'Implementing Microsoft Defender for Cloud to enable cloud security posture management, workload protection across
+action: defender
   VMs, containers, databases, and storage, configure security recommendations, and set up adaptive security controls with
   automated remediation.
 
@@ -15,7 +16,7 @@ tags:
 - cwpp
 - security-recommendations
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

@@ -1,6 +1,7 @@
 ---
 name: browser
 description: Extract and analyze browser history, cookies, cache, downloads, and bookmarks from Chrome, Firefox, and Edge
+action: browser
   for forensic evidence of user web activity.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -13,7 +14,7 @@ tags:
 - web-history
 - artifact-extraction
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

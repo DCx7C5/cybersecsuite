@@ -1,6 +1,7 @@
 ---
 name: helm
 description: Secure Helm chart deployments by validating chart integrity, scanning templates for misconfigurations, and enforcing
+action: helm
   security contexts in Kubernetes releases.
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - configuration-security
 - deployment
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

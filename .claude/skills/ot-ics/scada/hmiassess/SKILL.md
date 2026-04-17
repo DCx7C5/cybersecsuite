@@ -1,6 +1,7 @@
 ---
 name: hmiassess
 description: 'Perform security assessments of SCADA Human-Machine Interface (HMI) systems to identify vulnerabilities in web-based
+action: hmiassess
   HMIs, thin-client configurations, authentication mechanisms, and communication channels between HMI and PLCs, aligned with
   IEC 62443 and NIST SP 800-82 guidelines.
 
@@ -17,7 +18,7 @@ tags:
 - iec62443
 - nist-800-82
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

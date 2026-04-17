@@ -1,6 +1,7 @@
 ---
 name: host
 description: Test web applications for HTTP Host header injection vulnerabilities to identify password reset poisoning, web
+action: host
   cache poisoning, SSRF, and virtual host routing manipulation risks.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - header-manipulation
 - ssrf
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

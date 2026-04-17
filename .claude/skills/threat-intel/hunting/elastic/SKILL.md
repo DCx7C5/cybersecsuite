@@ -1,6 +1,7 @@
 ---
 name: elastic
 description: 'Performs proactive threat hunting in Elastic Security SIEM using KQL/EQL queries, detection rules, and Timeline
+action: elastic
   investigation to identify threats that evade automated detection. Use when SOC teams need to hunt for specific ATT&CK techniques,
   investigate anomalous behaviors, or validate detection coverage gaps using Elasticsearch and Kibana Security.
 
@@ -17,7 +18,7 @@ tags:
 - mitre-attack
 - kibana
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

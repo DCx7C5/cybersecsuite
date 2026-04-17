@@ -1,6 +1,7 @@
 ---
 name: modbusanom
 description: 'This skill covers detecting anomalies in Modbus/TCP and Modbus RTU communications in industrial control systems.
+action: modbusanom
   It addresses function code monitoring, register range validation, timing analysis, unauthorized client detection, and deep
   packet inspection for malformed Modbus frames. The skill leverages Zeek with Modbus protocol analyzers, Suricata IDS with
   OT rules, and custom Python-based detection using Markov chain models for normal Modbus transaction sequences.
@@ -17,7 +18,7 @@ tags:
 - modbus
 - protocol-anomaly
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

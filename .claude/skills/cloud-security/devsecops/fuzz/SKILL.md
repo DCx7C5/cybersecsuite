@@ -1,6 +1,7 @@
 ---
 name: fuzz
 description: Integrate AFL++ coverage-guided fuzz testing into CI/CD pipelines to discover memory corruption, input handling,
+action: fuzz
   and logic vulnerabilities in C/C++ and compiled applications.
 domain: cybersecurity
 subdomain: devsecops
@@ -13,7 +14,7 @@ tags:
 - vulnerability-discovery
 - afl
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

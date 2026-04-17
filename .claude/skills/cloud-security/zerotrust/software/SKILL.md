@@ -1,6 +1,7 @@
 ---
 name: software
 description: Deploy a Software-Defined Perimeter using the CSA v2.0 specification with Single Packet Authorization, mutual
+action: software
   TLS, and SDP controller/gateway configuration to enforce zero trust network access.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -11,7 +12,7 @@ tags:
 - network-access
 - ztna
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

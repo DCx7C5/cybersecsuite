@@ -1,6 +1,7 @@
 ---
 name: photorec
 description: Recover deleted files from disk images and storage media using PhotoRec's file signature-based carving engine
+action: photorec
   regardless of file system damage.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - data-recovery
 - evidence-recovery
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

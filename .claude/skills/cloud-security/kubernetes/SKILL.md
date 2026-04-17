@@ -1,6 +1,7 @@
 ---
 name: kubernetes
 description: 'Auditing Kubernetes cluster RBAC configurations to identify overly permissive roles, wildcard permissions, dangerous
+action: cloud-security-kubernetes
   ClusterRoleBindings, service account abuse, and privilege escalation paths using kubectl, rbac-tool, KubiScan, and Kubeaudit.
 
   '
@@ -15,7 +16,7 @@ tags:
 - gke
 - aks
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

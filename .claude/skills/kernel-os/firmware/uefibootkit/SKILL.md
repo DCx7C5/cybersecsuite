@@ -1,6 +1,7 @@
 ---
 name: uefibootkit
 description: 'Analyzes UEFI bootkit persistence mechanisms including firmware implants in SPI flash, EFI System Partition
+action: uefibootkit
   (ESP) modifications, Secure Boot bypass techniques, and UEFI variable manipulation. Covers detection of known bootkit families
   (BlackLotus, LoJax, MosaicRegressor, MoonBounce, CosmicStrand), ESP partition forensic inspection, chipsec-based firmware
   integrity verification, and Secure Boot configuration auditing. Activates for requests involving UEFI malware analysis,
@@ -18,7 +19,7 @@ tags:
 - ESP
 - persistence
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Platform Hardening

@@ -1,6 +1,7 @@
 ---
 name: elastic
 description: Perform systematic alert triage in Elastic Security SIEM to rapidly classify, prioritize, and investigate security
+action: elastic
   alerts for SOC operations.
 domain: cybersecurity
 subdomain: soc-operations
@@ -14,7 +15,7 @@ tags:
 - esql
 - kibana
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

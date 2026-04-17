@@ -1,6 +1,7 @@
 ---
 name: typosquatting
 description: 'Detects typosquatting attacks in npm and PyPI package registries by analyzing package name similarity using
+action: typosquatting
   Levenshtein distance and other string metrics, examining publish date heuristics to identify recently created packages mimicking
   established ones, and flagging download count anomalies where suspicious packages have disproportionately low usage compared
   to their legitimate targets. The analyst queries the PyPI JSON API and npm registry API to gather package metadata for automated
@@ -20,7 +21,7 @@ tags:
 - dependency-confusion
 - malicious-packages
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - GV.SC-01

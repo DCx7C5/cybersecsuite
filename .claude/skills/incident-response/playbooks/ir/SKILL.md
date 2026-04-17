@@ -1,6 +1,7 @@
 ---
 name: ir
 description: 'Designs and documents structured incident response playbooks that define step-by-step procedures for specific
+action: playbooks-ir
   incident types aligned with NIST SP 800-61r3 and SANS PICERL frameworks. Covers playbook structure, decision trees, escalation
   criteria, RACI matrices, and integration with SOAR platforms. Activates for requests involving IR playbook creation, incident
   response procedure documentation, response runbook development, or SOAR playbook design.
@@ -19,7 +20,7 @@ mitre_attack:
 - T1566
 - T1078
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

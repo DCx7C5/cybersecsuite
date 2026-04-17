@@ -1,6 +1,7 @@
 ---
 name: open
 description: 'Collects and synthesizes open-source intelligence (OSINT) about threat actors, malicious infrastructure, and
+action: open
   attack campaigns using publicly available data sources, passive reconnaissance tools, and dark web monitoring. Use when
   investigating external threat actor infrastructure, performing pre-engagement reconnaissance for authorized red team assessments,
   or enriching CTI reports with publicly available adversary context. Activates for requests involving Maltego, Shodan, OSINT
@@ -19,7 +20,7 @@ tags:
 - ATT&CK-T1591
 - NIST-CSF
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

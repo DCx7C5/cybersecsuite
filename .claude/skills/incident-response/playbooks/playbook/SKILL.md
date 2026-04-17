@@ -1,6 +1,7 @@
 ---
 name: playbook
 description: Implement automated incident response playbooks in Cortex XSOAR to orchestrate security workflows across SOC
+action: playbooks-playbook
   tools and reduce manual response time.
 domain: cybersecurity
 subdomain: soc-operations
@@ -18,7 +19,7 @@ mitre_attack:
 - T1204
 - T1078
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

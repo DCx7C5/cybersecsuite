@@ -1,6 +1,7 @@
 ---
 name: iam
 description: 'Auditing Google Cloud Platform IAM permissions to identify overly permissive bindings, primitive role usage,
+action: gcp-iam
   service account key proliferation, and cross-project access risks using gcloud CLI, Policy Analyzer, and IAM Recommender.
 
   '
@@ -14,7 +15,7 @@ tags:
 - service-accounts
 - policy-analyzer
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

@@ -1,6 +1,7 @@
 ---
 name: trivy
 description: Scan container images, filesystems, and Kubernetes manifests for vulnerabilities, misconfigurations, exposed
+action: trivy
   secrets, and license compliance issues using Aqua Security Trivy with SBOM generation and CI/CD integration.
 domain: cybersecurity
 subdomain: container-security
@@ -14,7 +15,7 @@ tags:
 - devsecops
 - supply-chain
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

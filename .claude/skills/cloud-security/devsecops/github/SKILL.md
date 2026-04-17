@@ -1,6 +1,7 @@
 ---
 name: github
 description: Configure GitHub Advanced Security with CodeQL to perform automated static analysis and vulnerability detection
+action: github
   across repositories at enterprise scale.
 domain: cybersecurity
 subdomain: devsecops
@@ -13,7 +14,7 @@ tags:
 - devops-security
 - shift-left
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

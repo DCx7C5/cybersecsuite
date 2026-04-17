@@ -2,7 +2,7 @@
 from tortoise.models import Model
 from tortoise import fields
 
-from skills.csdb.db.models.enums import RedBlueMode
+from db.models.enums import RedBlueMode
 
 
 class Workspace(Model):

@@ -1,6 +1,7 @@
 ---
 name: aws
 description: 'Securing AWS Lambda execution roles by implementing least-privilege IAM policies, applying permission boundaries,
+action: lambda-aws
   restricting resource-based policies, using IAM Access Analyzer to validate permissions, and enforcing role scoping through
   SCPs.
 
@@ -15,7 +16,7 @@ tags:
 - least-privilege
 - execution-roles
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

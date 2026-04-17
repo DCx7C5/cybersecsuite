@@ -1,6 +1,7 @@
 ---
 name: pcapforensics
 description: Capture and analyze network traffic using Wireshark and tshark to reconstruct network events, extract artifacts,
+action: pcapforensics
   and identify malicious communications.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - packet-analysis
 - traffic-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

@@ -1,6 +1,7 @@
 ---
 name: privescdetect
 description: Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel
+action: privescdetect
   exploits, and sudo/doas abuse across Windows and Linux.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - uac-bypass
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

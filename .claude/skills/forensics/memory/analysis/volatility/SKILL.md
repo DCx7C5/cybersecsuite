@@ -1,6 +1,7 @@
 ---
 name: volatility
 description: 'Analyzes RAM memory dumps from compromised systems using the Volatility framework to identify malicious processes,
+action: analysis-volatility
   injected code, network connections, loaded modules, and extracted credentials. Supports Windows, Linux, and macOS memory
   forensics. Activates for requests involving memory forensics, RAM analysis, volatile data examination, process injection
   detection, or memory-resident malware investigation.
@@ -20,7 +21,7 @@ mitre_attack:
 - T1059
 - T1620
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.AE-02

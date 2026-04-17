@@ -1,6 +1,7 @@
 ---
 name: code
 description: 'This skill covers implementing code signing for build artifacts to ensure integrity and authenticity throughout
+action: code
   the software supply chain. It addresses signing binaries, packages, and containers using GPG, Sigstore, and platform-specific
   signing tools, establishing trust chains, and verifying signatures in deployment pipelines.
 
@@ -15,7 +16,7 @@ tags:
 - sigstore
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

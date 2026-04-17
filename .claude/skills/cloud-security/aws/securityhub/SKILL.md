@@ -1,6 +1,7 @@
 ---
 name: securityhub
 description: 'This skill covers deploying AWS Security Hub as a centralized cloud security posture management platform that
+action: securityhub
   aggregates findings from GuardDuty, Inspector, Macie, and third-party tools. It details enabling security standards like
   CIS AWS Foundations Benchmark, configuring automated remediation, and building executive dashboards for compliance tracking
   across multi-account AWS organizations.
@@ -15,7 +16,7 @@ tags:
 - security-standards
 - finding-aggregation
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

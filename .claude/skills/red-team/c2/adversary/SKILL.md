@@ -1,6 +1,7 @@
 ---
 name: adversary
 description: Build an automated system to track adversary infrastructure using passive DNS, certificate transparency, WHOIS
+action: adversary
   data, and IP enrichment to map and monitor threat actor command-and-control networks.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - threat-intelligence
 - domain-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

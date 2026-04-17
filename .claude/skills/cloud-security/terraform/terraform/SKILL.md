@@ -1,6 +1,7 @@
 ---
 name: terraform
 description: 'Auditing Terraform infrastructure-as-code for security misconfigurations using Checkov, tfsec, Terrascan, and
+action: terraform
   OPA/Rego policies to detect overly permissive IAM policies, public resource exposure, missing encryption, and insecure defaults
   before cloud deployment.
 
@@ -15,7 +16,7 @@ tags:
 - tfsec
 - policy-as-code
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

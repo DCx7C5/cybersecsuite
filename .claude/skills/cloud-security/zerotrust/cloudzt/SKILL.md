@@ -1,6 +1,7 @@
 ---
 name: cloudzt
 description: 'This skill guides organizations through implementing zero trust architecture in cloud environments following
+action: cloudzt
   NIST SP 800-207 and Google BeyondCorp principles. It covers identity-centric access controls, micro-segmentation, continuous
   verification, device trust assessment, and deploying Identity-Aware Proxy to eliminate implicit network trust in AWS, Azure,
   and GCP environments.
@@ -15,7 +16,7 @@ tags:
 - micro-segmentation
 - continuous-verification
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

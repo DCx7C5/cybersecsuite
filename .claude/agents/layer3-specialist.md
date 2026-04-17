@@ -11,7 +11,7 @@ description: >
   Never discuss MAC addressing, transport sessions, or application payloads
   unless they directly affect Network Layer security.
 model: sonnet
-maxTurns: 20
+maxTurns: 30
 tools:
   - Read
   - Bash

@@ -1,6 +1,7 @@
 ---
 name: firewall
 description: 'Deploy and configure Tofino industrial firewalls from Belden/Hirschmann to protect SCADA systems and PLCs using
+action: firewall
   deep packet inspection for OT protocols including Modbus, EtherNet/IP, OPC, and S7comm, enforcing granular access control
   between ICS security zones.
 
@@ -17,7 +18,7 @@ tags:
 - network-security
 - scada
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

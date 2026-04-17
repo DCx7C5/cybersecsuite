@@ -1,6 +1,7 @@
 ---
 name: stuxnet
 description: 'This skill covers detecting sophisticated cyber-physical attacks that follow the Stuxnet attack pattern of modifying
+action: stuxnet
   PLC logic while spoofing sensor readings to hide the manipulation from operators. It addresses PLC logic integrity monitoring,
   physics-based process anomaly detection, engineering workstation compromise indicators, USB-borne attack vectors, and multi-stage
   attack chain detection spanning IT-to-OT lateral movement through to process manipulation.
@@ -18,7 +19,7 @@ tags:
 - plc-integrity
 - apt
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

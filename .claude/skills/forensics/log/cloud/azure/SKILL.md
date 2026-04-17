@@ -1,6 +1,7 @@
 ---
 name: azure
 description: 'Queries Azure Monitor activity logs and sign-in logs via azure-monitor-query to detect suspicious administrative
+action: azure
   operations, impossible travel, privilege escalation, and resource modifications. Builds KQL queries for threat hunting in
   Azure environments. Use when investigating suspicious Azure tenant activity or building cloud SIEM detections.
 
@@ -13,7 +14,7 @@ tags:
 - activity
 - logs
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

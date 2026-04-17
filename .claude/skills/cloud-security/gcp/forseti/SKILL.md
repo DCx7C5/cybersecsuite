@@ -1,6 +1,7 @@
 ---
 name: forseti
 description: 'Performing comprehensive security assessments of Google Cloud Platform environments using Forseti Security,
+action: forseti
   Security Command Center, and gcloud CLI to audit IAM policies, firewall rules, storage permissions, and compliance against
   CIS GCP Foundations Benchmark.
 
@@ -15,7 +16,7 @@ tags:
 - iam-audit
 - cis-benchmark
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

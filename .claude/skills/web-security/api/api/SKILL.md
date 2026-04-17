@@ -1,6 +1,7 @@
 ---
 name: api
 description: 'Conducts security testing of REST, GraphQL, and gRPC APIs to identify vulnerabilities in authentication, authorization,
+action: api
   rate limiting, input validation, and business logic. The tester uses the OWASP API Security Top 10 as the testing framework,
   combining Burp Suite interception with Postman collections and custom scripts to test endpoint security at every privilege
   level. Activates for requests involving API security testing, REST API pentest, GraphQL security assessment, or API vulnerability
@@ -16,7 +17,7 @@ tags:
 - GraphQL
 - authorization-testing
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

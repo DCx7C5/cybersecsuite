@@ -1,6 +1,7 @@
 ---
 name: identity
 description: 'Configuring Google Cloud Identity-Aware Proxy (IAP) to enforce per-request identity verification for Compute
+action: identity
   Engine, App Engine, Cloud Run, and GKE services using access levels, context-aware policies, and programmatic access with
   service accounts.
 
@@ -16,7 +17,7 @@ tags:
 - cloud-run
 - app-engine
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

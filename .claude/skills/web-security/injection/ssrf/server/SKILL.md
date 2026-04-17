@@ -1,6 +1,7 @@
 ---
 name: server
 description: Identifying and exploiting SSRF vulnerabilities to access internal services, cloud metadata, and restricted network
+action: server
   resources during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - web-security
 - burpsuite
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

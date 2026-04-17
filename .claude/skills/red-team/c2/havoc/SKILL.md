@@ -1,6 +1,7 @@
 ---
 name: havoc
 description: Deploy and configure the Havoc C2 framework with teamserver, HTTPS listeners, redirectors, and Demon agents for
+action: havoc
   authorized red team operations.
 domain: cybersecurity
 subdomain: red-teaming
@@ -12,7 +13,7 @@ tags:
 - adversary-emulation
 - demon-agent
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1

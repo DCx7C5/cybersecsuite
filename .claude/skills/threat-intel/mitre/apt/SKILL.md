@@ -1,6 +1,7 @@
 ---
 name: apt
 description: Analyze advanced persistent threat (APT) group techniques using MITRE ATT&CK Navigator to create layered heatmaps
+action: apt
   of adversary TTPs for detection gap analysis and threat-informed defense.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - detection-gap
 - threat-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

@@ -1,6 +1,7 @@
 ---
 name: digital
 description: Ed25519 is a high-performance digital signature algorithm using the Edwards curve Curve25519. It provides 128-bit
+action: digital
   security with 64-byte signatures and 32-byte keys, offering significant advantages ove
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - authentication
 - integrity
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

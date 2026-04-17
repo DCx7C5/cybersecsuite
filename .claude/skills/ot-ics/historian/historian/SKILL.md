@@ -1,6 +1,7 @@
 ---
 name: historian
 description: 'Detect cyber attacks targeting OT historian servers (OSIsoft PI, Ignition, Wonderware) that sit at the IT/OT
+action: historian
   boundary and serve as pivot points for lateral movement between enterprise and control networks, including data manipulation,
   unauthorized queries, and exploitation of historian-specific vulnerabilities.
 
@@ -17,7 +18,7 @@ tags:
 - data-integrity
 - lateral-movement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

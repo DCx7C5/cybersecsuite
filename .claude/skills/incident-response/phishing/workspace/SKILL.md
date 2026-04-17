@@ -1,6 +1,7 @@
 ---
 name: workspace
 description: Configure Google Workspace advanced phishing and malware protection settings including pre-delivery scanning,
+action: workspace
   attachment protection, spoofing detection, and Enhanced Safe Browsing.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -13,7 +14,7 @@ tags:
 - anti-spoofing
 - admin-console
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AT-01

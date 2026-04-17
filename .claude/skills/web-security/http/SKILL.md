@@ -1,6 +1,7 @@
 ---
 name: http
 description: Execute HTTP Parameter Pollution attacks to bypass input validation, WAF rules, and security controls by injecting
+action: web-security-http
   duplicate parameters that are processed differently by front-end and back-end systems.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - parameter-injection
 - server-parsing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

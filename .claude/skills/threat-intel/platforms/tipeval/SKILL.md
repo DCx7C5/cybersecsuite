@@ -1,6 +1,7 @@
 ---
 name: tipeval
 description: 'Evaluates and selects Threat Intelligence Platform (TIP) products based on organizational requirements including
+action: tipeval
   feed integration capability, STIX/TAXII support, workflow automation, analyst interface, and total cost of ownership. Use
   when conducting a TIP procurement, migrating between TIP solutions, or assessing whether the current TIP meets program maturity
   requirements. Activates for requests involving ThreatConnect, MISP, OpenCTI, Anomali, EclecticIQ, or TIP procurement decisions.
@@ -19,7 +20,7 @@ tags:
 - CTI-program
 - procurement
 version: 1.0.0
-author: team-cybersecurity
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

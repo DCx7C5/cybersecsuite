@@ -1,6 +1,7 @@
 ---
 name: zeekanalysis
 description: Deploy Zeek network security monitor to capture, parse, and analyze network traffic metadata for threat detection,
+action: zeekanalysis
   anomaly identification, and forensic investigation.
 domain: cybersecurity
 subdomain: network-security
@@ -15,7 +16,7 @@ tags:
 - forensics
 - siem-integration
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

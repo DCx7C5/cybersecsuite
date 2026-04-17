@@ -1,6 +1,7 @@
 ---
 name: hubcompliance
 description: 'Implementing AWS Security Hub to aggregate security findings across AWS accounts, enable compliance standards
+action: hubcompliance
   like CIS AWS Foundations and PCI DSS, configure automated remediation with EventBridge and Lambda, and create custom security
   insights for organizational risk management.
 
@@ -15,7 +16,7 @@ tags:
 - cspm
 - cis-benchmark
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

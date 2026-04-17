@@ -1,6 +1,7 @@
 ---
 name: graphql
 description: Execute and test GraphQL depth limit attacks using deeply nested recursive queries to identify denial-of-service
+action: graphql
   vulnerabilities in GraphQL APIs.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - resource-exhaustion
 - penetration-testing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

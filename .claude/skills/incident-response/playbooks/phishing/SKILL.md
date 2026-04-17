@@ -1,6 +1,7 @@
 ---
 name: phishing
 description: Automate phishing incident response using Splunk SOAR REST API to create containers, add artifacts, and trigger
+action: playbooks-phishing
   playbooks
 domain: cybersecurity
 subdomain: security-operations
@@ -10,7 +11,7 @@ tags:
 - phishing
 - incident-response
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

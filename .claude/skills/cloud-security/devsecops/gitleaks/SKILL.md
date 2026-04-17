@@ -1,6 +1,7 @@
 ---
 name: gitleaks
 description: 'This skill covers implementing Gitleaks for detecting and preventing hardcoded secrets in git repositories.
+action: gitleaks
   It addresses configuring pre-commit hooks, CI/CD pipeline integration, custom rule authoring for organization-specific secrets,
   baseline management for existing repositories, and remediation workflows for exposed credentials.
 
@@ -15,7 +16,7 @@ tags:
 - pre-commit
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

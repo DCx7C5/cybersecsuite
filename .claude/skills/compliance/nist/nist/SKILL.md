@@ -1,6 +1,7 @@
 ---
 name: nist
 description: >-
+action: nist
   The NIST Cybersecurity Framework (CSF) 2.0, released in February 2024, provides a
   comprehensive taxonomy for managing cybersecurity risk through six core Functions -
   Govern, Identify, Protect, Detect, Respond, and Recover. This skill covers conducting
@@ -11,7 +12,7 @@ subdomain: compliance-governance
 tags: [compliance, governance, nist, csf, maturity-assessment, risk-management]
 nist_csf: [GV.OC-01, GV.RM-01, GV.PO-01, ID.RA-01, GV.OV-01]
 version: "1.0"
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 model: sonnet
 maxTurns: 20

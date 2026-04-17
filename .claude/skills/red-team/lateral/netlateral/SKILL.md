@@ -1,6 +1,7 @@
 ---
 name: netlateral
 description: 'Identifies lateral movement techniques in enterprise networks by analyzing authentication logs, network flows,
+action: netlateral
   SMB traffic, and RDP sessions using Zeek, Velociraptor, and SIEM correlation rules to detect attackers moving between systems.
 
   '
@@ -13,7 +14,7 @@ tags:
 - siem
 - pass-the-hash
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

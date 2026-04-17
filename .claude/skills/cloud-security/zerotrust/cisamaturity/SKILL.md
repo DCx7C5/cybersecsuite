@@ -1,6 +1,7 @@
 ---
 name: cisamaturity
 description: Implement the CISA Zero Trust Maturity Model v2.0 across the five pillars of identity, devices, networks, applications,
+action: cisamaturity
   and data to achieve progressive organizational zero trust maturity.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -17,7 +18,7 @@ tags:
 - applications
 - data-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1

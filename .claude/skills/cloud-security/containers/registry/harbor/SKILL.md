@@ -1,6 +1,7 @@
 ---
 name: harbor
 description: Harbor is an open-source container registry that provides security features including vulnerability scanning
+action: harbor
   (integrated Trivy), image signing (Notary/Cosign), RBAC, content trust policies, replicatio
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - registry
 - harbor
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

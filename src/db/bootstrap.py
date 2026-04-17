@@ -1,9 +1,10 @@
-"""Bootstrap Tortoise ORM for csdb-mcp — global scope, initial tables only."""
+"""Bootstrap Tortoise ORM — initializes schema and intelligence data."""
 import os
 import asyncpg
-from tortoise import Tortoise
+from tortoise.context import TortoiseContext
 
 _initialized = False
+_ctx: TortoiseContext | None = None
 
 
 def get_database_config() -> dict:
@@ -21,7 +22,7 @@ def get_database_config() -> dict:
 
 
 def get_tortoise_config() -> dict:
-    from skills.csdb.db.models import MODEL_MODULES
+    from db.models import MODEL_MODULES
     return {
         "connections": {
             "default": {
@@ -41,7 +42,7 @@ def get_tortoise_config() -> dict:
 
 
 async def _ensure_database_exists(db_config: dict) -> None:
-    """Create target DB if absent. DDL-only — allowed exception per project rules."""
+    """Create target DB if absent."""
     db_name = db_config["database"]
     connect_kwargs: dict = {
         "host": db_config.get("host", "localhost"),
@@ -60,24 +61,41 @@ async def _ensure_database_exists(db_config: dict) -> None:
         await conn.close()
 
 
-async def init_tortoise_async(create_db: bool = False) -> None:
-    """Initialize Tortoise ORM. Optionally create DB + tables."""
-    global _initialized
+async def init_tortoise_async(
+    create_db: bool = False,
+    bootstrap_intel: bool = False,
+) -> None:
+    """Initialize Tortoise ORM. Optionally create DB, tables, and seed intelligence."""
+    global _initialized, _ctx
     if not _initialized:
         db_config = get_database_config()
         if create_db:
             await _ensure_database_exists(db_config)
-        await Tortoise.init(config=get_tortoise_config())
+        _ctx = TortoiseContext()
+        await _ctx.__aenter__()
+        await _ctx.init(config=get_tortoise_config(), _enable_global_fallback=True)
         _initialized = True
-    if create_db:
-        await Tortoise.generate_schemas(safe=True)
+    if create_db and _ctx is not None:
+        await _ctx.generate_schemas(safe=True)
+    if bootstrap_intel:
+        await bootstrap_intelligence_async(force=False, include_feeds=True)
 
 
 async def close_tortoise() -> None:
-    global _initialized
-    if _initialized:
-        await Tortoise.close_connections()
+    global _initialized, _ctx
+    if _initialized and _ctx is not None:
+        await _ctx.__aexit__(None, None, None)
+        _ctx = None
         _initialized = False
+
+
+async def bootstrap_intelligence_async(
+    force: bool = False,
+    include_feeds: bool = True,
+) -> dict:
+    """Bootstrap NVD/CVE, CWE, CAPEC, MITRE, MISP, OpenCTI intelligence into PostgreSQL."""
+    from db.intel_loader import bootstrap_intelligence_async as _load
+    return await _load(force=force, include_feeds=include_feeds)
 
 
 def get_status() -> dict:
@@ -87,31 +105,62 @@ def get_status() -> dict:
     }
 
 
-async def get_health_async(check_connection: bool = True) -> dict:
-    """Full health check — connects to DB, lists tables."""
+
+
+async def get_database_health_async(
+    check_connection: bool = True,
+    include_counts: bool = False,
+    create_db: bool = False,
+    bootstrap_intel: bool = False,
+) -> dict:
+    """Full database health check with optional table counts."""
+    if create_db:
+        await init_tortoise_async(create_db=True, bootstrap_intel=bootstrap_intel)
+
     health: dict = {
         "status": "ok",
         "config": get_database_config(),
         "initialized": _initialized,
     }
+
     if not check_connection:
         return health
+
     try:
         await init_tortoise_async()
-        conn = Tortoise.get_connection("default")
-        version_result = await conn.execute_query("SELECT version() AS version")
-        tables_result = await conn.execute_query(
-            "SELECT table_name FROM information_schema.tables "
-            "WHERE table_schema = 'public' ORDER BY table_name"
+        from tortoise import Tortoise
+
+        # Use ORM describe_model to list registered tables instead of raw SQL
+        registered_models = Tortoise.apps.get("models", {})
+        tables = sorted(
+            model.Meta.table
+            for model in registered_models.values()
+            if hasattr(model, "Meta") and hasattr(model.Meta, "table")
         )
-        tables = [row["table_name"] for row in tables_result[1]]
+
         health.update({
-            "database_version": version_result[1][0]["version"] if version_result[1] else None,
             "table_count": len(tables),
             "tables": tables,
         })
     except Exception as exc:
         health["status"] = "error"
         health["error"] = str(exc)
+        health["intel_bootstrapped"] = False
+        return health
+
+    if include_counts and health["status"] == "ok":
+        try:
+            from tortoise import Tortoise
+            registered_models = Tortoise.apps.get("models", {})
+            counts = {}
+            for model in registered_models.values():
+                if hasattr(model, "Meta") and hasattr(model.Meta, "table"):
+                    table_name = model.Meta.table
+                    counts[table_name] = await model.all().count()
+            health["counts"] = counts
+        except Exception:
+            pass
+
+    health["intel_bootstrapped"] = False
     return health
 

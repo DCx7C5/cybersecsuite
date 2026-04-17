@@ -1,6 +1,7 @@
 ---
 name: ms17
 description: MS17-010 (EternalBlue) is a critical vulnerability in Microsoft's SMBv1 implementation that allows remote code
+action: ms17
   execution. Originally discovered by the NSA and leaked by the Shadow Brokers in 2017, it
 domain: cybersecurity
 subdomain: red-teaming
@@ -14,7 +15,7 @@ tags:
 - smb
 - remote-code-execution
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

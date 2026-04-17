@@ -1,6 +1,7 @@
 ---
 name: restler
 description: 'Uses Microsoft RESTler to perform stateful REST API fuzzing by automatically generating and executing test sequences
+action: restler
   that exercise API endpoints, discover producer-consumer dependencies between requests, and find security and reliability
   bugs. The tester compiles an OpenAPI specification into a RESTler fuzzing grammar, configures authentication, runs test/fuzz-lean/fuzz
   modes, and analyzes results for 500 errors, authentication bypasses, resource leaks, and payload injection vulnerabilities.
@@ -17,7 +18,7 @@ tags:
 - openapi
 - stateful-testing
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

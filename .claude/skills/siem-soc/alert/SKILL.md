@@ -1,6 +1,7 @@
 ---
 name: alert
 description: 'Implements strategies to reduce SOC alert fatigue by tuning detection rules, consolidating duplicate alerts,
+action: alert
   implementing risk-based alerting, and measuring alert quality metrics to maintain analyst effectiveness and prevent critical
   alert dismissal. Use when SOC teams face overwhelming alert volumes, high false positive rates, or declining analyst performance.
 
@@ -16,7 +17,7 @@ tags:
 - siem
 - detection-engineering
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

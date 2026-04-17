@@ -1,6 +1,7 @@
 ---
 name: attackmap
 description: 'Maps observed adversary behaviors, security alerts, and detection rules to MITRE ATT&CK techniques and sub-techniques
+action: attackmap
   to quantify detection coverage and guide control prioritization. Use when building an ATT&CK-based coverage heatmap, tagging
   SIEM alerts with technique IDs, aligning security controls to adversary playbooks, or reporting threat exposure to executives.
   Activates for requests involving ATT&CK Navigator, Sigma rules, MITRE D3FEND, or coverage gap analysis.
@@ -17,7 +18,7 @@ tags:
 - detection-engineering
 - NIST-CSF
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

@@ -1,6 +1,7 @@
 ---
 name: excessive
 description: 'Tests APIs for excessive data exposure where endpoints return more data than the client application needs, relying
+action: excessive
   on the frontend to filter sensitive fields. The tester intercepts API responses and analyzes them for leaked PII, internal
   identifiers, debug information, or sensitive business data that the UI does not display but the API transmits. This maps
   to OWASP API3:2023 Broken Object Property Level Authorization. Activates for requests involving API data leakage testing,
@@ -16,7 +17,7 @@ tags:
 - rest-security
 - pii-leakage
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

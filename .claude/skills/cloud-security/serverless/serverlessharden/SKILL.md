@@ -1,6 +1,7 @@
 ---
 name: serverlessharden
 description: 'This skill covers security hardening for serverless compute platforms including AWS Lambda, Azure Functions,
+action: serverlessharden
   and Google Cloud Functions. It addresses least privilege IAM roles, dependency vulnerability scanning, secrets management
   integration, input validation, function URL authentication, and runtime monitoring to protect against injection attacks,
   credential theft, and supply chain compromises.
@@ -15,7 +16,7 @@ tags:
 - function-hardening
 - supply-chain
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

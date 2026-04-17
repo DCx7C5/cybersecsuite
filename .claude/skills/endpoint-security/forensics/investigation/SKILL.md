@@ -1,6 +1,7 @@
 ---
 name: filesystem-recon
 description: Filesystem forensic reconnaissance. Baseline/delta comparison, SUID/SGID audit, hidden file detection, inode anomalies, extended attributes, deleted-but-open files, setuid rootkits, and forensic timeline analysis.
+action: investigation
 model: sonnet
 maxTurns: 30
 tools:
@@ -14,6 +15,7 @@ skills:
   - threats/mitre-attack-mapper
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Filesystem Recon

@@ -1,6 +1,7 @@
 ---
 name: lolbins
 description: Proactively hunt for adversary abuse of legitimate system binaries (LOLBins) to execute malicious payloads while
+action: lolbins
   evading detection.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - proactive-detection
 - defense-evasion
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

@@ -1,6 +1,7 @@
 ---
 name: investigation
 description: 'Investigates phishing email incidents from initial user report through header analysis, URL/attachment detonation,
+action: phishing-investigation
   impacted user identification, and containment actions using SOC tools like Splunk, Microsoft Defender, and sandbox analysis
   platforms. Use when a reported phishing email requires full incident investigation to determine scope and impact.
 
@@ -21,7 +22,7 @@ mitre_attack:
 - T1204.001
 - T1598.003
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

@@ -1,6 +1,7 @@
 ---
 name: defense
 description: 'Detect NTFS timestamp manipulation (MITRE T1070.006) by comparing $STANDARD_INFORMATION vs $FILE_NAME timestamps
+action: defense
   in the MFT. Uses analyzeMFT and Python to identify files with anomalous temporal patterns indicating anti-forensic timestomping
   activity.
 
@@ -13,7 +14,7 @@ tags:
 - mft-analysis
 - defense-evasion
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

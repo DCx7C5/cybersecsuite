@@ -1,6 +1,7 @@
 ---
 name: aws
 description: Configure AWS Verified Access to provide VPN-less zero trust network access to internal applications using identity
+action: access-aws
   and device posture verification with Cedar policy language.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -15,7 +16,7 @@ tags:
 - device-posture
 - aws-ram
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

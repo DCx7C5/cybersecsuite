@@ -1,6 +1,7 @@
 ---
 name: darkweb
 description: Dark web monitoring involves systematically scanning Tor hidden services, underground forums, paste sites, and
+action: darkweb-darkweb
   dark web marketplaces to identify threats targeting an organization, including leaked cre
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - tor
 - threat-monitoring
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

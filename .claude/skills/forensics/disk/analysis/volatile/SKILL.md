@@ -1,6 +1,7 @@
 ---
 name: volatile
 description: Collect volatile forensic evidence from a compromised system following order of volatility, preserving memory,
+action: volatile
   network connections, processes, and system state before they are lost.
 domain: cybersecurity
 subdomain: incident-response
@@ -17,7 +18,7 @@ mitre_attack:
 - T1059
 - T1547
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.MA-01

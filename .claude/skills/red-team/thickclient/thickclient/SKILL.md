@@ -1,6 +1,7 @@
 ---
 name: thickclient
 description: Conduct a thick client application penetration test to identify insecure local storage, hardcoded credentials,
+action: thickclient
   DLL hijacking, memory manipulation, and insecure API communication in desktop applications using dnSpy, Procmon, and Burp
   Suite.
 domain: cybersecurity
@@ -14,7 +15,7 @@ tags:
 - binary-analysis
 - API-interception
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

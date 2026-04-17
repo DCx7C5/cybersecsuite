@@ -1,6 +1,7 @@
 ---
 name: plaso
 description: Build comprehensive forensic super-timelines using Plaso (log2timeline) to correlate events across file systems,
+action: plaso
   logs, and artifacts into a unified chronological view.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - super-timeline
 - event-correlation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

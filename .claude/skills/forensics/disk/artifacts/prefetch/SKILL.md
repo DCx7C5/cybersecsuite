@@ -1,6 +1,7 @@
 ---
 name: prefetch
 description: Parse Windows Prefetch files to determine program execution history including run counts, timestamps, and referenced
+action: prefetch
   files for forensic investigation.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - timeline-analysis
 - evidence-collection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

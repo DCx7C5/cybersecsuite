@@ -1,6 +1,7 @@
 ---
 name: ioc
 description: 'Automates the enrichment of raw indicators of compromise with multi-source threat intelligence context using
+action: ioc
   SOAR platforms, Python pipelines, or TIP playbooks to reduce analyst triage time and standardize enrichment outputs. Use
   when building automated enrichment workflows integrated with SIEM alerts, email submission pipelines, or bulk IOC processing
   from threat feeds. Activates for requests involving SOAR enrichment, Cortex XSOAR, Splunk SOAR, TheHive, Python enrichment
@@ -20,7 +21,7 @@ tags:
 - CTI
 - NIST-CSF
 version: 1.0.0
-author: team-cybersecurity
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

@@ -1,6 +1,7 @@
 ---
 name: endpoint
 description: 'Performs digital forensics investigation on compromised endpoints including memory acquisition, disk imaging,
+action: endpoint
   artifact analysis, and timeline reconstruction. Use when investigating security incidents, collecting evidence for legal
   proceedings, or analyzing endpoint compromise scope. Activates for requests involving endpoint forensics, memory analysis,
   disk forensics, or incident investigation.
@@ -16,7 +17,7 @@ tags:
 - incident-investigation
 - Volatility
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: http
 description: Detecting and exploiting HTTP request smuggling vulnerabilities caused by Content-Length and Transfer-Encoding
+action: smuggling-http
   parsing discrepancies between front-end and back-end servers.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - burpsuite
 - owasp
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

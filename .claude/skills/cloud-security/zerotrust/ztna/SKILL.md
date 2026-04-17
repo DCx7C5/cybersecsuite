@@ -1,6 +1,7 @@
 ---
 name: ztna
 description: 'Implementing Zero Trust Network Access (ZTNA) in cloud environments by configuring identity-aware proxies, micro-segmentation,
+action: ztna
   continuous verification with conditional access policies, and replacing traditional VPN-based access with BeyondCorp-style
   architectures across AWS, Azure, and GCP.
 
@@ -15,7 +16,7 @@ tags:
 - identity-aware-proxy
 - micro-segmentation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

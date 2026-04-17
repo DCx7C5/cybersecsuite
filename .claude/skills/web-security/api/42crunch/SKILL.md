@@ -1,6 +1,7 @@
 ---
 name: 42crunch
 description: Implement comprehensive API security testing using the 42Crunch platform to perform static audit and dynamic
+action: 42crunch
   conformance scanning of OpenAPI specifications.
 domain: cybersecurity
 subdomain: api-security
@@ -15,7 +16,7 @@ tags:
 - ci-cd-security
 - owasp-api-top-10
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

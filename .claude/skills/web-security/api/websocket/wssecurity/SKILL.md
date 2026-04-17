@@ -1,6 +1,7 @@
 ---
 name: wssecurity
 description: 'Tests WebSocket API implementations for security vulnerabilities including missing authentication on WebSocket
+action: wssecurity
   upgrade, Cross-Site WebSocket Hijacking (CSWSH), injection attacks through WebSocket messages, insufficient input validation,
   denial-of-service via message flooding, and information leakage through WebSocket frames. The tester intercepts WebSocket
   handshakes and messages using Burp Suite, crafts malicious payloads, and tests for authorization bypass on WebSocket channels.
@@ -18,7 +19,7 @@ tags:
 - injection
 - authentication
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

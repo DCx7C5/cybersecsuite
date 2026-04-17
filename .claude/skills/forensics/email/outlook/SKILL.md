@@ -1,6 +1,7 @@
 ---
 name: outlook
 description: Analyze Microsoft Outlook PST and OST files for email forensic evidence including message content, headers, attachments,
+action: outlook
   deleted items, and metadata using libpff, pst-utils, and forensic email analysis tools for legal investigations and incident
   response.
 domain: cybersecurity
@@ -17,7 +18,7 @@ tags:
 - libpff
 - eml-extraction
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MANAGE-2.4

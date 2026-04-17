@@ -1,6 +1,7 @@
 ---
 name: cryptomining
 description: 'This skill teaches security teams how to detect and respond to unauthorized cryptocurrency mining operations
+action: cryptomining
   in cloud environments. It covers identifying cryptomining indicators through compute usage anomalies, network traffic patterns
   to mining pools, GuardDuty CryptoCurrency findings, and runtime process monitoring on EC2, ECS, EKS, and Azure Automation
   workloads.
@@ -15,7 +16,7 @@ tags:
 - guardduty-crypto
 - cost-anomaly
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

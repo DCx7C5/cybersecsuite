@@ -1,6 +1,7 @@
 ---
 name: tls-sslkeylog
 description: TLS key logging management and SSLKEYLOGFILE forensics. Detects insecure keylog file permissions, unauthorized reader processes, ecapture-tls integration, TLS session decryption, and SSLKEYLOGFILE-based exfiltration indicators.
+action: sslkeylog
 model: sonnet
 maxTurns: 20
 tools:
@@ -15,6 +16,7 @@ skills:
   - threats/mitre-attack-mapper
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # SSLKEYLOG Skill – TLS Key Logging Management & Analysis

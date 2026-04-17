@@ -1,6 +1,7 @@
 ---
 name: patch
 description: 'This skill covers implementing a structured patch management program for OT/ICS environments where traditional
+action: patch
   IT patching approaches can cause process disruption or safety hazards. It addresses vendor compatibility testing, risk-based
   patch prioritization, staged deployment through test environments, maintenance window coordination, rollback procedures,
   and compensating controls when patches cannot be applied due to operational constraints or vendor restrictions.
@@ -17,7 +18,7 @@ tags:
 - patch-management
 - vulnerability-management
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

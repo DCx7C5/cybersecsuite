@@ -1,6 +1,7 @@
 ---
 name: schema
 description: Implement API schema validation using OpenAPI specifications and JSON Schema to enforce input/output contracts
+action: schema
   and prevent injection, data exposure, and mass assignment attacks.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - mass-assignment
 - api-gateway
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

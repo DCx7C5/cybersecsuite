@@ -1,6 +1,7 @@
 ---
 name: container
 description: 'Securing container registry images by implementing vulnerability scanning with Trivy and Grype, enforcing image
+action: registry-container
   signing with Cosign and Sigstore, configuring registry access controls, and building CI/CD pipelines that prevent deploying
   unscanned or unsigned images.
 
@@ -16,7 +17,7 @@ tags:
 - cosign
 - supply-chain
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

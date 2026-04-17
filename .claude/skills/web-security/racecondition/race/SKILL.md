@@ -1,6 +1,7 @@
 ---
 name: race
 description: Detect and exploit race condition vulnerabilities in web applications using Turbo Intruder's single-packet attack
+action: race
   technique to bypass rate limits, duplicate transactions, and exploit time-of-check-to-time-of-use flaws.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - limit-overrun
 - burp-suite
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

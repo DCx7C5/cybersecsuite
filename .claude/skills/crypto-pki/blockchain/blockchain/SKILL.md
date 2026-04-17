@@ -1,6 +1,7 @@
 ---
 name: blockchain
 description: Build an append-only log integrity chain using SHA-256 hash chaining for tamper detection. Each log entry is
+action: blockchain
   hashed with the previous entry's hash to create a blockchain-like structure where modifying any entry invalidates all subsequent
   hashes. Implements log ingestion, chain verification, tamper detection with pinpoint identification, and periodic checkpoint
   anchoring to external timestamping services.
@@ -12,7 +13,7 @@ tags:
 - integrity
 - with
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

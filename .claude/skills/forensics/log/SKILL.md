@@ -1,6 +1,7 @@
 ---
 name: log
 description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines
+action: log
   during forensic investigations.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - timeline-analysis
 - evidence-collection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

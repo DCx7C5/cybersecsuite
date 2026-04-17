@@ -16,7 +16,6 @@ def show_usage():
     print("CyberSec Management")
     print("Available commands:")
     print("  schema     - Create / update all tables (generate_schemas safe=True)")
-    print("  drop       - Drop ALL tables (destructive!)")
     print("  shell      - Launch async Python shell with models")
     print("  status     - Show database status")
     print("  seed       - Seed defaults + bootstrap MITRE/CVE/CWE intelligence")
@@ -24,6 +23,10 @@ def show_usage():
     print("  machine    - Seed / display local machine hardware inventory")
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
+    print("  case-open  - Open a new investigation case (Phase 0 — interactive intake)")
+    print("  ssl-genkey - Generate SSL/TLS certificate for proxy (port 8433)")
+    print("  ssl-info   - Display SSL/TLS certificate information")
+    print("  ssl-verify - Verify SSL/TLS certificate validity")
 
 
 async def schema_command():
@@ -37,32 +40,6 @@ async def schema_command():
     count = health.get("table_count", 0)
     print(f"✅ Done — {count} tables in public schema")
 
-
-async def drop_command():
-    """Drop ALL tables (destructive!)."""
-    from db.bootstrap import init_tortoise_async
-    from tortoise import Tortoise
-
-    confirm = input("⚠️  This drops ALL tables. Type 'yes' to confirm: ")
-    if confirm.strip() != "yes":
-        print("Aborted.")
-        return
-
-    await init_tortoise_async()
-    await Tortoise.generate_schemas(safe=True)  # ensure connection ready
-
-    conn = Tortoise.get_connection("default")
-    # noinspection SqlResolve
-    result = await conn.execute_query(
-        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
-    )
-    tables = [row["table_name"] for row in result[1]]
-    if tables:
-        table_list = ", ".join(f'"{t}"' for t in tables)
-        await conn.execute_script(f"DROP TABLE IF EXISTS {table_list} CASCADE;")
-        print(f"✅ Dropped {len(tables)} tables")
-    else:
-        print("No tables to drop.")
 
 
 async def shell_command():
@@ -158,6 +135,9 @@ def dashboard_command():
         sys.exit(1)
 
     spec = importlib.util.spec_from_file_location("generate_dashboard", gen_path)
+    if spec is None or spec.loader is None:
+        print(f"✗ Could not load dashboard generator: {gen_path}", file=sys.stderr)
+        sys.exit(1)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
 
@@ -216,6 +196,88 @@ async def machine_command():
         print(f"   PCI    : {len(pci_rows)} device(s)")
 
 
+async def case_open_command():
+    """Open a new investigation case interactively (Phase 0)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.case_intake import CaseIntake
+    from db.models.scope import Workspace
+    from db.models.enums import Severity, RedBlueMode
+
+    await init_tortoise_async(create_db=True)
+
+    print("═══ Phase 0 — Case Opening ═══\n")
+
+    title = input("Case title: ").strip()
+    if not title:
+        print("✗ Title is required.")
+        return
+
+    problem = input("Problem statement (what happened?): ").strip()
+    if not problem:
+        print("✗ Problem statement is required.")
+        return
+
+    hypothesis = input("Attack hypothesis (optional): ").strip()
+
+    print("\nKnown facts (one per line, empty line to finish):")
+    facts: list[str] = []
+    while True:
+        line = input("  > ").strip()
+        if not line:
+            break
+        facts.append(line)
+
+    print("Suspected IOCs (one per line, empty line to finish):")
+    iocs: list[str] = []
+    while True:
+        line = input("  > ").strip()
+        if not line:
+            break
+        iocs.append(line)
+
+    print("Affected assets (one per line, empty line to finish):")
+    assets: list[str] = []
+    while True:
+        line = input("  > ").strip()
+        if not line:
+            break
+        assets.append(line)
+
+    priority_input = input("Priority (low/medium/high/critical) [medium]: ").strip().lower() or "medium"
+    mode_input = input("Mode (blue/red/purple) [blue]: ").strip().lower() or "blue"
+
+    print("MITRE ATT&CK technique IDs (one per line, empty to finish):")
+    mitre: list[str] = []
+    while True:
+        line = input("  > ").strip()
+        if not line:
+            break
+        mitre.append(line)
+
+    notes = input("Analyst notes (optional): ").strip()
+
+    ws, _ = await Workspace.get_or_create(name="default")
+
+    intake = await CaseIntake.create(
+        workspace=ws,
+        title=title,
+        problem_statement=problem,
+        attack_hypothesis=hypothesis,
+        known_facts=facts,
+        suspected_iocs=iocs,
+        affected_assets=assets,
+        priority=priority_input,
+        mode=mode_input,
+        mitre_hypotheses=mitre,
+        analyst_notes=notes,
+    )
+
+    print(f"\n✅ Case #{intake.id} opened: {title}")
+    print(f"   Priority: {priority_input}  Mode: {mode_input}")
+    print(f"   Facts: {len(facts)}  IOCs: {len(iocs)}  Assets: {len(assets)}  MITRE: {len(mitre)}")
+    print("   Ready for Phase 1 (Recon).")
+
+
 async def main():
     if len(sys.argv) < 2:
         show_usage()
@@ -225,12 +287,12 @@ async def main():
 
     async_commands = {
         "schema":     schema_command,
-        "drop":       drop_command,
         "shell":      shell_command,
         "status":     status_command,
         "seed":       seed_command,
         "seed-intel": seed_intel_command,
         "machine":    machine_command,
+        "case-open":  case_open_command,
     }
 
     if command not in async_commands:
@@ -241,8 +303,8 @@ async def main():
     await async_commands[command]()
 
 
-if __name__ == "__main__":
-    # dashboard is fully synchronous — dispatch before starting any event loop
+def _run_main() -> None:
+    """Shared entry point for both __main__ and installed script."""
     if len(sys.argv) >= 2 and sys.argv[1] == "dashboard":
         dashboard_command()
         sys.exit(0)
@@ -255,4 +317,13 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nAborted by user.")
         sys.exit(130)
+
+
+if __name__ == "__main__":
+    _run_main()
+
+
+def main_sync() -> None:
+    """Synchronous entry point for `cybersecsuite` installed script."""
+    _run_main()
 

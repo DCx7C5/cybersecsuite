@@ -1,6 +1,7 @@
 ---
 name: campaign
 description: Campaign attribution analysis involves systematically evaluating evidence to determine which threat actor or
+action: campaign
   group is responsible for a cyber operation. This skill covers collecting and weighting attr
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -13,7 +14,7 @@ tags:
 - attribution
 - campaign-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

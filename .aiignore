@@ -1,0 +1,45 @@
+# AI Assistant - Ignore patterns
+# Optimized for AI code analysis and generation
+
+# Python environments & artifacts
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# Dependencies
+.egg-info/
+node_modules/
+
+# Large/binary files
+*.tar.gz
+*.zip
+*.whl
+*.db
+*.sqlite3
+
+# Sensitive data
+.env*
+secrets/
+*.key
+*.pem
+config.local*
+
+# Generated output
+htmlcov/
+.coverage
+test-results/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log

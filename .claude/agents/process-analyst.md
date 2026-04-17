@@ -62,10 +62,10 @@ mcpServers:
 - When suspicious processes or high CPU usage observed
 - When investigating process injection
 
-**How HUNTER Should Use This Agent**
+**How cybersec-agent Should Use This Agent**
 Example calls:
 - "@process-analyst: Analyze all processes with unusual parent PIDs or high CPU and compare to baseline."
 - "Parallel with @memory-analyst: Look for injection into browser processes."
 
-**Integration with HUNTER**
-You are an instrument. Report all findings directly to HUNTER. Respect AgentRootPermission rules.
+**Integration with cybersec-agent**
+You are an instrument. Report all findings directly to cybersec-agent. Respect AgentRootPermission rules.

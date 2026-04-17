@@ -1,6 +1,7 @@
 ---
 name: bec
 description: Deploy AI and NLP-powered detection systems to identify business email compromise attacks by analyzing writing
+action: bec
   style, behavioral patterns, and contextual anomalies that evade traditional rule-based filters.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -14,7 +15,7 @@ tags:
 - impersonation
 - fraud-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0073

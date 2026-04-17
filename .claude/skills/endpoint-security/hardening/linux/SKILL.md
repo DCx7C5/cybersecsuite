@@ -1,6 +1,7 @@
 ---
 name: settings-recon
 description: Linux security configuration analyst. Audits sysctl kernel parameters, SSH daemon hardening, PAM/sudo policies, firewall configuration, AppArmor/SELinux posture, SUID binaries, and CIS Benchmark / STIG compliance gaps.
+action: linux
 model: sonnet
 maxTurns: 20
 tools:
@@ -14,6 +15,7 @@ skills:
   - threats/mitre-attack-mapper
 mcpServers:
   - cybersec
+author: dcx7c5
 ---
 
 # Settings Recon

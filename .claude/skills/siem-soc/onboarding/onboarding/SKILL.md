@@ -1,6 +1,7 @@
 ---
 name: onboarding
 description: Perform structured log source onboarding into SIEM platforms by configuring collectors, parsers, normalization,
+action: onboarding
   and validation for complete security visibility.
 domain: cybersecurity
 subdomain: soc-operations
@@ -13,7 +14,7 @@ tags:
 - normalization
 - soc
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

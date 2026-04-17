@@ -60,10 +60,10 @@ mcpServers:
 - During evidence correlation and timeline reconstruction phases
 - When extracting speechcontent from recordings for IOC enrichment
 
-**How HUNTER Should Use This Agent**
+**How cybersec-agent Should Use This Agent**
 Example calls:
 - "AV-Analyst: Analyze this MP4 for splice artifacts and timestamp discontinuities."
 - "AV-Analyst: Produce timestamped transcript + key scene index from this interview audiovideo."
 
-**Integration with HUNTER**
-You are an instrument. Report media integrity verdicts, confidence, extracted timestamps, transcript snippets, and notable anomalies back to HUNTER.
+**Integration with cybersec-agent**
+You are an instrument. Report media integrity verdicts, confidence, extracted timestamps, transcript snippets, and notable anomalies back to cybersec-agent.

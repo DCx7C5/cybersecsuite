@@ -1,6 +1,7 @@
 ---
 name: autopsy
 description: Perform comprehensive forensic analysis of disk images using Autopsy to recover files, examine artifacts, and
+action: autopsy
   build investigation timelines.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - file-recovery
 - artifact-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

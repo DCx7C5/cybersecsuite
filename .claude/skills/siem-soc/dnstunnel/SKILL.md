@@ -1,6 +1,7 @@
 ---
 name: dnstunnel
 description: 'Detects DNS tunneling by computing Shannon entropy of DNS query names, analyzing query length distributions,
+action: dnstunnel
   inspecting TXT record payloads, and identifying high subdomain cardinality. Uses scapy for packet capture analysis and statistical
   methods to distinguish legitimate DNS from covert channels. Use when hunting for data exfiltration.
 
@@ -13,7 +14,7 @@ tags:
 - tunneling
 - detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

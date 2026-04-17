@@ -1,6 +1,7 @@
 ---
 name: tilcm
 description: Implement a structured threat intelligence lifecycle encompassing planning, collection, processing, analysis,
+action: tilcm
   dissemination, and feedback stages to produce actionable intelligence for organizational decision-making.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - strategic-intelligence
 - cti-program
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

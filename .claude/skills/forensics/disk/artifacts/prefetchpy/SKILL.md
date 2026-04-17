@@ -1,6 +1,7 @@
 ---
 name: prefetchpy
 description: Parse Windows Prefetch files using the windowsprefetch Python library to reconstruct application execution history,
+action: prefetchpy
   detect renamed or masquerading binaries, and identify suspicious program execution patterns.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -16,7 +17,7 @@ mitre_attack:
 - T1204
 - T1036
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

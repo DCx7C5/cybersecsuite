@@ -1,6 +1,7 @@
 ---
 name: network
 description: Detect and analyze covert communication channels used by malware including DNS tunneling, ICMP exfiltration,
+action: traffic-network
   steganographic HTTP, and protocol abuse for C2 and data exfiltration.
 domain: cybersecurity
 subdomain: malware-analysis
@@ -13,7 +14,7 @@ tags:
 - c2-detection
 - data-exfiltration
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

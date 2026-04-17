@@ -1,6 +1,7 @@
 ---
 name: waf
 description: 'This skill covers deploying and tuning Web Application Firewall rules on AWS WAF, Azure WAF, and Cloudflare
+action: waf
   to protect cloud-hosted applications against OWASP Top 10 attacks. It details configuring managed rule sets, creating custom
   rules for business logic protection, implementing rate limiting, deploying bot management, and reducing false positives
   through rule tuning and logging analysis.
@@ -16,7 +17,7 @@ tags:
 - owasp-protection
 - rate-limiting
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

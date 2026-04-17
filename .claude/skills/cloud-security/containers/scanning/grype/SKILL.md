@@ -1,6 +1,7 @@
 ---
 name: grype
 description: Scan container images for known vulnerabilities using Anchore Grype with SBOM-based matching and configurable
+action: grype
   severity thresholds.
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - anchore
 - supply-chain
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

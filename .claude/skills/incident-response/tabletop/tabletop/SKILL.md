@@ -1,6 +1,7 @@
 ---
 name: tabletop
 description: 'Performs tabletop exercises for SOC teams simulating security incidents through discussion-based scenarios to
+action: tabletop
   test incident response procedures, communication workflows, and decision-making under pressure without impacting production
   systems. Use when organizations need to validate IR playbooks, train analysts, or meet compliance requirements for incident
   response testing.
@@ -21,7 +22,7 @@ mitre_attack:
 - T1486
 - T1078
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

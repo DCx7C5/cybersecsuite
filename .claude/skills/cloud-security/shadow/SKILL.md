@@ -1,6 +1,7 @@
 ---
 name: shadow
 description: Detect unauthorized SaaS and cloud service usage (shadow IT) by analyzing proxy logs, DNS query logs, and netflow
+action: shadow
   data using Python pandas for traffic pattern analysis and domain classification.
 domain: cybersecurity
 subdomain: cloud-security
@@ -13,7 +14,7 @@ tags:
 - cloud-security
 - pandas
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

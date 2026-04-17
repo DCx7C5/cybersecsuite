@@ -1,6 +1,7 @@
 ---
 name: throttle
 description: 'Implements API rate limiting and throttling controls using token bucket, sliding window, and fixed window algorithms
+action: throttle
   to protect against brute force attacks, credential stuffing, resource exhaustion, and API abuse. The engineer configures
   per-user, per-IP, and per-endpoint rate limits using Redis-backed counters, API gateway plugins, or application middleware,
   and implements proper HTTP 429 responses with Retry-After headers. Activates for requests involving rate limiting implementation,
@@ -17,7 +18,7 @@ tags:
 - token-bucket
 - abuse-prevention
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

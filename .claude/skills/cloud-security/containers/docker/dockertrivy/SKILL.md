@@ -1,6 +1,7 @@
 ---
 name: dockertrivy
 description: Trivy is a comprehensive open-source vulnerability scanner by Aqua Security that detects vulnerabilities in OS
+action: dockertrivy
   packages, language-specific dependencies, misconfigurations, secrets, and license violati
 domain: cybersecurity
 subdomain: container-security
@@ -11,7 +12,7 @@ tags:
 - trivy
 - vulnerability-scanning
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

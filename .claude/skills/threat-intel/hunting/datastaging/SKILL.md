@@ -1,6 +1,7 @@
 ---
 name: datastaging
 description: Detect data staging activity before exfiltration by monitoring for archive creation with 7-Zip/RAR, unusual temp
+action: datastaging
   folder access, large file consolidation, and staging directory patterns via EDR and process telemetry
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - threat-hunting
 - dlp
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

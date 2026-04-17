@@ -1,6 +1,7 @@
 ---
 name: externalrecon
 description: 'Conducts external reconnaissance using Open Source Intelligence (OSINT) techniques to map an organization''s
+action: externalrecon
   external attack surface without directly interacting with target systems. The tester gathers information from public sources
   including DNS records, certificate transparency logs, search engines, social media, code repositories, and data breach databases
   to build a comprehensive target profile. Activates for requests involving OSINT reconnaissance, external footprinting, attack
@@ -16,7 +17,7 @@ tags:
 - footprinting
 - passive-recon
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

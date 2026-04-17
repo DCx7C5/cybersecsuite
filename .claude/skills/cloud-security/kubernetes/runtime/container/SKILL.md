@@ -1,6 +1,7 @@
 ---
 name: container
 description: Container escape is a critical attack technique where an adversary breaks out of container isolation to access
+action: runtime-container
   the host system or other containers. Detection involves monitoring for escape indicators
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - runtime-security
 - escape-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Platform Monitoring

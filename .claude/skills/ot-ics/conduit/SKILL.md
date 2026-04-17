@@ -1,6 +1,7 @@
 ---
 name: conduit
 description: 'Implement secure conduit architecture for OT remote access following IEC 62443 zones and conduits model, deploying
+action: conduit
   jump servers, MFA-enabled gateways, session recording, and approval-based workflows to control vendor and engineer access
   to industrial control systems without exposing OT networks directly.
 
@@ -17,7 +18,7 @@ tags:
 - conduit
 - mfa
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

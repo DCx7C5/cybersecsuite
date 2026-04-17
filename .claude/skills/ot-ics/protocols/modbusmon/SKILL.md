@@ -1,6 +1,7 @@
 ---
 name: modbusmon
 description: 'Monitors Modbus TCP traffic on SCADA and ICS networks to detect anomalous function code usage, unauthorized
+action: modbusmon
   register writes, and suspicious communication patterns. The analyst uses deep packet inspection with pymodbus, Scapy, and
   Zeek to baseline normal PLC/RTU communication behavior, then applies statistical and rule-based anomaly detection to identify
   reconnaissance, parameter manipulation, and denial-of-service attacks targeting Modbus devices on port 502. Activates for
@@ -18,7 +19,7 @@ tags:
 - anomaly-detection
 - OT-monitoring
 version: 1.0.0
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

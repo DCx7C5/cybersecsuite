@@ -1,6 +1,7 @@
 ---
 name: firmware
 description: 'Analyzes firmware images for embedded malware, backdoors, and unauthorized modifications targeting routers,
+action: firmware-firmware
   IoT devices, UEFI/BIOS, and embedded systems. Covers firmware extraction, filesystem analysis, binary reverse engineering,
   and bootkit detection. Activates for requests involving firmware security analysis, IoT malware investigation, UEFI rootkit
   detection, or embedded device compromise assessment.
@@ -15,7 +16,7 @@ tags:
 - UEFI
 - embedded-security
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.AE-02

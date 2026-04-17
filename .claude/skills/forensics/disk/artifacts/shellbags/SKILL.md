@@ -1,6 +1,7 @@
 ---
 name: shellbags
 description: Analyze Windows Shellbag registry artifacts to reconstruct folder browsing activity, detect access to removable
+action: shellbags
   media and network shares, and establish user interaction with directories even after deletion using SBECmd and ShellBags
   Explorer.
 domain: cybersecurity
@@ -17,7 +18,7 @@ tags:
 - bagmru
 - dfir
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

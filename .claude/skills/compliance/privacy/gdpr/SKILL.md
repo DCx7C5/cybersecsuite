@@ -1,6 +1,7 @@
 ---
 name: gdpr
 description: The General Data Protection Regulation (EU) 2016/679 (GDPR) is the EU's comprehensive data protection law governing
+action: gdpr
   the collection, processing, storage, and transfer of personal data. This skill cover
 domain: cybersecurity
 subdomain: compliance-governance
@@ -18,7 +19,7 @@ nist_csf:
 - PR.AA-01
 - ID.AM-02
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

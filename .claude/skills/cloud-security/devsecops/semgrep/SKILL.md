@@ -1,6 +1,7 @@
 ---
 name: semgrep
 description: Write custom Semgrep SAST rules in YAML to detect application-specific vulnerabilities, enforce coding standards,
+action: semgrep
   and integrate into CI/CD pipelines.
 domain: cybersecurity
 subdomain: devsecops
@@ -12,7 +13,7 @@ tags:
 - devsecops
 - code-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

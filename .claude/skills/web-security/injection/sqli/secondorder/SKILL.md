@@ -1,6 +1,7 @@
 ---
 name: secondorder
 description: Detect and exploit second-order SQL injection vulnerabilities where malicious input is stored in a database and
+action: secondorder
   later executed in an unsafe SQL query during a different application operation.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - blind-injection
 - persistent-sqli
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

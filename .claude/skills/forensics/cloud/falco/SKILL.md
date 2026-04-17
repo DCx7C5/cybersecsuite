@@ -1,6 +1,7 @@
 ---
 name: falco
 description: 'Uses Falco YAML rules for runtime threat detection in containers and Kubernetes, monitoring syscalls for shell
+action: falco
   spawns, file tampering, network anomalies, and privilege escalation. Manages Falco rules via the Falco gRPC API and parses
   Falco alert output. Use when building container runtime security or investigating k8s cluster compromises.
 
@@ -13,7 +14,7 @@ tags:
 - native
 - forensics
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

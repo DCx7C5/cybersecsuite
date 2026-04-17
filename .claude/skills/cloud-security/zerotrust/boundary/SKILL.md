@@ -1,6 +1,7 @@
 ---
 name: boundary
 description: Implement HashiCorp Boundary for identity-aware zero trust infrastructure access management with dynamic credential
+action: boundary
   brokering, session recording, and Vault integration.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -14,7 +15,7 @@ tags:
 - session-recording
 - just-in-time-access
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

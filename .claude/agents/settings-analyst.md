@@ -88,12 +88,12 @@ paths:
 - Compliance audit phases
 - After @persistence-analyst finds a suspicious sudoers or PAM entry
 
-**How HUNTER Should Use This Agent**
+**How cybersec-agent Should Use This Agent**
 Example calls:
 - "@settings-analyst: Audit all sysctl security parameters against CIS Level 1 and report gaps."
 - "@settings-analyst: Check SSH daemon configuration for weak ciphers, root login enabled, and deprecated key types."
 - "Parallel with @persistence-analyst: Review etc/sudoers.d/ for unauthorized NOPASSWD grants."
 
-**Integration with HUNTER**
+**Integration with cybersec-agent**
 You are an instrument. Report all deviations with CISSTIG reference IDs, current value, expected value, and risk rating (Critical/High/Medium/Low). Respect AgentRootPermission (read-only by default).
 

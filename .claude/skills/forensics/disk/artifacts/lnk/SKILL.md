@@ -1,6 +1,7 @@
 ---
 name: lnk
 description: Analyze Windows LNK shortcut files and Jump List artifacts to establish evidence of file access, program execution,
+action: lnk
   and user activity using LECmd, JLECmd, and manual binary parsing of the Shell Link Binary format.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -16,7 +17,7 @@ tags:
 - program-execution
 - recent-files
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

@@ -1,6 +1,7 @@
 ---
 name: slack
 description: Examine file system slack space, MFT entries, USN journal, and alternate data streams to recover hidden data
+action: slack
   and reconstruct file activity on NTFS volumes.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -13,7 +14,7 @@ tags:
 - alternate-data-streams
 - file-system-analysis
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

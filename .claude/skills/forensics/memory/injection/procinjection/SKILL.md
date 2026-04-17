@@ -1,6 +1,7 @@
 ---
 name: procinjection
 description: Detect process injection techniques (T1055) including CreateRemoteThread, process hollowing, and DLL injection
+action: procinjection
   via Sysmon Event IDs 8 and 10 and EDR process telemetry
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - edr
 - threat-hunting
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

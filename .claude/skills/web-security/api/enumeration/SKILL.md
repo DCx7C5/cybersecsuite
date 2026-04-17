@@ -1,6 +1,7 @@
 ---
 name: enumeration
 description: Detect and prevent API enumeration attacks including BOLA and IDOR exploitation by monitoring sequential identifier
+action: enumeration
   access patterns and authorization failures.
 domain: cybersecurity
 subdomain: api-security
@@ -14,7 +15,7 @@ tags:
 - access-control
 - rate-limiting
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

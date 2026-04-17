@@ -1,6 +1,7 @@
 ---
 name: sysartifacts
 description: Examine Linux system artifacts including auth logs, cron jobs, shell history, and system configuration to uncover
+action: sysartifacts
   evidence of compromise or unauthorized activity.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - persistence-detection
 - incident-investigation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

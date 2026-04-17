@@ -1,6 +1,7 @@
 ---
 name: evilginx
 description: Perform authorized initial access using EvilGinx3 adversary-in-the-middle phishing framework to capture session
+action: evilginx
   tokens and bypass multi-factor authentication during red team engagements.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - adversary-in-the-middle
 - credential-theft
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation

@@ -1,6 +1,7 @@
 ---
 name: qradar
 description: 'Correlates security events in IBM QRadar SIEM using AQL (Ariel Query Language), custom rules, building blocks,
+action: qradar
   and offense management to detect multi-stage attacks across network, endpoint, and application log sources. Use when SOC
   analysts need to investigate QRadar offenses, build correlation rules, or tune detection logic for reducing false positives.
 
@@ -16,7 +17,7 @@ tags:
 - offense-management
 - ibm
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

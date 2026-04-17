@@ -1,6 +1,7 @@
 ---
 name: auditprep
 description: 'Automates SOC 2 Type II audit preparation including gap assessment against AICPA Trust Services Criteria (CC1-CC9),
+action: auditprep
   evidence collection from cloud providers and identity systems, control testing validation, remediation tracking, and continuous
   compliance monitoring. Covers all five TSC categories (Security, Availability, Processing Integrity, Confidentiality, Privacy)
   with automated evidence gathering from AWS, Azure, GCP, Okta, GitHub, and Jira. Use when preparing for or maintaining SOC
@@ -18,7 +19,7 @@ tags:
 - compliance
 - grc
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - GV.OC-01

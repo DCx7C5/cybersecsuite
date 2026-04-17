@@ -1,6 +1,7 @@
 ---
 name: iocauto
 description: 'Automates Indicator of Compromise (IOC) enrichment by orchestrating lookups across VirusTotal, AbuseIPDB, Shodan,
+action: iocauto
   MISP, and other intelligence sources to provide contextual scoring and disposition recommendations. Use when SOC analysts
   need rapid multi-source enrichment of IPs, domains, URLs, and file hashes during alert triage or incident investigation.
 
@@ -17,7 +18,7 @@ tags:
 - shodan
 - threat-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

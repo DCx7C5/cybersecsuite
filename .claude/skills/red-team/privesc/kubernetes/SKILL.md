@@ -1,6 +1,7 @@
 ---
 name: kubernetes
 description: Detect and prevent privilege escalation in Kubernetes pods by monitoring security contexts, capabilities, and
+action: kubernetes
   syscall patterns with Falco and OPA policies.
 domain: cybersecurity
 subdomain: container-security
@@ -12,7 +13,7 @@ tags:
 - detection
 - pod-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

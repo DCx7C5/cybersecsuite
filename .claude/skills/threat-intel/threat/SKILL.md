@@ -1,6 +1,7 @@
 ---
 name: threat
 description: 'Generates structured cyber threat intelligence reports at strategic, operational, and tactical levels tailored
+action: threat-intel-threat
   to specific audiences including executives, security operations teams, and technical analysts. Use when producing finished
   intelligence products from raw collection data, creating sector threat briefings, or delivering post-incident intelligence
   assessments. Activates for requests involving CTI report writing, threat briefings, intelligence products, finished intelligence,
@@ -18,7 +19,7 @@ tags:
 - report-writing
 - NIST-CSF
 version: 1.0.0
-author: team-cybersecurity
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

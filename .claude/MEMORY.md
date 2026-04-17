@@ -30,12 +30,12 @@ opts = ClaudeAgentOptions(
 ```
 
 ### ASGI Mount Map (`src/proxy/asgi.py`)
-| Path | What |
-|------|------|
-| `/health` | DB health check (200/503) |
-| `/dashboard/*` | Dashboard UI + 16 REST + 4 SSE endpoints |
-| `/v1/*` | AI Proxy (OpenAI-compat) ← Claude routes here |
-| `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server |
+| Path                      | What                                          |
+|---------------------------|-----------------------------------------------|
+| `/health`                 | DB health check (200/503)                     |
+| `/dashboard/*`            | Dashboard UI + 16 REST + 4 SSE endpoints      |
+| `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here |
+| `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                       |
 
 ### settings.json (`.claude/settings.json`)
 ```json
@@ -61,74 +61,74 @@ opts = ClaudeAgentOptions(
 - MEMORY.md synced + plan.md removed (committed c6a6792)
 
 ### Not Done / Stub / Incomplete
-| File | Issue | Phase |
-|------|-------|-------|
-| `src/mcp/__init__.py` (0L) | Empty | Phase A |
-| `src/mcp/cybersec/` | Not created (tool split) | Phase A |
-| `src/mcp/dystopian.py` | Not created | Phase A |
-| `mcps/dystopian-crypto-mcp/` | Empty directory | Phase A |
-| `src/a2a/dev_agents.py` | 6 execute() stubs | Phase A2 |
-| `src/a2a/cybersec_agent.py` | ORM-only, no AI | Phase A2 |
-| `src/a2a/agent_sdk.py` | No base_url, 2 inline tools | Phase A2 |
-| `tests/` | Only `__init__.py`, no tests | Phase B |
-| `.claude/hooks/*.py` | 18 files, never audited | Phase A |
-| `.claude/commands/*` | 6 forensics commands, not reviewed | Phase A |
-| `.claude/skills/*/SKILL.md` | 780 skills across 20 domains, fully restructured | ✅ Done |
-| `src/telemetry/` | Not created | Phase E |
-| Extended dashboard | 8 new tabs, task builder | Phase E |
+| File                         | Issue                                            | Phase    |
+|------------------------------|--------------------------------------------------|----------|
+| `src/mcp/__init__.py` (0L)   | Empty                                            | Phase A  |
+| `src/mcp/cybersec/`          | Not created (tool split)                         | Phase A  |
+| `src/mcp/dystopian.py`       | Not created                                      | Phase A  |
+| `mcps/dystopian-crypto-mcp/` | Empty directory                                  | Phase A  |
+| `src/a2a/dev_agents.py`      | 6 execute() stubs                                | Phase A2 |
+| `src/a2a/cybersec_agent.py`  | ORM-only, no AI                                  | Phase A2 |
+| `src/a2a/agent_sdk.py`       | No base_url, 2 inline tools                      | Phase A2 |
+| `tests/`                     | Only `__init__.py`, no tests                     | Phase B  |
+| `.claude/hooks/*.py`         | 18 files, never audited                          | Phase A  |
+| `.claude/commands/*`         | 6 forensics commands, not reviewed               | Phase A  |
+| `.claude/skills/*/SKILL.md`  | 780 skills across 20 domains, fully restructured | ✅ Done   |
+| `src/telemetry/`             | Not created                                      | Phase E  |
+| Extended dashboard           | 8 new tabs, task builder                         | Phase E  |
 
 ---
 
 ## Codebase Map
 
 ### Root
-| File | Lines | Purpose |
-|------|-------|---------|
-| `mcp_server.py` | 1288 | FastMCP stdio — 29 tools (source of truth → split to src/mcp/cybersec/) |
-| `mcp.json` | 87 | 5 MCP servers for Claude Code CLI |
-| `pyproject.toml` | — | Python 3.14, uv, all deps |
-| `Makefile` | — | `make serve`, `make test`, etc. |
-| `Dockerfile` | — | EXPOSE 8000 8080 8433, uvicorn CMD |
-| `docker-compose.yml` | — | ASGI + PostgreSQL, healthcheck → 8000/health |
-| `.aiignore` | — | AI tool ignore patterns |
-| `.gitignore` | — | Standard Python gitignore (*.log, .venv, etc.) |
+| File                 | Lines | Purpose                                                                 |
+|----------------------|-------|-------------------------------------------------------------------------|
+| `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (source of truth → split to src/mcp/cybersec/) |
+| `mcp.json`           | 87    | 5 MCP servers for Claude Code CLI                                       |
+| `pyproject.toml`     | —     | Python 3.14, uv, all deps                                               |
+| `Makefile`           | —     | `make serve`, `make test`, etc.                                         |
+| `Dockerfile`         | —     | EXPOSE 8000 8080 8433, uvicorn CMD                                      |
+| `docker-compose.yml` | —     | ASGI + PostgreSQL, healthcheck → 8000/health                            |
+| `.aiignore`          | —     | AI tool ignore patterns                                                 |
+| `.gitignore`         | —     | Standard Python gitignore (*.log, .venv, etc.)                          |
 
 ### src/
-| File | Lines | Purpose |
-|------|-------|---------|
-| `src/proxy/asgi.py` | 116 | ASGI app, env-driven ports, mounts all sub-apps |
-| `src/manage.py` | 329 | CLI management (`manage.py serve`, `case-open`, etc.) |
-| `src/logger.py` | 30 | Structured logger |
-| `src/mcp/__init__.py` | 0 | EMPTY — needs `all_servers()`, `allowed_tools()` |
+| File                  | Lines | Purpose                                               |
+|-----------------------|-------|-------------------------------------------------------|
+| `src/proxy/asgi.py`   | 116   | ASGI app, env-driven ports, mounts all sub-apps       |
+| `src/manage.py`       | 329   | CLI management (`manage.py serve`, `case-open`, etc.) |
+| `src/logger.py`       | 30    | Structured logger                                     |
+| `src/mcp/__init__.py` | 0     | EMPTY — needs `all_servers()`, `allowed_tools()`      |
 
 ### src/a2a/
-| File | Lines | Purpose |
-|------|-------|---------|
-| `agent_sdk.py` | 304 | SDK bridge (needs base_url + MCP pkg update) |
-| `agent_loader.py` | 272 | Loads `.claude/agents/*.md` → AgentCards |
-| `orchestrator.py` | 353 | A2A task orchestration |
-| `dev_agents.py` | 349 | Dev agent stubs (needs SDK wiring) |
-| `cybersec_agent.py` | 327 | CybersecAgent (ORM-only, needs SDK wiring) |
-| `server.py` | 236 | A2A JSON-RPC server |
-| `client.py` | 205 | A2A client |
-| `registry.py` | 257 | AgentRegistry — remote A2A discovery |
-| `task_store.py` | 157 | In-memory + DB task store |
-| `models.py` | 215 | A2A Pydantic models |
-| `enums.py` | — | A2A enums |
-| `agent.py` | — | BaseA2AAgent |
+| File                | Lines | Purpose                                      |
+|---------------------|-------|----------------------------------------------|
+| `agent_sdk.py`      | 304   | SDK bridge (needs base_url + MCP pkg update) |
+| `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards     |
+| `orchestrator.py`   | 353   | A2A task orchestration                       |
+| `dev_agents.py`     | 349   | Dev agent stubs (needs SDK wiring)           |
+| `cybersec_agent.py` | 327   | CybersecAgent (ORM-only, needs SDK wiring)   |
+| `server.py`         | 236   | A2A JSON-RPC server                          |
+| `client.py`         | 205   | A2A client                                   |
+| `registry.py`       | 257   | AgentRegistry — remote A2A discovery         |
+| `task_store.py`     | 157   | In-memory + DB task store                    |
+| `models.py`         | 215   | A2A Pydantic models                          |
+| `enums.py`          | —     | A2A enums                                    |
+| `agent.py`          | —     | BaseA2AAgent                                 |
 
 ### src/ai_proxy/
-| File | Lines | Purpose |
-|------|-------|---------|
-| `routes.py` | 224 | OpenAI-compat `/v1/*` endpoints |
-| `providers/registry.py` | 1001 | 9 providers, model lists, cost metadata, auth types |
-| `routing/combo.py` | 574 | 13-strategy routing engine, circuit breaker, budget guard |
-| `translators/core.py` | 275 | Request/response translation between formats |
-| `services/rate_limiter.py` | 159 | Rate limiting per provider |
-| `services/usage_tracker.py` | 139 | Token usage tracking |
-| `executors/base.py` | 256 | Base executor for async provider calls |
-| `executors/playwright.py` | 270 | Playwright-based browser AI provider |
-| `cli.py` | 273 | CLI for provider management, usage, cost reports |
+| File                        | Lines | Purpose                                                   |
+|-----------------------------|-------|-----------------------------------------------------------|
+| `routes.py`                 | 224   | OpenAI-compat `/v1/*` endpoints                           |
+| `providers/registry.py`     | 1001  | 9 providers, model lists, cost metadata, auth types       |
+| `routing/combo.py`          | 574   | 13-strategy routing engine, circuit breaker, budget guard |
+| `translators/core.py`       | 275   | Request/response translation between formats              |
+| `services/rate_limiter.py`  | 159   | Rate limiting per provider                                |
+| `services/usage_tracker.py` | 139   | Token usage tracking                                      |
+| `executors/base.py`         | 256   | Base executor for async provider calls                    |
+| `executors/playwright.py`   | 270   | Playwright-based browser AI provider                      |
+| `cli.py`                    | 273   | CLI for provider management, usage, cost reports          |
 
 ### src/crypto/ (8 files, complete ✅)
 Ed25519 signing, BLAKE2b-256, Argon2id (mem=262144, iters=4), AES-256-GCM.
@@ -154,13 +154,13 @@ Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
 ### .claude/ system
-| Component    | Files                                                | Status                       |
-|--------------|------------------------------------------------------|------------------------------|
-| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams                  | ✅ all consistent frontmatter |
-| `hooks/`     | 18 hook .py files + hooks.json (18 events)           | ⚠️ NEVER AUDITED             |
-| `commands/`  | 6 forensics commands + config.py                     | ⚠️ NEVER AUDITED             |
-| `skills/`    | **780 SKILL.md** across 20 domains, single-word leaf dirs | ✅ RESTRUCTURED (2026-04-18) |
-| `templates/` | artifact.md, baselines/ (kernel/network/persistence) | Not reviewed                 |
+| Component    | Files                                                     | Status                       |
+|--------------|-----------------------------------------------------------|------------------------------|
+| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams                       | ✅ all consistent frontmatter |
+| `hooks/`     | 18 hook .py files + hooks.json (18 events)                | ⚠️ NEVER AUDITED             |
+| `commands/`  | 6 forensics commands + config.py                          | ⚠️ NEVER AUDITED             |
+| `skills/`    | **780 SKILL.md** across 20 domains, single-word leaf dirs | ✅ RESTRUCTURED (2026-04-18)  |
+| `templates/` | artifact.md, baselines/ (kernel/network/persistence)      | Not reviewed                 |
 
 #### hooks.json — 18 events registered
 `FirstInit`, `PreToolCall`, `PostToolUse`, `SessionStart`, `SessionEnd`, `AgentStart`, `AgentEnd`, `PhaseStart`, `PhaseEnd`, `InvestigationStart`, `InvestigationEnd`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated`
@@ -246,13 +246,15 @@ Model tiers:
 ### Phase 0 — Quick Fixes ✅ COMPLETE
 ### Phase Docs — 16 docs ✅ COMPLETE (commit 7217dff)
 
-### Skills Restructure ✅ COMPLETE (2026-04-18)
-- 20 top-level domains, single-word leaf dirs, 780 SKILL.md files
-- **26 project-native** (full) + **754 Anthropic** (full content copied + CyberSecSuite integration)
-- 224 explicit collision overrides for single-word dir disambiguation
-- Taxonomy framework dirs retain hyphens (`cloud-security`, `red-team`)
-- Master index: `.claude/skills/INDEX.md`
-- See **Skills System** section below for full details
+### Skills Restructure — IN PROGRESS (2026-04-18)
+- **Part A**: Redistribute `red-team/` (51 skills) to component domains
+- **Part B**: Flatten 75 same-name nestings
+- **Part C**: Restructure `malware/` domain  
+- **Part D**: Copy Anthropic extra content (~2,648 files)
+- **Part E**: Generate tag + NIST CSF 2.0 fixtures; implement seeding
+  - E1: Embed NIST CSF 2.0 (6 Functions, 22 Categories, 106 Subcategories) as static fixture
+  - E2: Extract 2,245 tags + 57 MITRE ATT&CK
+- **Part F**: Sync MEMORY.md + regenerate INDEX.md + skills.tree
 
 ### Phase A — mcp_server.py Split + SDK Package (PRIORITY)
 Ordered by dependency:
@@ -406,13 +408,88 @@ Copy verbatim into `src/mcp/cybersec/helpers.py`.
 
 ---
 
-## Skills System
+## Skills System (RESTRUCTURING IN PROGRESS)
 
-### Structure
+### Core Philosophy (User-Defined)
+**Skills = components** (tools, protocols, systems, software).
+**Actions = verbs** (analyze, harden, attack, detect, hunt, create) applied to components.
+**Activities ≠ domains** — `red-team/`, `forensics/`, `incident-response/` are methods/activities.
+
+### Restructuring Plan (5 Phases - Ordered)
+
+#### Phase 0: Copy Anthropic Extra Content ⭐ FIRST
+**Why**: Must copy scripts/references BEFORE renaming, to ensure complete skill dirs.
+
+- **ALL 754 Anthropic skills** have: LICENSE + scripts/ + references/ + sometimes assets/
+- **Strategy**: For each Anthropic skill, use `/tmp/skill_mapping.json` to find corresponding skill location
+- **Copy**: LICENSE + scripts/ + references/ + assets/ → our skill dir
+- **Preserve**: directory structure (scripts/, references/, assets/)
+- **Total**: ~2,648 files copied
+- **Result**: Each skill dir has complete Anthropic content + our SKILL.md
+
+#### Phase 1: Plan Deep Hierarchy
+- Analyze all 780 skills by path depth
+- Identify logical groupings for 3rd/4th/5th subdirs
+- Generate: old_path → new_path, old_name → new_name mappings
+
+#### Part A: Redistribute red-team/ (51 skills) to component domains
+**Currently**: `red-team/` has 51 skills (access/, recon/, c2/, lateral/, privesc/, socialeng/, etc.)
+**Solution**: `red-team/SKILL.md` stays as single **orchestrator index**. All 51 skills move to:
+- `web-security/auth/enum/` (access/authentication)
+- `identity/ad/`, `identity/kerberos/` (lateral movement, Kerberos attacks, AD exploits)
+- `network/smb/`, `network/dns/`, `network/lateral/`, `network/recon/` (network attacks)
+- `malware/c2/` (c2/sliver, c2/havoc, c2/covenant, c2/adversary, etc.)
+- `cloud-security/aws/`, `cloud-security/kubernetes/` (cloud privesc)
+- `endpoint-security/` (windows lateral, LOLBins, privesc, credentials)
+- `kernel-os/linux/` (Linux privesc)
+- `ot-ics/iot/` (IoT attacks)
+- `siem-soc/splunk/` (SIEM detection)
+- `ops/engagement/`, `ops/socialeng/`, `ops/purpleteam/`, `ops/physical/` (non-attack ops)
+- `mobile/pentest/`, `vulnerability/exploit/` (mobile/binary exploitation)
+
+**After redistribution**: `red-team/` = ONLY `SKILL.md` (links to 51 skills in their homes).
+
+#### Part B: Flatten 75 same-name nestings
+Across all domains: promote `foo/foo/SKILL.md` → `foo/SKILL.md`.
+
+#### Part C: Restructure malware/ domain
+Merge: `static/` + `static-analysis/` → `analysis/`; `ioc/` + `iocs/` → `ioc/`.
+Relocate: Empire → `c2/empire/`; `ghidrare` → `golang/`; `dnspy` → `dotnet/`.
+
+#### Part D: Copy Anthropic extra content
+~2,648 files: `scripts/`, `references/`, `assets/`, `SKILL.es.md`.
+
+#### Part E: Deep Hierarchy + Path-Based Naming
+Add 3rd/4th/5th levels, rename all SKILL.md `name:` fields to path-based names:
+- `mobile/android/apk/static-analysis/SKILL.md` → name: `android-apk-static-analysis`
+- `forensics/memory/analysis/volatility3/plugins/linux/processes/SKILL.md` → name: `memory-volatility3-plugins-linux-processes`
+
+#### E1 — NIST CSF 2.0 static fixture ✅ YES
+**Why**: CSF 2.0 is closed/published — no live API. Embed as static fixture.
+**Structure**: 6 Functions → 22 Categories → 106 Subcategories
+- Functions: `GV` (Govern), `ID` (Identify), `PR` (Protect), `DE` (Detect), `RS` (Respond), `RC` (Recover)
+- Categories: e.g. `GV.OC`, `ID.AM`, `PR.AA`, `DE.CM`, `RS.MA`, `RC.RP`
+- All 106 subcategories embedded in `data/fixtures/nist_csf.json` (static, no download)
+
+**Coverage**: SKILL.md files reference 46/106. `RS.AN-01` (CSF 1.1) marked as deprecated.
+
+**Implementation**:
+- Model: `ComplianceRule` with `framework="NIST_CSF_2.0"` (or new `NistCsfControl`)
+- Seed: `seed_nist_csf()` in `seeds.py` (idempotent, get_or_create by identifier)
+- Cross-ref: Link skills to CSF controls after tag seeding
+
+#### E2 — Tag fixtures
+Extract 2,245 tags + 57 MITRE ATT&CK → `data/fixtures/`; seed via `seed_skill_tags()`.
+
+#### Part G: Sync
+Update `MEMORY.md` (component philosophy), regenerate `INDEX.md` + `skills.tree`.
+
+### Restructuring Order
+**Phase 0** → **Phase 1** → **Part A** → **Part B** → **Part C** → **Part D** → **Part E** → **Part G**
+
+### Current Structure (before restructuring)
 ```
 .claude/skills/               ← root (780 SKILL.md, 20 domains)
-├── INDEX.md                  ← master index (auto-generated)
-│
 ├── forensics/          (89)  # disk, memory, network, log, email, mobile, cloud, usb
 ├── malware/            (70)  # static, dynamic, reversing, ransomware, persistence, obfuscation,
 │                             #   cobaltstrike, families, supplychain, ioc, yara, pdf, triage
@@ -421,34 +498,32 @@ Copy verbatim into `src/mcp/cybersec/helpers.py`.
 ├── incident-response/  (39)  # triage, containment, eradication, recovery, playbooks, tabletop,
 │                             #   phishing, cloud, insider, malware, dashboard
 ├── vulnerability/      (30)  # scanning, sca, prioritization, remediation, management
-├── red-team/           (51)  # recon, access, phishing, lateral, privesc, c2, socialeng,
-│                             #   engagement, purpleteam, thickclient
-├── network-security/   (35)  # ids, layer2, mitm, wireless, firewall, assessment, bgpsecurity
-├── web-security/       (95)  # injection (sqli/xss/xxe/ssrf/ssti), auth (jwt/oauth/csrf/bac),
-│                             #   api (graphql/websocket/soap), pentest, owasp, waf, cache,
-│                             #   tls, headers, cors, deserialization, upload, smuggling, ai
-├── cloud-security/    (113)  # aws, azure, gcp, kubernetes, containers, serverless, terraform,
-│                             #   devsecops, zerotrust, pentest, cwpp
-├── identity-security/  (44)  # ad, kerberos, mfa, pam, oauth, saml, serviceaccount, rbac
-├── endpoint-security/  (16)  # edr, defender, logging, forensics, hids, monitoring, hardening
-├── ot-ics/             (24)  # protocols, discovery, scada, plc, historian, assessment
-├── crypto-pki/         (20)  # signing, ca, lifecycle, transparency, tls, hsm, postquantum,
-│                             #   blockchain, encryption
-├── siem-soc/           (24)  # splunk, elastic, qradar, tuning, ueba, operations, onboarding
-├── compliance/         (13)  # nist, soc2, cis, privacy, email, pci, cloud
-├── kernel-os/           (7)  # linux/lkm/kerneldev-forensic, rootkits, firmware, ebpf
-├── mobile/              (7)  # android, ios, pinning, api
-├── steganography/       (1)  # LSB, DCT, entropy, stego tool artifacts
-├── deception/           (5)  # honeypot, honeytoken, canary, canarytoken, decoy
-└── ops/                 (9)  # mode (blue-team/purple-team), scope, dashboard, dbus, browser
+├── red-team/           (51)  # TO REDISTRIBUTE ⚠️
+├── network/ (was network-security)  (35)
+├── web-security/       (95)
+├── cloud-security/    (113)
+├── identity/ (was identity-security) (44)
+├── endpoint-security/  (16)
+├── ot-ics/             (24)
+├── crypto-pki/         (20)
+├── siem-soc/           (24)
+├── compliance/         (13)
+├── kernel-os/           (7)
+├── mobile/              (7)
+├── steganography/       (1)
+├── deception/           (5)
+├── database/ (new, empty)
+├── browser/ (new, empty)
+├── hardening/ (index-only, empty)
+└── ops/                 (9)  # mode, scope, meta-ops
 ```
 
-### Skill Counts
-| Type | Count | Description |
-|------|-------|-------------|
-| Project-native (full) | 26 | Rich SKILL.md with MCP examples, DB queries, agent hooks |
-| Anthropic-integrated (full content) | 754 | Full Anthropic workflow + CyberSecSuite integration |
-| **Total** | **780** | All in `.claude/skills/`, indexed in `INDEX.md` |
+### Skill Counts (Current)
+| Type                                | Count   | Description                                              |
+|-------------------------------------|---------|----------------------------------------------------------|
+| Project-native (full)               | 26      | Rich SKILL.md with MCP examples, DB queries, agent hooks |
+| Anthropic-integrated (full content) | 754     | Full Anthropic workflow + CyberSecSuite integration      |
+| **Total**                           | **780** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
 ### Naming Rules
 - **Taxonomy dirs** (framework): CAN have hyphens (`cloud-security`, `red-team`, `crypto-pki`)
@@ -475,14 +550,84 @@ source: Anthropic-Cybersecurity-Skills   # or empty for project-native
 Anthropic skills contain FULL original workflow content (commands, code, detection steps)
 plus appended `## CyberSecSuite Integration` section with MCP tool usage.
 
-### Key Files
+### Key Files (After Restructure)
 - `INDEX.md` — master sorted list (auto-generated, 780 entries)
 - `ops/mode/blue-team/SKILL.md` — blue team mode activation
-- `red-team/SKILL.md` — red team mode activation (merged with technique tree)
-- `red-team/purpleteam/SKILL.md` — purple team mode activation
+- `red-team/SKILL.md` — red team orchestrator index (links to 51 skills across domains)
+- `ops/purpleteam/SKILL.md` — purple team mode activation
 - `kernel-os/linux/lkm/kerneldev-forensic/` — full skill with config/, examples/, scripts/, templates/
 
 ### Anthropic Skills Source
 All 754 skills from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
 Full content copied with adapted frontmatter (model, maxTurns, mcpServers added).
 Restructure script: `/tmp/skills_restructure2.py` (taxonomy routing + single-word extraction)
+
+---
+
+## OmniRoute Integration (NEW)
+
+### OmniRoute MCP Server — 16+ Tools
+**Location**: `/home/daen/Projects/OmniRoute/open-sse/mcp-server/`
+
+#### Essential Tools (8)
+| Tool | Purpose |
+|------|---------|
+| `omniroute_get_health` | Gateway health, circuit breakers, uptime |
+| `omniroute_list_combos` | All configured combos with models |
+| `omniroute_get_combo_metrics` | Performance metrics for a specific combo |
+| `omniroute_switch_combo` | Switch active combo by ID/name |
+| `omniroute_check_quota` | Quota status per provider or all |
+| `omniroute_route_request` | Send a chat completion through OmniRoute |
+| `omniroute_cost_report` | Cost analytics for a time period |
+| `omniroute_list_models_catalog` | Full model catalog with capabilities |
+
+#### Advanced Tools (8)
+| Tool | Purpose |
+|------|---------|
+| `omniroute_simulate_route` | Dry-run routing simulation |
+| `omniroute_set_budget_guard` | Session budget with degrade/block/alert |
+| `omniroute_set_routing_strategy` | Runtime strategy switch |
+| `omniroute_set_resilience_profile` | Apply resilience presets |
+| `omniroute_test_combo` | Live-test all models in a combo |
+| `omniroute_get_provider_metrics` | Detailed per-provider metrics |
+| `omniroute_best_combo_for_task` | Task-fitness recommendation |
+| `omniroute_explain_route` | Explain a past routing decision |
+
+#### Skill Tools (3)
+- `omniroute_skills_list` — List all registered skills
+- `omniroute_skills_enable` — Enable/disable skill
+- `omniroute_skills_execute` — Execute skill with input
+
+### Integration Plan
+- Register as external MCP server in `mcp.json`
+- Add omniroute entry with npm command
+- Env vars: `OMNIROUTE_API_KEY`, `OMNIROUTE_BASE_URL=http://localhost:8888`
+- Update allowed_tools() → `mcp__omniroute__*`
+- Status: **PENDING** (todo: omniroute-integrate)
+
+---
+
+## Author + Action Metadata Update (NEW)
+
+### Changes to ALL 780 SKILL.md Files
+**Philosophy**: Skills = components. Last directory = action verb/tool applied to component.
+
+### Fields to Update/Add
+1. **`author: dcx7c5`** — change ALL from mahipal → dcx7c5 (754 Anthropic skills)
+                          add to 26 project-native skills
+2. **`action: <last_dir>`** — extract leaf directory name
+   - Examples:
+     - `mobile/android/apk/static-analysis/` → action: `static-analysis`
+     - `forensics/memory/analysis/volatility3/` → action: `volatility3`
+     - `cloud-security/aws/iam/` → action: `iam`
+     - `malware/c2/sliver/` → action: `sliver`
+
+### Current State
+- 754/780 have author field (mostly mahipal)
+- 26/780 have NO author field (project-native)
+- 0/780 have action field (to be added)
+
+### Todos
+- `author-action-map` — Generate mapping (pending)
+- `author-action-update` — Update all 780 SKILL.md (pending)
+- `author-action-validate` — Verify + regenerate INDEX (pending)

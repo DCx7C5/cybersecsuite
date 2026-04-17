@@ -1,6 +1,7 @@
 ---
 name: spiderfoot
 description: Automate OSINT collection using SpiderFoot REST API and CLI for target profiling, module-based reconnaissance,
+action: spiderfoot
   and structured result analysis across 200+ data sources
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -12,7 +13,7 @@ tags:
 - attack-surface
 - target-profiling
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

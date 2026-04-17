@@ -1,6 +1,7 @@
 ---
 name: sqlite
 description: Perform forensic analysis of SQLite databases to recover deleted records from freelists and WAL files, decode
+action: sqlite
   encoded timestamps, and extract evidence from browser history, messaging apps, and mobile device databases.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -16,7 +17,7 @@ tags:
 - b-tree
 - unallocated-space
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

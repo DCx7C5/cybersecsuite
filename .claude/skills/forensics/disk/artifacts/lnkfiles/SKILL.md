@@ -1,6 +1,7 @@
 ---
 name: lnkfiles
 description: Parse Windows LNK shortcut files to extract target paths, timestamps, volume information, and machine identifiers
+action: lnkfiles
   for forensic timeline reconstruction.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - timeline-reconstruction
 - evidence-collection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

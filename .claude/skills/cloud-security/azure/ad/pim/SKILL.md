@@ -1,6 +1,7 @@
 ---
 name: pim
 description: Configure Microsoft Entra Privileged Identity Management to enforce just-in-time role activation, approval workflows,
+action: pim
   and access reviews for Azure AD privileged roles.
 domain: cybersecurity
 subdomain: identity-access-management
@@ -13,7 +14,7 @@ tags:
 - identity-governance
 - zero-trust
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

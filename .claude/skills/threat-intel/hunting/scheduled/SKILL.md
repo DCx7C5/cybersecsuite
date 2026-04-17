@@ -1,6 +1,7 @@
 ---
 name: scheduled
 description: Hunt for adversary persistence via Windows Scheduled Tasks by analyzing task creation events, suspicious task
+action: scheduled
   actions, and unusual scheduling patterns.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - t1053
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Execution Isolation

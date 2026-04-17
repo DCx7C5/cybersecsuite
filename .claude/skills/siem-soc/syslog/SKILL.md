@@ -1,6 +1,7 @@
 ---
 name: syslog
 description: Configure rsyslog for centralized log collection with TLS encryption, custom templates, and log rotation. Generates
+action: syslog
   server and client configuration files with GnuTLS stream drivers, x509 certificate authentication, per-host log segregation,
   and reliable queue settings for high-availability syslog infrastructure.
 domain: cybersecurity
@@ -11,7 +12,7 @@ tags:
 - centralization
 - with
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

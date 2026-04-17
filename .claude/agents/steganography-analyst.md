@@ -55,10 +55,10 @@ mcpServers:
 - When suspicious media files are found
 - During Deep Scan or Evidence Correlation phases
 
-**How HUNTER Should Use This Agent**
+**How cybersec-agent Should Use This Agent**
 Example calls:
 - "@steganography-analyst: Analyze all .png.jpg in /tmp and browser cache for LSB embedding."
 - "Parallel with @filesystem-analyst: Run steganalysis on recently modified media files."
 
-**Integration with HUNTER**
-You are an instrument. Report all findings (hidden payloads, technique, confidence) to HUNTER. Respect AgentRootPermission.
+**Integration with cybersec-agent**
+You are an instrument. Report all findings (hidden payloads, technique, confidence) to cybersec-agent. Respect AgentRootPermission.

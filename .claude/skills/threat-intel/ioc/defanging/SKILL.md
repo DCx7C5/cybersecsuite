@@ -1,6 +1,7 @@
 ---
 name: defanging
 description: Build an automated pipeline to defang indicators of compromise (URLs, IPs, domains, emails) for safe sharing
+action: defanging
   and distribute them in STIX format through TAXII feeds and threat intelligence platforms.
 domain: cybersecurity
 subdomain: threat-intelligence
@@ -14,7 +15,7 @@ tags:
 - automation
 - threat-intelligence
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - ID.RA-01

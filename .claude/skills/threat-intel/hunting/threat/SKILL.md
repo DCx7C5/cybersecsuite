@@ -1,6 +1,7 @@
 ---
 name: threat
 description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and
+action: hunting-threat
   environmental data into testable hunting hypotheses.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -12,7 +13,7 @@ tags:
 - hunting-framework
 - proactive-detection
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

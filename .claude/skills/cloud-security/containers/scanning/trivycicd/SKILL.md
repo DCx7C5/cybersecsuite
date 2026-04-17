@@ -1,6 +1,7 @@
 ---
 name: trivycicd
 description: 'This skill covers integrating Aqua Security''s Trivy scanner into CI/CD pipelines for comprehensive container
+action: trivycicd
   image vulnerability detection. It addresses scanning Docker images for OS package and application dependency CVEs, detecting
   misconfigurations in Dockerfiles, scanning filesystem and git repositories, and establishing severity-based quality gates
   that block deployment of vulnerable images.
@@ -16,7 +17,7 @@ tags:
 - vulnerability-scanning
 - secure-sdlc
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

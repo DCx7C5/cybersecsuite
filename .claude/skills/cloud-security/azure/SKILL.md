@@ -1,6 +1,7 @@
 ---
 name: azure
 description: Detect and investigate Azure service principal abuse including privilege escalation, credential compromise, admin
+action: cloud-security-azure
   consent bypass, and unauthorized enumeration in Microsoft Entra ID environments.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - splunk
 - sentinel
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Token Binding

@@ -1,6 +1,7 @@
 ---
 name: postman
 description: 'Uses Postman to perform structured API security testing by building collections that test for OWASP API Security
+action: postman
   Top 10 vulnerabilities including authentication bypass, authorization flaws, injection, and data exposure. The tester creates
   environments with multiple user roles, writes test scripts for automated security validation, and integrates Postman with
   OWASP ZAP and Newman for CI/CD security testing. Activates for requests involving Postman security testing, API security
@@ -16,7 +17,7 @@ tags:
 - automated-testing
 - security-validation
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

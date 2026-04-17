@@ -1,6 +1,7 @@
 ---
 name: domainfronting
 description: Detect domain fronting C2 traffic by analyzing SNI vs HTTP Host header mismatches in proxy logs and TLS certificate
+action: domainfronting
   discrepancies using pyOpenSSL for certificate inspection
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - threat-hunting
 - network-security
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

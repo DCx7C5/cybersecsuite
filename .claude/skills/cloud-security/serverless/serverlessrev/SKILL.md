@@ -1,6 +1,7 @@
 ---
 name: serverlessrev
 description: 'Performing security reviews of serverless functions across AWS Lambda, Azure Functions, and GCP Cloud Functions
+action: serverlessrev
   to identify overly permissive execution roles, insecure environment variables, injection vulnerabilities, and missing runtime
   protections.
 
@@ -15,7 +16,7 @@ tags:
 - cloud-functions
 - security-review
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

@@ -1,6 +1,7 @@
 ---
 name: trailanalysis
 description: 'Implementing AWS CloudTrail log analysis for security monitoring, threat detection, and forensic investigation
+action: trailanalysis
   using Athena, CloudWatch Logs Insights, and SIEM integration to identify unauthorized access, privilege escalation, and
   suspicious API activity.
 
@@ -15,7 +16,7 @@ tags:
 - threat-detection
 - forensics
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

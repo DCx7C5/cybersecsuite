@@ -1,6 +1,7 @@
 ---
 name: vol3core
 description: Analyze volatile memory dumps using Volatility 3 to extract running processes, network connections, loaded modules,
+action: vol3core
   and evidence of malicious activity.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - malware-detection
 - incident-response
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01

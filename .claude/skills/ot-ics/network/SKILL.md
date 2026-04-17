@@ -1,6 +1,7 @@
 ---
 name: network
 description: 'This skill covers implementing network segmentation in Operational Technology environments using VLANs, industrial
+action: network
   firewalls, data diodes, and software-defined networking. It addresses the Purdue Model-based segmentation strategy, migration
   from flat networks to segmented architectures without disrupting operations, configuring OT-aware firewalls with industrial
   protocol deep packet inspection, and validating segmentation effectiveness through traffic analysis.
@@ -17,7 +18,7 @@ tags:
 - network-segmentation
 - vlan
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

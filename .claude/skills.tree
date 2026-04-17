@@ -1,0 +1,1781 @@
+skills
+├── cloud-security
+│   ├── aws
+│   │   ├── access
+│   │   │   └── aws
+│   │   │       └── SKILL.md
+│   │   ├── aws
+│   │   │   └── SKILL.md
+│   │   ├── configrules
+│   │   │   └── SKILL.md
+│   │   ├── guardduty
+│   │   │   ├── guardduty
+│   │   │   │   └── SKILL.md
+│   │   │   └── threatdetect
+│   │   │       └── SKILL.md
+│   │   ├── hubcompliance
+│   │   │   └── SKILL.md
+│   │   ├── iam
+│   │   │   └── SKILL.md
+│   │   ├── iamharden
+│   │   │   └── SKILL.md
+│   │   ├── lambda
+│   │   │   └── aws
+│   │   │       └── SKILL.md
+│   │   ├── macie
+│   │   │   └── SKILL.md
+│   │   ├── nitro
+│   │   │   └── SKILL.md
+│   │   ├── pentest
+│   │   │   └── pacu
+│   │   │       └── SKILL.md
+│   │   ├── scoutsuite
+│   │   │   └── SKILL.md
+│   │   ├── securityhub
+│   │   │   └── SKILL.md
+│   │   └── SKILL.md
+│   ├── azure
+│   │   ├── ad
+│   │   │   ├── azure
+│   │   │   │   └── SKILL.md
+│   │   │   ├── conditional
+│   │   │   │   └── SKILL.md
+│   │   │   ├── pim
+│   │   │   │   └── SKILL.md
+│   │   │   └── saml
+│   │   │       └── SKILL.md
+│   │   ├── defender
+│   │   │   ├── defender
+│   │   │   │   └── SKILL.md
+│   │   │   └── msdefender
+│   │   │       └── SKILL.md
+│   │   ├── sentinel
+│   │   │   └── sentinel
+│   │   │       └── SKILL.md
+│   │   ├── SKILL.md
+│   │   └── storage
+│   │       ├── misconfigured
+│   │       │   └── SKILL.md
+│   │       └── storagemisconfig
+│   │           └── SKILL.md
+│   ├── cloud
+│   │   └── SKILL.md
+│   ├── compromised
+│   │   └── SKILL.md
+│   ├── containers
+│   │   ├── calico
+│   │   │   └── SKILL.md
+│   │   ├── container
+│   │   │   └── SKILL.md
+│   │   ├── docker
+│   │   │   ├── docker
+│   │   │   │   └── SKILL.md
+│   │   │   ├── dockerdaemon
+│   │   │   │   └── SKILL.md
+│   │   │   ├── dockertrivy
+│   │   │   │   └── SKILL.md
+│   │   │   └── SKILL.md
+│   │   ├── helm
+│   │   │   └── SKILL.md
+│   │   ├── image
+│   │   │   └── SKILL.md
+│   │   ├── opa
+│   │   │   └── SKILL.md
+│   │   ├── pod
+│   │   │   └── SKILL.md
+│   │   ├── registry
+│   │   │   ├── container
+│   │   │   │   └── SKILL.md
+│   │   │   └── harbor
+│   │   │       └── SKILL.md
+│   │   ├── runtime
+│   │   │   └── SKILL.md
+│   │   ├── scanning
+│   │   │   ├── container
+│   │   │   │   └── SKILL.md
+│   │   │   ├── distroless
+│   │   │   │   └── SKILL.md
+│   │   │   ├── grype
+│   │   │   │   └── SKILL.md
+│   │   │   ├── trivy
+│   │   │   │   └── SKILL.md
+│   │   │   └── trivycicd
+│   │   │       └── SKILL.md
+│   │   └── supply
+│   │       └── SKILL.md
+│   ├── cryptomining
+│   │   └── SKILL.md
+│   ├── cwpp
+│   │   └── SKILL.md
+│   ├── data
+│   │   └── SKILL.md
+│   ├── devsecops
+│   │   ├── aqua
+│   │   │   └── SKILL.md
+│   │   ├── devsecops
+│   │   │   └── SKILL.md
+│   │   ├── fuzz
+│   │   │   └── SKILL.md
+│   │   ├── ghaworkflows
+│   │   │   └── SKILL.md
+│   │   ├── github
+│   │   │   └── SKILL.md
+│   │   ├── gitleaks
+│   │   │   └── SKILL.md
+│   │   ├── iacscan
+│   │   │   └── SKILL.md
+│   │   ├── policy
+│   │   │   └── SKILL.md
+│   │   ├── sast
+│   │   │   └── SKILL.md
+│   │   ├── scanning
+│   │   │   └── SKILL.md
+│   │   ├── secrets
+│   │   │   └── SKILL.md
+│   │   ├── semgrep
+│   │   │   └── SKILL.md
+│   │   └── supply
+│   │       └── SKILL.md
+│   ├── gcp
+│   │   ├── forseti
+│   │   │   └── SKILL.md
+│   │   ├── gcppolicy
+│   │   │   └── SKILL.md
+│   │   ├── iam
+│   │   │   └── SKILL.md
+│   │   ├── pentest
+│   │   │   └── pentest
+│   │   │       └── SKILL.md
+│   │   └── SKILL.md
+│   ├── kubernetes
+│   │   ├── cloudkube
+│   │   │   └── SKILL.md
+│   │   ├── etcd
+│   │   │   └── kubernetes
+│   │   │       └── SKILL.md
+│   │   ├── hardening
+│   │   │   ├── kubernetes
+│   │   │   │   └── SKILL.md
+│   │   │   ├── kubesecmanifest
+│   │   │   │   └── SKILL.md
+│   │   │   ├── podsecurity
+│   │   │   │   └── SKILL.md
+│   │   │   └── rbacharden
+│   │   │       └── SKILL.md
+│   │   ├── network
+│   │   │   ├── k8snetpol
+│   │   │   │   └── SKILL.md
+│   │   │   └── kubernetes
+│   │   │       └── SKILL.md
+│   │   ├── pentest
+│   │   │   └── kubernetes
+│   │   │       └── SKILL.md
+│   │   ├── runtime
+│   │   │   ├── container
+│   │   │   │   └── SKILL.md
+│   │   │   ├── escapedetect
+│   │   │   │   └── SKILL.md
+│   │   │   └── falco
+│   │   │       └── SKILL.md
+│   │   └── SKILL.md
+│   ├── office365
+│   │   └── SKILL.md
+│   ├── okta
+│   │   └── SKILL.md
+│   ├── pentest
+│   │   ├── cartography
+│   │   │   └── SKILL.md
+│   │   └── pentest
+│   │       └── SKILL.md
+│   ├── secrets
+│   │   └── SKILL.md
+│   ├── serverless
+│   │   ├── serverless
+│   │   │   └── SKILL.md
+│   │   ├── serverlessharden
+│   │   │   └── SKILL.md
+│   │   └── serverlessrev
+│   │       └── SKILL.md
+│   ├── shadow
+│   │   └── SKILL.md
+│   ├── terraform
+│   │   └── terraform
+│   │       └── SKILL.md
+│   ├── trailanalysis
+│   │   └── SKILL.md
+│   └── zerotrust
+│       ├── beyondcorp
+│       │   └── SKILL.md
+│       ├── beyondcorpmodel
+│       │   └── SKILL.md
+│       ├── boundary
+│       │   └── SKILL.md
+│       ├── browserisolation
+│       │   └── SKILL.md
+│       ├── cisamaturity
+│       │   └── SKILL.md
+│       ├── cloudflare
+│       │   └── SKILL.md
+│       ├── cloudzt
+│       │   └── SKILL.md
+│       ├── deviceposture
+│       │   └── SKILL.md
+│       ├── guardicore
+│       │   └── SKILL.md
+│       ├── identity
+│       │   └── SKILL.md
+│       ├── identityverify
+│       │   └── SKILL.md
+│       ├── just
+│       │   └── SKILL.md
+│       ├── mtls
+│       │   └── SKILL.md
+│       ├── nextdns
+│       │   └── SKILL.md
+│       ├── prisma
+│       │   └── SKILL.md
+│       ├── saas
+│       │   └── SKILL.md
+│       ├── software
+│       │   └── SKILL.md
+│       ├── tailscale
+│       │   └── SKILL.md
+│       ├── zerotrust
+│       │   └── SKILL.md
+│       ├── zscaler
+│       │   ├── SKILL.md
+│       │   └── zia
+│       │       └── SKILL.md
+│       └── ztna
+│           └── SKILL.md
+├── compliance
+│   ├── cis
+│   │   └── cloud
+│   │       └── SKILL.md
+│   ├── cloud
+│   │   └── nerc
+│   │       └── SKILL.md
+│   ├── email
+│   │   ├── dmarc
+│   │   │   └── SKILL.md
+│   │   └── dmarcrollout
+│   │       └── SKILL.md
+│   ├── iso
+│   │   └── SKILL.md
+│   ├── nist
+│   │   └── nist
+│   │       └── SKILL.md
+│   ├── pci
+│   │   └── pci
+│   │       └── SKILL.md
+│   ├── privacy
+│   │   ├── cloud
+│   │   │   └── SKILL.md
+│   │   ├── data
+│   │   │   └── SKILL.md
+│   │   ├── dsar
+│   │   │   └── SKILL.md
+│   │   ├── gdpr
+│   │   │   └── SKILL.md
+│   │   └── privacy
+│   │       └── SKILL.md
+│   └── soc2
+│       └── auditprep
+│           └── SKILL.md
+├── crypto-pki
+│   ├── aes
+│   │   └── SKILL.md
+│   ├── blockchain
+│   │   ├── blockchain
+│   │   │   └── SKILL.md
+│   │   └── ethereum
+│   │       └── SKILL.md
+│   ├── ca
+│   │   └── openssl
+│   │       └── SKILL.md
+│   ├── certificates
+│   │   └── transparency
+│   │       └── SKILL.md
+│   ├── cryptographic
+│   │   └── SKILL.md
+│   ├── digital
+│   │   └── SKILL.md
+│   ├── encryption
+│   │   ├── e2eencryption
+│   │   │   └── SKILL.md
+│   │   └── kmsenvelope
+│   │       └── SKILL.md
+│   ├── hashcat
+│   │   └── SKILL.md
+│   ├── hsm
+│   │   ├── hardware
+│   │   │   └── SKILL.md
+│   │   └── hsm
+│   │       └── SKILL.md
+│   ├── postquantum
+│   │   └── post
+│   │       └── SKILL.md
+│   ├── rsa
+│   │   └── SKILL.md
+│   ├── signing
+│   │   ├── code
+│   │   │   └── SKILL.md
+│   │   └── SKILL.md
+│   ├── tls
+│   │   ├── sslkeylog
+│   │   │   └── SKILL.md
+│   │   └── tls
+│   │       └── SKILL.md
+│   ├── transparency
+│   │   └── certificates
+│   │       └── SKILL.md
+│   └── zero
+│       └── SKILL.md
+├── deception
+│   ├── canary
+│   │   └── SKILL.md
+│   ├── canarytoken
+│   │   └── SKILL.md
+│   ├── deception
+│   │   └── SKILL.md
+│   ├── honeypot
+│   │   └── SKILL.md
+│   └── honeytoken
+│       └── SKILL.md
+├── endpoint-security
+│   ├── application
+│   │   └── SKILL.md
+│   ├── defender
+│   │   └── defender
+│   │       └── SKILL.md
+│   ├── disk
+│   │   └── SKILL.md
+│   ├── edr
+│   │   └── crowdstrike
+│   │       └── SKILL.md
+│   ├── endpoint
+│   │   └── SKILL.md
+│   ├── evasion
+│   │   └── SKILL.md
+│   ├── file
+│   │   └── SKILL.md
+│   ├── fileless
+│   │   └── SKILL.md
+│   ├── forensics
+│   │   └── investigation
+│   │       └── SKILL.md
+│   ├── hardening
+│   │   └── linux
+│   │       └── SKILL.md
+│   ├── linuxcis
+│   │   └── SKILL.md
+│   ├── memory
+│   │   └── SKILL.md
+│   ├── monitoring
+│   │   ├── datadog
+│   │   │   └── SKILL.md
+│   │   └── osquery
+│   │       └── SKILL.md
+│   ├── policy
+│   │   └── usbpolicy
+│   │       └── SKILL.md
+│   └── windowscis
+│       └── SKILL.md
+├── forensics
+│   ├── browser
+│   │   └── SKILL.md
+│   ├── cloud
+│   │   ├── cloud
+│   │   │   └── SKILL.md
+│   │   ├── docker
+│   │   │   └── SKILL.md
+│   │   ├── falco
+│   │   │   └── SKILL.md
+│   │   └── SKILL.md
+│   ├── disk
+│   │   ├── acquisition
+│   │   │   ├── autopsy
+│   │   │   │   └── SKILL.md
+│   │   │   └── dcfldd
+│   │   │       └── SKILL.md
+│   │   ├── analysis
+│   │   │   ├── disk
+│   │   │   │   └── SKILL.md
+│   │   │   ├── endpoint
+│   │   │   │   └── SKILL.md
+│   │   │   ├── slack
+│   │   │   │   └── SKILL.md
+│   │   │   ├── sqlite
+│   │   │   │   └── SKILL.md
+│   │   │   └── volatile
+│   │   │       └── SKILL.md
+│   │   ├── artifacts
+│   │   │   ├── eventlogs
+│   │   │   │   └── SKILL.md
+│   │   │   ├── lnk
+│   │   │   │   └── SKILL.md
+│   │   │   ├── lnkfiles
+│   │   │   │   └── SKILL.md
+│   │   │   ├── mft
+│   │   │   │   └── SKILL.md
+│   │   │   ├── prefetch
+│   │   │   │   └── SKILL.md
+│   │   │   ├── prefetchpy
+│   │   │   │   └── SKILL.md
+│   │   │   ├── registry
+│   │   │   │   └── SKILL.md
+│   │   │   ├── shellbags
+│   │   │   │   └── SKILL.md
+│   │   │   └── windows
+│   │   │       └── SKILL.md
+│   │   ├── filecarving
+│   │   │   ├── foremost
+│   │   │   │   └── SKILL.md
+│   │   │   └── photorec
+│   │   │       └── SKILL.md
+│   │   └── timeline
+│   │       ├── plaso
+│   │       │   └── SKILL.md
+│   │       └── timesketch
+│   │           └── SKILL.md
+│   ├── email
+│   │   ├── email
+│   │   │   └── SKILL.md
+│   │   ├── outlook
+│   │   │   └── SKILL.md
+│   │   └── phishing
+│   │       └── SKILL.md
+│   ├── log
+│   │   ├── cloud
+│   │   │   ├── anomalies
+│   │   │   │   └── SKILL.md
+│   │   │   ├── api
+│   │   │   │   └── SKILL.md
+│   │   │   ├── athena
+│   │   │   │   └── SKILL.md
+│   │   │   ├── azure
+│   │   │   │   └── SKILL.md
+│   │   │   ├── cloud
+│   │   │   │   └── SKILL.md
+│   │   │   ├── cloudtrailforensics
+│   │   │   │   └── SKILL.md
+│   │   │   └── kubernetes
+│   │   │       └── SKILL.md
+│   │   ├── linux
+│   │   │   ├── linux
+│   │   │   │   └── SKILL.md
+│   │   │   ├── linuxlogforen
+│   │   │   │   └── SKILL.md
+│   │   │   ├── SKILL.md
+│   │   │   └── sysartifacts
+│   │   │       └── SKILL.md
+│   │   ├── SKILL.md
+│   │   ├── web
+│   │   │   ├── hindsight
+│   │   │   │   └── SKILL.md
+│   │   │   └── web
+│   │   │       └── SKILL.md
+│   │   └── windows
+│   │       ├── powershell
+│   │       │   └── SKILL.md
+│   │       ├── splunk
+│   │       │   └── SKILL.md
+│   │       ├── sysmon
+│   │       │   └── SKILL.md
+│   │       └── windows
+│   │           └── SKILL.md
+│   ├── malware
+│   │   └── SKILL.md
+│   ├── memory
+│   │   ├── acquisition
+│   │   │   └── volatility
+│   │   │       └── SKILL.md
+│   │   ├── analysis
+│   │   │   ├── credentials
+│   │   │   │   └── SKILL.md
+│   │   │   ├── heap
+│   │   │   │   └── SKILL.md
+│   │   │   ├── vol3core
+│   │   │   │   └── SKILL.md
+│   │   │   ├── vol3plugins
+│   │   │   │   └── SKILL.md
+│   │   │   ├── volatility
+│   │   │   │   └── SKILL.md
+│   │   │   ├── volatility3
+│   │   │   │   ├── plugins
+│   │   │   │   │   └── linux
+│   │   │   │   │       └── processes
+│   │   │   │   │           └── SKILL.md
+│   │   │   │   └── SKILL.md
+│   │   │   └── volcombined
+│   │   │       └── SKILL.md
+│   │   └── injection
+│   │       ├── detection
+│   │       │   └── SKILL.md
+│   │       ├── process
+│   │       │   └── SKILL.md
+│   │       ├── procinjection
+│   │       │   └── SKILL.md
+│   │       └── sysmon
+│   │           └── SKILL.md
+│   ├── mobile
+│   │   └── cellebrite
+│   │       └── SKILL.md
+│   ├── network
+│   │   ├── capture
+│   │   │   ├── network
+│   │   │   │   └── SKILL.md
+│   │   │   ├── pcapforensics
+│   │   │   │   └── SKILL.md
+│   │   │   ├── scapy
+│   │   │   │   └── SKILL.md
+│   │   │   ├── tshark
+│   │   │   │   └── SKILL.md
+│   │   │   └── wireshark
+│   │   │       └── SKILL.md
+│   │   ├── dns
+│   │   │   ├── dns
+│   │   │   │   └── SKILL.md
+│   │   │   └── dnsexfil
+│   │   │       └── SKILL.md
+│   │   ├── flow
+│   │   │   ├── beaconing
+│   │   │   │   └── SKILL.md
+│   │   │   ├── c2beaconing
+│   │   │   │   └── SKILL.md
+│   │   │   └── network
+│   │   │       └── SKILL.md
+│   │   ├── traffic
+│   │   │   ├── arkime
+│   │   │   │   └── SKILL.md
+│   │   │   ├── arppoisoning
+│   │   │   │   └── SKILL.md
+│   │   │   ├── baselining
+│   │   │   │   └── SKILL.md
+│   │   │   ├── c2traffic
+│   │   │   │   └── SKILL.md
+│   │   │   ├── domainfronting
+│   │   │   │   └── SKILL.md
+│   │   │   ├── incidents
+│   │   │   │   └── SKILL.md
+│   │   │   ├── maltraffic
+│   │   │   │   └── SKILL.md
+│   │   │   ├── network
+│   │   │   │   └── SKILL.md
+│   │   │   └── nozomi
+│   │   │       └── SKILL.md
+│   │   └── zeek
+│   │       ├── dnsexfil
+│   │       │   └── SKILL.md
+│   │       ├── dnstunnel
+│   │       │   └── SKILL.md
+│   │       ├── zeek
+│   │       │   └── SKILL.md
+│   │       ├── zeekanalysis
+│   │       │   └── SKILL.md
+│   │       ├── zeekanomaly
+│   │       │   └── SKILL.md
+│   │       └── zeeklateral
+│   │           └── SKILL.md
+│   ├── stego
+│   │   └── SKILL.md
+│   ├── usb
+│   │   └── usb
+│   │       └── SKILL.md
+│   └── windows
+│       └── SKILL.md
+├── identity-security
+│   ├── access
+│   │   └── SKILL.md
+│   ├── ad
+│   │   ├── active
+│   │   │   └── SKILL.md
+│   │   ├── adsimulation
+│   │   │   └── SKILL.md
+│   │   ├── advulnassess
+│   │   │   └── SKILL.md
+│   │   ├── certificates
+│   │   │   └── SKILL.md
+│   │   ├── compromise
+│   │   │   └── SKILL.md
+│   │   ├── dcsync
+│   │   │   └── SKILL.md
+│   │   ├── dcsyncd
+│   │   │   └── SKILL.md
+│   │   ├── foresttrust
+│   │   │   └── SKILL.md
+│   │   ├── honeytoken
+│   │   │   └── SKILL.md
+│   │   ├── pentest
+│   │   │   └── SKILL.md
+│   │   └── tieredmodel
+│   │       └── SKILL.md
+│   ├── anomalous
+│   │   └── SKILL.md
+│   ├── google
+│   │   └── SKILL.md
+│   ├── hardware
+│   │   └── SKILL.md
+│   ├── hashicorp
+│   │   └── SKILL.md
+│   ├── kerberos
+│   │   ├── goldenticket
+│   │   │   └── SKILL.md
+│   │   ├── goldenticketd
+│   │   │   └── SKILL.md
+│   │   ├── impacket
+│   │   │   └── SKILL.md
+│   │   ├── kerbattack
+│   │   │   └── SKILL.md
+│   │   └── kerberoasting
+│   │       └── SKILL.md
+│   ├── ldap
+│   │   └── SKILL.md
+│   ├── mfa
+│   │   ├── duo
+│   │   │   └── SKILL.md
+│   │   ├── fido2
+│   │   │   └── SKILL.md
+│   │   └── passwordless
+│   │       └── SKILL.md
+│   ├── okta
+│   │   └── SKILL.md
+│   ├── pam
+│   │   ├── accessreview
+│   │   │   └── SKILL.md
+│   │   ├── delinea
+│   │   │   └── SKILL.md
+│   │   ├── pam
+│   │   │   └── SKILL.md
+│   │   ├── paw
+│   │   │   └── SKILL.md
+│   │   ├── privacctdiscovery
+│   │   │   └── SKILL.md
+│   │   ├── privileged
+│   │   │   └── SKILL.md
+│   │   └── sessionmon
+│   │       └── SKILL.md
+│   ├── privileged
+│   │   └── SKILL.md
+│   ├── rbac
+│   │   ├── entitlement
+│   │   │   └── SKILL.md
+│   │   ├── identity
+│   │   │   └── SKILL.md
+│   │   ├── rbac
+│   │   │   └── SKILL.md
+│   │   └── sailpoint
+│   │       └── SKILL.md
+│   ├── saml
+│   │   ├── googlesso
+│   │   │   └── SKILL.md
+│   │   └── okta
+│   │       └── SKILL.md
+│   ├── serviceaccount
+│   │   ├── saaudit
+│   │   │   └── SKILL.md
+│   │   ├── sarotation
+│   │   │   └── SKILL.md
+│   │   └── service
+│   │       └── SKILL.md
+│   └── zero
+│       └── SKILL.md
+├── incident-response
+│   ├── cloud
+│   │   └── ir
+│   │       └── SKILL.md
+│   ├── containment
+│   │   ├── active
+│   │   │   └── SKILL.md
+│   │   └── cloud
+│   │       └── SKILL.md
+│   ├── dashboard
+│   │   └── ir
+│   │       └── SKILL.md
+│   ├── email
+│   │   └── SKILL.md
+│   ├── eradication
+│   │   └── malware
+│   │       └── SKILL.md
+│   ├── insider
+│   │   ├── insider
+│   │   │   └── SKILL.md
+│   │   ├── insiderindicators
+│   │   │   └── SKILL.md
+│   │   ├── investigation
+│   │   │   └── SKILL.md
+│   │   └── ueba
+│   │       └── SKILL.md
+│   ├── phishing
+│   │   ├── aitm
+│   │   │   └── SKILL.md
+│   │   ├── bec
+│   │   │   └── SKILL.md
+│   │   ├── business
+│   │   │   └── SKILL.md
+│   │   ├── gateway
+│   │   │   └── SKILL.md
+│   │   ├── gophish
+│   │   │   └── SKILL.md
+│   │   ├── investigation
+│   │   │   └── SKILL.md
+│   │   ├── ir
+│   │   │   └── SKILL.md
+│   │   ├── mimecast
+│   │   │   └── SKILL.md
+│   │   ├── phishing
+│   │   │   └── SKILL.md
+│   │   ├── proofpoint
+│   │   │   └── SKILL.md
+│   │   ├── quishing
+│   │   │   └── SKILL.md
+│   │   ├── redteamphish
+│   │   │   └── SKILL.md
+│   │   ├── simulation
+│   │   │   └── SKILL.md
+│   │   ├── spearphish
+│   │   │   └── SKILL.md
+│   │   ├── training
+│   │   │   └── SKILL.md
+│   │   └── workspace
+│   │       └── SKILL.md
+│   ├── playbooks
+│   │   ├── ir
+│   │   │   └── SKILL.md
+│   │   ├── otirplaybook
+│   │   │   └── SKILL.md
+│   │   ├── phishing
+│   │   │   └── SKILL.md
+│   │   └── playbook
+│   │       └── SKILL.md
+│   ├── recovery
+│   │   └── backup
+│   │       └── SKILL.md
+│   ├── tabletop
+│   │   ├── post
+│   │   │   └── SKILL.md
+│   │   └── tabletop
+│   │       └── SKILL.md
+│   ├── triage
+│   │   ├── elastic
+│   │   │   └── SKILL.md
+│   │   ├── playbook
+│   │   │   └── SKILL.md
+│   │   ├── security
+│   │   │   └── SKILL.md
+│   │   ├── splunk
+│   │   │   └── SKILL.md
+│   │   └── web
+│   │       └── SKILL.md
+│   └── velociraptor
+│       └── SKILL.md
+├── INDEX.md
+├── kernel-os
+│   ├── firmware
+│   │   ├── binwalk
+│   │   │   └── SKILL.md
+│   │   ├── bootkit
+│   │   │   └── SKILL.md
+│   │   ├── firmware
+│   │   │   └── SKILL.md
+│   │   ├── SKILL.md
+│   │   └── uefibootkit
+│   │       └── SKILL.md
+│   ├── linux
+│   │   └── lkm
+│   │       └── kerneldev-forensic
+│   │           ├── config
+│   │           │   └── kerneldev_mcp.json
+│   │           ├── examples
+│   │           │   ├── build_and_test.sh
+│   │           │   ├── deploy_forensic_module.py
+│   │           │   ├── integration_testing.sh
+│   │           │   ├── mcp_commands.sh
+│   │           │   ├── module_creation.sh
+│   │           │   ├── scenario_apt_syscall.sh
+│   │           │   ├── scenario_memory_forensics.sh
+│   │           │   ├── scenario_rootkit_detection.sh
+│   │           │   └── session_modules.py
+│   │           ├── scripts
+│   │           │   ├── debug.sh
+│   │           │   ├── prerequisites.sh
+│   │           │   └── sign_module.sh
+│   │           ├── SKILL.md
+│   │           └── templates
+│   │               ├── forensic_sysfs_interface.c
+│   │               ├── Makefile
+│   │               └── syscall_monitor.c
+│   └── rootkits
+│       └── rootkit
+│           └── SKILL.md
+├── malware
+│   ├── automated
+│   │   └── SKILL.md
+│   ├── cobaltstrike
+│   │   ├── beacons
+│   │   │   └── SKILL.md
+│   │   ├── cobaltstrike
+│   │   │   └── SKILL.md
+│   │   └── malleable
+│   │       └── SKILL.md
+│   ├── config
+│   │   └── SKILL.md
+│   ├── dynamic
+│   │   ├── anyrun
+│   │   │   └── SKILL.md
+│   │   ├── cuckoo
+│   │   │   └── SKILL.md
+│   │   ├── dynamic
+│   │   │   └── SKILL.md
+│   │   ├── email
+│   │   │   └── SKILL.md
+│   │   ├── malware
+│   │   │   └── SKILL.md
+│   │   ├── mobile
+│   │   │   └── SKILL.md
+│   │   └── urlscan
+│   │       └── SKILL.md
+│   ├── families
+│   │   └── malware
+│   │       └── SKILL.md
+│   ├── fileless
+│   │   └── SKILL.md
+│   ├── ioc
+│   │   ├── malware
+│   │   │   └── SKILL.md
+│   │   └── virustotal
+│   │       └── SKILL.md
+│   ├── iocs
+│   │   └── SKILL.md
+│   ├── obfuscation
+│   │   ├── empire
+│   │   │   └── SKILL.md
+│   │   ├── javascript
+│   │   │   └── SKILL.md
+│   │   └── psobfuscation
+│   │       └── SKILL.md
+│   ├── pdf
+│   │   ├── pdfid
+│   │   │   └── SKILL.md
+│   │   └── peepdf
+│   │       └── SKILL.md
+│   ├── persistence
+│   │   ├── linux
+│   │   │   └── SKILL.md
+│   │   ├── malware
+│   │   │   └── SKILL.md
+│   │   ├── persistence
+│   │   │   └── SKILL.md
+│   │   ├── registry
+│   │   │   └── SKILL.md
+│   │   └── winpersist
+│   │       └── SKILL.md
+│   ├── ransomware
+│   │   ├── artifacts
+│   │   │   └── SKILL.md
+│   │   ├── backup
+│   │   │   └── SKILL.md
+│   │   ├── canaryfiles
+│   │   │   └── SKILL.md
+│   │   ├── cisaplaybook
+│   │   │   └── SKILL.md
+│   │   ├── decoy
+│   │   │   └── SKILL.md
+│   │   ├── decryption
+│   │   │   └── SKILL.md
+│   │   ├── detection
+│   │   │   └── SKILL.md
+│   │   ├── grouppolicy
+│   │   │   └── SKILL.md
+│   │   ├── honeypot
+│   │   │   └── SKILL.md
+│   │   ├── immutable
+│   │   │   └── SKILL.md
+│   │   ├── indicators
+│   │   │   └── SKILL.md
+│   │   ├── killswitch
+│   │   │   └── SKILL.md
+│   │   ├── leaksite
+│   │   │   └── SKILL.md
+│   │   ├── precursors
+│   │   │   └── SKILL.md
+│   │   ├── procedures
+│   │   │   └── SKILL.md
+│   │   ├── ransomware
+│   │   │   └── SKILL.md
+│   │   ├── recovery
+│   │   │   └── SKILL.md
+│   │   ├── response
+│   │   │   └── SKILL.md
+│   │   ├── socplaybook
+│   │   │   └── SKILL.md
+│   │   ├── tabletop
+│   │   │   └── SKILL.md
+│   │   └── wallets
+│   │       └── SKILL.md
+│   ├── reversing
+│   │   ├── android
+│   │   │   ├── apktool
+│   │   │   │   └── SKILL.md
+│   │   │   └── jadx
+│   │   │       └── SKILL.md
+│   │   ├── dnspy
+│   │   │   └── SKILL.md
+│   │   ├── ghidra
+│   │   │   └── SKILL.md
+│   │   ├── ghidrare
+│   │   │   └── SKILL.md
+│   │   ├── ios
+│   │   │   ├── frida
+│   │   │   │   └── SKILL.md
+│   │   │   └── objection
+│   │   │       └── SKILL.md
+│   │   └── rust
+│   │       └── SKILL.md
+│   ├── rootkit
+│   │   └── SKILL.md
+│   ├── static
+│   │   ├── linux
+│   │   │   └── SKILL.md
+│   │   ├── macro
+│   │   │   └── SKILL.md
+│   │   ├── packed
+│   │   │   └── SKILL.md
+│   │   └── static
+│   │       └── SKILL.md
+│   ├── static-analysis
+│   │   └── yara
+│   │       └── SKILL.md
+│   ├── supplychain
+│   │   ├── sigstore
+│   │   │   └── SKILL.md
+│   │   └── supply
+│   │       └── SKILL.md
+│   ├── triage
+│   │   ├── automated
+│   │   │   └── SKILL.md
+│   │   ├── ir
+│   │   │   └── SKILL.md
+│   │   ├── malware
+│   │   │   └── SKILL.md
+│   │   └── yara
+│   │       └── SKILL.md
+│   └── yara
+│       ├── yara
+│       │   └── SKILL.md
+│       └── yaradev
+│           └── SKILL.md
+├── mobile
+│   ├── android
+│   │   ├── android
+│   │   │   └── SKILL.md
+│   │   └── intents
+│   │       └── SKILL.md
+│   ├── deeplink
+│   │   └── SKILL.md
+│   ├── insecure
+│   │   └── SKILL.md
+│   ├── ios
+│   │   └── ios
+│   │       └── SKILL.md
+│   ├── mobile
+│   │   └── SKILL.md
+│   └── pinning
+│       └── certificates
+│           └── SKILL.md
+├── network-security
+│   ├── arp
+│   │   └── SKILL.md
+│   ├── assessment
+│   │   ├── ciscoise
+│   │   │   └── SKILL.md
+│   │   ├── extpentest
+│   │   │   └── SKILL.md
+│   │   ├── nac
+│   │   │   └── SKILL.md
+│   │   ├── netpentest
+│   │   │   └── SKILL.md
+│   │   ├── network
+│   │   │   └── SKILL.md
+│   │   └── pentest
+│   │       └── SKILL.md
+│   ├── bandwidth
+│   │   └── SKILL.md
+│   ├── bgp
+│   │   └── SKILL.md
+│   ├── bgpsecurity
+│   │   └── SKILL.md
+│   ├── cloudflare
+│   │   └── SKILL.md
+│   ├── dnsc2
+│   │   └── SKILL.md
+│   ├── firewall
+│   │   ├── firewall
+│   │   │   └── SKILL.md
+│   │   ├── ngfw
+│   │   │   └── SKILL.md
+│   │   ├── pfsense
+│   │   │   └── SKILL.md
+│   │   └── SKILL.md
+│   ├── ids
+│   │   ├── host
+│   │   │   └── SKILL.md
+│   │   ├── snort
+│   │   │   └── SKILL.md
+│   │   ├── suricata
+│   │   │   └── SKILL.md
+│   │   └── suricataips
+│   │       └── SKILL.md
+│   ├── idsscanning
+│   │   └── SKILL.md
+│   ├── injection
+│   │   └── packet
+│   │       └── SKILL.md
+│   ├── ipv6
+│   │   └── SKILL.md
+│   ├── layer2
+│   │   └── vlanhopping
+│   │       └── SKILL.md
+│   ├── metasploit
+│   │   └── SKILL.md
+│   ├── mitm
+│   │   └── mitm
+│   │       └── SKILL.md
+│   ├── monitoring2
+│   │   └── SKILL.md
+│   ├── network
+│   │   └── SKILL.md
+│   ├── nmap
+│   │   └── SKILL.md
+│   ├── port
+│   │   └── SKILL.md
+│   └── wireless
+│       ├── aircrack
+│       │   └── SKILL.md
+│       ├── bluetooth
+│       │   └── SKILL.md
+│       ├── btassessment
+│       │   └── SKILL.md
+│       ├── kismet
+│       │   └── SKILL.md
+│       ├── pentest
+│       │   └── SKILL.md
+│       └── wifipentest
+│           └── SKILL.md
+├── ops
+│   ├── browser
+│   │   └── SKILL.md
+│   ├── dashboard
+│   │   └── SKILL.md
+│   ├── dbus
+│   │   ├── alerts
+│   │   │   └── SKILL.md
+│   │   └── msgs
+│   │       └── SKILL.md
+│   ├── mode
+│   │   ├── blue-team
+│   │   │   └── SKILL.md
+│   │   └── purple-team
+│   │       └── SKILL.md
+│   └── scope
+│       ├── project
+│       │   └── SKILL.md
+│       ├── session
+│       │   └── SKILL.md
+│       └── user
+│           └── SKILL.md
+├── ot-ics
+│   ├── anomalies
+│   │   └── SKILL.md
+│   ├── conduit
+│   │   └── SKILL.md
+│   ├── discovery
+│   │   ├── claroty
+│   │   │   └── SKILL.md
+│   │   └── clarotyassess
+│   │       └── SKILL.md
+│   ├── dragos
+│   │   └── SKILL.md
+│   ├── firewall
+│   │   └── SKILL.md
+│   ├── historian
+│   │   ├── historian
+│   │   │   └── SKILL.md
+│   │   └── othistorian
+│   │       └── SKILL.md
+│   ├── iec
+│   │   └── SKILL.md
+│   ├── network
+│   │   └── SKILL.md
+│   ├── oil
+│   │   └── SKILL.md
+│   ├── patch
+│   │   └── SKILL.md
+│   ├── plc
+│   │   └── plc
+│   │       └── SKILL.md
+│   ├── power
+│   │   └── SKILL.md
+│   ├── protocols
+│   │   ├── dnp3
+│   │   │   └── SKILL.md
+│   │   ├── modbus
+│   │   │   └── SKILL.md
+│   │   ├── modbusanom
+│   │   │   └── SKILL.md
+│   │   ├── modbusmon
+│   │   │   └── SKILL.md
+│   │   └── s7comm
+│   │       └── SKILL.md
+│   ├── purdue
+│   │   └── SKILL.md
+│   ├── remote
+│   │   └── SKILL.md
+│   ├── scada
+│   │   ├── hmiassess
+│   │   │   └── SKILL.md
+│   │   └── scada
+│   │       └── SKILL.md
+│   └── stuxnet
+│       └── SKILL.md
+├── red-team
+│   ├── access
+│   │   ├── authentication
+│   │   │   └── SKILL.md
+│   │   └── evilginx
+│   │       └── SKILL.md
+│   ├── attack
+│   │   └── SKILL.md
+│   ├── binary
+│   │   └── SKILL.md
+│   ├── c2
+│   │   ├── adversary
+│   │   │   └── SKILL.md
+│   │   ├── covenant
+│   │   │   └── SKILL.md
+│   │   ├── havoc
+│   │   │   └── SKILL.md
+│   │   └── sliver
+│   │       └── SKILL.md
+│   ├── constrained
+│   │   └── SKILL.md
+│   ├── engagement
+│   │   ├── engagementplan
+│   │   │   └── SKILL.md
+│   │   └── full
+│   │       └── SKILL.md
+│   ├── iot
+│   │   └── SKILL.md
+│   ├── lateral
+│   │   ├── lateralmov
+│   │   │   └── SKILL.md
+│   │   ├── lmdetection
+│   │   │   └── SKILL.md
+│   │   ├── netlateral
+│   │   │   └── SKILL.md
+│   │   ├── passthehash
+│   │   │   └── SKILL.md
+│   │   ├── passtheticket
+│   │   │   └── SKILL.md
+│   │   ├── pttdetect
+│   │   │   └── SKILL.md
+│   │   ├── splunk
+│   │   │   └── SKILL.md
+│   │   └── wmiexec
+│   │       └── SKILL.md
+│   ├── ms17
+│   │   └── SKILL.md
+│   ├── nopac
+│   │   └── SKILL.md
+│   ├── pentest
+│   │   └── SKILL.md
+│   ├── physical
+│   │   └── SKILL.md
+│   ├── privesc
+│   │   ├── assessment
+│   │   │   └── SKILL.md
+│   │   ├── awsprivesc
+│   │   │   └── SKILL.md
+│   │   ├── kubernetes
+│   │   │   └── SKILL.md
+│   │   ├── lazagne
+│   │   │   └── SKILL.md
+│   │   ├── linuxprivesc
+│   │   │   └── SKILL.md
+│   │   ├── living
+│   │   │   └── SKILL.md
+│   │   ├── lolbas
+│   │   │   └── SKILL.md
+│   │   ├── privesc
+│   │   │   └── SKILL.md
+│   │   └── privescdetect
+│   │       └── SKILL.md
+│   ├── purple-team
+│   │   └── SKILL.md
+│   ├── purpleteam
+│   │   ├── ptexercise
+│   │   │   └── SKILL.md
+│   │   ├── purple
+│   │   │   └── SKILL.md
+│   │   └── threat
+│   │       └── SKILL.md
+│   ├── recon
+│   │   ├── bhanalysis
+│   │   │   └── SKILL.md
+│   │   ├── bhexploit
+│   │   │   └── SKILL.md
+│   │   ├── bloodhound
+│   │   │   └── SKILL.md
+│   │   ├── dns
+│   │   │   └── SKILL.md
+│   │   ├── dnstwist
+│   │   │   └── SKILL.md
+│   │   ├── subfinder
+│   │   │   └── SKILL.md
+│   │   └── typosquatting
+│   │       └── SKILL.md
+│   ├── red
+│   │   └── SKILL.md
+│   ├── SKILL.md
+│   ├── socialeng
+│   │   ├── deepfake
+│   │   │   └── SKILL.md
+│   │   ├── pentest
+│   │   │   └── SKILL.md
+│   │   └── social
+│   │       └── SKILL.md
+│   ├── thickclient
+│   │   └── thickclient
+│   │       └── SKILL.md
+│   └── zerologon
+│       └── SKILL.md
+├── siem-soc
+│   ├── alert
+│   │   └── SKILL.md
+│   ├── credential
+│   │   └── SKILL.md
+│   ├── detection
+│   │   ├── bruteforce
+│   │   │   └── SKILL.md
+│   │   └── credential
+│   │       └── SKILL.md
+│   ├── dnstunnel
+│   │   └── SKILL.md
+│   ├── endpoint
+│   │   └── SKILL.md
+│   ├── insider
+│   │   └── SKILL.md
+│   ├── log
+│   │   └── SKILL.md
+│   ├── memory
+│   │   └── SKILL.md
+│   ├── monitoring
+│   │   └── ebpf
+│   │       └── SKILL.md
+│   ├── onboarding
+│   │   └── onboarding
+│   │       └── SKILL.md
+│   ├── operations
+│   │   ├── kpimetrics
+│   │   │   └── SKILL.md
+│   │   └── soc
+│   │       └── SKILL.md
+│   ├── qradar
+│   │   └── qradar
+│   │       └── SKILL.md
+│   ├── security
+│   │   └── SKILL.md
+│   ├── siem
+│   │   └── SKILL.md
+│   ├── soar
+│   │   └── SKILL.md
+│   ├── splunk
+│   │   └── splunk
+│   │       └── SKILL.md
+│   ├── syslog
+│   │   └── SKILL.md
+│   ├── ticketing
+│   │   └── SKILL.md
+│   ├── tuning
+│   │   ├── detectionuc
+│   │   │   └── SKILL.md
+│   │   ├── siem
+│   │   │   └── SKILL.md
+│   │   └── usecase
+│   │       └── SKILL.md
+│   └── ueba
+│       └── user
+│           └── SKILL.md
+├── steganography
+│   └── SKILL.md
+├── threat-intel
+│   ├── analysis
+│   │   ├── actorinfra
+│   │   │   └── SKILL.md
+│   │   ├── actorprofile
+│   │   │   └── SKILL.md
+│   │   ├── campaign
+│   │   │   └── SKILL.md
+│   │   ├── cyber
+│   │   │   └── SKILL.md
+│   │   ├── iam
+│   │   │   └── SKILL.md
+│   │   ├── landscape
+│   │   │   └── SKILL.md
+│   │   ├── mitre-attack
+│   │   │   └── SKILL.md
+│   │   └── threat
+│   │       └── SKILL.md
+│   ├── brand
+│   │   └── SKILL.md
+│   ├── darkweb
+│   │   ├── darkweb
+│   │   │   └── SKILL.md
+│   │   ├── paste
+│   │   │   └── SKILL.md
+│   │   └── SKILL.md
+│   ├── detection
+│   │   ├── sigma
+│   │   │   └── SKILL.md
+│   │   └── splunk
+│   │       └── SKILL.md
+│   ├── feeds
+│   │   ├── feedintegr
+│   │   │   └── SKILL.md
+│   │   ├── opentaxii
+│   │   │   └── SKILL.md
+│   │   ├── security
+│   │   │   └── SKILL.md
+│   │   ├── stix
+│   │   │   └── SKILL.md
+│   │   ├── stixfeed
+│   │   │   └── SKILL.md
+│   │   └── threat
+│   │       └── SKILL.md
+│   ├── hunting
+│   │   ├── advanced
+│   │   │   └── SKILL.md
+│   │   ├── anomalous
+│   │   │   └── SKILL.md
+│   │   ├── cloud
+│   │   │   └── SKILL.md
+│   │   ├── data
+│   │   │   └── SKILL.md
+│   │   ├── datastaging
+│   │   │   └── SKILL.md
+│   │   ├── dcsync
+│   │   │   └── SKILL.md
+│   │   ├── defense
+│   │   │   └── SKILL.md
+│   │   ├── dll
+│   │   │   └── SKILL.md
+│   │   ├── dns
+│   │   │   └── SKILL.md
+│   │   ├── edr
+│   │   │   └── SKILL.md
+│   │   ├── elastic
+│   │   │   └── SKILL.md
+│   │   ├── email
+│   │   │   └── SKILL.md
+│   │   ├── lateralmov
+│   │   │   └── SKILL.md
+│   │   ├── living
+│   │   │   └── SKILL.md
+│   │   ├── lolbinlogs
+│   │   │   └── SKILL.md
+│   │   ├── lolbins
+│   │   │   └── SKILL.md
+│   │   ├── mimikatz
+│   │   │   └── SKILL.md
+│   │   ├── ntlm
+│   │   │   └── SKILL.md
+│   │   ├── ntlmrelay
+│   │   │   └── SKILL.md
+│   │   ├── persistence
+│   │   │   └── SKILL.md
+│   │   ├── phishing
+│   │   │   └── SKILL.md
+│   │   ├── registry
+│   │   │   └── SKILL.md
+│   │   ├── schedtasks
+│   │   │   └── SKILL.md
+│   │   ├── scheduled
+│   │   │   └── SKILL.md
+│   │   ├── shadow
+│   │   │   └── SKILL.md
+│   │   ├── startup
+│   │   │   └── SKILL.md
+│   │   ├── supply
+│   │   │   └── SKILL.md
+│   │   ├── suspicious
+│   │   │   └── SKILL.md
+│   │   ├── svcinstall
+│   │   │   └── SKILL.md
+│   │   ├── t1098
+│   │   │   └── SKILL.md
+│   │   ├── t1548
+│   │   │   └── SKILL.md
+│   │   ├── threat
+│   │   │   └── SKILL.md
+│   │   ├── unusual
+│   │   │   └── SKILL.md
+│   │   ├── webshell
+│   │   │   └── SKILL.md
+│   │   ├── wmi
+│   │   │   └── SKILL.md
+│   │   └── wmilateral
+│   │       └── SKILL.md
+│   ├── intelligence
+│   │   └── SKILL.md
+│   ├── ioc
+│   │   ├── defanging
+│   │   │   └── SKILL.md
+│   │   ├── indicator
+│   │   │   └── SKILL.md
+│   │   ├── indicators
+│   │   │   └── SKILL.md
+│   │   ├── ioc
+│   │   │   └── SKILL.md
+│   │   ├── iocauto
+│   │   │   └── SKILL.md
+│   │   ├── ioccollect
+│   │   │   └── SKILL.md
+│   │   ├── splunk
+│   │   │   └── SKILL.md
+│   │   └── tilcm
+│   │       └── SKILL.md
+│   ├── mitre
+│   │   ├── apt
+│   │   │   └── SKILL.md
+│   │   ├── attack
+│   │   │   └── SKILL.md
+│   │   ├── attackmap
+│   │   │   └── SKILL.md
+│   │   ├── coveragemap
+│   │   │   └── SKILL.md
+│   │   ├── threat
+│   │   │   └── SKILL.md
+│   │   ├── threatmodel
+│   │   │   └── SKILL.md
+│   │   └── ttps
+│   │       └── SKILL.md
+│   ├── osint
+│   │   ├── aicorrelation
+│   │   │   └── SKILL.md
+│   │   ├── externalrecon
+│   │   │   └── SKILL.md
+│   │   ├── gathering
+│   │   │   └── SKILL.md
+│   │   ├── open
+│   │   │   └── SKILL.md
+│   │   ├── osint
+│   │   │   └── SKILL.md
+│   │   └── spiderfoot
+│   │       └── SKILL.md
+│   ├── platforms
+│   │   ├── feedaggr
+│   │   │   └── SKILL.md
+│   │   ├── misp
+│   │   │   └── SKILL.md
+│   │   ├── mispcollect
+│   │   │   └── SKILL.md
+│   │   ├── mispshare
+│   │   │   └── SKILL.md
+│   │   ├── opencti
+│   │   │   └── SKILL.md
+│   │   ├── threat
+│   │   │   └── SKILL.md
+│   │   └── tipeval
+│   │       └── SKILL.md
+│   ├── shodan
+│   │   └── SKILL.md
+│   └── threat
+│       └── SKILL.md
+├── vulnerability
+│   ├── asset
+│   │   └── SKILL.md
+│   ├── attack
+│   │   └── SKILL.md
+│   ├── cloud
+│   │   └── SKILL.md
+│   ├── continuous
+│   │   └── SKILL.md
+│   ├── management
+│   │   ├── defectdojo
+│   │   │   └── SKILL.md
+│   │   ├── exceptions
+│   │   │   └── SKILL.md
+│   │   ├── slaalerts
+│   │   │   └── SKILL.md
+│   │   └── vulnerability
+│   │       └── SKILL.md
+│   ├── metasploit
+│   │   └── SKILL.md
+│   ├── patch
+│   │   └── SKILL.md
+│   ├── prioritization
+│   │   ├── cve
+│   │   │   └── SKILL.md
+│   │   ├── epss
+│   │   │   └── SKILL.md
+│   │   ├── ssvc
+│   │   │   └── SKILL.md
+│   │   └── vulnerabilities
+│   │       └── SKILL.md
+│   ├── rapid7
+│   │   └── SKILL.md
+│   ├── remediation
+│   │   ├── bucket
+│   │   │   └── SKILL.md
+│   │   ├── endpoint
+│   │   │   └── SKILL.md
+│   │   ├── patch
+│   │   │   └── SKILL.md
+│   │   └── vulnerability
+│   │       └── SKILL.md
+│   ├── sca
+│   │   ├── sbom
+│   │   │   └── SKILL.md
+│   │   └── sca
+│   │       └── SKILL.md
+│   ├── scanning
+│   │   ├── agentless
+│   │   │   └── SKILL.md
+│   │   ├── authenticated
+│   │   │   └── SKILL.md
+│   │   ├── nessus
+│   │   │   └── SKILL.md
+│   │   ├── nessusinfra
+│   │   │   └── SKILL.md
+│   │   ├── nikto
+│   │   │   └── SKILL.md
+│   │   ├── openvas
+│   │   │   └── SKILL.md
+│   │   ├── otsafescan
+│   │   │   └── SKILL.md
+│   │   └── vulnerability
+│   │       └── SKILL.md
+│   └── vulnerability
+│       └── SKILL.md
+└── web-security
+    ├── ai
+    │   ├── llm
+    │   │   └── SKILL.md
+    │   └── model
+    │       └── SKILL.md
+    ├── api
+    │   ├── 42crunch
+    │   │   └── SKILL.md
+    │   ├── api
+    │   │   └── SKILL.md
+    │   ├── apigee
+    │   │   └── SKILL.md
+    │   ├── apikeys
+    │   │   └── SKILL.md
+    │   ├── authn
+    │   │   └── SKILL.md
+    │   ├── bfla
+    │   │   └── SKILL.md
+    │   ├── bola
+    │   │   └── SKILL.md
+    │   ├── broken
+    │   │   └── SKILL.md
+    │   ├── bypass
+    │   │   └── SKILL.md
+    │   ├── enumeration
+    │   │   └── SKILL.md
+    │   ├── excessive
+    │   │   └── SKILL.md
+    │   ├── gateway
+    │   │   └── SKILL.md
+    │   ├── graphql
+    │   │   ├── assessment
+    │   │   │   └── SKILL.md
+    │   │   ├── graphql
+    │   │   │   └── SKILL.md
+    │   │   └── introspection
+    │   │       └── SKILL.md
+    │   ├── injection
+    │   │   └── SKILL.md
+    │   ├── inventory
+    │   │   └── SKILL.md
+    │   ├── mass
+    │   │   └── SKILL.md
+    │   ├── massassign
+    │   │   └── SKILL.md
+    │   ├── mobile
+    │   │   └── SKILL.md
+    │   ├── owasp
+    │   │   └── SKILL.md
+    │   ├── postman
+    │   │   └── SKILL.md
+    │   ├── posture
+    │   │   └── SKILL.md
+    │   ├── ratelimit
+    │   │   └── SKILL.md
+    │   ├── restler
+    │   │   └── SKILL.md
+    │   ├── schema
+    │   │   └── SKILL.md
+    │   ├── shadow
+    │   │   └── SKILL.md
+    │   ├── soap
+    │   │   └── soap
+    │   │       └── SKILL.md
+    │   ├── throttle
+    │   │   └── SKILL.md
+    │   ├── wafgateway
+    │   │   └── SKILL.md
+    │   └── websocket
+    │       ├── websocket
+    │       │   └── SKILL.md
+    │       └── wssecurity
+    │           └── SKILL.md
+    ├── auth
+    │   ├── bac
+    │   │   └── bac
+    │   │       └── SKILL.md
+    │   ├── csrf
+    │   │   └── csrf
+    │   │       └── SKILL.md
+    │   ├── jwt
+    │   │   ├── json
+    │   │   │   └── SKILL.md
+    │   │   ├── jwt
+    │   │   │   └── SKILL.md
+    │   │   ├── nonealgo
+    │   │   │   └── SKILL.md
+    │   │   ├── signing
+    │   │   │   └── SKILL.md
+    │   │   └── tokensec
+    │   │       └── SKILL.md
+    │   └── oauth
+    │       ├── consent
+    │       │   └── SKILL.md
+    │       ├── flaws
+    │       │   └── SKILL.md
+    │       ├── misconfig
+    │       │   └── SKILL.md
+    │       ├── oauth
+    │       │   └── SKILL.md
+    │       ├── scopes
+    │       │   └── SKILL.md
+    │       └── tokentheft
+    │           └── SKILL.md
+    ├── broken
+    │   └── SKILL.md
+    ├── business
+    │   └── SKILL.md
+    ├── cache
+    │   ├── cachedeception
+    │   │   └── SKILL.md
+    │   └── cachepoisoning
+    │       └── SKILL.md
+    ├── clickjacking
+    │   └── clickjacking
+    │       └── SKILL.md
+    ├── cors
+    │   └── cors
+    │       └── SKILL.md
+    ├── deserialization
+    │   └── insecure
+    │       └── SKILL.md
+    ├── directory
+    │   └── SKILL.md
+    ├── fuzzing
+    │   └── SKILL.md
+    ├── headers
+    │   ├── content
+    │   │   └── SKILL.md
+    │   └── security
+    │       └── SKILL.md
+    ├── host
+    │   └── SKILL.md
+    ├── http
+    │   └── SKILL.md
+    ├── idor
+    │   └── idor
+    │       └── SKILL.md
+    ├── injection
+    │   ├── sqli
+    │   │   ├── nosql
+    │   │   │   └── SKILL.md
+    │   │   ├── secondorder
+    │   │   │   └── SKILL.md
+    │   │   ├── sqlexploit
+    │   │   │   └── SKILL.md
+    │   │   ├── sqli
+    │   │   │   └── SKILL.md
+    │   │   └── sqlmap
+    │   │       └── SKILL.md
+    │   ├── ssrf
+    │   │   ├── server
+    │   │   │   └── SKILL.md
+    │   │   ├── ssrf
+    │   │   │   └── SKILL.md
+    │   │   └── ssrfexploit
+    │   │       └── SKILL.md
+    │   ├── ssti
+    │   │   └── template
+    │   │       └── SKILL.md
+    │   ├── xss
+    │   │   ├── burpsuite
+    │   │   │   └── SKILL.md
+    │   │   └── xss
+    │   │       └── SKILL.md
+    │   └── xxe
+    │       ├── xml
+    │       │   └── SKILL.md
+    │       └── xxe
+    │           └── SKILL.md
+    ├── logging
+    │   └── SKILL.md
+    ├── owasp
+    │   ├── owasp
+    │   │   └── SKILL.md
+    │   └── threatdragon
+    │       └── SKILL.md
+    ├── pentest
+    │   ├── burpsuite
+    │   │   └── SKILL.md
+    │   └── pentest
+    │       └── SKILL.md
+    ├── prototype
+    │   └── SKILL.md
+    ├── racecondition
+    │   └── race
+    │       └── SKILL.md
+    ├── redirect
+    │   └── open
+    │       └── SKILL.md
+    ├── runtime
+    │   └── SKILL.md
+    ├── sensitive
+    │   └── SKILL.md
+    ├── smuggling
+    │   └── http
+    │       └── SKILL.md
+    ├── supply
+    │   └── SKILL.md
+    ├── tls
+    │   ├── certificates
+    │   │   └── SKILL.md
+    │   ├── ctaudit
+    │   │   └── SKILL.md
+    │   ├── lifecycle
+    │   │   └── SKILL.md
+    │   ├── ssl
+    │   │   └── SKILL.md
+    │   ├── tls
+    │   │   └── SKILL.md
+    │   └── tlsassessment
+    │       └── SKILL.md
+    ├── type
+    │   └── SKILL.md
+    └── waf
+        ├── firewall
+        │   └── SKILL.md
+        └── waf
+            └── SKILL.md
+
+982 directories, 797 files

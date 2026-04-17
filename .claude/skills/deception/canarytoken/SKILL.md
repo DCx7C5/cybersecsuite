@@ -1,6 +1,7 @@
 ---
 name: canarytoken
 description: Deploy and monitor Canary Tokens via the Thinkst Canary API for deception-based breach detection using web bug
+action: canarytoken
   tokens, DNS tokens, document tokens, and AWS key tokens.
 domain: cybersecurity
 subdomain: deception-technology
@@ -13,7 +14,7 @@ tags:
 - tripwire
 - early-warning
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

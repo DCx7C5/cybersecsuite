@@ -1,6 +1,7 @@
 ---
 name: prisma
 description: 'Deploying Palo Alto Networks Prisma Access for SASE-based zero trust network access using GlobalProtect agents,
+action: prisma
   ZTNA Connectors, security policy enforcement, and integration with Strata Cloud Manager for unified security management.
 
   '
@@ -15,7 +16,7 @@ tags:
 - strata-cloud-manager
 - zero-trust
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1

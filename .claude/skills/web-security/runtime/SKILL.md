@@ -1,6 +1,7 @@
 ---
 name: runtime
 description: Deploy Runtime Application Self-Protection (RASP) agents to detect and block attacks from within application
+action: runtime
   runtime, covering OpenRASP integration, attack pattern detection, and security policy configuration for Java and Python
   web applications.
 domain: cybersecurity
@@ -15,7 +16,7 @@ tags:
 - rce
 - devsecops
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1

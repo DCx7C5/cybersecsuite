@@ -1,6 +1,7 @@
 ---
 name: startup
 description: Detect T1547.001 startup folder persistence by monitoring Windows startup directories for suspicious file creation,
+action: startup
   analyzing autoruns entries, and using Python watchdog for real-time filesystem monitoring.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - watchdog
 - filesystem-monitoring
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting

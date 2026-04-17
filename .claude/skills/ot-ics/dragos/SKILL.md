@@ -1,6 +1,7 @@
 ---
 name: dragos
 description: 'Deploy and configure the Dragos Platform for OT network monitoring, leveraging its 600+ industrial protocol
+action: dragos
   parsers, intelligence-driven threat detection analytics, and asset visibility capabilities to protect ICS environments against
   threat groups like VOLTZITE, GRAPHITE, and BAUXITE.
 
@@ -17,7 +18,7 @@ tags:
 - threat-intelligence
 - ndr
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

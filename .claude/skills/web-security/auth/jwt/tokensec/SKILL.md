@@ -1,6 +1,7 @@
 ---
 name: tokensec
 description: Assessing JSON Web Token implementations for cryptographic weaknesses, algorithm confusion attacks, and authorization
+action: tokensec
   bypass vulnerabilities during security engagements.
 domain: cybersecurity
 subdomain: web-application-security
@@ -12,7 +13,7 @@ tags:
 - token-security
 - burpsuite
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

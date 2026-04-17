@@ -1,6 +1,7 @@
 ---
 name: macie
 description: Implement Amazon Macie to automatically discover, classify, and protect sensitive data in S3 buckets using machine
+action: macie
   learning and pattern matching for PII, financial data, and credentials detection.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - dlp
 - compliance
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0043

@@ -1,6 +1,7 @@
 ---
 name: runtime
 description: Implement eBPF-based runtime security observability and enforcement in Kubernetes clusters using Cilium Tetragon
+action: runtime
   for kernel-level threat detection and policy enforcement.
 domain: cybersecurity
 subdomain: container-security
@@ -15,7 +16,7 @@ tags:
 - kernel-security
 - cncf
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

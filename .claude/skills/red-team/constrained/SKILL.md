@@ -1,6 +1,7 @@
 ---
 name: constrained
 description: Exploit Kerberos Constrained Delegation misconfigurations in Active Directory to impersonate privileged users
+action: constrained
   via S4U2self and S4U2proxy extensions for lateral movement and privilege escalation.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - privilege-escalation
 - lateral-movement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

@@ -1,6 +1,7 @@
 ---
 name: zia
 description: Implement Zero Trust Network Access using Zscaler Private Access (ZPA) to replace traditional VPN with identity-based,
+action: zia
   context-aware access to private applications through the Zscaler Zero Trust Exchange.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -11,7 +12,7 @@ tags:
 - network-access
 - vpn-replacement
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

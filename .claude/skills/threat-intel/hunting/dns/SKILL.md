@@ -1,6 +1,7 @@
 ---
 name: dns
 description: Hunt for DNS-based persistence mechanisms including DNS hijacking, dangling CNAME records, wildcard DNS abuse,
+action: dns
   and unauthorized zone modifications using passive DNS databases, SecurityTrails API, and DNS audit log analysis.
 domain: cybersecurity
 subdomain: threat-hunting
@@ -13,7 +14,7 @@ tags:
 - subdomain-takeover
 - securitytrails
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

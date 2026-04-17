@@ -1,6 +1,7 @@
 ---
 name: content
 description: Analyze and bypass Content Security Policy implementations to achieve cross-site scripting by exploiting misconfigurations,
+action: content
   JSONP endpoints, unsafe directives, and policy injection techniques.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - jsonp
 - policy-misconfiguration
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

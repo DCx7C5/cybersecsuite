@@ -1,6 +1,7 @@
 ---
 name: splunk
 description: 'Leverages Splunk Enterprise Security and SPL (Search Processing Language) to investigate security incidents
+action: splunk
   through log correlation, timeline reconstruction, and anomaly detection. Covers Windows event logs, firewall logs, proxy
   logs, and authentication data analysis. Activates for requests involving Splunk investigation, SPL queries, SIEM log analysis,
   security event correlation, or log-based incident investigation.
@@ -19,7 +20,7 @@ mitre_attack:
 - T1562
 - T1059
 version: 1.0.0
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0070

@@ -1,6 +1,7 @@
 ---
 name: cryptographic
 description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and
+action: cryptographic
   key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
 domain: cybersecurity
 subdomain: cryptography
@@ -11,7 +12,7 @@ tags:
 - compliance
 - vulnerability-assessment
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.DS-01

@@ -1,6 +1,7 @@
 ---
 name: nosql
 description: Detect and exploit NoSQL injection vulnerabilities in MongoDB, CouchDB, and other NoSQL databases to demonstrate
+action: nosql
   authentication bypass, data extraction, and unauthorized access risks.
 domain: cybersecurity
 subdomain: web-application-security
@@ -13,7 +14,7 @@ tags:
 - database-security
 - api-testing
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

@@ -1,6 +1,7 @@
 ---
 name: cloudflare
 description: 'Deploying Cloudflare Access with Cloudflare Tunnel to provide zero trust access to self-hosted and private applications,
+action: cloudflare
   configuring identity-aware access policies, device posture checks, and WARP client enrollment for VPN replacement.
 
   '
@@ -15,7 +16,7 @@ tags:
 - ztna
 - cloudflare-one
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 atlas_techniques:
 - AML.T0051

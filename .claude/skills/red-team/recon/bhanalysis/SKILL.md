@@ -1,6 +1,7 @@
 ---
 name: bhanalysis
 description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised
+action: bhanalysis
   users to Domain Admin.
 domain: cybersecurity
 subdomain: red-teaming
@@ -13,7 +14,7 @@ tags:
 - graph-theory
 - privilege-escalation
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Restore Access

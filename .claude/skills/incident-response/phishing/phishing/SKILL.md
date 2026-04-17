@@ -1,6 +1,7 @@
 ---
 name: phishing
 description: Implement a phishing report button in email clients with automated triage workflow that analyzes user-reported
+action: phishing-phishing
   suspicious emails and provides feedback to reporters.
 domain: cybersecurity
 subdomain: phishing-defense
@@ -17,7 +18,7 @@ mitre_attack:
 - T1204
 - T1534
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AT-01

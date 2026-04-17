@@ -1,6 +1,7 @@
 ---
 name: kubernetes
 description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration,
+action: etcd-kubernetes
   access controls, backup encryption, and network isolation.
 domain: cybersecurity
 subdomain: container-security
@@ -14,7 +15,7 @@ tags:
 - secrets
 - control-plane
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.PS-01

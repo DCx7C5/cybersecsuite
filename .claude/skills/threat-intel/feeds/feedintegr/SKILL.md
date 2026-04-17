@@ -1,6 +1,7 @@
 ---
 name: feedintegr
 description: 'Builds automated threat intelligence feed integration pipelines connecting STIX/TAXII feeds, open-source threat
+action: feedintegr
   intel, and commercial TI platforms into SIEM and security tools for real-time IOC matching and alerting. Use when SOC teams
   need to operationalize threat intelligence by automating feed ingestion, normalization, scoring, and distribution to detection
   systems.
@@ -18,7 +19,7 @@ tags:
 - ioc
 - siem-integration
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - DE.CM-01

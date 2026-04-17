@@ -1,6 +1,7 @@
 ---
 name: nextdns
 description: Implement NextDNS as a zero trust DNS filtering layer with encrypted resolution, threat intelligence blocking,
+action: nextdns
   privacy protection, and organizational policy enforcement across all endpoints.
 domain: cybersecurity
 subdomain: zero-trust-architecture
@@ -15,7 +16,7 @@ tags:
 - privacy
 - encrypted-dns
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.AA-01

@@ -1,6 +1,7 @@
 ---
 name: threat
 description: 'Executes Atomic Red Team tests for MITRE ATT&CK technique validation using the atomic-operator Python framework.
+action: threat
   Loads test definitions from YAML atomics, runs attack simulations, and validates detection coverage. Use when testing SIEM
   detection rules, validating EDR coverage, or conducting purple team exercises.
 
@@ -13,7 +14,7 @@ tags:
 - emulation
 - with
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7

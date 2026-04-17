@@ -1,6 +1,6 @@
 """
 Key management system with password-protected storage.
-Handles RSA key generation, lifecycle, and secure password management.
+Handles Ed25519 key generation, lifecycle, and secure password management.
 
 This module is designed to work with dystopian-crypto CLI tool.
 """
@@ -9,64 +9,63 @@ import json
 import os
 import secrets
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Tuple
 from datetime import datetime, timezone
 
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.kdf.argon2 import Argon2id
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
 class PasswordManager:
-    """Manage password-protected key files with PBKDF2 encryption."""
+    """Manage password-protected key files with Argon2id + AES-256-GCM encryption."""
 
     SALT_LENGTH = 32
-    IV_LENGTH = 16
-    PBKDF2_ITERATIONS = 480000
+    NONCE_LENGTH = 12  # GCM requires 12-byte nonce
+    TAG_LENGTH = 16    # GCM authentication tag
 
     @staticmethod
     def _derive_key(password: str, salt: bytes) -> bytes:
-        """Derive encryption key from password using PBKDF2."""
-        kdf = PBKDF2(
-            algorithm=hashes.SHA256(),
+        """Derive encryption key from password using Argon2id (NIST 2023 recommended)."""
+        kdf = Argon2id(
+            memory_cost=65536*4,
+            lanes=4,
             length=32,
             salt=salt,
-            iterations=PasswordManager.PBKDF2_ITERATIONS,
-            backend=default_backend(),
+            iterations=4
         )
         return kdf.derive(password.encode())
 
     @staticmethod
     def encrypt_key(key_data: bytes, password_file: str) -> bytes:
         """
-        Encrypt key data with AES-256 using password from file.
+        Encrypt key data with AES-256-GCM using password from file.
 
         Args:
             key_data: Private key bytes to encrypt
             password_file: Path to file containing password
 
         Returns:
-            Encrypted key data (salt + iv + ciphertext)
+            Encrypted key data (salt + nonce + ciphertext + tag)
         """
         # Read password from file
         password = Path(password_file).read_text().strip()
 
-        # Generate random salt and IV
+        # Generate random salt and nonce
         salt = secrets.token_bytes(PasswordManager.SALT_LENGTH)
-        iv = secrets.token_bytes(PasswordManager.IV_LENGTH)
+        nonce = secrets.token_bytes(PasswordManager.NONCE_LENGTH)
 
-        # Derive encryption key
+        # Derive encryption key with Argon2id
         key = PasswordManager._derive_key(password, salt)
 
-        # Encrypt key data
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-        encryptor = cipher.encryptor()
-        ciphertext = encryptor.update(key_data) + encryptor.finalize()
+        # Encrypt with AES-256-GCM (authenticated encryption)
+        cipher = AESGCM(key)
+        ciphertext = cipher.encrypt(nonce, key_data, None)  # No AAD
 
-        # Return salt + iv + ciphertext
-        return salt + iv + ciphertext
+        # Return salt + nonce + ciphertext (tag is appended by GCM)
+        return salt + nonce + ciphertext
 
     @staticmethod
     def decrypt_key(encrypted_data: bytes, password_file: str) -> bytes:
@@ -74,7 +73,7 @@ class PasswordManager:
         Decrypt key data using password from file.
 
         Args:
-            encrypted_data: Encrypted key data
+            encrypted_data: Encrypted key data (salt + nonce + ciphertext + tag)
             password_file: Path to file containing password
 
         Returns:
@@ -83,27 +82,24 @@ class PasswordManager:
         # Read password from file
         password = Path(password_file).read_text().strip()
 
-        # Extract salt and IV
+        # Extract salt and nonce
         salt = encrypted_data[:PasswordManager.SALT_LENGTH]
-        iv = encrypted_data[
+        nonce = encrypted_data[
             PasswordManager.SALT_LENGTH : PasswordManager.SALT_LENGTH
-            + PasswordManager.IV_LENGTH
+            + PasswordManager.NONCE_LENGTH
         ]
-        ciphertext = encrypted_data[
-            PasswordManager.SALT_LENGTH + PasswordManager.IV_LENGTH :
-        ]
+        ciphertext = encrypted_data[PasswordManager.SALT_LENGTH + PasswordManager.NONCE_LENGTH :]
 
-        # Derive key
+        # Derive key with Argon2id
         key = PasswordManager._derive_key(password, salt)
 
-        # Decrypt
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-        decryptor = cipher.decryptor()
-        return decryptor.update(ciphertext) + decryptor.finalize()
+        # Decrypt with AES-256-GCM (authenticated)
+        cipher = AESGCM(key)
+        return cipher.decrypt(nonce, ciphertext, None)  # No AAD
 
 
 class KeyManager:
-    """Manage RSA keys with password protection and metadata tracking."""
+    """Manage Ed25519 keys with password protection and metadata tracking."""
 
     def __init__(self, keys_dir: str = "/etc/dystopian-crypto/keys"):
         """
@@ -122,16 +118,14 @@ class KeyManager:
         self,
         name: str,
         password_file: str,
-        key_size: int = 2048,
         overwrite: bool = False,
     ) -> Dict[str, Any]:
         """
-        Create and store password-protected CA keypair.
+        Create and store password-protected CA keypair using Ed25519.
 
         Args:
             name: CA name (e.g., 'RootCA')
             password_file: Path to file containing password
-            key_size: RSA key size (2048, 3072, 4096)
             overwrite: Overwrite existing keys
 
         Returns:
@@ -148,10 +142,8 @@ class KeyManager:
         if not Path(password_file).exists():
             raise FileNotFoundError(f"Password file not found: {password_file}")
 
-        # Generate RSA keypair
-        private_key = rsa.generate_private_key(
-            public_exponent=65537, key_size=key_size, backend=default_backend()
-        )
+        # Generate Ed25519 keypair
+        private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
 
         # Serialize private key
@@ -180,8 +172,8 @@ class KeyManager:
         metadata = {
             "name": name,
             "type": "ca",
-            "key_size": key_size,
-            "algorithm": "RSA",
+            "key_size": 256,  # Ed25519 is 256-bit
+            "algorithm": "Ed25519",
             "created_at": datetime.now(timezone.utc).isoformat(),
             "private_key_path": str(private_key_path),
             "public_key_path": str(public_key_path),
@@ -202,17 +194,15 @@ class KeyManager:
         name: str,
         ca_name: str,
         password_file: str,
-        key_size: int = 2048,
         overwrite: bool = False,
     ) -> Dict[str, Any]:
         """
-        Create signing keypair under CA.
+        Create signing keypair under CA using Ed25519.
 
         Args:
             name: Signing key name
             ca_name: Parent CA name
             password_file: Password file
-            key_size: RSA key size
             overwrite: Overwrite existing
 
         Returns:
@@ -224,10 +214,8 @@ class KeyManager:
         if private_key_path.exists() and not overwrite:
             raise FileExistsError(f"Key {name} already exists.")
 
-        # Generate keypair
-        private_key = rsa.generate_private_key(
-            public_exponent=65537, key_size=key_size, backend=default_backend()
-        )
+        # Generate Ed25519 keypair
+        private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
 
         # Serialize and encrypt
@@ -254,8 +242,8 @@ class KeyManager:
             "name": name,
             "type": "signing",
             "parent_ca": ca_name,
-            "key_size": key_size,
-            "algorithm": "RSA",
+            "key_size": 256,  # Ed25519 is 256-bit
+            "algorithm": "Ed25519",
             "created_at": datetime.now(timezone.utc).isoformat(),
             "private_key_path": str(private_key_path),
             "public_key_path": str(public_key_path),
@@ -309,7 +297,7 @@ class KeyManager:
         return keys
 
     def rotate_key(
-        self, name: str, password_file: str, new_key_size: int = 2048
+        self, name: str, password_file: str
     ) -> Dict[str, Any]:
         """
         Rotate key (create new version).
@@ -317,7 +305,6 @@ class KeyManager:
         Args:
             name: Key name
             password_file: Password file
-            new_key_size: New key size
 
         Returns:
             New metadata
@@ -333,7 +320,7 @@ class KeyManager:
 
         # Create new key
         new_metadata = self.create_ca_keypair(
-            f"{name}_rotated_{timestamp}", password_file, new_key_size, overwrite=False
+            f"{name}_rotated_{timestamp}", password_file, overwrite=False
         )
 
         # Update metadata with rotation info

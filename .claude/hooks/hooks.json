@@ -1,0 +1,219 @@
+{
+  "FirstInit": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/first_init.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent"]
+    }
+  ],
+  "PreToolCall": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/pre_tool_call.py\""
+        }
+      ],
+      "agents": [
+        "cybersec-agent", "OrchestratorAgent",
+        "PythonDeveloper", "CppDeveloper", "CybersecAgent"
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/post_tool_use.py\""
+        }
+      ],
+      "agents": [
+        "cybersec-agent", "OrchestratorAgent",
+        "PythonDeveloper", "CppDeveloper", "CybersecAgent"
+      ]
+    }
+  ],
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/session_start.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent"]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/session_end.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent"]
+    }
+  ],
+  "AgentStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/agent_start.py\""
+        }
+      ],
+      "agents": [
+        "cybersec-agent", "OrchestratorAgent",
+        "PythonDeveloper", "CppDeveloper", "CybersecAgent"
+      ]
+    }
+  ],
+  "AgentEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/agent_end.py\""
+        }
+      ],
+      "agents": [
+        "cybersec-agent", "OrchestratorAgent",
+        "PythonDeveloper", "CppDeveloper", "CybersecAgent"
+      ]
+    }
+  ],
+  "PhaseStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/phase_start.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "PhaseEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/phase_end.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "InvestigationStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/investigation_start.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "InvestigationEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/investigation_end.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "IOCDiscovered": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/ioc_discovered.py\""
+        }
+      ],
+      "agents": [
+        "cybersec-agent", "OrchestratorAgent", "CybersecAgent",
+        "PythonDeveloper", "CppDeveloper"
+      ]
+    }
+  ],
+  "EvidenceCollected": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/evidence_collected.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "FindingConfirmed": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/finding_confirmed.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "ModeSwitch": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/mode_switch.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent"]
+    }
+  ],
+  "PermissionViolation": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/permission_violation.py\""
+        }
+      ],
+      "agents": [
+        "cybersec-agent", "OrchestratorAgent",
+        "PythonDeveloper", "CppDeveloper", "CybersecAgent"
+      ]
+    }
+  ],
+  "RootCommandExecuted": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/root_command_executed.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ],
+  "BaselineUpdated": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${workspaceFolder}/.claude/hooks/baseline_updated.py\""
+        }
+      ],
+      "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
+    }
+  ]
+}
+

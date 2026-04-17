@@ -1,6 +1,7 @@
 ---
 name: lateralmov
 description: 'Hunt for DCOM-based lateral movement by detecting abuse of MMC20.Application, ShellBrowserWindow, and ShellWindows
+action: lateralmov
   COM objects through Sysmon Event ID 1 (process creation) and Event ID 3 (network connection) correlation, WMI event analysis,
   RPC endpoint mapper traffic on port 135, and DCOM-specific parent-child process relationships.
 
@@ -20,7 +21,7 @@ tags:
 - WMI
 - RPC
 version: '1.0'
-author: mukul975
+author: dcx7c5
 license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis

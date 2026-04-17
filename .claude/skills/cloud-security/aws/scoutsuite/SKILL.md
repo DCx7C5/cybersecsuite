@@ -1,6 +1,7 @@
 ---
 name: scoutsuite
 description: Perform comprehensive security posture assessment of AWS accounts using ScoutSuite to enumerate resources, identify
+action: scoutsuite
   misconfigurations, and generate actionable security reports.
 domain: cybersecurity
 subdomain: cloud-security
@@ -14,7 +15,7 @@ tags:
 - cspm
 - nccgroup
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - PR.IR-01

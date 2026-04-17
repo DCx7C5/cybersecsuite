@@ -1,6 +1,7 @@
 ---
 name: foremost
 description: Recover files from disk images and unallocated space using Foremost's header-footer signature carving to extract
+action: foremost
   evidence regardless of file system state.
 domain: cybersecurity
 subdomain: digital-forensics
@@ -12,7 +13,7 @@ tags:
 - evidence-recovery
 - unallocated-space
 version: '1.0'
-author: mahipal
+author: dcx7c5
 license: Apache-2.0
 nist_csf:
 - RS.AN-01
