@@ -5,7 +5,6 @@ with session persistence, mode switching, and streaming support.
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 from collections.abc import AsyncGenerator
 from typing import Any

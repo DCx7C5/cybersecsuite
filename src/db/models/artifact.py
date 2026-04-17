@@ -3,7 +3,6 @@ Artifact model with SSL signature tracking and version history.
 """
 from tortoise.models import Model
 from tortoise import fields
-from datetime import datetime
 
 
 class Artifact(Model):

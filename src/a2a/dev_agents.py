@@ -4,6 +4,7 @@ Each exposes an AgentCard and executes language-specific tasks.
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ def build_python_agent_card(base_url: str = "http://localhost:8001") -> AgentCar
         name="PythonDeveloper",
         description="Expert Python developer — writes, reviews, and debugs Python code.",
         url=base_url,
-        version="1.0.0",
+        version="0.1.0",
         capabilities=AgentCapabilities(streaming=True),
         authentication=AgentAuthentication(schemes=[AuthScheme.ED25519]),
         default_input_modes=["text/plain"],

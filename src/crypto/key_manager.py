@@ -309,9 +309,6 @@ class KeyManager:
         Returns:
             New metadata
         """
-        # Get old metadata
-        old_metadata = self.get_metadata(name)
-
         # Backup old key
         backup_dir = self.keys_dir / ".backups"
         backup_dir.mkdir(exist_ok=True)

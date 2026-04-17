@@ -43,7 +43,7 @@ from telemetry.collector import collector as _telemetry_collector
 
 # ── Port / TLS configuration ─────────────────────────────────────────────────
 
-ASGI_HOST = os.environ.get("ASGI_HOST", "0.0.0.0")
+ASGI_HOST = os.environ.get("ASGI_HOST", "127.0.0.1")
 ASGI_PORT = int(os.environ.get("ASGI_PORT", "8000"))
 ASGI_TLS_PORT = int(os.environ.get("ASGI_TLS_PORT", "8433"))
 ASGI_TLS_CERT = os.environ.get(

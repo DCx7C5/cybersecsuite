@@ -38,7 +38,7 @@ _SKIP_PREFIXES = ("AGENT_", "CLAUDE_", "COPILOT_")
 
 
 def _parse_frontmatter(content: str) -> Dict[str, Any]:
-    """Extract and parse YAML frontmatter from a markdown file."""
+    """Extract and parse YAML frontmatter from a Markdown file."""
     m = _FRONTMATTER_RE.match(content)
     if not m:
         return {}
@@ -56,7 +56,12 @@ def _parse_frontmatter(content: str) -> Dict[str, Any]:
 
 
 def _parse_tools(tools_val: Any) -> List[str]:
-    """Normalize tools field to list of strings."""
+    """
+    Normalize tools field from frontmatter, which can be a list or comma-separated string.
+     - If it's a list, convert all items to strings.
+     - If it's a string, split by commas and strip whitespace.
+     - Otherwise, return an empty list.
+    """
     if not tools_val:
         return []
     if isinstance(tools_val, list):
@@ -67,7 +72,7 @@ def _parse_tools(tools_val: Any) -> List[str]:
 
 
 def _extract_skills_from_body(body: str, agent_name: str) -> List[AgentSkill]:
-    """Derive skills from the markdown body (## Capabilities / ## sections)."""
+    """Derive skills from the Markdown body (## Capabilities / ## sections)."""
     skills: List[AgentSkill] = []
     for m in re.finditer(r'^#{2,3}\s+(.+)$', body, re.MULTILINE):
         heading = m.group(1).strip()
@@ -90,6 +95,7 @@ class ClaudeAgentCard:
     """AgentCard with .claude-specific metadata attached."""
 
     def __init__(self, card: AgentCard, metadata: Dict[str, Any]) -> None:
+        self.name = None
         self.card = card
         self.metadata = metadata
 
@@ -167,7 +173,7 @@ def frontmatter_to_claude_agent(
             tags=description.lower().split()[:5],
         )]
 
-    # Writable agents (orchestrator or has Write/Edit tools) use Ed25519
+    # Writable agents (orchestrator or has Written/Edit tools) use Ed25519
     auth_schemes = [AuthScheme.NONE]
     if role == "orchestrator" or (tools and any(t in tools for t in ("Write", "Edit", "MultiEdit"))):
         auth_schemes = [AuthScheme.ED25519, AuthScheme.BEARER]

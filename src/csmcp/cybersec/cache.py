@@ -6,8 +6,8 @@ import json
 from datetime import datetime
 from typing import Any
 
-from mcp._sdk_compat import tool
-from mcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
+from csmcp._sdk_compat import tool
+from csmcp.cybersec.helpers import JsonDict, sdk_result
 
 _CACHE: dict[str, dict[str, Any]] = {}
 

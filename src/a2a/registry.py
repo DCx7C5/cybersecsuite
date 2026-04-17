@@ -238,7 +238,7 @@ class AgentRegistry:
 
     def summary(self) -> List[Dict]:
         """Return a summary of all registered agents."""
-        from typing import Dict as D, Any
+        from typing import Dict as D
         result: List[D[str, Any]] = []
         for agent in self._agents.values():
             entry: D[str, Any] = {

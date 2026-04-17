@@ -2,7 +2,7 @@
 
 Assembles all 29 tools into a single SdkMcpServer instance.
 Usage (SDK query):
-    from mcp.cybersec import cybersec_server
+    from csmcp.cybersec import cybersec_server
     options = ClaudeAgentOptions(
         mcp_servers={"cybersec": cybersec_server},
         allowed_tools=cybersec_server.tool_names,
@@ -10,16 +10,16 @@ Usage (SDK query):
 """
 from __future__ import annotations
 
-from mcp._sdk_compat import create_sdk_mcp_server
-from mcp.cybersec.findings import ALL_TOOLS as _findings_tools
-from mcp.cybersec.db import ALL_TOOLS as _db_tools
-from mcp.cybersec.intelligence import ALL_TOOLS as _intelligence_tools
-from mcp.cybersec.layers import ALL_TOOLS as _layers_tools
-from mcp.cybersec.cache import ALL_TOOLS as _cache_tools
-from mcp.cybersec.proxy import ALL_TOOLS as _proxy_tools
-from mcp.cybersec.session import ALL_TOOLS as _session_tools
-from mcp.cybersec.cases import ALL_TOOLS as _cases_tools
-from mcp.cybersec.poc import ALL_TOOLS as _poc_tools
+from csmcp._sdk_compat import create_sdk_mcp_server
+from csmcp.cybersec.findings import ALL_TOOLS as _findings_tools
+from csmcp.cybersec.db import ALL_TOOLS as _db_tools
+from csmcp.cybersec.intelligence import ALL_TOOLS as _intelligence_tools
+from csmcp.cybersec.layers import ALL_TOOLS as _layers_tools
+from csmcp.cybersec.cache import ALL_TOOLS as _cache_tools
+from csmcp.cybersec.proxy import ALL_TOOLS as _proxy_tools
+from csmcp.cybersec.session import ALL_TOOLS as _session_tools
+from csmcp.cybersec.cases import ALL_TOOLS as _cases_tools
+from csmcp.cybersec.poc import ALL_TOOLS as _poc_tools
 
 _ALL_CYBERSEC_TOOLS = (
     _findings_tools

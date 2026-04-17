@@ -11,7 +11,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-
+# ruff: noqa: E402 — sys.path manipulation must precede local imports
 from manage._commands import (
     schema_command,
     shell_command,

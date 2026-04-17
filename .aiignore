@@ -46,4 +46,6 @@ test-results/
 
 # Explicitly allow agent memory and instructions
 !.claude/
+!hooks/
+!src/hooks/
 

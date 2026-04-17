@@ -6,14 +6,13 @@ Creates phase directory structure, MITRE mapping, sets context.
 import asyncio
 import json
 import os
-import platform
 import socket
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 PHASE_OBJECTIVES = {
     "Rapid Recon":        ["System profiling", "Process enumeration", "Network topology discovery", "Initial threat surface"],
@@ -47,7 +46,6 @@ async def main():
                         datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S"))
 
     session_dir = get_session_dir()
-    project_dir = get_project_dir()
     now         = datetime.now(timezone.utc)
 
     # Create phase directories

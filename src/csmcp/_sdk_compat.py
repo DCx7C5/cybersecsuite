@@ -9,11 +9,12 @@ When not installed, a lightweight shim enables the same API surface.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable
 
 try:
-    from claude_agent_sdk import tool as sdk_tool, create_sdk_mcp_server as sdk_create_server
+    from claude_agent_sdk import tool as sdk_tool, create_sdk_mcp_server as sdk_create_server, McpSdkServerConfig
+
     _SDK_AVAILABLE = True
 except ImportError:
     _SDK_AVAILABLE = False
@@ -44,7 +45,7 @@ class SdkMcpServer:
         if tool is None:
             return {"content": [{"type": "text", "text": json.dumps({"error": f"Unknown tool: {tool_name}"})}], "isError": True}
         try:
-            import asyncio, inspect
+            import inspect
             if inspect.iscoroutinefunction(tool.fn):
                 return await tool.fn(args)
             return tool.fn(args)
@@ -77,7 +78,7 @@ def create_sdk_mcp_server(
     name: str,
     version: str,
     tools: list[Callable],
-) -> SdkMcpServer:
+) -> McpSdkServerConfig | SdkMcpServer:
     """Build an in-process MCP server from a list of @tool-decorated functions."""
     if _SDK_AVAILABLE:
         return sdk_create_server(name=name, version=version, tools=tools)

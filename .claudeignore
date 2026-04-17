@@ -91,4 +91,5 @@ coverage-report/
 
 *.log
 !.claude/
-
+!hooks/
+!src/hooks/

@@ -22,8 +22,8 @@ _SRC = Path(__file__).resolve().parent.parent
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-from crypto.key_manager import KeyManager, PasswordManager
-from crypto.vault import Vault
+from crypto.key_manager import KeyManager, PasswordManager  # noqa: E402
+from crypto.vault import Vault  # noqa: E402
 
 
 # ===================================================================

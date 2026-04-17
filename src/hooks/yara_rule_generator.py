@@ -5,7 +5,6 @@ Generates high-quality YARA rules from IOCs, findings, suspicious strings,
 memory patterns, binary artifacts, and threat intelligence.
 """
 
-import asyncio
 import json
 import os
 import sys
@@ -46,7 +45,7 @@ async def yara_rule_generator_async():
                         sources["iocs"].extend(data)
                     elif isinstance(data, dict):
                         sources["iocs"].append(data)
-                except:
+                except (json.JSONDecodeError, OSError):
                     continue
 
         # Read findings
@@ -113,7 +112,7 @@ def generate_yara_rules(sources):
                     rules += f'rule IOC_{ioc_type.upper()}_{hash(value) % 10000:04d} {{\n'
                     rules += '    meta:\n'
                     rules += f'        description = "MalwareHunter IOC match - {ioc_type}"\n'
-                    rules += f'        confidence = "high"\n'
+                    rules += '        confidence = "high"\n'
                     rules += '    strings:\n'
                     if ioc_type in ["file_hash", "sha256"]:
                         rules += f'        $hash = "{value}" ascii\n'

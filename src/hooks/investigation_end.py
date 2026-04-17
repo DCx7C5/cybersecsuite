@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 
 def _count(path: Path, pattern: str) -> int:
@@ -31,7 +31,6 @@ async def main():
     verdict          = data.get("verdict", "inconclusive")
 
     session_dir = get_session_dir()
-    project_dir = get_project_dir()
     now         = datetime.now(timezone.utc)
 
     stats = {"findings": 0, "iocs": 0, "artifacts": 0, "threats": 0}

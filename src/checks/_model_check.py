@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import Any
+
+from checks._constants import _SRC_ROOT, _SKIP_STEMS, _MODEL_BASES, _RELATIONAL_FIELDS
 
 def check_models() -> list[dict[str, str]]:
     """Programmatically inspect all model FK and M2M references for consistency.

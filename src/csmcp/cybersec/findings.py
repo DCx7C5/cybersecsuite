@@ -4,10 +4,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from mcp._sdk_compat import tool
-from mcp.cybersec.helpers import (
-    JsonDict, _get_current_scope, _build_scope_context,
-    _coerce_limit, get_workspace_dir, get_project_dir, get_session_dir,
+from csmcp._sdk_compat import tool
+from csmcp.cybersec.helpers import (
+    JsonDict, _get_current_scope, _coerce_limit, get_workspace_dir, get_project_dir, get_session_dir,
     sdk_result, sdk_error,
 )
 

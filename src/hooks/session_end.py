@@ -3,7 +3,6 @@
 SessionEnd Hook — syncs session findings to project layer and writes a summary artifact.
 """
 import asyncio
-import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path

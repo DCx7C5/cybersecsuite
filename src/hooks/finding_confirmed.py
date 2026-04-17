@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 SEVERITY_EMOJI = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
 
@@ -28,7 +28,6 @@ async def main():
     agent_name  = data.get("agent_name", os.environ.get("CYBERSEC_AGENT_NAME", "unknown"))
 
     session_dir = get_session_dir()
-    project_dir = get_project_dir()
     now         = datetime.now(timezone.utc)
     emoji       = SEVERITY_EMOJI.get(severity, "🟡")
 

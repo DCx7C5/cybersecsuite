@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp._sdk_compat import tool
-from mcp.cybersec.helpers import (
+from csmcp._sdk_compat import tool
+from csmcp.cybersec.helpers import (
     JsonDict, _get_current_scope, get_workspace_dir, get_project_dir,
-    get_session_dir, _coerce_limit, sdk_result, sdk_error,
+    get_session_dir, sdk_result, sdk_error,
 )
 
 

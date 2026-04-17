@@ -2,10 +2,8 @@
 Baseline models — known-good snapshots for delta comparison.
 Network, Process, Kernel, and Persistence baselines.
 """
-from tortoise.models import Model
 from tortoise import fields
 
-from db.models.enums import BaselineDomain
 from db.models.scope import ScopedEntry
 
 

@@ -6,7 +6,7 @@ import hashlib
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional
 from collections import OrderedDict
-from crypto.pydantic_models import CachedMessage, ArtifactChecksum
+from crypto.pydantic_models import CachedMessage
 
 
 class MessageCache:

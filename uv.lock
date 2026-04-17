@@ -218,6 +218,15 @@ wheels = [
 ]
 
 [[package]]
+name = "claude"
+version = "0.4.11"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/0d/40d26e7074d10f946ae06f6125de511ef0318598d7c3cc27c4ce9c9eb0a8/claude-0.4.11.tar.gz", hash = "sha256:a76ecc7e28869866c4353a39d176397a3b6964b543ef176363db5ea32726868d", size = 820, upload-time = "2025-06-10T18:49:08.992Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/63/2b/aa9b6b6fbf63e094c3dfe2ec0010ddd952934647ee51e13a97186b91a44d/claude-0.4.11-py3-none-any.whl", hash = "sha256:369b5945461154bdcb9957f375944e9268ad343e15a924af2476a05b1c167478", size = 1167, upload-time = "2025-06-10T18:49:08.17Z" },
+]
+
+[[package]]
 name = "claude-agent-sdk"
 version = "0.1.61"
 source = { git = "https://github.com/anthropics/claude-agent-sdk-python.git?rev=v0.1.61#b70e7e19a73afca688149cf1b925ff7dbe70dc01" }
@@ -346,6 +355,7 @@ source = { editable = "." }
 dependencies = [
     { name = "argon2-cffi" },
     { name = "asyncpg" },
+    { name = "claude" },
     { name = "claude-agent-sdk" },
     { name = "cryptography" },
     { name = "fastmcp" },
@@ -380,6 +390,7 @@ test = [
 requires-dist = [
     { name = "argon2-cffi", specifier = ">=23.1" },
     { name = "asyncpg", specifier = ">=0.30" },
+    { name = "claude", specifier = ">=0.4.11" },
     { name = "claude-agent-sdk", git = "https://github.com/anthropics/claude-agent-sdk-python.git?rev=v0.1.61" },
     { name = "cryptography", specifier = ">=44.0" },
     { name = "fastmcp", specifier = ">=2.0" },

@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from datetime import datetime
 
 def get_data_dir():
     """Returns persistent ${CLAUDE_PLUGIN_DATA}/cybersec-mem"""

@@ -3,7 +3,6 @@
 AgentEnd Hook — fires when an A2A agent finishes. Logs stats, cleans state.
 """
 import asyncio
-import json
 import os
 import re
 import sys

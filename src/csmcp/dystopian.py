@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp._sdk_compat import tool, create_sdk_mcp_server
-from mcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
+from csmcp._sdk_compat import tool, create_sdk_mcp_server
+from csmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
 
 
 @tool(

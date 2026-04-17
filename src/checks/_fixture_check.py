@@ -1,9 +1,11 @@
 """Fixture coverage checks."""
 from __future__ import annotations
 
-import re
-from pathlib import Path
-from typing import Any
+import ast
+
+from checks._constants import _SRC_ROOT, _SKIP_STEMS, _REPO_ROOT
+from checks._model_check import _get_meta_table
+
 
 def check_fixtures() -> list[dict[str, str]]:
     """Check which intel tables have seed fixtures and which do not.

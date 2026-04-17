@@ -4,12 +4,10 @@ MalwareHunter Threat Detected Hook
 Triggered when a potential threat is identified during investigation
 """
 
-import asyncio
 import json
 import os
 import sys
-from datetime import UTC, datetime
-from pathlib import Path
+from datetime import datetime
 from utils import ensure_structure, get_session_dir
 from uvloop_integration import run_with_uvloop
 
@@ -354,7 +352,7 @@ async def update_threat_timeline(investigation_dir, threat_record):
     if timeline_file.exists():
         try:
             timeline = json.loads(timeline_file.read_text())
-        except:
+        except (json.JSONDecodeError, OSError):
             timeline = []
 
     timeline.append(timeline_entry)

@@ -4,7 +4,6 @@ SessionStart Hook — fires when Claude opens a new session in cybersecsuite.
 Loads 3-tier memory (System → Project → Session) and injects A2A registry status.
 """
 import asyncio
-import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path

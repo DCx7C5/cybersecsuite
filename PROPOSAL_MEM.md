@@ -197,17 +197,17 @@ tags:
 
 ### 2.4 Cache Strategy
 
-| Property | Value |
-|---|---|
-| **Compression** | None — full fidelity, every token preserved |
-| **Index Key** | `conversation_id + timestamp` |
-| **Hierarchy** | Global → Project → Session |
-| **TTL (Global)** | Never expires |
-| **TTL (Project)** | Per-project lifetime |
-| **TTL (Session)** | Auto-archive after 7 days idle |
-| **Deduplication** | Content hashing via BLAKE2b |
-| **Conflict Resolution** | Last-write-wins with merge log |
-| **Max File Size** | Soft limit 500 lines per domain file; split if exceeded |
+| Property                | Value                                                   |
+|-------------------------|---------------------------------------------------------|
+| **Compression**         | None — full fidelity, every token preserved             |
+| **Index Key**           | `conversation_id + timestamp`                           |
+| **Hierarchy**           | Global → Project → Session                              |
+| **TTL (Global)**        | Never expires                                           |
+| **TTL (Project)**       | Per-project lifetime                                    |
+| **TTL (Session)**       | Auto-archive after 7 days idle                          |
+| **Deduplication**       | Content hashing via BLAKE2b                             |
+| **Conflict Resolution** | Last-write-wins with merge log                          |
+| **Max File Size**       | Soft limit 500 lines per domain file; split if exceeded |
 
 Deduplication prevents duplicate knowledge across scopes. When a session snapshot contains content already present in a domain file, the snapshot links to the domain entry rather than duplicating it.
 
@@ -268,13 +268,13 @@ python manage.py memory prune --older-than 30d
 
 Hooks that automatically write to the memory vault during investigations:
 
-| Hook | Trigger | Writes To |
-|---|---|---|
-| `on_ioc_found` | IOC identified during analysis | `entities/iocs/{hash}.md` |
-| `on_decision_made` | Architectural decision in conversation | `decisions/ADR-NNN-*.md` |
-| `on_session_end` | Session compaction/close | `sessions/{timestamp}.md` |
-| `on_tool_learned` | New tool/API usage pattern | `entities/tools/{name}.md` |
-| `on_cve_analyzed` | CVE lookup or analysis | `entities/cves/{id}.md` |
+| Hook               | Trigger                                | Writes To                  |
+|--------------------|----------------------------------------|----------------------------|
+| `on_ioc_found`     | IOC identified during analysis         | `entities/iocs/{hash}.md`  |
+| `on_decision_made` | Architectural decision in conversation | `decisions/ADR-NNN-*.md`   |
+| `on_session_end`   | Session compaction/close               | `sessions/{timestamp}.md`  |
+| `on_tool_learned`  | New tool/API usage pattern             | `entities/tools/{name}.md` |
+| `on_cve_analyzed`  | CVE lookup or analysis                 | `entities/cves/{id}.md`    |
 
 ### 3.5 SessionLayer Integration
 
@@ -336,13 +336,13 @@ Optimized for cybersecurity domain visualization:
 
 ### 4.4 Recommended Community Plugins
 
-| Plugin | Purpose |
-|---|---|
-| **Dataview** | Query memory files as a database (`TABLE FROM #ioc`) |
-| **Graph Analysis** | Betweenness centrality, clustering on knowledge graph |
-| **Tag Wrangler** | Bulk rename/merge tags across vault |
-| **Templater** | Templates for new entity cards, ADRs, session snapshots |
-| **Obsidian Git** | Auto-commit vault changes for version history |
+| Plugin             | Purpose                                                 |
+|--------------------|---------------------------------------------------------|
+| **Dataview**       | Query memory files as a database (`TABLE FROM #ioc`)    |
+| **Graph Analysis** | Betweenness centrality, clustering on knowledge graph   |
+| **Tag Wrangler**   | Bulk rename/merge tags across vault                     |
+| **Templater**      | Templates for new entity cards, ADRs, session snapshots |
+| **Obsidian Git**   | Auto-commit vault changes for version history           |
 
 ---
 
@@ -384,14 +384,14 @@ Optimized for cybersecurity domain visualization:
 
 ## 6. Token Economics
 
-| Metric | Current (MEMORY.md) | Proposed (Vault) |
-|---|---|---|
-| **Session load** | ~640 lines, ~2,560 tokens | index.md + 1-3 domain files, ~500-1,500 tokens |
-| **Worst case** | Full file every session | Full vault load on demand |
-| **Growth rate** | Linear (append-only) | Sublinear (domain files plateau) |
-| **Information loss** | Compaction trims tokens | Zero — full fidelity preserved |
-| **Search** | None (sequential scan by Claude) | Indexed, O(1) lookup via graph.json |
-| **Cross-session** | File on disk, no structure | Structured vault with backlinks |
+| Metric               | Current (MEMORY.md)              | Proposed (Vault)                               |
+|----------------------|----------------------------------|------------------------------------------------|
+| **Session load**     | ~640 lines, ~2,560 tokens        | index.md + 1-3 domain files, ~500-1,500 tokens |
+| **Worst case**       | Full file every session          | Full vault load on demand                      |
+| **Growth rate**      | Linear (append-only)             | Sublinear (domain files plateau)               |
+| **Information loss** | Compaction trims tokens          | Zero — full fidelity preserved                 |
+| **Search**           | None (sequential scan by Claude) | Indexed, O(1) lookup via graph.json            |
+| **Cross-session**    | File on disk, no structure       | Structured vault with backlinks                |
 
 **Estimated token savings**: 40-60% per session for focused tasks. Full context remains available via `memory search` or `memory_query` when needed — Claude loads the full domain file on demand rather than carrying everything in context.
 

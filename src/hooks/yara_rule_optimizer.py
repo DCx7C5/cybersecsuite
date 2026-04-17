@@ -6,11 +6,9 @@ and forensic best practices. Includes string reordering, condition tuning,
 metadata enrichment, and modular rule sets.
 """
 
-import asyncio
 import json
 import os
 import re
-import sys
 from datetime import datetime
 from pathlib import Path
 from utils import ensure_structure, get_session_dir
@@ -123,7 +121,7 @@ async def optimize_single_rule(rule_file: Path, session_dir: Path, investigation
             "optimized_path": str(optimized_path)
         }
 
-    except Exception as e:
+    except Exception:
         return None
 
 

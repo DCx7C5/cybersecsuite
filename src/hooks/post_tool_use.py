@@ -69,8 +69,7 @@ async def main():
         "timestamp": ts.isoformat(),
     })
 
-
-import re
+import re  # noqa: E402
 
 _IP_RE   = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b')
 _SHA_RE  = re.compile(r'\b[0-9a-f]{64}\b', re.I)          # SHA256

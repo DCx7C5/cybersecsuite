@@ -307,7 +307,7 @@ def load_openai_compatible_from_env() -> int:
 
 
 # ── Built-in provider registrations ─────────────────────────────────────────
-import ai_proxy.providers._providers  # noqa: F401  # side-effect: registers all built-ins
+import ai_proxy.providers._providers  # noqa: F401,E402  # side-effect: registers all built-ins
 
 # ── Auto-load custom providers on module import ──────────────────────────────
 

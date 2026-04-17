@@ -2,8 +2,6 @@
 """Command implementations for manage.py."""
 from __future__ import annotations
 
-import asyncio
-import json
 import sys
 from pathlib import Path
 
@@ -295,7 +293,6 @@ async def case_open_command():
     from db.bootstrap import init_tortoise_async
     from db.models.case_intake import CaseIntake
     from db.models.scope import Workspace
-    from db.models.enums import Severity, RedBlueMode
 
     await init_tortoise_async(create_db=True)
 

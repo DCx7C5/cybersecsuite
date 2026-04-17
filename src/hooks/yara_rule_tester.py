@@ -7,8 +7,6 @@ Comprehensive, non-destructive testing of generated YARA rules against session a
 import asyncio
 import json
 import os
-import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
 from utils import ensure_structure, get_session_dir

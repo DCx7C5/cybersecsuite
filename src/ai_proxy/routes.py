@@ -55,9 +55,6 @@ async def chat_completions(request: Request) -> JSONResponse | StreamingResponse
     max_cost_str = request.headers.get("x-max-cost-per-1k")
     max_cost = float(max_cost_str) if max_cost_str else None
 
-    # Check for combo routing header
-    combo_id = request.headers.get("x-combo")
-
     start = time.monotonic()
 
     if force_provider:

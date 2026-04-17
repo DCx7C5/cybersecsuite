@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 MITRE_BY_IOC_TYPE = {
     "ip":          ["T1071 - Application Layer Protocol", "T1095 - Non-Application Layer Protocol"],
@@ -41,7 +41,6 @@ async def main():
     agent_name   = data.get("agent_name", os.environ.get("CYBERSEC_AGENT_NAME", "unknown"))
 
     session_dir = get_session_dir()
-    project_dir = get_project_dir()
     now         = datetime.now(timezone.utc)
     ioc_id      = f"IOC-{now.strftime('%Y%m%d%H%M%S')}"
     emoji       = SEVERITY_EMOJI.get(severity, "🟡")

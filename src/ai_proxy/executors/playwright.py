@@ -10,7 +10,6 @@ Requires: playwright, playwright-stealth
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import time
 from typing import Any
@@ -139,7 +138,6 @@ class PlaywrightExecutor(BaseExecutor):
         input_selector = extra.get("input_selector", 'textarea[data-id="root"]')
         submit_selector = extra.get("submit_selector", 'button[data-testid="send-button"]')
         output_selector = extra.get("output_selector", '[data-message-author-role="assistant"]')
-        wait_selector = extra.get("wait_selector", output_selector)
         wait_timeout = extra.get("wait_timeout_ms", 120_000)
 
         # Extract user message from OpenAI format

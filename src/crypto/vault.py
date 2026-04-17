@@ -6,10 +6,8 @@ Each secret is a single ``{name}.enc`` file whose plaintext is protected
 by a master password read from a file — identical to the scheme used by
 :class:`crypto.key_manager.PasswordManager`.
 """
-import hashlib
 import os
 from pathlib import Path
-from typing import Optional
 
 from crypto.key_manager import PasswordManager
 

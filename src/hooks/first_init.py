@@ -5,7 +5,6 @@ Creates directory structure, writes system baseline, registers agent card.
 """
 import asyncio
 import json
-import os
 import platform
 import socket
 import sys
@@ -13,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context
+from _utils import ensure_structure, get_project_dir, audit, emit, hook_context
 
 MARKER = get_project_dir() / ".claude" / ".initialized"
 

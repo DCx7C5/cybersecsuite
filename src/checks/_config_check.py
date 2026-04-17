@@ -1,10 +1,12 @@
 """Configuration consistency checks."""
 from __future__ import annotations
 
+import ast
 import json
 import re
 from pathlib import Path
-from typing import Any
+
+from checks._constants import _REPO_ROOT, _SRC_ROOT  # noqa: F401
 
 def check_config() -> list[dict[str, str]]:
     """Verify config file consistency across mcp.json, docker-compose, settings.

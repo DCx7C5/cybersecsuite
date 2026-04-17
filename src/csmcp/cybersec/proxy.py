@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp._sdk_compat import tool
-from mcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
+from csmcp._sdk_compat import tool
+from csmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
 
 
 @tool(
@@ -228,8 +228,8 @@ async def get_circuit_breakers(args: dict[str, Any]) -> JsonDict:
 async def explain_route(args: dict[str, Any]) -> JsonDict:
     try:
         from ai_proxy.providers.registry import get_all_providers
-        from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts, budget_guard
-        from ai_proxy.services.rate_limiter import rate_limiter
+        from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts
+        from ai_proxy.services.rate_limiter import rate_limiter  # noqa: F401
     except ImportError:
         return sdk_error("ai_proxy not available")
 

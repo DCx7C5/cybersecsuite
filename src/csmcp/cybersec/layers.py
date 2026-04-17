@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp._sdk_compat import tool
-from mcp.cybersec.helpers import (
+from csmcp._sdk_compat import tool
+from csmcp.cybersec.helpers import (
     JsonDict, _get_current_scope, _normalize_target_scopes, _normalize_scope_level,
     _coerce_limit, sdk_result, sdk_error,
 )
