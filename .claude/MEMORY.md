@@ -33,7 +33,7 @@ opts = ClaudeAgentOptions(
 | Path                      | What                                          |
 |---------------------------|-----------------------------------------------|
 | `/health`                 | DB health check (200/503)                     |
-| `/dashboard/*`            | Dashboard UI + 16 REST + 3 SSE endpoints      |
+| `/dashboard/*`            | Dashboard UI + 25 REST + 4 SSE endpoints (30 routes total) |
 | `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here |
 | `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                       |
 
@@ -82,7 +82,7 @@ opts = ClaudeAgentOptions(
 ### src/
 | File                  | Lines | Purpose                                               |
 |-----------------------|-------|-------------------------------------------------------|
-| `src/proxy/asgi.py`   | 116   | ASGI app, env-driven ports, mounts all sub-apps       |
+| `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware |
 | `src/manage.py`       | 329   | CLI management (`manage.py serve`, `case-open`, etc.) |
 | `src/logger.py`       | 30    | Structured logger                                     |
 | `src/mcp/__init__.py` | 0     | EMPTY — needs `all_servers()`, `allowed_tools()`      |
@@ -90,11 +90,11 @@ opts = ClaudeAgentOptions(
 ### src/a2a/
 | File                | Lines | Purpose                                      |
 |---------------------|-------|----------------------------------------------|
-| `agent_sdk.py`      | 304   | SDK bridge (needs base_url + MCP pkg update) |
+| `agent_sdk.py`      | 358   | SDK bridge — model mapping, PreToolUse audit hook, run_agent_query() |
 | `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards     |
-| `orchestrator.py`   | 353   | A2A task orchestration                       |
-| `dev_agents.py`     | 349   | Dev agent stubs (needs SDK wiring)           |
-| `cybersec_agent.py` | 327   | CybersecAgent (ORM-only, needs SDK wiring)   |
+| `orchestrator.py`   | 365   | A2A task orchestration                       |
+| `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)               |
+| `cybersec_agent.py` | 350   | CybersecAgent (SDK-wired ✅)                 |
 | `server.py`         | 236   | A2A JSON-RPC server                          |
 | `client.py`         | 205   | A2A client                                   |
 | `registry.py`       | 257   | AgentRegistry — remote A2A discovery         |
@@ -130,23 +130,37 @@ Keys: `/etc/dystopian-crypto/keys`. Certs: `~/.omniroute/certs/`.
 | `config.py` | 253 |
 | `cli_integration.py` | 299 |
 
-### src/db/ (41 models, complete ✅)
+### src/db/ (42 models ✅)
 PostgreSQL via Tortoise ORM (asyncpg). DB: `cybersec_forensics`.
 Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, and 25+ more.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
 
-### src/dashboard/routes.py (1178L)
-16 REST endpoints + 3 SSE endpoints. All HTML inline in `_DASHBOARD_HTML` string.
+### src/telemetry/ (5 files ✅ new)
+In-process metrics store with ring-buffer, percentile summaries, ASGI middleware.
+| File | Purpose |
+|------|---------|
+| `store.py` | `MetricsStore` (asyncio.Lock, deque maxlen=1000), `TelemetryEvent`, `MetricSummary` (p50/p95/p99/mean/count/rps) |
+| `middleware.py` | `TelemetryMiddleware` — ASGI, path normalisation (`/{id}`, `/{uuid}`), skips /health+/static |
+| `decorators.py` | `@timed(name)`, `@counted(name)` async decorators |
+| `collector.py` | `TelemetryCollector` — 15s poll, 100-snapshot ring history, `get_history(metric, n)` for sparklines |
+| `__init__.py` | Module singleton `metrics_store`, `collector`, `record_event()`, `get_snapshot()` |
+
+Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
+
+### src/dashboard/routes.py (1520L)
+25 REST endpoints + 4 SSE endpoints + 1 HTML root = 30 routes. All HTML inline in `_DASHBOARD_HTML` string.
+REST: overview, providers, usage, health, crypto, a2a, investigations, db-counts, agents, routing, agent-factory, prompts, cases, tasks, tasks/create, tasks/{id}, tasks/{id}/cancel, findings, iocs, yara, network, intelligence, audit, compliance, telemetry
+SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
 ### .claude/ system
-| Component    | Files                                                     | Status                       |
-|--------------|-----------------------------------------------------------|------------------------------|
-| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)  | ✅ all consistent frontmatter |
-| `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json| ⚠️ NEVER AUDITED             |
-| `commands/`  | 7 slash commands + config.py + README.md                  | ⚠️ NEVER AUDITED             |
-| `skills/`    | **780 SKILL.md** across 20 domains, single-word leaf dirs | ✅ RESTRUCTURED               |
-| `templates/` | 14 template files across 6 subdirs                        | Not reviewed                 |
+| Component    | Files                                                      | Status                       |
+|--------------|------------------------------------------------------------|------------------------------|
+| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)   | ✅ all consistent frontmatter |
+| `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json | ⚠️ NEVER AUDITED             |
+| `commands/`  | 7 slash commands + config.py + `__init__.py` + README.md   | ⚠️ NEVER AUDITED             |
+| `skills/`    | **778 SKILL.md** across 19 active domains (24 dirs total)  | ✅ RESTRUCTURED               |
+| `templates/` | 14 template files across 6 subdirs                         | Not reviewed                 |
 
 #### templates/ structure
 ```
@@ -172,15 +186,15 @@ templates/
 `yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`
 
 #### commands/ — 7 slash commands
-| Command | Purpose |
-|---------|---------|
-| `hunt` | Check for suspicious processes and injections |
-| `browser-hunt` | Browser artifact forensics |
-| `memory-dump` | Process injection indicators |
-| `net-hunt` | ARP spoofing detection |
-| `mode-switch` | Switch blue/red/purple mode |
-| `setup` | Run manage.py commands |
-| `test-config` | Test configuration validation |
+| Command        | Purpose                                       |
+|----------------|-----------------------------------------------|
+| `hunt`         | Check for suspicious processes and injections |
+| `browser-hunt` | Browser artifact forensics                    |
+| `memory-dump`  | Process injection indicators                  |
+| `net-hunt`     | ARP spoofing detection                        |
+| `mode-switch`  | Switch blue/red/purple mode                   |
+| `setup`        | Run manage.py commands                        |
+| `test-config`  | Test configuration validation                 |
 
 Supporting files: `config.py`, `__init__.py`, `README.md`
 
@@ -223,12 +237,12 @@ Model tiers:
 **Actions = leaf directory names** (the specific tool/technique applied to a component).
 **Activities ≠ domains** — `red-team/`, `forensics/`, `incident-response/` are methods, not components.
 
-### Current State (780 skills, 20 domains)
+### Current State (778 skills, 19 active domains)
 | Type                     | Count   | Description                                              |
 |--------------------------|---------|----------------------------------------------------------|
 | Project-native (full)    | 26      | Rich SKILL.md with MCP examples, DB queries, agent hooks |
-| Anthropic-integrated     | 754     | Full Anthropic workflow + CyberSecSuite integration      |
-| **Total**                | **780** | All in `.claude/skills/`, indexed in `INDEX.md`          |
+| Anthropic-integrated     | 752     | Full Anthropic workflow + CyberSecSuite integration      |
+| **Total**                | **778** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
 **Frontmatter** — ✅ COMPLETE
 - Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
@@ -236,10 +250,10 @@ Model tiers:
 
 ### Domain Structure (after red-team redistribution ✅)
 ```
-.claude/skills/               ← root (780 SKILL.md, 20 domains)
-├── cloud-security/    (117)  # aws, azure, gcp, containers, kubernetes, devsecops
+.claude/skills/               ← root (778 SKILL.md, 19 active / 24 total dirs)
+├── cloud-security/ (117)  # aws, azure, gcp, containers, kubernetes, devsecops
 │                             #   + aws/privesc, azure/lateral, k8s/privesc (from red-team)
-├── web-security/       (97)  # injection, xss, ssrf, api, pentest, owasp
+├── web-security/       (97)  # injection, xss, ssrf, api, pentest, owasp  ← rename to web-application/ pending
 │                             #   + auth/enum, auth/evilginx (from red-team)
 ├── forensics/          (89)  # disk, memory, network, log, email, mobile, cloud, usb
 ├── threat-intel/       (87)  # platforms, feeds, ioc, osint, darkweb, mitre, hunting
@@ -309,20 +323,20 @@ source: Anthropic-Cybersecurity-Skills   # absent for 26 project-native
 | `model`, `maxTurns`, `tools` | 780 | always present |
 | `tags` | 780 | 2,283 unique |
 | `mitre_attack` | 644 | 131 unique technique IDs |
-| `nist_csf` | 754 | 46 unique subcategories (all Anthropic) |
+| `nist_csf` | 752 | 46 unique subcategories (all Anthropic) |
 | `d3fend_techniques` | 139 | D3FEND defensive techniques |
-| `domain`, `subdomain` | 754 | Anthropic-sourced only |
-| `source` | 754 | `Anthropic-Cybersecurity-Skills` |
+| `domain`, `subdomain` | 752 | Anthropic-sourced only |
+| `source` | 752 | `Anthropic-Cybersecurity-Skills` |
 | `cwe` | 99 | 33 unique CWE IDs |
 | `cve` | 51 | 58 unique CVE IDs |
 | `skills` | 22 | project-native cross-refs |
 
 ### Anthropic Skills Source
-All 754 from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
+All 752 from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
 Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, references/, assets/) NOT YET COPIED.
 
 ### Key Files
-- `INDEX.md` — master sorted list (auto-generated, 780 entries, 47KB)
+- `INDEX.md` — master sorted list (auto-generated, 778 entries, 47KB)
 - `DEV_REFERENCE.md` — developer reference (724 lines)
 - `ops/mode/blue-team/SKILL.md` — blue team mode activation
 - `red-team/SKILL.md` — red team orchestrator index
@@ -401,7 +415,11 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
 - Docs — 8 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart)
-- Skills taxonomy — 780 SKILL.md created, indexed, enriched (MITRE/CWE/CVE/tags)
+- Skills taxonomy — 778 SKILL.md created, indexed, enriched (MITRE/CWE/CVE/tags)
+- Phase A2 — A2A stubs wired to SDK (model mapping, PreToolUse audit hook, real AI execution) — commits 3cfa5a0
+- Phase D (partial) — Telemetry stack complete (MetricsStore, middleware, decorators, collector, TelemetryMiddleware mounted) — commits 44bcdd7, 1a688c6, 3936eaf
+- Dashboard expansion — 30 routes total (was 16+3); 7 data endpoints + telemetry + task CRUD — commits 13af280, 3936eaf
+- NIST fixtures downloaded — `data/fixtures/nist_csf_2.json` (185 subcategories) + `data/fixtures/nist_ai_rmf.json` (72 subcategories)
 
 ### docs/ — 8 files
 `architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
@@ -409,12 +427,12 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### Skills Restructuring (remaining)
 | Step | What | Status |
 |------|------|--------|
-| 1. Copy Anthropic content | LICENSE + scripts/ + references/ + assets/ for 754 skills | pending |
+| 1. Copy Anthropic content | LICENSE + scripts/ + references/ + assets/ for 752 skills | pending |
 | ~~2. Redistribute red-team/~~ | ~~Move 47 skills to component domains~~ | ✅ done |
 | 3. Flatten same-name nests | Promote 75× `foo/foo/SKILL.md` → `foo/SKILL.md` | pending |
 | 4. Restructure malware/ | Merge statics, relocate tools to proper dirs | pending |
 | 5. Deep hierarchy + rename | Add 3-5 levels, path-based `name:` fields | pending |
-| 6. Generate fixtures | NIST CSF 2.0 + 2,283 tags → `data/fixtures/`, seed functions | pending |
+| ~~6. Generate fixtures~~ | ~~NIST CSF 2.0 + AI RMF → `data/fixtures/`, seed functions~~ | ✅ fixtures downloaded |
 | 7. Sync indexes | Regenerate INDEX.md + skills.tree + MEMORY.md | pending |
 
 ### Phase A — MCP Split + SDK Package
@@ -429,7 +447,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 | 7 | `mcp-agent-sdk-update` — wire SDK | pkg-create + dystopian |
 | 8 | `dystopian-mcp-scaffold` — mcps/ standalone | — |
 
-### Phase A2 — Wire A2A Stubs to SDK (parallel with A)
+### ~~Phase A2 — Wire A2A Stubs to SDK~~ ✅ COMPLETE (commit 3cfa5a0)
 `a2a-devagents-wire`, `a2a-cybersec-wire`, `a2a-orchestrator-wire`, `a2a-agentdef-enhance`, `a2a-hooks-add`
 
 ### Phase A-Audit (parallel)
@@ -441,9 +459,12 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### Phase C — SSL/TLS (after A)
 `ssl-dystopian-integrate` → `ssl-cert-generation` → `ssl-cli-commands` → `ssl-dashboard-tab` → `ssl-proxy-config`
 
-### Phase D — Telemetry + Extended Dashboard
-Telemetry: `telemetry-store` → `telemetry-middleware` / `telemetry-decorator` / `telemetry-collector` → `telemetry-mount`
-Dashboard: 8 new API endpoints + SSE + task builder → `dashboard-html-rewrite`
+### ~~Phase D — Telemetry + Extended Dashboard~~ ✅ COMPLETE
+Telemetry stack: `src/telemetry/` (store, middleware, decorators, collector — 5 files, mounted in asgi.py)
+Dashboard: 30 routes total, 7 data endpoints + telemetry REST/SSE + task CRUD → `dashboard-html-rewrite` still pending
+
+### Phase D2 — NIST Integration (next)
+`nist-csf-model` → `nist-ai-rmf-model` → `nist-register-models` → `nist-seed-functions` → `nist-manage-commands` + `nist-dashboard-endpoints`
 
 ### Phase E — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
@@ -563,14 +584,20 @@ Copy from `mcp_server.py` lines 16–142 into `src/mcp/cybersec/helpers.py`.
 
 ---
 
-## NIST CSF 2.0 Fixture
+## NIST Fixtures (data/fixtures/)
 
-**Structure**: 6 Functions → 22 Categories → 106 Subcategories (closed/published, static embed)
-- Functions: `GV` (Govern), `ID` (Identify), `PR` (Protect), `DE` (Detect), `RS` (Respond), `RC` (Recover)
-- Target: `data/fixtures/nist_csf.json`
-- Model: `ComplianceRule` with `framework="NIST_CSF_2.0"` (or new `NistCsfControl`)
-- Seed: `seed_nist_csf()` in `seeds.py` (idempotent, get_or_create)
-- Current SKILL.md coverage: 46/106 subcategories referenced
+### nist_csf_2.json — NIST CSF 2.0
+**Source**: NIST reference tool XLSX (parsed via openpyxl)
+- **185 subcategories**, 6 functions: GV (Govern), ID (Identify), PR (Protect), DE (Detect), RS (Respond), RC (Recover)
+- Schema per entry: `id, title, function, function_description, category, category_description, implementation_examples, informative_references`
+- Current SKILL.md coverage: 46 of 185 subcategories referenced
+- Pending: DB model `NistCsfControl`, seed function `seed_nist_csf()`, CLI command, dashboard endpoint
+
+### nist_ai_rmf.json — NIST AI RMF 1.0
+**Source**: `https://airc.nist.gov/docs/playbook.json`
+- **72 subcategories**, 4 functions: Govern, Map, Measure, Manage
+- Schema per entry: `id, function, category, title, description, section_about, suggested_actions (list[str]), ai_actors, topic`
+- Pending: DB model `NistAiRmfControl`, seed function `seed_nist_ai_rmf()`, CLI command, dashboard endpoint
 
 ---
 
