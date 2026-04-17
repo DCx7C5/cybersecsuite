@@ -1,4 +1,4 @@
-# CyberSecSuite — MEMORY.md (Updated 2026-04-17 08:00 UTC)
+# CyberSecSuite — MEMORY.md (Updated 2026-04-17 08:21 UTC)
 
 ---
 
@@ -153,23 +153,14 @@ Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
 16 REST endpoints + 3 SSE endpoints. All HTML inline in `_DASHBOARD_HTML` string.
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
-### mcps/ (5 servers)
-| Server | Status |
-|--------|--------|
-| `dystopian-crypto-mcp/` | **EMPTY** — needs scaffold (mcp.json references `app.py`) |
-| `playwright-stealth-mcp/` | Complete standalone MCP server |
-| `token-optimization-mcp/` | Complete standalone MCP server |
-| `brave_stealth_profile/` | Browser profile for playwright (should be gitignored!) |
-| `MCP_DEV_INSTRUCTIONS.md` | Dev instructions for MCP component development |
-
 ### .claude/ system
-| Component | Files | Status |
-|-----------|-------|--------|
-| `agents/` | 32 agents + AGENT_FACTORY + 3 teams | ✅ all consistent frontmatter |
-| `hooks/` | 18 hook .py files + hooks.json (18 events) | ⚠️ NEVER AUDITED |
-| `commands/` | 6 forensics commands + config.py | ⚠️ NEVER AUDITED |
-| `skills/` | 20+ skills with SKILL.md | ⚠️ NEVER AUDITED |
-| `templates/` | artifact.md, baselines/ (kernel/network/persistence) | Not reviewed |
+| Component    | Files                                                | Status                       |
+|--------------|------------------------------------------------------|------------------------------|
+| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams                  | ✅ all consistent frontmatter |
+| `hooks/`     | 18 hook .py files + hooks.json (18 events)           | ⚠️ NEVER AUDITED             |
+| `commands/`  | 6 forensics commands + config.py                     | ⚠️ NEVER AUDITED             |
+| `skills/`    | **733 SKILL.md** across 22 domains, 8-layer taxonomy | ✅ RESTRUCTURED (2026-04-17) |
+| `templates/` | artifact.md, baselines/ (kernel/network/persistence) | Not reviewed                 |
 
 #### hooks.json — 18 events registered
 `FirstInit`, `PreToolCall`, `PostToolUse`, `SessionStart`, `SessionEnd`, `AgentStart`, `AgentEnd`, `PhaseStart`, `PhaseEnd`, `InvestigationStart`, `InvestigationEnd`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated`
@@ -230,23 +221,23 @@ Model tiers:
 **B. A2A Protocol** (external): `POST /a2a` JSON-RPC → OrchestratorAgent → registry → `execute()`
 
 ### mcp.json — 5 MCP servers for Claude Code CLI
-| Key | Server |
-|-----|--------|
-| `cybersec` | Main forensics (29 tools, stdio, `mcp_server.py`) |
-| `dystopian-crypto` | Crypto/CA/GPG (`mcps/dystopian-crypto-mcp/app.py` — **EMPTY**) |
-| `kerneldev` | Kernel module dev (`kerneldev_mcp.server`) |
-| `token-optimization-mcp` | Token caching |
-| `playwright-stealth-mcp` | Browser automation |
+| Key                      | Server                                                         |
+|--------------------------|----------------------------------------------------------------|
+| `cybersec`               | Main forensics (29 tools, stdio, `mcp_server.py`)              |
+| `dystopian-crypto`       | Crypto/CA/GPG (`mcps/dystopian-crypto-mcp/app.py` — **EMPTY**) |
+| `kerneldev`              | Kernel module dev (`kerneldev_mcp.server`)                     |
+| `token-optimization-mcp` | Token caching                                                  |
+| `playwright-stealth-mcp` | Browser automation                                             |
 
 ---
 
 ## Ports (after Phase 0)
-| Port | What | Status |
-|------|------|--------|
-| 8000 | ASGI HTTP (primary) | ✅ |
-| 8080 | ASGI HTTP (alt) | ⚠️ exposed, no alt listener |
-| 8433 | ASGI HTTPS | ⚠️ SSL helper ready, no certs |
-| 5432 | PostgreSQL | ✅ localhost |
+| Port | What                | Status                        |
+|------|---------------------|-------------------------------|
+| 8000 | ASGI HTTP (primary) | ✅                             |
+| 8080 | ASGI HTTP (alt)     | ⚠️ exposed, no alt listener   |
+| 8433 | ASGI HTTPS          | ⚠️ SSL helper ready, no certs |
+| 5432 | PostgreSQL          | ✅ localhost                   |
 
 ---
 
@@ -254,6 +245,13 @@ Model tiers:
 
 ### Phase 0 — Quick Fixes ✅ COMPLETE
 ### Phase Docs — 16 docs ✅ COMPLETE (commit 7217dff)
+
+### Skills Restructure ✅ COMPLETE (2026-04-17)
+- 22 top-level domains, 8-layer taxonomy, 494 directories
+- **733 SKILL.md** total: 26 full (project-adapted) + 707 stubs (Anthropic-mapped)
+- All 754 Anthropic skills mapped and integrated
+- Master index: `.claude/skills/INDEX.md`
+- See **Skills System** section below for full details
 
 ### Phase A — mcp_server.py Split + SDK Package (PRIORITY)
 Ordered by dependency:
@@ -388,19 +386,101 @@ Copy verbatim into `src/mcp/cybersec/helpers.py`.
 
 ## Investigation Phases
 
-| Phase | Name | Agent |
-|-------|------|-------|
-| 0 | Case Opening | cybersec-agent |
-| 1 | Rapid Recon | cybersec-agent |
-| 2 | Deep Scan | filesystem-analyst |
-| 3 | Network Analysis | network-analyst |
-| 4 | Persistence Hunt | persistence-analyst |
-| 5 | Memory Forensics | memory-analyst |
-| 6 | IOC Correlation | cybersec-analyst |
-| 7 | Threat Attribution | threat-modeler |
-| 8 | Artifact Signing | cybersec-agent (crypto) |
+| Phase | Name               | Agent                   |
+|-------|--------------------|-------------------------|
+| 0     | Case Opening       | cybersec-agent          |
+| 1     | Reconaissance      | cybersec-agent          |
+| 2     | Deep Scan          | filesystem-analyst      |
+| 3     | Network Analysis   | network-analyst         |
+| 4     | Persistence Hunt   | persistence-analyst     |
+| 5     | Memory Forensics   | memory-analyst          |
+| 6     | IOC Correlation    | cybersec-analyst        |
+| 7     | Threat Attribution | threat-modeler          |
+| 8     | Artifact Signing   | cybersec-agent (crypto) |
 
 ---
 
 ## Blueprint Reference
 `/home/daen/Projects/AI/blueprints/agent-sdk/` — `custom-tools.md`, `mcp.md`, `agent-loop.md`, `subagents.md`, `sessions.md`, `hooks.md`
+
+---
+
+## Skills System
+
+### Structure
+```
+.claude/skills/               ← root (494 dirs, 733 SKILL.md files)
+├── INDEX.md                  ← master index (auto-generated)
+│
+├── forensics/                # disk, memory, network, log, mobile, email, cloud, usb
+├── malware/                  # static-analysis, dynamic-analysis, reverse-engineering,
+│                             #   ransomware, persistence, obfuscation, families, ioc-extraction
+├── threat-intel/             # collection (misp, stix, feeds, ioc, osint), analysis (mitre-attack,
+│                             #   actor-profiling, kill-chain), detection-rules (sigma, splunk, yara)
+├── incident-response/        # triage, containment, eradication, recovery, playbooks, tabletop,
+│                             #   malware-ir, phishing-ir, cloud-ir, insider-threat, dashboard
+├── vulnerability/            # scanning (nessus, nikto, dependency), prioritization, remediation
+├── red-team/                 # recon, initial-access, lateral-movement, privilege-escalation,
+│   SKILL.md ← mode skill     #   c2, social-engineering, purple-team/
+├── network-security/         # monitoring (ids/snort/suricata, zeek, osquery), attack-simulation
+│                             #   (layer2/arp/vlan, layer3, layer4, layer7/mitm, wireless), firewall
+├── web-security/             # testing (injection/sqli/xss/xxe/ssrf, auth/jwt/oauth/csrf,
+│                             #   api/graphql/rest/soap/websocket, burpsuite, owasp-top10),
+│                             #   waf, cache-attacks, headers, ssl-tls
+├── cloud-security/           # aws, azure, gcp, kubernetes, containers, serverless, terraform,
+│                             #   devsecops, zero-trust
+├── identity-security/        # active-directory (attack/defense/audit), mfa, pam, oauth2, saml,
+│                             #   service-accounts
+├── endpoint-security/        # edr, hardening, forensics, hids
+├── ot-ics/                   # assessment, protocols (dnp3/s7comm), scada, plc, historian, network
+├── crypto-pki/               # signing, certificates, gpg, tls, hsm, post-quantum
+├── siem-soc/                 # splunk, elastic, qradar, sentinel, detection-engineering, threat-hunting
+├── compliance/               # frameworks (nist-csf/soc2/cis), privacy, dmarc
+├── kernel-os/                # linux (lkm/kerneldev-forensic, rootkits, syscall), firmware, hardware
+├── mobile/                   # android, ios, certificate-pinning, api
+├── steganography/            # LSB, DCT, entropy, stego tool artifacts
+├── deception/                # honeytokens, canary-files
+├── osint/                    # gathering, spiderfoot, domain, ip, dark-web
+├── automation/               # pipelines, ioc-pipeline, malware-pipeline
+└── ops/                      # mode (blue-team), scope (project/session/user),
+                              #   dashboard, dbus (alerts/msgs), browser (playwright/selenium)
+```
+
+### Skill Counts by Type
+| Type | Count | Description |
+|------|-------|-------------|
+| Full (project-adapted) | 26 | Rich SKILL.md: model, maxTurns, mcpServers, MCP examples, DB queries |
+| Stubs (Anthropic-mapped) | 707 | Frontmatter + source ref + CyberSecSuite integration section |
+| **Total** | **733** | All in `.claude/skills/`, indexed in `INDEX.md` |
+
+### SKILL.md Format
+Full skills (project-native):
+```yaml
+---
+name: skill-name
+description: "..."
+model: sonnet        # or opus/haiku
+maxTurns: 20
+tools: [Read, Bash, Glob, Grep]
+mcpServers: [cybersec]
+mitre_attack: [T1055]
+nist_csf: [DE.AE-02]
+tags: [volatility, memory]
+source: ""           # empty = original project skill
+---
+```
+Stub skills (Anthropic-mapped):
+```yaml
+source: "/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/<name>/SKILL.md"
+```
+
+### Key Files
+- `INDEX.md` — master sorted list; regenerate with `python3 /tmp/gen_index.py`
+- `ops/mode/blue-team/SKILL.md` — blue team mode activation
+- `red-team/SKILL.md` — red team mode activation (merged with technique tree)
+- `red-team/purple-team/SKILL.md` — purple team mode activation
+- `kernel-os/linux/lkm/kerneldev-forensic/` — full skill with config/, examples/, scripts/, templates/
+
+### Anthropic Skills Source
+All 754 skills from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
+Mapped via `/tmp/gen_stubs.py` (300 explicit mappings) + `/tmp/gen_stubs3.py` (437 keyword-routed)

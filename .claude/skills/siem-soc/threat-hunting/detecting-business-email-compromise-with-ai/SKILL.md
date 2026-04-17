@@ -1,0 +1,29 @@
+---
+name: detecting-business-email-compromise-with-ai
+description: "Deploy AI and NLP-powered detection systems to identify business email compromise attacks by analyzing writing"
+domain: cybersecurity
+subdomain: phishing-defense
+model: sonnet
+maxTurns: 20
+tools: [Read, Bash, Glob, Grep]
+mcpServers: [cybersec]
+mitre_attack: []
+nist_csf: 
+tags: 
+source: "/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/detecting-business-email-compromise-with-ai/SKILL.md"
+---
+# Detecting Business Email Compromise With Ai
+
+> **Source:** `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/detecting-business-email-compromise-with-ai/SKILL.md`
+
+## CyberSecSuite Integration
+
+```python
+mcp__cybersec__case_open(title="detecting-business-email-compromise-with-ai", type="investigation")
+mcp__cybersec__add_finding(title="...", severity="high", description="...")
+mcp__cybersec__add_ioc(type="...", value="...", confidence=0.9, source="detecting-business-email-compromise-with-ai")
+mcp__cybersec__suggest_mitre(description="...", context="...")
+```
+
+## Agent
+`@cybersec-agent` → delegates to appropriate specialist.
