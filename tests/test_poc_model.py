@@ -11,9 +11,9 @@ from db.models.enums import PocStatus, Severity
 # ── Tortoise in-memory SQLite fixture ────────────────────────────────────────
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(autouse=True)
 async def tortoise_ctx():
-    """Initialise Tortoise with SQLite in-memory for the test module."""
+    """Initialise Tortoise with SQLite in-memory for each test function."""
     async with TortoiseContext() as ctx:
         await ctx.init(
             db_url="sqlite://:memory:",
@@ -226,6 +226,11 @@ class TestSeedPoc:
         from db.models.poc import ProofOfConcept
         from db.models.seeds import seed_poc
 
+        # First run: create records
+        first = await seed_poc()
+        assert first["created"] == 5
+
+        # Second run: all should be skipped
         result = await seed_poc()
         assert result["skipped"] == 5
         assert result["created"] == 0
@@ -235,7 +240,9 @@ class TestSeedPoc:
 
     async def test_seed_known_titles(self):
         from db.models.poc import ProofOfConcept
+        from db.models.seeds import seed_poc
 
+        await seed_poc()
         titles = await ProofOfConcept.all().values_list("title", flat=True)
         assert any("Log4Shell" in t for t in titles)
         assert any("EternalBlue" in t for t in titles)
@@ -243,13 +250,17 @@ class TestSeedPoc:
 
     async def test_seed_weaponized_pocs(self):
         from db.models.poc import ProofOfConcept
+        from db.models.seeds import seed_poc
 
+        await seed_poc()
         weaponized = await ProofOfConcept.filter(is_weaponized=True).count()
         assert weaponized >= 2
 
     async def test_seed_statuses(self):
         from db.models.poc import ProofOfConcept
+        from db.models.seeds import seed_poc
 
+        await seed_poc()
         weaponized_status = await ProofOfConcept.filter(status=PocStatus.WEAPONIZED).count()
         verified_status = await ProofOfConcept.filter(status=PocStatus.VERIFIED).count()
         assert weaponized_status >= 2

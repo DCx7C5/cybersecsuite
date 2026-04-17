@@ -1,4 +1,5 @@
 """Configuration consistency checks."""
+
 from __future__ import annotations
 
 import ast
@@ -7,6 +8,7 @@ import re
 from pathlib import Path
 
 from checks._constants import _REPO_ROOT, _SRC_ROOT  # noqa: F401
+
 
 def check_config() -> list[dict[str, str]]:
     """Verify config file consistency across mcp.json, docker-compose, settings.
@@ -35,28 +37,34 @@ def check_config() -> list[dict[str, str]]:
 
 # ── Config sub-checks ─────────────────────────────────────────────────────
 
+
 def _check_mcp_json(findings: list[dict[str, str]]) -> None:
     """Verify mcp.json server command paths exist on disk."""
     mcp_path = _REPO_ROOT / "mcp.json"
     if not mcp_path.exists():
-        findings.append({
-            "level": "error",
-            "check": "config",
-            "message": "mcp.json not found at repository root",
-        })
+        findings.append(
+            {
+                "level": "error",
+                "check": "config",
+                "message": "mcp.json not found at repository root",
+            }
+        )
         return
 
     try:
         data = json.loads(mcp_path.read_text())
     except (json.JSONDecodeError, OSError) as exc:
-        findings.append({
-            "level": "error",
-            "check": "config",
-            "message": f"Cannot parse mcp.json: {exc}",
-        })
+        findings.append(
+            {
+                "level": "error",
+                "check": "config",
+                "message": f"Cannot parse mcp.json: {exc}",
+            }
+        )
         return
 
     servers = data.get("mcpServers", {})
+    before = len(findings)
     for name, cfg in servers.items():
         args: list[str] = cfg.get("args", [])
         # Resolve ${workspaceFolder} → repo root.
@@ -67,14 +75,16 @@ def _check_mcp_json(findings: list[dict[str, str]]) -> None:
             if arg == "--directory" and i + 1 < len(resolved):
                 dir_path = Path(resolved[i + 1])
                 if not dir_path.is_dir():
-                    findings.append({
-                        "level": "error",
-                        "check": "config",
-                        "message": (
-                            f"mcp.json server '{name}': --directory path "
-                            f"'{resolved[i + 1]}' does not exist"
-                        ),
-                    })
+                    findings.append(
+                        {
+                            "level": "error",
+                            "check": "config",
+                            "message": (
+                                f"mcp.json server '{name}': --directory path "
+                                f"'{resolved[i + 1]}' does not exist"
+                            ),
+                        }
+                    )
 
         # Check if referenced Python files exist.
         for arg in resolved:
@@ -90,25 +100,33 @@ def _check_mcp_json(findings: list[dict[str, str]]) -> None:
                     base = Path(resolved[dir_idx]) if dir_idx is not None else _REPO_ROOT
                     py_path = base / arg
                 if not py_path.exists():
-                    findings.append({
-                        "level": "warning",
-                        "check": "config",
-                        "message": (
-                            f"mcp.json server '{name}': Python file "
-                            f"'{arg}' not found on disk"
-                        ),
-                    })
+                    findings.append(
+                        {
+                            "level": "warning",
+                            "check": "config",
+                            "message": (
+                                f"mcp.json server '{name}': Python file '{arg}' not found on disk"
+                            ),
+                        }
+                    )
+
+    if len(findings) == before:
+        findings.append(
+            {"level": "info", "check": "config", "message": f"mcp.json: {len(servers)} server(s) validated OK"}
+        )
 
 
 def _check_docker_compose(findings: list[dict[str, str]]) -> None:
     """Verify Dockerfiles referenced in docker-compose.yml exist."""
     dc_path = _REPO_ROOT / "docker-compose.yml"
     if not dc_path.exists():
-        findings.append({
-            "level": "warning",
-            "check": "config",
-            "message": "docker-compose.yml not found at repository root",
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "check": "config",
+                "message": "docker-compose.yml not found at repository root",
+            }
+        )
         return
 
     content = dc_path.read_text()
@@ -121,6 +139,7 @@ def _check_docker_compose(findings: list[dict[str, str]]) -> None:
         content,
     )
 
+    before = len(findings)
     for context, dockerfile in build_blocks:
         context = context.strip()
         dockerfile = dockerfile.strip()
@@ -129,14 +148,21 @@ def _check_docker_compose(findings: list[dict[str, str]]) -> None:
         else:
             full_path = _REPO_ROOT / context / dockerfile
         if not full_path.exists():
-            findings.append({
-                "level": "error",
-                "check": "config",
-                "message": (
-                    f"docker-compose.yml: Dockerfile not found: "
-                    f"{full_path.relative_to(_REPO_ROOT)}"
-                ),
-            })
+            findings.append(
+                {
+                    "level": "error",
+                    "check": "config",
+                    "message": (
+                        f"docker-compose.yml: Dockerfile not found: "
+                        f"{full_path.relative_to(_REPO_ROOT)}"
+                    ),
+                }
+            )
+
+    if len(findings) == before:
+        findings.append(
+            {"level": "info", "check": "config", "message": "docker-compose.yml: Dockerfiles validated OK"}
+        )
 
 
 def _check_settings_ports(findings: list[dict[str, str]]) -> None:
@@ -150,11 +176,13 @@ def _check_settings_ports(findings: list[dict[str, str]]) -> None:
     try:
         settings = json.loads(settings_path.read_text())
     except (json.JSONDecodeError, OSError):
-        findings.append({
-            "level": "warning",
-            "check": "config",
-            "message": "Cannot parse .claude/settings.json",
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "check": "config",
+                "message": "Cannot parse .claude/settings.json",
+            }
+        )
         return
 
     # Extract ASGI ports from settings.
@@ -176,25 +204,29 @@ def _check_settings_ports(findings: list[dict[str, str]]) -> None:
 
     missing = settings_ports - dc_ports
     for port in sorted(missing):
-        findings.append({
-            "level": "warning",
-            "check": "config",
-            "message": (
-                f".claude/settings.json declares ASGI port {port} "
-                f"but it is not exposed in docker-compose.yml"
-            ),
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "check": "config",
+                "message": (
+                    f".claude/settings.json declares ASGI port {port} "
+                    f"but it is not exposed in docker-compose.yml"
+                ),
+            }
+        )
 
 
 def _check_pyproject_entrypoints(findings: list[dict[str, str]]) -> None:
     """Verify pyproject.toml entry-point modules resolve to files in src/."""
     pyproject_path = _REPO_ROOT / "pyproject.toml"
     if not pyproject_path.exists():
-        findings.append({
-            "level": "warning",
-            "check": "config",
-            "message": "pyproject.toml not found at repository root",
-        })
+        findings.append(
+            {
+                "level": "warning",
+                "check": "config",
+                "message": "pyproject.toml not found at repository root",
+            }
+        )
         return
 
     content = pyproject_path.read_text()
@@ -225,14 +257,16 @@ def _check_pyproject_entrypoints(findings: list[dict[str, str]]) -> None:
                 module_path / "__init__.py",
             ]
             if not any(c.exists() for c in candidates):
-                findings.append({
-                    "level": "error",
-                    "check": "config",
-                    "message": (
-                        f"pyproject.toml entry point '{ep_name}' references "
-                        f"module '{module_part}' which cannot be found in src/"
-                    ),
-                })
+                findings.append(
+                    {
+                        "level": "error",
+                        "check": "config",
+                        "message": (
+                            f"pyproject.toml entry point '{ep_name}' references "
+                            f"module '{module_part}' which cannot be found in src/"
+                        ),
+                    }
+                )
                 continue
 
             # Verify the function exists in the module.
@@ -247,11 +281,13 @@ def _check_pyproject_entrypoints(findings: list[dict[str, str]]) -> None:
                 if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
             }
             if func_name not in func_names:
-                findings.append({
-                    "level": "error",
-                    "check": "config",
-                    "message": (
-                        f"pyproject.toml entry point '{ep_name}': function "
-                        f"'{func_name}' not found in {resolved_file.name}"
-                    ),
-                })
+                findings.append(
+                    {
+                        "level": "error",
+                        "check": "config",
+                        "message": (
+                            f"pyproject.toml entry point '{ep_name}': function "
+                            f"'{func_name}' not found in {resolved_file.name}"
+                        ),
+                    }
+                )
