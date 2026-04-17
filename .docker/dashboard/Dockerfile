@@ -1,5 +1,47 @@
-# ── Base image ────────────────────────────────────────────────────────────────
-FROM python:3.14-slim
+# cybersecsuite — dashboard service (uv-based)
+FROM python:3.14-slim AS base
+
+# Install uv + curl (healthcheck) + libpq5 (asyncpg runtime)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+RUN apt-get update -qq \
+    && apt-get install -y --no-install-recommends curl libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy dependency files first for caching
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies
+RUN uv sync --frozen --no-dev --no-install-project
+
+# Copy source
+COPY src/ src/
+COPY mcp_server.py .
+COPY templates/ templates/
+COPY data/fixtures/ data/fixtures/
+
+# Install the project itself
+RUN uv sync --frozen --no-dev
+
+# Runtime
+ENV PYTHONPATH=/app/src
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV TERM=xterm-256color
+ENV ASGI_HOST=0.0.0.0
+ENV ASGI_PORT=8000
+ENV ASGI_TLS_PORT=8433
+
+EXPOSE 8000 8080 8433
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD curl -fs http://localhost:8000/health || exit 1
+
+STOPSIGNAL SIGTERM
+
+CMD ["uv", "run", "uvicorn", "proxy.asgi:app", "--host", "0.0.0.0", "--port", "8000"]
+
 
 ARG BUILD_DATE
 ARG VCS_REF

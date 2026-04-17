@@ -2,15 +2,20 @@
   "mcpServers": {
     "dystopian-crypto": {
       "name": "Dystopian Crypto",
-      "description": "Dystopian-resistant SSL CA & GPG key management tools (MCP server)",
+      "description": "Ed25519 key management, artifact signing/verification (Argon2id + AES-256-GCM)",
       "command": "uv",
       "args": [
         "--directory",
-        "${workspaceFolder}/mcps/dystopian-crypto-mcp",
+        "${workspaceFolder}",
         "run",
-        "app.py"
+        "python",
+        "-c",
+        "import asyncio; from mcp.dystopian import dystopian_server; asyncio.run(dystopian_server.run_stdio())"
       ],
-      "env": {},
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DYSTOPIAN_KEYS_DIR": "/etc/dystopian-crypto/keys"
+      },
       "cwd": "${workspaceFolder}"
     },
     "cybersec": {

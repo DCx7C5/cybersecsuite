@@ -31,7 +31,7 @@ services:
   cybersec-dashboard:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: .docker/dashboard/Dockerfile
     image: cybersec-dashboard
     container_name: cybersec-dashboard
     restart: unless-stopped
@@ -72,6 +72,26 @@ services:
       start_period: 15s
 
 
+  cybersec-redis:
+    build:
+      context: .docker/redis
+      dockerfile: Dockerfile
+    image: cybersec-redis
+    container_name: cybersec-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+
 volumes:
   pg_data:
   pg_socket:
+  redis_data:
