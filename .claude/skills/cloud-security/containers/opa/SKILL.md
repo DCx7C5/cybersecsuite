@@ -71,7 +71,7 @@ kubectl get crd | grep gatekeeper
 kubectl get validatingwebhookconfigurations gatekeeper-validating-webhook-configuration
 
 # Check CRDs
-kubectl get crd constrainttemplates.templates.gatekeeper.sh
+kubectl get crd constrainttemplates.plugins.gatekeeper.sh
 kubectl get crd configs.config.gatekeeper.sh
 ```
 
@@ -81,7 +81,7 @@ kubectl get crd configs.config.gatekeeper.sh
 
 ```yaml
 # template-required-labels.yaml
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8srequiredlabels
@@ -135,7 +135,7 @@ spec:
 
 ```yaml
 # template-block-privileged.yaml
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sblockprivileged
@@ -182,7 +182,7 @@ spec:
 
 ```yaml
 # template-allowed-repos.yaml
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sallowedrepos
@@ -244,7 +244,7 @@ spec:
 
 ```yaml
 # template-require-limits.yaml
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8srequirelimits
@@ -275,7 +275,7 @@ spec:
 
 ```yaml
 # template-block-latest-tag.yaml
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sblocklatesttag
@@ -305,7 +305,7 @@ spec:
 ### 6. Enforce Read-Only Root Filesystem
 
 ```yaml
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sreadonlyroot

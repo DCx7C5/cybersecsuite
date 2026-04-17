@@ -167,13 +167,13 @@ SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
 ### .claude/ system
-| Component    | Files                                                      | Status                       |
-|--------------|------------------------------------------------------------|------------------------------|
+| Component    | Files                                                                         | Status                       |
+|--------------|-------------------------------------------------------------------------------|------------------------------|
 | `agents/`    | **33 agents** + AGENT_FACTORY + DEV_SUB_AGENTS + 3 teams (in `teams/` subdir) | ✅ all consistent frontmatter |
-| `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json | ⚠️ NEVER AUDITED             |
-| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md | ⚠️ NEVER AUDITED             |
-| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only) | ✅ RESTRUCTURED               |
-| `templates/` | 14 template files across 6 subdirs                         | Not reviewed                 |
+| `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json                    | ⚠️ NEVER AUDITED             |
+| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                  | ⚠️ NEVER AUDITED             |
+| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)              | ✅ RESTRUCTURED               |
+| `templates/` | 14 template files across 6 subdirs                                            | Not reviewed                 |
 
 #### templates/ structure
 ```
@@ -239,13 +239,13 @@ Model tiers:
 **B. A2A Protocol** (external): `POST /a2a` JSON-RPC → OrchestratorAgent → registry → `execute()`
 
 ### mcp.json — 5 MCP servers for Claude Code CLI
-| Key                      | Server                                                                          |
-|--------------------------|---------------------------------------------------------------------------------|
-| `cybersec`               | Main forensics (29 tools, stdio, `mcp_server.py`, uv)                           |
-| `dystopian-crypto`       | Crypto — Ed25519/Argon2id/AES-256-GCM (`src/mcp/dystopian.py`, uv)             |
+| Key                      | Server                                                                                           |
+|--------------------------|--------------------------------------------------------------------------------------------------|
+| `cybersec`               | Main forensics (29 tools, stdio, `mcp_server.py`, uv)                                            |
+| `dystopian-crypto`       | Crypto — Ed25519/Argon2id/AES-256-GCM (`src/mcp/dystopian.py`, uv)                               |
 | `token-optimization-mcp` | Token counting, prompt compression, semantic caching (`mcps/token-optimization-mcp/main.py`, uv) |
-| `playwright-stealth-mcp` | Headless Brave browser automation (`mcps/playwright-stealth-mcp/server.py`, uv) |
-| `kerneldev`              | Kernel module dev / eBPF / symbol lookup (`kerneldev_mcp.server`, python)       |
+| `playwright-stealth-mcp` | Headless Brave browser automation (`mcps/playwright-stealth-mcp/server.py`, uv)                  |
+| `kerneldev`              | Kernel module dev / eBPF / symbol lookup (`kerneldev_mcp.server`, python)                        |
 
 ---
 
@@ -516,39 +516,28 @@ FastMCP typed-param pattern prevents trivial merge — deferred to `mcp-shim-upd
 ### Phase C — SSL/TLS
 `ssl-dystopian-integrate` → `ssl-cert-generation` → `ssl-cli-commands` → `ssl-dashboard-tab` → `ssl-proxy-config`
 
-### Phase D.5 — PoC Table (NEW)
-| Step | Todo                  | Purpose                                                                                                                                                                                                                                                                                                          |
-|------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1    | `poc-enums`           | Add `PoCStatus`, `PoCFramework`, `PoCLanguage` enums                                                                                                                                                                                                                                                             |
-| 2    | `poc-model`           | Implement `src/db/models/poc.py` (name, description, cve_intel FK, source_url, repository, language, framework, author, tags, severity, mitre_techniques, requires_auth, requires_network_access, requires_local_access, tested_versions, detection_evasion, payload_type, status, popularity_score, timestamps) |
-| 3    | `poc-seeds`           | Create `src/db/fixtures/poc_entries.json` (5-10 canonical CVEs: Log4Shell, MOVEit, etc.)                                                                                                                                                                                                                         |
-| 4    | `poc-bootstrap`       | Add `seed_poc()` to `src/db/seeds.py`, wire to `initialize_default_seed_data()`                                                                                                                                                                                                                                  |
-| 5    | `poc-seeds-cli`       | Add `seed-poc` command to `manage.py`                                                                                                                                                                                                                                                                            |
-| 6    | `poc-mcp-tools`       | Add MCP tools: `query_poc_by_cve`, `add_poc`, `get_poc_popularity` in `src/mcp/cybersec/`                                                                                                                                                                                                                        |
-| 7    | `poc-dashboard-tab`   | Add PoC inventory tab + `/api/poc` endpoint to dashboard                                                                                                                                                                                                                                                         |
-| 8    | `poc-integrity-check` | Add fixture coverage to `src/checks/integrity.py`                                                                                                                                                                                                                                                                |
-| 9    | `poc-tests`           | CRUD + FK relationship tests                                                                                                                                                                                                                                                                                     |
-| 10   | `memory-sync`         | Update `.claude/MEMORY.md` roadmap                                                                                                                                                                                                                                                                               |
-
-**Rationale**: Track proof-of-concept exploits linked to CVEs. Enables analysts to assess exploitability in forensic investigations.
-**Relationships**: CVEIntel ↔ PoC (1-to-many), Finding can reference PoC.
-
 ### Phase D.5 — PoC Table (IN PROGRESS)
-| Step | Todo | Purpose |
-|------|------|---------|
-| 1 | `poc-enums` | Add `PoCStatus`, `PoCFramework`, `PoCLanguage` enums |
-| 2 | `poc-model` | Implement `src/db/models/poc.py` (name, description, cve_intel FK, source_url, repository, language, framework, author, tags, severity, mitre_techniques, requires_auth, requires_network_access, requires_local_access, tested_versions, detection_evasion, payload_type, status, popularity_score, timestamps) |
-| 3 | `poc-seeds` | Create `src/db/fixtures/poc_entries.json` (5-10 canonical CVEs: Log4Shell, MOVEit, etc.) |
-| 4 | `poc-bootstrap` | Add `seed_poc()` to `src/db/seeds.py`, wire to `initialize_default_seed_data()` |
-| 5 | `poc-seeds-cli` | Add `seed-poc` command to `manage.py` |
-| 6 | `poc-mcp-tools` | Add MCP tools: `query_poc_by_cve`, `add_poc`, `get_poc_popularity` in `src/mcp/cybersec/` |
-| 7 | `poc-dashboard-tab` | Add PoC inventory tab + `/api/poc` endpoint to dashboard |
-| 8 | `poc-integrity-check` | Add fixture coverage to `src/checks/integrity.py` |
-| 9 | `poc-tests` | CRUD + FK relationship tests |
-| 10 | `memory-sync` | Update `.claude/MEMORY.md` roadmap |
+| Step | Todo                  | Status |
+|------|-----------------------|--------|
+| 1    | `poc-enums`           | ✅ `PocStatus` in `src/db/models/enums.py` |
+| 2    | `poc-model`           | ✅ `src/db/models/poc.py` (`ProofOfConcept`, table `intel_pocs`) |
+| 3    | `poc-seeds`           | ✅ `src/db/fixtures/poc_entries.json` (8 canonical PoCs) |
+| 4    | `poc-bootstrap`       | ✅ `seed_poc()` in `seeds.py`, wired to `initialize_default_seed_data()` |
+| 5    | `poc-seeds-cli`       | ✅ `seed-poc` command in `manage.py` |
+| 6    | `poc-mcp-tools`       | ✅ `src/mcp/cybersec/poc.py` — `query_poc_by_cve`, `add_poc`, `get_poc_popularity` |
+| 7    | `poc-dashboard-tab`   | ⚠️ Tab button added; tab panel div + JS fetch still missing |
+| 8    | `poc-integrity-check` | ⚠️ `poc_entries.json` fixture present; integrity auto-discovers `intel_pocs` |
+| 9    | `poc-tests`           | pending |
+| 10   | `memory-sync`         | pending |
 
 **Rationale**: Track proof-of-concept exploits linked to CVEs. Enables analysts to assess exploitability in forensic investigations.
 **Relationships**: CVEIntel ↔ PoC (1-to-many), Finding can reference PoC.
+
+### Phase E.1 — Type Safety Fixes ✅ (2026-04-17)
+Surgical pyright fixes in `src/` — only real bugs, no annotation-only cleanup:
+- **`src/db/intel_loader.py`**: `_map_tactic_name` return type `type[MITRETactic[Any]] | Literal[...]` → `MITRETactic`; removed unused `Literal` import; renamed 3× `to_create` variable in `bootstrap_mitre_intelligence_async` to `techniques_to_create`, `actors_to_create`, `software_to_create` (was causing pyright `reportRedeclaration` + `Iterable` type errors)
+- **`src/telemetry/middleware.py`**: initialized `status = 0` before try/except to prevent `possibly unbound` in finally block
+- **`src/ai_proxy/routing/combo.py`**: extracted `_context_window` helper to avoid double `get_model()` call in lambda (null-safety + double evaluation bug)
 
 ### Phase E — File Mapping (QUEUED)
 | Step | Todo | Files |
@@ -581,10 +570,24 @@ Decentralize SIEM-SOC skills from monolithic domain into first-layer homes (iden
 **Rationale**: Reorganize 27 SIEM skills into logically appropriate first-layer domains. Consolidate siem-soc/ to 14 platform-specific/generic SIEM skills. Create new `ops/soc-operations/` domain (6 skills).
 **Result**: Better skill discovery, clearer domain taxonomy, decentralized SIEM concerns.
 
-### Phase F — SSE Frontend (optional)
+### Phase F — File-Splitting (Token Efficiency) — PLANNED
+Large files to split into submodules. Rule: never break public API — all existing imports work via re-exports.
+
+| File | Lines | Plan |
+|------|-------|------|
+| `src/db/intel_loader.py` | 2062 | → `src/db/intel/` package (5 modules) |
+| `src/dashboard/routes.py` | 1614 | → `api/core`, `api/intel`, `api/ops`, `api/telemetry`, `_html.py` |
+| `mcp_server.py` | 1288 | → thin shim ≤200L, delegate to `src/mcp/cybersec/` |
+| `src/ai_proxy/providers/registry.py` | 1163 | → split provider defs into groups |
+| `src/checks/integrity.py` | 699 | → `_model_check`, `_fixture_check`, `_config_check` |
+| `src/manage.py` | 611 | → `src/manage/` package |
+
+Each phase: implement → smoke test → commit.
+
+### Phase G — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
 
-### Phase G — OmniRoute
+### Phase H — OmniRoute
 `omniroute-integrate` — add to mcp.json, wire allowed_tools
 
 ---

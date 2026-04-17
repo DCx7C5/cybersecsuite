@@ -135,15 +135,15 @@ yourdomain.com {
 
 ### Ports
 
-| Port | Purpose |
-|------|---------|
+| Port   | Purpose                              |
+|--------|--------------------------------------|
 | `8000` | HTTP (primary, behind reverse proxy) |
-| `8080` | Alt HTTP (Docker only) |
-| `8433` | HTTPS (Phase C — direct TLS) |
+| `8080` | Alt HTTP (Docker only)               |
+| `8433` | HTTPS (Phase C — direct TLS)         |
 
 ---
 
-## Docker Compose healthcheck
+## Docker Compose health check
 
 The `cybersec-app` service has a built-in healthcheck:
 

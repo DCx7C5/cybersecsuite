@@ -136,8 +136,8 @@ git secrets --add 'aws_session_token\s*=\s*.+'
 git secrets --scan-history
 
 # Add to global git template for all new repos
-git secrets --install ~/.git-templates/git-secrets
-git config --global init.templateDir ~/.git-templates/git-secrets
+git secrets --install ~/.git-plugins/git-secrets
+git config --global init.templateDir ~/.git-plugins/git-secrets
 ```
 
 ### Step 5: Integrate TruffleHog into CI/CD Pipeline

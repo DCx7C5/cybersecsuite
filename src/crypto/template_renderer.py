@@ -11,16 +11,16 @@ from typing import Dict, Any, Optional, List
 
 
 class ArtifactTemplateRenderer:
-    """Render artifact templates with signature data."""
+    """Render artifact plugins with signature data."""
 
-    TEMPLATE_PATH = Path(__file__).parent.parent.parent / "templates" / "artifact.md"
+    TEMPLATE_PATH = Path(__file__).parent.parent.parent / "plugins" / "artifact.md"
 
     def __init__(self, template_path: Optional[str] = None):
         """
         Initialize renderer.
 
         Args:
-            template_path: Custom template path (default: templates/artifact.md)
+            template_path: Custom template path (default: plugins/artifact.md)
         """
         if template_path:
             self.template_path = Path(template_path)

@@ -4,14 +4,14 @@ Get CyberSecSuite running from scratch in under 10 minutes.
 
 ## Prerequisites
 
-| Requirement | Version | Install |
-|-------------|---------|---------|
-| Python | 3.14+ | [python.org](https://python.org) or pyenv |
-| uv | latest | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| PostgreSQL | 15+ | Docker (recommended) or native |
-| Docker | 24+ | [docker.com](https://docker.com) — only for `make db` |
+| Requirement | Version | Install                                               |
+|-------------|---------|-------------------------------------------------------|
+| Python      | 3.14+   | [python.org](https://python.org) or pyenv             |
+| uv          | latest  | `curl -LsSf https://astral.sh/uv/install.sh \| sh`    |
+| PostgreSQL  | 15+     | Docker (recommended) or native                        |
+| Docker      | 24+     | [docker.com](https://docker.com) — only for `make db` |
 
-At minimum you need `ANTHROPIC_API_KEY` for agent execution. Other provider keys are optional.
+At minimum, you need `ANTHROPIC_API_KEY` for agent execution. Other provider keys are optional.
 
 ---
 

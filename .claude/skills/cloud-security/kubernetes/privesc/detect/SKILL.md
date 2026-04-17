@@ -91,7 +91,7 @@ metadata:
 
 ```yaml
 # Block dangerous capabilities
-apiVersion: templates.gatekeeper.sh/v1
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sdangerouspriv

@@ -1,6 +1,6 @@
 ---
 name: containers-helm
-description: Secure Helm chart deployments by validating chart integrity, scanning templates for misconfigurations, and enforcing
+description: Secure Helm chart deployments by validating chart integrity, scanning plugins for misconfigurations, and enforcing
 action: helm
   security contexts in Kubernetes releases.
 domain: cybersecurity
@@ -78,7 +78,7 @@ cat mychart-0.1.0.tgz.prov
 ### Render and Scan Templates
 
 ```bash
-# Render templates without deploying
+# Render plugins without deploying
 helm template myrelease ./mychart --values values-prod.yaml > rendered.yaml
 
 # Scan with kubesec
@@ -148,7 +148,7 @@ image:
 ### Template with Security Contexts
 
 ```yaml
-# templates/deployment.yaml
+# plugins/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -173,7 +173,7 @@ spec:
 ### Use External Secrets (Not Helm Values)
 
 ```yaml
-# templates/external-secret.yaml
+# plugins/external-secret.yaml
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
@@ -259,7 +259,7 @@ jobs:
       - name: Helm lint
         run: helm lint ./charts/mychart --strict
 
-      - name: Render templates
+      - name: Render plugins
         run: helm template test ./charts/mychart -f charts/mychart/values.yaml > rendered.yaml
 
       - name: Scan with kube-linter

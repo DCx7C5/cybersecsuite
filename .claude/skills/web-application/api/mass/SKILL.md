@@ -180,7 +180,7 @@ python3 mass_assignment_tester.py \
   --token "Bearer USER_TOKEN" \
   --fields-file mass_assignment_fields.txt
 
-# Nuclei mass assignment templates
+# Nuclei mass assignment plugins
 echo "http://target.com" | nuclei -t http/vulnerabilities/generic/mass-assignment.yaml
 ```
 

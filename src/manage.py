@@ -29,6 +29,7 @@ def show_usage():
     print("  seed-cwe            - Seed CWE weaknesses (18 entries)")
     print("  seed-capec          - Seed CAPEC attack patterns (20 entries)")
     print("  seed-cve            - Seed CVE vulnerability entries (30 entries)")
+    print("  seed-poc            - Seed PoC exploit records (5 entries)")
     print("  machine    - Seed / display local machine hardware inventory")
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
@@ -258,6 +259,15 @@ async def seed_cve_command():
     await init_tortoise_async(create_db=True)
     r = await seed_cve()
     print(f"✅ CVE: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_poc_command():
+    """Seed PoC sample records."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_poc
+    await init_tortoise_async(create_db=True)
+    result = await seed_poc()
+    print(f"✅ PoC seeded: {result['created']} created, {result['skipped']} skipped")
 
 
 def dashboard_command():
@@ -548,6 +558,7 @@ async def main():
         "seed-cwe":             seed_cwe_command,
         "seed-capec":           seed_capec_command,
         "seed-cve":             seed_cve_command,
+        "seed-poc":             seed_poc_command,
         "machine":              machine_command,
         "case-open":            case_open_command,
         "team-task":            team_task_command,

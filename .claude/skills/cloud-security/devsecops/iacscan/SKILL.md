@@ -1,6 +1,6 @@
 ---
 name: devsecops-iacscan
-description: 'This skill covers implementing automated security scanning for Infrastructure as Code (IaC) templates using
+description: 'This skill covers implementing automated security scanning for Infrastructure as Code (IaC) plugins using
 action: iacscan
   tools like Checkov, tfsec, and KICS. It addresses detecting misconfigurations in Terraform, CloudFormation, Kubernetes manifests,
   and Helm charts before deployment, establishing policy-based governance, and integrating IaC scanning into CI/CD pipelines
@@ -187,7 +187,7 @@ soft-fail: false
 # Scan Kubernetes manifests
 checkov -d ./k8s/ --framework kubernetes
 
-# Scan Helm charts (renders templates first)
+# Scan Helm charts (renders plugins first)
 checkov -d ./charts/myapp/ --framework helm
 
 # Scan with KICS (Keeping Infrastructure as Code Secure)

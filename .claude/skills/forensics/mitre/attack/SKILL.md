@@ -278,7 +278,7 @@ class AttackPatternLibrary:
         print(f"[+] Library exported to {output_file}")
 
     def generate_detection_templates(self, mapped_behaviors):
-        """Generate Sigma rule templates from attack patterns."""
+        """Generate Sigma rule plugins from attack patterns."""
         templates = []
         for mapping in mapped_behaviors:
             template = {
@@ -300,7 +300,7 @@ class AttackPatternLibrary:
 
         with open("detection_templates.json", "w") as f:
             json.dump(templates, f, indent=2)
-        print(f"[+] Generated {len(templates)} detection templates")
+        print(f"[+] Generated {len(templates)} detection plugins")
         return templates
 
 library = AttackPatternLibrary()

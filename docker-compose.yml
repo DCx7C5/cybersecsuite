@@ -66,7 +66,8 @@ services:
       cybersec-postgres:
         condition: service_healthy
     environment:
-      <<: [*db-env, *ai-keys]
+      <<: *db-env
+      <<: *ai-keys
       # Unix socket path – no TCP, no port needed
       CYBERSEC_DB_HOST: /tmp/.s.PGSQL.
       CYBERSEC_DB_PORT: 5432

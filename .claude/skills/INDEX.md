@@ -1,848 +1,1014 @@
-# CyberSecSuite Skills Index
+# Skills INDEX
 
-**Total Skills:** 780
-**Project-Native:** 26
-**Anthropic-Integrated:** 754
+> **933 skills** across **25 domains**
 
----
+## Domains
 
-## cloud-security/ (113 skills)
+### `browser/` — 22 skills
 
-- 📘 `cloud-security/aws/SKILL.md` — aws
-- 📘 `cloud-security/aws/access/aws/SKILL.md` — aws
-- 📘 `cloud-security/aws/aws/SKILL.md` — aws
-- 📘 `cloud-security/aws/configrules/SKILL.md` — configrules
-- 📘 `cloud-security/aws/guardduty/guardduty/SKILL.md` — guardduty
-- 📘 `cloud-security/aws/guardduty/threatdetect/SKILL.md` — threatdetect
-- 📘 `cloud-security/aws/hubcompliance/SKILL.md` — hubcompliance
-- 📘 `cloud-security/aws/iam/SKILL.md` — iam
-- 📘 `cloud-security/aws/iamharden/SKILL.md` — iamharden
-- 📘 `cloud-security/aws/lambda/aws/SKILL.md` — aws
-- 📘 `cloud-security/aws/macie/SKILL.md` — macie
-- 📘 `cloud-security/aws/nitro/SKILL.md` — nitro
-- 📘 `cloud-security/aws/pentest/pacu/SKILL.md` — pacu
-- 📘 `cloud-security/aws/scoutsuite/SKILL.md` — scoutsuite
-- 📘 `cloud-security/aws/securityhub/SKILL.md` — securityhub
-- 📘 `cloud-security/azure/SKILL.md` — azure
-- 📘 `cloud-security/azure/ad/azure/SKILL.md` — azure
-- 📘 `cloud-security/azure/ad/conditional/SKILL.md` — conditional
-- 📘 `cloud-security/azure/ad/pim/SKILL.md` — pim
-- 📘 `cloud-security/azure/ad/saml/SKILL.md` — saml
-- 📘 `cloud-security/azure/defender/defender/SKILL.md` — defender
-- 📘 `cloud-security/azure/defender/msdefender/SKILL.md` — msdefender
-- 📘 `cloud-security/azure/sentinel/sentinel/SKILL.md` — sentinel
-- 📘 `cloud-security/azure/storage/misconfigured/SKILL.md` — misconfigured
-- 📘 `cloud-security/azure/storage/storagemisconfig/SKILL.md` — storagemisconfig
-- 📘 `cloud-security/cloud/SKILL.md` — cloud
-- 📘 `cloud-security/compromised/SKILL.md` — compromised
-- 📘 `cloud-security/containers/calico/SKILL.md` — calico
-- 📘 `cloud-security/containers/container/SKILL.md` — container
-- 📘 `cloud-security/containers/docker/SKILL.md` — docker
-- 📘 `cloud-security/containers/docker/docker/SKILL.md` — docker
-- 📘 `cloud-security/containers/docker/dockerdaemon/SKILL.md` — dockerdaemon
-- 📘 `cloud-security/containers/docker/dockertrivy/SKILL.md` — dockertrivy
-- 📘 `cloud-security/containers/helm/SKILL.md` — helm
-- 📘 `cloud-security/containers/image/SKILL.md` — image
-- 📘 `cloud-security/containers/opa/SKILL.md` — opa
-- 📘 `cloud-security/containers/pod/SKILL.md` — pod
-- 📘 `cloud-security/containers/registry/container/SKILL.md` — container
-- 📘 `cloud-security/containers/registry/harbor/SKILL.md` — harbor
-- 📘 `cloud-security/containers/runtime/SKILL.md` — runtime
-- 📘 `cloud-security/containers/scanning/container/SKILL.md` — container
-- 📘 `cloud-security/containers/scanning/distroless/SKILL.md` — distroless
-- 📘 `cloud-security/containers/scanning/grype/SKILL.md` — grype
-- 📘 `cloud-security/containers/scanning/trivy/SKILL.md` — trivy
-- 📘 `cloud-security/containers/scanning/trivycicd/SKILL.md` — trivycicd
-- 📘 `cloud-security/containers/supply/SKILL.md` — supply
-- 📘 `cloud-security/cryptomining/SKILL.md` — cryptomining
-- 📘 `cloud-security/cwpp/SKILL.md` — cwpp
-- 📘 `cloud-security/data/SKILL.md` — data
-- 📘 `cloud-security/devsecops/aqua/SKILL.md` — aqua
-- 📘 `cloud-security/devsecops/devsecops/SKILL.md` — devsecops
-- 📘 `cloud-security/devsecops/fuzz/SKILL.md` — fuzz
-- 📘 `cloud-security/devsecops/ghaworkflows/SKILL.md` — ghaworkflows
-- 📘 `cloud-security/devsecops/github/SKILL.md` — github
-- 📘 `cloud-security/devsecops/gitleaks/SKILL.md` — gitleaks
-- 📘 `cloud-security/devsecops/iacscan/SKILL.md` — iacscan
-- 📘 `cloud-security/devsecops/policy/SKILL.md` — policy
-- 📘 `cloud-security/devsecops/sast/SKILL.md` — sast
-- 📘 `cloud-security/devsecops/scanning/SKILL.md` — scanning
-- 📘 `cloud-security/devsecops/secrets/SKILL.md` — secrets
-- 📘 `cloud-security/devsecops/semgrep/SKILL.md` — semgrep
-- 📘 `cloud-security/devsecops/supply/SKILL.md` — supply
-- 📘 `cloud-security/gcp/SKILL.md` — gcp
-- 📘 `cloud-security/gcp/forseti/SKILL.md` — forseti
-- 📘 `cloud-security/gcp/gcppolicy/SKILL.md` — gcppolicy
-- 📘 `cloud-security/gcp/iam/SKILL.md` — iam
-- 📘 `cloud-security/gcp/pentest/pentest/SKILL.md` — pentest
-- 📘 `cloud-security/kubernetes/SKILL.md` — kubernetes
-- 📘 `cloud-security/kubernetes/cloudkube/SKILL.md` — cloudkube
-- 📘 `cloud-security/kubernetes/etcd/kubernetes/SKILL.md` — kubernetes
-- 📘 `cloud-security/kubernetes/hardening/kubernetes/SKILL.md` — kubernetes
-- 📘 `cloud-security/kubernetes/hardening/kubesecmanifest/SKILL.md` — kubesecmanifest
-- 📘 `cloud-security/kubernetes/hardening/podsecurity/SKILL.md` — podsecurity
-- 📘 `cloud-security/kubernetes/hardening/rbacharden/SKILL.md` — rbacharden
-- 📘 `cloud-security/kubernetes/network/k8snetpol/SKILL.md` — k8snetpol
-- 📘 `cloud-security/kubernetes/network/kubernetes/SKILL.md` — kubernetes
-- 📘 `cloud-security/kubernetes/pentest/kubernetes/SKILL.md` — kubernetes
-- 📘 `cloud-security/kubernetes/runtime/container/SKILL.md` — container
-- 📘 `cloud-security/kubernetes/runtime/escapedetect/SKILL.md` — escapedetect
-- 📘 `cloud-security/kubernetes/runtime/falco/SKILL.md` — falco
-- 📘 `cloud-security/office365/SKILL.md` — office365
-- 📘 `cloud-security/okta/SKILL.md` — okta
-- 📘 `cloud-security/pentest/cartography/SKILL.md` — cartography
-- 📘 `cloud-security/pentest/pentest/SKILL.md` — pentest
-- 📘 `cloud-security/secrets/SKILL.md` — secrets
-- 📘 `cloud-security/serverless/serverless/SKILL.md` — serverless
-- 📘 `cloud-security/serverless/serverlessharden/SKILL.md` — serverlessharden
-- 📘 `cloud-security/serverless/serverlessrev/SKILL.md` — serverlessrev
-- 📘 `cloud-security/shadow/SKILL.md` — shadow
-- 📘 `cloud-security/terraform/terraform/SKILL.md` — terraform
-- 📘 `cloud-security/trailanalysis/SKILL.md` — trailanalysis
-- 📘 `cloud-security/zerotrust/beyondcorp/SKILL.md` — beyondcorp
-- 📘 `cloud-security/zerotrust/beyondcorpmodel/SKILL.md` — beyondcorpmodel
-- 📘 `cloud-security/zerotrust/boundary/SKILL.md` — boundary
-- 📘 `cloud-security/zerotrust/browserisolation/SKILL.md` — browserisolation
-- 📘 `cloud-security/zerotrust/cisamaturity/SKILL.md` — cisamaturity
-- 📘 `cloud-security/zerotrust/cloudflare/SKILL.md` — cloudflare
-- 📘 `cloud-security/zerotrust/cloudzt/SKILL.md` — cloudzt
-- 📘 `cloud-security/zerotrust/deviceposture/SKILL.md` — deviceposture
-- 📘 `cloud-security/zerotrust/guardicore/SKILL.md` — guardicore
-- 📘 `cloud-security/zerotrust/identity/SKILL.md` — identity
-- 📘 `cloud-security/zerotrust/identityverify/SKILL.md` — identityverify
-- 📘 `cloud-security/zerotrust/just/SKILL.md` — just
-- 📘 `cloud-security/zerotrust/mtls/SKILL.md` — mtls
-- 📘 `cloud-security/zerotrust/nextdns/SKILL.md` — nextdns
-- 📘 `cloud-security/zerotrust/prisma/SKILL.md` — prisma
-- 📘 `cloud-security/zerotrust/saas/SKILL.md` — saas
-- 📘 `cloud-security/zerotrust/software/SKILL.md` — software
-- 📘 `cloud-security/zerotrust/tailscale/SKILL.md` — tailscale
-- 📘 `cloud-security/zerotrust/zerotrust/SKILL.md` — zerotrust
-- 📘 `cloud-security/zerotrust/zscaler/SKILL.md` — zscaler
-- 📘 `cloud-security/zerotrust/zscaler/zia/SKILL.md` — zia
-- 📘 `cloud-security/zerotrust/ztna/SKILL.md` — ztna
+- [`browser/brave/history/analyze`](browser/brave/history/analyze/SKILL.md) — `brave-history-analyze`
+- [`browser/brave/shield/analyze`](browser/brave/shield/analyze/SKILL.md) — `brave-shield-analyze`
+- [`browser/brave/wallet/extract`](browser/brave/wallet/extract/SKILL.md) — `brave-wallet-extract`
+- [`browser/cache/artifact/recover`](browser/cache/artifact/recover/SKILL.md) — `cache-artifact-recover`
+- [`browser/chrome/cache/recover`](browser/chrome/cache/recover/SKILL.md) — `chrome-cache-recover`
+- [`browser/chrome/cookie/extract`](browser/chrome/cookie/extract/SKILL.md) — `chrome-cookie-extract`
+- [`browser/chrome/extension/audit`](browser/chrome/extension/audit/SKILL.md) — `chrome-extension-audit`
+- [`browser/chrome/history/analyze`](browser/chrome/history/analyze/SKILL.md) — `chrome-history-analyze`
+- [`browser/chrome/indexeddb/extract`](browser/chrome/indexeddb/extract/SKILL.md) — `chrome-indexeddb-extract`
+- [`browser/chrome/password/extract`](browser/chrome/password/extract/SKILL.md) — `chrome-password-extract`
+- [`browser/chromium/credential/extract`](browser/chromium/credential/extract/SKILL.md) — `chromium-credential-extract`
+- [`browser/chromium/localstorage/extract`](browser/chromium/localstorage/extract/SKILL.md) — `chromium-localstorage-extract`
+- [`browser/chromium/session/reconstruct`](browser/chromium/session/reconstruct/SKILL.md) — `chromium-session-reconstruct`
+- [`browser/credential/saved/extract`](browser/credential/saved/extract/SKILL.md) — `credential-saved-extract`
+- [`browser/extension/malicious/detect`](browser/extension/malicious/detect/SKILL.md) — `extension-malicious-detect`
+- [`browser/extension/manifest/audit`](browser/extension/manifest/audit/SKILL.md) — `extension-manifest-audit`
+- [`browser/firefox/addon/audit`](browser/firefox/addon/audit/SKILL.md) — `firefox-addon-audit`
+- [`browser/firefox/cookie/extract`](browser/firefox/cookie/extract/SKILL.md) — `firefox-cookie-extract`
+- [`browser/firefox/history/analyze`](browser/firefox/history/analyze/SKILL.md) — `firefox-history-analyze`
+- [`browser/firefox/profile/analyze`](browser/firefox/profile/analyze/SKILL.md) — `firefox-profile-analyze`
+- [`browser/forensics/artifact/collect`](browser/forensics/artifact/collect/SKILL.md) — `forensics-artifact-collect`
+- [`browser/phishing/fingerprint/detect`](browser/phishing/fingerprint/detect/SKILL.md) — `phishing-fingerprint-detect`
 
-## compliance/ (13 skills)
+### `cloud-security/` — 116 skills
 
-- 📘 `compliance/cis/cloud/SKILL.md` — cloud
-- 📘 `compliance/cloud/nerc/SKILL.md` — nerc
-- 📘 `compliance/email/dmarc/SKILL.md` — dmarc
-- 📘 `compliance/email/dmarcrollout/SKILL.md` — dmarcrollout
-- 📘 `compliance/iso/SKILL.md` — iso
-- 📘 `compliance/nist/nist/SKILL.md` — nist
-- 📘 `compliance/pci/pci/SKILL.md` — pci
-- 📘 `compliance/privacy/cloud/SKILL.md` — cloud
-- 📘 `compliance/privacy/data/SKILL.md` — data
-- 📘 `compliance/privacy/dsar/SKILL.md` — dsar
-- 📘 `compliance/privacy/gdpr/SKILL.md` — gdpr
-- 📘 `compliance/privacy/privacy/SKILL.md` — privacy
-- 📘 `compliance/soc2/auditprep/SKILL.md` — auditprep
+- [`cloud-security/aws`](cloud-security/aws/SKILL.md) — `aws`
+- [`cloud-security/aws/access/aws`](cloud-security/aws/access/aws/SKILL.md) — `aws-access-aws`
+- [`cloud-security/aws/configrules`](cloud-security/aws/configrules/SKILL.md) — `aws-configrules`
+- [`cloud-security/aws/cwpp`](cloud-security/aws/cwpp/SKILL.md) — `aws-cwpp`
+- [`cloud-security/aws/guardduty`](cloud-security/aws/guardduty/SKILL.md) — `aws-guardduty`
+- [`cloud-security/aws/guardduty/threatdetect`](cloud-security/aws/guardduty/threatdetect/SKILL.md) — `aws-guardduty-threatdetect`
+- [`cloud-security/aws/hubcompliance`](cloud-security/aws/hubcompliance/SKILL.md) — `aws-hubcompliance`
+- [`cloud-security/aws/iam`](cloud-security/aws/iam/SKILL.md) — `aws-iam`
+- [`cloud-security/aws/iamharden`](cloud-security/aws/iamharden/SKILL.md) — `aws-iamharden`
+- [`cloud-security/aws/lambda/aws`](cloud-security/aws/lambda/aws/SKILL.md) — `aws-lambda-aws`
+- [`cloud-security/aws/macie`](cloud-security/aws/macie/SKILL.md) — `aws-macie`
+- [`cloud-security/aws/nitro`](cloud-security/aws/nitro/SKILL.md) — `aws-nitro`
+- [`cloud-security/aws/pentest/pacu`](cloud-security/aws/pentest/pacu/SKILL.md) — `aws-pentest-pacu`
+- [`cloud-security/aws/privesc/assess`](cloud-security/aws/privesc/assess/SKILL.md) — `aws-privesc-assess`
+- [`cloud-security/aws/privesc/detect`](cloud-security/aws/privesc/detect/SKILL.md) — `aws-privesc-detect`
+- [`cloud-security/aws/scoutsuite`](cloud-security/aws/scoutsuite/SKILL.md) — `aws-scoutsuite`
+- [`cloud-security/aws/securityhub`](cloud-security/aws/securityhub/SKILL.md) — `aws-securityhub`
+- [`cloud-security/azure`](cloud-security/azure/SKILL.md) — `azure`
+- [`cloud-security/azure/ad/azure`](cloud-security/azure/ad/azure/SKILL.md) — `azure-ad-azure`
+- [`cloud-security/azure/ad/conditional`](cloud-security/azure/ad/conditional/SKILL.md) — `azure-ad-conditional`
+- [`cloud-security/azure/ad/pim`](cloud-security/azure/ad/pim/SKILL.md) — `azure-ad-pim`
+- [`cloud-security/azure/ad/saml`](cloud-security/azure/ad/saml/SKILL.md) — `azure-ad-saml`
+- [`cloud-security/azure/defender`](cloud-security/azure/defender/SKILL.md) — `azure-defender`
+- [`cloud-security/azure/defender/msdefender`](cloud-security/azure/defender/msdefender/SKILL.md) — `azure-defender-msdefender`
+- [`cloud-security/azure/lateral/detect`](cloud-security/azure/lateral/detect/SKILL.md) — `azure-lateral-detect`
+- [`cloud-security/azure/sentinel`](cloud-security/azure/sentinel/SKILL.md) — `azure-sentinel`
+- [`cloud-security/azure/storage/misconfigured`](cloud-security/azure/storage/misconfigured/SKILL.md) — `azure-storage-misconfigured`
+- [`cloud-security/azure/storage/storagemisconfig`](cloud-security/azure/storage/storagemisconfig/SKILL.md) — `azure-storage-storagemisconfig`
+- [`cloud-security/cloud`](cloud-security/cloud/SKILL.md) — `cloud`
+- [`cloud-security/compromised`](cloud-security/compromised/SKILL.md) — `compromised`
+- [`cloud-security/containers/calico`](cloud-security/containers/calico/SKILL.md) — `containers-calico`
+- [`cloud-security/containers/container`](cloud-security/containers/container/SKILL.md) — `containers-container`
+- [`cloud-security/containers/docker`](cloud-security/containers/docker/SKILL.md) — `containers-docker`
+- [`cloud-security/containers/docker/bench`](cloud-security/containers/docker/bench/SKILL.md) — `containers-docker-bench`
+- [`cloud-security/containers/docker/dockerdaemon`](cloud-security/containers/docker/dockerdaemon/SKILL.md) — `containers-docker-dockerdaemon`
+- [`cloud-security/containers/docker/dockertrivy`](cloud-security/containers/docker/dockertrivy/SKILL.md) — `containers-docker-dockertrivy`
+- [`cloud-security/containers/helm`](cloud-security/containers/helm/SKILL.md) — `containers-helm`
+- [`cloud-security/containers/image`](cloud-security/containers/image/SKILL.md) — `containers-image`
+- [`cloud-security/containers/opa`](cloud-security/containers/opa/SKILL.md) — `containers-opa`
+- [`cloud-security/containers/pod`](cloud-security/containers/pod/SKILL.md) — `containers-pod`
+- [`cloud-security/containers/registry/container`](cloud-security/containers/registry/container/SKILL.md) — `containers-registry-container`
+- [`cloud-security/containers/registry/harbor`](cloud-security/containers/registry/harbor/SKILL.md) — `containers-registry-harbor`
+- [`cloud-security/containers/runtime`](cloud-security/containers/runtime/SKILL.md) — `containers-runtime`
+- [`cloud-security/containers/scanning/container`](cloud-security/containers/scanning/container/SKILL.md) — `containers-scanning-container`
+- [`cloud-security/containers/scanning/distroless`](cloud-security/containers/scanning/distroless/SKILL.md) — `containers-scanning-distroless`
+- [`cloud-security/containers/scanning/grype`](cloud-security/containers/scanning/grype/SKILL.md) — `containers-scanning-grype`
+- [`cloud-security/containers/scanning/trivy`](cloud-security/containers/scanning/trivy/SKILL.md) — `containers-scanning-trivy`
+- [`cloud-security/containers/scanning/trivycicd`](cloud-security/containers/scanning/trivycicd/SKILL.md) — `containers-scanning-trivycicd`
+- [`cloud-security/containers/supply`](cloud-security/containers/supply/SKILL.md) — `containers-supply`
+- [`cloud-security/cryptomining`](cloud-security/cryptomining/SKILL.md) — `cryptomining`
+- [`cloud-security/data`](cloud-security/data/SKILL.md) — `data`
+- [`cloud-security/devsecops`](cloud-security/devsecops/SKILL.md) — `devsecops`
+- [`cloud-security/devsecops/aqua`](cloud-security/devsecops/aqua/SKILL.md) — `devsecops-aqua`
+- [`cloud-security/devsecops/fuzz`](cloud-security/devsecops/fuzz/SKILL.md) — `devsecops-fuzz`
+- [`cloud-security/devsecops/ghaworkflows`](cloud-security/devsecops/ghaworkflows/SKILL.md) — `devsecops-ghaworkflows`
+- [`cloud-security/devsecops/github`](cloud-security/devsecops/github/SKILL.md) — `devsecops-github`
+- [`cloud-security/devsecops/gitleaks`](cloud-security/devsecops/gitleaks/SKILL.md) — `devsecops-gitleaks`
+- [`cloud-security/devsecops/iacscan`](cloud-security/devsecops/iacscan/SKILL.md) — `devsecops-iacscan`
+- [`cloud-security/devsecops/policy`](cloud-security/devsecops/policy/SKILL.md) — `devsecops-policy`
+- [`cloud-security/devsecops/sast`](cloud-security/devsecops/sast/SKILL.md) — `devsecops-sast`
+- [`cloud-security/devsecops/scanning`](cloud-security/devsecops/scanning/SKILL.md) — `devsecops-scanning`
+- [`cloud-security/devsecops/secrets`](cloud-security/devsecops/secrets/SKILL.md) — `devsecops-secrets`
+- [`cloud-security/devsecops/semgrep`](cloud-security/devsecops/semgrep/SKILL.md) — `devsecops-semgrep`
+- [`cloud-security/devsecops/supply`](cloud-security/devsecops/supply/SKILL.md) — `devsecops-supply`
+- [`cloud-security/gcp`](cloud-security/gcp/SKILL.md) — `gcp`
+- [`cloud-security/gcp/forseti`](cloud-security/gcp/forseti/SKILL.md) — `gcp-forseti`
+- [`cloud-security/gcp/gcppolicy`](cloud-security/gcp/gcppolicy/SKILL.md) — `gcp-gcppolicy`
+- [`cloud-security/gcp/iam`](cloud-security/gcp/iam/SKILL.md) — `gcp-iam`
+- [`cloud-security/gcp/pentest`](cloud-security/gcp/pentest/SKILL.md) — `gcp-pentest`
+- [`cloud-security/kubernetes`](cloud-security/kubernetes/SKILL.md) — `kubernetes`
+- [`cloud-security/kubernetes/cloudkube`](cloud-security/kubernetes/cloudkube/SKILL.md) — `kubernetes-cloudkube`
+- [`cloud-security/kubernetes/etcd/kubernetes`](cloud-security/kubernetes/etcd/kubernetes/SKILL.md) — `kubernetes-etcd-kubernetes`
+- [`cloud-security/kubernetes/hardening/kubernetes`](cloud-security/kubernetes/hardening/kubernetes/SKILL.md) — `kubernetes-hardening-kubernetes`
+- [`cloud-security/kubernetes/hardening/kubesecmanifest`](cloud-security/kubernetes/hardening/kubesecmanifest/SKILL.md) — `kubernetes-hardening-kubesecmanifest`
+- [`cloud-security/kubernetes/hardening/podsecurity`](cloud-security/kubernetes/hardening/podsecurity/SKILL.md) — `kubernetes-hardening-podsecurity`
+- [`cloud-security/kubernetes/hardening/rbacharden`](cloud-security/kubernetes/hardening/rbacharden/SKILL.md) — `kubernetes-hardening-rbacharden`
+- [`cloud-security/kubernetes/network/k8snetpol`](cloud-security/kubernetes/network/k8snetpol/SKILL.md) — `kubernetes-network-k8snetpol`
+- [`cloud-security/kubernetes/network/kubernetes`](cloud-security/kubernetes/network/kubernetes/SKILL.md) — `kubernetes-network-kubernetes`
+- [`cloud-security/kubernetes/pentest/kubernetes`](cloud-security/kubernetes/pentest/kubernetes/SKILL.md) — `kubernetes-pentest-kubernetes`
+- [`cloud-security/kubernetes/privesc/detect`](cloud-security/kubernetes/privesc/detect/SKILL.md) — `kubernetes-privesc-detect`
+- [`cloud-security/kubernetes/runtime/container`](cloud-security/kubernetes/runtime/container/SKILL.md) — `kubernetes-runtime-container`
+- [`cloud-security/kubernetes/runtime/escapedetect`](cloud-security/kubernetes/runtime/escapedetect/SKILL.md) — `kubernetes-runtime-escapedetect`
+- [`cloud-security/kubernetes/runtime/falco`](cloud-security/kubernetes/runtime/falco/SKILL.md) — `kubernetes-runtime-falco`
+- [`cloud-security/office365`](cloud-security/office365/SKILL.md) — `office365`
+- [`cloud-security/okta`](cloud-security/okta/SKILL.md) — `okta`
+- [`cloud-security/pentest`](cloud-security/pentest/SKILL.md) — `pentest`
+- [`cloud-security/pentest/cartography`](cloud-security/pentest/cartography/SKILL.md) — `pentest-cartography`
+- [`cloud-security/secrets`](cloud-security/secrets/SKILL.md) — `secrets`
+- [`cloud-security/serverless`](cloud-security/serverless/SKILL.md) — `serverless`
+- [`cloud-security/serverless/serverlessharden`](cloud-security/serverless/serverlessharden/SKILL.md) — `serverless-serverlessharden`
+- [`cloud-security/serverless/serverlessrev`](cloud-security/serverless/serverlessrev/SKILL.md) — `serverless-serverlessrev`
+- [`cloud-security/shadow`](cloud-security/shadow/SKILL.md) — `shadow`
+- [`cloud-security/terraform`](cloud-security/terraform/SKILL.md) — `terraform`
+- [`cloud-security/trailanalysis`](cloud-security/trailanalysis/SKILL.md) — `trailanalysis`
+- [`cloud-security/zerotrust`](cloud-security/zerotrust/SKILL.md) — `zerotrust`
+- [`cloud-security/zerotrust/beyondcorp`](cloud-security/zerotrust/beyondcorp/SKILL.md) — `zerotrust-beyondcorp`
+- [`cloud-security/zerotrust/beyondcorpmodel`](cloud-security/zerotrust/beyondcorpmodel/SKILL.md) — `zerotrust-beyondcorpmodel`
+- [`cloud-security/zerotrust/boundary`](cloud-security/zerotrust/boundary/SKILL.md) — `zerotrust-boundary`
+- [`cloud-security/zerotrust/browserisolation`](cloud-security/zerotrust/browserisolation/SKILL.md) — `zerotrust-browserisolation`
+- [`cloud-security/zerotrust/cisamaturity`](cloud-security/zerotrust/cisamaturity/SKILL.md) — `zerotrust-cisamaturity`
+- [`cloud-security/zerotrust/cloudflare`](cloud-security/zerotrust/cloudflare/SKILL.md) — `zerotrust-cloudflare`
+- [`cloud-security/zerotrust/cloudzt`](cloud-security/zerotrust/cloudzt/SKILL.md) — `zerotrust-cloudzt`
+- [`cloud-security/zerotrust/deviceposture`](cloud-security/zerotrust/deviceposture/SKILL.md) — `zerotrust-deviceposture`
+- [`cloud-security/zerotrust/guardicore`](cloud-security/zerotrust/guardicore/SKILL.md) — `zerotrust-guardicore`
+- [`cloud-security/zerotrust/identity`](cloud-security/zerotrust/identity/SKILL.md) — `zerotrust-identity`
+- [`cloud-security/zerotrust/identityverify`](cloud-security/zerotrust/identityverify/SKILL.md) — `zerotrust-identityverify`
+- [`cloud-security/zerotrust/just`](cloud-security/zerotrust/just/SKILL.md) — `zerotrust-just`
+- [`cloud-security/zerotrust/mtls`](cloud-security/zerotrust/mtls/SKILL.md) — `zerotrust-mtls`
+- [`cloud-security/zerotrust/nextdns`](cloud-security/zerotrust/nextdns/SKILL.md) — `zerotrust-nextdns`
+- [`cloud-security/zerotrust/prisma`](cloud-security/zerotrust/prisma/SKILL.md) — `zerotrust-prisma`
+- [`cloud-security/zerotrust/saas`](cloud-security/zerotrust/saas/SKILL.md) — `zerotrust-saas`
+- [`cloud-security/zerotrust/software`](cloud-security/zerotrust/software/SKILL.md) — `zerotrust-software`
+- [`cloud-security/zerotrust/tailscale`](cloud-security/zerotrust/tailscale/SKILL.md) — `zerotrust-tailscale`
+- [`cloud-security/zerotrust/zscaler`](cloud-security/zerotrust/zscaler/SKILL.md) — `zerotrust-zscaler`
+- [`cloud-security/zerotrust/zscaler/zia`](cloud-security/zerotrust/zscaler/zia/SKILL.md) — `zerotrust-zscaler-zia`
+- [`cloud-security/zerotrust/ztna`](cloud-security/zerotrust/ztna/SKILL.md) — `zerotrust-ztna`
 
-## crypto-pki/ (20 skills)
+### `compliance/` — 13 skills
 
-- 📘 `crypto-pki/aes/SKILL.md` — aes
-- 📘 `crypto-pki/blockchain/blockchain/SKILL.md` — blockchain
-- 📘 `crypto-pki/blockchain/ethereum/SKILL.md` — ethereum
-- 📘 `crypto-pki/ca/openssl/SKILL.md` — openssl
-- 🔧 `crypto-pki/certificates/transparency/SKILL.md` — certificate-recon
-- 📘 `crypto-pki/cryptographic/SKILL.md` — cryptographic
-- 📘 `crypto-pki/digital/SKILL.md` — digital
-- 📘 `crypto-pki/encryption/e2eencryption/SKILL.md` — e2eencryption
-- 📘 `crypto-pki/encryption/kmsenvelope/SKILL.md` — kmsenvelope
-- 📘 `crypto-pki/hashcat/SKILL.md` — hashcat
-- 📘 `crypto-pki/hsm/hardware/SKILL.md` — hardware
-- 📘 `crypto-pki/hsm/hsm/SKILL.md` — hsm
-- 📘 `crypto-pki/postquantum/post/SKILL.md` — post
-- 📘 `crypto-pki/rsa/SKILL.md` — rsa
-- 🔧 `crypto-pki/signing/SKILL.md` — artifact-signing
-- 📘 `crypto-pki/signing/code/SKILL.md` — code
-- 🔧 `crypto-pki/tls/sslkeylog/SKILL.md` — tls-sslkeylog
-- 📘 `crypto-pki/tls/tls/SKILL.md` — tls
-- 📘 `crypto-pki/transparency/certificates/SKILL.md` — certificates
-- 📘 `crypto-pki/zero/SKILL.md` — zero
+- [`compliance/cis/cloud`](compliance/cis/cloud/SKILL.md) — `cis-cloud`
+- [`compliance/cloud/nerc`](compliance/cloud/nerc/SKILL.md) — `cloud-nerc`
+- [`compliance/email/dmarc`](compliance/email/dmarc/SKILL.md) — `email-dmarc`
+- [`compliance/email/dmarcrollout`](compliance/email/dmarcrollout/SKILL.md) — `email-dmarcrollout`
+- [`compliance/iso`](compliance/iso/SKILL.md) — `iso`
+- [`compliance/nist`](compliance/nist/SKILL.md) — `nist`
+- [`compliance/pci`](compliance/pci/SKILL.md) — `pci`
+- [`compliance/privacy`](compliance/privacy/SKILL.md) — `privacy`
+- [`compliance/privacy/cloud`](compliance/privacy/cloud/SKILL.md) — `privacy-cloud`
+- [`compliance/privacy/data`](compliance/privacy/data/SKILL.md) — `privacy-data`
+- [`compliance/privacy/dsar`](compliance/privacy/dsar/SKILL.md) — `privacy-dsar`
+- [`compliance/privacy/gdpr`](compliance/privacy/gdpr/SKILL.md) — `privacy-gdpr`
+- [`compliance/soc2/auditprep`](compliance/soc2/auditprep/SKILL.md) — `soc2-auditprep`
 
-## deception/ (5 skills)
+### `crypto-pki/` — 20 skills
 
-- 📘 `deception/canary/SKILL.md` — canary
-- 📘 `deception/canarytoken/SKILL.md` — canarytoken
-- 📘 `deception/deception/SKILL.md` — deception
-- 📘 `deception/honeypot/SKILL.md` — honeypot
-- 📘 `deception/honeytoken/SKILL.md` — honeytoken
+- [`crypto-pki/aes`](crypto-pki/aes/SKILL.md) — `aes`
+- [`crypto-pki/blockchain`](crypto-pki/blockchain/SKILL.md) — `blockchain`
+- [`crypto-pki/blockchain/ethereum`](crypto-pki/blockchain/ethereum/SKILL.md) — `blockchain-ethereum`
+- [`crypto-pki/ca/openssl`](crypto-pki/ca/openssl/SKILL.md) — `ca-openssl`
+- [`crypto-pki/certificates/transparency`](crypto-pki/certificates/transparency/SKILL.md) — `certificates-transparency`
+- [`crypto-pki/cryptographic`](crypto-pki/cryptographic/SKILL.md) — `cryptographic`
+- [`crypto-pki/digital`](crypto-pki/digital/SKILL.md) — `digital`
+- [`crypto-pki/encryption/e2eencryption`](crypto-pki/encryption/e2eencryption/SKILL.md) — `encryption-e2eencryption`
+- [`crypto-pki/encryption/kmsenvelope`](crypto-pki/encryption/kmsenvelope/SKILL.md) — `encryption-kmsenvelope`
+- [`crypto-pki/hashcat`](crypto-pki/hashcat/SKILL.md) — `hashcat`
+- [`crypto-pki/hsm`](crypto-pki/hsm/SKILL.md) — `hsm`
+- [`crypto-pki/hsm/hardware`](crypto-pki/hsm/hardware/SKILL.md) — `hsm-hardware`
+- [`crypto-pki/postquantum/post`](crypto-pki/postquantum/post/SKILL.md) — `postquantum-post`
+- [`crypto-pki/rsa`](crypto-pki/rsa/SKILL.md) — `rsa`
+- [`crypto-pki/signing`](crypto-pki/signing/SKILL.md) — `signing`
+- [`crypto-pki/signing/code`](crypto-pki/signing/code/SKILL.md) — `signing-code`
+- [`crypto-pki/tls`](crypto-pki/tls/SKILL.md) — `tls`
+- [`crypto-pki/tls/sslkeylog`](crypto-pki/tls/sslkeylog/SKILL.md) — `tls-sslkeylog`
+- [`crypto-pki/transparency/certificates`](crypto-pki/transparency/certificates/SKILL.md) — `transparency-certificates`
+- [`crypto-pki/zero`](crypto-pki/zero/SKILL.md) — `zero`
 
-## endpoint-security/ (16 skills)
+### `database/` — 26 skills
 
-- 📘 `endpoint-security/application/SKILL.md` — application
-- 📘 `endpoint-security/defender/defender/SKILL.md` — defender
-- 📘 `endpoint-security/disk/SKILL.md` — disk
-- 📘 `endpoint-security/edr/crowdstrike/SKILL.md` — crowdstrike
-- 📘 `endpoint-security/endpoint/SKILL.md` — endpoint
-- 📘 `endpoint-security/evasion/SKILL.md` — evasion
-- 📘 `endpoint-security/file/SKILL.md` — file
-- 📘 `endpoint-security/fileless/SKILL.md` — fileless
-- 🔧 `endpoint-security/forensics/investigation/SKILL.md` — filesystem-recon
-- 🔧 `endpoint-security/hardening/linux/SKILL.md` — settings-recon
-- 📘 `endpoint-security/linuxcis/SKILL.md` — linuxcis
-- 📘 `endpoint-security/memory/SKILL.md` — memory
-- 📘 `endpoint-security/monitoring/datadog/SKILL.md` — datadog
-- 📘 `endpoint-security/monitoring/osquery/SKILL.md` — osquery
-- 📘 `endpoint-security/policy/usbpolicy/SKILL.md` — usbpolicy
-- 📘 `endpoint-security/windowscis/SKILL.md` — windowscis
+- [`database/cassandra/auth/audit`](database/cassandra/auth/audit/SKILL.md) — `cassandra-auth-audit`
+- [`database/elasticsearch/exposure/detect`](database/elasticsearch/exposure/detect/SKILL.md) — `elasticsearch-exposure-detect`
+- [`database/logging/aggregation`](database/logging/aggregation/SKILL.md) — `database-logging-aggregation`
+- [`database/logging/syslog`](database/logging/syslog/SKILL.md) — `database-logging-syslog`
+- [`database/mongodb/exposure/detect`](database/mongodb/exposure/detect/SKILL.md) — `mongodb-exposure-detect`
+- [`database/mongodb/nosql-injection/detect`](database/mongodb/nosql-injection/detect/SKILL.md) — `mongodb-nosql-injection-detect`
+- [`database/mssql/linked-server/enum`](database/mssql/linked-server/enum/SKILL.md) — `mssql-linked-server-enum`
+- [`database/mssql/token/impersonate`](database/mssql/token/impersonate/SKILL.md) — `mssql-token-impersonate`
+- [`database/mssql/xp-cmdshell/detect`](database/mssql/xp-cmdshell/detect/SKILL.md) — `mssql-xp-cmdshell-detect`
+- [`database/mysql/credential/extract`](database/mysql/credential/extract/SKILL.md) — `mysql-credential-extract`
+- [`database/mysql/injection/detect`](database/mysql/injection/detect/SKILL.md) — `mysql-injection-detect`
+- [`database/mysql/privilege/enum`](database/mysql/privilege/enum/SKILL.md) — `mysql-privilege-enum`
+- [`database/mysql/replication/audit`](database/mysql/replication/audit/SKILL.md) — `mysql-replication-audit`
+- [`database/mysql/udf/exploit`](database/mysql/udf/exploit/SKILL.md) — `mysql-udf-exploit`
+- [`database/oracle/privilege/escalate`](database/oracle/privilege/escalate/SKILL.md) — `oracle-privilege-escalate`
+- [`database/oracle/tns-listener/enum`](database/oracle/tns-listener/enum/SKILL.md) — `oracle-tns-listener-enum`
+- [`database/postgres/copy-program/exploit`](database/postgres/copy-program/exploit/SKILL.md) — `postgres-copy-program-exploit`
+- [`database/postgres/extension/audit`](database/postgres/extension/audit/SKILL.md) — `postgres-extension-audit`
+- [`database/postgres/injection/detect`](database/postgres/injection/detect/SKILL.md) — `postgres-injection-detect`
+- [`database/postgres/log/analyze`](database/postgres/log/analyze/SKILL.md) — `postgres-log-analyze`
+- [`database/postgres/privilege/enum`](database/postgres/privilege/enum/SKILL.md) — `postgres-privilege-enum`
+- [`database/redis/auth/bypass`](database/redis/auth/bypass/SKILL.md) — `redis-auth-bypass`
+- [`database/redis/rce/exploit`](database/redis/rce/exploit/SKILL.md) — `redis-rce-exploit`
+- [`database/sqlite/artifact/extract`](database/sqlite/artifact/extract/SKILL.md) — `sqlite-artifact-extract`
+- [`database/sqlite/deleted-record/recover`](database/sqlite/deleted-record/recover/SKILL.md) — `sqlite-deleted-record-recover`
+- [`database/sqlite/wal/analyze`](database/sqlite/wal/analyze/SKILL.md) — `sqlite-wal-analyze`
 
-## forensics/ (89 skills)
+### `deception/` — 5 skills
 
-- 📘 `forensics/browser/SKILL.md` — browser
-- 📘 `forensics/cloud/SKILL.md` — cloud
-- 📘 `forensics/cloud/cloud/SKILL.md` — cloud
-- 📘 `forensics/cloud/docker/SKILL.md` — docker
-- 📘 `forensics/cloud/falco/SKILL.md` — falco
-- 📘 `forensics/disk/acquisition/autopsy/SKILL.md` — autopsy
-- 📘 `forensics/disk/acquisition/dcfldd/SKILL.md` — dcfldd
-- 📘 `forensics/disk/analysis/disk/SKILL.md` — disk
-- 📘 `forensics/disk/analysis/endpoint/SKILL.md` — endpoint
-- 📘 `forensics/disk/analysis/slack/SKILL.md` — slack
-- 📘 `forensics/disk/analysis/sqlite/SKILL.md` — sqlite
-- 📘 `forensics/disk/analysis/volatile/SKILL.md` — volatile
-- 📘 `forensics/disk/artifacts/eventlogs/SKILL.md` — eventlogs
-- 📘 `forensics/disk/artifacts/lnk/SKILL.md` — lnk
-- 📘 `forensics/disk/artifacts/lnkfiles/SKILL.md` — lnkfiles
-- 📘 `forensics/disk/artifacts/mft/SKILL.md` — mft
-- 📘 `forensics/disk/artifacts/prefetch/SKILL.md` — prefetch
-- 📘 `forensics/disk/artifacts/prefetchpy/SKILL.md` — prefetchpy
-- 📘 `forensics/disk/artifacts/registry/SKILL.md` — registry
-- 📘 `forensics/disk/artifacts/shellbags/SKILL.md` — shellbags
-- 📘 `forensics/disk/artifacts/windows/SKILL.md` — windows
-- 📘 `forensics/disk/filecarving/foremost/SKILL.md` — foremost
-- 📘 `forensics/disk/filecarving/photorec/SKILL.md` — photorec
-- 📘 `forensics/disk/timeline/plaso/SKILL.md` — plaso
-- 📘 `forensics/disk/timeline/timesketch/SKILL.md` — timesketch
-- 📘 `forensics/email/email/SKILL.md` — email
-- 📘 `forensics/email/outlook/SKILL.md` — outlook
-- 📘 `forensics/email/phishing/SKILL.md` — phishing
-- 📘 `forensics/log/SKILL.md` — log
-- 📘 `forensics/log/cloud/anomalies/SKILL.md` — anomalies
-- 📘 `forensics/log/cloud/api/SKILL.md` — api
-- 📘 `forensics/log/cloud/athena/SKILL.md` — athena
-- 📘 `forensics/log/cloud/azure/SKILL.md` — azure
-- 📘 `forensics/log/cloud/cloud/SKILL.md` — cloud
-- 📘 `forensics/log/cloud/cloudtrailforensics/SKILL.md` — cloudtrailforensics
-- 📘 `forensics/log/cloud/kubernetes/SKILL.md` — kubernetes
-- 🔧 `forensics/log/linux/SKILL.md` — logfile-recon
-- 📘 `forensics/log/linux/linux/SKILL.md` — linux
-- 📘 `forensics/log/linux/linuxlogforen/SKILL.md` — linuxlogforen
-- 📘 `forensics/log/linux/sysartifacts/SKILL.md` — sysartifacts
-- 📘 `forensics/log/web/hindsight/SKILL.md` — hindsight
-- 📘 `forensics/log/web/web/SKILL.md` — web
-- 📘 `forensics/log/windows/powershell/SKILL.md` — powershell
-- 📘 `forensics/log/windows/splunk/SKILL.md` — splunk
-- 📘 `forensics/log/windows/sysmon/SKILL.md` — sysmon
-- 📘 `forensics/log/windows/windows/SKILL.md` — windows
-- 📘 `forensics/malware/SKILL.md` — malware
-- 📘 `forensics/memory/acquisition/volatility/SKILL.md` — volatility
-- 📘 `forensics/memory/analysis/credentials/SKILL.md` — credentials
-- 📘 `forensics/memory/analysis/heap/SKILL.md` — heap
-- 📘 `forensics/memory/analysis/vol3core/SKILL.md` — vol3core
-- 📘 `forensics/memory/analysis/vol3plugins/SKILL.md` — vol3plugins
-- 📘 `forensics/memory/analysis/volatility/SKILL.md` — volatility
-- 🔧 `forensics/memory/analysis/volatility3/SKILL.md` — memory-recon
-- 🔧 `forensics/memory/analysis/volatility3/plugins/linux/processes/SKILL.md` — processes-recon
-- 📘 `forensics/memory/analysis/volcombined/SKILL.md` — volcombined
-- 📘 `forensics/memory/injection/detection/SKILL.md` — detection
-- 📘 `forensics/memory/injection/process/SKILL.md` — process
-- 📘 `forensics/memory/injection/procinjection/SKILL.md` — procinjection
-- 📘 `forensics/memory/injection/sysmon/SKILL.md` — sysmon
-- 📘 `forensics/mobile/cellebrite/SKILL.md` — cellebrite
-- 📘 `forensics/network/capture/network/SKILL.md` — network
-- 📘 `forensics/network/capture/pcapforensics/SKILL.md` — pcapforensics
-- 📘 `forensics/network/capture/scapy/SKILL.md` — scapy
-- 📘 `forensics/network/capture/tshark/SKILL.md` — tshark
-- 📘 `forensics/network/capture/wireshark/SKILL.md` — wireshark
-- 📘 `forensics/network/dns/dns/SKILL.md` — dns
-- 📘 `forensics/network/dns/dnsexfil/SKILL.md` — dnsexfil
-- 📘 `forensics/network/flow/beaconing/SKILL.md` — beaconing
-- 📘 `forensics/network/flow/c2beaconing/SKILL.md` — c2beaconing
-- 📘 `forensics/network/flow/network/SKILL.md` — network
-- 📘 `forensics/network/traffic/arkime/SKILL.md` — arkime
-- 📘 `forensics/network/traffic/arppoisoning/SKILL.md` — arppoisoning
-- 📘 `forensics/network/traffic/baselining/SKILL.md` — baselining
-- 📘 `forensics/network/traffic/c2traffic/SKILL.md` — c2traffic
-- 📘 `forensics/network/traffic/domainfronting/SKILL.md` — domainfronting
-- 📘 `forensics/network/traffic/incidents/SKILL.md` — incidents
-- 📘 `forensics/network/traffic/maltraffic/SKILL.md` — maltraffic
-- 📘 `forensics/network/traffic/network/SKILL.md` — network
-- 📘 `forensics/network/traffic/nozomi/SKILL.md` — nozomi
-- 📘 `forensics/network/zeek/dnsexfil/SKILL.md` — dnsexfil
-- 📘 `forensics/network/zeek/dnstunnel/SKILL.md` — dnstunnel
-- 📘 `forensics/network/zeek/zeek/SKILL.md` — zeek
-- 📘 `forensics/network/zeek/zeekanalysis/SKILL.md` — zeekanalysis
-- 📘 `forensics/network/zeek/zeekanomaly/SKILL.md` — zeekanomaly
-- 📘 `forensics/network/zeek/zeeklateral/SKILL.md` — zeeklateral
-- 📘 `forensics/stego/SKILL.md` — stego
-- 📘 `forensics/usb/usb/SKILL.md` — usb
-- 📘 `forensics/windows/SKILL.md` — windows
+- [`deception`](deception/SKILL.md) — `deception`
+- [`deception/canary`](deception/canary/SKILL.md) — `canary`
+- [`deception/canarytoken`](deception/canarytoken/SKILL.md) — `canarytoken`
+- [`deception/honeypot`](deception/honeypot/SKILL.md) — `honeypot`
+- [`deception/honeytoken`](deception/honeytoken/SKILL.md) — `honeytoken`
 
-## identity-security/ (44 skills)
+### `endpoint-security/` — 25 skills
 
-- 📘 `identity-security/access/SKILL.md` — access
-- 📘 `identity-security/ad/active/SKILL.md` — active
-- 📘 `identity-security/ad/adsimulation/SKILL.md` — adsimulation
-- 📘 `identity-security/ad/advulnassess/SKILL.md` — advulnassess
-- 📘 `identity-security/ad/certificates/SKILL.md` — certificates
-- 📘 `identity-security/ad/compromise/SKILL.md` — compromise
-- 📘 `identity-security/ad/dcsync/SKILL.md` — dcsync
-- 📘 `identity-security/ad/dcsyncd/SKILL.md` — dcsyncd
-- 📘 `identity-security/ad/foresttrust/SKILL.md` — foresttrust
-- 📘 `identity-security/ad/honeytoken/SKILL.md` — honeytoken
-- 📘 `identity-security/ad/pentest/SKILL.md` — pentest
-- 📘 `identity-security/ad/tieredmodel/SKILL.md` — tieredmodel
-- 📘 `identity-security/anomalous/SKILL.md` — anomalous
-- 📘 `identity-security/google/SKILL.md` — google
-- 📘 `identity-security/hardware/SKILL.md` — hardware
-- 📘 `identity-security/hashicorp/SKILL.md` — hashicorp
-- 📘 `identity-security/kerberos/goldenticket/SKILL.md` — goldenticket
-- 📘 `identity-security/kerberos/goldenticketd/SKILL.md` — goldenticketd
-- 📘 `identity-security/kerberos/impacket/SKILL.md` — impacket
-- 📘 `identity-security/kerberos/kerbattack/SKILL.md` — kerbattack
-- 📘 `identity-security/kerberos/kerberoasting/SKILL.md` — kerberoasting
-- 📘 `identity-security/ldap/SKILL.md` — ldap
-- 📘 `identity-security/mfa/duo/SKILL.md` — duo
-- 📘 `identity-security/mfa/fido2/SKILL.md` — fido2
-- 📘 `identity-security/mfa/passwordless/SKILL.md` — passwordless
-- 📘 `identity-security/okta/SKILL.md` — okta
-- 📘 `identity-security/pam/accessreview/SKILL.md` — accessreview
-- 📘 `identity-security/pam/delinea/SKILL.md` — delinea
-- 📘 `identity-security/pam/pam/SKILL.md` — pam
-- 📘 `identity-security/pam/paw/SKILL.md` — paw
-- 📘 `identity-security/pam/privacctdiscovery/SKILL.md` — privacctdiscovery
-- 📘 `identity-security/pam/privileged/SKILL.md` — privileged
-- 📘 `identity-security/pam/sessionmon/SKILL.md` — sessionmon
-- 📘 `identity-security/privileged/SKILL.md` — privileged
-- 📘 `identity-security/rbac/entitlement/SKILL.md` — entitlement
-- 📘 `identity-security/rbac/identity/SKILL.md` — identity
-- 📘 `identity-security/rbac/rbac/SKILL.md` — rbac
-- 📘 `identity-security/rbac/sailpoint/SKILL.md` — sailpoint
-- 📘 `identity-security/saml/googlesso/SKILL.md` — googlesso
-- 📘 `identity-security/saml/okta/SKILL.md` — okta
-- 📘 `identity-security/serviceaccount/saaudit/SKILL.md` — saaudit
-- 📘 `identity-security/serviceaccount/sarotation/SKILL.md` — sarotation
-- 📘 `identity-security/serviceaccount/service/SKILL.md` — service
-- 📘 `identity-security/zero/SKILL.md` — zero
+- [`endpoint-security/application`](endpoint-security/application/SKILL.md) — `application`
+- [`endpoint-security/credentials/lazagne`](endpoint-security/credentials/lazagne/SKILL.md) — `credentials-lazagne`
+- [`endpoint-security/defender`](endpoint-security/defender/SKILL.md) — `defender`
+- [`endpoint-security/disk`](endpoint-security/disk/SKILL.md) — `disk`
+- [`endpoint-security/edr/crowdstrike`](endpoint-security/edr/crowdstrike/SKILL.md) — `edr-crowdstrike`
+- [`endpoint-security/endpoint`](endpoint-security/endpoint/SKILL.md) — `endpoint`
+- [`endpoint-security/evasion`](endpoint-security/evasion/SKILL.md) — `evasion`
+- [`endpoint-security/file`](endpoint-security/file/SKILL.md) — `file`
+- [`endpoint-security/fileless`](endpoint-security/fileless/SKILL.md) — `fileless`
+- [`endpoint-security/forensics/investigation`](endpoint-security/forensics/investigation/SKILL.md) — `forensics-investigation`
+- [`endpoint-security/hardening/linux`](endpoint-security/hardening/linux/SKILL.md) — `hardening-linux`
+- [`endpoint-security/linuxcis`](endpoint-security/linuxcis/SKILL.md) — `linuxcis`
+- [`endpoint-security/memory`](endpoint-security/memory/SKILL.md) — `memory`
+- [`endpoint-security/monitoring/datadog`](endpoint-security/monitoring/datadog/SKILL.md) — `monitoring-datadog`
+- [`endpoint-security/monitoring/osquery`](endpoint-security/monitoring/osquery/SKILL.md) — `monitoring-osquery`
+- [`endpoint-security/policy/usb/create`](endpoint-security/policy/usb/create/SKILL.md) — `policy-usb-create`
+- [`endpoint-security/privesc/assess`](endpoint-security/privesc/assess/SKILL.md) — `privesc-assess`
+- [`endpoint-security/privesc/detect`](endpoint-security/privesc/detect/SKILL.md) — `privesc-detect`
+- [`endpoint-security/thickclient/pentest`](endpoint-security/thickclient/pentest/SKILL.md) — `thickclient-pentest`
+- [`endpoint-security/ueba/user-behavior`](endpoint-security/ueba/user-behavior/SKILL.md) — `endpoint-security-ueba-user-behavior`
+- [`endpoint-security/wazuh/detection`](endpoint-security/wazuh/detection/SKILL.md) — `endpoint-security-wazuh-detection`
+- [`endpoint-security/windows/lolbins/detect`](endpoint-security/windows/lolbins/detect/SKILL.md) — `windows-lolbins-detect`
+- [`endpoint-security/windows/lolbins/hunt`](endpoint-security/windows/lolbins/hunt/SKILL.md) — `windows-lolbins-hunt`
+- [`endpoint-security/windows/wmiexec`](endpoint-security/windows/wmiexec/SKILL.md) — `windows-wmiexec`
+- [`endpoint-security/windowscis`](endpoint-security/windowscis/SKILL.md) — `windowscis`
 
-## incident-response/ (39 skills)
+### `filesystem/` — 28 skills
 
-- 📘 `incident-response/cloud/ir/SKILL.md` — ir
-- 📘 `incident-response/containment/active/SKILL.md` — active
-- 📘 `incident-response/containment/cloud/SKILL.md` — cloud
-- 📘 `incident-response/dashboard/ir/SKILL.md` — ir
-- 📘 `incident-response/email/SKILL.md` — email
-- 📘 `incident-response/eradication/malware/SKILL.md` — malware
-- 📘 `incident-response/insider/insider/SKILL.md` — insider
-- 📘 `incident-response/insider/insiderindicators/SKILL.md` — insiderindicators
-- 📘 `incident-response/insider/investigation/SKILL.md` — investigation
-- 📘 `incident-response/insider/ueba/SKILL.md` — ueba
-- 📘 `incident-response/phishing/aitm/SKILL.md` — aitm
-- 📘 `incident-response/phishing/bec/SKILL.md` — bec
-- 📘 `incident-response/phishing/business/SKILL.md` — business
-- 📘 `incident-response/phishing/gateway/SKILL.md` — gateway
-- 📘 `incident-response/phishing/gophish/SKILL.md` — gophish
-- 📘 `incident-response/phishing/investigation/SKILL.md` — investigation
-- 📘 `incident-response/phishing/ir/SKILL.md` — ir
-- 📘 `incident-response/phishing/mimecast/SKILL.md` — mimecast
-- 📘 `incident-response/phishing/phishing/SKILL.md` — phishing
-- 📘 `incident-response/phishing/proofpoint/SKILL.md` — proofpoint
-- 📘 `incident-response/phishing/quishing/SKILL.md` — quishing
-- 📘 `incident-response/phishing/redteamphish/SKILL.md` — redteamphish
-- 📘 `incident-response/phishing/simulation/SKILL.md` — simulation
-- 📘 `incident-response/phishing/spearphish/SKILL.md` — spearphish
-- 📘 `incident-response/phishing/training/SKILL.md` — training
-- 📘 `incident-response/phishing/workspace/SKILL.md` — workspace
-- 📘 `incident-response/playbooks/ir/SKILL.md` — ir
-- 📘 `incident-response/playbooks/otirplaybook/SKILL.md` — otirplaybook
-- 📘 `incident-response/playbooks/phishing/SKILL.md` — phishing
-- 📘 `incident-response/playbooks/playbook/SKILL.md` — playbook
-- 📘 `incident-response/recovery/backup/SKILL.md` — backup
-- 📘 `incident-response/tabletop/post/SKILL.md` — post
-- 📘 `incident-response/tabletop/tabletop/SKILL.md` — tabletop
-- 📘 `incident-response/triage/elastic/SKILL.md` — elastic
-- 📘 `incident-response/triage/playbook/SKILL.md` — playbook
-- 📘 `incident-response/triage/security/SKILL.md` — security
-- 📘 `incident-response/triage/splunk/SKILL.md` — splunk
-- 📘 `incident-response/triage/web/SKILL.md` — web
-- 📘 `incident-response/velociraptor/SKILL.md` — velociraptor
+- [`filesystem/acl/extended/audit`](filesystem/acl/extended/audit/SKILL.md) — `acl-extended-audit`
+- [`filesystem/btrfs/snapshot/compare`](filesystem/btrfs/snapshot/compare/SKILL.md) — `btrfs-snapshot-compare`
+- [`filesystem/encryption/luks/configure`](filesystem/encryption/luks/configure/SKILL.md) — `encryption-luks-configure`
+- [`filesystem/encryption/veracrypt/deploy`](filesystem/encryption/veracrypt/deploy/SKILL.md) — `encryption-veracrypt-deploy`
+- [`filesystem/ext4/deleted-file/recover`](filesystem/ext4/deleted-file/recover/SKILL.md) — `ext4-deleted-file-recover`
+- [`filesystem/ext4/inode/analyze`](filesystem/ext4/inode/analyze/SKILL.md) — `ext4-inode-analyze`
+- [`filesystem/ext4/journal/recover`](filesystem/ext4/journal/recover/SKILL.md) — `ext4-journal-recover`
+- [`filesystem/fat32/slack-space/extract`](filesystem/fat32/slack-space/extract/SKILL.md) — `fat32-slack-space-extract`
+- [`filesystem/hardlink/attack/detect`](filesystem/hardlink/attack/detect/SKILL.md) — `hardlink-attack-detect`
+- [`filesystem/hidden/dotfile/detect`](filesystem/hidden/dotfile/detect/SKILL.md) — `hidden-dotfile-detect`
+- [`filesystem/hidden/rootkit/detect`](filesystem/hidden/rootkit/detect/SKILL.md) — `hidden-rootkit-detect`
+- [`filesystem/integrity/aide/configure`](filesystem/integrity/aide/configure/SKILL.md) — `integrity-aide-configure`
+- [`filesystem/integrity/tripwire/deploy`](filesystem/integrity/tripwire/deploy/SKILL.md) — `integrity-tripwire-deploy`
+- [`filesystem/lvm/snapshot/forensic`](filesystem/lvm/snapshot/forensic/SKILL.md) — `lvm-snapshot-forensic`
+- [`filesystem/mount/bind/detect`](filesystem/mount/bind/detect/SKILL.md) — `mount-bind-detect`
+- [`filesystem/ntfs/alternate-data-stream/detect`](filesystem/ntfs/alternate-data-stream/detect/SKILL.md) — `ntfs-alternate-data-stream-detect`
+- [`filesystem/ntfs/mft/parse`](filesystem/ntfs/mft/parse/SKILL.md) — `ntfs-mft-parse`
+- [`filesystem/ntfs/prefetch/parse`](filesystem/ntfs/prefetch/parse/SKILL.md) — `ntfs-prefetch-parse`
+- [`filesystem/ntfs/usnjrnl/analyze`](filesystem/ntfs/usnjrnl/analyze/SKILL.md) — `ntfs-usnjrnl-analyze`
+- [`filesystem/permission/suid/enum`](filesystem/permission/suid/enum/SKILL.md) — `permission-suid-enum`
+- [`filesystem/permission/world-writable/detect`](filesystem/permission/world-writable/detect/SKILL.md) — `permission-world-writable-detect`
+- [`filesystem/procfs/maps/analyze`](filesystem/procfs/maps/analyze/SKILL.md) — `procfs-maps-analyze`
+- [`filesystem/symlink/race-condition/detect`](filesystem/symlink/race-condition/detect/SKILL.md) — `symlink-race-condition-detect`
+- [`filesystem/sysfs/device/enum`](filesystem/sysfs/device/enum/SKILL.md) — `sysfs-device-enum`
+- [`filesystem/timeline/mtime-ctime/analyze`](filesystem/timeline/mtime-ctime/analyze/SKILL.md) — `timeline-mtime-ctime-analyze`
+- [`filesystem/tmpfs/artifact/collect`](filesystem/tmpfs/artifact/collect/SKILL.md) — `tmpfs-artifact-collect`
+- [`filesystem/vfs/hook/detect`](filesystem/vfs/hook/detect/SKILL.md) — `vfs-hook-detect`
+- [`filesystem/xfs/metadata/analyze`](filesystem/xfs/metadata/analyze/SKILL.md) — `xfs-metadata-analyze`
 
-## kernel-os/ (7 skills)
+### `forensics/` — 151 skills
 
-- 🔧 `kernel-os/firmware/SKILL.md` — firmware-recon
-- 📘 `kernel-os/firmware/binwalk/SKILL.md` — binwalk
-- 📘 `kernel-os/firmware/bootkit/SKILL.md` — bootkit
-- 📘 `kernel-os/firmware/firmware/SKILL.md` — firmware
-- 📘 `kernel-os/firmware/uefibootkit/SKILL.md` — uefibootkit
-- 🔧 `kernel-os/linux/lkm/kerneldev-forensic/SKILL.md` — kerneldev-forensic
-- 📘 `kernel-os/rootkits/rootkit/SKILL.md` — rootkit
+- [`forensics/analysis/actorinfra`](forensics/analysis/actorinfra/SKILL.md) — `analysis-actorinfra`
+- [`forensics/analysis/actorprofile`](forensics/analysis/actorprofile/SKILL.md) — `analysis-actorprofile`
+- [`forensics/analysis/campaign`](forensics/analysis/campaign/SKILL.md) — `analysis-campaign`
+- [`forensics/analysis/cyber`](forensics/analysis/cyber/SKILL.md) — `analysis-cyber`
+- [`forensics/analysis/iam`](forensics/analysis/iam/SKILL.md) — `analysis-iam`
+- [`forensics/analysis/landscape`](forensics/analysis/landscape/SKILL.md) — `analysis-landscape`
+- [`forensics/analysis/mitre-attack`](forensics/analysis/mitre-attack/SKILL.md) — `analysis-mitre-attack`
+- [`forensics/analysis/threat`](forensics/analysis/threat/SKILL.md) — `analysis-threat`
+- [`forensics/browser`](forensics/browser/SKILL.md) — `browser`
+- [`forensics/cloud`](forensics/cloud/SKILL.md) — `cloud`
+- [`forensics/cloud/docker`](forensics/cloud/docker/SKILL.md) — `cloud-docker`
+- [`forensics/cloud/env`](forensics/cloud/env/SKILL.md) — `cloud-env`
+- [`forensics/cloud/falco`](forensics/cloud/falco/SKILL.md) — `cloud-falco`
+- [`forensics/disk/acquisition/autopsy`](forensics/disk/acquisition/autopsy/SKILL.md) — `disk-acquisition-autopsy`
+- [`forensics/disk/acquisition/dcfldd`](forensics/disk/acquisition/dcfldd/SKILL.md) — `disk-acquisition-dcfldd`
+- [`forensics/disk/analysis/disk`](forensics/disk/analysis/disk/SKILL.md) — `disk-analysis-disk`
+- [`forensics/disk/analysis/endpoint`](forensics/disk/analysis/endpoint/SKILL.md) — `disk-analysis-endpoint`
+- [`forensics/disk/analysis/slack`](forensics/disk/analysis/slack/SKILL.md) — `disk-analysis-slack`
+- [`forensics/disk/analysis/sqlite`](forensics/disk/analysis/sqlite/SKILL.md) — `disk-analysis-sqlite`
+- [`forensics/disk/analysis/volatile`](forensics/disk/analysis/volatile/SKILL.md) — `disk-analysis-volatile`
+- [`forensics/disk/artifacts/eventlogs`](forensics/disk/artifacts/eventlogs/SKILL.md) — `disk-artifacts-eventlogs`
+- [`forensics/disk/artifacts/lnk`](forensics/disk/artifacts/lnk/SKILL.md) — `disk-artifacts-lnk`
+- [`forensics/disk/artifacts/lnkfiles`](forensics/disk/artifacts/lnkfiles/SKILL.md) — `disk-artifacts-lnkfiles`
+- [`forensics/disk/artifacts/mft`](forensics/disk/artifacts/mft/SKILL.md) — `disk-artifacts-mft`
+- [`forensics/disk/artifacts/prefetch`](forensics/disk/artifacts/prefetch/SKILL.md) — `disk-artifacts-prefetch`
+- [`forensics/disk/artifacts/prefetchpy`](forensics/disk/artifacts/prefetchpy/SKILL.md) — `disk-artifacts-prefetchpy`
+- [`forensics/disk/artifacts/registry`](forensics/disk/artifacts/registry/SKILL.md) — `disk-artifacts-registry`
+- [`forensics/disk/artifacts/shellbags`](forensics/disk/artifacts/shellbags/SKILL.md) — `disk-artifacts-shellbags`
+- [`forensics/disk/artifacts/windows`](forensics/disk/artifacts/windows/SKILL.md) — `disk-artifacts-windows`
+- [`forensics/disk/filecarving/foremost`](forensics/disk/filecarving/foremost/SKILL.md) — `disk-filecarving-foremost`
+- [`forensics/disk/filecarving/photorec`](forensics/disk/filecarving/photorec/SKILL.md) — `disk-filecarving-photorec`
+- [`forensics/disk/timeline/plaso`](forensics/disk/timeline/plaso/SKILL.md) — `disk-timeline-plaso`
+- [`forensics/disk/timeline/timesketch`](forensics/disk/timeline/timesketch/SKILL.md) — `disk-timeline-timesketch`
+- [`forensics/email`](forensics/email/SKILL.md) — `email`
+- [`forensics/email/outlook`](forensics/email/outlook/SKILL.md) — `email-outlook`
+- [`forensics/email/phishing`](forensics/email/phishing/SKILL.md) — `email-phishing`
+- [`forensics/hunting/advanced`](forensics/hunting/advanced/SKILL.md) — `hunting-advanced`
+- [`forensics/hunting/anomalous`](forensics/hunting/anomalous/SKILL.md) — `hunting-anomalous`
+- [`forensics/hunting/cloud`](forensics/hunting/cloud/SKILL.md) — `hunting-cloud`
+- [`forensics/hunting/data`](forensics/hunting/data/SKILL.md) — `hunting-data`
+- [`forensics/hunting/datastaging`](forensics/hunting/datastaging/SKILL.md) — `hunting-datastaging`
+- [`forensics/hunting/dcsync`](forensics/hunting/dcsync/SKILL.md) — `hunting-dcsync`
+- [`forensics/hunting/defense`](forensics/hunting/defense/SKILL.md) — `hunting-defense`
+- [`forensics/hunting/dll`](forensics/hunting/dll/SKILL.md) — `hunting-dll`
+- [`forensics/hunting/dns`](forensics/hunting/dns/SKILL.md) — `hunting-dns`
+- [`forensics/hunting/edr`](forensics/hunting/edr/SKILL.md) — `hunting-edr`
+- [`forensics/hunting/elastic`](forensics/hunting/elastic/SKILL.md) — `hunting-elastic`
+- [`forensics/hunting/email`](forensics/hunting/email/SKILL.md) — `hunting-email`
+- [`forensics/hunting/lateralmov`](forensics/hunting/lateralmov/SKILL.md) — `hunting-lateralmov`
+- [`forensics/hunting/living`](forensics/hunting/living/SKILL.md) — `hunting-living`
+- [`forensics/hunting/lolbinlogs`](forensics/hunting/lolbinlogs/SKILL.md) — `hunting-lolbinlogs`
+- [`forensics/hunting/lolbins`](forensics/hunting/lolbins/SKILL.md) — `hunting-lolbins`
+- [`forensics/hunting/mimikatz`](forensics/hunting/mimikatz/SKILL.md) — `hunting-mimikatz`
+- [`forensics/hunting/ntlm`](forensics/hunting/ntlm/SKILL.md) — `hunting-ntlm`
+- [`forensics/hunting/ntlmrelay`](forensics/hunting/ntlmrelay/SKILL.md) — `hunting-ntlmrelay`
+- [`forensics/hunting/persistence`](forensics/hunting/persistence/SKILL.md) — `hunting-persistence`
+- [`forensics/hunting/phishing`](forensics/hunting/phishing/SKILL.md) — `hunting-phishing`
+- [`forensics/hunting/registry`](forensics/hunting/registry/SKILL.md) — `hunting-registry`
+- [`forensics/hunting/schedtasks`](forensics/hunting/schedtasks/SKILL.md) — `hunting-schedtasks`
+- [`forensics/hunting/scheduled`](forensics/hunting/scheduled/SKILL.md) — `hunting-scheduled`
+- [`forensics/hunting/shadow`](forensics/hunting/shadow/SKILL.md) — `hunting-shadow`
+- [`forensics/hunting/startup`](forensics/hunting/startup/SKILL.md) — `hunting-startup`
+- [`forensics/hunting/supply`](forensics/hunting/supply/SKILL.md) — `hunting-supply`
+- [`forensics/hunting/suspicious`](forensics/hunting/suspicious/SKILL.md) — `hunting-suspicious`
+- [`forensics/hunting/svcinstall`](forensics/hunting/svcinstall/SKILL.md) — `hunting-svcinstall`
+- [`forensics/hunting/t1098`](forensics/hunting/t1098/SKILL.md) — `hunting-t1098`
+- [`forensics/hunting/t1548`](forensics/hunting/t1548/SKILL.md) — `hunting-t1548`
+- [`forensics/hunting/threat`](forensics/hunting/threat/SKILL.md) — `hunting-threat`
+- [`forensics/hunting/unusual`](forensics/hunting/unusual/SKILL.md) — `hunting-unusual`
+- [`forensics/hunting/webshell`](forensics/hunting/webshell/SKILL.md) — `hunting-webshell`
+- [`forensics/hunting/wmi`](forensics/hunting/wmi/SKILL.md) — `hunting-wmi`
+- [`forensics/hunting/wmilateral`](forensics/hunting/wmilateral/SKILL.md) — `hunting-wmilateral`
+- [`forensics/intelligence`](forensics/intelligence/SKILL.md) — `intelligence`
+- [`forensics/ioc`](forensics/ioc/SKILL.md) — `ioc`
+- [`forensics/ioc/defanging`](forensics/ioc/defanging/SKILL.md) — `ioc-defanging`
+- [`forensics/ioc/indicator`](forensics/ioc/indicator/SKILL.md) — `ioc-indicator`
+- [`forensics/ioc/indicators`](forensics/ioc/indicators/SKILL.md) — `ioc-indicators`
+- [`forensics/ioc/iocauto`](forensics/ioc/iocauto/SKILL.md) — `ioc-iocauto`
+- [`forensics/ioc/ioccollect`](forensics/ioc/ioccollect/SKILL.md) — `ioc-ioccollect`
+- [`forensics/ioc/splunk`](forensics/ioc/splunk/SKILL.md) — `ioc-splunk`
+- [`forensics/ioc/tilcm`](forensics/ioc/tilcm/SKILL.md) — `ioc-tilcm`
+- [`forensics/log`](forensics/log/SKILL.md) — `log`
+- [`forensics/log/cloud`](forensics/log/cloud/SKILL.md) — `log-cloud`
+- [`forensics/log/cloud/anomalies`](forensics/log/cloud/anomalies/SKILL.md) — `log-cloud-anomalies`
+- [`forensics/log/cloud/api`](forensics/log/cloud/api/SKILL.md) — `log-cloud-api`
+- [`forensics/log/cloud/athena`](forensics/log/cloud/athena/SKILL.md) — `log-cloud-athena`
+- [`forensics/log/cloud/azure`](forensics/log/cloud/azure/SKILL.md) — `log-cloud-azure`
+- [`forensics/log/cloud/cloudtrailforensics`](forensics/log/cloud/cloudtrailforensics/SKILL.md) — `log-cloud-cloudtrailforensics`
+- [`forensics/log/cloud/kubernetes`](forensics/log/cloud/kubernetes/SKILL.md) — `log-cloud-kubernetes`
+- [`forensics/log/linux`](forensics/log/linux/SKILL.md) — `log-linux`
+- [`forensics/log/linux/auditd`](forensics/log/linux/auditd/SKILL.md) — `log-linux-auditd`
+- [`forensics/log/linux/linuxlogforen`](forensics/log/linux/linuxlogforen/SKILL.md) — `log-linux-linuxlogforen`
+- [`forensics/log/linux/sysartifacts`](forensics/log/linux/sysartifacts/SKILL.md) — `log-linux-sysartifacts`
+- [`forensics/log/web`](forensics/log/web/SKILL.md) — `log-web`
+- [`forensics/log/web/hindsight`](forensics/log/web/hindsight/SKILL.md) — `log-web-hindsight`
+- [`forensics/log/windows`](forensics/log/windows/SKILL.md) — `log-windows`
+- [`forensics/log/windows/powershell`](forensics/log/windows/powershell/SKILL.md) — `log-windows-powershell`
+- [`forensics/log/windows/splunk`](forensics/log/windows/splunk/SKILL.md) — `log-windows-splunk`
+- [`forensics/log/windows/sysmon`](forensics/log/windows/sysmon/SKILL.md) — `log-windows-sysmon`
+- [`forensics/malware`](forensics/malware/SKILL.md) — `malware`
+- [`forensics/memory-analysis/siem-integration`](forensics/memory-analysis/siem-integration/SKILL.md) — `forensics-memory-analysis-siem-integration`
+- [`forensics/memory/acquisition/volatility`](forensics/memory/acquisition/volatility/SKILL.md) — `memory-acquisition-volatility`
+- [`forensics/memory/analysis/credentials`](forensics/memory/analysis/credentials/SKILL.md) — `memory-analysis-credentials`
+- [`forensics/memory/analysis/heap`](forensics/memory/analysis/heap/SKILL.md) — `memory-analysis-heap`
+- [`forensics/memory/analysis/vol3core`](forensics/memory/analysis/vol3core/SKILL.md) — `memory-analysis-vol3core`
+- [`forensics/memory/analysis/vol3plugins`](forensics/memory/analysis/vol3plugins/SKILL.md) — `memory-analysis-vol3plugins`
+- [`forensics/memory/analysis/volatility`](forensics/memory/analysis/volatility/SKILL.md) — `memory-analysis-volatility`
+- [`forensics/memory/analysis/volatility3`](forensics/memory/analysis/volatility3/SKILL.md) — `memory-analysis-volatility3`
+- [`forensics/memory/analysis/volatility3/plugins/linux/processes`](forensics/memory/analysis/volatility3/plugins/linux/processes/SKILL.md) — `memory-analysis-volatility3-plugins-linux-processes`
+- [`forensics/memory/analysis/volcombined`](forensics/memory/analysis/volcombined/SKILL.md) — `memory-analysis-volcombined`
+- [`forensics/memory/injection/detection`](forensics/memory/injection/detection/SKILL.md) — `memory-injection-detection`
+- [`forensics/memory/injection/process`](forensics/memory/injection/process/SKILL.md) — `memory-injection-process`
+- [`forensics/memory/injection/procinjection`](forensics/memory/injection/procinjection/SKILL.md) — `memory-injection-procinjection`
+- [`forensics/memory/injection/sysmon`](forensics/memory/injection/sysmon/SKILL.md) — `memory-injection-sysmon`
+- [`forensics/mitre/apt`](forensics/mitre/apt/SKILL.md) — `mitre-apt`
+- [`forensics/mitre/attack`](forensics/mitre/attack/SKILL.md) — `mitre-attack`
+- [`forensics/mitre/attackmap`](forensics/mitre/attackmap/SKILL.md) — `mitre-attackmap`
+- [`forensics/mitre/coveragemap`](forensics/mitre/coveragemap/SKILL.md) — `mitre-coveragemap`
+- [`forensics/mitre/threat`](forensics/mitre/threat/SKILL.md) — `mitre-threat`
+- [`forensics/mitre/threatmodel`](forensics/mitre/threatmodel/SKILL.md) — `mitre-threatmodel`
+- [`forensics/mitre/ttps`](forensics/mitre/ttps/SKILL.md) — `mitre-ttps`
+- [`forensics/mobile/cellebrite`](forensics/mobile/cellebrite/SKILL.md) — `mobile-cellebrite`
+- [`forensics/network/capture/network`](forensics/network/capture/network/SKILL.md) — `network-capture-network`
+- [`forensics/network/capture/pcapforensics`](forensics/network/capture/pcapforensics/SKILL.md) — `network-capture-pcapforensics`
+- [`forensics/network/capture/scapy`](forensics/network/capture/scapy/SKILL.md) — `network-capture-scapy`
+- [`forensics/network/capture/tshark`](forensics/network/capture/tshark/SKILL.md) — `network-capture-tshark`
+- [`forensics/network/capture/wireshark`](forensics/network/capture/wireshark/SKILL.md) — `network-capture-wireshark`
+- [`forensics/network/dns`](forensics/network/dns/SKILL.md) — `network-dns`
+- [`forensics/network/dns/dnsexfil`](forensics/network/dns/dnsexfil/SKILL.md) — `network-dns-dnsexfil`
+- [`forensics/network/flow/beaconing`](forensics/network/flow/beaconing/SKILL.md) — `network-flow-beaconing`
+- [`forensics/network/flow/c2beaconing`](forensics/network/flow/c2beaconing/SKILL.md) — `network-flow-c2beaconing`
+- [`forensics/network/flow/network`](forensics/network/flow/network/SKILL.md) — `network-flow-network`
+- [`forensics/network/traffic/arkime`](forensics/network/traffic/arkime/SKILL.md) — `network-traffic-arkime`
+- [`forensics/network/traffic/arppoisoning`](forensics/network/traffic/arppoisoning/SKILL.md) — `network-traffic-arppoisoning`
+- [`forensics/network/traffic/baselining`](forensics/network/traffic/baselining/SKILL.md) — `network-traffic-baselining`
+- [`forensics/network/traffic/c2traffic`](forensics/network/traffic/c2traffic/SKILL.md) — `network-traffic-c2traffic`
+- [`forensics/network/traffic/domainfronting`](forensics/network/traffic/domainfronting/SKILL.md) — `network-traffic-domainfronting`
+- [`forensics/network/traffic/incidents`](forensics/network/traffic/incidents/SKILL.md) — `network-traffic-incidents`
+- [`forensics/network/traffic/maltraffic`](forensics/network/traffic/maltraffic/SKILL.md) — `network-traffic-maltraffic`
+- [`forensics/network/traffic/network`](forensics/network/traffic/network/SKILL.md) — `network-traffic-network`
+- [`forensics/network/traffic/nozomi`](forensics/network/traffic/nozomi/SKILL.md) — `network-traffic-nozomi`
+- [`forensics/network/zeek`](forensics/network/zeek/SKILL.md) — `network-zeek`
+- [`forensics/network/zeek/dnsexfil`](forensics/network/zeek/dnsexfil/SKILL.md) — `network-zeek-dnsexfil`
+- [`forensics/network/zeek/dnstunnel`](forensics/network/zeek/dnstunnel/SKILL.md) — `network-zeek-dnstunnel`
+- [`forensics/network/zeek/zeekanalysis`](forensics/network/zeek/zeekanalysis/SKILL.md) — `network-zeek-zeekanalysis`
+- [`forensics/network/zeek/zeekanomaly`](forensics/network/zeek/zeekanomaly/SKILL.md) — `network-zeek-zeekanomaly`
+- [`forensics/network/zeek/zeeklateral`](forensics/network/zeek/zeeklateral/SKILL.md) — `network-zeek-zeeklateral`
+- [`forensics/stego`](forensics/stego/SKILL.md) — `stego`
+- [`forensics/threat`](forensics/threat/SKILL.md) — `threat`
+- [`forensics/usb`](forensics/usb/SKILL.md) — `usb`
+- [`forensics/windows`](forensics/windows/SKILL.md) — `windows`
 
-## malware/ (70 skills)
+### `identity/` — 56 skills
 
-- 📘 `malware/automated/SKILL.md` — automated
-- 📘 `malware/cobaltstrike/beacons/SKILL.md` — beacons
-- 📘 `malware/cobaltstrike/cobaltstrike/SKILL.md` — cobaltstrike
-- 📘 `malware/cobaltstrike/malleable/SKILL.md` — malleable
-- 📘 `malware/config/SKILL.md` — config
-- 📘 `malware/dynamic/anyrun/SKILL.md` — anyrun
-- 📘 `malware/dynamic/cuckoo/SKILL.md` — cuckoo
-- 📘 `malware/dynamic/dynamic/SKILL.md` — dynamic
-- 📘 `malware/dynamic/email/SKILL.md` — email
-- 📘 `malware/dynamic/malware/SKILL.md` — malware
-- 📘 `malware/dynamic/mobile/SKILL.md` — mobile
-- 📘 `malware/dynamic/urlscan/SKILL.md` — urlscan
-- 📘 `malware/families/malware/SKILL.md` — malware
-- 📘 `malware/fileless/SKILL.md` — fileless
-- 📘 `malware/ioc/malware/SKILL.md` — malware
-- 📘 `malware/ioc/virustotal/SKILL.md` — virustotal
-- 📘 `malware/iocs/SKILL.md` — iocs
-- 📘 `malware/obfuscation/empire/SKILL.md` — empire
-- 📘 `malware/obfuscation/javascript/SKILL.md` — javascript
-- 📘 `malware/obfuscation/psobfuscation/SKILL.md` — psobfuscation
-- 📘 `malware/pdf/pdfid/SKILL.md` — pdfid
-- 📘 `malware/pdf/peepdf/SKILL.md` — peepdf
-- 🔧 `malware/persistence/linux/SKILL.md` — persistence-recon
-- 📘 `malware/persistence/malware/SKILL.md` — malware
-- 📘 `malware/persistence/persistence/SKILL.md` — persistence
-- 📘 `malware/persistence/registry/SKILL.md` — registry
-- 📘 `malware/persistence/winpersist/SKILL.md` — winpersist
-- 📘 `malware/ransomware/artifacts/SKILL.md` — artifacts
-- 📘 `malware/ransomware/backup/SKILL.md` — backup
-- 📘 `malware/ransomware/canaryfiles/SKILL.md` — canaryfiles
-- 📘 `malware/ransomware/cisaplaybook/SKILL.md` — cisaplaybook
-- 📘 `malware/ransomware/decoy/SKILL.md` — decoy
-- 📘 `malware/ransomware/decryption/SKILL.md` — decryption
-- 📘 `malware/ransomware/detection/SKILL.md` — detection
-- 📘 `malware/ransomware/grouppolicy/SKILL.md` — grouppolicy
-- 📘 `malware/ransomware/honeypot/SKILL.md` — honeypot
-- 📘 `malware/ransomware/immutable/SKILL.md` — immutable
-- 📘 `malware/ransomware/indicators/SKILL.md` — indicators
-- 📘 `malware/ransomware/killswitch/SKILL.md` — killswitch
-- 📘 `malware/ransomware/leaksite/SKILL.md` — leaksite
-- 📘 `malware/ransomware/precursors/SKILL.md` — precursors
-- 📘 `malware/ransomware/procedures/SKILL.md` — procedures
-- 📘 `malware/ransomware/ransomware/SKILL.md` — ransomware
-- 📘 `malware/ransomware/recovery/SKILL.md` — recovery
-- 📘 `malware/ransomware/response/SKILL.md` — response
-- 📘 `malware/ransomware/socplaybook/SKILL.md` — socplaybook
-- 📘 `malware/ransomware/tabletop/SKILL.md` — tabletop
-- 📘 `malware/ransomware/wallets/SKILL.md` — wallets
-- 📘 `malware/reversing/android/apktool/SKILL.md` — apktool
-- 📘 `malware/reversing/android/jadx/SKILL.md` — jadx
-- 📘 `malware/reversing/dnspy/SKILL.md` — dnspy
-- 📘 `malware/reversing/ghidra/SKILL.md` — ghidra
-- 📘 `malware/reversing/ghidrare/SKILL.md` — ghidrare
-- 📘 `malware/reversing/ios/frida/SKILL.md` — frida
-- 📘 `malware/reversing/ios/objection/SKILL.md` — objection
-- 📘 `malware/reversing/rust/SKILL.md` — rust
-- 📘 `malware/rootkit/SKILL.md` — rootkit
-- 🔧 `malware/static-analysis/yara/SKILL.md` — yara-rules
-- 📘 `malware/static/linux/SKILL.md` — linux
-- 📘 `malware/static/macro/SKILL.md` — macro
-- 📘 `malware/static/packed/SKILL.md` — packed
-- 📘 `malware/static/static/SKILL.md` — static
-- 📘 `malware/supplychain/sigstore/SKILL.md` — sigstore
-- 📘 `malware/supplychain/supply/SKILL.md` — supply
-- 📘 `malware/triage/automated/SKILL.md` — automated
-- 📘 `malware/triage/ir/SKILL.md` — ir
-- 📘 `malware/triage/malware/SKILL.md` — malware
-- 📘 `malware/triage/yara/SKILL.md` — yara
-- 📘 `malware/yara/yara/SKILL.md` — yara
-- 📘 `malware/yara/yaradev/SKILL.md` — yaradev
+- [`identity/access`](identity/access/SKILL.md) — `access`
+- [`identity/ad/active`](identity/ad/active/SKILL.md) — `ad-active`
+- [`identity/ad/adsimulation`](identity/ad/adsimulation/SKILL.md) — `ad-adsimulation`
+- [`identity/ad/advulnassess`](identity/ad/advulnassess/SKILL.md) — `ad-advulnassess`
+- [`identity/ad/bloodhound/analyze`](identity/ad/bloodhound/analyze/SKILL.md) — `ad-bloodhound-analyze`
+- [`identity/ad/bloodhound/exploit`](identity/ad/bloodhound/exploit/SKILL.md) — `ad-bloodhound-exploit`
+- [`identity/ad/bloodhound/recon`](identity/ad/bloodhound/recon/SKILL.md) — `ad-bloodhound-recon`
+- [`identity/ad/certificates`](identity/ad/certificates/SKILL.md) — `ad-certificates`
+- [`identity/ad/compromise`](identity/ad/compromise/SKILL.md) — `ad-compromise`
+- [`identity/ad/dcsync`](identity/ad/dcsync/SKILL.md) — `ad-dcsync`
+- [`identity/ad/dcsyncd`](identity/ad/dcsyncd/SKILL.md) — `ad-dcsyncd`
+- [`identity/ad/foresttrust`](identity/ad/foresttrust/SKILL.md) — `ad-foresttrust`
+- [`identity/ad/honeytoken`](identity/ad/honeytoken/SKILL.md) — `ad-honeytoken`
+- [`identity/ad/nopac`](identity/ad/nopac/SKILL.md) — `ad-nopac`
+- [`identity/ad/pentest`](identity/ad/pentest/SKILL.md) — `ad-pentest`
+- [`identity/ad/tieredmodel`](identity/ad/tieredmodel/SKILL.md) — `ad-tieredmodel`
+- [`identity/ad/zerologon`](identity/ad/zerologon/SKILL.md) — `ad-zerologon`
+- [`identity/anomalous`](identity/anomalous/SKILL.md) — `anomalous`
+- [`identity/bruteforce-detection`](identity/bruteforce-detection/SKILL.md) — `identity-bruteforce-detection`
+- [`identity/credential-detection`](identity/credential-detection/SKILL.md) — `credential-detection`
+- [`identity/credential-dumping-detection`](identity/credential-dumping-detection/SKILL.md) — `identity-credential-dumping-detection`
+- [`identity/google`](identity/google/SKILL.md) — `google`
+- [`identity/hardware`](identity/hardware/SKILL.md) — `hardware`
+- [`identity/hashicorp`](identity/hashicorp/SKILL.md) — `hashicorp`
+- [`identity/kerberos/constrained`](identity/kerberos/constrained/SKILL.md) — `kerberos-constrained`
+- [`identity/kerberos/goldenticket`](identity/kerberos/goldenticket/SKILL.md) — `kerberos-goldenticket`
+- [`identity/kerberos/goldenticketd`](identity/kerberos/goldenticketd/SKILL.md) — `kerberos-goldenticketd`
+- [`identity/kerberos/impacket`](identity/kerberos/impacket/SKILL.md) — `kerberos-impacket`
+- [`identity/kerberos/kerbattack`](identity/kerberos/kerbattack/SKILL.md) — `kerberos-kerbattack`
+- [`identity/kerberos/kerberoasting`](identity/kerberos/kerberoasting/SKILL.md) — `kerberos-kerberoasting`
+- [`identity/kerberos/passtheticket`](identity/kerberos/passtheticket/SKILL.md) — `kerberos-passtheticket`
+- [`identity/kerberos/pttdetect`](identity/kerberos/pttdetect/SKILL.md) — `kerberos-pttdetect`
+- [`identity/ldap`](identity/ldap/SKILL.md) — `ldap`
+- [`identity/mfa/duo`](identity/mfa/duo/SKILL.md) — `mfa-duo`
+- [`identity/mfa/fido2`](identity/mfa/fido2/SKILL.md) — `mfa-fido2`
+- [`identity/mfa/passwordless`](identity/mfa/passwordless/SKILL.md) — `mfa-passwordless`
+- [`identity/ntlm/passthehash`](identity/ntlm/passthehash/SKILL.md) — `ntlm-passthehash`
+- [`identity/okta`](identity/okta/SKILL.md) — `okta`
+- [`identity/pam`](identity/pam/SKILL.md) — `pam`
+- [`identity/pam/accessreview`](identity/pam/accessreview/SKILL.md) — `pam-accessreview`
+- [`identity/pam/delinea`](identity/pam/delinea/SKILL.md) — `pam-delinea`
+- [`identity/pam/paw`](identity/pam/paw/SKILL.md) — `pam-paw`
+- [`identity/pam/privacctdiscovery`](identity/pam/privacctdiscovery/SKILL.md) — `pam-privacctdiscovery`
+- [`identity/pam/privileged`](identity/pam/privileged/SKILL.md) — `pam-privileged`
+- [`identity/pam/sessionmon`](identity/pam/sessionmon/SKILL.md) — `pam-sessionmon`
+- [`identity/privileged`](identity/privileged/SKILL.md) — `privileged`
+- [`identity/rbac`](identity/rbac/SKILL.md) — `rbac`
+- [`identity/rbac/entitlement`](identity/rbac/entitlement/SKILL.md) — `rbac-entitlement`
+- [`identity/rbac/identity`](identity/rbac/identity/SKILL.md) — `rbac-identity`
+- [`identity/rbac/sailpoint`](identity/rbac/sailpoint/SKILL.md) — `rbac-sailpoint`
+- [`identity/saml/googlesso`](identity/saml/googlesso/SKILL.md) — `saml-googlesso`
+- [`identity/saml/okta`](identity/saml/okta/SKILL.md) — `saml-okta`
+- [`identity/serviceaccount/saaudit`](identity/serviceaccount/saaudit/SKILL.md) — `serviceaccount-saaudit`
+- [`identity/serviceaccount/sarotation`](identity/serviceaccount/sarotation/SKILL.md) — `serviceaccount-sarotation`
+- [`identity/serviceaccount/service`](identity/serviceaccount/service/SKILL.md) — `serviceaccount-service`
+- [`identity/zero`](identity/zero/SKILL.md) — `zero`
 
-## mobile/ (7 skills)
+### `incident-response/` — 40 skills
 
-- 📘 `mobile/android/android/SKILL.md` — android
-- 📘 `mobile/android/intents/SKILL.md` — intents
-- 📘 `mobile/deeplink/SKILL.md` — deeplink
-- 📘 `mobile/insecure/SKILL.md` — insecure
-- 📘 `mobile/ios/ios/SKILL.md` — ios
-- 📘 `mobile/mobile/SKILL.md` — mobile
-- 📘 `mobile/pinning/certificates/SKILL.md` — certificates
+- [`incident-response/cloud/ir`](incident-response/cloud/ir/SKILL.md) — `cloud-ir`
+- [`incident-response/containment/active`](incident-response/containment/active/SKILL.md) — `containment-active`
+- [`incident-response/containment/cloud`](incident-response/containment/cloud/SKILL.md) — `containment-cloud`
+- [`incident-response/dashboard/ir`](incident-response/dashboard/ir/SKILL.md) — `dashboard-ir`
+- [`incident-response/email`](incident-response/email/SKILL.md) — `email`
+- [`incident-response/eradication/malware`](incident-response/eradication/malware/SKILL.md) — `eradication-malware`
+- [`incident-response/insider`](incident-response/insider/SKILL.md) — `insider`
+- [`incident-response/insider-threat`](incident-response/insider-threat/SKILL.md) — `incident-response-insider-threat`
+- [`incident-response/insider/insiderindicators`](incident-response/insider/insiderindicators/SKILL.md) — `insider-insiderindicators`
+- [`incident-response/insider/investigation`](incident-response/insider/investigation/SKILL.md) — `insider-investigation`
+- [`incident-response/insider/ueba`](incident-response/insider/ueba/SKILL.md) — `insider-ueba`
+- [`incident-response/phishing`](incident-response/phishing/SKILL.md) — `phishing`
+- [`incident-response/phishing/aitm`](incident-response/phishing/aitm/SKILL.md) — `phishing-aitm`
+- [`incident-response/phishing/bec`](incident-response/phishing/bec/SKILL.md) — `phishing-bec`
+- [`incident-response/phishing/business`](incident-response/phishing/business/SKILL.md) — `phishing-business`
+- [`incident-response/phishing/gateway`](incident-response/phishing/gateway/SKILL.md) — `phishing-gateway`
+- [`incident-response/phishing/gophish`](incident-response/phishing/gophish/SKILL.md) — `phishing-gophish`
+- [`incident-response/phishing/investigation`](incident-response/phishing/investigation/SKILL.md) — `phishing-investigation`
+- [`incident-response/phishing/ir`](incident-response/phishing/ir/SKILL.md) — `phishing-ir`
+- [`incident-response/phishing/mimecast`](incident-response/phishing/mimecast/SKILL.md) — `phishing-mimecast`
+- [`incident-response/phishing/proofpoint`](incident-response/phishing/proofpoint/SKILL.md) — `phishing-proofpoint`
+- [`incident-response/phishing/quishing`](incident-response/phishing/quishing/SKILL.md) — `phishing-quishing`
+- [`incident-response/phishing/redteamphish`](incident-response/phishing/redteamphish/SKILL.md) — `phishing-redteamphish`
+- [`incident-response/phishing/simulation`](incident-response/phishing/simulation/SKILL.md) — `phishing-simulation`
+- [`incident-response/phishing/spearphish`](incident-response/phishing/spearphish/SKILL.md) — `phishing-spearphish`
+- [`incident-response/phishing/training`](incident-response/phishing/training/SKILL.md) — `phishing-training`
+- [`incident-response/phishing/workspace`](incident-response/phishing/workspace/SKILL.md) — `phishing-workspace`
+- [`incident-response/playbooks/ir`](incident-response/playbooks/ir/SKILL.md) — `playbooks-ir`
+- [`incident-response/playbooks/otirplaybook`](incident-response/playbooks/otirplaybook/SKILL.md) — `playbooks-otirplaybook`
+- [`incident-response/playbooks/phishing`](incident-response/playbooks/phishing/SKILL.md) — `playbooks-phishing`
+- [`incident-response/playbooks/playbook`](incident-response/playbooks/playbook/SKILL.md) — `playbooks-playbook`
+- [`incident-response/recovery/backup`](incident-response/recovery/backup/SKILL.md) — `recovery-backup`
+- [`incident-response/tabletop`](incident-response/tabletop/SKILL.md) — `tabletop`
+- [`incident-response/tabletop/post`](incident-response/tabletop/post/SKILL.md) — `tabletop-post`
+- [`incident-response/triage/elastic`](incident-response/triage/elastic/SKILL.md) — `triage-elastic`
+- [`incident-response/triage/playbook`](incident-response/triage/playbook/SKILL.md) — `triage-playbook`
+- [`incident-response/triage/security`](incident-response/triage/security/SKILL.md) — `triage-security`
+- [`incident-response/triage/splunk`](incident-response/triage/splunk/SKILL.md) — `triage-splunk`
+- [`incident-response/triage/web`](incident-response/triage/web/SKILL.md) — `triage-web`
+- [`incident-response/velociraptor`](incident-response/velociraptor/SKILL.md) — `velociraptor`
 
-## network-security/ (36 skills)
+### `industrial/` — 25 skills
 
-- 📘 `network-security/arp/SKILL.md` — arp
-- 📘 `network-security/assessment/ciscoise/SKILL.md` — ciscoise
-- 📘 `network-security/assessment/extpentest/SKILL.md` — extpentest
-- 📘 `network-security/assessment/nac/SKILL.md` — nac
-- 📘 `network-security/assessment/netpentest/SKILL.md` — netpentest
-- 📘 `network-security/assessment/network/SKILL.md` — network
-- 📘 `network-security/assessment/pentest/SKILL.md` — pentest
-- 📘 `network-security/bandwidth/SKILL.md` — bandwidth
-- 📘 `network-security/bgp/SKILL.md` — bgp
-- 📘 `network-security/bgpsecurity/SKILL.md` — bgpsecurity
-- 📘 `network-security/cloudflare/SKILL.md` — cloudflare
-- 📘 `network-security/dnsc2/SKILL.md` — dnsc2
-- 📘 `network-security/firewall/SKILL.md` — firewall
-- 📘 `network-security/firewall/firewall/SKILL.md` — firewall
-- 📘 `network-security/firewall/ngfw/SKILL.md` — ngfw
-- 📘 `network-security/firewall/pfsense/SKILL.md` — pfsense
-- 📘 `network-security/ids/host/SKILL.md` — host
-- 📘 `network-security/ids/snort/SKILL.md` — snort
-- 📘 `network-security/ids/suricata/SKILL.md` — suricata
-- 📘 `network-security/ids/suricataips/SKILL.md` — suricataips
-- 📘 `network-security/idsscanning/SKILL.md` — idsscanning
-- 📘 `network-security/injection/packet/SKILL.md` — packet
-- 📘 `network-security/ipv6/SKILL.md` — ipv6
-- 📘 `network-security/layer2/vlanhopping/SKILL.md` — vlanhopping
-- 📘 `network-security/metasploit/SKILL.md` — metasploit
-- 📘 `network-security/mitm/mitm/SKILL.md` — mitm
-- 🔧 `network-security/monitoring2/SKILL.md` — network-recon
-- 📘 `network-security/network/SKILL.md` — network
-- 📘 `network-security/nmap/SKILL.md` — nmap
-- 📘 `network-security/port/SKILL.md` — port
-- 📘 `network-security/wireless/aircrack/SKILL.md` — aircrack
-- 📘 `network-security/wireless/bluetooth/SKILL.md` — bluetooth
-- 📘 `network-security/wireless/btassessment/SKILL.md` — btassessment
-- 📘 `network-security/wireless/kismet/SKILL.md` — kismet
-- 📘 `network-security/wireless/pentest/SKILL.md` — pentest
-- 📘 `network-security/wireless/wifipentest/SKILL.md` — wifipentest
+- [`industrial/ics/access/remote/implement`](industrial/ics/access/remote/implement/SKILL.md) — `ics-access-remote-implement`
+- [`industrial/ics/architecture/iec-62443/conduit/implement`](industrial/ics/architecture/iec-62443/conduit/implement/SKILL.md) — `ics-architecture-iec-62443-conduit-implement`
+- [`industrial/ics/architecture/iec-62443/zones/design`](industrial/ics/architecture/iec-62443/zones/design/SKILL.md) — `ics-architecture-iec-62443-zones-design`
+- [`industrial/ics/architecture/purdue/implement`](industrial/ics/architecture/purdue/implement/SKILL.md) — `ics-architecture-purdue-implement`
+- [`industrial/ics/asset-management/claroty/assess`](industrial/ics/asset-management/claroty/assess/SKILL.md) — `ics-asset-management-claroty-assess`
+- [`industrial/ics/asset-management/claroty/discover`](industrial/ics/asset-management/claroty/discover/SKILL.md) — `ics-asset-management-claroty-discover`
+- [`industrial/ics/detection/anomaly/deploy`](industrial/ics/detection/anomaly/deploy/SKILL.md) — `ics-detection-anomaly-deploy`
+- [`industrial/ics/historian/attack/detect`](industrial/ics/historian/attack/detect/SKILL.md) — `ics-historian-attack-detect`
+- [`industrial/ics/historian/server/harden`](industrial/ics/historian/server/harden/SKILL.md) — `ics-historian-server-harden`
+- [`industrial/ics/malware/stuxnet/detect`](industrial/ics/malware/stuxnet/detect/SKILL.md) — `ics-malware-stuxnet-detect`
+- [`industrial/ics/monitoring/dragos/deploy`](industrial/ics/monitoring/dragos/deploy/SKILL.md) — `ics-monitoring-dragos-deploy`
+- [`industrial/ics/network/firewall/deploy`](industrial/ics/network/firewall/deploy/SKILL.md) — `ics-network-firewall-deploy`
+- [`industrial/ics/network/segmentation/implement`](industrial/ics/network/segmentation/implement/SKILL.md) — `ics-network-segmentation-implement`
+- [`industrial/ics/plc/firmware/analyze`](industrial/ics/plc/firmware/analyze/SKILL.md) — `ics-plc-firmware-analyze`
+- [`industrial/ics/protocols/dnp3/detect`](industrial/ics/protocols/dnp3/detect/SKILL.md) — `ics-protocols-dnp3-detect`
+- [`industrial/ics/protocols/modbus/analyze`](industrial/ics/protocols/modbus/analyze/SKILL.md) — `ics-protocols-modbus-analyze`
+- [`industrial/ics/protocols/modbus/detect`](industrial/ics/protocols/modbus/detect/SKILL.md) — `ics-protocols-modbus-detect`
+- [`industrial/ics/protocols/modbus/monitor`](industrial/ics/protocols/modbus/monitor/SKILL.md) — `ics-protocols-modbus-monitor`
+- [`industrial/ics/protocols/s7comm/analyze`](industrial/ics/protocols/s7comm/analyze/SKILL.md) — `ics-protocols-s7comm-analyze`
+- [`industrial/ics/scada/attack/detect`](industrial/ics/scada/attack/detect/SKILL.md) — `ics-scada-attack-detect`
+- [`industrial/ics/scada/hmi/assess`](industrial/ics/scada/hmi/assess/SKILL.md) — `ics-scada-hmi-assess`
+- [`industrial/ics/vulnerability/patch/manage`](industrial/ics/vulnerability/patch/manage/SKILL.md) — `ics-vulnerability-patch-manage`
+- [`industrial/iot/device/pentest`](industrial/iot/device/pentest/SKILL.md) — `iot-device-pentest`
+- [`industrial/sector/oil-gas/assess`](industrial/sector/oil-gas/assess/SKILL.md) — `sector-oil-gas-assess`
+- [`industrial/sector/power-grid/assess`](industrial/sector/power-grid/assess/SKILL.md) — `sector-power-grid-assess`
 
-## ops/ (9 skills)
+### `intel-platform/` — 13 skills
 
-- 🔧 `ops/browser/SKILL.md` — browser
-- 🔧 `ops/dashboard/SKILL.md` — dashboard
-- 🔧 `ops/dbus/alerts/SKILL.md` — dbus-alerts
-- 🔧 `ops/dbus/msgs/SKILL.md` — dbus-msgs
-- 🔧 `ops/mode/blue-team/SKILL.md` — mode-blue-team
-- 🔧 `ops/mode/purple-team/SKILL.md` — mode-purple-team
-- 🔧 `ops/scope/project/SKILL.md` — scope-project
-- 🔧 `ops/scope/session/SKILL.md` — scope-session
-- 🔧 `ops/scope/user/SKILL.md` — scope-user
+- [`intel-platform/feeds/feedintegr`](intel-platform/feeds/feedintegr/SKILL.md) — `feeds-feedintegr`
+- [`intel-platform/feeds/opentaxii`](intel-platform/feeds/opentaxii/SKILL.md) — `feeds-opentaxii`
+- [`intel-platform/feeds/security`](intel-platform/feeds/security/SKILL.md) — `feeds-security`
+- [`intel-platform/feeds/stix`](intel-platform/feeds/stix/SKILL.md) — `feeds-stix`
+- [`intel-platform/feeds/stixfeed`](intel-platform/feeds/stixfeed/SKILL.md) — `feeds-stixfeed`
+- [`intel-platform/feeds/threat`](intel-platform/feeds/threat/SKILL.md) — `feeds-threat`
+- [`intel-platform/platforms/feedaggr`](intel-platform/platforms/feedaggr/SKILL.md) — `platforms-feedaggr`
+- [`intel-platform/platforms/misp`](intel-platform/platforms/misp/SKILL.md) — `platforms-misp`
+- [`intel-platform/platforms/mispcollect`](intel-platform/platforms/mispcollect/SKILL.md) — `platforms-mispcollect`
+- [`intel-platform/platforms/mispshare`](intel-platform/platforms/mispshare/SKILL.md) — `platforms-mispshare`
+- [`intel-platform/platforms/opencti`](intel-platform/platforms/opencti/SKILL.md) — `platforms-opencti`
+- [`intel-platform/platforms/threat`](intel-platform/platforms/threat/SKILL.md) — `platforms-threat`
+- [`intel-platform/platforms/tipeval`](intel-platform/platforms/tipeval/SKILL.md) — `platforms-tipeval`
 
-## ot-ics/ (24 skills)
+### `kernel-os/` — 9 skills
 
-- 📘 `ot-ics/anomalies/SKILL.md` — anomalies
-- 📘 `ot-ics/conduit/SKILL.md` — conduit
-- 📘 `ot-ics/discovery/claroty/SKILL.md` — claroty
-- 📘 `ot-ics/discovery/clarotyassess/SKILL.md` — clarotyassess
-- 📘 `ot-ics/dragos/SKILL.md` — dragos
-- 📘 `ot-ics/firewall/SKILL.md` — firewall
-- 📘 `ot-ics/historian/historian/SKILL.md` — historian
-- 📘 `ot-ics/historian/othistorian/SKILL.md` — othistorian
-- 📘 `ot-ics/iec/SKILL.md` — iec
-- 📘 `ot-ics/network/SKILL.md` — network
-- 📘 `ot-ics/oil/SKILL.md` — oil
-- 📘 `ot-ics/patch/SKILL.md` — patch
-- 📘 `ot-ics/plc/plc/SKILL.md` — plc
-- 📘 `ot-ics/power/SKILL.md` — power
-- 📘 `ot-ics/protocols/dnp3/SKILL.md` — dnp3
-- 📘 `ot-ics/protocols/modbus/SKILL.md` — modbus
-- 📘 `ot-ics/protocols/modbusanom/SKILL.md` — modbusanom
-- 📘 `ot-ics/protocols/modbusmon/SKILL.md` — modbusmon
-- 📘 `ot-ics/protocols/s7comm/SKILL.md` — s7comm
-- 📘 `ot-ics/purdue/SKILL.md` — purdue
-- 📘 `ot-ics/remote/SKILL.md` — remote
-- 📘 `ot-ics/scada/hmiassess/SKILL.md` — hmiassess
-- 📘 `ot-ics/scada/scada/SKILL.md` — scada
-- 📘 `ot-ics/stuxnet/SKILL.md` — stuxnet
+- [`kernel-os/ebpf/monitoring`](kernel-os/ebpf/monitoring/SKILL.md) — `kernel-os-ebpf-monitoring`
+- [`kernel-os/firmware`](kernel-os/firmware/SKILL.md) — `firmware`
+- [`kernel-os/firmware/analyze`](kernel-os/firmware/analyze/SKILL.md) — `firmware-analyze`
+- [`kernel-os/firmware/binwalk`](kernel-os/firmware/binwalk/SKILL.md) — `firmware-binwalk`
+- [`kernel-os/firmware/bootkit`](kernel-os/firmware/bootkit/SKILL.md) — `firmware-bootkit`
+- [`kernel-os/firmware/uefibootkit`](kernel-os/firmware/uefibootkit/SKILL.md) — `firmware-uefibootkit`
+- [`kernel-os/linux/lkm/kerneldev-forensic`](kernel-os/linux/lkm/kerneldev-forensic/SKILL.md) — `linux-lkm-kerneldev-forensic`
+- [`kernel-os/linux/privesc/exploit`](kernel-os/linux/privesc/exploit/SKILL.md) — `linux-privesc-exploit`
+- [`kernel-os/rootkits/rootkit`](kernel-os/rootkits/rootkit/SKILL.md) — `rootkits-rootkit`
 
-## red-team/ (51 skills)
+### `malware/` — 74 skills
 
-- 🔧 `red-team/SKILL.md` — mode-red-team
-- 📘 `red-team/access/authentication/SKILL.md` — authentication
-- 📘 `red-team/access/evilginx/SKILL.md` — evilginx
-- 📘 `red-team/attack/SKILL.md` — attack
-- 📘 `red-team/binary/SKILL.md` — binary
-- 📘 `red-team/c2/adversary/SKILL.md` — adversary
-- 📘 `red-team/c2/covenant/SKILL.md` — covenant
-- 📘 `red-team/c2/havoc/SKILL.md` — havoc
-- 📘 `red-team/c2/sliver/SKILL.md` — sliver
-- 📘 `red-team/constrained/SKILL.md` — constrained
-- 📘 `red-team/engagement/engagementplan/SKILL.md` — engagementplan
-- 📘 `red-team/engagement/full/SKILL.md` — full
-- 📘 `red-team/iot/SKILL.md` — iot
-- 📘 `red-team/lateral/lateralmov/SKILL.md` — lateralmov
-- 📘 `red-team/lateral/lmdetection/SKILL.md` — lmdetection
-- 📘 `red-team/lateral/netlateral/SKILL.md` — netlateral
-- 📘 `red-team/lateral/passthehash/SKILL.md` — passthehash
-- 📘 `red-team/lateral/passtheticket/SKILL.md` — passtheticket
-- 📘 `red-team/lateral/pttdetect/SKILL.md` — pttdetect
-- 📘 `red-team/lateral/splunk/SKILL.md` — splunk
-- 📘 `red-team/lateral/wmiexec/SKILL.md` — wmiexec
-- 📘 `red-team/ms17/SKILL.md` — ms17
-- 📘 `red-team/nopac/SKILL.md` — nopac
-- 📘 `red-team/pentest/SKILL.md` — pentest
-- 📘 `red-team/physical/SKILL.md` — physical
-- 📘 `red-team/privesc/assessment/SKILL.md` — assessment
-- 📘 `red-team/privesc/awsprivesc/SKILL.md` — awsprivesc
-- 📘 `red-team/privesc/kubernetes/SKILL.md` — kubernetes
-- 📘 `red-team/privesc/lazagne/SKILL.md` — lazagne
-- 📘 `red-team/privesc/linuxprivesc/SKILL.md` — linuxprivesc
-- 📘 `red-team/privesc/living/SKILL.md` — living
-- 📘 `red-team/privesc/lolbas/SKILL.md` — lolbas
-- 📘 `red-team/privesc/privesc/SKILL.md` — privesc
-- 📘 `red-team/privesc/privescdetect/SKILL.md` — privescdetect
-- 🔧 `red-team/purple-team/SKILL.md` — mode-purple-team
-- 📘 `red-team/purpleteam/ptexercise/SKILL.md` — ptexercise
-- 📘 `red-team/purpleteam/purple/SKILL.md` — purple
-- 📘 `red-team/purpleteam/threat/SKILL.md` — threat
-- 📘 `red-team/recon/bhanalysis/SKILL.md` — bhanalysis
-- 📘 `red-team/recon/bhexploit/SKILL.md` — bhexploit
-- 📘 `red-team/recon/bloodhound/SKILL.md` — bloodhound
-- 📘 `red-team/recon/dns/SKILL.md` — dns
-- 📘 `red-team/recon/dnstwist/SKILL.md` — dnstwist
-- 📘 `red-team/recon/subfinder/SKILL.md` — subfinder
-- 📘 `red-team/recon/typosquatting/SKILL.md` — typosquatting
-- 📘 `red-team/red/SKILL.md` — red
-- 📘 `red-team/socialeng/deepfake/SKILL.md` — deepfake
-- 📘 `red-team/socialeng/pentest/SKILL.md` — pentest
-- 📘 `red-team/socialeng/social/SKILL.md` — social
-- 📘 `red-team/thickclient/thickclient/SKILL.md` — thickclient
-- 📘 `red-team/zerologon/SKILL.md` — zerologon
+- [`malware/automated`](malware/automated/SKILL.md) — `automated`
+- [`malware/c2/adversary`](malware/c2/adversary/SKILL.md) — `c2-adversary`
+- [`malware/c2/covenant`](malware/c2/covenant/SKILL.md) — `c2-covenant`
+- [`malware/c2/havoc`](malware/c2/havoc/SKILL.md) — `c2-havoc`
+- [`malware/c2/sliver`](malware/c2/sliver/SKILL.md) — `c2-sliver`
+- [`malware/cobaltstrike`](malware/cobaltstrike/SKILL.md) — `cobaltstrike`
+- [`malware/cobaltstrike/beacons`](malware/cobaltstrike/beacons/SKILL.md) — `cobaltstrike-beacons`
+- [`malware/cobaltstrike/malleable`](malware/cobaltstrike/malleable/SKILL.md) — `cobaltstrike-malleable`
+- [`malware/config`](malware/config/SKILL.md) — `config`
+- [`malware/dynamic`](malware/dynamic/SKILL.md) — `dynamic`
+- [`malware/dynamic/anyrun`](malware/dynamic/anyrun/SKILL.md) — `dynamic-anyrun`
+- [`malware/dynamic/cuckoo`](malware/dynamic/cuckoo/SKILL.md) — `dynamic-cuckoo`
+- [`malware/dynamic/email`](malware/dynamic/email/SKILL.md) — `dynamic-email`
+- [`malware/dynamic/malware`](malware/dynamic/malware/SKILL.md) — `dynamic-malware`
+- [`malware/dynamic/mobile`](malware/dynamic/mobile/SKILL.md) — `dynamic-mobile`
+- [`malware/dynamic/urlscan`](malware/dynamic/urlscan/SKILL.md) — `dynamic-urlscan`
+- [`malware/families/malware`](malware/families/malware/SKILL.md) — `families-malware`
+- [`malware/fileless`](malware/fileless/SKILL.md) — `fileless`
+- [`malware/ioc/malware`](malware/ioc/malware/SKILL.md) — `ioc-malware`
+- [`malware/ioc/virustotal`](malware/ioc/virustotal/SKILL.md) — `ioc-virustotal`
+- [`malware/iocs`](malware/iocs/SKILL.md) — `iocs`
+- [`malware/obfuscation/empire`](malware/obfuscation/empire/SKILL.md) — `obfuscation-empire`
+- [`malware/obfuscation/javascript`](malware/obfuscation/javascript/SKILL.md) — `obfuscation-javascript`
+- [`malware/obfuscation/psobfuscation`](malware/obfuscation/psobfuscation/SKILL.md) — `obfuscation-psobfuscation`
+- [`malware/pdf/pdfid`](malware/pdf/pdfid/SKILL.md) — `pdf-pdfid`
+- [`malware/pdf/peepdf`](malware/pdf/peepdf/SKILL.md) — `pdf-peepdf`
+- [`malware/persistence`](malware/persistence/SKILL.md) — `persistence`
+- [`malware/persistence/linux`](malware/persistence/linux/SKILL.md) — `persistence-linux`
+- [`malware/persistence/malware`](malware/persistence/malware/SKILL.md) — `persistence-malware`
+- [`malware/persistence/registry`](malware/persistence/registry/SKILL.md) — `persistence-registry`
+- [`malware/persistence/winpersist`](malware/persistence/winpersist/SKILL.md) — `persistence-winpersist`
+- [`malware/ransomware`](malware/ransomware/SKILL.md) — `ransomware`
+- [`malware/ransomware/artifacts`](malware/ransomware/artifacts/SKILL.md) — `ransomware-artifacts`
+- [`malware/ransomware/backup`](malware/ransomware/backup/SKILL.md) — `ransomware-backup`
+- [`malware/ransomware/canaryfiles`](malware/ransomware/canaryfiles/SKILL.md) — `ransomware-canaryfiles`
+- [`malware/ransomware/cisaplaybook`](malware/ransomware/cisaplaybook/SKILL.md) — `ransomware-cisaplaybook`
+- [`malware/ransomware/decoy`](malware/ransomware/decoy/SKILL.md) — `ransomware-decoy`
+- [`malware/ransomware/decryption`](malware/ransomware/decryption/SKILL.md) — `ransomware-decryption`
+- [`malware/ransomware/detection`](malware/ransomware/detection/SKILL.md) — `ransomware-detection`
+- [`malware/ransomware/grouppolicy`](malware/ransomware/grouppolicy/SKILL.md) — `ransomware-grouppolicy`
+- [`malware/ransomware/honeypot`](malware/ransomware/honeypot/SKILL.md) — `ransomware-honeypot`
+- [`malware/ransomware/immutable`](malware/ransomware/immutable/SKILL.md) — `ransomware-immutable`
+- [`malware/ransomware/indicators`](malware/ransomware/indicators/SKILL.md) — `ransomware-indicators`
+- [`malware/ransomware/killswitch`](malware/ransomware/killswitch/SKILL.md) — `ransomware-killswitch`
+- [`malware/ransomware/leaksite`](malware/ransomware/leaksite/SKILL.md) — `ransomware-leaksite`
+- [`malware/ransomware/precursors`](malware/ransomware/precursors/SKILL.md) — `ransomware-precursors`
+- [`malware/ransomware/procedures`](malware/ransomware/procedures/SKILL.md) — `ransomware-procedures`
+- [`malware/ransomware/recovery`](malware/ransomware/recovery/SKILL.md) — `ransomware-recovery`
+- [`malware/ransomware/response`](malware/ransomware/response/SKILL.md) — `ransomware-response`
+- [`malware/ransomware/socplaybook`](malware/ransomware/socplaybook/SKILL.md) — `ransomware-socplaybook`
+- [`malware/ransomware/tabletop`](malware/ransomware/tabletop/SKILL.md) — `ransomware-tabletop`
+- [`malware/ransomware/wallets`](malware/ransomware/wallets/SKILL.md) — `ransomware-wallets`
+- [`malware/reversing/android/apktool`](malware/reversing/android/apktool/SKILL.md) — `reversing-android-apktool`
+- [`malware/reversing/android/jadx`](malware/reversing/android/jadx/SKILL.md) — `reversing-android-jadx`
+- [`malware/reversing/dnspy`](malware/reversing/dnspy/SKILL.md) — `reversing-dnspy`
+- [`malware/reversing/ghidra`](malware/reversing/ghidra/SKILL.md) — `reversing-ghidra`
+- [`malware/reversing/ghidrare`](malware/reversing/ghidrare/SKILL.md) — `reversing-ghidrare`
+- [`malware/reversing/ios/frida`](malware/reversing/ios/frida/SKILL.md) — `reversing-ios-frida`
+- [`malware/reversing/ios/objection`](malware/reversing/ios/objection/SKILL.md) — `reversing-ios-objection`
+- [`malware/reversing/rust`](malware/reversing/rust/SKILL.md) — `reversing-rust`
+- [`malware/rootkit`](malware/rootkit/SKILL.md) — `rootkit`
+- [`malware/static`](malware/static/SKILL.md) — `static`
+- [`malware/static-analysis/yara`](malware/static-analysis/yara/SKILL.md) — `static-analysis-yara`
+- [`malware/static/linux`](malware/static/linux/SKILL.md) — `static-linux`
+- [`malware/static/macro`](malware/static/macro/SKILL.md) — `static-macro`
+- [`malware/static/packed`](malware/static/packed/SKILL.md) — `static-packed`
+- [`malware/supplychain/sigstore`](malware/supplychain/sigstore/SKILL.md) — `supplychain-sigstore`
+- [`malware/supplychain/supply`](malware/supplychain/supply/SKILL.md) — `supplychain-supply`
+- [`malware/triage/automated`](malware/triage/automated/SKILL.md) — `triage-automated`
+- [`malware/triage/ir`](malware/triage/ir/SKILL.md) — `triage-ir`
+- [`malware/triage/malware`](malware/triage/malware/SKILL.md) — `triage-malware`
+- [`malware/triage/yara`](malware/triage/yara/SKILL.md) — `triage-yara`
+- [`malware/yara`](malware/yara/SKILL.md) — `yara`
+- [`malware/yara/yaradev`](malware/yara/yaradev/SKILL.md) — `yara-yaradev`
 
-## siem-soc/ (24 skills)
+### `mobile/` — 8 skills
 
-- 📘 `siem-soc/alert/SKILL.md` — alert
-- 📘 `siem-soc/credential/SKILL.md` — credential
-- 📘 `siem-soc/detection/bruteforce/SKILL.md` — bruteforce
-- 📘 `siem-soc/detection/credential/SKILL.md` — credential
-- 📘 `siem-soc/dnstunnel/SKILL.md` — dnstunnel
-- 📘 `siem-soc/endpoint/SKILL.md` — endpoint
-- 📘 `siem-soc/insider/SKILL.md` — insider
-- 📘 `siem-soc/log/SKILL.md` — log
-- 📘 `siem-soc/memory/SKILL.md` — memory
-- 📘 `siem-soc/monitoring/ebpf/SKILL.md` — ebpf
-- 📘 `siem-soc/onboarding/onboarding/SKILL.md` — onboarding
-- 📘 `siem-soc/operations/kpimetrics/SKILL.md` — kpimetrics
-- 📘 `siem-soc/operations/soc/SKILL.md` — soc
-- 📘 `siem-soc/qradar/qradar/SKILL.md` — qradar
-- 📘 `siem-soc/security/SKILL.md` — security
-- 📘 `siem-soc/siem/SKILL.md` — siem
-- 📘 `siem-soc/soar/SKILL.md` — soar
-- 📘 `siem-soc/splunk/splunk/SKILL.md` — splunk
-- 📘 `siem-soc/syslog/SKILL.md` — syslog
-- 📘 `siem-soc/ticketing/SKILL.md` — ticketing
-- 📘 `siem-soc/tuning/detectionuc/SKILL.md` — detectionuc
-- 📘 `siem-soc/tuning/siem/SKILL.md` — siem
-- 📘 `siem-soc/tuning/usecase/SKILL.md` — usecase
-- 📘 `siem-soc/ueba/user/SKILL.md` — user
+- [`mobile`](mobile/SKILL.md) — `mobile`
+- [`mobile/android/apk/static-analysis`](mobile/android/apk/static-analysis/SKILL.md) — `android-apk-static-analysis`
+- [`mobile/android/intents`](mobile/android/intents/SKILL.md) — `android-intents`
+- [`mobile/deeplink`](mobile/deeplink/SKILL.md) — `deeplink`
+- [`mobile/insecure`](mobile/insecure/SKILL.md) — `insecure`
+- [`mobile/ios/app/dynamic-analysis`](mobile/ios/app/dynamic-analysis/SKILL.md) — `ios-app-dynamic-analysis`
+- [`mobile/pentest`](mobile/pentest/SKILL.md) — `pentest`
+- [`mobile/pinning/certificates`](mobile/pinning/certificates/SKILL.md) — `pinning-certificates`
 
-## steganography/ (1 skills)
+### `network/` — 69 skills
 
-- 🔧 `steganography/SKILL.md` — steganography
+- [`network/arp`](network/arp/SKILL.md) — `arp`
+- [`network/assessment/ciscoise`](network/assessment/ciscoise/SKILL.md) — `assessment-ciscoise`
+- [`network/assessment/extpentest`](network/assessment/extpentest/SKILL.md) — `assessment-extpentest`
+- [`network/assessment/nac`](network/assessment/nac/SKILL.md) — `assessment-nac`
+- [`network/assessment/netpentest`](network/assessment/netpentest/SKILL.md) — `assessment-netpentest`
+- [`network/assessment/network`](network/assessment/network/SKILL.md) — `assessment-network`
+- [`network/assessment/pentest`](network/assessment/pentest/SKILL.md) — `assessment-pentest`
+- [`network/bandwidth`](network/bandwidth/SKILL.md) — `bandwidth`
+- [`network/bgp`](network/bgp/SKILL.md) — `bgp`
+- [`network/bgpsecurity`](network/bgpsecurity/SKILL.md) — `bgpsecurity`
+- [`network/cloudflare`](network/cloudflare/SKILL.md) — `cloudflare`
+- [`network/dhcp/rogue-server/detect`](network/dhcp/rogue-server/detect/SKILL.md) — `dhcp-rogue-server-detect`
+- [`network/dhcp/starvation/detect`](network/dhcp/starvation/detect/SKILL.md) — `dhcp-starvation-detect`
+- [`network/dns/dnstwist`](network/dns/dnstwist/SKILL.md) — `dns-dnstwist`
+- [`network/dns/enum`](network/dns/enum/SKILL.md) — `dns-enum`
+- [`network/dns/subfinder`](network/dns/subfinder/SKILL.md) — `dns-subfinder`
+- [`network/dns/tunneling-detection`](network/dns/tunneling-detection/SKILL.md) — `network-dns-tunneling-detection`
+- [`network/dns/typosquatting`](network/dns/typosquatting/SKILL.md) — `dns-typosquatting`
+- [`network/dnsc2`](network/dnsc2/SKILL.md) — `dnsc2`
+- [`network/firewall`](network/firewall/SKILL.md) — `firewall`
+- [`network/firewall/gcp`](network/firewall/gcp/SKILL.md) — `firewall-gcp`
+- [`network/firewall/ngfw`](network/firewall/ngfw/SKILL.md) — `firewall-ngfw`
+- [`network/firewall/pfsense`](network/firewall/pfsense/SKILL.md) — `firewall-pfsense`
+- [`network/ids/snort`](network/ids/snort/SKILL.md) — `ids-snort`
+- [`network/ids/suricata`](network/ids/suricata/SKILL.md) — `ids-suricata`
+- [`network/ids/suricataips`](network/ids/suricataips/SKILL.md) — `ids-suricataips`
+- [`network/ids/wazuh/install`](network/ids/wazuh/install/SKILL.md) — `ids-wazuh-install`
+- [`network/idsscanning`](network/idsscanning/SKILL.md) — `idsscanning`
+- [`network/injection/packet`](network/injection/packet/SKILL.md) — `injection-packet`
+- [`network/ipv6`](network/ipv6/SKILL.md) — `ipv6`
+- [`network/lateral-movement/detection-splunk`](network/lateral-movement/detection-splunk/SKILL.md) — `network-lateral-movement-detection-splunk`
+- [`network/lateral/analyze`](network/lateral/analyze/SKILL.md) — `lateral-analyze`
+- [`network/lateral/detect`](network/lateral/detect/SKILL.md) — `lateral-detect`
+- [`network/layer2/vlanhopping`](network/layer2/vlanhopping/SKILL.md) — `layer2-vlanhopping`
+- [`network/load-balancer/haproxy/configure`](network/load-balancer/haproxy/configure/SKILL.md) — `load-balancer-haproxy-configure`
+- [`network/load-balancer/nginx/configure`](network/load-balancer/nginx/configure/SKILL.md) — `load-balancer-nginx-configure`
+- [`network/metasploit`](network/metasploit/SKILL.md) — `metasploit`
+- [`network/mitm`](network/mitm/SKILL.md) — `mitm`
+- [`network/monitoring2`](network/monitoring2/SKILL.md) — `monitoring2`
+- [`network/nat/slipstream/detect`](network/nat/slipstream/detect/SKILL.md) — `nat-slipstream-detect`
+- [`network/nmap`](network/nmap/SKILL.md) — `nmap`
+- [`network/port`](network/port/SKILL.md) — `port`
+- [`network/protocol/http/request-smuggling/detect`](network/protocol/http/request-smuggling/detect/SKILL.md) — `protocol-http-request-smuggling-detect`
+- [`network/protocol/icmp/covert-channel/detect`](network/protocol/icmp/covert-channel/detect/SKILL.md) — `protocol-icmp-covert-channel-detect`
+- [`network/protocol/tcp/session-hijack/detect`](network/protocol/tcp/session-hijack/detect/SKILL.md) — `protocol-tcp-session-hijack-detect`
+- [`network/protocol/tcp/syn-flood/detect`](network/protocol/tcp/syn-flood/detect/SKILL.md) — `protocol-tcp-syn-flood-detect`
+- [`network/protocol/tls/downgrade/detect`](network/protocol/tls/downgrade/detect/SKILL.md) — `protocol-tls-downgrade-detect`
+- [`network/protocol/udp/amplification/detect`](network/protocol/udp/amplification/detect/SKILL.md) — `protocol-udp-amplification-detect`
+- [`network/proxy/socks5/tunnel/create`](network/proxy/socks5/tunnel/create/SKILL.md) — `proxy-socks5-tunnel-create`
+- [`network/proxy/transparent/http/configure`](network/proxy/transparent/http/configure/SKILL.md) — `proxy-transparent-http-configure`
+- [`network/recon/easm`](network/recon/easm/SKILL.md) — `recon-easm`
+- [`network/scanning/host/discovery/enum`](network/scanning/host/discovery/enum/SKILL.md) — `scanning-host-discovery-enum`
+- [`network/scanning/port/service/fingerprint`](network/scanning/port/service/fingerprint/SKILL.md) — `scanning-port-service-fingerprint`
+- [`network/scanning/vulnerability/masscan/execute`](network/scanning/vulnerability/masscan/execute/SKILL.md) — `scanning-vulnerability-masscan-execute`
+- [`network/traffic/analysis/netflow/analyze`](network/traffic/analysis/netflow/analyze/SKILL.md) — `traffic-analysis-netflow-analyze`
+- [`network/traffic/anomaly/baseline/detect`](network/traffic/anomaly/baseline/detect/SKILL.md) — `traffic-anomaly-baseline-detect`
+- [`network/traffic/capture/pcap/analyze`](network/traffic/capture/pcap/analyze/SKILL.md) — `traffic-capture-pcap-analyze`
+- [`network/tunnel/dns-covert/detect`](network/tunnel/dns-covert/detect/SKILL.md) — `tunnel-dns-covert-detect`
+- [`network/tunnel/ssh-reverse/create`](network/tunnel/ssh-reverse/create/SKILL.md) — `tunnel-ssh-reverse-create`
+- [`network/vlan`](network/vlan/SKILL.md) — `vlan`
+- [`network/vpn/ipsec/tunnel/deploy`](network/vpn/ipsec/tunnel/deploy/SKILL.md) — `vpn-ipsec-tunnel-deploy`
+- [`network/vpn/openvpn/server/configure`](network/vpn/openvpn/server/configure/SKILL.md) — `vpn-openvpn-server-configure`
+- [`network/vpn/wireguard/server/deploy`](network/vpn/wireguard/server/deploy/SKILL.md) — `vpn-wireguard-server-deploy`
+- [`network/wireless/aircrack`](network/wireless/aircrack/SKILL.md) — `wireless-aircrack`
+- [`network/wireless/bluetooth`](network/wireless/bluetooth/SKILL.md) — `wireless-bluetooth`
+- [`network/wireless/btassessment`](network/wireless/btassessment/SKILL.md) — `wireless-btassessment`
+- [`network/wireless/kismet`](network/wireless/kismet/SKILL.md) — `wireless-kismet`
+- [`network/wireless/pentest`](network/wireless/pentest/SKILL.md) — `wireless-pentest`
+- [`network/wireless/wifipentest`](network/wireless/wifipentest/SKILL.md) — `wireless-wifipentest`
 
-## threat-intel/ (87 skills)
+### `network-filesystem/` — 18 skills
 
-- 📘 `threat-intel/analysis/actorinfra/SKILL.md` — actorinfra
-- 📘 `threat-intel/analysis/actorprofile/SKILL.md` — actorprofile
-- 📘 `threat-intel/analysis/campaign/SKILL.md` — campaign
-- 📘 `threat-intel/analysis/cyber/SKILL.md` — cyber
-- 📘 `threat-intel/analysis/iam/SKILL.md` — iam
-- 📘 `threat-intel/analysis/landscape/SKILL.md` — landscape
-- 🔧 `threat-intel/analysis/mitre-attack/SKILL.md` — threats-mitre-attack-mapper
-- 📘 `threat-intel/analysis/threat/SKILL.md` — threat
-- 📘 `threat-intel/brand/SKILL.md` — brand
-- 📘 `threat-intel/darkweb/SKILL.md` — darkweb
-- 📘 `threat-intel/darkweb/darkweb/SKILL.md` — darkweb
-- 📘 `threat-intel/darkweb/paste/SKILL.md` — paste
-- 📘 `threat-intel/detection/sigma/SKILL.md` — sigma
-- 📘 `threat-intel/detection/splunk/SKILL.md` — splunk
-- 📘 `threat-intel/feeds/feedintegr/SKILL.md` — feedintegr
-- 📘 `threat-intel/feeds/opentaxii/SKILL.md` — opentaxii
-- 📘 `threat-intel/feeds/security/SKILL.md` — security
-- 📘 `threat-intel/feeds/stix/SKILL.md` — stix
-- 📘 `threat-intel/feeds/stixfeed/SKILL.md` — stixfeed
-- 📘 `threat-intel/feeds/threat/SKILL.md` — threat
-- 📘 `threat-intel/hunting/advanced/SKILL.md` — advanced
-- 📘 `threat-intel/hunting/anomalous/SKILL.md` — anomalous
-- 📘 `threat-intel/hunting/cloud/SKILL.md` — cloud
-- 📘 `threat-intel/hunting/data/SKILL.md` — data
-- 📘 `threat-intel/hunting/datastaging/SKILL.md` — datastaging
-- 📘 `threat-intel/hunting/dcsync/SKILL.md` — dcsync
-- 📘 `threat-intel/hunting/defense/SKILL.md` — defense
-- 📘 `threat-intel/hunting/dll/SKILL.md` — dll
-- 📘 `threat-intel/hunting/dns/SKILL.md` — dns
-- 📘 `threat-intel/hunting/edr/SKILL.md` — edr
-- 📘 `threat-intel/hunting/elastic/SKILL.md` — elastic
-- 📘 `threat-intel/hunting/email/SKILL.md` — email
-- 📘 `threat-intel/hunting/lateralmov/SKILL.md` — lateralmov
-- 📘 `threat-intel/hunting/living/SKILL.md` — living
-- 📘 `threat-intel/hunting/lolbinlogs/SKILL.md` — lolbinlogs
-- 📘 `threat-intel/hunting/lolbins/SKILL.md` — lolbins
-- 📘 `threat-intel/hunting/mimikatz/SKILL.md` — mimikatz
-- 📘 `threat-intel/hunting/ntlm/SKILL.md` — ntlm
-- 📘 `threat-intel/hunting/ntlmrelay/SKILL.md` — ntlmrelay
-- 📘 `threat-intel/hunting/persistence/SKILL.md` — persistence
-- 📘 `threat-intel/hunting/phishing/SKILL.md` — phishing
-- 📘 `threat-intel/hunting/registry/SKILL.md` — registry
-- 📘 `threat-intel/hunting/schedtasks/SKILL.md` — schedtasks
-- 📘 `threat-intel/hunting/scheduled/SKILL.md` — scheduled
-- 📘 `threat-intel/hunting/shadow/SKILL.md` — shadow
-- 📘 `threat-intel/hunting/startup/SKILL.md` — startup
-- 📘 `threat-intel/hunting/supply/SKILL.md` — supply
-- 📘 `threat-intel/hunting/suspicious/SKILL.md` — suspicious
-- 📘 `threat-intel/hunting/svcinstall/SKILL.md` — svcinstall
-- 📘 `threat-intel/hunting/t1098/SKILL.md` — t1098
-- 📘 `threat-intel/hunting/t1548/SKILL.md` — t1548
-- 📘 `threat-intel/hunting/threat/SKILL.md` — threat
-- 📘 `threat-intel/hunting/unusual/SKILL.md` — unusual
-- 📘 `threat-intel/hunting/webshell/SKILL.md` — webshell
-- 📘 `threat-intel/hunting/wmi/SKILL.md` — wmi
-- 📘 `threat-intel/hunting/wmilateral/SKILL.md` — wmilateral
-- 📘 `threat-intel/intelligence/SKILL.md` — intelligence
-- 📘 `threat-intel/ioc/defanging/SKILL.md` — defanging
-- 📘 `threat-intel/ioc/indicator/SKILL.md` — indicator
-- 📘 `threat-intel/ioc/indicators/SKILL.md` — indicators
-- 📘 `threat-intel/ioc/ioc/SKILL.md` — ioc
-- 📘 `threat-intel/ioc/iocauto/SKILL.md` — iocauto
-- 📘 `threat-intel/ioc/ioccollect/SKILL.md` — ioccollect
-- 📘 `threat-intel/ioc/splunk/SKILL.md` — splunk
-- 📘 `threat-intel/ioc/tilcm/SKILL.md` — tilcm
-- 📘 `threat-intel/mitre/apt/SKILL.md` — apt
-- 📘 `threat-intel/mitre/attack/SKILL.md` — attack
-- 📘 `threat-intel/mitre/attackmap/SKILL.md` — attackmap
-- 📘 `threat-intel/mitre/coveragemap/SKILL.md` — coveragemap
-- 📘 `threat-intel/mitre/threat/SKILL.md` — threat
-- 📘 `threat-intel/mitre/threatmodel/SKILL.md` — threatmodel
-- 📘 `threat-intel/mitre/ttps/SKILL.md` — ttps
-- 📘 `threat-intel/osint/aicorrelation/SKILL.md` — aicorrelation
-- 📘 `threat-intel/osint/externalrecon/SKILL.md` — externalrecon
-- 📘 `threat-intel/osint/gathering/SKILL.md` — gathering
-- 📘 `threat-intel/osint/open/SKILL.md` — open
-- 📘 `threat-intel/osint/osint/SKILL.md` — osint
-- 📘 `threat-intel/osint/spiderfoot/SKILL.md` — spiderfoot
-- 📘 `threat-intel/platforms/feedaggr/SKILL.md` — feedaggr
-- 📘 `threat-intel/platforms/misp/SKILL.md` — misp
-- 📘 `threat-intel/platforms/mispcollect/SKILL.md` — mispcollect
-- 📘 `threat-intel/platforms/mispshare/SKILL.md` — mispshare
-- 📘 `threat-intel/platforms/opencti/SKILL.md` — opencti
-- 📘 `threat-intel/platforms/threat/SKILL.md` — threat
-- 📘 `threat-intel/platforms/tipeval/SKILL.md` — tipeval
-- 📘 `threat-intel/shodan/SKILL.md` — shodan
-- 📘 `threat-intel/threat/SKILL.md` — threat
+- [`network-filesystem/cifs/credential/intercept`](network-filesystem/cifs/credential/intercept/SKILL.md) — `cifs-credential-intercept`
+- [`network-filesystem/ftp/anonymous/detect`](network-filesystem/ftp/anonymous/detect/SKILL.md) — `ftp-anonymous-detect`
+- [`network-filesystem/ftp/bounce/exploit`](network-filesystem/ftp/bounce/exploit/SKILL.md) — `ftp-bounce-exploit`
+- [`network-filesystem/ftps/cert/analyze`](network-filesystem/ftps/cert/analyze/SKILL.md) — `ftps-cert-analyze`
+- [`network-filesystem/iscsi/target/enum`](network-filesystem/iscsi/target/enum/SKILL.md) — `iscsi-target-enum`
+- [`network-filesystem/nfs/acl/audit`](network-filesystem/nfs/acl/audit/SKILL.md) — `nfs-acl-audit`
+- [`network-filesystem/nfs/export/enum`](network-filesystem/nfs/export/enum/SKILL.md) — `nfs-export-enum`
+- [`network-filesystem/nfs/mount/analyze`](network-filesystem/nfs/mount/analyze/SKILL.md) — `nfs-mount-analyze`
+- [`network-filesystem/nfs/rootsquash/bypass`](network-filesystem/nfs/rootsquash/bypass/SKILL.md) — `nfs-rootsquash-bypass`
+- [`network-filesystem/rsync/exposure/detect`](network-filesystem/rsync/exposure/detect/SKILL.md) — `rsync-exposure-detect`
+- [`network-filesystem/samba/config/audit`](network-filesystem/samba/config/audit/SKILL.md) — `samba-config-audit`
+- [`network-filesystem/smb/brute/execute`](network-filesystem/smb/brute/execute/SKILL.md) — `smb-brute-execute`
+- [`network-filesystem/smb/null-session/detect`](network-filesystem/smb/null-session/detect/SKILL.md) — `smb-null-session-detect`
+- [`network-filesystem/smb/relay/execute`](network-filesystem/smb/relay/execute/SKILL.md) — `smb-relay-execute`
+- [`network-filesystem/smb/share/enum`](network-filesystem/smb/share/enum/SKILL.md) — `smb-share-enum`
+- [`network-filesystem/smb/signing/audit`](network-filesystem/smb/signing/audit/SKILL.md) — `smb-signing-audit`
+- [`network-filesystem/tftp/exposure/detect`](network-filesystem/tftp/exposure/detect/SKILL.md) — `tftp-exposure-detect`
+- [`network-filesystem/webdav/upload/exploit`](network-filesystem/webdav/upload/exploit/SKILL.md) — `webdav-upload-exploit`
 
-## vulnerability/ (30 skills)
+### `ops/` — 23 skills
 
-- 📘 `vulnerability/asset/SKILL.md` — asset
-- 📘 `vulnerability/attack/SKILL.md` — attack
-- 📘 `vulnerability/cloud/SKILL.md` — cloud
-- 📘 `vulnerability/continuous/SKILL.md` — continuous
-- 📘 `vulnerability/management/defectdojo/SKILL.md` — defectdojo
-- 📘 `vulnerability/management/exceptions/SKILL.md` — exceptions
-- 📘 `vulnerability/management/slaalerts/SKILL.md` — slaalerts
-- 📘 `vulnerability/management/vulnerability/SKILL.md` — vulnerability
-- 📘 `vulnerability/metasploit/SKILL.md` — metasploit
-- 📘 `vulnerability/patch/SKILL.md` — patch
-- 📘 `vulnerability/prioritization/cve/SKILL.md` — cve
-- 📘 `vulnerability/prioritization/epss/SKILL.md` — epss
-- 📘 `vulnerability/prioritization/ssvc/SKILL.md` — ssvc
-- 📘 `vulnerability/prioritization/vulnerabilities/SKILL.md` — vulnerabilities
-- 📘 `vulnerability/rapid7/SKILL.md` — rapid7
-- 📘 `vulnerability/remediation/bucket/SKILL.md` — bucket
-- 📘 `vulnerability/remediation/endpoint/SKILL.md` — endpoint
-- 📘 `vulnerability/remediation/patch/SKILL.md` — patch
-- 📘 `vulnerability/remediation/vulnerability/SKILL.md` — vulnerability
-- 📘 `vulnerability/sca/sbom/SKILL.md` — sbom
-- 📘 `vulnerability/sca/sca/SKILL.md` — sca
-- 📘 `vulnerability/scanning/agentless/SKILL.md` — agentless
-- 📘 `vulnerability/scanning/authenticated/SKILL.md` — authenticated
-- 📘 `vulnerability/scanning/nessus/SKILL.md` — nessus
-- 📘 `vulnerability/scanning/nessusinfra/SKILL.md` — nessusinfra
-- 📘 `vulnerability/scanning/nikto/SKILL.md` — nikto
-- 📘 `vulnerability/scanning/openvas/SKILL.md` — openvas
-- 📘 `vulnerability/scanning/otsafescan/SKILL.md` — otsafescan
-- 📘 `vulnerability/scanning/vulnerability/SKILL.md` — vulnerability
-- 📘 `vulnerability/vulnerability/SKILL.md` — vulnerability
+- [`ops/brand`](ops/brand/SKILL.md) — `brand`
+- [`ops/browser`](ops/browser/SKILL.md) — `browser`
+- [`ops/dashboard`](ops/dashboard/SKILL.md) — `dashboard`
+- [`ops/dbus/alerts`](ops/dbus/alerts/SKILL.md) — `dbus-alerts`
+- [`ops/dbus/msgs`](ops/dbus/msgs/SKILL.md) — `dbus-msgs`
+- [`ops/engagement/execute`](ops/engagement/execute/SKILL.md) — `engagement-execute`
+- [`ops/engagement/plan`](ops/engagement/plan/SKILL.md) — `engagement-plan`
+- [`ops/incident-ticketing`](ops/incident-ticketing/SKILL.md) — `ops-incident-ticketing`
+- [`ops/mode/blue-team`](ops/mode/blue-team/SKILL.md) — `mode-blue-team`
+- [`ops/mode/purple-team`](ops/mode/purple-team/SKILL.md) — `mode-purple-team`
+- [`ops/mode/red-team`](ops/mode/red-team/SKILL.md) — `mode-red-team`
+- [`ops/physical/pentest`](ops/physical/pentest/SKILL.md) — `physical-pentest`
+- [`ops/scope/project`](ops/scope/project/SKILL.md) — `scope-project`
+- [`ops/scope/session`](ops/scope/session/SKILL.md) — `scope-session`
+- [`ops/scope/user`](ops/scope/user/SKILL.md) — `scope-user`
+- [`ops/soc-operations/alert-tuning`](ops/soc-operations/alert-tuning/SKILL.md) — `ops-soc-operations-alert-tuning`
+- [`ops/soc-operations/chaos-engineering`](ops/soc-operations/chaos-engineering/SKILL.md) — `ops-soc-operations-chaos-engineering`
+- [`ops/soc-operations/escalation`](ops/soc-operations/escalation/SKILL.md) — `ops-soc-operations-escalation`
+- [`ops/soc-operations/kpi-metrics`](ops/soc-operations/kpi-metrics/SKILL.md) — `ops-soc-operations-kpi-metrics`
+- [`ops/soc-operations/onboarding`](ops/soc-operations/onboarding/SKILL.md) — `ops-soc-operations-onboarding`
+- [`ops/socialeng/deepfake`](ops/socialeng/deepfake/SKILL.md) — `socialeng-deepfake`
+- [`ops/socialeng/pentest`](ops/socialeng/pentest/SKILL.md) — `socialeng-pentest`
+- [`ops/socialeng/vishing`](ops/socialeng/vishing/SKILL.md) — `socialeng-vishing`
 
-## web-security/ (95 skills)
+### `osint/` — 9 skills
 
-- 📘 `web-security/ai/llm/SKILL.md` — llm
-- 📘 `web-security/ai/model/SKILL.md` — model
-- 📘 `web-security/api/42crunch/SKILL.md` — 42crunch
-- 📘 `web-security/api/api/SKILL.md` — api
-- 📘 `web-security/api/apigee/SKILL.md` — apigee
-- 📘 `web-security/api/apikeys/SKILL.md` — apikeys
-- 📘 `web-security/api/authn/SKILL.md` — authn
-- 📘 `web-security/api/bfla/SKILL.md` — bfla
-- 📘 `web-security/api/bola/SKILL.md` — bola
-- 📘 `web-security/api/broken/SKILL.md` — broken
-- 📘 `web-security/api/bypass/SKILL.md` — bypass
-- 📘 `web-security/api/enumeration/SKILL.md` — enumeration
-- 📘 `web-security/api/excessive/SKILL.md` — excessive
-- 📘 `web-security/api/gateway/SKILL.md` — gateway
-- 📘 `web-security/api/graphql/assessment/SKILL.md` — assessment
-- 📘 `web-security/api/graphql/graphql/SKILL.md` — graphql
-- 📘 `web-security/api/graphql/introspection/SKILL.md` — introspection
-- 📘 `web-security/api/injection/SKILL.md` — injection
-- 📘 `web-security/api/inventory/SKILL.md` — inventory
-- 📘 `web-security/api/mass/SKILL.md` — mass
-- 📘 `web-security/api/massassign/SKILL.md` — massassign
-- 📘 `web-security/api/mobile/SKILL.md` — mobile
-- 📘 `web-security/api/owasp/SKILL.md` — owasp
-- 📘 `web-security/api/postman/SKILL.md` — postman
-- 📘 `web-security/api/posture/SKILL.md` — posture
-- 📘 `web-security/api/ratelimit/SKILL.md` — ratelimit
-- 📘 `web-security/api/restler/SKILL.md` — restler
-- 📘 `web-security/api/schema/SKILL.md` — schema
-- 📘 `web-security/api/shadow/SKILL.md` — shadow
-- 📘 `web-security/api/soap/soap/SKILL.md` — soap
-- 📘 `web-security/api/throttle/SKILL.md` — throttle
-- 📘 `web-security/api/wafgateway/SKILL.md` — wafgateway
-- 📘 `web-security/api/websocket/websocket/SKILL.md` — websocket
-- 📘 `web-security/api/websocket/wssecurity/SKILL.md` — wssecurity
-- 📘 `web-security/auth/bac/bac/SKILL.md` — bac
-- 📘 `web-security/auth/csrf/csrf/SKILL.md` — csrf
-- 📘 `web-security/auth/jwt/json/SKILL.md` — json
-- 📘 `web-security/auth/jwt/jwt/SKILL.md` — jwt
-- 📘 `web-security/auth/jwt/nonealgo/SKILL.md` — nonealgo
-- 📘 `web-security/auth/jwt/signing/SKILL.md` — signing
-- 📘 `web-security/auth/jwt/tokensec/SKILL.md` — tokensec
-- 📘 `web-security/auth/oauth/consent/SKILL.md` — consent
-- 📘 `web-security/auth/oauth/flaws/SKILL.md` — flaws
-- 📘 `web-security/auth/oauth/misconfig/SKILL.md` — misconfig
-- 📘 `web-security/auth/oauth/oauth/SKILL.md` — oauth
-- 📘 `web-security/auth/oauth/scopes/SKILL.md` — scopes
-- 📘 `web-security/auth/oauth/tokentheft/SKILL.md` — tokentheft
-- 📘 `web-security/broken/SKILL.md` — broken
-- 📘 `web-security/business/SKILL.md` — business
-- 📘 `web-security/cache/cachedeception/SKILL.md` — cachedeception
-- 📘 `web-security/cache/cachepoisoning/SKILL.md` — cachepoisoning
-- 📘 `web-security/clickjacking/clickjacking/SKILL.md` — clickjacking
-- 📘 `web-security/cors/cors/SKILL.md` — cors
-- 📘 `web-security/deserialization/insecure/SKILL.md` — insecure
-- 📘 `web-security/directory/SKILL.md` — directory
-- 📘 `web-security/fuzzing/SKILL.md` — fuzzing
-- 📘 `web-security/headers/content/SKILL.md` — content
-- 📘 `web-security/headers/security/SKILL.md` — security
-- 📘 `web-security/host/SKILL.md` — host
-- 📘 `web-security/http/SKILL.md` — http
-- 📘 `web-security/idor/idor/SKILL.md` — idor
-- 📘 `web-security/injection/sqli/nosql/SKILL.md` — nosql
-- 📘 `web-security/injection/sqli/secondorder/SKILL.md` — secondorder
-- 📘 `web-security/injection/sqli/sqlexploit/SKILL.md` — sqlexploit
-- 📘 `web-security/injection/sqli/sqli/SKILL.md` — sqli
-- 📘 `web-security/injection/sqli/sqlmap/SKILL.md` — sqlmap
-- 📘 `web-security/injection/ssrf/server/SKILL.md` — server
-- 📘 `web-security/injection/ssrf/ssrf/SKILL.md` — ssrf
-- 📘 `web-security/injection/ssrf/ssrfexploit/SKILL.md` — ssrfexploit
-- 📘 `web-security/injection/ssti/template/SKILL.md` — template
-- 📘 `web-security/injection/xss/burpsuite/SKILL.md` — burpsuite
-- 📘 `web-security/injection/xss/xss/SKILL.md` — xss
-- 📘 `web-security/injection/xxe/xml/SKILL.md` — xml
-- 📘 `web-security/injection/xxe/xxe/SKILL.md` — xxe
-- 📘 `web-security/logging/SKILL.md` — logging
-- 📘 `web-security/owasp/owasp/SKILL.md` — owasp
-- 📘 `web-security/owasp/threatdragon/SKILL.md` — threatdragon
-- 📘 `web-security/pentest/burpsuite/SKILL.md` — burpsuite
-- 📘 `web-security/pentest/pentest/SKILL.md` — pentest
-- 📘 `web-security/prototype/SKILL.md` — prototype
-- 📘 `web-security/racecondition/race/SKILL.md` — race
-- 📘 `web-security/redirect/open/SKILL.md` — open
-- 📘 `web-security/runtime/SKILL.md` — runtime
-- 📘 `web-security/sensitive/SKILL.md` — sensitive
-- 📘 `web-security/smuggling/http/SKILL.md` — http
-- 📘 `web-security/supply/SKILL.md` — supply
-- 📘 `web-security/tls/certificates/SKILL.md` — certificates
-- 📘 `web-security/tls/ctaudit/SKILL.md` — ctaudit
-- 📘 `web-security/tls/lifecycle/SKILL.md` — lifecycle
-- 📘 `web-security/tls/ssl/SKILL.md` — ssl
-- 📘 `web-security/tls/tls/SKILL.md` — tls
-- 📘 `web-security/tls/tlsassessment/SKILL.md` — tlsassessment
-- 📘 `web-security/type/SKILL.md` — type
-- 📘 `web-security/waf/firewall/SKILL.md` — firewall
-- 📘 `web-security/waf/waf/SKILL.md` — waf
+- [`osint/darkweb`](osint/darkweb/SKILL.md) — `darkweb`
+- [`osint/darkweb/paste`](osint/darkweb/paste/SKILL.md) — `darkweb-paste`
+- [`osint/osint`](osint/osint/SKILL.md) — `osint`
+- [`osint/osint/aicorrelation`](osint/osint/aicorrelation/SKILL.md) — `osint-aicorrelation`
+- [`osint/osint/externalrecon`](osint/osint/externalrecon/SKILL.md) — `osint-externalrecon`
+- [`osint/osint/gathering`](osint/osint/gathering/SKILL.md) — `osint-gathering`
+- [`osint/osint/open`](osint/osint/open/SKILL.md) — `osint-open`
+- [`osint/osint/spiderfoot`](osint/osint/spiderfoot/SKILL.md) — `osint-spiderfoot`
+- [`osint/shodan`](osint/shodan/SKILL.md) — `shodan`
+
+### `processes/` — 30 skills
+
+- [`processes/container/escape/detect`](processes/container/escape/detect/SKILL.md) — `container-escape-detect`
+- [`processes/ipc/dbus/service/enum`](processes/ipc/dbus/service/enum/SKILL.md) — `ipc-dbus-service-enum`
+- [`processes/ipc/named-pipe/abuse/detect`](processes/ipc/named-pipe/abuse/detect/SKILL.md) — `ipc-named-pipe-abuse-detect`
+- [`processes/ipc/shared-memory/analyze`](processes/ipc/shared-memory/analyze/SKILL.md) — `ipc-shared-memory-analyze`
+- [`processes/linux/cgroup/resource/audit`](processes/linux/cgroup/resource/audit/SKILL.md) — `linux-cgroup-resource-audit`
+- [`processes/linux/daemon/hidden/detect`](processes/linux/daemon/hidden/detect/SKILL.md) — `linux-daemon-hidden-detect`
+- [`processes/linux/ld-preload/hijack/detect`](processes/linux/ld-preload/hijack/detect/SKILL.md) — `linux-ld-preload-hijack-detect`
+- [`processes/linux/namespace/pid/analyze`](processes/linux/namespace/pid/analyze/SKILL.md) — `linux-namespace-pid-analyze`
+- [`processes/linux/proc-fs/environ/extract`](processes/linux/proc-fs/environ/extract/SKILL.md) — `linux-proc-fs-environ-extract`
+- [`processes/linux/proc-fs/fd/enum`](processes/linux/proc-fs/fd/enum/SKILL.md) — `linux-proc-fs-fd-enum`
+- [`processes/linux/proc-fs/maps/analyze`](processes/linux/proc-fs/maps/analyze/SKILL.md) — `linux-proc-fs-maps-analyze`
+- [`processes/linux/ptrace/injection/detect`](processes/linux/ptrace/injection/detect/SKILL.md) — `linux-ptrace-injection-detect`
+- [`processes/linux/socket/inode/map`](processes/linux/socket/inode/map/SKILL.md) — `linux-socket-inode-map`
+- [`processes/memory/code-injection/analyze`](processes/memory/code-injection/analyze/SKILL.md) — `memory-code-injection-analyze`
+- [`processes/memory/heap/spray/detect`](processes/memory/heap/spray/detect/SKILL.md) — `memory-heap-spray-detect`
+- [`processes/memory/rop/chain/detect`](processes/memory/rop/chain/detect/SKILL.md) — `memory-rop-chain-detect`
+- [`processes/memory/shellcode/pattern/detect`](processes/memory/shellcode/pattern/detect/SKILL.md) — `memory-shellcode-pattern-detect`
+- [`processes/monitoring/auditd/rule/configure`](processes/monitoring/auditd/rule/configure/SKILL.md) — `monitoring-auditd-rule-configure`
+- [`processes/monitoring/ebpf/tracepoint/deploy`](processes/monitoring/ebpf/tracepoint/deploy/SKILL.md) — `monitoring-ebpf-tracepoint-deploy`
+- [`processes/monitoring/sysmon/configure`](processes/monitoring/sysmon/configure/SKILL.md) — `monitoring-sysmon-configure`
+- [`processes/privilege/capability/audit`](processes/privilege/capability/audit/SKILL.md) — `privilege-capability-audit`
+- [`processes/privilege/sudo/abuse/detect`](processes/privilege/sudo/abuse/detect/SKILL.md) — `privilege-sudo-abuse-detect`
+- [`processes/privilege/suid-binary/detect`](processes/privilege/suid-binary/detect/SKILL.md) — `privilege-suid-binary-detect`
+- [`processes/windows/dll/hijack/detect`](processes/windows/dll/hijack/detect/SKILL.md) — `windows-dll-hijack-detect`
+- [`processes/windows/handle/leak/detect`](processes/windows/handle/leak/detect/SKILL.md) — `windows-handle-leak-detect`
+- [`processes/windows/process/hollow/detect`](processes/windows/process/hollow/detect/SKILL.md) — `windows-process-hollow-detect`
+- [`processes/windows/thread/injection/detect`](processes/windows/thread/injection/detect/SKILL.md) — `windows-thread-injection-detect`
+- [`processes/windows/token/impersonate/detect`](processes/windows/token/impersonate/detect/SKILL.md) — `windows-token-impersonate-detect`
+- [`processes/windows/wmi/persistence/detect`](processes/windows/wmi/persistence/detect/SKILL.md) — `windows-wmi-persistence-detect`
+- [`processes/zombie/orphan/detect`](processes/zombie/orphan/detect/SKILL.md) — `zombie-orphan-detect`
+
+### `siem-soc/` — 9 skills
+
+- [`siem-soc/correlation-rules`](siem-soc/correlation-rules/SKILL.md) — `siem-soc-correlation-rules`
+- [`siem-soc/orchestration`](siem-soc/orchestration/SKILL.md) — `siem-soc-orchestration`
+- [`siem-soc/qradar`](siem-soc/qradar/SKILL.md) — `qradar`
+- [`siem-soc/sigma-rules`](siem-soc/sigma-rules/SKILL.md) — `siem-soc-sigma-rules`
+- [`siem-soc/splunk`](siem-soc/splunk/SKILL.md) — `splunk`
+- [`siem-soc/splunk/detection-rules`](siem-soc/splunk/detection-rules/SKILL.md) — `siem-soc-splunk-detection-rules`
+- [`siem-soc/tuning/detection-use-cases`](siem-soc/tuning/detection-use-cases/SKILL.md) — `siem-soc-tuning-detection-use-cases`
+- [`siem-soc/tuning/false-positive-reduction`](siem-soc/tuning/false-positive-reduction/SKILL.md) — `siem-soc-tuning-false-positive-reduction`
+- [`siem-soc/tuning/use-case-tuning`](siem-soc/tuning/use-case-tuning/SKILL.md) — `siem-soc-tuning-use-case-tuning`
+
+### `steganography/` — 15 skills
+
+- [`steganography`](steganography/SKILL.md) — `steganography`
+- [`steganography/audio/mp3/metadata/detect`](steganography/audio/mp3/metadata/detect/SKILL.md) — `audio-mp3-metadata-detect`
+- [`steganography/audio/wav/echo-hiding/detect`](steganography/audio/wav/echo-hiding/detect/SKILL.md) — `audio-wav-echo-hiding-detect`
+- [`steganography/document/docx/metadata/detect`](steganography/document/docx/metadata/detect/SKILL.md) — `document-docx-metadata-detect`
+- [`steganography/document/pdf/stream/detect`](steganography/document/pdf/stream/detect/SKILL.md) — `document-pdf-stream-detect`
+- [`steganography/image/bmp/lsb/detect`](steganography/image/bmp/lsb/detect/SKILL.md) — `image-bmp-lsb-detect`
+- [`steganography/image/gif/palette/detect`](steganography/image/gif/palette/detect/SKILL.md) — `image-gif-palette-detect`
+- [`steganography/image/jpg/dct/detect`](steganography/image/jpg/dct/detect/SKILL.md) — `image-jpg-dct-detect`
+- [`steganography/image/png/lsb/detect`](steganography/image/png/lsb/detect/SKILL.md) — `image-png-lsb-detect`
+- [`steganography/network/dns/covert/detect`](steganography/network/dns/covert/detect/SKILL.md) — `network-dns-covert-detect`
+- [`steganography/network/http/covert/detect`](steganography/network/http/covert/detect/SKILL.md) — `network-http-covert-detect`
+- [`steganography/tool/steghide/execute`](steganography/tool/steghide/execute/SKILL.md) — `tool-steghide-execute`
+- [`steganography/tool/stegseek/execute`](steganography/tool/stegseek/execute/SKILL.md) — `tool-stegseek-execute`
+- [`steganography/tool/zsteg/execute`](steganography/tool/zsteg/execute/SKILL.md) — `tool-zsteg-execute`
+- [`steganography/video/mp4/frame/detect`](steganography/video/mp4/frame/detect/SKILL.md) — `video-mp4-frame-detect`
+
+### `vulnerabilities/` — 32 skills
+
+- [`vulnerabilities`](vulnerabilities/SKILL.md) — `vulnerability`
+- [`vulnerabilities/asset`](vulnerabilities/asset/SKILL.md) — `asset`
+- [`vulnerabilities/attack`](vulnerabilities/attack/SKILL.md) — `attack`
+- [`vulnerabilities/cloud`](vulnerabilities/cloud/SKILL.md) — `cloud`
+- [`vulnerabilities/continuous`](vulnerabilities/continuous/SKILL.md) — `continuous`
+- [`vulnerabilities/exploit/binary`](vulnerabilities/exploit/binary/SKILL.md) — `exploit-binary`
+- [`vulnerabilities/exploit/ms17`](vulnerabilities/exploit/ms17/SKILL.md) — `exploit-ms17`
+- [`vulnerabilities/management/defectdojo`](vulnerabilities/management/defectdojo/SKILL.md) — `management-defectdojo`
+- [`vulnerabilities/management/exceptions`](vulnerabilities/management/exceptions/SKILL.md) — `management-exceptions`
+- [`vulnerabilities/management/slaalerts`](vulnerabilities/management/slaalerts/SKILL.md) — `management-slaalerts`
+- [`vulnerabilities/management/vulnerability`](vulnerabilities/management/vulnerability/SKILL.md) — `management-vulnerability`
+- [`vulnerabilities/metasploit`](vulnerabilities/metasploit/SKILL.md) — `metasploit`
+- [`vulnerabilities/patch`](vulnerabilities/patch/SKILL.md) — `patch`
+- [`vulnerabilities/prioritization/cve`](vulnerabilities/prioritization/cve/SKILL.md) — `prioritization-cve`
+- [`vulnerabilities/prioritization/epss`](vulnerabilities/prioritization/epss/SKILL.md) — `prioritization-epss`
+- [`vulnerabilities/prioritization/ssvc`](vulnerabilities/prioritization/ssvc/SKILL.md) — `prioritization-ssvc`
+- [`vulnerabilities/prioritization/vulnerabilities`](vulnerabilities/prioritization/vulnerabilities/SKILL.md) — `prioritization-vulnerabilities`
+- [`vulnerabilities/rapid7`](vulnerabilities/rapid7/SKILL.md) — `rapid7`
+- [`vulnerabilities/remediation/bucket`](vulnerabilities/remediation/bucket/SKILL.md) — `remediation-bucket`
+- [`vulnerabilities/remediation/endpoint`](vulnerabilities/remediation/endpoint/SKILL.md) — `remediation-endpoint`
+- [`vulnerabilities/remediation/patch`](vulnerabilities/remediation/patch/SKILL.md) — `remediation-patch`
+- [`vulnerabilities/remediation/vulnerability`](vulnerabilities/remediation/vulnerability/SKILL.md) — `remediation-vulnerability`
+- [`vulnerabilities/sca`](vulnerabilities/sca/SKILL.md) — `sca`
+- [`vulnerabilities/sca/sbom`](vulnerabilities/sca/sbom/SKILL.md) — `sca-sbom`
+- [`vulnerabilities/scanning/agentless`](vulnerabilities/scanning/agentless/SKILL.md) — `scanning-agentless`
+- [`vulnerabilities/scanning/authenticated`](vulnerabilities/scanning/authenticated/SKILL.md) — `scanning-authenticated`
+- [`vulnerabilities/scanning/nessus`](vulnerabilities/scanning/nessus/SKILL.md) — `scanning-nessus`
+- [`vulnerabilities/scanning/nessusinfra`](vulnerabilities/scanning/nessusinfra/SKILL.md) — `scanning-nessusinfra`
+- [`vulnerabilities/scanning/nikto`](vulnerabilities/scanning/nikto/SKILL.md) — `scanning-nikto`
+- [`vulnerabilities/scanning/openvas`](vulnerabilities/scanning/openvas/SKILL.md) — `scanning-openvas`
+- [`vulnerabilities/scanning/otsafescan`](vulnerabilities/scanning/otsafescan/SKILL.md) — `scanning-otsafescan`
+- [`vulnerabilities/scanning/vulnerability`](vulnerabilities/scanning/vulnerability/SKILL.md) — `scanning-vulnerability`
+
+### `web-application/` — 97 skills
+
+- [`web-application/ai/llm`](web-application/ai/llm/SKILL.md) — `ai-llm`
+- [`web-application/ai/model`](web-application/ai/model/SKILL.md) — `ai-model`
+- [`web-application/api`](web-application/api/SKILL.md) — `api`
+- [`web-application/api/42crunch`](web-application/api/42crunch/SKILL.md) — `api-42crunch`
+- [`web-application/api/apigee`](web-application/api/apigee/SKILL.md) — `api-apigee`
+- [`web-application/api/apikeys`](web-application/api/apikeys/SKILL.md) — `api-apikeys`
+- [`web-application/api/authn`](web-application/api/authn/SKILL.md) — `api-authn`
+- [`web-application/api/bfla`](web-application/api/bfla/SKILL.md) — `api-bfla`
+- [`web-application/api/bola`](web-application/api/bola/SKILL.md) — `api-bola`
+- [`web-application/api/broken`](web-application/api/broken/SKILL.md) — `api-broken`
+- [`web-application/api/bypass`](web-application/api/bypass/SKILL.md) — `api-bypass`
+- [`web-application/api/enumeration`](web-application/api/enumeration/SKILL.md) — `api-enumeration`
+- [`web-application/api/excessive`](web-application/api/excessive/SKILL.md) — `api-excessive`
+- [`web-application/api/gateway`](web-application/api/gateway/SKILL.md) — `api-gateway`
+- [`web-application/api/graphql`](web-application/api/graphql/SKILL.md) — `api-graphql`
+- [`web-application/api/graphql/assessment`](web-application/api/graphql/assessment/SKILL.md) — `api-graphql-assessment`
+- [`web-application/api/graphql/introspection`](web-application/api/graphql/introspection/SKILL.md) — `api-graphql-introspection`
+- [`web-application/api/injection`](web-application/api/injection/SKILL.md) — `api-injection`
+- [`web-application/api/inventory`](web-application/api/inventory/SKILL.md) — `api-inventory`
+- [`web-application/api/mass`](web-application/api/mass/SKILL.md) — `api-mass`
+- [`web-application/api/massassign`](web-application/api/massassign/SKILL.md) — `api-massassign`
+- [`web-application/api/mobile`](web-application/api/mobile/SKILL.md) — `api-mobile`
+- [`web-application/api/owasp`](web-application/api/owasp/SKILL.md) — `api-owasp`
+- [`web-application/api/postman`](web-application/api/postman/SKILL.md) — `api-postman`
+- [`web-application/api/posture`](web-application/api/posture/SKILL.md) — `api-posture`
+- [`web-application/api/ratelimit`](web-application/api/ratelimit/SKILL.md) — `api-ratelimit`
+- [`web-application/api/restler`](web-application/api/restler/SKILL.md) — `api-restler`
+- [`web-application/api/schema`](web-application/api/schema/SKILL.md) — `api-schema`
+- [`web-application/api/shadow`](web-application/api/shadow/SKILL.md) — `api-shadow`
+- [`web-application/api/soap`](web-application/api/soap/SKILL.md) — `api-soap`
+- [`web-application/api/throttle`](web-application/api/throttle/SKILL.md) — `api-throttle`
+- [`web-application/api/wafgateway`](web-application/api/wafgateway/SKILL.md) — `api-wafgateway`
+- [`web-application/api/websocket`](web-application/api/websocket/SKILL.md) — `api-websocket`
+- [`web-application/api/websocket/wssecurity`](web-application/api/websocket/wssecurity/SKILL.md) — `api-websocket-wssecurity`
+- [`web-application/auth/bac`](web-application/auth/bac/SKILL.md) — `auth-bac`
+- [`web-application/auth/csrf`](web-application/auth/csrf/SKILL.md) — `auth-csrf`
+- [`web-application/auth/enum`](web-application/auth/enum/SKILL.md) — `auth-enum`
+- [`web-application/auth/evilginx`](web-application/auth/evilginx/SKILL.md) — `auth-evilginx`
+- [`web-application/auth/jwt`](web-application/auth/jwt/SKILL.md) — `auth-jwt`
+- [`web-application/auth/jwt/json`](web-application/auth/jwt/json/SKILL.md) — `auth-jwt-json`
+- [`web-application/auth/jwt/nonealgo`](web-application/auth/jwt/nonealgo/SKILL.md) — `auth-jwt-nonealgo`
+- [`web-application/auth/jwt/signing`](web-application/auth/jwt/signing/SKILL.md) — `auth-jwt-signing`
+- [`web-application/auth/jwt/tokensec`](web-application/auth/jwt/tokensec/SKILL.md) — `auth-jwt-tokensec`
+- [`web-application/auth/oauth`](web-application/auth/oauth/SKILL.md) — `auth-oauth`
+- [`web-application/auth/oauth/consent`](web-application/auth/oauth/consent/SKILL.md) — `auth-oauth-consent`
+- [`web-application/auth/oauth/flaws`](web-application/auth/oauth/flaws/SKILL.md) — `auth-oauth-flaws`
+- [`web-application/auth/oauth/misconfig`](web-application/auth/oauth/misconfig/SKILL.md) — `auth-oauth-misconfig`
+- [`web-application/auth/oauth/scopes`](web-application/auth/oauth/scopes/SKILL.md) — `auth-oauth-scopes`
+- [`web-application/auth/oauth/tokentheft`](web-application/auth/oauth/tokentheft/SKILL.md) — `auth-oauth-tokentheft`
+- [`web-application/broken`](web-application/broken/SKILL.md) — `broken`
+- [`web-application/business`](web-application/business/SKILL.md) — `business`
+- [`web-application/cache/cachedeception`](web-application/cache/cachedeception/SKILL.md) — `cache-cachedeception`
+- [`web-application/cache/cachepoisoning`](web-application/cache/cachepoisoning/SKILL.md) — `cache-cachepoisoning`
+- [`web-application/clickjacking`](web-application/clickjacking/SKILL.md) — `clickjacking`
+- [`web-application/cors`](web-application/cors/SKILL.md) — `cors`
+- [`web-application/deserialization/insecure`](web-application/deserialization/insecure/SKILL.md) — `deserialization-insecure`
+- [`web-application/directory`](web-application/directory/SKILL.md) — `directory`
+- [`web-application/fuzzing`](web-application/fuzzing/SKILL.md) — `fuzzing`
+- [`web-application/headers/content`](web-application/headers/content/SKILL.md) — `headers-content`
+- [`web-application/headers/security`](web-application/headers/security/SKILL.md) — `headers-security`
+- [`web-application/host`](web-application/host/SKILL.md) — `host`
+- [`web-application/http`](web-application/http/SKILL.md) — `http`
+- [`web-application/idor`](web-application/idor/SKILL.md) — `idor`
+- [`web-application/injection/sqli`](web-application/injection/sqli/SKILL.md) — `injection-sqli`
+- [`web-application/injection/sqli/nosql`](web-application/injection/sqli/nosql/SKILL.md) — `injection-sqli-nosql`
+- [`web-application/injection/sqli/secondorder`](web-application/injection/sqli/secondorder/SKILL.md) — `injection-sqli-secondorder`
+- [`web-application/injection/sqli/sqlexploit`](web-application/injection/sqli/sqlexploit/SKILL.md) — `injection-sqli-sqlexploit`
+- [`web-application/injection/sqli/sqlmap`](web-application/injection/sqli/sqlmap/SKILL.md) — `injection-sqli-sqlmap`
+- [`web-application/injection/ssrf`](web-application/injection/ssrf/SKILL.md) — `injection-ssrf`
+- [`web-application/injection/ssrf/server`](web-application/injection/ssrf/server/SKILL.md) — `injection-ssrf-server`
+- [`web-application/injection/ssrf/ssrfexploit`](web-application/injection/ssrf/ssrfexploit/SKILL.md) — `injection-ssrf-ssrfexploit`
+- [`web-application/injection/ssti/template`](web-application/injection/ssti/template/SKILL.md) — `injection-ssti-template`
+- [`web-application/injection/xss`](web-application/injection/xss/SKILL.md) — `injection-xss`
+- [`web-application/injection/xss/burpsuite`](web-application/injection/xss/burpsuite/SKILL.md) — `injection-xss-burpsuite`
+- [`web-application/injection/xxe`](web-application/injection/xxe/SKILL.md) — `injection-xxe`
+- [`web-application/injection/xxe/xml`](web-application/injection/xxe/xml/SKILL.md) — `injection-xxe-xml`
+- [`web-application/logging`](web-application/logging/SKILL.md) — `logging`
+- [`web-application/owasp`](web-application/owasp/SKILL.md) — `owasp`
+- [`web-application/owasp/threatdragon`](web-application/owasp/threatdragon/SKILL.md) — `owasp-threatdragon`
+- [`web-application/pentest`](web-application/pentest/SKILL.md) — `pentest`
+- [`web-application/pentest/burpsuite`](web-application/pentest/burpsuite/SKILL.md) — `pentest-burpsuite`
+- [`web-application/prototype`](web-application/prototype/SKILL.md) — `prototype`
+- [`web-application/racecondition/race`](web-application/racecondition/race/SKILL.md) — `racecondition-race`
+- [`web-application/redirect/open`](web-application/redirect/open/SKILL.md) — `redirect-open`
+- [`web-application/runtime`](web-application/runtime/SKILL.md) — `runtime`
+- [`web-application/sensitive`](web-application/sensitive/SKILL.md) — `sensitive`
+- [`web-application/smuggling/http`](web-application/smuggling/http/SKILL.md) — `smuggling-http`
+- [`web-application/supply`](web-application/supply/SKILL.md) — `supply`
+- [`web-application/tls`](web-application/tls/SKILL.md) — `tls`
+- [`web-application/tls/certificates`](web-application/tls/certificates/SKILL.md) — `tls-certificates`
+- [`web-application/tls/ctaudit`](web-application/tls/ctaudit/SKILL.md) — `tls-ctaudit`
+- [`web-application/tls/lifecycle`](web-application/tls/lifecycle/SKILL.md) — `tls-lifecycle`
+- [`web-application/tls/ssl`](web-application/tls/ssl/SKILL.md) — `tls-ssl`
+- [`web-application/tls/tlsassessment`](web-application/tls/tlsassessment/SKILL.md) — `tls-tlsassessment`
+- [`web-application/type`](web-application/type/SKILL.md) — `type`
+- [`web-application/waf`](web-application/waf/SKILL.md) — `waf`
+- [`web-application/waf/firewall`](web-application/waf/firewall/SKILL.md) — `waf-firewall`
 

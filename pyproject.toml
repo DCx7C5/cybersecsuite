@@ -28,6 +28,7 @@ dependencies = [
     # Agent SDK
     "claude-agent-sdk @ git+https://github.com/anthropics/claude-agent-sdk-python.git@v0.1.61",
     "openpyxl>=3.1.5",
+    "pytest>=9.0.2",
 ]
 
 [project.scripts]

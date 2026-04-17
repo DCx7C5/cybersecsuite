@@ -19,6 +19,7 @@ from mcp.cybersec.cache import ALL_TOOLS as _cache_tools
 from mcp.cybersec.proxy import ALL_TOOLS as _proxy_tools
 from mcp.cybersec.session import ALL_TOOLS as _session_tools
 from mcp.cybersec.cases import ALL_TOOLS as _cases_tools
+from mcp.cybersec.poc import ALL_TOOLS as _poc_tools
 
 _ALL_CYBERSEC_TOOLS = (
     _findings_tools
@@ -29,6 +30,7 @@ _ALL_CYBERSEC_TOOLS = (
     + _proxy_tools
     + _session_tools
     + _cases_tools
+    + _poc_tools
 )
 
 cybersec_server = create_sdk_mcp_server(

@@ -307,7 +307,7 @@ after_action_report:
     - gap_3:
         finding: "No pre-approved media holding statement for cyber incidents"
         risk: Medium
-        action: "Draft and approve 3 holding statement templates with Legal"
+        action: "Draft and approve 3 holding statement plugins with Legal"
         owner: Communications Lead
         due_date: 2024-04-10
 

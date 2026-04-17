@@ -47,15 +47,15 @@ graph TD
 
 ### Plugin Breakdown
 
-| Plugin | Source Modules | Responsibility |
-|---|---|---|
-| **cybersecsuite-core** | `db/` (base models, connection), `telemetry/`, `manage.py` | DB connection pool, config loading, structured logging, base `Model`/`TimestampMixin` classes, CLI framework |
-| **cybersecsuite-forensics** | `mcp/` | ForensicProject, Session, Finding models; MCP tool servers (findings, IOCs, cache, layers, sessions); forensic slash commands |
-| **cybersecsuite-crypto** | `crypto/` | Ed25519 key management, SSL CLI, vault operations, artifact signing/verification |
-| **cybersecsuite-proxy** | `ai_proxy/`, `proxy/` | Provider registry (48 providers), routing strategies, format translation, ASGI server (Starlette mounting, health checks, TLS) |
-| **cybersecsuite-dashboard** | `dashboard/`, `templates/` | 25 REST + 4 SSE endpoints, Jinja2 template rendering, static assets |
-| **cybersecsuite-intel** | `db/` (intel models, fixtures, seeds) | CVE, MITRE ATT&CK, CWE, CAPEC models; threat actors, software families; 6 fixture files; seed data loaders |
-| **cybersecsuite-a2a** | `a2a/` | JSON-RPC 2.0 A2A server, agent cards, `agent_sdk.py`, team dispatch |
+| Plugin                      | Source Modules                                             | Responsibility                                                                                                                 |
+|-----------------------------|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| **cybersecsuite-core**      | `db/` (base models, connection), `telemetry/`, `manage.py` | DB connection pool, config loading, structured logging, base `Model`/`TimestampMixin` classes, CLI framework                   |
+| **cybersecsuite-forensics** | `mcp/`                                                     | ForensicProject, Session, Finding models; MCP tool servers (findings, IOCs, cache, layers, sessions); forensic slash commands  |
+| **cybersecsuite-crypto**    | `crypto/`                                                  | Ed25519 key management, SSL CLI, vault operations, artifact signing/verification                                               |
+| **cybersecsuite-proxy**     | `ai_proxy/`, `proxy/`                                      | Provider registry (48 providers), routing strategies, format translation, ASGI server (Starlette mounting, health checks, TLS) |
+| **cybersecsuite-dashboard** | `dashboard/`, `templates/`                                 | 25 REST + 4 SSE endpoints, Jinja2 template rendering, static assets                                                            |
+| **cybersecsuite-intel**     | `db/` (intel models, fixtures, seeds)                      | CVE, MITRE ATT&CK, CWE, CAPEC models; threat actors, software families; 6 fixture files; seed data loaders                     |
+| **cybersecsuite-a2a**       | `a2a/`                                                     | JSON-RPC 2.0 A2A server, agent cards, `agent_sdk.py`, team dispatch                                                            |
 
 ### Dependency Rules
 
@@ -273,20 +273,20 @@ dependencies = [
 ### Versioning
 
 - All plugins start at `0.1.0`.
-- Independent semver per plugin after `1.0.0`.
+- Independent semver per plugin after `0.1.0`.
 - `cybersecsuite-core` versions are pinned as `>=X.Y.0,<X.Y+1.0` (compatible release) by downstream plugins.
 
 ## 6. Risk Assessment
 
-| Risk | Severity | Mitigation |
-|---|---|---|
-| **Circular dependencies** between plugins | High | Strict dependency DAG enforced in CI. Only core is a shared dependency. Dashboard→Forensics is the sole cross-plugin edge. |
-| **DB migration coordination** across plugins | High | Single Aerich migration registry in core discovers model modules via entry points. Migrations run in topological order (core → intel → forensics → dashboard). |
-| **Import path breakage** | Medium | Provide a compatibility shim package (`from src.db import X` → `from cybersecsuite.core import X`) for one major version cycle. |
-| **`.claude/` skills coupling** | Medium | Skills reference module paths in instructions. Update `.claude/skills/` files in the same PR that moves the corresponding source. |
-| **Docker build complexity** | Medium | Multi-stage builds install only required plugins per container. `docker/dashboard/Dockerfile` installs `cybersecsuite-core + dashboard + forensics`. |
-| **Test isolation** | Low | Unit tests live in each plugin package. Integration tests remain in root `tests/` and install the meta-package. |
-| **PyPI namespace squatting** | Low | Register all 7 package names on PyPI immediately, even before publishing real releases. |
+| Risk                                         | Severity | Mitigation                                                                                                                                                     |
+|----------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Circular dependencies** between plugins    | High     | Strict dependency DAG enforced in CI. Only core is a shared dependency. Dashboard→Forensics is the sole cross-plugin edge.                                     |
+| **DB migration coordination** across plugins | High     | Single Aerich migration registry in core discovers model modules via entry points. Migrations run in topological order (core → intel → forensics → dashboard). |
+| **Import path breakage**                     | Medium   | Provide a compatibility shim package (`from src.db import X` → `from cybersecsuite.core import X`) for one major version cycle.                                |
+| **`.claude/` skills coupling**               | Medium   | Skills reference module paths in instructions. Update `.claude/skills/` files in the same PR that moves the corresponding source.                              |
+| **Docker build complexity**                  | Medium   | Multi-stage builds install only required plugins per container. `docker/dashboard/Dockerfile` installs `cybersecsuite-core + dashboard + forensics`.           |
+| **Test isolation**                           | Low      | Unit tests live in each plugin package. Integration tests remain in root `tests/` and install the meta-package.                                                |
+| **PyPI namespace squatting**                 | Low      | Register all 7 package names on PyPI immediately, even before publishing real releases.                                                                        |
 
 ### Circular Dependency Detection (CI)
 

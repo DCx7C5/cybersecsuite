@@ -265,3 +265,11 @@ class InterfaceType(str, Enum):
     VPN = "vpn"
     OTHER = "other"
 
+
+class PocStatus(str, Enum):
+    UNVERIFIED = "unverified"
+    VERIFIED = "verified"
+    WEAPONIZED = "weaponized"
+    PATCHED = "patched"
+    DISPUTED = "disputed"
+

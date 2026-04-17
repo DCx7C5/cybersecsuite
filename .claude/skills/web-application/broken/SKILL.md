@@ -129,7 +129,7 @@ curl -s http://subdomain.target.com | grep -q "Sorry, this shop is currently una
 # Use subjack for automated takeover detection
 subjack -w subdomains.txt -c fingerprints.json -t 100 -o takeover_candidates.txt
 
-# Use nuclei takeover templates
+# Use nuclei takeover plugins
 subfinder -d target.com -silent | nuclei -t http/takeovers/ -o takeovers.txt
 ```
 

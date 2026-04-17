@@ -18,6 +18,7 @@ tools:
   - TodoRead
   - TodoWrite
   - WebFetch
+  - WebSearch
 ---
 
 # Cybersec Agent — Central Orchestrator & Elite APT/Rootkit Investigator

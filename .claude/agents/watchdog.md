@@ -44,17 +44,17 @@ Paths are resolved dynamically at runtime — never assume hardcoded locations. 
 
 After discovery, the watch list should cover these categories (actual paths vary per system):
 
-| Category                | Example Path (Debian)          | Why                             |
-|-------------------------|--------------------------------|---------------------------------|
-| System CA store         | `${OPENSSLDIR}/certs/`         | Rogue CA injection              |
-| TLS private keys        | `${OPENSSLDIR}/private/`       | Key theft / replacement         |
-| App TLS certificates    | `$ASGI_TLS_CERT`              | App cert tampering              |
-| SSH host keys           | `HostKey` from sshd_config     | Host key replacement            |
-| SSH authorized keys     | `AuthorizedKeysFile` per user  | Unauthorized access persistence |
-| TLS session key logs    | `$SSLKEYLOGFILE` or `/tmp/`   | Session key exfiltration        |
-| PKI trust anchors       | distro-specific (see above)    | Trust store manipulation        |
-| Open FDs to key files   | `/proc/*/fd/` → `(deleted)`   | Deleted-but-open key files      |
-| Custom key directories  | `settings.json` → `keys.directory` | Managed key material       |
+| Category               | Example Path (Debian)              | Why                             |
+|------------------------|------------------------------------|---------------------------------|
+| System CA store        | `${OPENSSLDIR}/certs/`             | Rogue CA injection              |
+| TLS private keys       | `${OPENSSLDIR}/private/`           | Key theft / replacement         |
+| App TLS certificates   | `$ASGI_TLS_CERT`                   | App cert tampering              |
+| SSH host keys          | `HostKey` from sshd_config         | Host key replacement            |
+| SSH authorized keys    | `AuthorizedKeysFile` per user      | Unauthorized access persistence |
+| TLS session key logs   | `$SSLKEYLOGFILE` or `/tmp/`        | Session key exfiltration        |
+| PKI trust anchors      | distro-specific (see above)        | Trust store manipulation        |
+| Open FDs to key files  | `/proc/*/fd/` → `(deleted)`        | Deleted-but-open key files      |
+| Custom key directories | `settings.json` → `keys.directory` | Managed key material            |
 
 ## Detection Methods
 

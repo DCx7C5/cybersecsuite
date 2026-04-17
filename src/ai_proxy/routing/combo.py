@@ -235,10 +235,10 @@ def _apply_strategy(targets: list[ResolvedTarget], strategy: Strategy, combo_id:
 
     if strategy == Strategy.CONTEXT_OPTIMIZED:
         # Sort by context window size (largest first for long conversations)
-        return sorted(targets, key=lambda t: -(
-            t.provider.get_model(t.model_id).context_window
-            if t.provider.get_model(t.model_id) else 0
-        ))
+        def _context_window(t: Any) -> int:
+            m = t.provider.get_model(t.model_id)
+            return -(m.context_window if m else 0)
+        return sorted(targets, key=_context_window)
 
     if strategy in (Strategy.CONTEXT_RELAY, Strategy.AUTO):
         # Context relay uses priority order but with session continuity

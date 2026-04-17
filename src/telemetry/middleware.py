@@ -37,6 +37,7 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
 
         key = _normalise(path)
         t0 = time.perf_counter()
+        status = 0
         try:
             response = await call_next(request)
             status = response.status_code

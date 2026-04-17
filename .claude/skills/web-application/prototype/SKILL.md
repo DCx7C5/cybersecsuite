@@ -171,7 +171,7 @@ curl -X POST http://target.com/api/data \
 # Use ppfuzz for automated detection
 ppfuzz -l urls.txt -o results.txt
 
-# Nuclei templates for prototype pollution
+# Nuclei plugins for prototype pollution
 echo "http://target.com" | nuclei -t http/vulnerabilities/generic/prototype-pollution.yaml
 
 # Server-side detection with Burp Scanner

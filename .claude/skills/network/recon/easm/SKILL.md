@@ -157,10 +157,10 @@ for page in query:
 Run targeted vulnerability scans against discovered assets using Nuclei templates.
 
 ```bash
-# Update nuclei templates
+# Update nuclei plugins
 nuclei -ut
 
-# Scan with all templates
+# Scan with all plugins
 cat combined_subdomains.txt | httpx -silent | nuclei -o nuclei_results.txt
 
 # Scan with specific severity

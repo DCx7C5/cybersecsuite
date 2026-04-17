@@ -253,6 +253,7 @@ async def initialize_default_seed_data(
         ("cwe", seed_cwe),
         ("capec", seed_capec),
         ("cve", seed_cve),
+        ("poc", seed_poc),
     ]:
         try:
             results[name] = await fn()
@@ -267,6 +268,114 @@ async def bootstrap_intelligence_async(
 ) -> Dict[str, Any]:
     """Bootstrap all intelligence tables. Delegates to initialize_default_seed_data."""
     return await initialize_default_seed_data(force_intel=force, include_feeds=include_feeds)
+
+
+async def seed_poc() -> Dict[str, Any]:
+    """
+    Seed sample PoC records for well-known CVEs.
+
+    Returns:
+        {"created": int, "skipped": int, "total": int}
+    """
+    from db.models.poc import ProofOfConcept
+    from db.models.cve import CVEIntel
+    from db.models.enums import PocStatus, Severity
+
+    samples = [
+        {
+            "title": "Log4Shell RCE PoC (CVE-2021-44228)",
+            "cve_id": "CVE-2021-44228",
+            "poc_url": "https://github.com/tangxiaofeng7/CVE-2021-44228-Apache-Log4j-Rce",
+            "source": "GitHub",
+            "language": "java",
+            "status": PocStatus.WEAPONIZED,
+            "severity": Severity.CRITICAL,
+            "reliability_score": 0.98,
+            "is_weaponized": True,
+            "requires_auth": False,
+            "requires_interaction": False,
+            "description": "Public PoC for Log4Shell JNDI injection remote code execution in Apache Log4j 2.",
+            "affected_versions": ["2.0-beta9", "2.14.1"],
+            "tags": ["rce", "log4j", "jndi", "java"],
+        },
+        {
+            "title": "ProxyLogon PoC (CVE-2021-26855)",
+            "cve_id": "CVE-2021-26855",
+            "poc_url": "https://github.com/hausec/ProxyLogon",
+            "source": "GitHub",
+            "language": "python",
+            "status": PocStatus.VERIFIED,
+            "severity": Severity.CRITICAL,
+            "reliability_score": 0.93,
+            "is_weaponized": True,
+            "requires_auth": False,
+            "requires_interaction": False,
+            "description": "ProxyLogon SSRF exploit chain for Microsoft Exchange Server.",
+            "affected_versions": ["Exchange 2013", "Exchange 2016", "Exchange 2019"],
+            "tags": ["exchange", "ssrf", "rce", "microsoft"],
+        },
+        {
+            "title": "EternalBlue SMB RCE (MS17-010)",
+            "cve_id": "CVE-2017-0144",
+            "poc_url": "https://github.com/worawit/MS17-010",
+            "source": "GitHub",
+            "language": "python",
+            "status": PocStatus.WEAPONIZED,
+            "severity": Severity.CRITICAL,
+            "reliability_score": 0.99,
+            "is_weaponized": True,
+            "requires_auth": False,
+            "requires_interaction": False,
+            "description": "EternalBlue SMBv1 exploit — basis for WannaCry and NotPetya.",
+            "affected_versions": ["Windows XP", "Windows 7", "Windows Server 2008 R2"],
+            "tags": ["smb", "rce", "eternalblue", "wanacry", "windows"],
+        },
+        {
+            "title": "Shellshock Bash RCE PoC (CVE-2014-6271)",
+            "cve_id": "CVE-2014-6271",
+            "poc_url": "https://www.exploit-db.com/exploits/34765",
+            "source": "ExploitDB",
+            "language": "bash",
+            "status": PocStatus.VERIFIED,
+            "severity": Severity.CRITICAL,
+            "reliability_score": 0.91,
+            "is_weaponized": False,
+            "requires_auth": False,
+            "requires_interaction": False,
+            "description": "Shellshock — arbitrary code execution via malformed environment variables in GNU Bash.",
+            "affected_versions": ["bash < 4.3 patch 25"],
+            "tags": ["bash", "rce", "cgi", "shellshock"],
+        },
+        {
+            "title": "Heartbleed OpenSSL PoC (CVE-2014-0160)",
+            "cve_id": "CVE-2014-0160",
+            "poc_url": "https://github.com/FiloSottile/Heartbleed",
+            "source": "GitHub",
+            "language": "go",
+            "status": PocStatus.VERIFIED,
+            "severity": Severity.HIGH,
+            "reliability_score": 0.97,
+            "is_weaponized": False,
+            "requires_auth": False,
+            "requires_interaction": False,
+            "description": "Heartbleed TLS heartbeat extension buffer over-read — leaks server memory.",
+            "affected_versions": ["OpenSSL 1.0.1 - 1.0.1f", "OpenSSL 1.0.2-beta"],
+            "tags": ["openssl", "tls", "memory-disclosure", "heartbleed"],
+        },
+    ]
+
+    created = skipped = 0
+    for sample in samples:
+        cve_id = sample.pop("cve_id")
+        cve = await CVEIntel.filter(cve_id=cve_id).first()
+        existing = await ProofOfConcept.filter(poc_url=sample["poc_url"]).first()
+        if existing:
+            skipped += 1
+            continue
+        await ProofOfConcept.create(cve=cve, **sample)
+        created += 1
+
+    return {"created": created, "skipped": skipped, "total": len(samples)}
 
 
 async def seed_local_machine() -> Tuple[Any, bool]:

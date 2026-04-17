@@ -92,7 +92,7 @@ variables:
   DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   SECURE_LOG_LEVEL: "info"
 
-# Include GitLab managed security templates
+# Include GitLab managed security plugins
 include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml

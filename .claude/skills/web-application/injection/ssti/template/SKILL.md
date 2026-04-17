@@ -77,11 +77,11 @@ done
 # Check common injection locations:
 # - Error pages with reflected input
 # - Profile fields (name, bio, signature)
-# - Email subject/body templates
+# - Email subject/body plugins
 # - PDF/report generation with custom fields
 # - Search results pages
 # - 404 pages reflecting the URL path
-# - Notification templates
+# - Notification plugins
 ```
 
 ### Step 2: Identify the Template Engine

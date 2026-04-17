@@ -20,7 +20,7 @@ def get_session_dir():
     return Path(os.environ.get("CYBERSEC_SESSION_DIR")) if os.environ.get("CYBERSEC_SESSION_DIR") else None
 
 def ensure_structure():
-    """Create folders + copy templates"""
+    """Create folders + copy plugins"""
     data_dir = get_data_dir()
     project_dir = data_dir / "project"
     session_dir = data_dir / "session"
@@ -28,8 +28,8 @@ def ensure_structure():
     project_dir.mkdir(parents=True, exist_ok=True)
     session_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copy templates
-    template_dir = Path(os.environ["CLAUDE_PLUGIN_ROOT"]) / "templates" / "project"
+    # Copy plugins
+    template_dir = Path(os.environ["CLAUDE_PLUGIN_ROOT"]) / "plugins" / "project"
     for template in template_dir.glob("*.md"):
         dest = project_dir / template.name
         if not dest.exists():

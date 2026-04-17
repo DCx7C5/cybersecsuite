@@ -1215,7 +1215,7 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                 obj.technique_id: obj
                 for obj in await ForensicMITRETechnique.filter(technique_id__in=list(techniques.keys())).all()
             }
-            to_create: list[MitreTechniqueIntel] = []
+            techniques_to_create: list[MitreTechniqueIntel] = []
             forensic_to_create: list[ForensicMITRETechnique] = []
             for technique_id, defaults in techniques.items():
                 current = existing.get(technique_id)
@@ -1226,7 +1226,7 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                     else:
                         tech_stats.skipped += 1
                 else:
-                    to_create.append(MitreTechniqueIntel(technique_id=technique_id, **defaults))
+                    techniques_to_create.append(MitreTechniqueIntel(technique_id=technique_id, **defaults))
 
                 forensic_defaults = {
                     "technique_name": defaults["name"],
@@ -1246,9 +1246,9 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                 else:
                     forensic_to_create.append(ForensicMITRETechnique(technique_id=technique_id, **forensic_defaults))
 
-            if to_create:
-                await MitreTechniqueIntel.bulk_create(to_create, batch_size=500)
-                tech_stats.inserted += len(to_create)
+            if techniques_to_create:
+                await MitreTechniqueIntel.bulk_create(techniques_to_create, batch_size=500)
+                tech_stats.inserted += len(techniques_to_create)
             if forensic_to_create:
                 await ForensicMITRETechnique.bulk_create(forensic_to_create, batch_size=500)
 
@@ -1302,7 +1302,7 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                 obj.actor_name: obj
                 for obj in await MitreThreatActorIntel.filter(actor_name__in=list(actors.keys())).all()
             }
-            to_create: list[MitreThreatActorIntel] = []
+            actors_to_create: list[MitreThreatActorIntel] = []
             for actor_name, defaults in actors.items():
                 current = existing.get(actor_name)
                 if current:
@@ -1312,10 +1312,10 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                     else:
                         actor_stats.skipped += 1
                 else:
-                    to_create.append(MitreThreatActorIntel(actor_name=actor_name, **defaults))
-            if to_create:
-                await MitreThreatActorIntel.bulk_create(to_create, batch_size=300)
-                actor_stats.inserted += len(to_create)
+                    actors_to_create.append(MitreThreatActorIntel(actor_name=actor_name, **defaults))
+            if actors_to_create:
+                await MitreThreatActorIntel.bulk_create(actors_to_create, batch_size=300)
+                actor_stats.inserted += len(actors_to_create)
 
             all_actors: dict[str, MitreThreatActorIntel] = {
                 obj.actor_name: obj
@@ -1429,7 +1429,7 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                     software_id__in=[record["software_id"] for record in software_by_stix_id.values()]
                 ).all()
             }
-            to_create: list[MitreSoftwareFamilyIntel] = []
+            software_to_create: list[MitreSoftwareFamilyIntel] = []
             for record in software_by_stix_id.values():
                 software_id = record["software_id"]
                 defaults = {k: v for k, v in record.items() if k != "software_id"}
@@ -1441,10 +1441,10 @@ async def bootstrap_mitre_intelligence_async(force: bool = False) -> dict[str, A
                     else:
                         software_stats.skipped += 1
                 else:
-                    to_create.append(MitreSoftwareFamilyIntel(software_id=software_id, **defaults))
-            if to_create:
-                await MitreSoftwareFamilyIntel.bulk_create(to_create, batch_size=500)
-                software_stats.inserted += len(to_create)
+                    software_to_create.append(MitreSoftwareFamilyIntel(software_id=software_id, **defaults))
+            if software_to_create:
+                await MitreSoftwareFamilyIntel.bulk_create(software_to_create, batch_size=500)
+                software_stats.inserted += len(software_to_create)
 
             software_models = {
                 obj.software_id: obj

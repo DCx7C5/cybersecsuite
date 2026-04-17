@@ -295,7 +295,7 @@ async def api_routing(request: Request) -> JSONResponse:
 
 
 async def api_agent_factory(request: Request) -> JSONResponse:
-    """Agent factory metadata: available templates, capabilities."""
+    """Agent factory metadata: available plugins, capabilities."""
     try:
         factory_path = Path(__file__).resolve().parent.parent.parent / ".claude" / "agents" / "AGENT_FACTORY.md"
         if not factory_path.exists():
@@ -335,7 +335,7 @@ async def api_agent_factory(request: Request) -> JSONResponse:
     return JSONResponse({
         "factory_available": factory_exists,
         "factory_size_bytes": factory_size,
-        "templates": ["orchestrator", "specialist"],
+        "plugins": ["orchestrator", "specialist"],
         "archetypes": ["orchestrator", "specialist", "team-mode"],
         "tools": ["Read", "Write", "Glob", "WebFetch"],
         "agents": agent_files,
@@ -552,11 +552,11 @@ async def sse_health(request: Request) -> StreamingResponse:
 
 
 async def api_prompts(request: Request) -> JSONResponse:
-    """Prompt templates and session context."""
+    """Prompt plugins and session context."""
     try:
-        templates_dir = Path(__file__).resolve().parent.parent.parent.parent / "templates"
+        templates_dir = Path(__file__).resolve().parent.parent.parent.parent / "plugins"
         if not templates_dir.exists():
-            templates_dir = Path.cwd() / "templates"
+            templates_dir = Path.cwd() / "plugins"
 
         template_data: dict[str, list[str]] = {}
         if templates_dir.exists():
@@ -578,7 +578,7 @@ async def api_prompts(request: Request) -> JSONResponse:
         return JSONResponse({"status": "error", "error": str(e)})
 
     return JSONResponse({
-        "templates": template_data,
+        "plugins": template_data,
         "total_templates": sum(len(v) for v in template_data.values()),
         "sessions": session_count,
     })
@@ -960,6 +960,51 @@ async def api_task_get(request: Request) -> JSONResponse:
     })
 
 
+async def api_pocs(request: Request) -> JSONResponse:
+    """PoC exploit records — totals by status/severity + recent 50."""
+    try:
+        from db.models.poc import ProofOfConcept
+
+        total = await ProofOfConcept.all().count()
+        weaponized = await ProofOfConcept.filter(is_weaponized=True).count()
+
+        by_status: dict[str, int] = {}
+        for st in ("unverified", "verified", "weaponized", "patched", "disputed"):
+            by_status[st] = await ProofOfConcept.filter(status=st).count()
+
+        by_severity: dict[str, int] = {}
+        for sev in ("critical", "high", "medium", "low", "info"):
+            by_severity[sev] = await ProofOfConcept.filter(severity=sev).count()
+
+        recent = await ProofOfConcept.all().order_by("-created_at").limit(50)
+        recent_list = [
+            {
+                "id": p.id,
+                "title": p.title,
+                "status": p.status if isinstance(p.status, str) else p.status.value,
+                "severity": p.severity if isinstance(p.severity, str) else (p.severity.value if p.severity else None),
+                "poc_url": p.poc_url,
+                "source": p.source,
+                "language": p.language,
+                "is_weaponized": p.is_weaponized,
+                "reliability_score": p.reliability_score,
+                "tags": p.tags,
+                "created_at": p.created_at.isoformat() if p.created_at else None,
+            }
+            for p in recent
+        ]
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+
+    return JSONResponse({
+        "total": total,
+        "weaponized": weaponized,
+        "by_status": by_status,
+        "by_severity": by_severity,
+        "recent": recent_list,
+    })
+
+
 # ── Dashboard HTML (self-contained) ──────────────────────────────────────────
 
 _DASHBOARD_HTML = """<!DOCTYPE html>
@@ -1043,6 +1088,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="tab" onclick="showTab('dbcounts')">&#x1f4ca; DB Counts</div>
     <div class="tab" onclick="showTab('cases')">&#x1f4c2; Cases</div>
     <div class="tab" onclick="showTab('tasks')">&#x23f1; Tasks</div>
+    <div class="tab" onclick="showTab('pocs')">&#x1f4a3; PoCs</div>
   </div>
 
   <!-- Providers tab -->
@@ -1393,7 +1439,7 @@ async function refresh() {
         + '<div class="card text-center"><div class="text-2xl font-bold ' + (fv.factory_available ? 'text-green-400' : 'text-red-400') + '">' + (fv.factory_available ? '&#x2705;' : '&#x274c;') + '</div><div class="text-xs text-gray-500">Factory</div></div>'
         + '<div class="card text-center"><div class="text-2xl font-bold">' + fv.total_agents + '</div><div class="text-xs text-gray-500">Agent Files</div></div>'
         + '<div class="card text-center"><div class="text-2xl font-bold">' + fv.total_teams + '</div><div class="text-xs text-gray-500">Team Files</div></div>'
-        + '<div class="card text-center"><div class="text-2xl font-bold">' + (fv.templates||[]).length + '</div><div class="text-xs text-gray-500">Templates</div></div>'
+        + '<div class="card text-center"><div class="text-2xl font-bold">' + (fv.plugins||[]).length + '</div><div class="text-xs text-gray-500">Templates</div></div>'
         + '</div>'
         + '<h4 class="font-semibold mb-2">Archetypes</h4>'
         + '<div class="flex gap-2 mb-4">' + (fv.archetypes||[]).map(a =>
@@ -1419,7 +1465,7 @@ async function refresh() {
         + '<div class="card text-center"><div class="text-2xl font-bold">' + pmv.total_templates + '</div><div class="text-xs text-gray-500">Template Files</div></div>'
         + '<div class="card text-center"><div class="text-2xl font-bold">' + pmv.sessions + '</div><div class="text-xs text-gray-500">Sessions</div></div>'
         + '</div>'
-        + Object.entries(pmv.templates||{}).map(([cat, files]) =>
+        + Object.entries(pmv.plugins||{}).map(([cat, files]) =>
           '<h4 class="font-semibold mt-3 mb-2">' + cat + '</h4>'
           + '<div class="flex flex-wrap gap-2">' + files.map(f =>
             '<span class="badge badge-standard">' + f + '</span>'
@@ -1556,6 +1602,7 @@ def create_dashboard_router() -> Router:
         Route("/api/nist-csf", api_nist_csf, methods=["GET"]),
         Route("/api/nist-ai-rmf", api_nist_ai_rmf, methods=["GET"]),
         Route("/api/telemetry", api_telemetry, methods=["GET"]),
+        Route("/api/pocs", api_pocs, methods=["GET"]),
         Route("/api/tasks/create", api_task_create, methods=["POST"]),
         Route("/api/tasks/{task_id}", api_task_get, methods=["GET"]),
         # SSE streaming endpoints

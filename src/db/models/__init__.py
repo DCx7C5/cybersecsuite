@@ -7,6 +7,7 @@ MODEL_MODULES: list[str] = [
     # Enums (no models, but included for Tortoise enum registration)
     # Intelligence
     "db.models.cve",
+    "db.models.poc",
     "db.models.cve_entry",
     "db.models.cwe",
     "db.models.capec",

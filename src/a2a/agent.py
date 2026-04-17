@@ -8,7 +8,7 @@ import abc
 from typing import AsyncIterator, Optional
 
 from a2a.models import (
-    Task, TaskSendParams, AgentCard,
+    Task, AgentCard,
     Message, TaskArtifact, TextPart,
 )
 from a2a.enums import TaskState, MessageRole, PartType

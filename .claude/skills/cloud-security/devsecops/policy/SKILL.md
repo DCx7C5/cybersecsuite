@@ -69,8 +69,8 @@ helm install gatekeeper gatekeeper/gatekeeper \
 ### Step 2: Create Constraint Templates
 
 ```yaml
-# templates/k8s-required-labels.yaml
-apiVersion: templates.gatekeeper.sh/v1
+# plugins/k8s-required-labels.yaml
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8srequiredlabels
@@ -100,8 +100,8 @@ spec:
         }
 
 ---
-# templates/k8s-container-limits.yaml
-apiVersion: templates.gatekeeper.sh/v1
+# plugins/k8s-container-limits.yaml
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8scontainerlimits
@@ -134,8 +134,8 @@ spec:
         }
 
 ---
-# templates/k8s-block-privileged.yaml
-apiVersion: templates.gatekeeper.sh/v1
+# plugins/k8s-block-privileged.yaml
+apiVersion: plugins.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8sblockprivileged

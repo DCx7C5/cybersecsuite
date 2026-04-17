@@ -20,7 +20,6 @@ Usage:
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 from pathlib import Path
@@ -42,9 +41,7 @@ from claude_agent_sdk.types import PreToolUseHookInput, HookContext
 from a2a.agent_loader import (
     ClaudeAgentCard,
     frontmatter_to_claude_agent,
-    load_agents_from_dir,
 )
-from a2a.registry import AgentRegistry
 
 logger = logging.getLogger("a2a.agent_sdk")
 
@@ -89,7 +86,9 @@ _MODEL_MAP: dict[str, str] = {
 
 
 def _claude_card_to_agent_def(card: ClaudeAgentCard) -> AgentDefinition:
-    """Convert a ClaudeAgentCard to an SDK AgentDefinition."""
+    """Convert a ClaudeAgentCard to an SDK AgentDefinition.
+    :type card: ClaudeAgentCard
+    """
     # Map .claude tools to SDK built-in tool names
     sdk_tools = []
     for t in card.tools:
@@ -237,7 +236,7 @@ try:
     from hooks.database import write_scoped_entry_async  # type: ignore[import]
     _HOOKS_OK = True
 except ImportError:
-    pass
+    import sys as _sys
 
 
 async def _audit_hook(
@@ -258,7 +257,7 @@ async def _audit_hook(
                     "agent_type": input_data.get("agent_type", ""),
                 },
             )
-        except Exception:
+        except BaseException(Exception):
             pass  # never block execution on audit failure
     return {}
 

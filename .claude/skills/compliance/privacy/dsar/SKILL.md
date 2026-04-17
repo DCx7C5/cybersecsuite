@@ -196,7 +196,7 @@ and supplementary information document.
 ```python
 from agent import DSARResponseGenerator
 
-generator = DSARResponseGenerator(template_dir="templates/")
+generator = DSARResponseGenerator(template_dir="plugins/")
 
 # Generate complete response package
 response = generator.generate_response(
@@ -249,7 +249,7 @@ from agent import DSARWorkflowEngine, PIIDiscoveryEngine, DSARResponseGenerator
 # Full automated pipeline
 engine = DSARWorkflowEngine(config_path="dsar_config.json")
 pii = PIIDiscoveryEngine()
-gen = DSARResponseGenerator(template_dir="templates/")
+gen = DSARResponseGenerator(template_dir="plugins/")
 
 # 1. Intake
 req = engine.register_dsar(
