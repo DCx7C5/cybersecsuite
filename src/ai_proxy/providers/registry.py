@@ -990,6 +990,49 @@ _register(ProviderConfig(
     },
 ))
 
+_register(ProviderConfig(
+    id="kimi",
+    name="Kimi",
+    base_url="https://api.moonshot.cn/v1",
+    env_key="KIMI_API_KEY",
+    models=[
+        ModelConfig(id="kimi-k2.5", name="Kimi K2.5", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=1.00, output=4.00)),
+        ModelConfig(id="kimi-k2.5-thinking", name="Kimi K2.5 Thinking", context_window=128_000, max_output=16_384,
+                    cost=ModelCost(input=1.00, output=4.00)),
+        ModelConfig(id="kimi-latest", name="Kimi Latest", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=1.00, output=4.00)),
+    ],
+))
+
+_register(ProviderConfig(
+    id="qwen",
+    name="Qwen",
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    env_key="QWEN_API_KEY",
+    models=[
+        ModelConfig(id="qwen3-coder-plus", name="Qwen3 Coder Plus", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=0.50, output=2.00), supports_tools=True),
+        ModelConfig(id="qwen3-max", name="Qwen3 Max", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=1.60, output=6.40), supports_tools=True),
+        ModelConfig(id="qwen3-235b", name="Qwen3 235B", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=1.60, output=6.40), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="chutes",
+    name="Chutes",
+    base_url="https://api.chutes.ai/v1",
+    env_key="CHUTES_API_KEY",
+    models=[
+        ModelConfig(id="deepseek-r1", name="DeepSeek R1 (Chutes)", context_window=64_000, max_output=8_192,
+                    cost=ModelCost(input=0.55, output=2.19)),
+        ModelConfig(id="llama-3.3-70b", name="Llama 3.3 70B (Chutes)", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=0.35, output=0.40)),
+    ],
+))
+
 
 # ── Auto-load custom providers on module import ──────────────────────────────
 

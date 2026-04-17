@@ -29,7 +29,6 @@ MODEL_MODULES: list[str] = [
     "db.models.machine",
     "db.models.yara_rule",
     "db.models.threat_profile_entry",
-    "db.models.intelligence",
     # Compliance + audit
     "db.models.compliance",
     "db.models.nist_csf",

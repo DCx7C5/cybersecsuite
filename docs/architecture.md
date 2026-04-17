@@ -234,29 +234,38 @@ Models are grouped by domain:
 
 ## Flowcharts
 
-### Conceptual — User Flow
+### Ultimate — Target Architecture
 
 ```mermaid
 flowchart LR
     User["👤 User"] --> CLI["Claude Code CLI"]
-    CLI --> MCP["mcp.json\n(5 MCP servers)"]
-    MCP --> Tools["cybersec MCP tools\n(29 cybersec + 5 dystopian)"]
-    Tools --> DB["PostgreSQL\n(7 intel tables)"]
-    Tools --> AIProxy["AI Proxy\n(9 providers)"]
-    DB --> Response["📋 Response"]
-    AIProxy --> Response
+    CLI --> AgentSDK["agent-sdk\nSdkMcpServer"]
+    AgentSDK --> MCP["MCP Tool Layer\n(cybersec + dystopian)"]
+    MCP --> DB["PostgreSQL\n(8 intel tables\n70 models)"]
+    MCP --> AIProxy["AI Proxy\n(51 providers\n13 strategies)"]
+    MCP --> Crypto["Vault + SSL\n(Ed25519, Argon2id)"]
+    MCP --> Checks["Integrity Checks\n(models, fixtures, config)"]
+    DB --> Fixtures["Fixtures\n(CVE, MITRE, CWE\nCAPEC, Actors, Software)"]
+    AIProxy --> Response["📋 Response"]
+    CLI --> Teams["Team Dispatch\n(blue/red/purple)"]
+    Teams --> Agents[".claude/agents/\n33 specialists"]
+    Agents --> Skills[".claude/skills/\n933 SKILL.md\n26 domains"]
 ```
 
-### Actual Code — Execution Path
+### Actual — Current Execution Path
 
 ```mermaid
 flowchart TD
-    Entry["mcp_server.py\n(FastMCP stdio)"] --> MCP["src/mcp/cybersec/\n(8 modules, 29 tools)"]
-    MCP --> DB["src/db/\n(Tortoise ORM)\n7 intel tables"]
-    MCP --> A2A["src/a2a/\n(A2A agent protocol)"]
-    MCP --> AIProxy["src/ai_proxy/\n(multi-provider LLM\n9 providers, 13 strategies)"]
-    MCP --> Dashboard["src/dashboard/\n(FastAPI, ~30 routes)"]
+    Entry["mcp_server.py\n(FastMCP stdio — 29 tools)"] --> MCP["src/mcp/cybersec/\n(8 modules)"]
+    MCP --> DB["src/db/\n(Tortoise ORM)\n8 intel tables · 70 models"]
+    MCP --> A2A["src/a2a/\n(A2A JSON-RPC 2.0)"]
+    MCP --> AIProxy["src/ai_proxy/\n(51 providers\n13 routing strategies)"]
+    MCP --> Dashboard["src/dashboard/\n(Starlette, ~30 routes)"]
+    MCP --> Crypto["src/crypto/\n(vault, SSL CLI\nkey mgmt, signing)"]
     DB --> PG["PostgreSQL\ncybersec-postgres"]
-    AIProxy --> Providers["Anthropic · OpenAI\nGemini · Groq · DeepSeek\nMistral · xAI · Together · OpenRouter"]
+    DB --> Fixtures["src/db/fixtures/\n6 JSON seed files"]
+    AIProxy --> Providers["Anthropic · OpenAI · Gemini\nGroq · DeepSeek · Mistral\nxAI · Together · OpenRouter\n+42 more providers"]
     A2A --> Agents[".claude/agents/\n33 specialist agents"]
+    Checks["src/checks/\nintegrity.py"] --> DB
+    Checks --> Config["mcp.json\ndocker-compose.yml\nsettings.json"]
 ```

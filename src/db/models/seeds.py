@@ -209,11 +209,40 @@ async def seed_capec() -> Dict[str, Any]:
     return {"created": created, "skipped": skipped, "total": len(data)}
 
 
+async def seed_cve() -> Dict[str, Any]:
+    """Idempotent seed of CVE entries from data/fixtures/cve_entries.json."""
+    from db.models.cve import CVEIntel
+
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "cve_entries.json").read_text())
+    created = skipped = 0
+    for entry in data:
+        _, was_created = await CVEIntel.get_or_create(
+            cve_id=entry["cve_id"],
+            defaults={
+                "cvss_score": entry.get("cvss_score"),
+                "cvss_vector": entry.get("cvss_vector", ""),
+                "severity": entry.get("severity", ""),
+                "description": entry.get("description"),
+                "affected_products": entry.get("affected_products", []),
+                "references": entry.get("references", []),
+                "exploit_available": entry.get("exploit_available", False),
+                "patch_available": entry.get("patch_available", False),
+                "published_at": entry.get("published_at"),
+                "last_modified_at": entry.get("last_modified_at"),
+                "source_feed": entry.get("source_feed", ""),
+                "tags": entry.get("tags", []),
+            },
+        )
+        created += was_created
+        skipped += not was_created
+    return {"created": created, "skipped": skipped, "total": len(data)}
+
+
 async def initialize_default_seed_data(
     force_intel: bool = False,
     include_feeds: bool = True,
 ) -> Dict[str, Any]:
-    """Seed all intel tables (NIST, MITRE, CWE, CAPEC). Idempotent."""
+    """Seed all intel tables (NIST, MITRE, CWE, CAPEC, CVE). Idempotent."""
     results: Dict[str, Any] = {"timestamp": datetime.now(timezone.utc).isoformat()}
     for name, fn in [
         ("nist_csf", seed_nist_csf),
@@ -223,6 +252,7 @@ async def initialize_default_seed_data(
         ("mitre_software", seed_mitre_software),
         ("cwe", seed_cwe),
         ("capec", seed_capec),
+        ("cve", seed_cve),
     ]:
         try:
             results[name] = await fn()

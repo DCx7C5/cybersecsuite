@@ -1,3 +1,27 @@
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-db-env: &db-env
+  CYBERSEC_DB_USER: ${CYBERSEC_DB_USER:-cybersec}
+  CYBERSEC_DB_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
+  CYBERSEC_DB_NAME: ${CYBERSEC_DB_NAME:-cybersec_forensics}
+
+x-ai-keys: &ai-keys
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+  DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+  GROQ_API_KEY: ${GROQ_API_KEY:-}
+  MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+  XAI_API_KEY: ${XAI_API_KEY:-}
+  TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+
 services:
   cybersec-postgres:
     build:
@@ -5,8 +29,9 @@ services:
       dockerfile: Dockerfile
     image: cybersec-postgres
     container_name: cybersec-postgres
-    restart: unless-stopped
+    <<: *common
     environment:
+      <<: *db-env
       POSTGRES_DB_PORT: 5432
       POSTGRES_USER: ${CYBERSEC_DB_USER:-cybersec}
       POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
@@ -34,30 +59,18 @@ services:
       dockerfile: .docker/dashboard/Dockerfile
     image: cybersec-dashboard
     container_name: cybersec-dashboard
-    restart: unless-stopped
+    <<: *common
     tty: true
     stdin_open: true
     depends_on:
       cybersec-postgres:
         condition: service_healthy
     environment:
+      <<: [*db-env, *ai-keys]
       # Unix socket path – no TCP, no port needed
       CYBERSEC_DB_HOST: /tmp/.s.PGSQL.
       CYBERSEC_DB_PORT: 5432
-      CYBERSEC_DB_USER: ${CYBERSEC_DB_USER:-cybersec}
-      CYBERSEC_DB_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
-      CYBERSEC_DB_NAME: ${CYBERSEC_DB_NAME:-cybersec_forensics}
       CYBERSEC_AUTO_CREATE_DB: "true"
-      # AI Proxy — provider API keys
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
-      GROQ_API_KEY: ${GROQ_API_KEY:-}
-      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
-      XAI_API_KEY: ${XAI_API_KEY:-}
-      TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     ports:
       - "127.0.0.1:8000:8000"
       - "127.0.0.1:8080:8080"
@@ -78,7 +91,7 @@ services:
       dockerfile: Dockerfile
     image: cybersec-redis
     container_name: cybersec-redis
-    restart: unless-stopped
+    <<: *common
     ports:
       - "127.0.0.1:6379:6379"
     volumes:

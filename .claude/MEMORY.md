@@ -72,18 +72,19 @@ opts = ClaudeAgentOptions(
 ### Root
 | File                 | Lines | Purpose                                                                 |
 |----------------------|-------|-------------------------------------------------------------------------|
-| `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (source of truth → split to src/mcp/cybersec/) |
+| `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (→ being replaced by src/mcp/cybersec/) |
 | `mcp.json`           | 86    | 5 MCP servers for Claude Code CLI                                       |
 | `pyproject.toml`     | —     | Python 3.14, uv, all deps                                               |
 | `Makefile`           | —     | `make serve`, `make test`, etc.                                         |
-| `Dockerfile`         | —     | EXPOSE 8000 8080 8433, uvicorn CMD                                      |
-| `docker-compose.yml` | —     | ASGI + PostgreSQL, healthcheck → 8000/health                            |
+| `docker-compose.yml` | —     | ASGI + PostgreSQL + Redis, YAML anchors `&common`/`&db-env`/`&ai-keys`  |
+| `PROPOSAL.md`        | ~240  | Plugin separation architecture proposal                                 |
+| `PROPOSAL_MEM.md`    | ~250  | Global uncompressed claude memory cache proposal                        |
 
 ### src/
 | File                  | Lines | Purpose                                                                 |
 |-----------------------|-------|-------------------------------------------------------------------------|
 | `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware    |
-| `src/manage.py`       | 329   | CLI management (`manage.py serve`, `case-open`, etc.)                   |
+| `src/manage.py`       | ~450  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
 | `src/logger.py`       | 30    | Structured logger                                                       |
 | `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools |
 
@@ -107,7 +108,7 @@ opts = ClaudeAgentOptions(
 | File                        | Lines | Purpose                                                   |
 |-----------------------------|-------|-----------------------------------------------------------|
 | `routes.py`                 | 224   | OpenAI-compat `/v1/*` endpoints                           |
-| `providers/registry.py`     | 1001  | 9 providers, model lists, cost metadata, auth types       |
+| `providers/registry.py`     | 1040  | **51 providers**, model lists, cost metadata, auth types  |
 | `routing/combo.py`          | 574   | 13-strategy routing engine, circuit breaker, budget guard |
 | `translators/core.py`       | 275   | Request/response translation between formats              |
 | `services/rate_limiter.py`  | 159   | Rate limiting per provider                                |
@@ -116,24 +117,36 @@ opts = ClaudeAgentOptions(
 | `executors/playwright.py`   | 270   | Playwright-based browser AI provider                      |
 | `cli.py`                    | 273   | CLI for provider management, usage, cost reports          |
 
-### src/crypto/ (8 files, complete ✅)
+### src/crypto/ (10 files ✅)
 Ed25519 signing, BLAKE2b-256, Argon2id (mem=262144, iters=4), AES-256-GCM.
-Keys: `/etc/dystopian-crypto/keys`. Certs: `~/.omniroute/certs/`.
-| File | Lines |
-|------|-------|
-| `pydantic_models.py` | 494 |
-| `artifact_manager.py` | 376 |
-| `key_manager.py` | 362 |
-| `ssl_signer.py` | 277 |
-| `template_renderer.py` | 228 |
-| `cache.py` | 270 |
-| `config.py` | 253 |
-| `cli_integration.py` | 299 |
+Keys: `/etc/dystopian-crypto/keys`. Vault: `~/.dystopian-crypto/vault/`.
+| File | Lines | Purpose |
+|------|-------|---------|
+| `pydantic_models.py` | 494 | Pydantic validation models |
+| `artifact_manager.py` | 376 | Artifact signing/verification |
+| `key_manager.py` | 362 | KeyManager + PasswordManager |
+| `ssl_signer.py` | 277 | SSLArtifactSigner (Ed25519) |
+| `vault.py` | ~120 | **NEW** File-based encrypted secret vault |
+| `cli_integration.py` | ~350 | **REWRITTEN** Runnable Click CLI: ssl + vault commands |
+| `template_renderer.py` | 228 | Certificate template renderer |
+| `cache.py` | 270 | Crypto cache layer |
+| `config.py` | 253 | Crypto configuration |
 
-### src/db/ (44 models ✅)
+### src/db/ (44 model files, 70 model classes ✅)
 PostgreSQL via Tortoise ORM (asyncpg). DB: `cybersec_forensics`.
 Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, and 25+ more.
+**Fixtures**: 6 JSON files in `src/db/fixtures/` (mitre_techniques, mitre_actors, mitre_software, cwe_entries, capec_entries, **cve_entries**)
+**Known fix**: Duplicate AuditLog (audit.py→re-export from core.py), duplicate SharedEntry removed from investigation.py, empty intelligence.py removed from MODEL_MODULES.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
+
+### src/checks/ (NEW ✅)
+Integrity check module — validates model FK consistency, fixture coverage, and config file paths.
+| File | Purpose |
+|------|---------|
+| `integrity.py` | `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()` |
+| `__init__.py` | Re-exports |
+
+**Results**: 0 model errors (after fix), 3 config errors (missing MCP dirs, stale entry point), 18 warnings (missing fixtures).
 
 ### src/telemetry/ (5 files ✅ new)
 In-process metrics store with ring-buffer, percentile summaries, ASGI middleware.
@@ -237,7 +250,7 @@ Model tiers:
 **Actions = leaf directory names** (the specific tool/technique applied to a component).
 **Activities ≠ domains** — `red-team/`, `forensics/`, `incident-response/` are methods, not components.
 
-### Current State (933 skills, 28 active domains)
+### Current State (933 skills, 26 active domains)
 | Type                     | Count   | Description                                              |
 |--------------------------|---------|----------------------------------------------------------|
 | Project-native (full)    | 170+    | Rich SKILL.md with deep taxonomy, MITRE/CWE/CVE headers  |
@@ -248,55 +261,38 @@ Model tiers:
 - Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
 - Action collision resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
 
-### Domain Structure (after classical domain expansion ✅)
+### Domain Structure (after Phase 5+7 restructuring ✅)
 ```
-.claude/skills/               ← root (933 SKILL.md, 28 active domains)
-├── cloud-security/ (117)  # aws, azure, gcp, containers, kubernetes, devsecops
-│                             #   + aws/privesc, azure/lateral, k8s/privesc (from red-team)
-├── web-application/    (97)  # injection, xss, ssrf, api, pentest, owasp (renamed from web-security ✅)
-│                             #   + auth/enum, auth/evilginx (from red-team)
-├── forensics/          (89)  # disk, memory, network, log, email, mobile, cloud, usb
-├── threat-intel/       (87)  # platforms, feeds, ioc, osint, darkweb, mitre, hunting
+.claude/skills/               ← root (933 SKILL.md, 26 active domains)
+├── forensics/         (150)  # disk, memory, network, log, email, mobile, cloud, usb
+│                             #   + hunting, ioc, analysis, intelligence, mitre (from threat-intel)
+├── cloud-security/    (116)  # aws, azure, gcp, containers, kubernetes, devsecops
+├── web-application/    (97)  # injection, xss, ssrf, api, pentest, owasp
 ├── malware/            (74)  # static, dynamic, reversing, persistence, c2, yara, triage
-│                             #   + c2/adversary, c2/covenant, c2/havoc, c2/sliver (from red-team)
+├── network/            (67)  # firewall, ids, wireless, vpn, dns, lateral, recon
 ├── identity/           (53)  # ad, kerberos, oauth, saml, pam, mfa, okta
-│                             #   + ad/bloodhound, ad/nopac, ad/zerologon, kerberos/*, ntlm/*
-├── processes/          (43)  # linux/{proc-fs,ptrace,namespace,cgroup,ld-preload,daemon,socket}/
-│                             #   windows/{handle,thread,process,dll,token,wmi}/, memory/, ipc/,
-│                             #   monitoring/, zombie/, privilege/, container/
-├── network/            (43)  # firewall, ids, wireless, vpn, dns, assessment, lateral
-│                             #   + recon/easm, dns/dnstwist, dns/subfinder, lateral/*
 ├── incident-response/  (39)  # triage, containment, playbooks, phishing, cloud, insider
-├── database/           (37)  # mysql/, postgres/, sqlite/, mssql/, redis/, mongodb/,
-│                             #   elasticsearch/, cassandra/ — injection, privesc, forensics
-├── filesystem/         (28)  # ext4/, ntfs/, fat32/, xfs/, btrfs/, tmpfs/, procfs/, vfs/,
-│                             #   permission/, acl/, integrity/, encryption/, timeline/, lvm/
-├── vulnerability/      (32)  # scanning, sca, prioritization, remediation, exploit
-│                             #   + exploit/binary, exploit/ms17
-├── browser/            (25)  # chrome/, firefox/, brave/, chromium/, extension/, forensics/,
-│                             #   phishing/, cache/, credential/
-├── ot-ics/             (25)  # scada, plc, modbus, dnp3, iot + iot/pentest
-├── network-filesystem/ (18)  # smb/, nfs/, cifs/, webdav/, ftp/, rsync/, iscsi/, samba/
-├── siem-soc/           (25)  # splunk, elastic, detection, correlation, tuning
-│                             #   + splunk/lateral
+├── vulnerabilities/    (32)  # scanning, sca, prioritization, remediation, exploit
+├── processes/          (30)  # linux/{proc-fs,ptrace,namespace,cgroup,ld-preload,daemon,socket}/
+│                             #   windows/{handle,thread,process,dll,token,wmi}/
+├── filesystem/         (28)  # ext4, ntfs, fat32, xfs, btrfs, tmpfs, procfs, vfs
+├── siem-soc/           (27)  # splunk, elastic, detection, correlation, tuning
+├── industrial/         (25)  # scada, plc, modbus, dnp3, iot (dissolved from ot-ics)
+├── database/           (24)  # mysql, postgres, sqlite, mssql, redis, mongodb, elasticsearch
 ├── endpoint-security/  (23)  # edr, av, policy, dlp, hardening
-│                             #   + windows/wmiexec, windows/lolbins, privesc, credentials/*
+├── browser/            (22)  # chrome, firefox, brave, chromium, extension, forensics
 ├── crypto-pki/         (20)  # tls, certificates, pki, key-management, hashing
-├── ops/                (19)  # mode, scope, engagement, purpleteam, socialeng, physical
+├── network-filesystem/ (18)  # smb, nfs, cifs, webdav, ftp, rsync, iscsi, samba
+├── ops/                (17)  # mode, scope, engagement, purpleteam, socialeng, physical
+├── steganography/      (15)  # image, audio, video, document, tool, network
+├── intel-platform/     (13)  # platforms, feeds (from threat-intel)
 ├── compliance/         (13)  # cis, nist, gdpr, hipaa, pci, sox, iso
+├── osint/               (9)  # shodan, darkweb, social (from threat-intel)
 ├── mobile/              (8)  # android, ios, apk analysis
-├── kernel-os/           (8)  # linux, firmware, lkm, ebpf + linux/privesc
+├── kernel-os/           (8)  # linux, firmware, lkm, ebpf
 ├── deception/           (5)  # honeypots, canaries
-├── red-team/            (2)  # MODE ACTIVATORS ONLY (red-team + purple-team)
-├── steganography/       (1)  # stego detection
-└── hardening/                # (index-only, links to */hardening/ skills)
+└── hardening/           (0)  # index-only, links to */hardening/ skills
 ```
-
-#### Red-team Redistribution ✅
-47 skills moved to component domains. Only 2 mode activators remain.
-Key moves: C2→`malware/c2/`, AD attacks→`identity/ad/`, Kerberos→`identity/kerberos/`,
-lateral→`network/lateral/`+`endpoint-security/windows/`, privesc→per-platform,
-DNS recon→`network/dns/`, socialeng→`ops/socialeng/`, purple→`ops/purpleteam/`
 
 ### Naming Rules
 - **Taxonomy dirs**: CAN have hyphens (`cloud-security`, `crypto-pki`, `red-team`)
@@ -457,7 +453,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 - `initialize_default_seed_data()` now runs all 7 seeders (NIST + MITRE + CWE + CAPEC)
 - `manage.py` commands: `seed`, `seed-intel`, `seed-mitre`, `seed-mitre-actors`, `seed-mitre-software`, `seed-cwe`, `seed-capec`
 
-**Intel tables seeded**: `intel_mitre_techniques`, `intel_mitre_threat_actors`, `intel_mitre_software_families`, `intel_cwes`, `intel_capec_patterns`, `nist_csf_controls`, `nist_ai_rmf_controls`
+**Intel tables seeded**: `intel_mitre_techniques`, `intel_mitre_threat_actors`, `intel_mitre_software_families`, `intel_cwes`, `intel_capec_patterns`, `intel_cves`, `nist_csf_controls`, `nist_ai_rmf_controls`
 
 ### ✅ Phase 3 — Documentation — COMPLETE (commit 0984fda)
 - Updated all 8 docs: architecture.md (2 Mermaid flowcharts), api.md, agents.md, configuration.md, contributing.md, deployment.md, mcp-tools.md, quickstart.md
@@ -479,6 +475,18 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### ✅ Phase 6 — Agent Team Task — COMPLETE
 - `.claude/commands/team-task` slash command
 - `manage.py team-task --team blue|red|purple --task "..." [--agents a,b]`
+
+### ✅ Phase 7 — Vault, SSL, Fixtures, Checks, Providers — COMPLETE
+- **docker-compose.yml**: YAML anchors `x-common: &common`, `x-db-env: &db-env`, `x-ai-keys: &ai-keys` — DRY config
+- **Vault**: `src/crypto/vault.py` — file-based encrypted secret vault (~/.dystopian-crypto/vault/)
+- **SSL CLI**: `src/crypto/cli_integration.py` rewritten — runnable Click CLI: `ssl create-ca`, `create-key`, `create-csr`, `list`, `verify`, `rotate`; vault `store`, `get`, `list`, `delete`
+- **manage.py**: wired `ssl`, `vault`, `check` commands
+- **CVE fixture**: `src/db/fixtures/cve_entries.json` (30 canonical CVEs), `seed_cve()`, `seed-cve` command
+- **Integrity checks**: `src/checks/integrity.py` — `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()`
+- **Model fixes**: Duplicate `AuditLog` (audit.py→re-export), duplicate `SharedEntry` removed from investigation.py, empty intelligence.py removed
+- **Providers**: 48 → **51** providers in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes)
+- **Flowcharts**: Updated `docs/architecture.md` — ultimate + actual Mermaid diagrams
+- **Proposals**: `PROPOSAL.md` (plugin separation), `PROPOSAL_MEM.md` (Obsidian memory cache)
 
 ### Phase A — MCP Split + SDK Package ✅ COMPLETE (commit f0e8b72)
 | Order | Todo                                              | Status                                       |

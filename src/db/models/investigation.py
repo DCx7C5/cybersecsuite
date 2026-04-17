@@ -136,13 +136,3 @@ class WatchlistItem(ScopedEntry):
 
     class Meta:
         table = "watchlist_items"
-
-
-class SharedEntry(ScopedEntry):
-    id = fields.IntField(primary_key=True)
-    value_type = fields.CharField(max_length=128, db_index=True)
-    key = fields.CharField(max_length=512, default="")
-    data = fields.JSONField(default=dict)
-
-    class Meta:
-        table = "shared_entries"

@@ -1,0 +1,634 @@
+[
+  {
+    "cve_id": "CVE-2021-44228",
+    "cvss_score": 10.0,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "Apache Log4j2 2.0-beta9 through 2.15.0 (excluding security releases 2.12.2, 2.12.3, and 2.3.1) JNDI features used in configuration, log messages, and parameters do not protect against attacker-controlled LDAP and other JNDI related endpoints. An attacker who can control log messages or log message parameters can execute arbitrary code loaded from LDAP servers when message lookup substitution is enabled.",
+    "affected_products": ["cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*"],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-44228",
+      "https://logging.apache.org/log4j/2.x/security.html"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-12-10T00:00:00Z",
+    "last_modified_at": "2023-11-06T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "log4j", "jndi", "log4shell"]
+  },
+  {
+    "cve_id": "CVE-2017-0144",
+    "cvss_score": 8.1,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "The SMBv1 server in Microsoft Windows Vista SP2, Windows Server 2008 SP2 and R2 SP1, Windows 7 SP1, Windows 8.1, Windows Server 2012 Gold and R2, Windows RT 8.1, Windows 10 Gold, 1511, and 1607, and Windows Server 2016 allows remote attackers to execute arbitrary code via crafted packets, aka 'Windows SMB Remote Code Execution Vulnerability'. This vulnerability is exploited by the EternalBlue tool.",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_7:-:sp1:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2008:r2:sp1:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_10:-:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2017-0144",
+      "https://docs.microsoft.com/en-us/security-updates/securitybulletins/2017/ms17-010"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2017-03-17T00:00:00Z",
+    "last_modified_at": "2018-06-21T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "smb", "eternalblue", "wannacry", "worm"]
+  },
+  {
+    "cve_id": "CVE-2014-0160",
+    "cvss_score": 7.5,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "severity": "high",
+    "description": "The (1) TLS and (2) DTLS implementations in OpenSSL 1.0.1 before 1.0.1g do not properly handle Heartbeat Extension packets, which allows remote attackers to obtain sensitive information from process memory via crafted packets that trigger a buffer over-read, as demonstrated by reading private keys, aka the Heartbleed bug.",
+    "affected_products": ["cpe:2.3:a:openssl:openssl:*:*:*:*:*:*:*:*"],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2014-0160",
+      "https://heartbleed.com/"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2014-04-07T00:00:00Z",
+    "last_modified_at": "2023-11-07T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["information-disclosure", "openssl", "heartbleed", "tls", "memory-leak"]
+  },
+  {
+    "cve_id": "CVE-2021-26855",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "Microsoft Exchange Server Remote Code Execution Vulnerability. A server-side request forgery (SSRF) vulnerability in Microsoft Exchange Server allows an unauthenticated attacker to send arbitrary HTTP requests and authenticate as the Exchange server. This vulnerability is part of an attack chain; the initial attack requires the ability to make an untrusted connection to Exchange server port 443.",
+    "affected_products": [
+      "cpe:2.3:a:microsoft:exchange_server:2013:cumulative_update_23:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2016:cumulative_update_19:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2019:cumulative_update_8:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-26855",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-26855"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-03-03T00:00:00Z",
+    "last_modified_at": "2023-08-02T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "ssrf", "exchange", "proxylogon", "hafnium"]
+  },
+  {
+    "cve_id": "CVE-2021-34527",
+    "cvss_score": 8.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Windows Print Spooler Remote Code Execution Vulnerability. A remote code execution vulnerability exists when the Windows Print Spooler service improperly performs privileged file operations. An attacker who successfully exploited this vulnerability could run arbitrary code with SYSTEM privileges.",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_10:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-34527",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-34527"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-07-02T00:00:00Z",
+    "last_modified_at": "2023-08-08T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "privilege-escalation", "print-spooler", "printnightmare"]
+  },
+  {
+    "cve_id": "CVE-2019-0708",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "A remote code execution vulnerability exists in Remote Desktop Services (formerly known as Terminal Services) when an unauthenticated attacker connects to the target system using RDP and sends specially crafted requests, aka 'Remote Desktop Services Remote Code Execution Vulnerability' (BlueKeep).",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_7:-:sp1:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2008:r2:sp1:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_xp:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2019-0708",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2019-0708"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2019-05-16T00:00:00Z",
+    "last_modified_at": "2021-06-03T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "rdp", "bluekeep", "wormable", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2017-5638",
+    "cvss_score": 10.0,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1 has incorrect exception handling and error-message generation during file-upload attempts, which allows remote attackers to execute arbitrary commands via a crafted Content-Type, Content-Disposition, or Content-Length HTTP header.",
+    "affected_products": [
+      "cpe:2.3:a:apache:struts:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2017-5638",
+      "https://cwiki.apache.org/confluence/display/WW/S2-045"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2017-03-11T00:00:00Z",
+    "last_modified_at": "2021-02-24T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "struts", "equifax", "web"]
+  },
+  {
+    "cve_id": "CVE-2021-21972",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "The vSphere Client (HTML5) contains a remote code execution vulnerability in a vCenter Server plugin. A malicious actor with network access to port 443 may exploit this issue to execute commands with unrestricted privileges on the underlying operating system that hosts vCenter Server.",
+    "affected_products": [
+      "cpe:2.3:a:vmware:vcenter_server:6.5:*:*:*:*:*:*:*",
+      "cpe:2.3:a:vmware:vcenter_server:6.7:*:*:*:*:*:*:*",
+      "cpe:2.3:a:vmware:vcenter_server:7.0:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-21972",
+      "https://www.vmware.com/security/advisories/VMSA-2021-0002.html"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-02-24T00:00:00Z",
+    "last_modified_at": "2022-07-12T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "vmware", "vcenter", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2020-1472",
+    "cvss_score": 10.0,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "An elevation of privilege vulnerability exists when an attacker establishes a vulnerable Netlogon secure channel connection to a domain controller, using the Netlogon Remote Protocol (MS-NRPC), aka 'Netlogon Elevation of Privilege Vulnerability' (Zerologon). This vulnerability allows an unauthenticated attacker to completely compromise all Active Directory identity services.",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_server_2012:r2:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2016:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2020-1472",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2020-1472"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2020-08-17T00:00:00Z",
+    "last_modified_at": "2024-01-19T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["privilege-escalation", "critical", "zerologon", "active-directory", "netlogon"]
+  },
+  {
+    "cve_id": "CVE-2023-4966",
+    "cvss_score": 9.4,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:L",
+    "severity": "critical",
+    "description": "Sensitive information disclosure in NetScaler ADC and NetScaler Gateway when configured as a Gateway (VPN virtual server, ICA Proxy, CVPN, RDP Proxy) or AAA virtual server. This vulnerability allows unauthenticated attackers to leak sensitive session token information, leading to session hijacking. Known as Citrix Bleed.",
+    "affected_products": [
+      "cpe:2.3:a:citrix:netscaler_adc:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:citrix:netscaler_gateway:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-4966",
+      "https://support.citrix.com/article/CTX579459/netscaler-adc-and-netscaler-gateway-security-bulletin-for-cve20234966-and-cve20234967"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2023-10-10T00:00:00Z",
+    "last_modified_at": "2024-01-16T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["information-disclosure", "critical", "citrix-bleed", "session-hijack", "vpn"]
+  },
+  {
+    "cve_id": "CVE-2021-27065",
+    "cvss_score": 7.8,
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Microsoft Exchange Server Remote Code Execution Vulnerability. This vulnerability is part of the ProxyLogon/HAFNIUM attack chain. It allows a post-authentication attacker to write arbitrary files on the Exchange server, leading to remote code execution.",
+    "affected_products": [
+      "cpe:2.3:a:microsoft:exchange_server:2013:cumulative_update_23:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2016:cumulative_update_19:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2019:cumulative_update_8:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-27065",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-27065"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-03-03T00:00:00Z",
+    "last_modified_at": "2023-08-02T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "exchange", "hafnium", "proxylogon", "file-write"]
+  },
+  {
+    "cve_id": "CVE-2022-30190",
+    "cvss_score": 7.8,
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Word. An attacker who successfully exploits this vulnerability can run arbitrary code with the privileges of the calling application. Known as Follina.",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_10:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_11:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2022-30190",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2022-30190"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2022-06-01T00:00:00Z",
+    "last_modified_at": "2023-06-14T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "follina", "msdt", "office", "phishing"]
+  },
+  {
+    "cve_id": "CVE-2023-23397",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "Microsoft Outlook Elevation of Privilege Vulnerability. An attacker could exploit this vulnerability by sending a specially crafted email which triggers automatically when it is retrieved and processed by the Outlook client. This could lead to exploitation BEFORE the email is viewed in the Preview Pane, leaking the victim's Net-NTLMv2 hash.",
+    "affected_products": [
+      "cpe:2.3:a:microsoft:outlook:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:365_apps:*:*:*:*:enterprise:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-23397",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2023-23397"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2023-03-14T00:00:00Z",
+    "last_modified_at": "2023-06-14T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["privilege-escalation", "critical", "outlook", "ntlm-relay", "zero-click"]
+  },
+  {
+    "cve_id": "CVE-2024-3094",
+    "cvss_score": 10.0,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "Malicious code was discovered in the upstream tarballs of xz, starting with version 5.6.0. Through a series of complex obfuscations, the liblzma build process extracts a prebuilt object file from a disguised test file existing in the source code, which is then used to modify specific functions in the liblzma code. This results in a modified liblzma library that can be used by any software linked against this library, intercepting and modifying data interaction with the library. Specifically targets OpenSSH sshd authentication via systemd.",
+    "affected_products": [
+      "cpe:2.3:a:tukaani:xz:5.6.0:*:*:*:*:*:*:*",
+      "cpe:2.3:a:tukaani:xz:5.6.1:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2024-3094",
+      "https://www.openwall.com/lists/oss-security/2024/03/29/4"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2024-03-29T00:00:00Z",
+    "last_modified_at": "2024-07-24T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["supply-chain", "critical", "xz-utils", "backdoor", "ssh"]
+  },
+  {
+    "cve_id": "CVE-2018-13379",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "An Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal') in Fortinet FortiOS 6.0.0 to 6.0.4, 5.6.3 to 5.6.7 and 5.4.6 to 5.4.12 and FortiProxy 2.0.0, 1.2.0 to 1.2.8, 1.1.0 to 1.1.6, 1.0.0 to 1.0.7 under SSL VPN web portal allows an unauthenticated attacker to download system files via special crafted HTTP resource requests.",
+    "affected_products": [
+      "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2018-13379",
+      "https://fortiguard.com/psirt/FG-IR-18-384"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2019-06-04T00:00:00Z",
+    "last_modified_at": "2021-06-03T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["path-traversal", "critical", "fortigate", "ssl-vpn", "credential-theft"]
+  },
+  {
+    "cve_id": "CVE-2020-0688",
+    "cvss_score": 8.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "A remote code execution vulnerability exists in Microsoft Exchange Server when the server fails to properly create unique keys at install time. Knowledge of the validation key allows an authenticated user with a mailbox to pass arbitrary objects to be deserialized by the web application, which runs as SYSTEM.",
+    "affected_products": [
+      "cpe:2.3:a:microsoft:exchange_server:2010:sp3:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2013:*:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2016:*:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:exchange_server:2019:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2020-0688",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2020-0688"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2020-02-11T00:00:00Z",
+    "last_modified_at": "2023-05-19T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "exchange", "deserialization", "cryptographic-key"]
+  },
+  {
+    "cve_id": "CVE-2019-11510",
+    "cvss_score": 10.0,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "In Pulse Secure Pulse Connect Secure (PCS) 8.2 before 8.2R12.1, 8.3 before 8.3R7.1, and 9.0 before 9.0R3.4, an unauthenticated remote attacker can send a specially crafted URI to perform an arbitrary file reading vulnerability.",
+    "affected_products": [
+      "cpe:2.3:a:pulsesecure:pulse_connect_secure:8.2:*:*:*:*:*:*:*",
+      "cpe:2.3:a:pulsesecure:pulse_connect_secure:8.3:*:*:*:*:*:*:*",
+      "cpe:2.3:a:pulsesecure:pulse_connect_secure:9.0:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2019-11510",
+      "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44101"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2019-05-08T00:00:00Z",
+    "last_modified_at": "2023-03-08T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["arbitrary-file-read", "critical", "pulse-secure", "vpn", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2021-40444",
+    "cvss_score": 7.8,
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Microsoft MSHTML Remote Code Execution Vulnerability. An attacker could craft a malicious ActiveX control to be used by a Microsoft Office document that hosts the browser rendering engine. The attacker would then have to convince the user to open the malicious document.",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_10:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:office:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-40444",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-40444"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-09-15T00:00:00Z",
+    "last_modified_at": "2023-08-08T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "mshtml", "activex", "office", "phishing"]
+  },
+  {
+    "cve_id": "CVE-2023-27997",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "A heap-based buffer overflow vulnerability [CWE-122] in FortiOS version 7.2.4 and below, version 7.0.11 and below, version 6.4.12 and below, version 6.0.16 and below and FortiProxy version 7.2.3 and below, version 7.0.9 and below, version 2.0.12 and below, version 1.2 all versions, version 1.1 all versions SSL-VPN may allow a remote attacker to execute arbitrary code or commands via specifically crafted requests.",
+    "affected_products": [
+      "cpe:2.3:o:fortinet:fortios:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:fortinet:fortiproxy:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-27997",
+      "https://fortiguard.com/psirt/FG-IR-23-097"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2023-06-13T00:00:00Z",
+    "last_modified_at": "2023-11-07T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "fortigate", "heap-overflow", "ssl-vpn"]
+  },
+  {
+    "cve_id": "CVE-2022-1388",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "On F5 BIG-IP 16.1.x versions prior to 16.1.2.2, 15.1.x versions prior to 15.1.5.1, 14.1.x versions prior to 14.1.4.6, 13.1.x versions prior to 13.1.5, and all 12.1.x and 11.6.x versions, undisclosed requests may bypass iControl REST authentication, allowing an unauthenticated attacker with network access to the BIG-IP system through the management port and/or self IP addresses to execute arbitrary system commands.",
+    "affected_products": [
+      "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2022-1388",
+      "https://support.f5.com/csp/article/K23605346"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2022-05-05T00:00:00Z",
+    "last_modified_at": "2023-02-14T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "f5", "big-ip", "auth-bypass"]
+  },
+  {
+    "cve_id": "CVE-2019-19781",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "An issue was discovered in Citrix Application Delivery Controller (ADC) and Gateway 10.5, 11.1, 12.0, 12.1, and 13.0. They allow Directory Traversal, which can lead to remote code execution without credentials.",
+    "affected_products": [
+      "cpe:2.3:a:citrix:application_delivery_controller:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:citrix:gateway:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2019-19781",
+      "https://support.citrix.com/article/CTX267027"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2019-12-27T00:00:00Z",
+    "last_modified_at": "2022-04-18T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "citrix", "adc", "path-traversal", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2022-26134",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance.",
+    "affected_products": [
+      "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+      "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2022-26134",
+      "https://confluence.atlassian.com/doc/confluence-security-advisory-2022-06-02-1130377146.html"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2022-06-03T00:00:00Z",
+    "last_modified_at": "2023-02-23T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "confluence", "ognl-injection", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2021-22986",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "On BIG-IP versions 16.0.x before 16.0.1.1, 15.1.x before 15.1.2.1, 14.1.x before 14.1.4, 13.1.x before 13.1.3.6, and 12.1.x before 12.1.5.3, undisclosed requests to iControl REST interface can lead to remote command execution. This vulnerability allows an unauthenticated attacker to execute arbitrary system commands via the iControl REST API.",
+    "affected_products": [
+      "cpe:2.3:a:f5:big-ip:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-22986",
+      "https://support.f5.com/csp/article/K03009991"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-03-31T00:00:00Z",
+    "last_modified_at": "2022-07-12T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "f5", "big-ip", "icontrol", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2020-14882",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "Vulnerability in the Oracle WebLogic Server product of Oracle Fusion Middleware (component: Console). Supported versions that are affected are 10.3.6.0.0, 12.1.3.0.0, 12.2.1.3.0, 12.2.1.4.0 and 14.1.1.0.0. Easily exploitable vulnerability allows unauthenticated attacker with network access via HTTP to compromise Oracle WebLogic Server. Successful attacks of this vulnerability can result in takeover of Oracle WebLogic Server.",
+    "affected_products": [
+      "cpe:2.3:a:oracle:weblogic_server:10.3.6.0.0:*:*:*:*:*:*:*",
+      "cpe:2.3:a:oracle:weblogic_server:12.2.1.4.0:*:*:*:*:*:*:*",
+      "cpe:2.3:a:oracle:weblogic_server:14.1.1.0.0:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2020-14882",
+      "https://www.oracle.com/security-alerts/cpuoct2020.html"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2020-10-21T00:00:00Z",
+    "last_modified_at": "2022-06-29T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "weblogic", "oracle", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2018-7600",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "Drupal before 7.58, 8.x before 8.3.9, 8.4.x before 8.4.6, and 8.5.x before 8.5.1 allows remote attackers to execute arbitrary code because of an issue affecting multiple subsystems with default or common module configurations. Known as Drupalgeddon2.",
+    "affected_products": [
+      "cpe:2.3:a:drupal:drupal:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2018-7600",
+      "https://www.drupal.org/sa-core-2018-002"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2018-03-29T00:00:00Z",
+    "last_modified_at": "2019-03-01T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "drupal", "drupalgeddon2", "web", "pre-auth"]
+  },
+  {
+    "cve_id": "CVE-2017-11882",
+    "cvss_score": 7.8,
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Microsoft Office 2007 Service Pack 3, Microsoft Office 2010 Service Pack 2, Microsoft Office 2013 Service Pack 1, and Microsoft Office 2016 allow an attacker to run arbitrary code in the context of the current user by failing to properly handle objects in memory, aka 'Microsoft Office Memory Corruption Vulnerability'. This is a vulnerability in the Equation Editor component (EQNEDT32.EXE).",
+    "affected_products": [
+      "cpe:2.3:a:microsoft:office:2007:sp3:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:office:2010:sp2:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:office:2013:sp1:*:*:*:*:*:*",
+      "cpe:2.3:a:microsoft:office:2016:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2017-11882",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2017-11882"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2017-11-15T00:00:00Z",
+    "last_modified_at": "2021-03-16T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "office", "equation-editor", "memory-corruption", "phishing"]
+  },
+  {
+    "cve_id": "CVE-2014-6271",
+    "cvss_score": 9.8,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "critical",
+    "description": "GNU Bash through 4.3 processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code via a crafted environment, as demonstrated by vectors involving the ForceCommand feature in OpenSSH sshd, the mod_cgi and mod_cgid modules in the Apache HTTP Server, scripts executed by unspecified DHCP clients, and other situations. Known as Shellshock.",
+    "affected_products": [
+      "cpe:2.3:a:gnu:bash:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2014-6271",
+      "https://shellshocker.net/"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2014-09-24T00:00:00Z",
+    "last_modified_at": "2021-11-17T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "critical", "bash", "shellshock", "environment-injection"]
+  },
+  {
+    "cve_id": "CVE-2021-3156",
+    "cvss_score": 7.8,
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Sudo before 1.9.5p2 contains an off-by-one error that can result in a heap-based buffer overflow, allowing privilege escalation to root via 'sudoedit -s' and a command-line argument that ends with a single backslash character. Known as Baron Samedit.",
+    "affected_products": [
+      "cpe:2.3:a:sudo_project:sudo:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-3156",
+      "https://www.qualys.com/2021/01/26/cve-2021-3156/baron-samedit-heap-based-overflow-sudo.txt"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-01-26T00:00:00Z",
+    "last_modified_at": "2024-02-09T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["privilege-escalation", "sudo", "baron-samedit", "heap-overflow", "linux"]
+  },
+  {
+    "cve_id": "CVE-2023-0669",
+    "cvss_score": 7.2,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Fortra (formerly HelpSystems) GoAnywhere MFT suffers from a pre-authentication command injection vulnerability in the License Response Servlet due to deserializing an arbitrary attacker-controlled object. This was exploited in the wild by the Cl0p ransomware group.",
+    "affected_products": [
+      "cpe:2.3:a:fortra:goanywhere_managed_file_transfer:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-0669",
+      "https://www.fortra.com/security/advisories/product-security/fi-2023-001"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2023-02-06T00:00:00Z",
+    "last_modified_at": "2023-11-07T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["rce", "deserialization", "goanywhere", "cl0p", "ransomware"]
+  },
+  {
+    "cve_id": "CVE-2021-1675",
+    "cvss_score": 7.8,
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+    "severity": "high",
+    "description": "Windows Print Spooler Elevation of Privilege Vulnerability. An attacker who successfully exploited this vulnerability could run arbitrary code with SYSTEM privileges. An attacker could then install programs; view, change, or delete data; or create new accounts with full user rights.",
+    "affected_products": [
+      "cpe:2.3:o:microsoft:windows_10:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*",
+      "cpe:2.3:o:microsoft:windows_server_2016:*:*:*:*:*:*:*:*"
+    ],
+    "references": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2021-1675",
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-1675"
+    ],
+    "exploit_available": true,
+    "patch_available": true,
+    "published_at": "2021-06-08T00:00:00Z",
+    "last_modified_at": "2023-08-08T00:00:00Z",
+    "source_feed": "NVD",
+    "tags": ["privilege-escalation", "rce", "print-spooler", "windows"]
+  }
+]

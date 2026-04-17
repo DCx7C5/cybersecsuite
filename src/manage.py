@@ -28,15 +28,36 @@ def show_usage():
     print("  seed-mitre-software - Seed MITRE ATT&CK software families (14 entries)")
     print("  seed-cwe            - Seed CWE weaknesses (18 entries)")
     print("  seed-capec          - Seed CAPEC attack patterns (20 entries)")
+    print("  seed-cve            - Seed CVE vulnerability entries (30 entries)")
     print("  machine    - Seed / display local machine hardware inventory")
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
     print("  case-open  - Open a new investigation case (Phase 0 — interactive intake)")
     print("  team-task  - Dispatch task to blue/red/purple team")
     print("               Flags: --team blue|red|purple  --task \"desc\"  --agents a,b  --mode blue|red|purple")
-    print("  ssl-genkey - Generate SSL/TLS certificate for proxy (port 8433)")
-    print("  ssl-info   - Display SSL/TLS certificate information")
-    print("  ssl-verify - Verify SSL/TLS certificate validity")
+    print()
+    print("SSL / Key Management:")
+    print("  ssl create-ca   - Create CA keypair (Ed25519, password-protected)")
+    print("                    Flags: --name NAME --pass PASS.txt [--vault-pass VAULT.txt] [--overwrite]")
+    print("  ssl create-key  - Create Ed25519 keypair (standalone or under CA)")
+    print("                    Flags: --name NAME --pass PASS.txt [--ca CA_NAME] [--overwrite]")
+    print("  ssl create-csr  - Generate Certificate Signing Request")
+    print("                    Flags: --name NAME --pass PASS.txt --cn CN [--org ORG] [--country CC]")
+    print("  ssl list        - List all managed keys and metadata")
+    print()
+    print("Vault (encrypted secret storage):")
+    print("  vault store     - Encrypt and store a secret")
+    print("                    Flags: --name NAME --file FILE --master-pass MASTER.txt")
+    print("  vault get       - Decrypt and print a secret")
+    print("                    Flags: --name NAME --master-pass MASTER.txt")
+    print("  vault list      - List all secrets in the vault")
+    print("  vault delete    - Remove a secret from the vault")
+    print("                    Flags: --name NAME")
+    print()
+    print("Integrity:")
+    print("  check    - Run model, fixture, and config consistency checks")
+    print("             Validates FK targets, table names, related_names,")
+    print("             fixture coverage, and config cross-references")
 
 
 async def schema_command():
@@ -228,6 +249,15 @@ async def seed_capec_command():
     await init_tortoise_async(create_db=True)
     r = await seed_capec()
     print(f"✅ CAPEC: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_cve_command():
+    """Seed CVE vulnerability entries (30 canonical entries)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_cve
+    await init_tortoise_async(create_db=True)
+    r = await seed_cve()
+    print(f"✅ CVE: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
 
 
 def dashboard_command():
@@ -433,6 +463,69 @@ async def team_task_command():
     print(f'   Execute : claude --agent teams/{team}-team --task "{task_desc}"')
 
 
+def ssl_command() -> None:
+    """Dispatch ``ssl`` sub-commands via Click CLI."""
+    from crypto.cli_integration import ssl as ssl_group
+
+    # Re-package argv so Click sees e.g. ["ssl", "create-ca", "--name", ...]
+    ssl_group(args=sys.argv[2:], standalone_mode=True)
+
+
+def vault_command() -> None:
+    """Dispatch ``vault`` sub-commands via Click CLI."""
+    from crypto.cli_integration import vault as vault_group
+
+    vault_group(args=sys.argv[2:], standalone_mode=True)
+
+
+def check_command() -> None:
+    """Run model, fixture, and config integrity checks."""
+    from checks.integrity import run_all_checks
+
+    report = run_all_checks()
+
+    section_labels = {
+        "models": "Model Integrity",
+        "fixtures": "Fixture Coverage",
+        "config": "Config Consistency",
+    }
+
+    for section in ("models", "fixtures", "config"):
+        findings = report[section]
+        label = section_labels[section]
+        print(f"\n{'═' * 60}")
+        print(f"  {label}")
+        print(f"{'═' * 60}")
+        if not findings:
+            print("  ✅ No issues found")
+            continue
+        for f in findings:
+            level = f["level"]
+            if level == "error":
+                icon = "✗"
+            elif level == "warning":
+                icon = "⚠"
+            else:
+                icon = "✓"
+            print(f"  {icon} [{level.upper():7s}] {f['message']}")
+
+    summary = report["summary"]
+    print(f"\n{'─' * 60}")
+    errors = summary["errors"]
+    warnings = summary["warnings"]
+    if errors == 0 and warnings == 0:
+        print("  ✅ All checks passed — no issues found")
+    else:
+        parts = []
+        if errors:
+            parts.append(f"{errors} error(s)")
+        if warnings:
+            parts.append(f"{warnings} warning(s)")
+        status = "✗" if errors else "⚠"
+        print(f"  {status} Summary: {', '.join(parts)}")
+    print()
+
+
 async def main():
     if len(sys.argv) < 2:
         show_usage()
@@ -454,6 +547,7 @@ async def main():
         "seed-mitre-software":  seed_mitre_software_command,
         "seed-cwe":             seed_cwe_command,
         "seed-capec":           seed_capec_command,
+        "seed-cve":             seed_cve_command,
         "machine":              machine_command,
         "case-open":            case_open_command,
         "team-task":            team_task_command,
@@ -469,8 +563,21 @@ async def main():
 
 def _run_main() -> None:
     """Shared entry point for both __main__ and installed script."""
+    # Synchronous command groups — handled before the async event loop.
     if len(sys.argv) >= 2 and sys.argv[1] == "dashboard":
         dashboard_command()
+        sys.exit(0)
+
+    if len(sys.argv) >= 2 and sys.argv[1] == "ssl":
+        ssl_command()
+        sys.exit(0)
+
+    if len(sys.argv) >= 2 and sys.argv[1] == "vault":
+        vault_command()
+        sys.exit(0)
+
+    if len(sys.argv) >= 2 and sys.argv[1] == "check":
+        check_command()
         sys.exit(0)
 
     try:
