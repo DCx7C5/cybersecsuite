@@ -73,7 +73,7 @@ opts = ClaudeAgentOptions(
 | File                 | Lines | Purpose                                                                 |
 |----------------------|-------|-------------------------------------------------------------------------|
 | `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (→ being replaced by src/mcp/cybersec/) |
-| `mcp.json`           | 86    | 5 MCP servers for Claude Code CLI                                       |
+| `mcp.json`           | 91    | 5 MCP servers for Claude Code CLI                                       |
 | `pyproject.toml`     | —     | Python 3.14, uv, all deps                                               |
 | `Makefile`           | —     | `make serve`, `make test`, etc.                                         |
 | `docker-compose.yml` | —     | ASGI + PostgreSQL + Redis, YAML anchors `&common`/`&db-env`/`&ai-keys`  |
@@ -84,7 +84,7 @@ opts = ClaudeAgentOptions(
 | File                  | Lines | Purpose                                                                 |
 |-----------------------|-------|-------------------------------------------------------------------------|
 | `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware    |
-| `src/manage.py`       | ~450  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
+| `src/manage.py`       | ~600  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
 | `src/logger.py`       | 30    | Structured logger                                                       |
 | `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools |
 
@@ -108,7 +108,7 @@ opts = ClaudeAgentOptions(
 | File                        | Lines | Purpose                                                   |
 |-----------------------------|-------|-----------------------------------------------------------|
 | `routes.py`                 | 224   | OpenAI-compat `/v1/*` endpoints                           |
-| `providers/registry.py`     | 1140  | **60 providers**, model lists, cost metadata, auth types  |
+| `providers/registry.py`     | 1163  | **60 providers**, model lists, cost metadata, auth types  |
 | `routing/combo.py`          | 574   | 13-strategy routing engine, circuit breaker, budget guard |
 | `translators/core.py`       | 275   | Request/response translation between formats              |
 | `services/rate_limiter.py`  | 159   | Rate limiting per provider                                |
@@ -126,8 +126,8 @@ Keys: `/etc/dystopian-crypto/keys`. Vault: `~/.dystopian-crypto/vault/`.
 | `artifact_manager.py` | 376 | Artifact signing/verification |
 | `key_manager.py` | 362 | KeyManager + PasswordManager |
 | `ssl_signer.py` | 277 | SSLArtifactSigner (Ed25519) |
-| `vault.py` | ~120 | **NEW** File-based encrypted secret vault |
-| `cli_integration.py` | ~350 | **REWRITTEN** Runnable Click CLI: ssl + vault commands |
+| `vault.py` | ~200 | File-based encrypted secret vault |
+| `cli_integration.py` | ~416 | Runnable Click CLI: ssl + vault commands |
 | `template_renderer.py` | 228 | Certificate template renderer |
 | `cache.py` | 270 | Crypto cache layer |
 | `config.py` | 253 | Crypto configuration |
@@ -139,11 +139,11 @@ Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecor
 **Known fix**: Duplicate AuditLog (audit.py→re-export from core.py), duplicate SharedEntry removed from investigation.py, empty intelligence.py removed from MODEL_MODULES.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
 
-### src/checks/ (NEW ✅)
+### src/checks/ (2 files ✅)
 Integrity check module — validates model FK consistency, fixture coverage, and config file paths.
 | File | Purpose |
 |------|---------|
-| `integrity.py` | `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()` |
+| `integrity.py` | `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()` (~699L) |
 | `__init__.py` | Re-exports |
 
 **Results**: 0 model errors (after fix), 3 config errors (missing MCP dirs, stale entry point), 18 warnings (missing fixtures).
@@ -160,8 +160,8 @@ In-process metrics store with ring-buffer, percentile summaries, ASGI middleware
 
 Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
 
-### src/dashboard/routes.py (1620L)
-27 REST endpoints + 4 SSE endpoints + 1 HTML root = 32 routes. All HTML inline in `_DASHBOARD_HTML` string.
+### src/dashboard/routes.py (1567L)
+28 REST endpoints + 4 SSE endpoints + 1 HTML root = **33 routes** total. All HTML inline in `_DASHBOARD_HTML` string.
 REST: overview, providers, usage, health, crypto, a2a, investigations, db-counts, agents, routing, agent-factory, prompts, cases, tasks, tasks/create, tasks/{id}, tasks/{id}/cancel, findings, iocs, yara, network, intelligence, audit, compliance, **nist-csf**, **nist-ai-rmf**, telemetry
 SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
@@ -169,10 +169,10 @@ Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Find
 ### .claude/ system
 | Component    | Files                                                      | Status                       |
 |--------------|------------------------------------------------------------|------------------------------|
-| `agents/`    | 33 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)   | ✅ all consistent frontmatter |
+| `agents/`    | **33 agents** + AGENT_FACTORY + DEV_SUB_AGENTS + 3 teams (in `teams/` subdir) | ✅ all consistent frontmatter |
 | `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json | ⚠️ NEVER AUDITED             |
-| `commands/`  | 7 slash commands + config.py + `__init__.py` + README.md   | ⚠️ NEVER AUDITED             |
-| `skills/`    | **933 SKILL.md** across 28 active domains                 | ✅ RESTRUCTURED               |
+| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md | ⚠️ NEVER AUDITED             |
+| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only) | ✅ RESTRUCTURED               |
 | `templates/` | 14 template files across 6 subdirs                         | Not reviewed                 |
 
 #### templates/ structure
@@ -198,7 +198,7 @@ templates/
 `_utils`, `utils` (shared utilities), `database`, `exact_match_cache`, `uvloop_integration`,
 `yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`
 
-#### commands/ — 7 slash commands
+#### commands/ — 8 slash commands
 | Command        | Purpose                                       |
 |----------------|-----------------------------------------------|
 | `hunt`         | Check for suspicious processes and injections |
@@ -208,6 +208,7 @@ templates/
 | `mode-switch`  | Switch blue/red/purple mode                   |
 | `setup`        | Run manage.py commands                        |
 | `test-config`  | Test configuration validation                 |
+| `team-task`    | Dispatch task to a blue/red/purple team       |
 
 Supporting files: `config.py`, `__init__.py`, `README.md`
 
@@ -222,10 +223,15 @@ Supporting files: `config.py`, `__init__.py`, `README.md`
 Loads `.claude/agents/cybersec-agent.md`. Orchestrator with `role: orchestrator`.
 Accepts `blue|red|purple` mode. Delegates to all 32 specialist sub-agents.
 
-### All 32 agents — frontmatter consistent ✅
+### All 33 agents — frontmatter consistent ✅
 Model tiers:
-- **Haiku** — watchdog, command-verifier
-- **Sonnet** — 27 agents: all analysts, developers, layer2-7 specialists (default)
+- **Haiku** — watchdog, command-verifier, token-optimizer
+- **Sonnet** — 28 agents: all analysts, developers, layer2-7 specialists (default)
+  Includes: audiovideo-analyst, certificate-analyst, code-reviewer, cpp-developer,
+  cybersec-agent, cybersec-analyst, encoding-specialist, filesystem-analyst, frontend-design,
+  kernel-analyst, layer2-7 specialists (×6), logfile-analyst, memory-analyst, network-analyst,
+  persistence-analyst, postgres-db-engineer, process-analyst, python-developer, reverse-engineer\*,
+  senior-frontend, settings-analyst, steganography-analyst, threat-modeler, vuln-scanner
 - **Opus** — firmware-analyst, reverse-engineer, AGENT_FACTORY
 
 ### Two Execution Paths (NEVER conflate)
@@ -420,22 +426,24 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
-- Docs — 8 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart)
+- Docs — 9 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart, **teams**)
 - Skills taxonomy — 778 → **933** SKILL.md across 24+ domains (web-security→web-application, ot-ics dissolved, 6 classical domains expanded with 189 new deep-hierarchy skills)
 - MCP package split — `src/mcp/` package: `cybersec/` (29 tools) + `dystopian.py` (5 tools) + SDK compat shim → 34 tools, `all_servers()` + `allowed_tools()` — commit f0e8b72
 - New agents — `token-optimizer.md` (haiku, redundancy detection + prompt compression + cache seeds) — 33 agents total
 - Phase A2 — A2A stubs wired to SDK (model mapping, PreToolUse audit hook, real AI execution) — commits 3cfa5a0
 - Phase D (partial) — Telemetry stack complete (MetricsStore, middleware, decorators, collector, TelemetryMiddleware mounted) — commits 44bcdd7, 1a688c6, 3936eaf
-- Dashboard expansion — 30 routes total (was 16+3); 7 data endpoints + telemetry + task CRUD — commits 13af280, 3936eaf
+- Dashboard expansion — **33 routes total** (was 16+3); 7 data endpoints + telemetry + task CRUD — commits 13af280, 3936eaf
 - NIST fixtures downloaded — `data/fixtures/nist_csf_2.json` (185 subcategories) + `data/fixtures/nist_ai_rmf.json` (72 subcategories)
 - NIST DB models + seeds + CLI + dashboard endpoints — `NistCsfControl`, `NistAiRmfControl`, `seed_nist_csf()`, `seed_nist_ai_rmf()`, `seed-nist-csf/ai-rmf/all` CLI commands, `/api/nist-csf` + `/api/nist-ai-rmf` endpoints (commit 72de387)
 - Skills: web-security renamed → web-application; ot-ics dissolved → 3-6 level hierarchy (ics/, iot/, sector/) (commit 3db39fd)
 - **MCP pkg split** — `src/mcp/cybersec/` (8 submodules, 29 tools) + `src/mcp/dystopian.py` (5 crypto tools) + `_sdk_compat.py` shim → commit f0e8b72
 - **Classical domains expanded** — 189 new SKILL.md: network, network-filesystem, filesystem, database, browser, processes → commit 63b4880
 - **token-optimizer agent** — `.claude/agents/token-optimizer.md` (haiku, redundancy/compression specialist)
+- **11 new specialist agents added** — audiovideo-analyst, certificate-analyst, cpp-developer, encoding-specialist, frontend-design, logfile-analyst, postgres-db-engineer, process-analyst, senior-frontend, settings-analyst, vuln-scanner (Sonnet) → **33 agents total**
+- **Provider expansion** — 48 → 51 → **60 providers** in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes, replicate, lepton, runpod, writer, reka, zhipu, yi, minimax, stepfun)
 
-### docs/ — 8 files
-`architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
+### docs/ — 9 files
+`architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`, `teams.md`
 
 ---
 
@@ -458,7 +466,6 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### ✅ Phase 3 — Documentation — COMPLETE (commit 0984fda)
 - Updated all 8 docs: architecture.md (2 Mermaid flowcharts), api.md, agents.md, configuration.md, contributing.md, deployment.md, mcp-tools.md, quickstart.md
 - Created `docs/teams.md` — team mode, blue/red/purple responsibilities, team-task command
-
 ### ✅ Phase 4 — SKILL.md Mass Updates — COMPLETE (commit 0984fda)
 - Removed `source:` field (748 files); renamed `name:` to path-based pattern (919 files)
 - Added `nist_csf: []` and `capec: []` frontmatter headers to all 919 files
@@ -470,7 +477,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 - `threat-intel/` dissolved (86 skills): hunting/ioc/analysis/intelligence/threat/mitre → `forensics/`; detection → `siem-soc/`; platforms/feeds → `intel-platform/` (new); osint/shodan/darkweb → `osint/` (new); brand → `ops/`
 - `steganography/`: 14 new SKILL.md files (image/audio/video/document/tool/network)
 - **New domains**: `intel-platform/`, `osint/`
-- **Total**: 933 SKILL.md across **28 active domains**
+- **Total**: 933 SKILL.md across **26 active domains**
 
 ### ✅ Phase 6 — Agent Team Task — COMPLETE
 - `.claude/commands/team-task` slash command
