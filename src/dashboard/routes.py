@@ -832,6 +832,39 @@ async def api_compliance(request: Request) -> JSONResponse:
     })
 
 
+async def api_telemetry(request: Request) -> JSONResponse:
+    """Live telemetry snapshot from MetricsStore + collector history."""
+    try:
+        from telemetry import get_snapshot
+        from telemetry.collector import collector
+        snap = await get_snapshot()
+        history = collector.all_history()
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({"snapshot": snap, "history_len": len(history)})
+
+
+async def sse_telemetry(request: Request) -> StreamingResponse:
+    """SSE stream of telemetry snapshots every 5 s."""
+    async def event_generator():
+        try:
+            import json
+            import asyncio
+            from telemetry import get_snapshot
+            while True:
+                snap = await get_snapshot()
+                yield f"event: telemetry_update\ndata: {json.dumps(snap, default=str)}\n\n"
+                await asyncio.sleep(5)
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
 # ── Dashboard HTML (self-contained) ──────────────────────────────────────────
 
 _DASHBOARD_HTML = """<!DOCTYPE html>
@@ -1425,9 +1458,11 @@ def create_dashboard_router() -> Router:
         Route("/api/intelligence", api_intelligence, methods=["GET"]),
         Route("/api/audit", api_audit, methods=["GET"]),
         Route("/api/compliance", api_compliance, methods=["GET"]),
+        Route("/api/telemetry", api_telemetry, methods=["GET"]),
         # SSE streaming endpoints
         Route("/sse/cases", sse_cases, methods=["GET"]),
         Route("/sse/tasks", sse_tasks, methods=["GET"]),
         Route("/sse/health", sse_health, methods=["GET"]),
+        Route("/sse/telemetry", sse_telemetry, methods=["GET"]),
     ])
 
