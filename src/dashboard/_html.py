@@ -163,10 +163,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
        <div class="card text-center"><div class="text-2xl font-bold text-green-400" id="cases-open">-</div><div class="text-xs text-gray-500">Open</div></div>
        <div class="card text-center"><div class="text-2xl font-bold text-gray-400" id="cases-closed">-</div><div class="text-xs text-gray-500">Closed</div></div>
      </div>
-     <table>
-       <thead><tr><th>Title</th><th>Priority</th><th>Mode</th><th>Facts</th><th>IOCs</th><th>Assets</th><th>MITRE</th><th>Created</th><th>Status</th></tr></thead>
-       <tbody id="cases-body"><tr><td colspan="9" class="text-center text-gray-500 loading">Loading cases...</td></tr></tbody>
-     </table>
+     <div id="cases-table"><div class="loading text-gray-500">Loading cases...</div></div>
    </div>
 
    <!-- Tasks tab -->
@@ -179,10 +176,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
        <div class="card text-center"><div class="text-2xl font-bold text-green-400" id="tasks-completed">-</div><div class="text-xs text-gray-500">Done</div></div>
        <div class="card text-center"><div class="text-2xl font-bold text-red-400" id="tasks-failed">-</div><div class="text-xs text-gray-500">Failed</div></div>
      </div>
-     <table>
-       <thead><tr><th>Task ID</th><th>State</th><th>Agent</th><th>Created</th><th>Updated</th><th>Action</th></tr></thead>
-       <tbody id="tasks-body"><tr><td colspan="6" class="text-center text-gray-500 loading">Loading tasks...</td></tr></tbody>
-     </table>
+     <div id="tasks-table"><div class="loading text-gray-500">Loading tasks...</div></div>
+   </div>
+
+   <!-- PoCs tab -->
+   <div id="tab-pocs" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f4a3; Proof-of-Concept Exploits</h3>
+     <div id="pocs-content" class="loading">Loading PoC data...</div>
    </div>
 
    <!-- Explorer tab -->
@@ -325,7 +325,7 @@ function renderTable(containerId, schema, rows, opts = {}) {
 
 async function refresh() {
   try {
-    const [ov, pv, uv, hv, cv, av, iv, dv, agv, rtv, fv, pmv, casesv, tasksv] = await Promise.all([
+    const [ov, pv, uv, hv, cv, av, iv, dv, agv, rtv, fv, pmv, casesv, tasksv, pocv] = await Promise.all([
       fetch('/dashboard/api/overview').then(r => r.json()),
       fetch('/dashboard/api/providers').then(r => r.json()),
       fetch('/dashboard/api/usage').then(r => r.json()),
@@ -340,6 +340,7 @@ async function refresh() {
       fetch('/dashboard/api/prompts').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/cases').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/tasks').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/pocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
     ]);
 
     // Stats
@@ -598,58 +599,108 @@ async function refresh() {
     }
 
     // Cases tab (Phase 0)
-    $('cases-total').textContent = cv.total || 0;
-    $('cases-open').textContent = cv.open || 0;
-    $('cases-closed').textContent = cv.closed || 0;
-    const cases_body = $('cases-body');
-    if (cv.error) {
-      cases_body.innerHTML = '<tr><td colspan="9" class="text-center text-red-400">' + cv.error + '</td></tr>';
+    $('cases-total').textContent = casesv.total || 0;
+    $('cases-open').textContent = casesv.open || 0;
+    $('cases-closed').textContent = casesv.closed || 0;
+    if (casesv.error) {
+      $('cases-table').innerHTML = '<p class="text-red-400">Error: ' + casesv.error + '</p>';
     } else {
-      cases_body.innerHTML = (cv.cases || []).map(c => {
-        const status_badge = c.closed_at ? '<span class="badge badge-err">CLOSED</span>' : '<span class="badge badge-ok">OPEN</span>';
-        const priority_color = c.priority === 'critical' ? 'text-red-400' : c.priority === 'high' ? 'text-yellow-400' : 'text-gray-300';
-        return '<tr>'
-          + '<td><strong>' + (c.title || '').substring(0, 40) + '</strong></td>'
-          + '<td class="' + priority_color + '">' + (c.priority || '?').toUpperCase() + '</td>'
-          + '<td><span class="badge badge-standard">' + (c.mode || '?').toUpperCase() + '</span></td>'
-          + '<td>' + (c.facts_count || 0) + '</td>'
-          + '<td>' + (c.iocs_count || 0) + '</td>'
-          + '<td>' + (c.assets_count || 0) + '</td>'
-          + '<td>' + (c.mitre_count || 0) + '</td>'
-          + '<td class="text-xs">' + (c.created_at ? c.created_at.substring(0, 10) : '?') + '</td>'
-          + '<td>' + status_badge + '</td>'
-          + '</tr>';
-      }).join('') || '<tr><td colspan="9" class="text-center text-gray-500">No cases found</td></tr>';
+      const caseRows = (casesv.cases || []).map(c => ({
+        title: (c.title || '').substring(0, 50),
+        priority: c.priority === 'critical'
+          ? '<span class="text-red-400 font-bold">' + (c.priority || '?').toUpperCase() + '</span>'
+          : c.priority === 'high'
+          ? '<span class="text-yellow-400">' + (c.priority || '?').toUpperCase() + '</span>'
+          : (c.priority || '?').toUpperCase(),
+        mode: '<span class="badge badge-standard">' + (c.mode || '?').toUpperCase() + '</span>',
+        facts_count: c.facts_count || 0,
+        iocs_count: c.iocs_count || 0,
+        assets_count: c.assets_count || 0,
+        mitre_count: c.mitre_count || 0,
+        created_at: c.created_at,
+        status: c.closed_at
+          ? '<span class="badge badge-err">CLOSED</span>'
+          : '<span class="badge badge-ok">OPEN</span>',
+      }));
+      renderTable('cases-table', [
+        {key: 'title', label: 'Title', type: 'string'},
+        {key: 'priority', label: 'Priority', type: 'string'},
+        {key: 'mode', label: 'Mode', type: 'string'},
+        {key: 'facts_count', label: 'Facts', type: 'number'},
+        {key: 'iocs_count', label: 'IOCs', type: 'number'},
+        {key: 'assets_count', label: 'Assets', type: 'number'},
+        {key: 'mitre_count', label: 'MITRE', type: 'number'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+        {key: 'status', label: 'Status', type: 'string'},
+      ], caseRows);
     }
 
     // Tasks tab
-    $('tasks-total').textContent = tv.total || 0;
-    $('tasks-submitted').textContent = tv.by_state?.submitted || 0;
-    $('tasks-working').textContent = tv.by_state?.working || 0;
-    $('tasks-completed').textContent = tv.by_state?.completed || 0;
-    $('tasks-failed').textContent = tv.by_state?.failed || 0;
-    const tasks_body = $('tasks-body');
-    if (tv.error) {
-      tasks_body.innerHTML = '<tr><td colspan="6" class="text-center text-red-400">' + tv.error + '</td></tr>';
+    $('tasks-total').textContent = tasksv.total || 0;
+    $('tasks-submitted').textContent = tasksv.by_state?.submitted || 0;
+    $('tasks-working').textContent = tasksv.by_state?.working || 0;
+    $('tasks-completed').textContent = tasksv.by_state?.completed || 0;
+    $('tasks-failed').textContent = tasksv.by_state?.failed || 0;
+    if (tasksv.error) {
+      $('tasks-table').innerHTML = '<p class="text-red-400">Error: ' + tasksv.error + '</p>';
     } else {
-      tasks_body.innerHTML = (tv.tasks || []).map(t => {
-        const state_badge = t.state === 'completed' ? '<span class="badge badge-ok">✓ DONE</span>'
+      const taskRows = (tasksv.tasks || []).map(t => ({
+        id: '<span class="font-mono text-xs">' + t.id + '</span>',
+        state: t.state === 'completed' ? '<span class="badge badge-ok">✓ DONE</span>'
           : t.state === 'failed' ? '<span class="badge badge-err">✗ FAIL</span>'
           : t.state === 'working' ? '<span class="badge badge-standard">⟳ WORK</span>'
           : t.state === 'submitted' ? '<span class="badge badge-budget">⊕ SBMT</span>'
-          : '<span class="badge">' + t.state.toUpperCase() + '</span>';
-        const cancel_btn = (t.state === 'completed' || t.state === 'failed' || t.state === 'canceled')
-          ? '-'
-          : '<button onclick="cancelTask(' + t.id + ')" class="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 rounded">Cancel</button>';
-        return '<tr>'
-          + '<td class="font-mono text-xs">' + t.id + '</td>'
-          + '<td>' + state_badge + '</td>'
-          + '<td class="text-xs">' + (t.agent || '?') + '</td>'
-          + '<td class="text-xs">' + (t.created_at ? t.created_at.substring(0, 10) : '?') + '</td>'
-          + '<td class="text-xs">' + (t.updated_at ? t.updated_at.substring(0, 10) : '?') + '</td>'
-          + '<td>' + cancel_btn + '</td>'
-          + '</tr>';
-      }).join('') || '<tr><td colspan="6" class="text-center text-gray-500">No tasks found</td></tr>';
+          : '<span class="badge">' + (t.state || '?').toUpperCase() + '</span>',
+        agent: t.agent || '?',
+        created_at: t.created_at,
+        updated_at: t.updated_at,
+        action: (t.state === 'completed' || t.state === 'failed' || t.state === 'canceled')
+          ? '—'
+          : '<button onclick="cancelTask(\'' + t.id + '\')" class="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 rounded">Cancel</button>',
+      }));
+      renderTable('tasks-table', [
+        {key: 'id', label: 'Task ID', type: 'string'},
+        {key: 'state', label: 'State', type: 'string'},
+        {key: 'agent', label: 'Agent', type: 'string'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+        {key: 'updated_at', label: 'Updated', type: 'datetime'},
+        {key: 'action', label: 'Action', type: 'string'},
+      ], taskRows);
+    }
+
+    // PoCs tab
+    const pocContent = $('pocs-content');
+    if (pocv.error) {
+      pocContent.innerHTML = '<p class="text-red-400">Error: ' + pocv.error + '</p>';
+    } else {
+      const byStatus = pocv.by_status || {};
+      const bySeverity = pocv.by_severity || {};
+      pocContent.innerHTML = '<div class="grid grid-cols-2 gap-4 mb-4">'
+        + '<div class="card text-center"><div class="text-2xl font-bold">' + (pocv.total || 0) + '</div><div class="text-xs text-gray-500">Total PoCs</div></div>'
+        + '<div class="card text-center"><div class="text-2xl font-bold text-red-400">' + (pocv.weaponized || 0) + '</div><div class="text-xs text-gray-500">Weaponized</div></div>'
+        + '</div>'
+        + '<div class="grid grid-cols-2 gap-4 mb-4">'
+        + '<div class="card"><h4 class="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">By Status</h4>'
+        + '<div class="grid grid-cols-5 gap-2 text-center">'
+        + Object.entries(byStatus).map(([k, v]) => '<div><div class="text-lg font-bold">' + v + '</div><div class="text-xs text-gray-500">' + k + '</div></div>').join('')
+        + '</div></div>'
+        + '<div class="card"><h4 class="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">By Severity</h4>'
+        + '<div class="grid grid-cols-5 gap-2 text-center">'
+        + Object.entries(bySeverity).map(([k, v]) => '<div><div class="text-lg font-bold">' + v + '</div><div class="text-xs text-gray-500">' + k + '</div></div>').join('')
+        + '</div></div>'
+        + '</div>'
+        + '<div id="pocs-table"></div>';
+      renderTable('pocs-table', [
+        {key: 'title', label: 'Title', type: 'string'},
+        {key: 'status', label: 'Status', type: 'string'},
+        {key: 'severity', label: 'Severity', type: 'string'},
+        {key: 'is_weaponized', label: 'Weaponized', type: 'bool'},
+        {key: 'reliability_score', label: 'Reliability', type: 'number'},
+        {key: 'language', label: 'Language', type: 'string'},
+        {key: 'source', label: 'Source', type: 'string'},
+        {key: 'tags', label: 'Tags', type: 'json'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+      ], pocv.recent || []);
     }
 
   } catch (e) {
@@ -722,6 +773,3 @@ setInterval(refresh, 15000);
 </script>
 </body>
 </html>"""
-
-
-
