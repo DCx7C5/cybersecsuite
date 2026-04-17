@@ -66,8 +66,8 @@ Claude Code / agent_sdk.py
 |---|---|
 | `agents/` | 34 agents: 33 specialists + AGENT_FACTORY · teams/: blue/red/purple · model tiers: Haiku (3), Sonnet (28), Opus (3) |
 | `hooks/` | 32 .py files: 10 settings.json-wired + 12 custom event handlers (via `emit()`) + 10 utility modules |
-| `commands/` | 8 slash commands: hunt, browser-hunt, memory-dump, net-hunt, mode-switch, setup, test-config, team-task ⚠️ NEVER AUDITED |
-| `skills/` | 933 SKILL.md across 26 domains — 752 Anthropic-integrated, 170+ project-native |
+| `commands/` | **DISSOLVED** — all 8 converted to SKILL.md entries (see skills/) |
+| `skills/` | 941 SKILL.md across 26 domains — includes 8 former commands (forensics/hunting/apt-hunt, forensics/browser/hunt, forensics/memory/dump, forensics/network/apt-hunt, ops/mode-switch, ops/setup, ops/test-config, ops/team-task) |
 
 **Two execution paths** — NEVER conflate:
 - **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 36 MCP tools
@@ -134,6 +134,8 @@ async def _fn(args: dict) -> dict:
 - Phase K.3 — Providers/Usage/Crypto/A2A converted to renderTable
 - Phase K.4 — 7 new forensic tabs: Findings/IOCs/YARA/Network/Intel/Audit/Compliance
 - Phase K.5 — Agent Query panel: agent selector, context enrichment, conversation history
+- Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
+- Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 
 ### 🚧 Active — Phase K (Dashboard)
 6. Split `_html.py` (1194L) → `templates/` package with component helpers (`stat_card`, `tab_panel`, `stat_grid`, `table_slot`)
@@ -145,4 +147,3 @@ async def _fn(args: dict) -> dict:
 - Phase N — update all 10 docs + README
 - Phase G — SSE frontend wiring (replace polling)
 - OmniRoute integration (mcp.json + allowed_tools)
-- Commands audit (8 slash commands — never tested)
