@@ -33,11 +33,11 @@ opts = ClaudeAgentOptions(
 | Path                      | What                                                       |
 |---------------------------|------------------------------------------------------------|
 | `/health`                 | DB health check (200/503)                                  |
-| `/dashboard/*`            | Dashboard UI + 25 REST + 4 SSE endpoints (30 routes total) |
+| `/dashboard/*`            | Dashboard UI + 30 REST + 4 SSE endpoints (36 routes total) |
 | `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here              |
 | `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                                    |
 
-### settings.json (`.claude/settings.json`) — 13 sections
+### settings.json (`.claude/settings.json`) — 14 top-level keys
 ```json
 {
   "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1", ... },
@@ -45,24 +45,25 @@ opts = ClaudeAgentOptions(
   "version": "0.1.0",
   "asgi": { "host": "127.0.0.1", "port": 8000, "alt_port": 8080, "tls_port": 8433 },
   "mcp": { "servers": ["cybersec", "dystopian"], "tool_prefix": "mcp__" },
-  "proxy": { "enabled": true, "default_strategy": "cost-optimized" },
-  "crypto": { "algorithm": "Ed25519", "hash": "blake2b", "hash_digest_size": 32 },
+  "proxy": { "enabled": true, "default_strategy": "cost-optimized", "browser_providers": {...} },
+  "crypto": { "algorithm": "Ed25519", "hash": "blake2b", "hash_digest_size": 32, "key_derivation": {...}, "encryption": {...} },
   "signing": { "algorithm": "Ed25519", "token_format": "frontmatter.payload", "default_expiry_hours": 8760 },
   "artifacts": { "checksum_algorithm": "blake2b", "signature_log_enabled": true },
-  "keys": { "directory": "/etc/dystopian-crypto/keys" },
+  "keys": { "directory": "/etc/dystopian-crypto/keys", "permissions": {...} },
   "cache": { "integrity_key": "cache_integrity", "default_ttl_hours": 24 },
-  "security": { "min_password_length": 32, "audit_logging": true },
+  "security": { "min_password_length": 32, "require_password_file": true, "audit_logging": true },
   "hooks_dir": "hooks/",
   "hooks": {
-    "PreToolUse":  [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 .../hooks/pre_tool_call.py"}] }],
-    "PostToolUse": [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 .../hooks/post_tool_use.py"}] }],
-    "Stop":        [{ "hooks": [{"type":"command","command":"python3 .../hooks/session_end.py"}] }]
+    "PreToolUse":  [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/pre_tool_call.py\""}] }],
+    "PostToolUse": [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/post_tool_use.py\""}] }],
+    "Stop":        [{ "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/session_end.py\""}] }]
   }
 }
 ```
 
-**Workspace-level hooks** (3, in settings.json): `PreToolUse`, `PostToolUse`, `Stop` — fire globally for all agents.
-**Agent-scoped hooks** (15, in cybersec-agent frontmatter): `FirstInit`, `SessionStart/End`, `AgentStart/End`, `PhaseStart/End`, `InvestigationStart/End`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated` — fire only during cybersec-agent lifecycle.
+**Workspace-level hooks** (3, in settings.json `hooks` key): `PreToolUse`, `PostToolUse`, `Stop` — fire globally for all agents via Claude Code hook system. These are the ONLY hooks the Claude Code settings.json schema supports.
+**Agent-scoped hooks** (15, defined in `.claude/hooks/*.py` + `hooks.json`): `FirstInit`, `SessionStart/End`, `AgentStart/End`, `PhaseStart/End`, `InvestigationStart/End`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated` — these are **custom event handlers** invoked via `hooks/_utils.py emit()`, NOT native Claude Code settings.json properties.
+**Root hooks/** directory (29 .py files): `pre_tool_call.py`, `post_tool_use.py`, `session_end.py` are wired via settings.json; remaining 26 are event handlers + utility modules invoked programmatically.
 
 ### Ports
 | Port | What                | Status                        |
@@ -90,7 +91,7 @@ opts = ClaudeAgentOptions(
 | File                    | Lines | Purpose                                                                        |
 |-------------------------|-------|--------------------------------------------------------------------------------|
 | `src/proxy/asgi.py`     | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware           |
-| `src/manage.py`         | ~600  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
+| `src/manage.py`         | 161   | CLI management dispatcher (delegates to manage/_commands.py)                    |
 | `src/logger.py`         | 30    | Structured logger                                                              |
 | `src/csmcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 36 tools        |
 
@@ -137,7 +138,7 @@ async for chunk in runner.stream("What are the top threats?"):
 ### src/a2a/
 | File                | Lines | Purpose                                                                              |
 |---------------------|-------|--------------------------------------------------------------------------------------|
-| `agent_sdk.py`      | ~250  | SDK bridge — `build_agent_options()` → 36 MCP tools (29+7) via `csmcp.all_servers()` |
+| `agent_sdk.py`      | 250   | SDK bridge — `build_agent_options()` → 36 MCP tools (31+5) via `csmcp.all_servers()` |
 | `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards                                             |
 | `orchestrator.py`   | 365   | A2A task orchestration                                                               |
 | `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)                                                        |
@@ -178,21 +179,24 @@ Keys: `/etc/dystopian-crypto/keys`. Vault: `~/.dystopian-crypto/vault/`.
 | `cache.py` | 270 | Crypto cache layer |
 | `config.py` | 253 | Crypto configuration |
 
-### src/db/ (44 model files, 70 model classes ✅)
+### src/db/ (44 model files, 82 model classes discovered by introspector ✅)
 PostgreSQL via Tortoise ORM (asyncpg). DB: `cybersec_forensics`.
-Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, and 25+ more.
-**Fixtures**: 6 JSON files in `src/db/fixtures/` (mitre_techniques, mitre_actors, mitre_software, cwe_entries, capec_entries, **cve_entries**)
-**Known fix**: Duplicate AuditLog (audit.py→re-export from core.py), duplicate SharedEntry removed from investigation.py, empty intelligence.py removed from MODEL_MODULES.
+Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, ProofOfConcept, NistCsfControl, NistAiRmfControl, and 60+ more (including junction tables).
+**Fixtures**: 7 JSON files in `src/db/fixtures/` (mitre_techniques, mitre_actors, mitre_software, cwe_entries, capec_entries, cve_entries, **poc_entries**)
+**Known skips**: `db.models.forensic` (SessionPhase enum missing INIT), `db.models.yara_rule` (YaraRuleSource enum missing IOC_DERIVED) — `_schema.py` silently skips these on import error.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
 
-### src/checks/ (2 files ✅)
+### src/checks/ (4 files, split from single 699L file)
 Integrity check module — validates model FK consistency, fixture coverage, and config file paths.
-| File | Purpose |
-|------|---------|
-| `integrity.py` | `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()` (~699L) |
-| `__init__.py` | Re-exports |
+| File                | Lines | Purpose                                            |
+|---------------------|-------|----------------------------------------------------|
+| `integrity.py`      | 68    | Thin dispatcher: `run_all_checks()` → 3 submodules |
+| `_model_check.py`   | 281   | `check_models()` — FK consistency, field validation |
+| `_fixture_check.py` | 117   | `check_fixtures()` — fixture file coverage          |
+| `_config_check.py`  | 254   | `check_config()` — config paths, MCP entries         |
+| `__init__.py`       | —     | Re-exports                                          |
 
-**Results**: 0 model errors (after fix), 3 config errors (missing MCP dirs, stale entry point), 18 warnings (missing fixtures).
+**⚠️ 40 lint errors** in checks/ — F821 undefined names (`ast`, `Path`, `_REPO_ROOT`, `_SRC_ROOT`, `_SKIP_STEMS`, `_MODEL_BASES`, `_RELATIONAL_FIELDS`). Split left some imports behind. Fix in Phase J.
 
 ### src/telemetry/ (5 files ✅ new)
 In-process metrics store with ring-buffer, percentile summaries, ASGI middleware.
@@ -206,17 +210,30 @@ In-process metrics store with ring-buffer, percentile summaries, ASGI middleware
 
 Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
 
-### src/dashboard/routes.py (1567L)
-28 REST endpoints + 4 SSE endpoints + 1 HTML root = **33 routes** total. All HTML inline in `_DASHBOARD_HTML` string.
-REST: overview, providers, usage, health, crypto, a2a, investigations, db-counts, agents, routing, agent-factory, prompts, cases, tasks, tasks/create, tasks/{id}, tasks/{id}/cancel, findings, iocs, yara, network, intelligence, audit, compliance, **nist-csf**, **nist-ai-rmf**, telemetry
+### src/dashboard/ (36 routes, 82 model registry)
+| File          | Lines | Purpose                                                                        |
+|---------------|-------|--------------------------------------------------------------------------------|
+| `routes.py`   | 63    | Thin route wiring — 36 Starlette routes                                        |
+| `_html.py`    | 561   | SPA HTML template (inline JS, CSS, tab navigation)                             |
+| `_handlers.py`| 1228  | All API handlers — 30 REST + 4 SSE + 3 new endpoints (models/tables/agent-query)|
+| `_schema.py`  | 149   | Tortoise model introspector — discovers 82 models, serialization, pagination   |
+
+**New endpoints (Phase H/I)**:
+- `GET /api/models` — lists all 82 registered DB models with table name + field count
+- `GET /api/tables/{model}` — generic paginated query for ANY model by name (supports sort, filter_*)
+- `POST /api/agent-query` — agent-sdk bridge: {agent, prompt, context_table?, row_ids?} → agent response
+
+**Expanded endpoints** (now return full model fields, not just summaries):
+findings (20 fields), iocs (14), yara (14), network (+hosts +ips), intelligence (+mitre +cve), audit (12), compliance (13), nist-csf (dynamic), nist-ai-rmf (dynamic)
+
+Current tabs in HTML: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit, PoC, NIST, Crypto, A2A.
 SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
-Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
 ### .claude/ system
 | Component    | Files                                                                                                        | Status                       |
 |--------------|--------------------------------------------------------------------------------------------------------------|------------------------------|
-| `agents/`    | **33 specialists** + AGENT_FACTORY + DEV_SUB_AGENTS + `teams/` (3 modes) + `sub_agents/` (1: cybersec-agent) | ✅ all consistent frontmatter |
-| `hooks/`     | 27 .py files (18 event handlers + 9 modules) + hooks.json                                                    | ⚠️ NEVER AUDITED             |
+| `agents/`    | **34 agents** (33 specialists + AGENT_FACTORY) + DEV_SUB_AGENTS + `teams/` (3 modes) + `sub_agents/` (1: cybersec-agent) | ✅ all consistent frontmatter |
+| `hooks/`     | 29 .py files — 3 settings.json-wired (pre_tool_call, post_tool_use, session_end) + 15 custom event handlers + 11 utility modules | ⚠️ Has lint errors |
 | `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                                                 | ⚠️ NEVER AUDITED             |
 | `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                                             | ✅ RESTRUCTURED               |
 | `templates/` | 14 template files across 6 subdirs                                                                           | Not reviewed                 |
@@ -233,18 +250,19 @@ templates/
   threat-intelligence/  session-index.md, threat-profile.md
 ```
 
-#### hooks/ — 27 .py files
-**18 event handlers** (registered in hooks.json):
+#### hooks/ — 29 .py files (root directory, NOT .claude/hooks)
+**3 settings.json-wired** (Claude Code native hook system):
+`pre_tool_call.py` (PreToolUse), `post_tool_use.py` (PostToolUse), `session_end.py` (Stop)
+
+**15 custom event handlers** (invoked via `_utils.py emit()`, NOT native Claude Code):
 `agent_end`, `agent_start`, `baseline_updated`, `evidence_collected`, `finding_confirmed`,
 `first_init`, `investigation_end`, `investigation_start`, `ioc_discovered`, `mode_switch`,
-`permission_violation`, `phase_end`, `phase_start`, `post_tool_use`, `pre_tool_call`,
-`root_command_executed`, `session_end`, `session_start`
+`permission_violation`, `phase_end`, `phase_start`, `root_command_executed`, `session_start`
 
-**9 additional modules** (not in hooks.json):
+**11 utility/support modules** (not event handlers):
 `_utils`, `utils` (shared utilities), `database`, `exact_match_cache`,
-`yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`
-
-> **Note:** `uvloop_integration.py` moved to `src/hooks/uvloop_integration.py` (proper Python package). Import: `from hooks.uvloop_integration import run_with_uvloop`.
+`yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`,
+`uvloop_integration` (moved from .claude/hooks/), `hooks.json` (event registry)
 
 #### commands/ — 8 slash commands
 | Command        | Purpose                                       |
@@ -274,15 +292,15 @@ Accepts `blue|red|purple` mode. Delegates to all 32 specialist sub-agents.
 ### agents/ directory structure
 ```
 .claude/agents/
-├── <33 specialist agents>.md     ← all specialists (filesystem, memory, network, ...)
-├── AGENT_FACTORY.md              ← agent creation orchestrator (Opus)
-├── DEV_SUB_AGENTS.md             ← dev sub-agent reference
-├── teams/                        ← blue.md, red.md, purple.md team modes
+├── <34 agent .md files>               ← all specialists + orchestrator
+├── AGENT_FACTORY.md                   ← agent creation orchestrator (Opus)
+├── DEV_SUB_AGENTS.md                  ← dev sub-agent reference
+├── teams/                             ← blue.md, red.md, purple.md team modes
 └── sub_agents/
-    └── cybersec-agent.md         ← orchestrator in sub_agents context
+    └── cybersec-agent.md              ← orchestrator in sub_agents context
 ```
 
-### All 33 agents — frontmatter consistent ✅
+### All 34 agents — frontmatter consistent ✅
 Model tiers:
 - **Haiku** — watchdog, command-verifier, token-optimizer
 - **Sonnet** — 28 agents: all analysts, developers, layer2-7 specialists (default)
@@ -294,19 +312,18 @@ Model tiers:
 - **Opus** — firmware-analyst, reverse-engineer, AGENT_FACTORY
 
 ### Two Execution Paths (NEVER conflate)
-**A. Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → provider routing → MCP tools + subagents
+**A. Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → provider routing → 36 MCP tools + subagents
 **B. A2A Protocol** (external): `POST /a2a` JSON-RPC → OrchestratorAgent → registry → `execute()`
 
-### mcp.json — 5 MCP servers for Claude Code CLI
-| Key                      | Server                                                                                           |
-|--------------------------|--------------------------------------------------------------------------------------------------|
-| `cybersec`               | 29 forensics tools (`python -m csmcp.cybersec.server`, PYTHONPATH=src, uv)                       |
-| `dystopian-crypto`       | 5 crypto tools (`python -m csmcp.dystopian_server`, PYTHONPATH=src, uv)                          |
-| `token-optimization-mcp` | Token counting, prompt compression, semantic caching (`mcps/token-optimization-mcp/main.py`, uv) |
-| `playwright-stealth-mcp` | Headless Brave browser automation (`mcps/playwright-stealth-mcp/server.py`, uv)                  |
-| `kerneldev`              | Kernel module dev / eBPF / symbol lookup (`kerneldev_mcp.server`, python)                        |
+### mcp.json — 3 MCP servers for Claude Code CLI
+| Key                 | Server                                                                     |
+|---------------------|----------------------------------------------------------------------------|
+| `cybersec`          | 31 forensics tools (`python -m csmcp.cybersec.server`, PYTHONPATH=src, uv) |
+| `dystopian-crypto`  | 5 crypto tools (`python -m csmcp.dystopian_server`, PYTHONPATH=src, uv)    |
+| `kerneldev`         | Kernel module dev / eBPF / symbol lookup (`kerneldev_mcp.server`, python)  |
 
-Both `cybersec` and `dystopian-crypto` use real `mcp.server.Server` stdio transport (not FastMCP).
+Stale entries `token-optimization-mcp` and `playwright-stealth-mcp` **removed** (Phase I — `mcps/` dir deleted).
+Both `cybersec` and `dystopian-crypto` use agent-sdk `create_sdk_mcp_server` + `mcp.server.Server` stdio transport (not FastMCP).
 
 ---
 
@@ -417,29 +434,10 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 
 ---
 
-## mcp_server.py Split Plan
+## ~~mcp_server.py Split Plan~~ — DONE ✅
 
-Split `mcp_server.py` (1288L, 29 tools) into `src/mcp/cybersec/` subpackage:
-
-```
-src/mcp/
-  __init__.py              # all_servers() → dict, allowed_tools() → list[str]
-  cybersec/
-    __init__.py            # create_sdk_mcp_server("cybersec", tools=[ALL 29 tools])
-    helpers.py             # ScopeState, scope vars, helper funcs (lines 16-142)
-    findings.py            # add_finding, add_ioc, query_findings, update_risk_register (4)
-    db.py                  # db_healthcheck, bootstrap_intelligence (2)
-    intelligence.py        # suggest_mitre, get_project_memory (2)
-    layers.py              # share_to_layers, get_layer_value (2)
-    cache.py               # cache_lookup, cache_store, cache_analytics, cache_invalidate (4)
-    proxy.py               # 10 proxy tools
-    session.py             # session_snapshot, agent_registry, best_provider (3)
-    cases.py               # case_open, case_status (2)
-  dystopian.py             # 5 crypto tools wrapping src/crypto/
-```
-
-`mcp_server.py` → thin FastMCP stdio shim after split.
-Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
+`mcp_server.py` **DELETED** in Phase H. All tools now in `src/csmcp/cybersec/` (31 tools, agent-sdk).
+Tool naming: `mcp__cybersec__<tool>` (SDK). `mcp.json` uses `python -m csmcp.cybersec.server`.
 
 ---
 
@@ -487,167 +485,60 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
-- Docs — 9 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart, **teams**)
-- Skills taxonomy — 778 → **933** SKILL.md across 24+ domains (web-security→web-application, ot-ics dissolved, 6 classical domains expanded with 189 new deep-hierarchy skills)
-- MCP package split — `src/mcp/` package: `cybersec/` (29 tools) + `dystopian.py` (5 tools) + SDK compat shim → 34 tools, `all_servers()` + `allowed_tools()` — commit f0e8b72
-- New agents — `token-optimizer.md` (haiku, redundancy detection + prompt compression + cache seeds) — 33 agents total
-- Phase A2 — A2A stubs wired to SDK (model mapping, PreToolUse audit hook, real AI execution) — commits 3cfa5a0
-- Phase D (partial) — Telemetry stack complete (MetricsStore, middleware, decorators, collector, TelemetryMiddleware mounted) — commits 44bcdd7, 1a688c6, 3936eaf
-- Dashboard expansion — **33 routes total** (was 16+3); 7 data endpoints + telemetry + task CRUD — commits 13af280, 3936eaf
-- NIST fixtures downloaded — `data/fixtures/nist_csf_2.json` (185 subcategories) + `data/fixtures/nist_ai_rmf.json` (72 subcategories)
-- NIST DB models + seeds + CLI + dashboard endpoints — `NistCsfControl`, `NistAiRmfControl`, `seed_nist_csf()`, `seed_nist_ai_rmf()`, `seed-nist-csf/ai-rmf/all` CLI commands, `/api/nist-csf` + `/api/nist-ai-rmf` endpoints (commit 72de387)
-- Skills: web-security renamed → web-application; ot-ics dissolved → 3-6 level hierarchy (ics/, iot/, sector/) (commit 3db39fd)
-- **MCP pkg split** — `src/mcp/cybersec/` (8 submodules, 29 tools) + `src/mcp/dystopian.py` (5 crypto tools) + `_sdk_compat.py` shim → commit f0e8b72
-- **Classical domains expanded** — 189 new SKILL.md: network, network-filesystem, filesystem, database, browser, processes → commit 63b4880
-- **token-optimizer agent** — `.claude/agents/token-optimizer.md` (haiku, redundancy/compression specialist)
-- **11 new specialist agents added** — audiovideo-analyst, certificate-analyst, cpp-developer, encoding-specialist, frontend-design, logfile-analyst, postgres-db-engineer, process-analyst, senior-frontend, settings-analyst, vuln-scanner (Sonnet) → **33 agents total**
-- **Provider expansion** — 48 → 51 → **60 providers** in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes, replicate, lepton, runpod, writer, reka, zhipu, yi, minimax, stepfun)
-- **Skills MAPPER.md** — `.claude/skills/MAPPER.md` generated: 730 Anthropic-matched skills + 203 project-native; mapping rule: local `<domain>/<path>/SKILL.md` ↔ Anthropic `<slug>/SKILL.md` via normalized body hash
-- **Skills asset sync** — **3,276 non-SKILL.md files** copied from Anthropic-Cybersecurity-Skills to corresponding local skill dirs: 1,280 `references/`, 995 `scripts/`, 729 `LICENSE`, 267 `assets/`; rule: `network/assessment/ciscoise/` ← Anthropic source skill `<slug>/`
-- **SIEM-SOC decentralization** — 27 → 9 skills in `siem-soc/`; 18 skills redistributed to natural domains (identity×3, endpoint-security×2, network×2, ops×6, database×2, forensics×1, kernel-os×1, incident-response×1); new `ops/soc-operations/` domain created; INDEX.md regenerated (933 skills, 25 domains); MAPPER.md extended with reorganization map
+- Phases 1-7 — config, intel seeds, docs, skills taxonomy, domain restructuring, team task, vault/SSL/fixtures/checks/providers
+- Phase A — MCP split: `src/csmcp/cybersec/` (31 tools) + `dystopian.py` (5 tools) → 36 total
+- Phase A2 — A2A stubs wired to SDK
+- Phase D — Telemetry stack complete
+- Phase D.5 — PoC table (model, seeds, CLI, MCP tools, dashboard tab)
+- Phase E.1 — Type safety fixes
+- Phase F — File splitting (`intel_loader`, `routes.py`, `registry.py`, `manage.py`, `integrity.py`)
+- Phase H — **mcp_server.py DELETED**, agent-sdk migration complete, `src/csmcp/` rename, `src/agent/` package created
+- Phase I — Tool inventory (`docs/tools.md`), MEMORY.md sync, `mcp.json` cleanup (stale entries removed)
+- Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
+- Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated
+- Provider expansion — 60 providers in `registry.py`
+- 34 agents total (33 specialists + AGENT_FACTORY)
 
-### docs/ — 9 files
-`architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`, `teams.md`
+### docs/ — 10 files
+`architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`, `teams.md`, `tools.md`
 
 ---
 
-## Active Roadmap (Mega-Iteration)
+## Active Roadmap (Current)
 
-### ✅ Phase 1 — Config, Docker, CLAUDE.md — COMPLETE (commit a3ac1d9)
-- Created `CLAUDE.md` at project root (project overview, MCP tools, arch, env vars)
-- Fixed `mcp.json` dystopian-crypto path (→ `src/mcp/dystopian.py`)
-- Moved root `Dockerfile` → `.docker/dashboard/Dockerfile`; created `.docker/redis/Dockerfile`
-- Added `cybersec-redis` service to `docker-compose.yml`
+### Phase J — Lint Cleanup (NEXT)
+Fix 72 ruff errors across src/: 31 F821 undefined names, 30 F401 unused imports, 7 E402, 3 F841.
+Biggest offenders: `src/checks/` (40 errors). Auto-fix → manual fix → dead code audit → 0 errors.
 
-### ✅ Phase 2 — Intel DB Seeds — COMPLETE (commit 90c40be)
-- Created `src/db/fixtures/`: mitre_techniques.json (30), mitre_actors.json (12), mitre_software.json (14), cwe_entries.json (18), capec_entries.json (20)
-- Added `seed_mitre_techniques()`, `seed_mitre_actors()`, `seed_mitre_software()`, `seed_cwe()`, `seed_capec()` to `seeds.py`
-- `initialize_default_seed_data()` now runs all 7 seeders (NIST + MITRE + CWE + CAPEC)
-- `manage.py` commands: `seed`, `seed-intel`, `seed-mitre`, `seed-mitre-actors`, `seed-mitre-software`, `seed-cwe`, `seed-capec`
+### Phase K — Dashboard Full Buildout
+1. `renderTable()` JS component for _html.py (sortable, searchable, paginated, type-aware)
+2. Expand 14 existing tabs to use renderTable with full-field APIs
+3. Add 14 new tabs (forensic sessions, MITRE, intel feeds, artifacts, machines, baselines, vulns...)
+4. Interactive agent query panel (SSE streaming, agent selection, context enrichment)
+5. Settings dashboard (read/edit settings.json project + global)
+6. Team builder + Task chain builder (define phases, assign agents, link skills, execute)
+7. Agent manager, Skill browser (922 skills tree), Hook manager
 
-**Intel tables seeded**: `intel_mitre_techniques`, `intel_mitre_threat_actors`, `intel_mitre_software_families`, `intel_cwes`, `intel_capec_patterns`, `intel_cves`, `nist_csf_controls`, `nist_ai_rmf_controls`
+### Phase L — Agent Package Completion
+Complete `src/agent/` stubs: hooks.py (5 hooks), sessions.py (SDK wrapper), runner.py (AgentRunner), streaming.py (SSE)
 
-### ✅ Phase 3 — Documentation — COMPLETE (commit 0984fda)
-- Updated all 8 docs: architecture.md (2 Mermaid flowcharts), api.md, agents.md, configuration.md, contributing.md, deployment.md, mcp-tools.md, quickstart.md
-- Created `docs/teams.md` — team mode, blue/red/purple responsibilities, team-task command
-### ✅ Phase 4 — SKILL.md Mass Updates — COMPLETE (commit 0984fda)
-- Removed `source:` field (748 files); renamed `name:` to path-based pattern (919 files)
-- Added `nist_csf: []` and `capec: []` frontmatter headers to all 919 files
-- **Name pattern**: `network/ids/wazuh/install/SKILL.md` → `name: ids-wazuh-install`
+### Phase M — Code Splits
+Split `_handlers.py` (1228L) → api/ package, `_commands.py` (487L), fix checks/, registry, consolidate a2a/
 
-### ✅ Phase 5 — Domain Restructuring — COMPLETE (commit dacc0c0)
-- `vulnerability/` → `vulnerabilities/` (32 skills)
-- `ot-ics/` → `industrial/` (25 skills)
-- `threat-intel/` dissolved (86 skills): hunting/ioc/analysis/intelligence/threat/mitre → `forensics/`; detection → `siem-soc/`; platforms/feeds → `intel-platform/` (new); osint/shodan/darkweb → `osint/` (new); brand → `ops/`
-- `steganography/`: 14 new SKILL.md files (image/audio/video/document/tool/network)
-- **New domains**: `intel-platform/`, `osint/`
-- **Total**: 933 SKILL.md across **26 active domains**
+### Phase N — Documentation
+Update all 10 docs + MEMORY.md + README.md to reflect current state
 
-### ✅ Phase 6 — Agent Team Task — COMPLETE
-- `.claude/commands/team-task` slash command
-- `manage.py team-task --team blue|red|purple --task "..." [--agents a,b]`
+### Completed Phase Details (reference)
 
-### ✅ Phase 7 — Vault, SSL, Fixtures, Checks, Providers — COMPLETE
-- **docker-compose.yml**: YAML anchors `x-common: &common`, `x-db-env: &db-env`, `x-ai-keys: &ai-keys` — DRY config
-- **Vault**: `src/crypto/vault.py` — file-based encrypted secret vault (~/.dystopian-crypto/vault/)
-- **SSL CLI**: `src/crypto/cli_integration.py` rewritten — runnable Click CLI: `ssl create-ca`, `create-key`, `create-csr`, `list`, `verify`, `rotate`; vault `store`, `get`, `list`, `delete`
-- **manage.py**: wired `ssl`, `vault`, `check` commands
-- **CVE fixture**: `src/db/fixtures/cve_entries.json` (30 canonical CVEs), `seed_cve()`, `seed-cve` command
-- **Integrity checks**: `src/checks/integrity.py` — `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()`
-- **Model fixes**: Duplicate `AuditLog` (audit.py→re-export), duplicate `SharedEntry` removed from investigation.py, empty intelligence.py removed
-- **Providers**: 48 → 51 → **60** providers in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes, replicate, lepton, runpod, writer, reka, zhipu, yi, minimax, stepfun)
-- **Flowcharts**: Updated `docs/architecture.md` — ultimate + actual Mermaid diagrams
-- **Proposals**: `PROPOSAL.md` (plugin separation), `PROPOSAL_MEM.md` (Obsidian memory cache)
+**Phase F — File-Splitting** ✅: intel_loader(2062L→intel/ pkg), routes.py(1614L→_html+_handlers+routes), registry.py(1163L→core+_providers), manage.py(611L→manage/ pkg), integrity.py(699L→3 submodules)
 
-### Phase A — MCP Split + SDK Package ✅ COMPLETE (commit f0e8b72)
-| Order | Todo                                              | Status                                       |
-|-------|---------------------------------------------------|----------------------------------------------|
-| 1-5   | helpers, 8 submodules, pkg, `__init__`, dystopian | ✅ all done                                   |
-| 6     | `mcp-shim-update` — slim mcp_server.py            | ⚠️ pending — still 1288L with inline helpers |
-| 7     | `mcp-agent-sdk-update` — wire SDK to `src/mcp/`   | pending                                      |
+**Phase D.5 — PoC Table** ✅: model, enums, seeds (8 PoCs), CLI, MCP tools (add_poc, query_pocs), dashboard tab
 
-**Known redundancy**: `mcp_server.py` has 5 helpers duplicating `src/mcp/cybersec/helpers.py`.
-FastMCP typed-param pattern prevents trivial merge — deferred to `mcp-shim-update`.
+**Phase E — File Mapping** — DEFERRED (asset sync from Anthropic source)
 
-### ~~Phase A2~~ ✅ COMPLETE (commit 3cfa5a0) · ~~Phase D / D2~~ ✅ COMPLETE
-
-### Phase B — Code Review (after A)
-`review-dashboard-routes`, `review-combo-routing`, `review-mcp-server`, `review-a2a-modules`, `review-db-models`, `review-manage-cli`
-
-### Phase C — SSL/TLS
-`ssl-dystopian-integrate` → `ssl-cert-generation` → `ssl-cli-commands` → `ssl-dashboard-tab` → `ssl-proxy-config`
-
-### Phase D.5 — PoC Table (IN PROGRESS)
-| Step | Todo                  | Status                                                                            |
-|------|-----------------------|-----------------------------------------------------------------------------------|
-| 1    | `poc-enums`           | ✅ `PocStatus` in `src/db/models/enums.py`                                         |
-| 2    | `poc-model`           | ✅ `src/db/models/poc.py` (`ProofOfConcept`, table `intel_pocs`)                   |
-| 3    | `poc-seeds`           | ✅ `src/db/fixtures/poc_entries.json` (8 canonical PoCs)                           |
-| 4    | `poc-bootstrap`       | ✅ `seed_poc()` in `seeds.py`, wired to `initialize_default_seed_data()`           |
-| 5    | `poc-seeds-cli`       | ✅ `seed-poc` command in `manage.py`                                               |
-| 6    | `poc-mcp-tools`       | ✅ `src/mcp/cybersec/poc.py` — `query_poc_by_cve`, `add_poc`, `get_poc_popularity` |
-| 7    | `poc-dashboard-tab`   | ⚠️ Tab button added; tab panel div + JS fetch still missing                       |
-| 8    | `poc-integrity-check` | ⚠️ `poc_entries.json` fixture present; integrity auto-discovers `intel_pocs`      |
-| 9    | `poc-tests`           | pending                                                                           |
-| 10   | `memory-sync`         | pending                                                                           |
-
-**Rationale**: Track proof-of-concept exploits linked to CVEs. Enables analysts to assess exploitability in forensic investigations.
-**Relationships**: CVEIntel ↔ PoC (1-to-many), Finding can reference PoC.
-
-### Phase E.1 — Type Safety Fixes ✅ (2026-04-17, commits f0e8b72 + 2b58d569)
-Surgical pyright fixes in `src/` — only real bugs, no annotation-only cleanup:
-- **`src/db/intel_loader.py`**: `_map_tactic_name` return type → `MITRETactic`; removed `Literal` import; renamed 3× `to_create` in `bootstrap_mitre_intelligence_async` (`techniques_to_create`, `actors_to_create`, `software_to_create`)
-- **`src/telemetry/middleware.py`**: `status = 0` before try/except — unbound in finally fixed
-- **`src/ai_proxy/routing/combo.py`**: extracted `_context_window` helper, no double `get_model()` call
-- **`mcp_server.py`**: removed 4 duplicate helper functions (`_normalize_choice`, `_coerce_limit`, `_normalize_target_scopes`, `_normalize_scope_level`); now imports from `mcp.cybersec.helpers`
-
-### Phase E — File Mapping (QUEUED)
-| Step | Todo                                                                                           | Files                                 |
-|------|------------------------------------------------------------------------------------------------|---------------------------------------|
-| 1    | `files-inventory`                                                                              | Generate FILES_INVENTORY.md breakdown |
-| 2-4  | `files-copy-licenses`, `files-copy-agent-py`, `files-copy-api-refs`                            | Copy universal files (~2,500 total)   |
-| 5-7  | `files-copy-process-py`, `files-copy-other-refs`, `files-copy-assets`                          | Copy selective files (~900 total)     |
-| 8-10 | `files-resolve-local-conflicts`, `files-symlink-decision`, `files-update-comprehensive-mapper` | Merge + document                      |
-
-**Rationale**: Sync supporting assets (LICENSE, scripts, references, templates) from Anthropic source to local tree. Enables offline reference, attribution, and automation.
-
-### Phase D.6 — SIEM-SOC Reorganization (NEW)
-Decentralize SIEM-SOC skills from monolithic domain into first-layer homes (identity, endpoint, network, ops, etc.).
-
-| Step  | Todo                                                                 | Target              | Skills                                                                      |
-|-------|----------------------------------------------------------------------|---------------------|-----------------------------------------------------------------------------|
-| 1-2   | `siem-new-dirs`, `siem-identify-conflicts`                           | Prep                | New ops/soc-operations/                                                     |
-| 3     | `siem-migrate-identity`                                              | identity/           | credential-detection, bruteforce-detection, credential-dumping (3)          |
-| 4     | `siem-migrate-endpoint`                                              | endpoint-security/  | wazuh, ueba (2)                                                             |
-| 5     | `siem-migrate-network`                                               | network/            | dns-tunneling, lateral-movement-detection (2)                               |
-| 6     | `siem-migrate-ops`                                                   | ops/soc-operations/ | alert-tuning, onboarding, kpi-metrics, escalation, ticketing, chaos-eng (6) |
-| 7     | `siem-migrate-database`                                              | database/logging/   | log-aggregation, syslog (2)                                                 |
-| 8     | `siem-migrate-forensics`                                             | forensics/          | memory-analysis-siem (1)                                                    |
-| 9     | `siem-migrate-kernel`                                                | kernel-os/ebpf/     | ebpf-monitoring (1)                                                         |
-| 10    | `siem-migrate-incresponse`                                           | incident-response/  | insider-threat (1)                                                          |
-| 11    | `siem-cleanup`                                                       | siem-soc/           | Remove empty dirs, consolidate (14 remain)                                  |
-| 12-14 | `siem-update-skill-names`, `siem-update-mapper`, `siem-update-index` | Metadata            | Update INDEX.md + MAPPER.md                                                 |
-| 15-16 | `siem-validate-structure`, `siem-integrity-check`                    | Validate            | Verify structure + check integrity                                          |
-
-**Rationale**: Reorganize 27 SIEM skills into logically appropriate first-layer domains. Consolidate siem-soc/ to 14 platform-specific/generic SIEM skills. Create new `ops/soc-operations/` domain (6 skills).
-**Result**: Better skill discovery, clearer domain taxonomy, decentralized SIEM concerns.
-
-### Phase F — File-Splitting (Token Efficiency) — ✅ COMPLETE
-Large files split into submodules. Public API preserved — all existing imports still work.
-
-| File                                 | Before | After (new structure)                                                                         | Commit     |
-|--------------------------------------|--------|-----------------------------------------------------------------------------------------------|------------|
-| `src/db/intel_loader.py`             | 2062L  | `src/db/intel/`: `_utils`(332L) `_snapshot`(60L) `_loaders`(276L) `bootstrap`(1475L) shim(8L) | `2687c778` |
-| `src/dashboard/routes.py`            | 1614L  | `_html.py`(561L) + `_handlers.py`(1008L) + thin `routes.py`(55L)                              | `9c136218` |
-| `src/ai_proxy/providers/registry.py` | 1163L  | core `registry.py`(319L) + `_providers.py` registrations(854L)                                | `449addfd` |
-| `src/manage.py`                      | 611L   | `manage/_commands.py`(487L) + thin `manage.py` dispatcher(162L)                               | `ffebc600` |
-| `src/checks/integrity.py`            | 699L   | `_model_check`(282L) + `_fixture_check`(120L) + `_config_check`(255L) + thin(71L)             | `4e7244f4` |
-
-### Phase G — SSE Frontend (optional)
-`sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
-
-### Phase H — OmniRoute
-`omniroute-integrate` — add to mcp.json, wire allowed_tools
+### Queued / Optional
+- Phase G — SSE Frontend: `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
+- OmniRoute integration: add to mcp.json + wire allowed_tools
 
 ---
 
@@ -656,7 +547,7 @@ Large files split into submodules. Public API preserved — all existing imports
 - **Python 3.14** · **`uv`** — never `pip`
 - **Tortoise ORM** + PostgreSQL (asyncpg) — `localhost:5432/cybersec_forensics`
 - **Starlette ASGI** + uvicorn port 8000
-- **FastMCP** for stdio MCP server (Claude Code CLI)
+- **agent-sdk** (`create_sdk_mcp_server`) for MCP tools (in-process); `mcp.server.Server` for stdio transport
 - **Pydantic v2**
 - **cryptography** lib: Ed25519, BLAKE2b-256, Argon2id, AES-256-GCM
 - **claude-agent-sdk** @ v0.1.61
@@ -741,7 +632,7 @@ from db.bootstrap import (get_database_health_async, init_tortoise_async,
 ```
 
 ### Scope helpers
-Copy from `mcp_server.py` lines 16–142 into `src/mcp/cybersec/helpers.py`.
+Already in `src/csmcp/cybersec/helpers.py` — `ScopeState`, `_build_scope_context()`, `_coerce_limit()`, etc.
 
 ---
 
@@ -767,14 +658,13 @@ Copy from `mcp_server.py` lines 16–142 into `src/mcp/cybersec/helpers.py`.
 **Source**: NIST reference tool XLSX (parsed via openpyxl)
 - **185 subcategories**, 6 functions: GV (Govern), ID (Identify), PR (Protect), DE (Detect), RS (Respond), RC (Recover)
 - Schema per entry: `id, title, function, function_description, category, category_description, implementation_examples, informative_references`
-- Current SKILL.md coverage: 46 of 185 subcategories referenced
-- Pending: DB model `NistCsfControl`, seed function `seed_nist_csf()`, CLI command, dashboard endpoint
+- ✅ DB model `NistCsfControl`, seed function `seed_nist_csf()`, CLI command `seed-nist-csf`, dashboard endpoint `/api/nist-csf`
 
 ### nist_ai_rmf.json — NIST AI RMF 1.0
 **Source**: `https://airc.nist.gov/docs/playbook.json`
 - **72 subcategories**, 4 functions: Govern, Map, Measure, Manage
 - Schema per entry: `id, function, category, title, description, section_about, suggested_actions (list[str]), ai_actors, topic`
-- Pending: DB model `NistAiRmfControl`, seed function `seed_nist_ai_rmf()`, CLI command, dashboard endpoint
+- ✅ DB model `NistAiRmfControl`, seed function `seed_nist_ai_rmf()`, CLI command `seed-nist-ai-rmf`, dashboard endpoint `/api/nist-ai-rmf`
 
 ---
 
