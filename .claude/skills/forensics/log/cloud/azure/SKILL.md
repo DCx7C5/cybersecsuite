@@ -1,37 +1,104 @@
 ---
 name: analyzing-azure-activity-logs-for-threats
-description: "'Queries Azure Monitor activity logs and sign-in logs via azure-monitor-query to detect suspicious administrative"
+description: 'Queries Azure Monitor activity logs and sign-in logs via azure-monitor-query to detect suspicious administrative
+  operations, impossible travel, privilege escalation, and resource modifications. Builds KQL queries for threat hunting in
+  Azure environments. Use when investigating suspicious Azure tenant activity or building cloud SIEM detections.
+
+  '
 domain: cybersecurity
 subdomain: security-operations
+tags:
+- analyzing
+- azure
+- activity
+- logs
+version: '1.0'
+author: mahipal
+license: Apache-2.0
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
 mcpServers: [cybersec]
-mitre_attack: []
-nist_csf: 
-tags: 
-source: "/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/analyzing-azure-activity-logs-for-threats/SKILL.md"
+source: Anthropic-Cybersecurity-Skills
 ---
-# Analyzing Azure Activity Logs For Threats
 
-> **Source:** `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/analyzing-azure-activity-logs-for-threats/SKILL.md`
-> Full technique details in source. This stub adds CyberSecSuite integration.
+# Analyzing Azure Activity Logs for Threats
+
+
+## When to Use
+
+- When investigating security incidents that require analyzing azure activity logs for threats
+- When building detection rules or threat hunting queries for this domain
+- When SOC analysts need structured procedures for this analysis type
+- When validating security monitoring coverage for related attack techniques
+
+## Prerequisites
+
+- Familiarity with security operations concepts and tools
+- Access to a test or lab environment for safe execution
+- Python 3.8+ with required dependencies installed
+- Appropriate authorization for any testing activities
+
+## Instructions
+
+Use azure-monitor-query to execute KQL queries against Azure Log Analytics workspaces,
+detecting suspicious admin operations and sign-in anomalies.
+
+```python
+from azure.identity import DefaultAzureCredential
+from azure.monitor.query import LogsQueryClient
+from datetime import timedelta
+
+credential = DefaultAzureCredential()
+client = LogsQueryClient(credential)
+
+response = client.query_workspace(
+    workspace_id="WORKSPACE_ID",
+    query="AzureActivity | where OperationNameValue has 'MICROSOFT.AUTHORIZATION/ROLEASSIGNMENTS/WRITE' | take 10",
+    timespan=timedelta(hours=24),
+)
+```
+
+Key detection queries:
+1. Role assignment changes (privilege escalation)
+2. Resource group and subscription modifications
+3. Key vault secret access from new IPs
+4. Network security group rule changes
+5. Conditional access policy modifications
+
+## Examples
+
+```python
+# Detect new Global Admin role assignments
+query = '''
+AuditLogs
+| where OperationName == "Add member to role"
+| where TargetResources[0].modifiedProperties[0].newValue has "Global Administrator"
+'''
+```
+
+
+---
 
 ## CyberSecSuite Integration
 
-```python
-# Open a case before starting
-mcp__cybersec__case_open(title="analyzing-azure-activity-logs-for-threats", type="investigation")
+```bash
+# Open a case before starting investigation
+mcp__cybersec__case_open --title "analyzing-azure-activity-logs-for-threats" --type investigation
 
 # Persist findings to PostgreSQL
-mcp__cybersec__add_finding(title="...", severity="high", description="...", mitre_techniques=[])
+mcp__cybersec__add_finding --title "..." --severity high --description "..."
 
-# Log IOCs discovered
-mcp__cybersec__add_ioc(type="...", value="...", confidence=0.9, source="analyzing-azure-activity-logs-for-threats")
+# Log IOCs
+mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
 
-# Suggest MITRE mapping
-mcp__cybersec__suggest_mitre(description="...", context="...")
+# Map to MITRE
+mcp__cybersec__suggest_mitre --description "..."
 ```
 
-## Agent
-Invoke via: `@security-operations-analyst` or `@cybersec-agent`
+**Agent:** `@cybersec-agent` → delegates to appropriate specialist
