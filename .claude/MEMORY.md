@@ -130,7 +130,7 @@ Keys: `/etc/dystopian-crypto/keys`. Certs: `~/.omniroute/certs/`.
 | `config.py` | 253 |
 | `cli_integration.py` | 299 |
 
-### src/db/ (42 models ✅)
+### src/db/ (44 models ✅)
 PostgreSQL via Tortoise ORM (asyncpg). DB: `cybersec_forensics`.
 Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, and 25+ more.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
@@ -147,9 +147,9 @@ In-process metrics store with ring-buffer, percentile summaries, ASGI middleware
 
 Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
 
-### src/dashboard/routes.py (1520L)
-25 REST endpoints + 4 SSE endpoints + 1 HTML root = 30 routes. All HTML inline in `_DASHBOARD_HTML` string.
-REST: overview, providers, usage, health, crypto, a2a, investigations, db-counts, agents, routing, agent-factory, prompts, cases, tasks, tasks/create, tasks/{id}, tasks/{id}/cancel, findings, iocs, yara, network, intelligence, audit, compliance, telemetry
+### src/dashboard/routes.py (1620L)
+27 REST endpoints + 4 SSE endpoints + 1 HTML root = 32 routes. All HTML inline in `_DASHBOARD_HTML` string.
+REST: overview, providers, usage, health, crypto, a2a, investigations, db-counts, agents, routing, agent-factory, prompts, cases, tasks, tasks/create, tasks/{id}, tasks/{id}/cancel, findings, iocs, yara, network, intelligence, audit, compliance, **nist-csf**, **nist-ai-rmf**, telemetry
 SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
@@ -253,7 +253,7 @@ Model tiers:
 .claude/skills/               ← root (778 SKILL.md, 19 active / 24 total dirs)
 ├── cloud-security/ (117)  # aws, azure, gcp, containers, kubernetes, devsecops
 │                             #   + aws/privesc, azure/lateral, k8s/privesc (from red-team)
-├── web-security/       (97)  # injection, xss, ssrf, api, pentest, owasp  ← rename to web-application/ pending
+├── web-application/    (97)  # injection, xss, ssrf, api, pentest, owasp (renamed from web-security ✅)
 │                             #   + auth/enum, auth/evilginx (from red-team)
 ├── forensics/          (89)  # disk, memory, network, log, email, mobile, cloud, usb
 ├── threat-intel/       (87)  # platforms, feeds, ioc, osint, darkweb, mitre, hunting
@@ -420,6 +420,8 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 - Phase D (partial) — Telemetry stack complete (MetricsStore, middleware, decorators, collector, TelemetryMiddleware mounted) — commits 44bcdd7, 1a688c6, 3936eaf
 - Dashboard expansion — 30 routes total (was 16+3); 7 data endpoints + telemetry + task CRUD — commits 13af280, 3936eaf
 - NIST fixtures downloaded — `data/fixtures/nist_csf_2.json` (185 subcategories) + `data/fixtures/nist_ai_rmf.json` (72 subcategories)
+- NIST DB models + seeds + CLI + dashboard endpoints — `NistCsfControl`, `NistAiRmfControl`, `seed_nist_csf()`, `seed_nist_ai_rmf()`, `seed-nist-csf/ai-rmf/all` CLI commands, `/api/nist-csf` + `/api/nist-ai-rmf` endpoints (commit 72de387)
+- Skills: web-security renamed → web-application; ot-ics dissolved → 3-6 level hierarchy (ics/, iot/, sector/) (commit 3db39fd)
 
 ### docs/ — 8 files
 `architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
@@ -463,8 +465,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 Telemetry stack: `src/telemetry/` (store, middleware, decorators, collector — 5 files, mounted in asgi.py)
 Dashboard: 30 routes total, 7 data endpoints + telemetry REST/SSE + task CRUD → `dashboard-html-rewrite` still pending
 
-### Phase D2 — NIST Integration (next)
-`nist-csf-model` → `nist-ai-rmf-model` → `nist-register-models` → `nist-seed-functions` → `nist-manage-commands` + `nist-dashboard-endpoints`
+~~Phase D2 — NIST Integration (next)~~ ✅ COMPLETE (commit 72de387)
 
 ### Phase E — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
