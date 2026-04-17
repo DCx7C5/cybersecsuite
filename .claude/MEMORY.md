@@ -37,7 +37,7 @@ opts = ClaudeAgentOptions(
 | `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here              |
 | `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                                    |
 
-### settings.json (`.claude/settings.json`) — 12 sections
+### settings.json (`.claude/settings.json`) — 13 sections
 ```json
 {
   "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1", ... },
@@ -61,7 +61,8 @@ opts = ClaudeAgentOptions(
 }
 ```
 
-**Hooks**: Only 4 real Claude Code events exist: `PreToolUse`, `PostToolUse`, `Notification`, `Stop`. Old settings.json had 18 fake event names (FirstInit, AgentStart, PhaseStart, etc.) — **removed in Phase H**. The other hook scripts in `hooks/` (session_start.py, ioc_discovered.py, etc.) remain usable as manual utilities or called from the wired hooks.
+**Workspace-level hooks** (3, in settings.json): `PreToolUse`, `PostToolUse`, `Stop` — fire globally for all agents.
+**Agent-scoped hooks** (15, in cybersec-agent frontmatter): `FirstInit`, `SessionStart/End`, `AgentStart/End`, `PhaseStart/End`, `InvestigationStart/End`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated` — fire only during cybersec-agent lifecycle.
 
 ### Ports
 | Port | What                | Status                        |
