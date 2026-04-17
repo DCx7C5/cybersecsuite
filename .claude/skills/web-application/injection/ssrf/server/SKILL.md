@@ -1,5 +1,5 @@
 ---
-name: server
+name: injection-ssrf-server
 description: Identifying and exploiting SSRF vulnerabilities to access internal services, cloud metadata, and restricted network
 action: server
   resources during authorized penetration tests.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-918
+capec: []
 ---
 
 # Exploiting Server-Side Request Forgery

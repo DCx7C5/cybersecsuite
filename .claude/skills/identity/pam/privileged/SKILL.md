@@ -1,5 +1,5 @@
 ---
-name: privileged
+name: pam-privileged
 description: Conduct systematic reviews of privileged accounts to validate access rights, identify excessive permissions,
 action: privileged
   and enforce least privilege across PAM infrastructure.
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Performing Privileged Account Access Review

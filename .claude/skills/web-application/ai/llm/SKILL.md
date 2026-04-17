@@ -1,5 +1,5 @@
 ---
-name: llm
+name: ai-llm
 description: 'Implements input and output validation guardrails for LLM-powered applications to prevent prompt injection,
 action: llm
   data leakage, toxic content generation, and hallucinated outputs. Builds a security validation pipeline using NVIDIA NeMo
@@ -44,11 +44,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 cwe:
 - CWE-20
+capec: []
 ---
 
 # Implementing LLM Guardrails for Security

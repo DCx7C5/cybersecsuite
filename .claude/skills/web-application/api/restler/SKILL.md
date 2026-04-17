@@ -1,5 +1,5 @@
 ---
-name: restler
+name: api-restler
 description: 'Uses Microsoft RESTler to perform stateful REST API fuzzing by automatically generating and executing test sequences
 action: restler
   that exercise API endpoints, discover producer-consumer dependencies between requests, and find security and reliability
@@ -25,7 +25,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing API Fuzzing with RESTler

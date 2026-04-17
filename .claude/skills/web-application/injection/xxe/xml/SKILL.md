@@ -1,5 +1,5 @@
 ---
-name: xml
+name: injection-xxe-xml
 description: Test web applications for XML injection vulnerabilities including XXE, XPath injection, and XML entity attacks
 action: xml
   to identify data exposure and server-side request forgery risks.
@@ -21,7 +21,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 - T1550
@@ -29,6 +28,7 @@ cwe:
 - CWE-611
 - CWE-643
 - CWE-91
+capec: []
 ---
 
 # Testing for XML Injection Vulnerabilities

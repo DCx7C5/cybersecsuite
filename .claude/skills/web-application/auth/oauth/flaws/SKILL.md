@@ -1,5 +1,5 @@
 ---
-name: flaws
+name: auth-oauth-flaws
 description: 'Tests OAuth 2.0 and OpenID Connect implementations for security flaws including authorization code interception,
 action: flaws
   redirect URI manipulation, CSRF in OAuth flows, token leakage, scope escalation, and PKCE bypass. The tester evaluates the
@@ -25,12 +25,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 - T1550
 cwe:
 - CWE-352
+capec: []
 ---
 
 # Testing OAuth2 Implementation Flaws

@@ -1,5 +1,5 @@
 ---
-name: ioccollect
+name: ioc-ioccollect
 description: 'Systematically collects, categorizes, and distributes indicators of compromise (IOCs) during and after security
 action: ioccollect
   incidents to enable detection, blocking, and threat intelligence sharing. Covers network, host, email, and behavioral indicators
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1071
 - T1059
 - T1547
 - T1053
 - T1070
+capec: []
 ---
 
 # Collecting Indicators of Compromise

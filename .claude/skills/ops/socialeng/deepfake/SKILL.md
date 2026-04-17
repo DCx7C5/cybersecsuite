@@ -1,5 +1,5 @@
 ---
-name: deepfake
+name: socialeng-deepfake
 description: 'Detects AI-generated deepfake audio used in voice phishing (vishing) attacks by extracting spectral features
 action: deepfake
   (MFCC, spectral centroid, spectral contrast, zero-crossing rate) and classifying samples with machine learning models. Supports
@@ -41,11 +41,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1566
 - T1566.004
+capec: []
 ---
 
 # Detecting Deepfake Audio in Vishing Attacks

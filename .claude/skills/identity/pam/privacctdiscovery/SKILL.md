@@ -1,5 +1,5 @@
 ---
-name: privacctdiscovery
+name: pam-privacctdiscovery
 description: Discover and inventory all privileged accounts across enterprise infrastructure including domain admins, local
 action: privacctdiscovery
   admins, service accounts, database admins, cloud IAM roles, and application admin account
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1078.004
 - T1082
+capec: []
 ---
 
 # Performing Privileged Account Discovery

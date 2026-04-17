@@ -17,4 +17,5 @@ nist_csf:
   - DE.CM-03
   - DE.CM-04
   - DE.AE-01
+capec: []
 ---

@@ -1,5 +1,5 @@
 ---
-name: web
+name: triage-web
 description: Triage web application vulnerability findings from DAST/SAST scanners using OWASP risk rating methodology to
 action: web
   separate true positives from false positives and prioritize remediation.
@@ -23,7 +23,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Web Application Vulnerability Triage

@@ -1,5 +1,5 @@
 ---
-name: gcppolicy
+name: gcp-gcppolicy
 description: Implement GCP Organization Policy constraints to enforce security guardrails across the entire resource hierarchy,
 action: gcppolicy
   restricting risky configurations and ensuring compliance at organization, folder, and project levels.
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1562.001
+capec: []
 ---
 
 # Implementing GCP Organization Policy Constraints

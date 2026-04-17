@@ -1,5 +1,5 @@
 ---
-name: privescdetect
+name: privesc-detect
 description: Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel
 action: detect
   exploits, and sudo/doas abuse across Windows and Linux.
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1068
@@ -35,6 +34,7 @@ mitre_attack:
 - T1548.002
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Detecting Privilege Escalation Attempts

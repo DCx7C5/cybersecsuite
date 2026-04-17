@@ -16,4 +16,5 @@ tags:
 nist_csf:
   - PR.DS-02
   - PR.AC-05
+capec: []
 ---

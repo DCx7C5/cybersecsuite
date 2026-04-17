@@ -1,5 +1,5 @@
 ---
-name: misconfigured
+name: azure-storage-misconfigured
 description: 'Detecting misconfigured Azure Storage accounts including publicly accessible blob containers, missing encryption
 action: misconfigured
   settings, overly permissive SAS tokens, disabled logging, and network access violations using Azure CLI, PowerShell, and
@@ -31,10 +31,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1078.004
+capec: []
 ---
 
 # Detecting Misconfigured Azure Storage

@@ -1,5 +1,5 @@
 ---
-name: training
+name: phishing-training
 description: Security awareness training is the human layer of phishing defense. An effective anti-phishing training program
 action: training
   combines regular simulations, interactive learning modules, metric tracking, and positiv
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 # Implementing Anti-Phishing Training Program

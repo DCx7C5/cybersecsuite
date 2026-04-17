@@ -1,5 +1,5 @@
 ---
-name: sessionmon
+name: pam-sessionmon
 description: 'Implements privileged session monitoring and recording using Privileged Access Management (PAM) solutions, focusing
 action: sessionmon
   on CyberArk Privileged Session Manager (PSM) and open-source alternatives. Covers session recording configuration, keystroke
@@ -26,7 +26,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Privileged Session Monitoring

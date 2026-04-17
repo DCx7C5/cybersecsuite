@@ -1,5 +1,5 @@
 ---
-name: apt
+name: mitre-apt
 description: Analyze advanced persistent threat (APT) group techniques using MITRE ATT&CK Navigator to create layered heatmaps
 action: apt
   of adversary TTPs for detection gap analysis and threat-informed defense.
@@ -28,9 +28,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Analyzing APT Group with MITRE ATT&CK Navigator

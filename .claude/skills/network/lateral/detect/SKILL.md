@@ -1,5 +1,5 @@
 ---
-name: lmdetection
+name: lateral-detect
 description: 'Detects lateral movement techniques including Pass-the-Hash, PsExec, WMI execution, RDP pivoting, and SMB-based
 action: detect
   spreading using SIEM correlation of Windows event logs, network flow data, and endpoint telemetry mapped to MITRE ATT&CK
@@ -32,7 +32,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1021.001
@@ -40,6 +39,7 @@ mitre_attack:
 - T1047
 - T1059
 - T1550.002
+capec: []
 ---
 
 # Performing Lateral Movement Detection

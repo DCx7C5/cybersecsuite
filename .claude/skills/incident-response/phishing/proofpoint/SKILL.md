@@ -1,5 +1,5 @@
 ---
-name: proofpoint
+name: phishing-proofpoint
 description: Deploy and configure Proofpoint Email Protection as a secure email gateway to detect and block phishing, malware,
 action: proofpoint
   BEC, and spam before messages reach user inboxes.
@@ -22,10 +22,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1566
+capec: []
 ---
 
 # Implementing Proofpoint Email Security Gateway

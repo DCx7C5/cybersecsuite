@@ -18,4 +18,5 @@ nist_csf:
 mitre:
   - T1036.005
   - T1564
+capec: []
 ---

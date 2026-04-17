@@ -1,5 +1,5 @@
 ---
-name: cloudzt
+name: zerotrust-cloudzt
 description: 'This skill guides organizations through implementing zero trust architecture in cloud environments following
 action: cloudzt
   NIST SP 800-207 and Google BeyondCorp principles. It covers identity-centric access controls, micro-segmentation, continuous
@@ -23,7 +23,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Zero Trust in Cloud

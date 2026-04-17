@@ -1,5 +1,5 @@
 ---
-name: aitm
+name: phishing-aitm
 description: Detect and respond to Adversary-in-the-Middle (AiTM) phishing attacks that use reverse proxy kits like EvilProxy,
 action: aitm
   Evilginx, and Tycoon 2FA to bypass MFA and steal session tokens.
@@ -22,7 +22,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
@@ -31,6 +30,7 @@ mitre_attack:
 - T1583.001
 cwe:
 - CWE-384
+capec: []
 ---
 
 # Performing Adversary-in-the-Middle Phishing Detection

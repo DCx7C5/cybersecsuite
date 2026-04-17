@@ -1,5 +1,5 @@
 ---
-name: okta
+name: saml-okta
 description: Implement SAML 2.0 Single Sign-On (SSO) using Okta as the Identity Provider (IdP). This skill covers end-to-end
 action: okta
   configuration of SAML authentication flows, attribute mapping, certificate management, a
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1550
+capec: []
 ---
 
 # Implementing SAML SSO with Okta

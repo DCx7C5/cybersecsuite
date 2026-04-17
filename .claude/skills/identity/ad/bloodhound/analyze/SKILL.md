@@ -1,5 +1,5 @@
 ---
-name: bhanalysis
+name: ad-bloodhound-analyze
 description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised
 action: analyze
   users to Domain Admin.
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 - T1078.004
@@ -34,6 +33,7 @@ mitre_attack:
 - T1595
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Performing Active Directory BloodHound Analysis

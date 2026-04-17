@@ -1,5 +1,5 @@
 ---
-name: certificates
+name: pinning-certificates
 description: 'Bypasses SSL/TLS certificate pinning implementations in Android and iOS applications to enable traffic interception
 action: certificates
   during authorized security assessments. Covers OkHttp, TrustManager, NSURLSession, and third-party pinning library bypass
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1404
+capec: []
 ---
 
 # Performing Mobile App Certificate Pinning Bypass

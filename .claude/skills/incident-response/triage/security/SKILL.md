@@ -1,5 +1,5 @@
 ---
-name: security
+name: triage-security
 description: 'Performs initial triage of security incidents to determine severity, scope, and required response actions using
 action: security
   the NIST SP 800-61r3 and SANS PICERL frameworks. Classifies incidents by type, assigns priority based on business impact,
@@ -29,7 +29,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 - T1566
@@ -37,6 +36,7 @@ mitre_attack:
 - T1059
 - T1046
 - T1070
+capec: []
 ---
 
 # Triaging Security Incidents

@@ -1,5 +1,5 @@
 ---
-name: lnk
+name: disk-artifacts-lnk
 description: Analyze Windows LNK shortcut files and Jump List artifacts to establish evidence of file access, program execution,
 action: lnk
   and user activity using LECmd, JLECmd, and manual binary parsing of the Shell Link Binary format.
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing LNK File and Jump List Artifacts

@@ -1,5 +1,5 @@
 ---
-name: duo
+name: mfa-duo
 description: Deploy Cisco Duo multi-factor authentication across enterprise applications, VPN, RDP, and SSH access points.
 action: duo
   This skill covers Duo integration methods, adaptive authentication policies, device trust
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021.001
 - T1078.004
 - T1566
+capec: []
 ---
 
 # Configuring Multi-Factor Authentication with Duo

@@ -1,5 +1,5 @@
 ---
-name: honeytoken
+name: ad-honeytoken
 description: 'Deploys deception-based honeytokens in Active Directory including fake privileged accounts with AdminCount=1,
 action: honeytoken
   fake SPNs for Kerberoasting detection (honeyroasting), decoy GPOs with cpassword traps, and fake BloodHound paths. Monitors
@@ -24,7 +24,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021
@@ -32,6 +31,7 @@ mitre_attack:
 - T1059
 - T1087
 - T1558.003
+capec: []
 ---
 
 # Deploying Active Directory Honeytokens

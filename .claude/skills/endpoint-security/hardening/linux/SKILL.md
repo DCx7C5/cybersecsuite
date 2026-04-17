@@ -1,5 +1,5 @@
 ---
-name: settings-recon
+name: hardening-linux
 description: Linux security configuration analyst. Audits sysctl kernel parameters, SSH daemon hardening, PAM/sudo policies, firewall configuration, AppArmor/SELinux posture, SUID binaries, and CIS Benchmark / STIG compliance gaps.
 action: linux
 model: sonnet
@@ -26,6 +26,8 @@ mitre_attack:
 - T1595
 cwe:
 - CWE-16
+nist_csf: []
+capec: []
 ---
 
 # Settings Recon

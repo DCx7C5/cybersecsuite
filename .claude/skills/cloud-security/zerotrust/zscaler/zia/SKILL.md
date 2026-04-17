@@ -1,5 +1,5 @@
 ---
-name: zia
+name: zerotrust-zscaler-zia
 description: Implement Zero Trust Network Access using Zscaler Private Access (ZPA) to replace traditional VPN with identity-based,
 action: zia
   context-aware access to private applications through the Zscaler Zero Trust Exchange.
@@ -19,9 +19,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Zero Trust Network Access with Zscaler

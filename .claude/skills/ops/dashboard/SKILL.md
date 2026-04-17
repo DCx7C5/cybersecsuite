@@ -16,6 +16,8 @@ tags:
 - dashboard
 mitre_attack:
 - T1059.004
+nist_csf: []
+capec: []
 ---
 
 # Dashboard Skill — CyberSec Health & Status Monitor

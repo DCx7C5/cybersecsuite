@@ -1,5 +1,5 @@
 ---
-name: lateralmov
+name: hunting-lateralmov
 description: 'Hunt for DCOM-based lateral movement by detecting abuse of MMC20.Application, ShellBrowserWindow, and ShellWindows
 action: lateralmov
   COM objects through Sysmon Event ID 1 (process creation) and Event ID 3 (network connection) correlation, WMI event analysis,
@@ -34,11 +34,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1047
 - T1059
+capec: []
 ---
 
 # Hunting for DCOM Lateral Movement

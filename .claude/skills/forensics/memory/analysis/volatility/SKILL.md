@@ -1,5 +1,5 @@
 ---
-name: volatility
+name: memory-analysis-volatility
 description: 'Analyzes RAM memory dumps from compromised systems using the Volatility framework to identify malicious processes,
 action: volatility
   injected code, network connections, loaded modules, and extracted credentials. Supports Windows, Linux, and macOS memory
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1055
 - T1003
@@ -31,6 +30,7 @@ mitre_attack:
 - T1620
 - T1014
 - T1027
+capec: []
 ---
 
 # Analyzing Memory Dumps with Volatility

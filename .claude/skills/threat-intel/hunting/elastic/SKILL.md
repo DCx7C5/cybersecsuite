@@ -1,5 +1,5 @@
 ---
-name: elastic
+name: hunting-elastic
 description: 'Performs proactive threat hunting in Elastic Security SIEM using KQL/EQL queries, detection rules, and Timeline
 action: elastic
   investigation to identify threats that evade automated detection. Use when SOC teams need to hunt for specific ATT&CK techniques,
@@ -39,10 +39,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Performing Threat Hunting with Elastic SIEM

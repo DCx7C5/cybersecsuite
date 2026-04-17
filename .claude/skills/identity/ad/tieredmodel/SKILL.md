@@ -1,5 +1,5 @@
 ---
-name: tieredmodel
+name: ad-tieredmodel
 description: Implement Microsoft's Enhanced Security Admin Environment (ESAE) tiered administration model for Active Directory.
 action: tieredmodel
   Covers Tier 0/1/2 separation, privileged access workstations (PAWs), administrative f
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1078.004
+capec: []
 ---
 
 # Configuring Active Directory Tiered Model

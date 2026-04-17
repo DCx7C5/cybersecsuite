@@ -1,5 +1,5 @@
 ---
-name: authentication
+name: auth-enum
 description: Discovering and accessing unprotected pages, APIs, and administrative interfaces by enumerating URLs and bypassing
 action: enum
   authentication controls during authorized security assessments.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-287
+capec: []
 ---
 
 # Bypassing Authentication with Forced Browsing

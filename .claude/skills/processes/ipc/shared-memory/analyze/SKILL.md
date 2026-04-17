@@ -19,4 +19,5 @@ mitre:
   - T1055.001
 cwe:
   - CWE-200
+capec: []
 ---

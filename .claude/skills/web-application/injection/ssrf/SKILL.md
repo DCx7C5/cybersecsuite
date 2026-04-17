@@ -1,5 +1,5 @@
 ---
-name: ssrf
+name: injection-ssrf
 description: Detect and exploit blind Server-Side Request Forgery vulnerabilities using out-of-band techniques, DNS interactions,
 action: ssrf
   and timing analysis to access internal services and cloud metadata endpoints.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1190
 cwe:
 - CWE-918
+capec: []
 ---
 
 # Performing Blind SSRF Exploitation

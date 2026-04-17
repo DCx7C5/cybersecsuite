@@ -1,5 +1,5 @@
 ---
-name: guardicore
+name: zerotrust-guardicore
 description: 'Implementing microsegmentation using Akamai Guardicore Segmentation to map application dependencies, create
 action: guardicore
   granular network policies, visualize east-west traffic flows, and enforce least-privilege communication between workloads
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
+capec: []
 ---
 
 # Implementing Microsegmentation with Guardicore

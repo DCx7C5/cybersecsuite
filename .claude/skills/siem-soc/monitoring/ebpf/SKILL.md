@@ -1,5 +1,5 @@
 ---
-name: ebpf
+name: monitoring-ebpf
 description: 'Implements eBPF-based security monitoring using Cilium Tetragon for real-time process execution tracking, network
 action: ebpf
   connection observability, file access auditing, and runtime enforcement. Covers TracingPolicy CRD authoring with kprobe/tracepoint
@@ -34,11 +34,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1547
 - T1610
+capec: []
 ---
 
 # Implementing eBPF Security Monitoring

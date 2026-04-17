@@ -21,7 +21,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021
@@ -31,6 +30,7 @@ cve:
 - CVE-2017-0144
 - CVE-2021-34527
 - CVE-2020-0796
+capec: []
 ---
 
 # Exploiting SMB Vulnerabilities with Metasploit

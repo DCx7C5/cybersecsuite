@@ -1,5 +1,5 @@
 ---
-name: bluetooth
+name: wireless-bluetooth
 description: 'Detects and analyzes Bluetooth Low Energy (BLE) security attacks including sniffing, replay attacks, GATT enumeration
 action: bluetooth
   abuse, and Man-in-the-Middle interception. Uses Ubertooth One and nRF52840 sniffers for packet capture, the bleak Python
@@ -26,10 +26,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1040
 - T1557
+capec: []
 ---
 
 # Detecting Bluetooth Low Energy Attacks

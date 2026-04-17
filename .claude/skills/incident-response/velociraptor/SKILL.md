@@ -28,12 +28,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1003
 - T1070
 - T1547
+capec: []
 ---
 
 # Implementing Velociraptor for IR Collection

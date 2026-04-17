@@ -1,5 +1,5 @@
 ---
-name: mass
+name: api-mass
 description: Discover and exploit mass assignment vulnerabilities in REST APIs to escalate privileges, modify restricted fields,
 action: mass
   and bypass authorization controls by injecting unexpected parameters in API requests.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 cwe:
 - CWE-269
 - CWE-915
+capec: []
 ---
 
 # Exploiting Mass Assignment in REST APIs

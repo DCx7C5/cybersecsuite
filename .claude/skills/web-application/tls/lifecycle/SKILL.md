@@ -1,5 +1,5 @@
 ---
-name: lifecycle
+name: tls-lifecycle
 description: SSL/TLS certificate lifecycle management encompasses the full process of requesting, issuing, deploying, monitoring,
 action: lifecycle
   renewing, and revoking X.509 certificates. Poor certificate management is a leading
@@ -19,7 +19,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing SSL Certificate Lifecycle Management

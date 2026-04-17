@@ -1,5 +1,5 @@
 ---
-name: opentaxii
+name: feeds-opentaxii
 description: Deploy and configure an OpenTAXII server to share and consume STIX-formatted cyber threat intelligence using
 action: opentaxii
   the TAXII 2.1 protocol for automated indicator exchange between organizations.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2021-26855
+capec: []
 ---
 
 # Implementing TAXII Server with OpenTAXII

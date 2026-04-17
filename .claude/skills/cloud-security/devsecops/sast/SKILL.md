@@ -1,5 +1,5 @@
 ---
-name: sast
+name: devsecops-sast
 description: 'This skill covers integrating Static Application Security Testing (SAST) tools—CodeQL and Semgrep—into GitHub
 action: sast
   Actions CI/CD pipelines. It addresses configuring automated code scanning on pull requests and pushes, tuning rules to reduce
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Integrating SAST into GitHub Actions Pipeline

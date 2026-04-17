@@ -1,5 +1,5 @@
 ---
-name: splunk
+name: splunk-lateral
 description: Detect adversary lateral movement across networks using Splunk SPL queries against Windows authentication logs,
 action: lateral
   SMB traffic, and remote service abuse.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021
 - T1059
 - T1070
+capec: []
 ---
 
 # Detecting Lateral Movement with Splunk

@@ -1,5 +1,5 @@
 ---
-name: datastaging
+name: hunting-datastaging
 description: Detect data staging activity before exfiltration by monitoring for archive creation with 7-Zip/RAR, unusual temp
 action: datastaging
   folder access, large file consolidation, and staging directory patterns via EDR and process telemetry
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
 - T1074
 - T1560
+capec: []
 ---
 
 # Hunting for Data Staging Before Exfiltration

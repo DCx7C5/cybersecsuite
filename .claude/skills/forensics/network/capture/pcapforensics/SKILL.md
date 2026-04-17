@@ -1,5 +1,5 @@
 ---
-name: pcapforensics
+name: network-capture-pcapforensics
 description: Capture and analyze network traffic using Wireshark and tshark to reconstruct network events, extract artifacts,
 action: pcapforensics
   and identify malicious communications.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1040
 - T1041
 - T1071
+capec: []
 ---
 
 # Performing Network Forensics with Wireshark

@@ -1,5 +1,5 @@
 ---
-name: broken
+name: api-broken
 description: Detect and test for OWASP API3:2023 Broken Object Property Level Authorization vulnerabilities including excessive
 action: broken
   data exposure and mass assignment attacks.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-915
+capec: []
 ---
 
 # Detecting Broken Object Property Level Authorization

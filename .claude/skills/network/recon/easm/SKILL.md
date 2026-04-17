@@ -1,5 +1,5 @@
 ---
-name: attack
+name: recon-easm
 description: 'Implements external attack surface management (EASM) using Shodan, Censys, and ProjectDiscovery tools (subfinder,
 action: easm
   httpx, nuclei) for asset discovery, subdomain enumeration, service fingerprinting, and exposure scoring. Includes a weighted
@@ -24,11 +24,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1595
 - T1595.002
+capec: []
 ---
 
 # Implementing Attack Surface Management

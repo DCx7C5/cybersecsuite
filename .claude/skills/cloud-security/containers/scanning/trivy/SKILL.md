@@ -1,5 +1,5 @@
 ---
-name: trivy
+name: containers-scanning-trivy
 description: Scan container images, filesystems, and Kubernetes manifests for vulnerabilities, misconfigurations, exposed
 action: trivy
   secrets, and license compliance issues using Aqua Security Trivy with SBOM generation and CI/CD integration.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1195
 - T1610
+capec: []
 ---
 
 # Performing Container Security Scanning with Trivy

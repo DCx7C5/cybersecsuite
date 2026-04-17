@@ -1,5 +1,5 @@
 ---
-name: vlanhopping
+name: layer2-vlanhopping
 description: 'Simulates VLAN hopping attacks using switch spoofing and double tagging techniques in authorized environments
 action: vlanhopping
   to test VLAN segmentation effectiveness and validate switch port security configurations against Layer 2 bypass attacks.
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1599
+capec: []
 ---
 
 # Performing VLAN Hopping Attack

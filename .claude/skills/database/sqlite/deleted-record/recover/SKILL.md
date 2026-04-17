@@ -16,4 +16,5 @@ nist_csf:
   - RS.AN-03
 mitre:
   - T1070.004
+capec: []
 ---

@@ -1,5 +1,5 @@
 ---
-name: splunk
+name: log-windows-splunk
 description: 'Analyzes Windows Security, System, and Sysmon event logs in Splunk to detect authentication attacks, privilege
 action: splunk
   escalation, persistence mechanisms, and lateral movement using SPL queries mapped to MITRE ATT&CK techniques. Use when SOC
@@ -31,10 +31,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Analyzing Windows Event Logs in Splunk

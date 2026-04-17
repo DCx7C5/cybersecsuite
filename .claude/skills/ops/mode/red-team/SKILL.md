@@ -20,6 +20,8 @@ tags:
 mitre_attack:
 - T1218
 - T1547
+nist_csf: []
+capec: []
 ---
 
 # Red Team Mode – Offensive / Adversary Posture

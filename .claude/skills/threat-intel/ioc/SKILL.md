@@ -28,10 +28,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
 - T1566
+capec: []
 ---
 
 # Automating IOC Enrichment

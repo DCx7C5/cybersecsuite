@@ -1,5 +1,5 @@
 ---
-name: fido2
+name: mfa-fido2
 description: Deploy FIDO2/WebAuthn passwordless authentication using security keys and platform authenticators. Covers WebAuthn
 action: fido2
   API integration, FIDO2 server configuration, passkey enrollment, biometric authentica
@@ -30,9 +30,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Passwordless Authentication with FIDO2

@@ -1,5 +1,5 @@
 ---
-name: semgrep
+name: devsecops-semgrep
 description: Write custom Semgrep SAST rules in YAML to detect application-specific vulnerabilities, enforce coding standards,
 action: semgrep
   and integrate into CI/CD pipelines.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Semgrep for Custom SAST Rules

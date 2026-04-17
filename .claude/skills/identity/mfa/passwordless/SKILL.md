@@ -1,5 +1,5 @@
 ---
-name: passwordless
+name: mfa-passwordless
 description: 'Implements passwordless authentication using Microsoft Entra ID with FIDO2 security keys, Windows Hello for
 action: passwordless
   Business, Microsoft Authenticator passkeys, and certificate-based authentication to eliminate password-based attacks. Activates
@@ -24,10 +24,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1566
+capec: []
 ---
 
 # Implementing Passwordless Auth with Microsoft Entra

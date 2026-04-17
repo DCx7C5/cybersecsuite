@@ -1,5 +1,5 @@
 ---
-name: indicators
+name: ioc-indicators
 description: 'Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs, and email artifacts
 action: indicators
   to determine maliciousness confidence, campaign attribution, and blocking priority. Use when triaging IOCs from phishing
@@ -28,9 +28,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 # Analyzing Indicators of Compromise

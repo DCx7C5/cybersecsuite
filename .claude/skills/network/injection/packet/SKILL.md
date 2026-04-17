@@ -1,5 +1,5 @@
 ---
-name: packet
+name: injection-packet
 description: 'Crafts and injects custom network packets using Scapy, hping3, and Nemesis during authorized security assessments
 action: packet
   to test firewall rules, IDS detection, protocol handling, and network stack resilience against malformed and spoofed traffic.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1562.001
 - T1562.004
+capec: []
 ---
 
 # Performing Packet Injection Attack

@@ -1,5 +1,5 @@
 ---
-name: tshark
+name: network-capture-tshark
 description: Automate network traffic analysis using tshark and pyshark for protocol statistics, suspicious flow detection,
 action: tshark
   DNS anomaly identification, and IOC extraction from PCAP files
@@ -21,13 +21,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1040
 - T1041
 - T1059
 - T1071.001
 - T1562.001
+capec: []
 ---
 
 # Performing Network Traffic Analysis with TShark

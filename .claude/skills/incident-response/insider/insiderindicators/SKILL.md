@@ -1,5 +1,5 @@
 ---
-name: insiderindicators
+name: insider-insiderindicators
 description: 'Investigates insider threat indicators including data exfiltration attempts, unauthorized access patterns, policy
 action: insiderindicators
   violations, and pre-departure behaviors using SIEM analytics, DLP alerts, and HR data correlation. Use when SOC teams receive
@@ -25,9 +25,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
+capec: []
 ---
 
 # Investigating Insider Threat Indicators

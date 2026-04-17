@@ -1,5 +1,5 @@
 ---
-name: docker-bench
+name: containers-docker-bench
 description: Docker Bench for Security is an open-source script that checks dozens of common best practices around deploying
 action: docker
   Docker containers in production. Based on the CIS Docker Benchmark, it audits host confi
@@ -19,10 +19,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
+capec: []
 ---
 
 # Performing Docker Bench Security Assessment

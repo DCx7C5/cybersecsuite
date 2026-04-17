@@ -1,5 +1,5 @@
 ---
-name: goldenticketd
+name: kerberos-goldenticketd
 description: Detect Kerberos Golden Ticket forgery by analyzing Windows Event ID 4769 for RC4 encryption downgrades (0x17),
 action: goldenticketd
   abnormal ticket lifetimes, and krbtgt account anomalies in Splunk and Elastic SIEM
@@ -27,13 +27,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1070
 - T1550.002
 - T1558
 - T1558.001
+capec: []
 ---
 
 # Detecting Golden Ticket Forgery

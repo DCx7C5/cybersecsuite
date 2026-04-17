@@ -1,5 +1,5 @@
 ---
-name: lateralmov
+name: azure-lateral-detect
 description: Detect lateral movement in Azure AD/Entra ID environments using Microsoft Graph API audit logs, Azure Sentinel
 action: detect
   KQL hunting queries, and sign-in anomaly correlation to identify privilege escalation, token theft, and cross-tenant pivoting.
@@ -22,7 +22,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1021.001
@@ -30,6 +29,7 @@ mitre_attack:
 - T1059
 - T1078.004
 - T1550
+capec: []
 ---
 
 # Detecting Azure Lateral Movement

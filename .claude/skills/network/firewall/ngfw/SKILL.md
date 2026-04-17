@@ -1,5 +1,5 @@
 ---
-name: ngfw
+name: firewall-ngfw
 description: Configure and deploy Palo Alto Networks next-generation firewalls with App-ID, User-ID, zone-based policies,
 action: ngfw
   SSL decryption, and threat prevention profiles for enterprise network security.
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1562.004
+capec: []
 ---
 
 # Implementing Next-Generation Firewall with Palo Alto

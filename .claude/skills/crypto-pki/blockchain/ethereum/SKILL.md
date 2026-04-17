@@ -1,5 +1,5 @@
 ---
-name: ethereum
+name: blockchain-ethereum
 description: Perform static and symbolic analysis of Solidity smart contracts using Slither and Mythril to detect reentrancy,
 action: ethereum
   integer overflow, access control, and other vulnerability classes before deployment to Ethereum mainnet.
@@ -21,7 +21,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Ethereum Smart Contract Vulnerabilities

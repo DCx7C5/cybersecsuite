@@ -1,5 +1,5 @@
 ---
-name: introspection
+name: api-graphql-introspection
 description: 'Performs GraphQL introspection attacks to extract the full API schema including types, queries, mutations, subscriptions,
 action: introspection
   and field definitions from GraphQL endpoints. The tester uses introspection queries to map the attack surface, identifies
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-200
+capec: []
 ---
 
 # Performing GraphQL Introspection Attack

@@ -1,5 +1,5 @@
 ---
-name: quishing
+name: phishing-quishing
 description: Detect and prevent QR code phishing (quishing) attacks that bypass traditional email security by embedding malicious
 action: quishing
   URLs in QR code images within emails.
@@ -28,10 +28,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1566
+capec: []
 ---
 
 # Detecting QR Code Phishing with Email Security

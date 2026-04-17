@@ -1,5 +1,5 @@
 ---
-name: user
+name: ueba-user
 description: 'Performs User and Entity Behavior Analytics (UEBA) to detect anomalous user activities including impossible
 action: user
   travel, unusual access patterns, privilege abuse, and insider threats using SIEM-based behavioral baselines and statistical
@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1070
+capec: []
 ---
 
 # Performing User Behavior Analytics

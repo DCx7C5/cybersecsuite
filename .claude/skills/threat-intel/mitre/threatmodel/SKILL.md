@@ -1,5 +1,5 @@
 ---
-name: threatmodel
+name: mitre-threatmodel
 description: 'Implements threat modeling using the MITRE ATT&CK framework to map adversary TTPs against organizational assets,
 action: threatmodel
   assess detection coverage gaps, and prioritize defensive investments. Use when SOC teams need to align detection engineering
@@ -38,10 +38,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0855
 - T1059
+capec: []
 ---
 
 # Implementing Threat Modeling with MITRE ATT&CK

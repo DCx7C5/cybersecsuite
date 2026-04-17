@@ -25,9 +25,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0855
+capec: []
 ---
 
 # Implementing Conduit Security for OT Remote Access

@@ -1,5 +1,5 @@
 ---
-name: tlsassessment
+name: tls-tlsassessment
 description: Assess SSL/TLS server configurations using the sslyze Python library to evaluate cipher suites, certificate chains,
 action: tlsassessment
   protocol versions, HSTS headers, and known vulnerabilities like Heartbleed and ROBOT.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 cve:
 - CVE-2014-0160
+capec: []
 ---
 
 # Performing SSL/TLS Security Assessment

@@ -1,5 +1,5 @@
 ---
-name: github
+name: devsecops-github
 description: Configure GitHub Advanced Security with CodeQL to perform automated static analysis and vulnerability detection
 action: github
   across repositories at enterprise scale.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1059
 - T1195
+capec: []
 ---
 
 # Implementing GitHub Advanced Security for Code Scanning

@@ -1,5 +1,5 @@
 ---
-name: ueba
+name: insider-ueba
 description: Implement User and Entity Behavior Analytics using Elasticsearch/OpenSearch to build behavioral baselines, calculate
 action: ueba
   anomaly scores, perform peer group analysis, and detect insider threat indicators such as data exfiltration, privilege abuse,
@@ -22,10 +22,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Detecting Insider Threat with UEBA

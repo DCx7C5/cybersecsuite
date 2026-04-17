@@ -1,5 +1,5 @@
 ---
-name: lnkfiles
+name: disk-artifacts-lnkfiles
 description: Parse Windows LNK shortcut files to extract target paths, timestamps, volume information, and machine identifiers
 action: lnkfiles
   for forensic timeline reconstruction.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Windows LNK Files for Artifacts

@@ -1,5 +1,5 @@
 ---
-name: aws
+name: aws-lambda-aws
 description: 'Securing AWS Lambda execution roles by implementing least-privilege IAM policies, applying permission boundaries,
 action: aws
   restricting resource-based policies, using IAM Access Analyzer to validate permissions, and enforcing role scoping through
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059.009
 - T1078.004
+capec: []
 ---
 
 # Securing AWS Lambda Execution Roles

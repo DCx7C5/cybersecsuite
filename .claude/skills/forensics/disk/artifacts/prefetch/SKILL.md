@@ -1,5 +1,5 @@
 ---
-name: prefetch
+name: disk-artifacts-prefetch
 description: Parse Windows Prefetch files to determine program execution history including run counts, timestamps, and referenced
 action: prefetch
   files for forensic investigation.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Prefetch Files for Execution History

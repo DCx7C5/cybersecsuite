@@ -1,5 +1,5 @@
 ---
-name: http
+name: smuggling-http
 description: Detecting and exploiting HTTP request smuggling vulnerabilities caused by Content-Length and Transfer-Encoding
 action: http
   parsing discrepancies between front-end and back-end servers.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-444
+capec: []
 ---
 
 # Exploiting HTTP Request Smuggling

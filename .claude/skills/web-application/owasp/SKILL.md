@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1189
@@ -33,6 +32,7 @@ cwe:
 - CWE-352
 - CWE-79
 - CWE-89
+capec: []
 ---
 
 # Integrating DAST with OWASP ZAP in Pipeline

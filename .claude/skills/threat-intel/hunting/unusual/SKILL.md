@@ -1,5 +1,5 @@
 ---
-name: unusual
+name: hunting-unusual
 description: Hunt for unusual network connections by analyzing outbound traffic patterns, rare destinations, non-standard
 action: unusual
   ports, and anomalous connection frequencies from endpoints.
@@ -26,11 +26,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1071
+capec: []
 ---
 
 # Hunting For Unusual Network Connections

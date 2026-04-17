@@ -1,5 +1,5 @@
 ---
-name: edr
+name: hunting-edr
 description: Detect OS credential dumping techniques targeting LSASS memory, SAM database, NTDS.dit, and cached credentials
 action: edr
   using EDR telemetry, Sysmon process access monitoring, and Windows security event correlation.
@@ -28,13 +28,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.001
 - T1003.002
 - T1003.003
 - T1059
+capec: []
 ---
 
 # Detecting T1003 Credential Dumping with EDR

@@ -1,5 +1,5 @@
 ---
-name: open
+name: osint-open
 description: 'Collects and synthesizes open-source intelligence (OSINT) about threat actors, malicious infrastructure, and
 action: open
   attack campaigns using publicly available data sources, passive reconnaissance tools, and dark web monitoring. Use when
@@ -27,7 +27,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1082
@@ -35,6 +34,7 @@ mitre_attack:
 - T1593
 - T1595
 - T1596.002
+capec: []
 ---
 
 # Collecting Open-Source Intelligence

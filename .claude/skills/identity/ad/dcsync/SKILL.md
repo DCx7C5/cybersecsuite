@@ -1,5 +1,5 @@
 ---
-name: dcsync
+name: ad-dcsync
 description: Perform DCSync attacks to replicate Active Directory credentials and establish domain persistence by extracting
 action: dcsync
   KRBTGT, Domain Admin, and service account hashes for Golden Ticket creation.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.006
 - T1547
 - T1558.001
+capec: []
 ---
 
 # Conducting Domain Persistence with DCSync

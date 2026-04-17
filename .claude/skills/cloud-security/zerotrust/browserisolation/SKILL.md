@@ -1,5 +1,5 @@
 ---
-name: browserisolation
+name: zerotrust-browserisolation
 description: 'Deploys remote browser isolation (RBI) as a core component of a Zero Trust architecture. Implements isolation
 action: browserisolation
   policies with URL categorization and risk-based routing, content disarming and reconstruction (CDR) for file sanitization,
@@ -26,9 +26,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
+capec: []
 ---
 
 # Implementing Browser Isolation for Zero Trust

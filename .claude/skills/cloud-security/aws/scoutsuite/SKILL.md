@@ -1,5 +1,5 @@
 ---
-name: scoutsuite
+name: aws-scoutsuite
 description: Perform comprehensive security posture assessment of AWS accounts using ScoutSuite to enumerate resources, identify
 action: scoutsuite
   misconfigurations, and generate actionable security reports.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-16
+capec: []
 ---
 
 # Performing AWS Account Enumeration with ScoutSuite

@@ -1,5 +1,5 @@
 ---
-name: vlan-create
+name: vlan
 description: 'Designs and implements VLAN-based network segmentation on managed switches to isolate network zones, enforce
 action: vlan
   access control between segments, and reduce the attack surface by limiting lateral movement paths in enterprise network
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
+capec: []
 ---
 
 # Configuring Network Segmentation with VLANs

@@ -1,5 +1,5 @@
 ---
-name: mimikatz
+name: hunting-mimikatz
 description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory
 action: mimikatz
   detection of known modules.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.001
 - T1059
 - T1070
+capec: []
 ---
 
 # Detecting Mimikatz Execution Patterns

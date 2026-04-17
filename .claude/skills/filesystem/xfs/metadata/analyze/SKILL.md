@@ -15,4 +15,5 @@ tags:
 nist_csf:
   - DE.AE-02
   - RS.AN-03
+capec: []
 ---

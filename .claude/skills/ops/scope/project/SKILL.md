@@ -16,6 +16,8 @@ tags:
 - scope
 - project
 - scope-project
+nist_csf: []
+capec: []
 ---
 
 # Project Layer Skill – Project Forensic Intelligence Hub

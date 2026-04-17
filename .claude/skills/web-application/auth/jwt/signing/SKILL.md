@@ -1,5 +1,5 @@
 ---
-name: signing
+name: auth-jwt-signing
 description: JSON Web Tokens (JWT) defined in RFC 7519 are compact, URL-safe tokens used for authentication and authorization
 action: signing
   in web applications. This skill covers implementing secure JWT signing with HMAC-SHA256
@@ -18,11 +18,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1550
 cwe:
 - CWE-347
+capec: []
 ---
 
 # Implementing JWT Signing and Verification

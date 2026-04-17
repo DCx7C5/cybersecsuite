@@ -1,5 +1,5 @@
 ---
-name: disk
+name: disk-analysis-disk
 description: 'Conducts disk forensics investigations using forensic imaging, file system analysis, artifact recovery, and
 action: disk
   timeline reconstruction to support incident response cases. Utilizes tools such as FTK Imager, Autopsy, and The Sleuth Kit
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
 - T1027
 - T1036
 - T1564
 - T1547
+capec: []
 ---
 
 # Performing Disk Forensics Investigation

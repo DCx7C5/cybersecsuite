@@ -1,5 +1,5 @@
 ---
-name: ir
+name: phishing-ir
 description: 'Responds to phishing incidents by analyzing reported emails, extracting indicators, assessing credential compromise,
 action: ir
   quarantining malicious messages across the organization, and remediating affected accounts. Covers email header analysis,
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
 - T1204
 - T1534
 - T1598
 - T1003
+capec: []
 ---
 
 # Conducting Phishing Incident Response

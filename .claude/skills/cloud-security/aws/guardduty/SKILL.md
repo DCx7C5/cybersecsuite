@@ -1,5 +1,5 @@
 ---
-name: guardduty
+name: aws-guardduty
 description: Automate AWS GuardDuty threat detection findings processing using EventBridge and Lambda to enable real-time
 action: guardduty
   incident response, automatic quarantine of compromised resources, and security notification workflows.
@@ -22,12 +22,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1059.009
 - T1070
 - T1530
+capec: []
 ---
 
 # Detecting AWS GuardDuty Findings Automation

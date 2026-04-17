@@ -1,5 +1,5 @@
 ---
-name: assessment
+name: api-graphql-assessment
 description: Assessing GraphQL API endpoints for introspection leaks, injection attacks, authorization flaws, and denial-of-service
 action: assessment
   vulnerabilities during authorized security tests.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1498
 cwe:
 - CWE-200
+capec: []
 ---
 
 # Performing GraphQL Security Assessment

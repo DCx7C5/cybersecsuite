@@ -1,5 +1,5 @@
 ---
-name: rootkit
+name: rootkits-rootkit
 description: Detect kernel-level rootkits in Linux memory dumps using Volatility3 linux plugins (check_syscall, lsmod, hidden_modules),
 action: rootkit
   rkhunter system scanning, and /proc vs /sys discrepancy analysis to identify hooked syscalls, hidden kernel modules, and
@@ -23,11 +23,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1014
 - T1059
+capec: []
 ---
 
 # Analyzing Linux Kernel Rootkits

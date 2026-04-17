@@ -1,5 +1,5 @@
 ---
-name: escapedetect
+name: kubernetes-runtime-escapedetect
 description: 'Detects container escape attempts by analyzing namespace configurations, privileged container checks, dangerous
 action: escapedetect
   capability assignments, and host path mounts using the kubernetes Python client. Identifies CVE-2022-0492 style escapes
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
 cve:
 - CVE-2022-0492
+capec: []
 ---
 
 # Performing Container Escape Detection

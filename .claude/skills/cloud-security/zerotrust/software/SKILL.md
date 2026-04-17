@@ -1,5 +1,5 @@
 ---
-name: software
+name: zerotrust-software
 description: Deploy a Software-Defined Perimeter using the CSA v2.0 specification with Single Packet Authorization, mutual
 action: software
   TLS, and SDP controller/gateway configuration to enforce zero trust network access.
@@ -19,7 +19,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Deploying Software-Defined Perimeter

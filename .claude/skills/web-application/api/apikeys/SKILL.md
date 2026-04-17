@@ -1,5 +1,5 @@
 ---
-name: apikeys
+name: api-apikeys
 description: 'Implements secure API key generation, storage, rotation, and revocation controls to protect API authentication
 action: apikeys
   credentials from leakage, brute force, and abuse. The engineer designs API key formats with sufficient entropy, implements
@@ -32,10 +32,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
+capec: []
 ---
 
 # Implementing API Key Security Controls

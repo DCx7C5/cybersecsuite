@@ -1,5 +1,5 @@
 ---
-name: kubernetes
+name: kubernetes-hardening-kubernetes
 description: Audit Kubernetes cluster security posture against CIS benchmarks using kube-bench with automated checks for control
 action: kubernetes
   plane, worker nodes, and RBAC.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Performing Kubernetes CIS Benchmark with kube-bench

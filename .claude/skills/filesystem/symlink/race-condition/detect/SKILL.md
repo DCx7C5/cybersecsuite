@@ -18,4 +18,5 @@ mitre:
 cwe:
   - CWE-362
   - CWE-61
+capec: []
 ---

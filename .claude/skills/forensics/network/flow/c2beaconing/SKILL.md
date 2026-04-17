@@ -1,5 +1,5 @@
 ---
-name: c2beaconing
+name: network-flow-c2beaconing
 description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation
 action: c2beaconing
   to identify compromised endpoints communicating with adversary infrastructure.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1071
 - T1071.001
 - T1562.004
+capec: []
 ---
 
 # Hunting for Command and Control Beaconing

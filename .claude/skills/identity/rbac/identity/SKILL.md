@@ -1,5 +1,5 @@
 ---
-name: identity
+name: rbac-identity
 description: 'Builds comprehensive identity governance and lifecycle management processes including joiner-mover-leaver automation,
 action: identity
   role mining, access request workflows, periodic recertification, and orphaned account remediation using IGA platforms. Activates
@@ -28,7 +28,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Building Identity Governance Lifecycle Process

@@ -1,5 +1,5 @@
 ---
-name: wssecurity
+name: api-websocket-wssecurity
 description: 'Tests WebSocket API implementations for security vulnerabilities including missing authentication on WebSocket
 action: wssecurity
   upgrade, Cross-Site WebSocket Hijacking (CSWSH), injection attacks through WebSocket messages, insufficient input validation,
@@ -26,9 +26,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-1385
+capec: []
 ---
 
 # Testing WebSocket API Security

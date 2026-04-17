@@ -1,5 +1,5 @@
 ---
-name: openssl
+name: ca-openssl
 description: A Certificate Authority (CA) is the trust anchor in a PKI hierarchy, responsible for issuing, signing, and revoking
 action: openssl
   digital certificates. This skill covers building a two-tier CA hierarchy (Root CA +
@@ -18,7 +18,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Configuring Certificate Authority with OpenSSL

@@ -1,5 +1,5 @@
 ---
-name: windows
+name: log-windows
 description: 'Configures Windows Event Logging with advanced audit policies to generate high-fidelity security events for
 action: windows
   threat detection and forensic investigation. Use when enabling audit policies for logon events, process creation, privilege
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Configuring Windows Event Logging for Detection

@@ -1,5 +1,5 @@
 ---
-name: model
+name: ai-model
 description: 'Detects prompt injection attacks targeting LLM-based applications using a multi-layered defense combining regex
 action: model
   pattern matching for known attack signatures, heuristic scoring for structural anomalies, and transformer-based classification
@@ -44,11 +44,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 cwe:
 - CWE-20
+capec: []
 ---
 
 # Detecting AI Model Prompt Injection Attacks

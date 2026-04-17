@@ -1,5 +1,5 @@
 ---
-name: sqlmap
+name: injection-sqli-sqlmap
 description: Detecting and exploiting SQL injection vulnerabilities using sqlmap to extract database contents during authorized
 action: sqlmap
   penetration tests.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-89
+capec: []
 ---
 
 # Exploiting SQL Injection with sqlmap

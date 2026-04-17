@@ -1,5 +1,5 @@
 ---
-name: sentinel
+name: azure-sentinel
 description: 'This skill covers deploying Microsoft Sentinel as a cloud-native SIEM and SOAR platform for centralized security
 action: sentinel
   operations. It details configuring data connectors for multi-cloud log ingestion, writing KQL detection queries, building
@@ -31,10 +31,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Building Cloud SIEM with Sentinel

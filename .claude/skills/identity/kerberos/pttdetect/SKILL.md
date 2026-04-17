@@ -1,5 +1,5 @@
 ---
-name: pttdetect
+name: kerberos-pttdetect
 description: Detect Kerberos Pass-the-Ticket (PtT) attacks by analyzing Windows Event IDs 4768, 4769, and 4771 for anomalous
 action: pttdetect
   ticket usage patterns in Splunk and Elastic SIEM
@@ -27,7 +27,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
@@ -35,6 +34,7 @@ mitre_attack:
 - T1550.003
 - T1558
 - T1562.001
+capec: []
 ---
 
 # Detecting Pass-the-Ticket Attacks

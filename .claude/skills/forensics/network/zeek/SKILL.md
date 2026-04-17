@@ -1,5 +1,5 @@
 ---
-name: zeek
+name: network-zeek
 description: 'Performs statistical analysis of Zeek conn.log connection intervals to detect C2 beaconing patterns. Uses the
 action: zeek
   ZAT library to load Zeek logs into Pandas DataFrames, calculates inter-arrival time standard deviation, and flags periodic
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1071
 - T1071.001
+capec: []
 ---
 
 # Detecting Beaconing Patterns with Zeek

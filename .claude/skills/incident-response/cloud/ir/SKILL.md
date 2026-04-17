@@ -1,5 +1,5 @@
 ---
-name: ir
+name: cloud-ir
 description: 'Responds to security incidents in cloud environments (AWS, Azure, GCP) by performing identity-based containment,
 action: ir
   cloud-native log analysis, resource isolation, and forensic evidence acquisition adapted for ephemeral cloud infrastructure.
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078
 - T1537
 - T1580
 - T1525
 - T1078.004
+capec: []
 ---
 
 # Conducting Cloud Incident Response

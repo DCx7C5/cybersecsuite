@@ -1,5 +1,5 @@
 ---
-name: plaso
+name: disk-timeline-plaso
 description: Build comprehensive forensic super-timelines using Plaso (log2timeline) to correlate events across file systems,
 action: plaso
   logs, and artifacts into a unified chronological view.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Timeline Reconstruction with Plaso

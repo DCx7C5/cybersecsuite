@@ -1,5 +1,5 @@
 ---
-name: sailpoint
+name: rbac-sailpoint
 description: Deploy SailPoint IdentityNow or IdentityIQ for identity governance and administration. Covers identity lifecycle
 action: sailpoint
   management, access request workflows, certification campaigns, role mining, SOD policy
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Identity Governance with SailPoint

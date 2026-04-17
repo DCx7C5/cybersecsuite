@@ -1,5 +1,5 @@
 ---
-name: kerbattack
+name: kerberos-kerbattack
 description: Kerberoasting is a post-exploitation technique that targets service accounts in Active Directory by requesting
 action: kerbattack
   Kerberos TGS (Ticket Granting Service) tickets for accounts with Service Principal Names
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1071
 - T1558
 - T1558.003
+capec: []
 ---
 
 # Performing Kerberoasting Attack

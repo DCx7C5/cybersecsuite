@@ -1,5 +1,5 @@
 ---
-name: misp
+name: platforms-misp
 description: Analyze the threat landscape using MISP (Malware Information Sharing Platform) by querying event statistics,
 action: misp
   attribute distributions, threat actor galaxy clusters, and tag trends over time. Uses PyMISP to pull event data, compute
@@ -26,9 +26,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Analyzing Threat Landscape with MISP

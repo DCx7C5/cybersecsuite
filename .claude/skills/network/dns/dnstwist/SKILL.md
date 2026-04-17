@@ -1,5 +1,5 @@
 ---
-name: dnstwist
+name: dns-dnstwist
 description: Detect typosquatting, homograph phishing, and brand impersonation domains using dnstwist to generate domain permutations
 action: dnstwist
   and identify registered lookalike domains targeting your organization.
@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
 - T1583.001
+capec: []
 ---
 
 # Analyzing Typosquatting Domains with DNSTwist

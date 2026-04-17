@@ -1,5 +1,5 @@
 ---
-name: phishing
+name: playbooks-phishing
 description: Automate phishing incident response using Splunk SOAR REST API to create containers, add artifacts, and trigger
 action: phishing
   playbooks
@@ -18,11 +18,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
 - T1566
 - T1610
+capec: []
 ---
 
 # Implementing SOAR Playbook for Phishing

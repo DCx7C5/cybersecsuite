@@ -21,4 +21,5 @@ mitre:
   - T1071
 cwe:
   - CWE-311
+capec: []
 ---

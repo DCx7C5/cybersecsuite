@@ -1,5 +1,5 @@
 ---
-name: cloud
+name: containment-cloud
 description: Execute cloud-native incident containment across AWS, Azure, and GCP by isolating compromised resources, revoking
 action: cloud
   credentials, preserving forensic evidence, and applying security group restrictions to prevent lateral movement.
@@ -28,7 +28,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078
 - T1537
@@ -37,6 +36,7 @@ mitre_attack:
 - T1098
 - T1003
 - T1078.004
+capec: []
 ---
 
 # Performing Cloud Incident Containment Procedures

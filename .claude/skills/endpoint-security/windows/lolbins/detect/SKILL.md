@@ -1,5 +1,5 @@
 ---
-name: living
+name: windows-lolbins-detect
 description: 'Detect abuse of legitimate Windows binaries (LOLBins) used for living off the land attacks. Monitors process
 action: detect
   creation, command-line arguments, and parent-child relationships to identify suspicious LOLBin execution patterns.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1059
 - T1070
 - T1218
+capec: []
 ---
 
 # Detecting Living Off the Land Attacks

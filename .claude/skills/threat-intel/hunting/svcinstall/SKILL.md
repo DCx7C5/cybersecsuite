@@ -1,5 +1,5 @@
 ---
-name: svcinstall
+name: hunting-svcinstall
 description: Detect suspicious Windows service installations (MITRE ATT&CK T1543.003) by parsing System event logs for Event
 action: svcinstall
   ID 7045, analyzing service binary paths, and identifying indicators of persistence mechanisms.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1059.001
 - T1547
+capec: []
 ---
 
 # Hunting for Unusual Service Installations

@@ -1,5 +1,5 @@
 ---
-name: open
+name: redirect-open
 description: Identify and test open redirect vulnerabilities in web applications by analyzing URL redirection parameters,
 action: open
   bypass techniques, and exploitation chains for phishing and token theft.
@@ -21,13 +21,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1550
 - T1566
 cwe:
 - CWE-601
+capec: []
 ---
 
 # Testing for Open Redirect Vulnerabilities

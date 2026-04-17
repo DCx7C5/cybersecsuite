@@ -1,5 +1,5 @@
 ---
-name: playbook
+name: triage-playbook
 description: Classify and prioritize security incidents using structured IR playbooks to determine severity, assign response
 action: playbook
   teams, and initiate appropriate response procedures.
@@ -19,13 +19,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 - T1566
 - T1078
 - T1059
 - T1070
+capec: []
 ---
 
 # Triaging Security Incidents with IR Playbooks

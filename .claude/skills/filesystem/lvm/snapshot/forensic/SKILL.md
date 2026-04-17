@@ -14,4 +14,5 @@ tags:
 nist_csf:
   - RS.AN-03
   - RS.MI-01
+capec: []
 ---

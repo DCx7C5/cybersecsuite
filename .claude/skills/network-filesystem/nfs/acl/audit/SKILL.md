@@ -13,4 +13,5 @@ tags:
 nist_csf:
   - PR.AC-04
   - ID.RA-01
+capec: []
 ---

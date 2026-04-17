@@ -1,5 +1,5 @@
 ---
-name: consent
+name: auth-oauth-consent
 description: Detect risky OAuth application consent grants in Azure AD / Microsoft Entra ID using Microsoft Graph API, audit
 action: consent
   logs, and permission analysis to identify illicit consent grant attacks.
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1550
+capec: []
 ---
 
 # Detecting Suspicious OAuth Application Consent

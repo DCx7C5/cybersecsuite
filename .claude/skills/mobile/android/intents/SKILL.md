@@ -1,5 +1,5 @@
 ---
-name: intents
+name: android-intents
 description: 'Tests Android inter-process communication (IPC) through intents for vulnerabilities including intent injection,
 action: intents
   unauthorized component access, broadcast sniffing, pending intent hijacking, and content provider data leakage. Use when
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1404
+capec: []
 ---
 
 # Testing Android Intents for Vulnerabilities

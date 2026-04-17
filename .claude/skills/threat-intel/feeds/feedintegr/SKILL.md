@@ -1,5 +1,5 @@
 ---
-name: feedintegr
+name: feeds-feedintegr
 description: 'Builds automated threat intelligence feed integration pipelines connecting STIX/TAXII feeds, open-source threat
 action: feedintegr
   intel, and commercial TI platforms into SIEM and security tools for real-time IOC matching and alerting. Use when SOC teams
@@ -26,10 +26,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Building Threat Intelligence Feed Integration

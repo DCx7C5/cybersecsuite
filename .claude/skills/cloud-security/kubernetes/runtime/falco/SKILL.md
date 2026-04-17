@@ -1,5 +1,5 @@
 ---
-name: falco
+name: kubernetes-runtime-falco
 description: Detect container escape attempts in real-time using Falco runtime security rules that monitor syscalls, file
 action: falco
   access, and privilege escalation.
@@ -26,13 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
 - T1611
 cve:
 - CVE-2022-0492
+capec: []
 ---
 
 # Detecting Container Escape with Falco Rules

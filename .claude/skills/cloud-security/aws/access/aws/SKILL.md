@@ -1,5 +1,5 @@
 ---
-name: aws
+name: aws-access-aws
 description: Configure AWS Verified Access to provide VPN-less zero trust network access to internal applications using identity
 action: aws
   and device posture verification with Cedar policy language.
@@ -23,7 +23,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Configuring AWS Verified Access for ZTNA

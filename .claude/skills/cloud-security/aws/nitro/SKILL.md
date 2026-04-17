@@ -1,5 +1,5 @@
 ---
-name: nitro
+name: aws-nitro
 description: 'Implements AWS Nitro Enclave-based confidential computing environments with cryptographic attestation, KMS policy
 action: nitro
   integration using PCR-based condition keys, and secure vsock communication channels. The practitioner builds enclave images,
@@ -27,9 +27,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1578.002
+capec: []
 ---
 
 # Implementing AWS Nitro Enclave Security

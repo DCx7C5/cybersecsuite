@@ -1,5 +1,5 @@
 ---
-name: graphql
+name: api-graphql
 description: Execute and test GraphQL depth limit attacks using deeply nested recursive queries to identify denial-of-service
 action: graphql
   vulnerabilities in GraphQL APIs.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1498
 cwe:
 - CWE-200
+capec: []
 ---
 
 # Performing GraphQL Depth Limit Attack

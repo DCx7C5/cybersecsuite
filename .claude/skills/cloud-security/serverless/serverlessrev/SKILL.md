@@ -1,5 +1,5 @@
 ---
-name: serverlessrev
+name: serverless-serverlessrev
 description: 'Performing security reviews of serverless functions across AWS Lambda, Azure Functions, and GCP Cloud Functions
 action: serverlessrev
   to identify overly permissive execution roles, insecure environment variables, injection vulnerabilities, and missing runtime
@@ -23,11 +23,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059.009
 - T1078.004
 - T1610
+capec: []
 ---
 
 # Performing Serverless Function Security Review

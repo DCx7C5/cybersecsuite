@@ -1,5 +1,5 @@
 ---
-name: splunk
+name: triage-splunk
 description: 'Triages security alerts in Splunk Enterprise Security by classifying severity, investigating notable events,
 action: splunk
   correlating related telemetry, and making escalation or closure decisions using SPL queries and the Incident Review dashboard.
@@ -25,9 +25,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
+capec: []
 ---
 
 # Triaging Security Alerts in Splunk

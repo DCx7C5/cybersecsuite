@@ -1,5 +1,5 @@
 ---
-name: kubernetes
+name: kubernetes-privesc-detect
 description: Detect and prevent privilege escalation in Kubernetes pods by monitoring security contexts, capabilities, and
 action: detect
   syscall patterns with Falco and OPA policies.
@@ -26,13 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1068
 - T1610
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Detecting Privilege Escalation in Kubernetes Pods

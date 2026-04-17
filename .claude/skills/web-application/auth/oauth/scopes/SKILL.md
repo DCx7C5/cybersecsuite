@@ -1,5 +1,5 @@
 ---
-name: scopes
+name: auth-oauth-scopes
 description: 'Performs OAuth 2.0 scope minimization review to identify over-permissioned third-party application integrations,
 action: scopes
   excessive API scopes, unused token grants, and risky OAuth consent patterns across identity providers and SaaS platforms.
@@ -24,10 +24,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1550
+capec: []
 ---
 
 # Performing OAuth Scope Minimization Review

@@ -1,5 +1,5 @@
 ---
-name: kpimetrics
+name: operations-kpimetrics
 description: 'Builds SOC performance metrics and KPI tracking dashboards measuring Mean Time to Detect (MTTD), Mean Time to
 action: kpimetrics
   Respond (MTTR), alert quality ratios, analyst productivity, and detection coverage using SIEM data. Use when SOC leadership
@@ -33,7 +33,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Building SOC Metrics and KPI Tracking

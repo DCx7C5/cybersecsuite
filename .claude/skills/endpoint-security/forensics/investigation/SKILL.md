@@ -1,5 +1,5 @@
 ---
-name: filesystem-recon
+name: forensics-investigation
 description: Filesystem forensic reconnaissance. Baseline/delta comparison, SUID/SGID audit, hidden file detection, inode anomalies, extended attributes, deleted-but-open files, setuid rootkits, and forensic timeline analysis.
 action: investigation
 model: sonnet
@@ -22,6 +22,8 @@ mitre_attack:
 - T1059
 - T1548.001
 - T1595
+nist_csf: []
+capec: []
 ---
 
 # Filesystem Recon

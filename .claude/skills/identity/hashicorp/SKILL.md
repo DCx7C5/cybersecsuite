@@ -24,10 +24,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1078.004
+capec: []
 ---
 
 # Implementing HashiCorp Vault Dynamic Secrets

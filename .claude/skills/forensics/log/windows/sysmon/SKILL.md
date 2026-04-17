@@ -1,5 +1,5 @@
 ---
-name: sysmon
+name: log-windows-sysmon
 description: 'Detect malicious scheduled task creation and modification using Sysmon Event IDs 1 (Process Create for schtasks.exe),
 action: sysmon
   11 (File Create for task XML), and Windows Security Event 4698/4702. The analyst correlates task creation with suspicious
@@ -31,12 +31,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1059
 - T1547
 - T1562.001
+capec: []
 ---
 
 # Detecting Malicious Scheduled Tasks with Sysmon

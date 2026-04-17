@@ -20,4 +20,5 @@ mitre:
   - T1542
 cwe:
   - CWE-364
+capec: []
 ---

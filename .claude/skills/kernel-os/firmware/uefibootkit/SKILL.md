@@ -1,5 +1,5 @@
 ---
-name: uefibootkit
+name: firmware-uefibootkit
 description: 'Analyzes UEFI bootkit persistence mechanisms including firmware implants in SPI flash, EFI System Partition
 action: uefibootkit
   (ESP) modifications, Secure Boot bypass techniques, and UEFI variable manipulation. Covers detection of known bootkit families
@@ -31,7 +31,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1014
 - T1071
@@ -39,6 +38,7 @@ mitre_attack:
 - T1547
 cve:
 - CVE-2022-21894
+capec: []
 ---
 
 # Analyzing UEFI Bootkit Persistence

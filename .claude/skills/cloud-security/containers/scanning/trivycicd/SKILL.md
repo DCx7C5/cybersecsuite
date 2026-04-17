@@ -1,5 +1,5 @@
 ---
-name: trivycicd
+name: containers-scanning-trivycicd
 description: 'This skill covers integrating Aqua Security''s Trivy scanner into CI/CD pipelines for comprehensive container
 action: trivycicd
   image vulnerability detection. It addresses scanning Docker images for OS package and application dependency CVEs, detecting
@@ -24,13 +24,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1610
 cve:
 - CVE-2023-44487
 - CVE-2024-21626
+capec: []
 ---
 
 # Scanning Containers with Trivy in CI/CD

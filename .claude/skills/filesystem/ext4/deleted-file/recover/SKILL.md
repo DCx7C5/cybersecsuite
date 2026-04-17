@@ -14,4 +14,5 @@ tags:
   - undelete
 nist_csf:
   - RS.AN-03
+capec: []
 ---

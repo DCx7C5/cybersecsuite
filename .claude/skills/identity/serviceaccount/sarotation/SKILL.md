@@ -1,5 +1,5 @@
 ---
-name: sarotation
+name: serviceaccount-sarotation
 description: Automate credential rotation for service accounts across Active Directory, cloud platforms, and application databases
 action: sarotation
   to eliminate stale secrets and reduce compromise risk.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
+capec: []
 ---
 
 # Performing Service Account Credential Rotation

@@ -1,5 +1,5 @@
 ---
-name: zerologon
+name: ad-zerologon
 description: Exploit the Zerologon vulnerability (CVE-2020-1472) in the Netlogon Remote Protocol to achieve domain controller
 action: zerologon
   compromise by resetting the machine account password to empty.
@@ -26,13 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 cwe:
 - CWE-269
 cve:
 - CVE-2020-1472
+capec: []
 ---
 
 # Exploiting Zerologon Vulnerability (CVE-2020-1472)

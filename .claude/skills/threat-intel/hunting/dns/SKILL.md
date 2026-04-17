@@ -1,5 +1,5 @@
 ---
-name: dns
+name: hunting-dns
 description: Hunt for DNS-based persistence mechanisms including DNS hijacking, dangling CNAME records, wildcard DNS abuse,
 action: dns
   and unauthorized zone modifications using passive DNS databases, SecurityTrails API, and DNS audit log analysis.
@@ -21,7 +21,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
@@ -29,6 +28,7 @@ mitre_attack:
 - T1595.002
 cwe:
 - CWE-284
+capec: []
 ---
 
 # Hunting for DNS-based Persistence

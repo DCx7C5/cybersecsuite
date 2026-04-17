@@ -16,4 +16,5 @@ nist_csf:
   - DE.CM-04
 mitre:
   - T1557.002
+capec: []
 ---

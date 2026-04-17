@@ -15,4 +15,5 @@ tags:
 nist_csf:
   - PR.IR-01
   - ID.RA-01
+capec: []
 ---

@@ -1,5 +1,5 @@
 ---
-name: bec
+name: phishing-bec
 description: Deploy AI and NLP-powered detection systems to identify business email compromise attacks by analyzing writing
 action: bec
   style, behavioral patterns, and contextual anomalies that evade traditional rule-based filters.
@@ -38,9 +38,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Detecting Business Email Compromise with AI

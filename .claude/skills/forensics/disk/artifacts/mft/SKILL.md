@@ -1,5 +1,5 @@
 ---
-name: mft
+name: disk-artifacts-mft
 description: Analyze the NTFS Master File Table ($MFT) to recover metadata and content of deleted files by examining MFT record
 action: mft
   entries, $LogFile, $UsnJrnl, and MFT slack space using MFTECmd, analyzeMFT, and X-Ways Forensics.
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing MFT for Deleted File Recovery

@@ -1,5 +1,5 @@
 ---
-name: investigation
+name: insider-investigation
 description: 'Investigates insider threat incidents involving employees, contractors, or trusted partners who misuse authorized
 action: investigation
   access to steal data, sabotage systems, or violate security policies. Combines digital forensics, user behavior analytics,
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078
 - T1048
 - T1567
 - T1114
 - T1041
+capec: []
 ---
 
 # Performing Insider Threat Investigation

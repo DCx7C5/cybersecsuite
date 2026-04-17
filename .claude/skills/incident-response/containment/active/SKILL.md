@@ -1,5 +1,5 @@
 ---
-name: active
+name: containment-active
 description: 'Executes containment strategies to stop active adversary operations and prevent lateral movement during a confirmed
 action: active
   security breach. Implements short-term and long-term containment using network segmentation, endpoint isolation, credential
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1570
@@ -32,6 +31,7 @@ mitre_attack:
 - T1003
 - T1071
 - T1486
+capec: []
 ---
 
 # Containing Active Breaches

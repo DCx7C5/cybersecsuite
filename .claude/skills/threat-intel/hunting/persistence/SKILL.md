@@ -1,5 +1,5 @@
 ---
-name: persistence
+name: hunting-persistence
 description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI
 action: persistence
   consumer, filter, and binding creation events that execute malicious code triggered by system events.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1047
 - T1059
 - T1547
+capec: []
 ---
 
 # Hunting for Persistence via WMI Subscriptions

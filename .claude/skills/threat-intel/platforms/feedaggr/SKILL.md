@@ -1,5 +1,5 @@
 ---
-name: feedaggr
+name: platforms-feedaggr
 description: Deploy MISP (Malware Information Sharing Platform) to aggregate, correlate, and distribute threat intelligence
 action: feedaggr
   feeds from multiple sources for centralized IOC management and automated SIEM integration.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
 - T1593
 - T1610
+capec: []
 ---
 
 # Building Threat Feed Aggregation with MISP

@@ -1,5 +1,5 @@
 ---
-name: threatdragon
+name: owasp-threatdragon
 description: Use OWASP Threat Dragon to create data flow diagrams, identify threats using STRIDE and LINDDUN methodologies,
 action: threatdragon
   and generate threat model reports for secure design review.
@@ -30,7 +30,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Threat Modeling with OWASP Threat Dragon

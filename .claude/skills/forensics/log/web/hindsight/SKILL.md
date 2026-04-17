@@ -1,5 +1,5 @@
 ---
-name: hindsight
+name: log-web-hindsight
 description: Analyze Chromium-based browser artifacts using Hindsight to extract browsing history, downloads, cookies, cached
 action: hindsight
   content, autofill data, saved passwords, and browser extensions from Chrome, Edge, Brave, and Opera for forensic investigation.
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Browser Forensics with Hindsight

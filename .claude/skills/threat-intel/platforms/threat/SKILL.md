@@ -1,5 +1,5 @@
 ---
-name: threat
+name: platforms-threat
 description: Building a Threat Intelligence Platform (TIP) involves deploying and integrating multiple CTI tools into a unified
 action: threat
   system for collecting, analyzing, enriching, and disseminating threat intelligence. T
@@ -22,7 +22,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Building Threat Intelligence Platform

@@ -1,5 +1,5 @@
 ---
-name: simulation
+name: phishing-simulation
 description: 'Executes authorized phishing simulation campaigns to assess an organization''s susceptibility to email-based
 action: simulation
   social engineering attacks. The tester designs realistic phishing scenarios, builds credential harvesting infrastructure,
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 # Executing Phishing Simulation Campaign

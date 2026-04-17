@@ -1,5 +1,5 @@
 ---
-name: spearphish
+name: phishing-spearphish
 description: Spearphishing simulation is a targeted social engineering attack vector used by red teams to gain initial access.
 action: spearphish
   Unlike broad phishing campaigns, spearphishing uses OSINT-derived intelligence to craf
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1071
 - T1566
 - T1566.001
 - T1593
+capec: []
 ---
 
 # Conducting Spearphishing Simulation Campaign

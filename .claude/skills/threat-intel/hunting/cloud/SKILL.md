@@ -1,5 +1,5 @@
 ---
-name: cloud
+name: hunting-cloud
 description: Hunt for threats in AWS environments using Detective behavior graphs, entity investigation timelines, GuardDuty
 action: cloud
   finding correlation, and automated entity profiling across IAM users, EC2 instances, and IP addresses.
@@ -23,12 +23,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1059
 - T1078.004
 - T1578.002
+capec: []
 ---
 
 # Performing Cloud-Native Threat Hunting with AWS Detective

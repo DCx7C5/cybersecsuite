@@ -1,5 +1,5 @@
 ---
-name: wafgateway
+name: api-wafgateway
 description: 'Securing API Gateway endpoints with AWS WAF by configuring managed rule groups for OWASP Top 10 protection,
 action: wafgateway
   creating custom rate limiting rules, implementing bot control, setting up IP reputation filtering, and monitoring WAF metrics
@@ -24,10 +24,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1498
+capec: []
 ---
 
 # Securing API Gateway with AWS WAF

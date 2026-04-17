@@ -1,5 +1,5 @@
 ---
-name: certificate-recon
+name: certificates-transparency
 description: X.509 / PKI forensics specialist. Certificate chain validation, rogue CA and sub-CA detection, TLS/mTLS inspection, Certificate Transparency log analysis, private-key material forensics, code-signing audit, and certificate-based MITM investigation.
 action: transparency
 model: sonnet
@@ -26,6 +26,8 @@ mitre_attack:
 - T1553.002
 - T1557
 - T1595
+nist_csf: []
+capec: []
 ---
 
 # Certificate Recon

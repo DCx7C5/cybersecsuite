@@ -1,5 +1,5 @@
 ---
-name: timesketch
+name: disk-timeline-timesketch
 description: Build collaborative forensic incident timelines using Timesketch to ingest, normalize, and analyze multi-source
 action: timesketch
   event data for attack chain reconstruction and investigation documentation.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
 - T1059
 - T1053
+capec: []
 ---
 
 # Building Incident Timeline with Timesketch

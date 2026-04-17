@@ -20,4 +20,5 @@ mitre:
   - T1068
 cwe:
   - CWE-269
+capec: []
 ---

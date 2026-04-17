@@ -21,6 +21,8 @@ tags:
 - tls-sslkeylog
 mitre_attack:
 - T1041
+nist_csf: []
+capec: []
 ---
 
 # SSLKEYLOG Skill – TLS Key Logging Management & Analysis

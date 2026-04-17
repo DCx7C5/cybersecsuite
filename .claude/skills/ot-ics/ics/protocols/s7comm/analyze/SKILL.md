@@ -25,7 +25,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0843
 - T0855
@@ -35,6 +34,7 @@ cve:
 - CVE-2019-13945
 - CVE-2022-38773
 - CVE-2019-10929
+capec: []
 ---
 
 # Performing S7comm Protocol Security Analysis

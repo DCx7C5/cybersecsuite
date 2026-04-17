@@ -22,4 +22,5 @@ mitre:
 cwe:
   - CWE-757
   - CWE-326
+capec: []
 ---

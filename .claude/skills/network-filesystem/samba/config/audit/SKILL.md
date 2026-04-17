@@ -17,4 +17,5 @@ nist_csf:
   - PR.DS-02
 mitre:
   - T1135
+capec: []
 ---

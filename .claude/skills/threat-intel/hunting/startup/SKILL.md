@@ -1,5 +1,5 @@
 ---
-name: startup
+name: hunting-startup
 description: Detect T1547.001 startup folder persistence by monitoring Windows startup directories for suspicious file creation,
 action: startup
   analyzing autoruns entries, and using Python watchdog for real-time filesystem monitoring.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1547
 - T1547.001
+capec: []
 ---
 
 # Hunting for Startup Folder Persistence

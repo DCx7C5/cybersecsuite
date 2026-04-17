@@ -1,5 +1,5 @@
 ---
-name: subfinder
+name: dns-subfinder
 description: Enumerate subdomains of target domains using ProjectDiscovery's Subfinder passive reconnaissance tool to map
 action: subfinder
   the attack surface during security assessments.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1593
 - T1595
 - T1595.002
+capec: []
 ---
 
 # Performing Subdomain Enumeration with Subfinder

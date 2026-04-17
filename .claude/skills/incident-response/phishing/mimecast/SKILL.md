@@ -1,5 +1,5 @@
 ---
-name: mimecast
+name: phishing-mimecast
 description: Deploy Mimecast Targeted Threat Protection including URL Protect, Attachment Protect, Impersonation Protect,
 action: mimecast
   and Internal Email Protect to defend against advanced phishing and spearphishing attacks.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1059
 - T1566
 - T1566.001
+capec: []
 ---
 
 # Implementing Mimecast Targeted Attack Protection

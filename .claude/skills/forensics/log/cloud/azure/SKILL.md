@@ -1,5 +1,5 @@
 ---
-name: azure
+name: log-cloud-azure
 description: 'Queries Azure Monitor activity logs and sign-in logs via azure-monitor-query to detect suspicious administrative
 action: azure
   operations, impossible travel, privilege escalation, and resource modifications. Builds KQL queries for threat hunting in
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1078.004
+capec: []
 ---
 
 # Analyzing Azure Activity Logs for Threats

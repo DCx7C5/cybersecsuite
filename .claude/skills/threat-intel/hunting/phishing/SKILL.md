@@ -1,5 +1,5 @@
 ---
-name: phishing
+name: hunting-phishing
 description: Hunt for spearphishing campaign indicators across email logs, endpoint telemetry, and network data to detect
 action: phishing
   targeted email attacks.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1566
 - T1566.001
+capec: []
 ---
 
 # Hunting For Spearphishing Indicators

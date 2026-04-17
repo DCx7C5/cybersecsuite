@@ -19,6 +19,8 @@ mitre_attack:
 - T1027.003
 - T1059
 - T1595
+nist_csf: []
+capec: []
 ---
 
 # Steganography Recon

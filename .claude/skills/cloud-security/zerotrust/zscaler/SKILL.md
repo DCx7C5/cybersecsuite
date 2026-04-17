@@ -1,5 +1,5 @@
 ---
-name: zscaler
+name: zerotrust-zscaler
 description: 'Configuring Zscaler Private Access (ZPA) to replace traditional VPN with zero trust network access by deploying
 action: zscaler
   App Connectors, defining application segments, configuring access policies based on user identity and device posture, and
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Configuring Zscaler Private Access for ZTNA

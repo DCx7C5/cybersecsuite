@@ -1,5 +1,5 @@
 ---
-name: security
+name: headers-security
 description: Auditing HTTP security headers including CSP, HSTS, X-Frame-Options, and cookie attributes to identify missing
 action: security
   or misconfigured browser-level protections.
@@ -21,13 +21,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 - T1595
 cwe:
 - CWE-1021
 - CWE-79
+capec: []
 ---
 
 # Performing Security Headers Audit

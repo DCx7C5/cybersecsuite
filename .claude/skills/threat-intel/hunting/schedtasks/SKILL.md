@@ -1,5 +1,5 @@
 ---
-name: schedtasks
+name: hunting-schedtasks
 description: Hunt for adversary persistence and execution via Windows scheduled tasks by analyzing task creation events, suspicious
 action: schedtasks
   task properties, and unusual execution patterns that indicate T1053.005 abuse.
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1547
+capec: []
 ---
 
 # Hunting for Suspicious Scheduled Tasks

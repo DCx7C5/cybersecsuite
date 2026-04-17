@@ -8,10 +8,10 @@ nist_csf: [GV.PO-01, PR.DS-01, PR.AA-01, DE.CM-01, ID.RA-01]
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 tags:
 - compliance
 - pci
+capec: []
 ---
 
 # Implementing PCI DSS Compliance Controls

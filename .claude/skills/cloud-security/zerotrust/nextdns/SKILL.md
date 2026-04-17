@@ -1,5 +1,5 @@
 ---
-name: nextdns
+name: zerotrust-nextdns
 description: Implement NextDNS as a zero trust DNS filtering layer with encrypted resolution, threat intelligence blocking,
 action: nextdns
   privacy protection, and organizational policy enforcement across all endpoints.
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1071.004
+capec: []
 ---
 
 # Implementing Zero Trust DNS with NextDNS

@@ -1,5 +1,5 @@
 ---
-name: living
+name: hunting-living
 description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse
 action: living
   of Azure, AWS, GCP services, and SaaS platforms.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
 - T1070
 - T1071
+capec: []
 ---
 
 # Hunting For Living Off The Cloud Techniques

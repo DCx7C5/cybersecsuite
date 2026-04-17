@@ -1,5 +1,5 @@
 ---
-name: wireshark
+name: network-capture-wireshark
 description: 'Captures and analyzes network packet data using Wireshark and tshark to identify malicious traffic patterns,
 action: wireshark
   diagnose protocol issues, extract artifacts, and support incident response investigations on authorized network segments.
@@ -21,7 +21,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1040
@@ -29,6 +28,7 @@ mitre_attack:
 - T1071
 - T1562.001
 - T1562.004
+capec: []
 ---
 
 # Analyzing Network Traffic with Wireshark

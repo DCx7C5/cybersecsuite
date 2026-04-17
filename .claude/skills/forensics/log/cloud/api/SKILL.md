@@ -1,5 +1,5 @@
 ---
-name: api
+name: log-cloud-api
 description: 'Parses API Gateway access logs (AWS API Gateway, Kong, Nginx) to detect BOLA/IDOR attacks, rate limit bypass,
 action: api
   credential scanning, and injection attempts. Uses pandas for statistical analysis of request patterns and anomaly detection.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 cwe:
 - CWE-639
+capec: []
 ---
 
 # Analyzing API Gateway Access Logs

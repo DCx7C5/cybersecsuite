@@ -1,5 +1,5 @@
 ---
-name: host
+name: ids-wazuh-install
 description: 'Configures host-based intrusion detection systems (HIDS) to monitor endpoint file integrity, system calls, and
 action: host
   configuration changes for security violations. Use when deploying OSSEC, Wazuh, or AIDE for endpoint monitoring, building
@@ -24,12 +24,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1014
 - T1059
 - T1070
 - T1562.001
+capec: []
 ---
 
 # Configuring Host-Based Intrusion Detection

@@ -1,5 +1,5 @@
 ---
-name: redteamphish
+name: phishing-redteamphish
 description: Automate GoPhish phishing simulation campaigns using the Python gophish library. Creates email templates with
 action: redteamphish
   tracking pixels, configures SMTP sending profiles, builds target groups from CSV, launches campaigns, and analyzes results
@@ -19,9 +19,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 ## When to Use

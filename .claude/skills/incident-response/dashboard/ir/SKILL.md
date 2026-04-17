@@ -1,5 +1,5 @@
 ---
-name: ir
+name: dashboard-ir
 description: 'Builds real-time incident response dashboards in Splunk, Elastic, or Grafana to provide SOC analysts and leadership
 action: ir
   with situational awareness during active incidents, tracking affected systems, containment status, IOC spread, and response
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
+capec: []
 ---
 
 # Building Incident Response Dashboard

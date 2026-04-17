@@ -1,5 +1,5 @@
 ---
-name: prefetchpy
+name: disk-artifacts-prefetchpy
 description: Parse Windows Prefetch files using the windowsprefetch Python library to reconstruct application execution history,
 action: prefetchpy
   detect renamed or masquerading binaries, and identify suspicious program execution patterns.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1204
 - T1036
+capec: []
 ---
 
 # Analyzing Windows Prefetch with Python

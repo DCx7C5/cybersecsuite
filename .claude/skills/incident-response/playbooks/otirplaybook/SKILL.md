@@ -1,5 +1,5 @@
 ---
-name: otirplaybook
+name: playbooks-otirplaybook
 description: 'Develop and implement OT-specific incident response playbooks aligned with SANS PICERL framework, IEC 62443,
 action: otirplaybook
   and NIST SP 800-82 that address unique ICS challenges including safety-critical systems, limited downtime tolerance, and
@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0855
 - T1486
+capec: []
 ---
 
 # Implementing OT Incident Response Playbook

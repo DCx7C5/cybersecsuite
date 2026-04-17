@@ -1,5 +1,5 @@
 ---
-name: auditprep
+name: soc2-auditprep
 description: 'Automates SOC 2 Type II audit preparation including gap assessment against AICPA Trust Services Criteria (CC1-CC9),
 action: auditprep
   evidence collection from cloud providers and identity systems, control testing validation, remediation tracking, and continuous
@@ -26,7 +26,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing SOC 2 Type II Audit Preparation

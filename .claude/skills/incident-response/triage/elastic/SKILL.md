@@ -1,5 +1,5 @@
 ---
-name: elastic
+name: triage-elastic
 description: Perform systematic alert triage in Elastic Security SIEM to rapidly classify, prioritize, and investigate security
 action: elastic
   alerts for SOC operations.
@@ -28,11 +28,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1082
+capec: []
 ---
 
 # Performing Alert Triage with Elastic SIEM

@@ -1,5 +1,5 @@
 ---
-name: apigee
+name: api-apigee
 description: Implement API threat protection using Google Apigee policies including JSON/XML threat protection, OAuth 2.0,
 action: apigee
   SpikeArrest, and Advanced API Security for OWASP Top 10 defense.
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1550
+capec: []
 ---
 
 # Implementing API Threat Protection with Apigee

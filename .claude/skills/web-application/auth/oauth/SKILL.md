@@ -1,5 +1,5 @@
 ---
-name: oauth
+name: auth-oauth
 description: Configure secure OAuth 2.0 authorization flows including Authorization Code with PKCE, Client Credentials, and
 action: oauth
   Device Authorization Grant. This skill covers flow selection, PKCE implementation, token
@@ -22,10 +22,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1550
+capec: []
 ---
 
 # Configuring OAuth 2.0 Authorization Flow

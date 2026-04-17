@@ -16,4 +16,5 @@ nist_csf:
   - DE.CM-07
 mitre:
   - T1070.004
+capec: []
 ---

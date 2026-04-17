@@ -1,5 +1,5 @@
 ---
-name: forensics-log-linux-auditd
+name: log-linux-auditd
 description: 'Uses the Linux Audit framework (auditd) with ausearch and aureport utilities to detect intrusion attempts, unauthorized
 action: linux
   access, privilege escalation, and suspicious system activity. Covers audit rule configuration, log querying, timeline reconstruction,
@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1547
+capec: []
 ---
 
 # Analyzing Linux Audit Logs for Intrusion

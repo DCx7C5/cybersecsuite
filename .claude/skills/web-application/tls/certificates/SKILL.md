@@ -1,5 +1,5 @@
 ---
-name: certificates
+name: tls-certificates
 description: 'Queries Certificate Transparency logs via crt.sh and pycrtsh to detect phishing domains, unauthorized certificate
 action: certificates
   issuance, and shadow IT. Monitors newly issued certificates for typosquatting and brand impersonation using Levenshtein
@@ -24,10 +24,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1566
+capec: []
 ---
 
 # Analyzing TLS Certificate Transparency Logs

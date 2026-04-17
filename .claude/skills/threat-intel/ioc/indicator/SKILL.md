@@ -1,5 +1,5 @@
 ---
-name: indicator
+name: ioc-indicator
 description: Indicator lifecycle management tracks IOCs from initial discovery through validation, enrichment, deployment,
 action: indicator
   monitoring, and eventual retirement. This skill covers implementing systematic processes f
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
+capec: []
 ---
 
 # Performing Indicator Lifecycle Management

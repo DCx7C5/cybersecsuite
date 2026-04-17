@@ -1,5 +1,5 @@
 ---
-name: nac
+name: assessment-nac
 description: 'Implements 802.1X port-based network access control using RADIUS authentication, PacketFence NAC, and switch
 action: nac
   configurations to enforce identity-based access policies, posture assessment, and automatic VLAN assignment for authorized
@@ -22,7 +22,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Network Access Control

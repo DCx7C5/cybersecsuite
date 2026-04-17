@@ -1,5 +1,5 @@
 ---
-name: harbor
+name: containers-registry-harbor
 description: Harbor is an open-source container registry that provides security features including vulnerability scanning
 action: harbor
   (integrated Trivy), image signing (Notary/Cosign), RBAC, content trust policies, replicatio
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1610
+capec: []
 ---
 
 # Securing Container Registry with Harbor

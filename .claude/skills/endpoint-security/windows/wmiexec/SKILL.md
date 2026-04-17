@@ -1,5 +1,5 @@
 ---
-name: wmiexec
+name: windows-wmiexec
 description: Perform lateral movement across Windows networks using WMI-based remote execution techniques including Impacket
 action: wmiexec
   wmiexec.py, CrackMapExec, and native WMI commands for stealthy post-exploitation during red team engagements.
@@ -26,10 +26,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1047
+capec: []
 ---
 
 # Performing Lateral Movement with WMIExec

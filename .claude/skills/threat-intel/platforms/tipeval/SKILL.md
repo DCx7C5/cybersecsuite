@@ -1,5 +1,5 @@
 ---
-name: tipeval
+name: platforms-tipeval
 description: 'Evaluates and selects Threat Intelligence Platform (TIP) products based on organizational requirements including
 action: tipeval
   feed integration capability, STIX/TAXII support, workflow automation, analyst interface, and total cost of ownership. Use
@@ -27,7 +27,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Evaluating Threat Intelligence Platforms

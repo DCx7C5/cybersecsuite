@@ -1,5 +1,5 @@
 ---
-name: ntlm
+name: hunting-ntlm
 description: 'Detect NTLM relay attacks through Windows Security Event correlation by analyzing Event 4624 LogonType 3 for
 action: ntlm
   IP-to-hostname mismatches, identifying Responder/LLMNR poisoning artifacts, auditing SMB and LDAP signing enforcement across
@@ -44,7 +44,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021.002
 - T1059
@@ -53,6 +52,7 @@ mitre_attack:
 - T1557.001
 cve:
 - CVE-2021-36942
+capec: []
 ---
 
 # Detecting NTLM Relay with Event Correlation

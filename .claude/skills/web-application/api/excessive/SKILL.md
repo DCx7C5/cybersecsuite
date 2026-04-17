@@ -1,5 +1,5 @@
 ---
-name: excessive
+name: api-excessive
 description: 'Tests APIs for excessive data exposure where endpoints return more data than the client application needs, relying
 action: excessive
   on the frontend to filter sensitive fields. The tester intercepts API responses and analyzes them for leaked PII, internal
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-200
+capec: []
 ---
 
 # Exploiting Excessive Data Exposure in API

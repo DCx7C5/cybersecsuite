@@ -1,5 +1,5 @@
 ---
-name: post
+name: postquantum-post
 description: 'Assesses organizational readiness for post-quantum cryptography migration per NIST FIPS 203/204/205 standards.
 action: post
   Performs cryptographic inventory scanning to identify quantum-vulnerable algorithms (RSA, ECDH, ECDSA), evaluates hybrid
@@ -27,9 +27,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2021-26855
+capec: []
 ---
 
 # Performing Post-Quantum Cryptography Migration

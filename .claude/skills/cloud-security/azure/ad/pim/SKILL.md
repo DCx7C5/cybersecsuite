@@ -1,5 +1,5 @@
 ---
-name: pim
+name: azure-ad-pim
 description: Configure Microsoft Entra Privileged Identity Management to enforce just-in-time role activation, approval workflows,
 action: pim
   and access reviews for Azure AD privileged roles.
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Azure AD Privileged Identity Management

@@ -1,5 +1,5 @@
 ---
-name: actorprofile
+name: analysis-actorprofile
 description: 'Develops comprehensive threat actor profiles for APT groups, criminal organizations, and hacktivist collectives
 action: actorprofile
   by aggregating TTP documentation, historical campaign data, tooling fingerprints, and attribution indicators from multiple
@@ -27,9 +27,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Profiling Threat Actor Groups

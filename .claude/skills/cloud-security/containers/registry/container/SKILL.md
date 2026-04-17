@@ -1,5 +1,5 @@
 ---
-name: container
+name: containers-registry-container
 description: 'Securing container registry images by implementing vulnerability scanning with Trivy and Grype, enforcing image
 action: container
   signing with Cosign and Sigstore, configuring registry access controls, and building CI/CD pipelines that prevent deploying
@@ -24,11 +24,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1195
 - T1610
+capec: []
 ---
 
 # Securing Container Registry Images

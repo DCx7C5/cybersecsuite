@@ -18,4 +18,5 @@ mitre:
   - T1498
 cwe:
   - CWE-400
+capec: []
 ---

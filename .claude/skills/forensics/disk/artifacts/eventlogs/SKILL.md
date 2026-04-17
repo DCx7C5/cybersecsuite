@@ -1,5 +1,5 @@
 ---
-name: eventlogs
+name: disk-artifacts-eventlogs
 description: Extract, parse, and analyze Windows Event Logs (EVTX) using Chainsaw, Hayabusa, and EvtxECmd to detect lateral
 action: eventlogs
   movement, persistence, and privilege escalation.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1059
 - T1547
+capec: []
 ---
 
 # Extracting Windows Event Logs Artifacts

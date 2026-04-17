@@ -1,5 +1,5 @@
 ---
-name: ir
+name: playbooks-ir
 description: 'Designs and documents structured incident response playbooks that define step-by-step procedures for specific
 action: ir
   incident types aligned with NIST SP 800-61r3 and SANS PICERL frameworks. Covers playbook structure, decision trees, escalation
@@ -23,12 +23,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 - T1566
 - T1078
 - T1070
+capec: []
 ---
 
 # Building Incident Response Playbooks

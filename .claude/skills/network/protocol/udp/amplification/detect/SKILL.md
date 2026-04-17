@@ -20,4 +20,5 @@ mitre:
   - T1498.002
 cwe:
   - CWE-400
+capec: []
 ---

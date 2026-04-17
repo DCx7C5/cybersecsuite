@@ -18,4 +18,5 @@ mitre:
   - T1090.003
 cwe:
   - CWE-441
+capec: []
 ---

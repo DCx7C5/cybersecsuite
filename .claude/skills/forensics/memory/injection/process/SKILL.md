@@ -1,5 +1,5 @@
 ---
-name: process
+name: memory-injection-process
 description: Detect process hollowing (T1055.012) by analyzing memory-mapped sections, hollowed process indicators, and parent-child
 action: process
   process anomalies in EDR telemetry.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1055
 - T1055.012
 - T1059
+capec: []
 ---
 
 # Detecting Process Hollowing Technique

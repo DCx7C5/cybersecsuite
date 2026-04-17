@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1562.004
+capec: []
 ---
 
 # Implementing Network Segmentation with Firewall Zones

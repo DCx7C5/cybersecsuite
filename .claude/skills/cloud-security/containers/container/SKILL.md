@@ -1,5 +1,5 @@
 ---
-name: container
+name: containers-container
 description: Detect unauthorized modifications to running containers by monitoring for binary execution drift, file system
 action: container
   changes, and configuration deviations from the original container image.
@@ -22,10 +22,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
+capec: []
 ---
 
 # Detecting Container Drift at Runtime

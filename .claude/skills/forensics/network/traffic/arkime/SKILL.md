@@ -1,5 +1,5 @@
 ---
-name: arkime
+name: network-traffic-arkime
 description: Deploy and query Arkime (formerly Moloch) for full packet capture network traffic analysis. Uses the Arkime API
 action: arkime
   v3 to search sessions, download PCAPs, analyze connection patterns, detect beaconing behavior, and identify suspicious network
@@ -19,7 +19,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Network Traffic Analysis with Arkime

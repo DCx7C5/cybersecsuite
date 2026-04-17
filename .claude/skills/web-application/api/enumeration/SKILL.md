@@ -1,5 +1,5 @@
 ---
-name: enumeration
+name: api-enumeration
 description: Detect and prevent API enumeration attacks including BOLA and IDOR exploitation by monitoring sequential identifier
 action: enumeration
   access patterns and authorization failures.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1562.001
 cwe:
 - CWE-639
+capec: []
 ---
 
 # Detecting API Enumeration Attacks

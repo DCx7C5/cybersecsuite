@@ -19,4 +19,5 @@ mitre:
   - T1505.001
 cwe:
   - CWE-78
+capec: []
 ---

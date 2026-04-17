@@ -13,10 +13,10 @@ nist_csf: [GV.OC-01, GV.RM-01, GV.PO-01, ID.RA-01, GV.OV-01]
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 tags:
 - compliance
 - nist
+capec: []
 ---
 
 # Performing NIST CSF Maturity Assessment

@@ -1,5 +1,5 @@
 ---
-name: beyondcorpmodel
+name: zerotrust-beyondcorpmodel
 description: 'Implementing Google''s BeyondCorp zero trust access model to eliminate implicit trust from the network perimeter,
 action: beyondcorpmodel
   enforce identity-aware access controls using IAP, Access Context Manager, and Chrome Enterprise Premium for VPN-less secure
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing BeyondCorp Zero Trust Access Model

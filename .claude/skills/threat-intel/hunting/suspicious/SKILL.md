@@ -1,5 +1,5 @@
 ---
-name: suspicious
+name: hunting-suspicious
 description: Detect suspicious PowerShell execution patterns including encoded commands, download cradles, AMSI bypass attempts,
 action: suspicious
   and constrained language mode evasion.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1059.001
 - T1070
+capec: []
 ---
 
 # Detecting Suspicious Powershell Execution

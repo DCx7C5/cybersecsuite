@@ -1,5 +1,5 @@
 ---
-name: content
+name: headers-content
 description: Analyze and bypass Content Security Policy implementations to achieve cross-site scripting by exploiting misconfigurations,
 action: content
   JSONP endpoints, unsafe directives, and policy injection techniques.
@@ -21,13 +21,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1189
 cwe:
 - CWE-16
 - CWE-79
+capec: []
 ---
 
 # Performing Content Security Policy Bypass

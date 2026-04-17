@@ -1,5 +1,5 @@
 ---
-name: websocket
+name: api-websocket
 description: Testing WebSocket implementations for authentication bypass, cross-site hijacking, injection attacks, and insecure
 action: websocket
   message handling during authorized security assessments.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-1385
+capec: []
 ---
 
 # Exploiting WebSocket Vulnerabilities

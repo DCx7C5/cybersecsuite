@@ -1,5 +1,5 @@
 ---
-name: threat
+name: hunting-threat
 description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and
 action: threat
   environmental data into testable hunting hypotheses.
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Building Threat Hunt Hypothesis Framework

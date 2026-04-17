@@ -1,5 +1,5 @@
 ---
-name: suricata
+name: ids-suricata
 description: 'Deploys and configures Suricata IDS/IPS with Emerging Threats rulesets, EVE JSON logging, and custom rules for
 action: suricata
   real-time network traffic inspection, threat detection, and integration with SIEM platforms for centralized security monitoring.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021.002
 - T1059
 - T1070
 - T1562.001
+capec: []
 ---
 
 # Configuring Suricata for Network Monitoring

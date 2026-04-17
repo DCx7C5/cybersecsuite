@@ -1,5 +1,5 @@
 ---
-name: hardware
+name: hsm-hardware
 description: Integrate Hardware Security Modules (HSMs) using PKCS#11 interface for cryptographic key management, signing
 action: hardware
   operations, and secure key storage with python-pkcs11, AWS CloudHSM, and YubiHSM2.
@@ -28,7 +28,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Hardware Security Module Integration

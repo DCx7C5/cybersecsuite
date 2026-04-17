@@ -1,5 +1,5 @@
 ---
-name: compromise
+name: ad-compromise
 description: Investigate Active Directory compromise by analyzing authentication logs, replication metadata, Group Policy
 action: compromise
   changes, and Kerberos ticket anomalies to identify attacker persistence and lateral movement paths.
@@ -28,7 +28,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1558
@@ -38,6 +37,7 @@ mitre_attack:
 - T1003.003
 - T1547
 - T1558.001
+capec: []
 ---
 
 # Performing Active Directory Compromise Investigation

@@ -1,5 +1,5 @@
 ---
-name: privesc
+name: aws-privesc-detect
 description: Detect AWS IAM privilege escalation paths using boto3 and Cloudsplaining policy analysis to identify overly permissive
 action: detect
   policies, dangerous permission combinations, and least-privilege violations
@@ -21,13 +21,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059.009
 - T1068
 - T1078.004
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Detecting AWS IAM Privilege Escalation

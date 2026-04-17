@@ -1,5 +1,5 @@
 ---
-name: deviceposture
+name: zerotrust-deviceposture
 description: 'Implementing device posture assessment as a zero trust access control by integrating endpoint health signals
 action: deviceposture
   from CrowdStrike ZTA, Microsoft Intune, and Jamf into conditional access policies that enforce compliance before granting
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Device Posture Assessment in Zero Trust

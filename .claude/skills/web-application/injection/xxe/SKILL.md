@@ -1,5 +1,5 @@
 ---
-name: xxe
+name: injection-xxe
 description: Discovering and exploiting XML External Entity injection vulnerabilities to read server files, perform SSRF,
 action: xxe
   and exfiltrate data during authorized penetration tests.
@@ -20,13 +20,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-611
 - CWE-91
 - CWE-918
+capec: []
 ---
 
 # Testing for XXE Injection Vulnerabilities

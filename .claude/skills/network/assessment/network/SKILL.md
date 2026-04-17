@@ -1,5 +1,5 @@
 ---
-name: network
+name: assessment-network
 description: 'This skill covers conducting comprehensive security assessments of Operational Technology (OT) networks including
 action: network
   SCADA systems, DCS architectures, and industrial control system communication paths. It addresses the Purdue Reference Model
@@ -25,9 +25,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0855
+capec: []
 ---
 
 # Performing OT Network Security Assessment

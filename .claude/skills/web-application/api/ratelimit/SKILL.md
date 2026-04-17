@@ -1,5 +1,5 @@
 ---
-name: ratelimit
+name: api-ratelimit
 description: Implement API abuse detection using token bucket, sliding window, and adaptive rate limiting algorithms to prevent
 action: ratelimit
   DDoS, brute force, and credential stuffing attacks.
@@ -22,13 +22,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1110
 - T1190
 - T1498
+capec: []
 ---
 
 # Implementing API Abuse Detection with Rate Limiting

@@ -1,5 +1,5 @@
 ---
-name: template
+name: injection-ssti-template
 description: Detecting and exploiting Server-Side Template Injection (SSTI) vulnerabilities across Jinja2, Twig, Freemarker,
 action: template
   and other template engines to achieve remote code execution.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-1336
+capec: []
 ---
 
 # Exploiting Template Injection Vulnerabilities

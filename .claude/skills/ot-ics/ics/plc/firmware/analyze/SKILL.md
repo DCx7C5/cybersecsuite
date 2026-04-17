@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0843
 - T0855
+capec: []
 ---
 
 # Performing PLC Firmware Security Analysis

@@ -1,5 +1,5 @@
 ---
-name: runtime
+name: containers-runtime
 description: Implement eBPF-based runtime security observability and enforcement in Kubernetes clusters using Cilium Tetragon
 action: runtime
   for kernel-level threat detection and policy enforcement.
@@ -31,10 +31,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1547
 - T1610
+capec: []
 ---
 
 # Implementing Runtime Security with Tetragon

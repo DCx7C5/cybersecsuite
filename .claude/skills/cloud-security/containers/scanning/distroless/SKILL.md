@@ -1,5 +1,5 @@
 ---
-name: distroless
+name: containers-scanning-distroless
 description: Reduce container attack surface by building application images on Google distroless base images that contain
 action: distroless
   only the application runtime with no shell, package manager, or unnecessary OS utilities.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1195
 - T1595
 - T1610
+capec: []
 ---
 
 # Implementing Container Image Minimal Base with Distroless

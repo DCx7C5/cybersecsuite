@@ -17,4 +17,5 @@ nist_csf:
   - DE.CM-07
 mitre:
   - T1200
+capec: []
 ---

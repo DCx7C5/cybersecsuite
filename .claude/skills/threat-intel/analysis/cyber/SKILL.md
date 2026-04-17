@@ -1,5 +1,5 @@
 ---
-name: cyber
+name: analysis-cyber
 description: 'Analyzes intrusion activity against the Lockheed Martin Cyber Kill Chain framework to identify which phases
 action: cyber
   an adversary has completed, where defenses succeeded or failed, and what controls would have interrupted the attack at earlier
@@ -25,9 +25,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2023-23397
+capec: []
 ---
 
 # Analyzing Cyber Kill Chain

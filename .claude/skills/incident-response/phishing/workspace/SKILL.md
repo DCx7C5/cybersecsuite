@@ -1,5 +1,5 @@
 ---
-name: workspace
+name: phishing-workspace
 description: Configure Google Workspace advanced phishing and malware protection settings including pre-delivery scanning,
 action: workspace
   attachment protection, spoofing detection, and Enhanced Safe Browsing.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1059
 - T1566
+capec: []
 ---
 
 # Implementing Google Workspace Phishing Protection

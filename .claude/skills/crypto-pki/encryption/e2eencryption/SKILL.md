@@ -1,5 +1,5 @@
 ---
-name: e2eencryption
+name: encryption-e2eencryption
 description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary
 action: e2eencryption
   (including the server) able to decrypt them. This skill implements a simplified version
@@ -18,9 +18,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2021-26855
+capec: []
 ---
 
 # Implementing End-to-End Encryption for Messaging

@@ -1,5 +1,5 @@
 ---
-name: full
+name: engagement-execute
 description: Plan and execute a comprehensive red team engagement covering reconnaissance through post-exploitation using
 action: execute
   MITRE ATT&CK-aligned TTPs to evaluate an organization's detection and response capabilities.
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
@@ -34,6 +33,7 @@ mitre_attack:
 - T1595
 cve:
 - CVE-2021-34473
+capec: []
 ---
 
 # Conducting Full-Scope Red Team Engagement

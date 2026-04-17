@@ -1,5 +1,5 @@
 ---
-name: jwt
+name: auth-jwt
 description: 'Exploits JWT algorithm confusion vulnerabilities where the server''s token verification library accepts the
 action: jwt
   algorithm specified in the JWT header rather than enforcing a fixed algorithm. The tester manipulates the alg header to
@@ -24,13 +24,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1550
 cwe:
 - CWE-347
 cve:
 - CVE-2024-54150
+capec: []
 ---
 
 # Exploiting JWT Algorithm Confusion Attack

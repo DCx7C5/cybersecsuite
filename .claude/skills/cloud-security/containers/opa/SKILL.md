@@ -1,5 +1,5 @@
 ---
-name: opa
+name: containers-opa
 description: Enforce Kubernetes admission policies using OPA Gatekeeper with ConstraintTemplates, Rego rules, and the Gatekeeper
 action: opa
   policy library.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Implementing OPA Gatekeeper for Policy Enforcement

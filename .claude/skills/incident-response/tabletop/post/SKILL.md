@@ -1,5 +1,5 @@
 ---
-name: post
+name: tabletop-post
 description: Facilitate structured post-incident reviews to identify root causes, document what worked and failed, and produce
 action: post
   actionable recommendations to improve future incident response.
@@ -19,11 +19,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 - T1566
 - T1078
+capec: []
 ---
 
 # Conducting Post-Incident Lessons Learned

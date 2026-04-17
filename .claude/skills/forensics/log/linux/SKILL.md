@@ -1,5 +1,5 @@
 ---
-name: logfile-recon
+name: log-linux
 description: Linux log forensics and event correlation. Authentication events, auditd analysis, journald forensics, web server logs, cron/systemd-timer abuse, sudo trail, timeline reconstruction, and log tampering detection.
 action: linux
 model: sonnet
@@ -24,6 +24,8 @@ mitre_attack:
 - T1110
 - T1548.003
 - T1595
+nist_csf: []
+capec: []
 ---
 
 # Logfile Recon

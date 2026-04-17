@@ -1,5 +1,5 @@
 ---
-name: dcfldd
+name: disk-acquisition-dcfldd
 description: Create forensically sound bit-for-bit disk images using dd and dcfldd while preserving evidence integrity through
 action: dcfldd
   hash verification.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Acquiring Disk Image with dd and dcfldd

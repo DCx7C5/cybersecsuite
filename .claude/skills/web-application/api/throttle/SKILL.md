@@ -1,5 +1,5 @@
 ---
-name: throttle
+name: api-throttle
 description: 'Implements API rate limiting and throttling controls using token bucket, sliding window, and fixed window algorithms
 action: throttle
   to protect against brute force attacks, credential stuffing, resource exhaustion, and API abuse. The engineer configures
@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1498
+capec: []
 ---
 
 # Implementing API Rate Limiting and Throttling

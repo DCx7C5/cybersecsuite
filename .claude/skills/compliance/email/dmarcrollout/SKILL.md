@@ -1,5 +1,5 @@
 ---
-name: dmarcrollout
+name: email-dmarcrollout
 description: Execute a phased DMARC rollout from p=none monitoring through p=quarantine to p=reject enforcement, ensuring
 action: dmarcrollout
   all legitimate email sources are authenticated before blocking unauthorized senders.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 # Performing DMARC Policy Enforcement Rollout

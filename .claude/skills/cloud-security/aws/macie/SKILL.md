@@ -1,5 +1,5 @@
 ---
-name: macie
+name: aws-macie
 description: Implement Amazon Macie to automatically discover, classify, and protect sensitive data in S3 buckets using machine
 action: macie
   learning and pattern matching for PII, financial data, and credentials detection.
@@ -31,10 +31,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1530
+capec: []
 ---
 
 # Implementing AWS Macie for Data Classification

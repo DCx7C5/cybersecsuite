@@ -1,5 +1,5 @@
 ---
-name: zeekanalysis
+name: network-zeek-zeekanalysis
 description: Deploy Zeek network security monitor to capture, parse, and analyze network traffic metadata for threat detection,
 action: zeekanalysis
   anomaly identification, and forensic investigation.
@@ -23,12 +23,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1040
 - T1059
 - T1070
 - T1562.001
+capec: []
 ---
 
 # Performing Network Traffic Analysis with Zeek

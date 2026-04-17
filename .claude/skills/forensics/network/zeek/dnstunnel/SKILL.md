@@ -1,5 +1,5 @@
 ---
-name: dnstunnel
+name: network-zeek-dnstunnel
 description: Detect DNS tunneling and data exfiltration by analyzing Zeek dns.log for high-entropy subdomain queries, excessive
 action: dnstunnel
   query volume, long query lengths, and unusual DNS record types indicating covert channel communication.
@@ -27,13 +27,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
 - T1071
 - T1071.004
 - T1595.002
+capec: []
 ---
 
 # Hunting for DNS Tunneling with Zeek

@@ -1,5 +1,5 @@
 ---
-name: netlateral
+name: lateral-analyze
 description: 'Identifies lateral movement techniques in enterprise networks by analyzing authentication logs, network flows,
 action: analyze
   SMB traffic, and RDP sessions using Zeek, Velociraptor, and SIEM correlation rules to detect attackers moving between systems.
@@ -27,7 +27,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1021.001
@@ -35,6 +34,7 @@ mitre_attack:
 - T1059
 - T1070
 - T1550.002
+capec: []
 ---
 
 # Detecting Lateral Movement in Network

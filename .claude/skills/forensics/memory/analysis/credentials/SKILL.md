@@ -1,5 +1,5 @@
 ---
-name: credentials
+name: memory-analysis-credentials
 description: Extract cached credentials, password hashes, Kerberos tickets, and authentication tokens from memory dumps using
 action: credentials
   Volatility and Mimikatz for forensic investigation.
@@ -21,7 +21,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1558
@@ -29,6 +28,7 @@ mitre_attack:
 - T1021
 - T1550.002
 - T1550.003
+capec: []
 ---
 
 # Extracting Credentials from Memory Dump

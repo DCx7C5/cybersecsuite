@@ -1,5 +1,5 @@
 ---
-name: constrained
+name: kerberos-constrained
 description: Exploit Kerberos Constrained Delegation misconfigurations in Active Directory to impersonate privileged users
 action: constrained
   via S4U2self and S4U2proxy extensions for lateral movement and privilege escalation.
@@ -26,13 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1068
 - T1558
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Exploiting Constrained Delegation Abuse

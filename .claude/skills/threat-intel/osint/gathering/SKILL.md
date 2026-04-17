@@ -1,5 +1,5 @@
 ---
-name: gathering
+name: osint-gathering
 description: Open Source Intelligence (OSINT) gathering is the first active phase of a red team engagement, where operators
 action: gathering
   collect publicly available information about the target organization to identify attack s
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1071
 - T1593
 - T1595
+capec: []
 ---
 
 # Performing Open Source Intelligence Gathering

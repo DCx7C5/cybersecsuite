@@ -1,5 +1,5 @@
 ---
-name: supply
+name: hunting-supply
 description: Hunt for supply chain compromise indicators including trojanized software updates, compromised dependencies,
 action: supply
   unauthorized code modifications, and tampered build artifacts.
@@ -26,11 +26,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1195
+capec: []
 ---
 
 # Hunting For Supply Chain Compromise

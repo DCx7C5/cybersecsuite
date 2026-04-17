@@ -1,5 +1,5 @@
 ---
-name: aqua
+name: devsecops-aqua
 description: Deploy Aqua Security's Trivy scanner to detect vulnerabilities, misconfigurations, secrets, and license issues
 action: aqua
   in container images across CI/CD pipelines and registries.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1195
 - T1610
+capec: []
 ---
 
 # Implementing Aqua Security for Container Scanning

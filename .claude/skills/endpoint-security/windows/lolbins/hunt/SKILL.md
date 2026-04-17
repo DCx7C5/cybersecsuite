@@ -1,5 +1,5 @@
 ---
-name: lolbas
+name: windows-lolbins-hunt
 description: Detect Living Off the Land Binaries (LOLBins/LOLBAS) abuse including certutil, regsvr32, mshta, and rundll32
 action: hunt
   via process telemetry, Sigma rules, and parent-child process analysis
@@ -27,10 +27,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1218
+capec: []
 ---
 
 # Detecting Living Off the Land with LOLBAS

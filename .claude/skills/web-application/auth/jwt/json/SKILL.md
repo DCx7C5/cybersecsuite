@@ -1,5 +1,5 @@
 ---
-name: json
+name: auth-jwt-json
 description: Test JWT implementations for critical vulnerabilities including algorithm confusion, none algorithm bypass, kid
 action: json
   parameter injection, and weak secret exploitation to achieve authentication bypass and privilege escalation.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1550
 cwe:
 - CWE-287
 - CWE-347
+capec: []
 ---
 
 # Testing for JSON Web Token Vulnerabilities

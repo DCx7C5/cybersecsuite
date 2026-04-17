@@ -1,5 +1,5 @@
 ---
-name: container
+name: containers-scanning-container
 description: 'This skill covers hardening container images by minimizing attack surface, removing unnecessary packages, implementing
 action: container
   multi-stage builds, configuring non-root users, and applying CIS Docker Benchmark recommendations to produce secure production-ready
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Performing Container Image Hardening

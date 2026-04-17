@@ -1,5 +1,5 @@
 ---
-name: bola
+name: api-bola
 description: 'Tests REST and GraphQL APIs for Broken Object Level Authorization (BOLA/IDOR) vulnerabilities where an authenticated
 action: bola
   user can access or modify resources belonging to other users by manipulating object identifiers in API requests. The tester
@@ -26,10 +26,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-200
 - CWE-639
+capec: []
 ---
 
 # Testing API for Broken Object Level Authorization

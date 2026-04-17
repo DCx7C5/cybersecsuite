@@ -1,5 +1,5 @@
 ---
-name: volcombined
+name: memory-analysis-volcombined
 description: 'Performs memory forensics analysis using Volatility 3 to extract evidence of malware execution, process injection,
 action: volcombined
   network connections, and credential theft from RAM dumps captured during incident response. Covers memory acquisition, process
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1055
@@ -33,6 +32,7 @@ mitre_attack:
 - T1014
 - T1027
 - T1486
+capec: []
 ---
 
 # Conducting Memory Forensics with Volatility

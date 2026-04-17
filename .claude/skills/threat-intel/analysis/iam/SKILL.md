@@ -1,5 +1,5 @@
 ---
-name: iam
+name: analysis-iam
 description: The Diamond Model of Intrusion Analysis provides a structured framework for analyzing cyber intrusions by examining
 action: iam
   four core features - Adversary, Capability, Infrastructure, and Victim. This skill covers implementing the Diamond Model
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Diamond Model Analysis

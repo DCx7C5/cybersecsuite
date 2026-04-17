@@ -1,5 +1,5 @@
 ---
-name: kubernetes
+name: kubernetes-network-kubernetes
 description: Implement Kubernetes network segmentation using Calico NetworkPolicy and GlobalNetworkPolicy for zero-trust pod-to-pod
 action: kubernetes
   communication.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Implementing Kubernetes Network Policy with Calico

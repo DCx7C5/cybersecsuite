@@ -1,5 +1,5 @@
 ---
-name: gateway
+name: phishing-gateway
 description: Spearphishing targets specific individuals using personalized, researched content that bypasses generic spam
 action: gateway
   filters. Email security gateways (SEGs) like Microsoft Defender for Office 365, Proofpoint,
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1566
 - T1566.001
+capec: []
 ---
 
 # Detecting Spearphishing with Email Gateway

@@ -1,5 +1,5 @@
 ---
-name: campaign
+name: analysis-campaign
 description: Campaign attribution analysis involves systematically evaluating evidence to determine which threat actor or
 action: campaign
   group is responsible for a cyber operation. This skill covers collecting and weighting attr
@@ -21,7 +21,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Campaign Attribution Evidence

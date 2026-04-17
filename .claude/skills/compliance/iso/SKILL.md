@@ -8,10 +8,10 @@ nist_csf: [GV.OC-01, GV.RM-01, GV.PO-01, ID.RA-01, PR.DS-01]
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 tags:
 - compliance
 - iso
+capec: []
 ---
 
 # Implementing ISO 27001 Information Security Management

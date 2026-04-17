@@ -1,5 +1,5 @@
 ---
-name: scapy
+name: network-capture-scapy
 description: Craft, send, sniff, and dissect network packets using Scapy for protocol analysis, network reconnaissance, and
 action: scapy
   traffic anomaly detection in authorized security testing
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1040
 - T1595
+capec: []
 ---
 
 # Analyzing Network Packets with Scapy

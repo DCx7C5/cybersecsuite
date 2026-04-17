@@ -1,5 +1,5 @@
 ---
-name: attackmap
+name: mitre-attackmap
 description: 'Maps observed adversary behaviors, security alerts, and detection rules to MITRE ATT&CK techniques and sub-techniques
 action: attackmap
   to quantify detection coverage and guide control prioritization. Use when building an ATT&CK-based coverage heatmap, tagging
@@ -39,11 +39,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1562.001
+capec: []
 ---
 
 # Mapping MITRE ATT&CK Techniques

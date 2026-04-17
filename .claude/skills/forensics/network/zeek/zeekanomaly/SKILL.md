@@ -1,5 +1,5 @@
 ---
-name: zeekanomaly
+name: network-zeek-zeekanomaly
 description: 'Deploys and configures Zeek (formerly Bro) network security monitor to passively analyze network traffic, generate
 action: zeekanomaly
   structured logs, detect anomalous behavior, and create custom detection scripts for threat hunting and incident response.
@@ -21,12 +21,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1071.001
 - T1562.001
+capec: []
 ---
 
 # Detecting Network Anomalies with Zeek

@@ -1,5 +1,5 @@
 ---
-name: pod
+name: containers-pod
 description: Implement Kubernetes Pod Security Admission to enforce baseline and restricted security profiles at namespace
 action: pod
   level using built-in admission controller.
@@ -19,9 +19,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Implementing Pod Security Admission Controller

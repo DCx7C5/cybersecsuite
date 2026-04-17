@@ -1,5 +1,5 @@
 ---
-name: azure
+name: azure-ad-azure
 description: 'Auditing Microsoft Entra ID (Azure Active Directory) configuration to identify risky authentication policies,
 action: azure
   overly permissive role assignments, stale accounts, conditional access gaps, and guest user risks using AzureAD PowerShell,
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Auditing Azure Active Directory Configuration

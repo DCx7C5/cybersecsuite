@@ -1,5 +1,5 @@
 ---
-name: iam
+name: aws-iam
 description: Configure IAM permission boundaries in AWS to delegate role creation to developers while enforcing maximum privilege
 action: iam
   limits set by the security team.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing AWS IAM Permission Boundaries

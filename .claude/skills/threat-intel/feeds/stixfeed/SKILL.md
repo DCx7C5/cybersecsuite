@@ -1,5 +1,5 @@
 ---
-name: stixfeed
+name: feeds-stixfeed
 description: 'Processes STIX 2.1 threat intelligence bundles delivered via TAXII 2.1 servers, normalizing objects into platform-native
 action: stixfeed
   schemas and routing them to appropriate consuming systems. Use when onboarding new TAXII collection endpoints, automating
@@ -26,7 +26,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Processing STIX/TAXII Feeds

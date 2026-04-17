@@ -1,5 +1,5 @@
 ---
-name: tilcm
+name: ioc-tilcm
 description: Implement a structured threat intelligence lifecycle encompassing planning, collection, processing, analysis,
 action: tilcm
   dissemination, and feedback stages to produce actionable intelligence for organizational decision-making.
@@ -22,7 +22,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Threat Intelligence Lifecycle Management

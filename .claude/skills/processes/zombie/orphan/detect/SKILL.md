@@ -16,4 +16,5 @@ nist_csf:
   - DE.AE-02
 mitre:
   - T1014
+capec: []
 ---

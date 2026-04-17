@@ -19,4 +19,5 @@ mitre:
   - T1557
 cwe:
   - CWE-940
+capec: []
 ---

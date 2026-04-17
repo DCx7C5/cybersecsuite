@@ -1,5 +1,5 @@
 ---
-name: securityhub
+name: aws-securityhub
 description: 'This skill covers deploying AWS Security Hub as a centralized cloud security posture management platform that
 action: securityhub
   aggregates findings from GuardDuty, Inspector, Macie, and third-party tools. It details enabling security standards like
@@ -23,7 +23,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing AWS Security Hub

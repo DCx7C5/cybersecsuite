@@ -1,5 +1,5 @@
 ---
-name: dll
+name: hunting-dll
 description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack
 action: dll
   execution flow for defense evasion.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1059
 - T1547
+capec: []
 ---
 
 # Detecting DLL Sideloading Attacks

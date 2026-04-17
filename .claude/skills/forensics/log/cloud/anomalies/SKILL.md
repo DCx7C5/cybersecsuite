@@ -1,5 +1,5 @@
 ---
-name: anomalies
+name: log-cloud-anomalies
 description: Detect unusual API call patterns in AWS CloudTrail logs using boto3, statistical baselining, and behavioral analysis
 action: anomalies
   to identify credential compromise, privilege escalation, and unauthorized resource access.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Detecting AWS CloudTrail Anomalies

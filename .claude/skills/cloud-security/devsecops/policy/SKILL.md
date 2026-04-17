@@ -1,5 +1,5 @@
 ---
-name: policy
+name: devsecops-policy
 description: 'This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes
 action: policy
   and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller,
@@ -28,9 +28,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Implementing Policy as Code with Open Policy Agent

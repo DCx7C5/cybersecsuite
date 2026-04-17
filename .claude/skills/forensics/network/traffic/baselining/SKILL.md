@@ -1,5 +1,5 @@
 ---
-name: baselining
+name: network-traffic-baselining
 description: Build network traffic baselines from NetFlow/IPFIX data using Python pandas for statistical analysis, z-score
 action: baselining
   anomaly detection, and hourly/daily traffic pattern profiling
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Implementing Network Traffic Baselining

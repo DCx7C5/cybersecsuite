@@ -1,5 +1,5 @@
 ---
-name: rbacharden
+name: kubernetes-hardening-rbacharden
 description: Harden Kubernetes Role-Based Access Control by implementing least-privilege policies, auditing role bindings,
 action: rbacharden
   eliminating cluster-admin sprawl, and integrating external identity providers.
@@ -22,12 +22,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1041
 - T1078.004
 - T1610
+capec: []
 ---
 
 # Implementing RBAC Hardening for Kubernetes

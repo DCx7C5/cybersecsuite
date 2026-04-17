@@ -1,5 +1,5 @@
 ---
-name: identityverify
+name: zerotrust-identityverify
 description: Implement continuous identity verification for zero trust using phishing-resistant MFA (FIDO2/WebAuthn), risk-based
 action: identityverify
   conditional access, and identity governance aligned with the CISA Zero Trust Maturity Model.
@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1550
 - T1566
+capec: []
 ---
 
 # Implementing Identity Verification for Zero Trust

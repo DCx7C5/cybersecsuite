@@ -1,5 +1,5 @@
 ---
-name: saaudit
+name: serviceaccount-saaudit
 description: Audit service accounts across enterprise infrastructure to identify orphaned, over-privileged, and non-compliant
 action: saaudit
   accounts. This skill covers discovery of service accounts in Active Directory, cloud pl
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1082
+capec: []
 ---
 
 # Performing Service Account Audit

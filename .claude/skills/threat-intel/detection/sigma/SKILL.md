@@ -1,5 +1,5 @@
 ---
-name: sigma
+name: detection-sigma
 description: 'Builds vendor-agnostic detection rules using the Sigma rule format for threat detection across SIEM platforms
 action: sigma
   including Splunk, Elastic, and Microsoft Sentinel. Use when creating portable detection logic from threat intelligence,
@@ -32,10 +32,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Building Detection Rules with Sigma

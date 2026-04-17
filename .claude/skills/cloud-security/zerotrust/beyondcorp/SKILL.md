@@ -1,5 +1,5 @@
 ---
-name: beyondcorp
+name: zerotrust-beyondcorp
 description: Deploy Google BeyondCorp Enterprise zero trust access controls using Identity-Aware Proxy (IAP), context-aware
 action: beyondcorp
   access policies, device trust validation, and Access Context Manager to enforce identity and posture-based access to GCP
@@ -21,7 +21,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Zero Trust with BeyondCorp

@@ -1,5 +1,5 @@
 ---
-name: posture
+name: api-posture
 description: Implement API Security Posture Management to continuously discover, classify, and score APIs based on risk while
 action: posture
   enforcing security policies across the API lifecycle.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
+capec: []
 ---
 
 # Implementing API Security Posture Management

@@ -1,5 +1,5 @@
 ---
-name: autopsy
+name: disk-acquisition-autopsy
 description: Perform comprehensive forensic analysis of disk images using Autopsy to recover files, examine artifacts, and
 action: autopsy
   build investigation timelines.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Disk Image with Autopsy

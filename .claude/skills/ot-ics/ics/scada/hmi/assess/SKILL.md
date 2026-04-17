@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0855
 cve:
 - CVE-2025-0921
+capec: []
 ---
 
 # Performing SCADA HMI Security Assessment

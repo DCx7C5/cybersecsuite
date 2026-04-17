@@ -1,5 +1,5 @@
 ---
-name: cloud
+name: privacy-cloud
 description: 'Implementing Cloud Data Loss Prevention (DLP) using Amazon Macie, Azure Information Protection, and Google Cloud
 action: cloud
   DLP API to discover, classify, and protect sensitive data across cloud storage, databases, and data pipelines.
@@ -32,11 +32,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1078.004
 - T1082
+capec: []
 ---
 
 # Implementing Cloud DLP for Data Protection

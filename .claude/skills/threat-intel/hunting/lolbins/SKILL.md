@@ -1,5 +1,5 @@
 ---
-name: lolbins
+name: hunting-lolbins
 description: Proactively hunt for adversary abuse of legitimate system binaries (LOLBins) to execute malicious payloads while
 action: lolbins
   evading detection.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1059
 - T1070
 - T1218
+capec: []
 ---
 
 # Hunting for Living-off-the-Land Binaries (LOLBins)

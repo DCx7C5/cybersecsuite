@@ -1,5 +1,5 @@
 ---
-name: iamharden
+name: aws-iamharden
 description: 'This skill guides practitioners through hardening AWS Identity and Access Management configurations to enforce
 action: iamharden
   least privilege access across cloud accounts. It covers IAM policy scoping, permission boundaries, Access Analyzer integration,
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Securing AWS IAM Permissions

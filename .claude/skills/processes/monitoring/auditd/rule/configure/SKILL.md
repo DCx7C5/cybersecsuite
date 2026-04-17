@@ -14,4 +14,5 @@ tags:
 nist_csf:
   - DE.CM-03
   - DE.AE-01
+capec: []
 ---

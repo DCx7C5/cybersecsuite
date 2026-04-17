@@ -1,5 +1,5 @@
 ---
-name: docker
+name: cloud-docker
 description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to
 action: docker
   identify malicious activity and evidence.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Analyzing Docker Container Forensics

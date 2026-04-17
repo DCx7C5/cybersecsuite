@@ -1,5 +1,5 @@
 ---
-name: entitlement
+name: rbac-entitlement
 description: 'Performs entitlement review and access certification campaigns using SailPoint IdentityIQ including manager
 action: entitlement
   certifications, targeted entitlement reviews, role-based access validation, SOD violation remediation, and automated revocation
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Entitlement Review with SailPoint IdentityIQ

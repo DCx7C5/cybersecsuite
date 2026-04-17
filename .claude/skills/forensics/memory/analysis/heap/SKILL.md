@@ -1,5 +1,5 @@
 ---
-name: heap
+name: memory-analysis-heap
 description: Detect and analyze heap spray attacks in memory dumps using Volatility3 plugins to identify NOP sled patterns,
 action: heap
   shellcode landing zones, and suspicious large allocations in process virtual address space.
@@ -19,10 +19,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1046
+capec: []
 ---
 
 # Analyzing Heap Spray Exploitation

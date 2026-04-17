@@ -1,5 +1,5 @@
 ---
-name: sysartifacts
+name: log-linux-sysartifacts
 description: Examine Linux system artifacts including auth logs, cron jobs, shell history, and system configuration to uncover
 action: sysartifacts
   evidence of compromise or unauthorized activity.
@@ -20,12 +20,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1053.003
 - T1059
 - T1070
 - T1547
+capec: []
 ---
 
 # Analyzing Linux System Artifacts

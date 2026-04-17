@@ -1,5 +1,5 @@
 ---
-name: usbpolicy
+name: policy-usb-create
 description: 'Implements USB device control policies to restrict unauthorized removable media access on endpoints, preventing
 action: create
   data exfiltration and malware introduction via USB devices. Use when deploying device control via Group Policy, Intune,
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
+capec: []
 ---
 
 # Implementing USB Device Control Policy

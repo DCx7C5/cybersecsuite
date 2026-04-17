@@ -1,5 +1,5 @@
 ---
-name: ttps
+name: mitre-ttps
 description: 'Map advanced persistent threat (APT) group tactics, techniques, and procedures (TTPs) to the MITRE ATT&CK framework
 action: ttps
   using the ATT&CK Navigator and attackcti Python library. The analyst queries STIX/TAXII data for group-technique associations,
@@ -39,9 +39,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Analyzing Threat Actor TTPs with MITRE Navigator

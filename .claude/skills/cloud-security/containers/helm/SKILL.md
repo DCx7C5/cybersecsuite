@@ -1,5 +1,5 @@
 ---
-name: helm
+name: containers-helm
 description: Secure Helm chart deployments by validating chart integrity, scanning templates for misconfigurations, and enforcing
 action: helm
   security contexts in Kubernetes releases.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1195
 - T1610
+capec: []
 ---
 
 # Securing Helm Chart Deployments

@@ -1,5 +1,5 @@
 ---
-name: firewall
+name: waf-firewall
 description: Bypass Web Application Firewall protections using encoding techniques, HTTP method manipulation, parameter pollution,
 action: firewall
   and payload obfuscation to deliver SQL injection, XSS, and other attack payloads past WAF detection rules.
@@ -21,7 +21,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1059
@@ -31,6 +30,7 @@ mitre_attack:
 cwe:
 - CWE-79
 - CWE-89
+capec: []
 ---
 
 # Performing Web Application Firewall Bypass

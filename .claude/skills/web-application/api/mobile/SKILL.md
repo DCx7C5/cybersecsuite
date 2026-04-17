@@ -1,5 +1,5 @@
 ---
-name: mobile
+name: api-mobile
 description: 'Tests authentication and authorization mechanisms in mobile application APIs to identify broken authentication,
 action: mobile
   insecure token management, session fixation, privilege escalation, and IDOR vulnerabilities. Use when performing API security
@@ -25,13 +25,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1404
 - T1550
 cwe:
 - CWE-347
 - CWE-639
+capec: []
 ---
 
 # Testing Mobile API Authentication

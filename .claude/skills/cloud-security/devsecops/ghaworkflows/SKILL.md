@@ -1,5 +1,5 @@
 ---
-name: ghaworkflows
+name: devsecops-ghaworkflows
 description: 'This skill covers hardening GitHub Actions workflows against supply chain attacks, credential theft, and privilege
 action: ghaworkflows
   escalation. It addresses pinning actions to SHA digests, minimizing GITHUB_TOKEN permissions, protecting secrets from exfiltration,
@@ -23,11 +23,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1195
+capec: []
 ---
 
 # Securing GitHub Actions Workflows

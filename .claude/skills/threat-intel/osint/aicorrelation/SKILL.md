@@ -1,5 +1,5 @@
 ---
-name: aicorrelation
+name: osint-aicorrelation
 description: Use AI and LLM-based reasoning to correlate findings across multiple OSINT sources—username enumeration, email
 action: aicorrelation
   lookups, social media profiles, domain records, breach databases, and dark-web mentions—into unified intelligence profiles
@@ -40,10 +40,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1593
 - T1595
+capec: []
 ---
 
 # Performing AI-Driven OSINT Correlation

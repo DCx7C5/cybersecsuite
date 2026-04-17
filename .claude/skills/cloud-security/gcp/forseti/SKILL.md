@@ -1,5 +1,5 @@
 ---
-name: forseti
+name: gcp-forseti
 description: 'Performing comprehensive security assessments of Google Cloud Platform environments using Forseti Security,
 action: forseti
   Security Command Center, and gcloud CLI to audit IAM policies, firewall rules, storage permissions, and compliance against
@@ -33,10 +33,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1562.004
+capec: []
 ---
 
 # Performing GCP Security Assessment with Forseti

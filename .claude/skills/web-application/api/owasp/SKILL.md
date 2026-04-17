@@ -1,5 +1,5 @@
 ---
-name: owasp
+name: api-owasp
 description: Systematically assessing REST and GraphQL API endpoints against the OWASP API Security Top 10 risks using automated
 action: owasp
   and manual testing techniques.
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-200
+capec: []
 ---
 
 # Testing API Security with OWASP Top 10

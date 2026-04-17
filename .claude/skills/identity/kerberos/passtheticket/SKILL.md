@@ -1,5 +1,5 @@
 ---
-name: passtheticket
+name: kerberos-passtheticket
 description: Pass-the-Ticket (PtT) is a lateral movement technique that uses stolen Kerberos tickets (TGT or TGS) to authenticate
 action: passtheticket
   to services without knowing the user's password. By extracting Kerberos tickets fro
@@ -27,13 +27,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003.001
 - T1021
 - T1071
 - T1550.003
 - T1558
+capec: []
 ---
 
 # Conducting Pass-the-Ticket Attack

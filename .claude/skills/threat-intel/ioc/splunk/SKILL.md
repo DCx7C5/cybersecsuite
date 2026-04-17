@@ -1,5 +1,5 @@
 ---
-name: splunk
+name: ioc-splunk
 description: Build automated threat intelligence enrichment pipelines in Splunk Enterprise Security using lookup tables, modular
 action: splunk
   inputs, and the Threat Intelligence Framework.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
+capec: []
 ---
 
 # Building Threat Intelligence Enrichment in Splunk

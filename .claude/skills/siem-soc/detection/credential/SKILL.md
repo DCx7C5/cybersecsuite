@@ -1,5 +1,5 @@
 ---
-name: credential
+name: detection-credential
 description: Detect LSASS credential dumping, SAM database extraction, and NTDS.dit theft using Sysmon Event ID 10, Windows
 action: credential
   Security logs, and SIEM correlation rules
@@ -27,7 +27,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.001
@@ -35,6 +34,7 @@ mitre_attack:
 - T1003.003
 - T1027
 - T1059
+capec: []
 ---
 
 # Detecting Credential Dumping Techniques

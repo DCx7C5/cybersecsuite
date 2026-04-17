@@ -1,5 +1,5 @@
 ---
-name: 42crunch
+name: api-42crunch
 description: Implement comprehensive API security testing using the 42Crunch platform to perform static audit and dynamic
 action: 42crunch
   conformance scanning of OpenAPI specifications.
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Implementing API Security Testing with 42Crunch

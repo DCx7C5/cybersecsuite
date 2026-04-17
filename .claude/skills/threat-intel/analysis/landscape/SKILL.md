@@ -1,5 +1,5 @@
 ---
-name: landscape
+name: analysis-landscape
 description: Conduct a sector-specific threat landscape assessment by analyzing threat actor targeting patterns, common attack
 action: landscape
   vectors, and industry-specific vulnerabilities to inform organizational risk management.
@@ -27,7 +27,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Threat Landscape Assessment for Sector

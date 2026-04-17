@@ -1,5 +1,5 @@
 ---
-name: vol3plugins
+name: memory-analysis-vol3plugins
 description: Analyze memory dumps using Volatility3 plugins to detect injected code, rootkits, credential theft, and malware
 action: vol3plugins
   artifacts in Windows, Linux, and macOS memory images.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1014
 - T1055
 - T1059
+capec: []
 ---
 
 # Performing Memory Forensics with Volatility3 Plugins

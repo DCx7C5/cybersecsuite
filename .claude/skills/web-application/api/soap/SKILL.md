@@ -1,5 +1,5 @@
 ---
-name: soap
+name: api-soap
 description: Perform security testing of SOAP web services by analyzing WSDL definitions and testing for XML injection, XXE,
 action: soap
   WS-Security bypass, and SOAPAction spoofing.
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-611
 - CWE-643
 - CWE-91
+capec: []
 ---
 
 # Performing SOAP Web Service Security Testing

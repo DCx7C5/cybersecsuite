@@ -1,5 +1,5 @@
 ---
-name: delinea
+name: pam-delinea
 description: 'Implements Delinea Secret Server for privileged access management (PAM) including secret vault configuration,
 action: delinea
   role-based access policies, automated password rotation, session recording, and integration with Active Directory and cloud
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
+capec: []
 ---
 
 # Implementing Delinea Secret Server for PAM

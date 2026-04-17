@@ -1,5 +1,5 @@
 ---
-name: just
+name: zerotrust-just
 description: Implement Just-In-Time (JIT) access provisioning to eliminate standing privileges by granting temporary, time-bound
 action: just
   access only when needed. This skill covers JIT architecture design, approval workflo
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Just-In-Time Access Provisioning

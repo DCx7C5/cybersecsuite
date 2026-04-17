@@ -1,5 +1,5 @@
 ---
-name: bfla
+name: api-bfla
 description: 'Tests APIs for Broken Function Level Authorization (BFLA) vulnerabilities where regular users can invoke administrative
 action: bfla
   functions or access privileged API endpoints by directly calling them. The tester identifies admin and privileged endpoints,
@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Exploiting Broken Function Level Authorization

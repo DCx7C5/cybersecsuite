@@ -1,5 +1,5 @@
 ---
-name: ciscoise
+name: assessment-ciscoise
 description: Deploy Cisco Identity Services Engine for 802.1X wired and wireless authentication, MAC Authentication Bypass,
 action: ciscoise
   posture assessment, and dynamic VLAN assignment for network access control.
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1557
+capec: []
 ---
 
 # Implementing Network Access Control with Cisco ISE

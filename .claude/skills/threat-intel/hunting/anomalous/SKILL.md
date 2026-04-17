@@ -1,5 +1,5 @@
 ---
-name: anomalous
+name: hunting-anomalous
 description: 'Hunt for malicious PowerShell activity by analyzing Script Block Logging (Event 4104), Module Logging (Event
 action: anomalous
   4103), and process creation events. The analyst parses Windows Event Log EVTX files to detect obfuscated commands, AMSI
@@ -25,12 +25,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1027
 - T1059
 - T1059.001
+capec: []
 ---
 
 # Hunting for Anomalous PowerShell Execution

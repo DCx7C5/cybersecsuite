@@ -25,13 +25,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
 - T1071
 - T1071.001
 - T1595.002
+capec: []
 ---
 
 # Detecting Command and Control Over DNS

@@ -1,5 +1,5 @@
 ---
-name: dnsexfil
+name: network-zeek-dnsexfil
 description: Detect DNS-based data exfiltration by analyzing Zeek dns.log for high-entropy subdomains and anomalous query
 action: dnsexfil
   patterns
@@ -18,11 +18,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
 - T1595.002
+capec: []
 ---
 
 # Detecting Exfiltration over DNS with Zeek

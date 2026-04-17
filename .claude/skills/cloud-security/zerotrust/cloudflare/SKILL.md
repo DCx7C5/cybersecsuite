@@ -1,5 +1,5 @@
 ---
-name: cloudflare
+name: zerotrust-cloudflare
 description: 'Deploying Cloudflare Access with Cloudflare Tunnel to provide zero trust access to self-hosted and private applications,
 action: cloudflare
   configuring identity-aware access policies, device posture checks, and WARP client enrollment for VPN replacement.
@@ -32,9 +32,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021.001
+capec: []
 ---
 
 # Deploying Cloudflare Access for Zero Trust

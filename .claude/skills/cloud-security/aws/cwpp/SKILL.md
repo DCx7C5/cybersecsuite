@@ -1,5 +1,5 @@
 ---
-name: cwpp
+name: aws-cwpp
 description: 'Implements cloud workload protection using boto3 and google-cloud APIs for runtime security monitoring, process
 action: cwpp
   anomaly detection, and file integrity checking on EC2/GCE instances. Scans for cryptomining, reverse shells, and unauthorized
@@ -21,7 +21,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Cloud Workload Protection

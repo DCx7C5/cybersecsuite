@@ -1,5 +1,5 @@
 ---
-name: cloudtrailforensics
+name: log-cloud-cloudtrailforensics
 description: Perform forensic investigation of AWS environments using CloudTrail logs to reconstruct attacker activity, identify
 action: cloudtrailforensics
   compromised credentials, and analyze API call patterns.
@@ -22,12 +22,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1041
 - T1078.004
 - T1530
+capec: []
 ---
 
 # Performing Cloud Forensics with AWS CloudTrail

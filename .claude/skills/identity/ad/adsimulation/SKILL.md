@@ -1,5 +1,5 @@
 ---
-name: adsimulation
+name: ad-adsimulation
 description: 'Executes authorized attack simulations against Active Directory environments to identify misconfigurations,
 action: adsimulation
   weak credentials, dangerous privilege paths, and exploitable trust relationships that could lead to domain compromise. The
@@ -30,13 +30,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1087
 - T1558
 - T1558.003
+capec: []
 ---
 
 # Executing Active Directory Attack Simulation

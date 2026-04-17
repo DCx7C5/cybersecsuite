@@ -1,5 +1,5 @@
 ---
-name: foremost
+name: disk-filecarving-foremost
 description: Recover files from disk images and unallocated space using Foremost's header-footer signature carving to extract
 action: foremost
   evidence regardless of file system state.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing File Carving with Foremost

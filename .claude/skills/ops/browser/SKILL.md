@@ -23,6 +23,8 @@ mitre_attack:
 - T1003
 - T1059
 - T1595
+nist_csf: []
+capec: []
 ---
 
 # Browser Forensic Recon

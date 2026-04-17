@@ -1,5 +1,5 @@
 ---
-name: typosquatting
+name: dns-typosquatting
 description: 'Detects typosquatting attacks in npm and PyPI package registries by analyzing package name similarity using
 action: typosquatting
   Levenshtein distance and other string metrics, examining publish date heuristics to identify recently created packages mimicking
@@ -28,11 +28,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1195
 - T1583.001
+capec: []
 ---
 
 # Detecting Typosquatting Packages in npm and PyPI

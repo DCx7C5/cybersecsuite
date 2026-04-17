@@ -1,5 +1,5 @@
 ---
-name: detectionuc
+name: tuning-detectionuc
 description: 'Implements SIEM detection use cases by designing correlation rules, threshold alerts, and behavioral analytics
 action: detectionuc
   mapped to MITRE ATT&CK techniques across Splunk, Elastic, and Sentinel. Use when SOC teams need to expand detection coverage,
@@ -39,10 +39,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Implementing SIEM Use Cases for Detection

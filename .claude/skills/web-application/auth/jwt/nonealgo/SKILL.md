@@ -1,5 +1,5 @@
 ---
-name: nonealgo
+name: auth-jwt-nonealgo
 description: Execute and test the JWT none algorithm attack to bypass signature verification by manipulating the alg header
 action: nonealgo
   field in JSON Web Tokens.
@@ -22,7 +22,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1134
 - T1550
@@ -31,6 +30,7 @@ cwe:
 - CWE-347
 cve:
 - CVE-2018-0114
+capec: []
 ---
 
 # Performing JWT None Algorithm Attack

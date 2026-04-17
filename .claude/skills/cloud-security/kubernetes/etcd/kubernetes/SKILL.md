@@ -1,5 +1,5 @@
 ---
-name: kubernetes
+name: kubernetes-etcd-kubernetes
 description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration,
 action: kubernetes
   access controls, backup encryption, and network isolation.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Performing Kubernetes etcd Security Assessment

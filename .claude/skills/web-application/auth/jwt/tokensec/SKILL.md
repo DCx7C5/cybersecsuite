@@ -1,5 +1,5 @@
 ---
-name: tokensec
+name: auth-jwt-tokensec
 description: Assessing JSON Web Token implementations for cryptographic weaknesses, algorithm confusion attacks, and authorization
 action: tokensec
   bypass vulnerabilities during security engagements.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1550
 cwe:
 - CWE-347
+capec: []
 ---
 
 # Testing JWT Token Security

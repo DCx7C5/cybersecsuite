@@ -1,5 +1,5 @@
 ---
-name: arppoisoning
+name: network-traffic-arppoisoning
 description: Detect and prevent ARP spoofing attacks using ARPWatch, Dynamic ARP Inspection, Wireshark analysis, and custom
 action: arppoisoning
   monitoring scripts to protect against man-in-the-middle interception.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1557
 - T1557.002
+capec: []
 ---
 
 # Detecting ARP Poisoning in Network Traffic

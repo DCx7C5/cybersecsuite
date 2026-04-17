@@ -1,5 +1,5 @@
 ---
-name: wmilateral
+name: hunting-wmilateral
 description: Detect WMI-based lateral movement by analyzing Windows Event ID 4688 process creation and Sysmon Event ID 1 for
 action: wmilateral
   WmiPrvSE.exe child process patterns, remote process execution, and WMI event subscription persistence.
@@ -20,13 +20,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1047
 - T1059
 - T1059.001
 - T1547
+capec: []
 ---
 
 # Hunting for Lateral Movement via WMI

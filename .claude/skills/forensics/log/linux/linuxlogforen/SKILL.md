@@ -1,5 +1,5 @@
 ---
-name: linuxlogforen
+name: log-linux-linuxlogforen
 description: Perform forensic investigation of Linux system logs including syslog, auth.log, systemd journal, kern.log, and
 action: linuxlogforen
   application logs to reconstruct user activity, detect unauthorized access, and establish event timelines on compromised
@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1053.003
 - T1070
 - T1548.003
+capec: []
 ---
 
 # Performing Linux Log Forensics Investigation

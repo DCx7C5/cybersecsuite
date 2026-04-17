@@ -1,5 +1,5 @@
 ---
-name: iacscan
+name: devsecops-iacscan
 description: 'This skill covers implementing automated security scanning for Infrastructure as Code (IaC) templates using
 action: iacscan
   tools like Checkov, tfsec, and KICS. It addresses detecting misconfigurations in Terraform, CloudFormation, Kubernetes manifests,
@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1530
+capec: []
 ---
 
 # Implementing Infrastructure as Code Security Scanning

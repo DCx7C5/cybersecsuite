@@ -1,5 +1,5 @@
 ---
-name: endpoint
+name: disk-analysis-endpoint
 description: 'Performs digital forensics investigation on compromised endpoints including memory acquisition, disk imaging,
 action: endpoint
   artifact analysis, and timeline reconstruction. Use when investigating security incidents, collecting evidence for legal
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
+capec: []
 ---
 
 # Performing Endpoint Forensics Investigation

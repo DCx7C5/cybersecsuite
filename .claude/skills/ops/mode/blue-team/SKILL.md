@@ -16,6 +16,8 @@ tags:
 - mode
 - blue-team
 - mode-blue-team
+nist_csf: []
+capec: []
 ---
 
 # Blue Team Mode – Defensive Posture

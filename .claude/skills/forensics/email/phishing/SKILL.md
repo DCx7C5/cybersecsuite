@@ -1,5 +1,5 @@
 ---
-name: phishing
+name: email-phishing
 description: Parse and analyze email headers to trace the origin of phishing emails, verify sender authenticity, and identify
 action: phishing
   spoofing through SPF, DKIM, and DMARC validation.
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 # Analyzing Email Headers for Phishing Investigation

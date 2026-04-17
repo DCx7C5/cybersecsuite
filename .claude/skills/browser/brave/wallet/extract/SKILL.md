@@ -20,4 +20,5 @@ mitre:
   - T1005
 cwe:
   - CWE-312
+capec: []
 ---

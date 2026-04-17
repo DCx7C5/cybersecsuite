@@ -1,5 +1,5 @@
 ---
-name: passthehash
+name: ntlm-passthehash
 description: Detect Pass-the-Hash attacks by analyzing NTLM authentication patterns, identifying Type 3 logons with NTLM where
 action: passthehash
   Kerberos is expected, and correlating with credential dumping.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1070
 - T1550.002
+capec: []
 ---
 
 # Detecting Pass The Hash Attacks

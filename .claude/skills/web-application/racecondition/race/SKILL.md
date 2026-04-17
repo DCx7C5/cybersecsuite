@@ -1,5 +1,5 @@
 ---
-name: race
+name: racecondition-race
 description: Detect and exploit race condition vulnerabilities in web applications using Turbo Intruder's single-packet attack
 action: race
   technique to bypass rate limits, duplicate transactions, and exploit time-of-check-to-time-of-use flaws.
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-362
 - CWE-367
+capec: []
 ---
 
 # Exploiting Race Condition Vulnerabilities

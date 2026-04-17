@@ -1,5 +1,5 @@
 ---
-name: volatile
+name: disk-analysis-volatile
 description: Collect volatile forensic evidence from a compromised system following order of volatility, preserving memory,
 action: volatile
   network connections, processes, and system state before they are lost.
@@ -20,13 +20,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1055
 - T1059
 - T1547
 - T1027
+capec: []
 ---
 
 # Collecting Volatile Evidence from Compromised Hosts

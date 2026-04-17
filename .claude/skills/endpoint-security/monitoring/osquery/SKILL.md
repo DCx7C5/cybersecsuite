@@ -1,5 +1,5 @@
 ---
-name: osquery
+name: monitoring-osquery
 description: 'Deploys and configures osquery for real-time endpoint monitoring using SQL-based queries to inspect running
 action: osquery
   processes, open ports, installed software, and system configuration. Use when building visibility into endpoint state, threat
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1547
 - T1049
@@ -33,6 +32,7 @@ mitre_attack:
 - T1552
 - T1059
 - T1070
+capec: []
 ---
 
 # Deploying Osquery for Endpoint Monitoring

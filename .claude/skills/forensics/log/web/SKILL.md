@@ -1,5 +1,5 @@
 ---
-name: web
+name: log-web
 description: Parse Apache and Nginx access logs to detect SQL injection attempts, local file inclusion, directory traversal,
 action: web
   web scanner fingerprints, and brute-force patterns. Uses regex-based pattern matching against OWASP attack signatures, GeoIP
@@ -19,9 +19,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Analyzing Web Server Logs for Intrusion

@@ -1,5 +1,5 @@
 ---
-name: bootkit
+name: firmware-bootkit
 description: 'Analyzes bootkit and advanced rootkit malware that infects the Master Boot Record (MBR), Volume Boot Record
 action: bootkit
   (VBR), or UEFI firmware to gain persistence below the operating system. Covers boot sector analysis, UEFI module inspection,
@@ -23,12 +23,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1014
 - T1542
 cve:
 - CVE-2022-21894
+capec: []
 ---
 
 # Analyzing Bootkit and Rootkit Samples

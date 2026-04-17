@@ -1,5 +1,5 @@
 ---
-name: engagementplan
+name: engagement-plan
 description: Red team engagement planning is the foundational phase that defines scope, objectives, rules of engagement (ROE),
 action: plan
   threat model selection, and operational timelines before any offensive testing begins.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1071
+capec: []
 ---
 
 # Executing Red Team Engagement Planning

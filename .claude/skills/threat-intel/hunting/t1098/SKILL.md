@@ -1,5 +1,5 @@
 ---
-name: t1098
+name: hunting-t1098
 description: Hunt for MITRE ATT&CK T1098 account manipulation including shadow admin creation, SID history injection, group
 action: t1098
   membership changes, and credential modifications using Windows Security Event Logs.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1098
 - T1547
 - T1562.001
+capec: []
 ---
 
 # Hunting for T1098 Account Manipulation

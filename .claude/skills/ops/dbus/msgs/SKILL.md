@@ -21,6 +21,8 @@ tags:
 mitre_attack:
 - T1003
 - T1021
+nist_csf: []
+capec: []
 ---
 
 # D-Bus Messages

@@ -1,5 +1,5 @@
 ---
-name: cellebrite
+name: mobile-cellebrite
 description: Acquire and analyze mobile device data using Cellebrite UFED and open-source tools to extract communications,
 action: cellebrite
   location data, and application artifacts.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1404
+capec: []
 ---
 
 # Performing Mobile Device Forensics with Cellebrite

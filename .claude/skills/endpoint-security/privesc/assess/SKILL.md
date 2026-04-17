@@ -1,5 +1,5 @@
 ---
-name: assessment
+name: privesc-assess
 description: 'Performs privilege escalation assessments on compromised Linux and Windows systems to identify paths from low-privilege
 action: assess
   access to root or SYSTEM-level control. The tester enumerates misconfigurations, vulnerable services, kernel exploits, SUID
@@ -30,7 +30,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1068
@@ -40,6 +39,7 @@ cve:
 - CVE-2022-0847
 - CVE-2016-5195
 - CVE-2021-4034
+capec: []
 ---
 
 # Performing Privilege Escalation Assessment

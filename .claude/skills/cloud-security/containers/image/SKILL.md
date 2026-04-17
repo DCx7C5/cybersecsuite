@@ -1,5 +1,5 @@
 ---
-name: image
+name: containers-image
 description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations,
 action: image
   and Kubernetes admission enforcement.
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1195
 - T1610
+capec: []
 ---
 
 # Implementing Image Provenance Verification with Cosign

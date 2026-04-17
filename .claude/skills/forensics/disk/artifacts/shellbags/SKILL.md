@@ -1,5 +1,5 @@
 ---
-name: shellbags
+name: disk-artifacts-shellbags
 description: Analyze Windows Shellbag registry artifacts to reconstruct folder browsing activity, detect access to removable
 action: shellbags
   media and network shares, and establish user interaction with directories even after deletion using SBECmd and ShellBags
@@ -25,7 +25,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Windows Shellbag Artifacts

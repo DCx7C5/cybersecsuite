@@ -1,5 +1,5 @@
 ---
-name: snort
+name: ids-snort
 description: 'Installs, configures, and tunes Snort 3 intrusion detection system to monitor network traffic for malicious
 action: snort
   activity using custom and community rulesets, preprocessors, and alert output plugins on authorized network segments.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1562.001
+capec: []
 ---
 
 # Configuring Snort IDS for Intrusion Detection

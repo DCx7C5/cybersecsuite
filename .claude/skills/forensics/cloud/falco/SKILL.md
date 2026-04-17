@@ -1,5 +1,5 @@
 ---
-name: falco
+name: cloud-falco
 description: 'Uses Falco YAML rules for runtime threat detection in containers and Kubernetes, monitoring syscalls for shell
 action: falco
   spawns, file tampering, network anomalies, and privilege escalation. Manages Falco rules via the Falco gRPC API and parses
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
+capec: []
 ---
 
 # Performing Cloud Native Forensics with Falco

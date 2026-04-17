@@ -1,5 +1,5 @@
 ---
-name: siem
+name: tuning-siem
 description: Perform systematic SIEM false positive reduction through rule tuning, threshold adjustment, correlation refinement,
 action: siem
   and threat intelligence enrichment to combat alert fatigue.
@@ -27,10 +27,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Performing False Positive Reduction in SIEM

@@ -1,5 +1,5 @@
 ---
-name: cloud
+name: log-cloud
 description: Detect abnormal access patterns in AWS S3, GCS, and Azure Blob Storage by analyzing CloudTrail Data Events, GCS
 action: cloud
   audit logs, and Azure Storage Analytics. Identifies after-hours bulk downloads, access from new IP addresses, unusual API
@@ -26,11 +26,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1078.004
 - T1530
+capec: []
 ---
 
 # Analyzing Cloud Storage Access Patterns

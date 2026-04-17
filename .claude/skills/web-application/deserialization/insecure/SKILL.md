@@ -1,5 +1,5 @@
 ---
-name: insecure
+name: deserialization-insecure
 description: Identifying and exploiting insecure deserialization vulnerabilities in Java, PHP, Python, and .NET applications
 action: insecure
   to achieve remote code execution during authorized penetration tests.
@@ -20,13 +20,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-502
 cve:
 - CVE-2015-7501
+capec: []
 ---
 
 # Exploiting Insecure Deserialization

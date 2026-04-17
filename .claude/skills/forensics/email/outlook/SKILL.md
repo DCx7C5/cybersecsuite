@@ -1,5 +1,5 @@
 ---
-name: outlook
+name: email-outlook
 description: Analyze Microsoft Outlook PST and OST files for email forensic evidence including message content, headers, attachments,
 action: outlook
   deleted items, and metadata using libpff, pst-utils, and forensic email analysis tools for legal investigations and incident
@@ -29,7 +29,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Outlook PST for Email Forensics

@@ -1,5 +1,5 @@
 ---
-name: service
+name: serviceaccount-service
 description: Detect abuse of service accounts through anomalous interactive logons, privilege escalation, lateral movement,
 action: service
   and unauthorized access patterns.
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1059
@@ -34,6 +33,7 @@ mitre_attack:
 - T1070
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Detecting Service Account Abuse

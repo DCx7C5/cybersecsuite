@@ -1,5 +1,5 @@
 ---
-name: goldenticket
+name: kerberos-goldenticket
 description: Detect Golden Ticket attacks in Active Directory by analyzing Kerberos TGT anomalies including mismatched encryption
 action: goldenticket
   types, impossible ticket lifetimes, non-existent accounts, and forged PAC signatures in domain controller event logs.
@@ -20,7 +20,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.003
@@ -28,6 +27,7 @@ mitre_attack:
 - T1059
 - T1558
 - T1558.001
+capec: []
 ---
 
 # Detecting Golden Ticket Attacks in Kerberos Logs

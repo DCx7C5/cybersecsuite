@@ -1,5 +1,5 @@
 ---
-name: mtls
+name: zerotrust-mtls
 description: 'Configures mutual TLS (mTLS) authentication between microservices using Python cryptography library for certificate
 action: mtls
   generation and ssl module for TLS verification. Validates certificate chains, checks expiration, and audits mTLS deployment
@@ -21,7 +21,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing mTLS for Zero Trust Services

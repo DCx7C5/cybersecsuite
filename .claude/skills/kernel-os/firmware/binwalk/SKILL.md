@@ -1,5 +1,5 @@
 ---
-name: binwalk
+name: firmware-binwalk
 description: 'Performs firmware image extraction and analysis using binwalk to identify embedded filesystems, compressed archives,
 action: binwalk
   bootloaders, kernel images, and cryptographic material. Covers entropy analysis for detecting encrypted or compressed regions,
@@ -24,11 +24,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2021-42373
 - CVE-2021-42374
 - CVE-2016-3116
+capec: []
 ---
 
 # Performing Firmware Extraction with Binwalk

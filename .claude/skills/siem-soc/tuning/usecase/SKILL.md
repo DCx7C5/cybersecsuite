@@ -1,5 +1,5 @@
 ---
-name: usecase
+name: tuning-usecase
 description: Tune SIEM detection rules to reduce false positives by analyzing alert volumes, creating whitelists, adjusting
 action: usecase
   thresholds, and measuring detection efficacy metrics in Splunk and Elastic
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Implementing SIEM Use Case Tuning

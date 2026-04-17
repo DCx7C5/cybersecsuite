@@ -16,6 +16,8 @@ tags:
 - scope
 - user
 - scope-user
+nist_csf: []
+capec: []
 ---
 
 # System Layer Skill – Global Forensic Intelligence

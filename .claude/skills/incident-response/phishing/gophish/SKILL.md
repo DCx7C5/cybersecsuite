@@ -1,5 +1,5 @@
 ---
-name: gophish
+name: phishing-gophish
 description: GoPhish is an open-source phishing simulation framework used by security teams to conduct authorized phishing
 action: gophish
   awareness campaigns. It provides campaign management, email template creation, landing pag
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
+capec: []
 ---
 
 # Performing Phishing Simulation with GoPhish

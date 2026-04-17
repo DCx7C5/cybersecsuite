@@ -1,5 +1,5 @@
 ---
-name: bruteforce
+name: detection-bruteforce
 description: Detect RDP brute force attacks by analyzing Windows Security Event Logs for failed authentication patterns (Event
 action: bruteforce
   ID 4625), successful logons after failures (Event ID 4624), NLA failures, and source IP frequency analysis.
@@ -20,13 +20,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021.001
 - T1059
 - T1070
 - T1110
+capec: []
 ---
 
 # Detecting RDP Brute Force Attacks

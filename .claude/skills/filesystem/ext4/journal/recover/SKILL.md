@@ -14,4 +14,5 @@ tags:
   - sleuthkit
 nist_csf:
   - RS.AN-03
+capec: []
 ---

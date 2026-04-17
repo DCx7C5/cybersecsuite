@@ -1,5 +1,5 @@
 ---
-name: crowdstrike
+name: edr-crowdstrike
 description: 'Deploys and configures CrowdStrike Falcon EDR agents across enterprise endpoints to enable real-time threat
 action: crowdstrike
   detection, behavioral analysis, and automated response. Use when onboarding endpoints to EDR coverage, configuring detection
@@ -34,10 +34,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Deploying EDR Agent with CrowdStrike

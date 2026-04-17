@@ -1,5 +1,5 @@
 ---
-name: webshell
+name: hunting-webshell
 description: Hunt for web shell deployments on internet-facing servers by analyzing file creation in web directories, suspicious
 action: webshell
   process spawning from web servers, and anomalous HTTP patterns.
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1505.003
 - T1547
+capec: []
 ---
 
 # Hunting For Webshell Activity

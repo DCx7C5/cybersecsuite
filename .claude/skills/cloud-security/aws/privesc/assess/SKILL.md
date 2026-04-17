@@ -1,5 +1,5 @@
 ---
-name: awsprivesc
+name: aws-privesc-assess
 description: 'Performing authorized privilege escalation assessments in AWS environments to identify IAM misconfigurations
 action: assess
   that allow users or roles to elevate their permissions using Pacu, CloudFox, Principal Mapper, and manual IAM policy analysis
@@ -23,13 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1068
 - T1078.004
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Performing AWS Privilege Escalation Assessment

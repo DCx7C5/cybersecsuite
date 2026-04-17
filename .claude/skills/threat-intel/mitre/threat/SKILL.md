@@ -1,5 +1,5 @@
 ---
-name: threat
+name: mitre-threat
 description: MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics, techniques, and procedures (TTPs)
 action: threat
   based on real-world observations. This skill covers systematically mapping threat actor beh
@@ -27,9 +27,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Analyzing Threat Actor TTPs with MITRE ATT&CK

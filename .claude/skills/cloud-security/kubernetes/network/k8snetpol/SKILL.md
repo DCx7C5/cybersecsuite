@@ -1,5 +1,5 @@
 ---
-name: k8snetpol
+name: kubernetes-network-k8snetpol
 description: Kubernetes NetworkPolicies provide pod-level network segmentation by defining ingress and egress rules that control
 action: k8snetpol
   traffic flow between pods, namespaces, and external endpoints. Combined with CNI plu
@@ -19,10 +19,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1610
+capec: []
 ---
 
 # Implementing Network Policies for Kubernetes

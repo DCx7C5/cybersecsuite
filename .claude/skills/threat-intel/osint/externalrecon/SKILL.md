@@ -1,5 +1,5 @@
 ---
-name: externalrecon
+name: osint-externalrecon
 description: 'Conducts external reconnaissance using Open Source Intelligence (OSINT) techniques to map an organization''s
 action: externalrecon
   external attack surface without directly interacting with target systems. The tester gathers information from public sources
@@ -24,11 +24,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1593
 - T1595
+capec: []
 ---
 
 # Conducting External Reconnaissance with OSINT

@@ -1,5 +1,5 @@
 ---
-name: boundary
+name: zerotrust-boundary
 description: Implement HashiCorp Boundary for identity-aware zero trust infrastructure access management with dynamic credential
 action: boundary
   brokering, session recording, and Vault integration.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
+capec: []
 ---
 
 # Implementing Zero Trust with HashiCorp Boundary

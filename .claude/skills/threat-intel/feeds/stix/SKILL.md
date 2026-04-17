@@ -1,5 +1,5 @@
 ---
-name: stix
+name: feeds-stix
 description: STIX (Structured Threat Information eXpression) and TAXII (Trusted Automated eXchange of Intelligence Information)
 action: stix
   are OASIS open standards for representing and transporting cyber threat intelligence.
@@ -22,12 +22,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1070
 - T1082
 cve:
 - CVE-2021-26855
+capec: []
 ---
 
 # Implementing STIX/TAXII Feed Integration

@@ -21,6 +21,8 @@ tags:
 - mode-purple-team
 mitre_attack:
 - T1059
+nist_csf: []
+capec: []
 ---
 
 # Purple Team Mode – Hybrid Offensive + Defensive Posture

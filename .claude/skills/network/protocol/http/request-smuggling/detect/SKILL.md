@@ -20,4 +20,5 @@ mitre:
   - T1059.007
 cwe:
   - CWE-444
+capec: []
 ---

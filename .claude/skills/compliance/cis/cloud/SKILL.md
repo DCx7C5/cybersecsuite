@@ -1,5 +1,5 @@
 ---
-name: cloud
+name: cis-cloud
 description: 'This skill details how to conduct cloud security audits using Center for Internet Security benchmarks for AWS,
 action: cloud
   Azure, and GCP. It covers interpreting CIS Foundations Benchmark controls, running automated assessments with tools like
@@ -27,7 +27,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Auditing Cloud with CIS Benchmarks

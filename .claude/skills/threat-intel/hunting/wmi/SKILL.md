@@ -1,5 +1,5 @@
 ---
-name: wmi
+name: hunting-wmi
 description: Detect WMI event subscription persistence by analyzing Sysmon Event IDs 19, 20, and 21 for malicious EventFilter,
 action: wmi
   EventConsumer, and FilterToConsumerBinding creation.
@@ -28,12 +28,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1047
 - T1059
 - T1547
 - T1562.001
+capec: []
 ---
 
 # Detecting WMI Persistence

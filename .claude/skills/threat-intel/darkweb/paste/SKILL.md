@@ -1,5 +1,5 @@
 ---
-name: paste
+name: darkweb-paste
 description: Monitor paste sites like Pastebin and GitHub Gists for leaked credentials, API keys, and sensitive data dumps
 action: paste
   using automated scraping and keyword matching to detect breaches early.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1593
+capec: []
 ---
 
 # Performing Paste Site Monitoring for Credentials

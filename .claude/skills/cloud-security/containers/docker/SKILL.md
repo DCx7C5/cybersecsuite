@@ -1,5 +1,5 @@
 ---
-name: docker
+name: containers-docker
 description: Hardening Docker containers for production involves applying security best practices aligned with CIS Docker
 action: docker
   Benchmark v1.8.0 to minimize attack surface, prevent privilege escalation, and enforce leas
@@ -19,9 +19,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Hardening Docker Containers for Production

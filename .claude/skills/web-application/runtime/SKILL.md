@@ -27,7 +27,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 - T1190
@@ -35,6 +34,7 @@ cwe:
 - CWE-502
 - CWE-79
 - CWE-89
+capec: []
 ---
 
 # Implementing Runtime Application Self-Protection

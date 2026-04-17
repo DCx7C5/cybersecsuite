@@ -1,5 +1,5 @@
 ---
-name: playbook
+name: playbooks-playbook
 description: Implement automated incident response playbooks in Cortex XSOAR to orchestrate security workflows across SOC
 action: playbook
   tools and reduce manual response time.
@@ -22,11 +22,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
 - T1204
 - T1078
+capec: []
 ---
 
 # Implementing SOAR Playbook with Palo Alto XSOAR

@@ -1,5 +1,5 @@
 ---
-name: dns
+name: network-dns
 description: 'Analyzes DNS query logs to detect data exfiltration via DNS tunneling, DGA domain communication, and covert
 action: dns
   C2 channels using entropy analysis, query volume anomalies, and subdomain length detection in SIEM platforms. Use when SOC
@@ -29,7 +29,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
@@ -38,6 +37,7 @@ mitre_attack:
 - T1071.001
 - T1071.004
 - T1562.004
+capec: []
 ---
 
 # Analyzing DNS Logs for Exfiltration

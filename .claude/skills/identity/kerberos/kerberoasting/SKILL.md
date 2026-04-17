@@ -1,5 +1,5 @@
 ---
-name: kerberoasting
+name: kerberos-kerberoasting
 description: Detect Kerberoasting attacks by monitoring for anomalous Kerberos TGS requests targeting service accounts with
 action: kerberoasting
   SPNs for offline password cracking.
@@ -27,13 +27,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1070
 - T1558
 - T1558.003
+capec: []
 ---
 
 # Detecting Kerberoasting Attacks

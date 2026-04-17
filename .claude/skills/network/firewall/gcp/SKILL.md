@@ -1,5 +1,5 @@
 ---
-name: network-firewall-gcp
+name: firewall-gcp
 description: 'Implementing and auditing GCP VPC firewall rules to enforce network segmentation, restrict ingress and egress
 action: firewall
   traffic, apply hierarchical firewall policies across the organization, and monitor firewall rule effectiveness using VPC
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1562.004
+capec: []
 ---
 
 # Implementing GCP VPC Firewall Rules

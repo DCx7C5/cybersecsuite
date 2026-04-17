@@ -1,5 +1,5 @@
 ---
-name: xss
+name: injection-xss
 description: 'Tests web applications for Cross-Site Scripting (XSS) vulnerabilities by injecting JavaScript payloads into
 action: xss
   reflected, stored, and DOM-based contexts to demonstrate client-side code execution, session hijacking, and user impersonation.
@@ -24,13 +24,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1189
 - T1566
 cwe:
 - CWE-79
+capec: []
 ---
 
 # Testing for XSS Vulnerabilities

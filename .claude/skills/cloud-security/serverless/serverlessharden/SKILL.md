@@ -1,5 +1,5 @@
 ---
-name: serverlessharden
+name: serverless-serverlessharden
 description: 'This skill covers security hardening for serverless compute platforms including AWS Lambda, Azure Functions,
 action: serverlessharden
   and Google Cloud Functions. It addresses least privilege IAM roles, dependency vulnerability scanning, secrets management
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1059.009
@@ -33,6 +32,7 @@ cve:
 - CVE-2023-45857
 - CVE-2022-23529
 - CVE-2021-23337
+capec: []
 ---
 
 # Securing Serverless Functions

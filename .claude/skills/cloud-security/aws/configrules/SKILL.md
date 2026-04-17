@@ -1,5 +1,5 @@
 ---
-name: configrules
+name: aws-configrules
 description: 'Implementing AWS Config rules for continuous compliance monitoring of AWS resources, deploying managed and custom
 action: configrules
   rules aligned to CIS and PCI DSS frameworks, configuring automatic remediation with SSM Automation, and aggregating compliance
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Implementing AWS Config Rules for Compliance

@@ -1,5 +1,5 @@
 ---
-name: sqlite
+name: disk-analysis-sqlite
 description: Perform forensic analysis of SQLite databases to recover deleted records from freelists and WAL files, decode
 action: sqlite
   encoded timestamps, and extract evidence from browser history, messaging apps, and mobile device databases.
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing SQLite Database Forensics

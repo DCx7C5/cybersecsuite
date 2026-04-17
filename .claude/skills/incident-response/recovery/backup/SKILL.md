@@ -1,5 +1,5 @@
 ---
-name: backup
+name: recovery-backup
 description: Validate backup integrity through cryptographic hash verification, automated restore testing, corruption detection,
 action: backup
   and recoverability checks to ensure backups are reliable for disaster recovery and ransomware response scenarios.
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1486
+capec: []
 ---
 
 # Validating Backup Integrity for Recovery

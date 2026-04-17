@@ -1,5 +1,5 @@
 ---
-name: code
+name: signing-code
 description: 'This skill covers implementing code signing for build artifacts to ensure integrity and authenticity throughout
 action: code
   the software supply chain. It addresses signing binaries, packages, and containers using GPG, Sigstore, and platform-specific
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1195
 - T1553.002
+capec: []
 ---
 
 # Implementing Code Signing for Artifacts

@@ -1,5 +1,5 @@
 ---
-name: volatility
+name: memory-acquisition-volatility
 description: 'Performs Linux memory acquisition using LiME (Linux Memory Extractor) kernel module and analysis with Volatility
 action: volatility
   3 framework. Extracts process lists, network connections, bash history, loaded kernel modules, and injected code from Linux
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
+capec: []
 ---
 
 # Analyzing Memory Forensics with LiME and Volatility

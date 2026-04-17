@@ -1,5 +1,5 @@
 ---
-name: certificates
+name: ad-certificates
 description: Exploit misconfigured Active Directory Certificate Services (AD CS) ESC1 vulnerability to request certificates
 action: certificates
   as high-privileged users and escalate domain privileges during authorized red team assessments.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 cwe:
 - CWE-16
 - CWE-269
+capec: []
 ---
 
 # Exploiting Active Directory Certificate Services ESC1

@@ -21,13 +21,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021
 - T1036
 - T1046
 - T1059
+capec: []
 ---
 
 # Implementing Network Deception with Honeypots

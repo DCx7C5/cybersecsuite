@@ -1,5 +1,5 @@
 ---
-name: supply
+name: containers-supply
 description: Implement software supply chain integrity verification for container builds using the in-toto framework to create
 action: supply
   cryptographically signed attestations across CI/CD pipeline steps.
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1195
 - T1610
+capec: []
 ---
 
 # Implementing Supply Chain Security with in-toto

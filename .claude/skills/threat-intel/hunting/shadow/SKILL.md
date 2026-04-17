@@ -1,5 +1,5 @@
 ---
-name: shadow
+name: hunting-shadow
 description: Hunt for Volume Shadow Copy deletion activity that indicates ransomware preparation or anti-forensics by monitoring
 action: shadow
   vssadmin, wmic, and PowerShell shadow copy commands.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1486
+capec: []
 ---
 
 # Hunting For Shadow Copy Deletion

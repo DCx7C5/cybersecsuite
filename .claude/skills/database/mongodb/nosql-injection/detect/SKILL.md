@@ -18,4 +18,5 @@ mitre:
   - T1190
 cwe:
   - CWE-943
+capec: []
 ---

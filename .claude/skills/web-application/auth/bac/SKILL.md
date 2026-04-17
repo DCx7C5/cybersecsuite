@@ -1,5 +1,5 @@
 ---
-name: bac
+name: auth-bac
 description: Systematically testing web applications for broken access control vulnerabilities including privilege escalation,
 action: bac
   missing function-level checks, and insecure direct object references.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Testing for Broken Access Control

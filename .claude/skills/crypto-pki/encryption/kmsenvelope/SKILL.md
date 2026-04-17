@@ -1,5 +1,5 @@
 ---
-name: kmsenvelope
+name: encryption-kmsenvelope
 description: Envelope encryption is a strategy where data is encrypted with a data encryption key (DEK), and the DEK itself
 action: kmsenvelope
   is encrypted with a master key (KEK) managed by AWS KMS. This approach allows encrypting
@@ -19,7 +19,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Envelope Encryption with AWS KMS

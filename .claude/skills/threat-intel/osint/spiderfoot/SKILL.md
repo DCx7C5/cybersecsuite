@@ -1,5 +1,5 @@
 ---
-name: spiderfoot
+name: osint-spiderfoot
 description: Automate OSINT collection using SpiderFoot REST API and CLI for target profiling, module-based reconnaissance,
 action: spiderfoot
   and structured result analysis across 200+ data sources
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1562.001
 - T1593
 - T1595
+capec: []
 ---
 
 # Performing OSINT with SpiderFoot

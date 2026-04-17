@@ -1,5 +1,5 @@
 ---
-name: active
+name: ad-active
 description: Detect dangerous ACL misconfigurations in Active Directory using ldap3 to identify GenericAll, WriteDACL, and
 action: active
   WriteOwner abuse paths
@@ -17,12 +17,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 - T1087.002
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Analyzing Active Directory ACL Abuse

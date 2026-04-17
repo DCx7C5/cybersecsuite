@@ -1,5 +1,5 @@
 ---
-name: bypass
+name: api-bypass
 description: 'Tests API rate limiting implementations for bypass vulnerabilities by manipulating request headers, IP addresses,
 action: bypass
   HTTP methods, API versions, and encoding schemes to circumvent request throttling controls. The tester identifies rate limit
@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1110
 - T1498
+capec: []
 ---
 
 # Performing API Rate Limiting Bypass

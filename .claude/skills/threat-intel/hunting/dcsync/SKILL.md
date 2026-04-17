@@ -1,5 +1,5 @@
 ---
-name: dcsync
+name: hunting-dcsync
 description: Detect DCSync attacks by analyzing Windows Event ID 4662 for unauthorized DS-Replication-Get-Changes requests
 action: dcsync
   from non-domain-controller accounts.
@@ -28,11 +28,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.006
 - T1059
+capec: []
 ---
 
 # Hunting for DCSync Attacks

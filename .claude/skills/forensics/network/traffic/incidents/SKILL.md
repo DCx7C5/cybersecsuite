@@ -1,5 +1,5 @@
 ---
-name: incidents
+name: network-traffic-incidents
 description: 'Analyzes network traffic captures and flow data to identify adversary activity during security incidents, including
 action: incidents
   command-and-control communications, lateral movement, data exfiltration, and exploitation attempts. Uses Wireshark, Zeek,
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1071
 - T1095
@@ -35,6 +34,7 @@ mitre_attack:
 - T1070
 - T1071.001
 - T1562.001
+capec: []
 ---
 
 # Analyzing Network Traffic for Incidents

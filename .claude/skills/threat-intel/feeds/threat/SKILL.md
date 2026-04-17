@@ -1,5 +1,5 @@
 ---
-name: threat
+name: feeds-threat
 description: 'Analyzes structured and unstructured threat intelligence feeds to extract actionable indicators, adversary tactics,
 action: threat
   and campaign context. Use when ingesting commercial or open-source CTI feeds, evaluating feed quality, normalizing data
@@ -27,12 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1059
 - T1070
 - T1593
+capec: []
 ---
 
 # Analyzing Threat Intelligence Feeds

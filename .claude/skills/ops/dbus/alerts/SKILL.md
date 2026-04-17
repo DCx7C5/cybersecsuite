@@ -22,6 +22,8 @@ mitre_attack:
 - T1021
 cve:
 - CVE-2021-3560
+nist_csf: []
+capec: []
 ---
 
 # D-Bus Alerts

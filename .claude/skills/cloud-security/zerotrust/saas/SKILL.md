@@ -1,5 +1,5 @@
 ---
-name: saas
+name: zerotrust-saas
 description: 'Implementing zero trust access controls for SaaS applications using CASB, SSPM, conditional access policies,
 action: saas
   OAuth app governance, and session controls to enforce identity verification, device compliance, and data protection for
@@ -24,10 +24,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1550
+capec: []
 ---
 
 # Implementing Zero Trust for SaaS Applications

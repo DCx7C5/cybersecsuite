@@ -1,5 +1,5 @@
 ---
-name: threat
+name: analysis-threat
 description: 'Correlates disparate security incidents, IOCs, and adversary behaviors across time and organizations to identify
 action: threat
   unified threat campaigns, attribute them to common threat actors, and extract shared indicators for improved detection.
@@ -27,9 +27,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1071
+capec: []
 ---
 
 # Correlating Threat Campaigns

@@ -1,5 +1,5 @@
 ---
-name: security
+name: feeds-security
 description: 'Create, validate, and share STIX 2.1 threat intelligence objects using the stix2 Python library. Covers indicators,
 action: security
   malware, campaigns, relationships, bundles, and TAXII 2.1 publishing.
@@ -26,9 +26,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2021-26855
+capec: []
 ---
 
 # Implementing Security Information Sharing with STIX 2.1

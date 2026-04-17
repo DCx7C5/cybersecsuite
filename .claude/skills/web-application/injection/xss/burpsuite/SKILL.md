@@ -1,5 +1,5 @@
 ---
-name: burpsuite
+name: injection-xss-burpsuite
 description: Identifying and validating cross-site scripting vulnerabilities using Burp Suite's scanner, intruder, and repeater
 action: burpsuite
   tools during authorized security assessments.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 cwe:
 - CWE-79
+capec: []
 ---
 
 # Testing for XSS Vulnerabilities with Burp Suite

@@ -1,5 +1,5 @@
 ---
-name: authn
+name: api-authn
 description: 'Tests API authentication mechanisms for weaknesses including broken token validation, missing authentication
 action: authn
   on endpoints, weak password policies, credential stuffing susceptibility, token leakage in URLs or logs, and session management
@@ -25,12 +25,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1550
 cwe:
 - CWE-347
+capec: []
 ---
 
 # Testing API Authentication Weaknesses

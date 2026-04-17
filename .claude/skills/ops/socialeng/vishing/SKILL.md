@@ -1,5 +1,5 @@
 ---
-name: social
+name: socialeng-vishing
 description: Plan and execute authorized vishing (voice phishing) pretext calls to assess employee susceptibility to social
 action: vishing
   engineering and evaluate security awareness controls.
@@ -32,10 +32,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1566
 - T1566.004
+capec: []
 ---
 
 # Conducting Social Engineering Pretext Call

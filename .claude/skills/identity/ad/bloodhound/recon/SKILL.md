@@ -1,5 +1,5 @@
 ---
-name: bloodhound
+name: ad-bloodhound-recon
 description: Conduct internal Active Directory reconnaissance using BloodHound Community Edition to map attack paths, identify
 action: recon
   privilege escalation chains, and discover misconfigurations in domain environments.
@@ -26,13 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 - T1087
 - T1595
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Conducting Internal Reconnaissance with BloodHound CE

@@ -1,5 +1,5 @@
 ---
-name: ctaudit
+name: tls-ctaudit
 description: 'Monitors Certificate Transparency (CT) logs to detect unauthorized certificate issuance, discover subdomains
 action: ctaudit
   via CT data, and alert on suspicious certificate activity for owned domains. Uses the crt.sh API and direct CT log querying
@@ -25,13 +25,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1566
 - T1583.001
 - T1595.002
 - T1596.002
+capec: []
 ---
 
 # Auditing TLS Certificate Transparency Logs

@@ -1,5 +1,5 @@
 ---
-name: misconfig
+name: auth-oauth-misconfig
 description: Identifying and exploiting OAuth 2.0 and OpenID Connect misconfigurations including redirect URI manipulation,
 action: misconfig
   token leakage, and authorization code theft during security assessments.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1550
 cwe:
 - CWE-16
+capec: []
 ---
 
 # Exploiting OAuth Misconfiguration

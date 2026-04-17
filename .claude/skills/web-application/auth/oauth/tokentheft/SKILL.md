@@ -1,5 +1,5 @@
 ---
-name: tokentheft
+name: auth-oauth-tokentheft
 description: 'Detects and responds to OAuth token theft and replay attacks in cloud environments, focusing on Microsoft Entra
 action: tokentheft
   ID (Azure AD) token protection, conditional access policies, and sign-in anomaly detection. Covers access token theft, refresh
@@ -26,11 +26,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
 - T1550
 - T1566
+capec: []
 ---
 
 # Detecting OAuth Token Theft

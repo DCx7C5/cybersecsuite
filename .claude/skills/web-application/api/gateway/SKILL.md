@@ -1,5 +1,5 @@
 ---
-name: gateway
+name: api-gateway
 description: 'Implements security controls at the API gateway layer including authentication enforcement, rate limiting, request
 action: gateway
   validation, IP allowlisting, TLS termination, and threat protection. The engineer configures API gateways (Kong, AWS API
@@ -25,11 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 cwe:
 - CWE-79
+capec: []
 ---
 
 # Implementing API Gateway Security Controls

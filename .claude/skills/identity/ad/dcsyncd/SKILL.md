@@ -1,5 +1,5 @@
 ---
-name: dcsyncd
+name: ad-dcsyncd
 description: Detect DCSync attacks where adversaries abuse Active Directory replication privileges to extract password hashes
 action: dcsyncd
   by monitoring for non-domain-controller accounts requesting directory replication via DsGetNCChanges.
@@ -27,13 +27,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1003.006
 - T1021
 - T1059
 - T1558
+capec: []
 ---
 
 # Detecting DCSync Attack in Active Directory

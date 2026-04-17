@@ -1,5 +1,5 @@
 ---
-name: zeeklateral
+name: network-zeek-zeeklateral
 description: 'Detect lateral movement in network traffic using Zeek (formerly Bro) log analysis. Parses conn.log, smb_mapping.log,
 action: zeeklateral
   smb_files.log, dce_rpc.log, kerberos.log, and ntlm.log to identify SMB file transfers, NTLM account spray activity, remote
@@ -23,7 +23,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1021.002
@@ -31,6 +30,7 @@ mitre_attack:
 - T1550.002
 - T1550.003
 - T1558
+capec: []
 ---
 
 # Detecting Lateral Movement with Zeek

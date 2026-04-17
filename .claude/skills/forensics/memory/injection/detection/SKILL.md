@@ -1,5 +1,5 @@
 ---
-name: detection
+name: memory-injection-detection
 description: 'Detects and analyzes process injection techniques used by malware including classic DLL injection, process hollowing,
 action: detection
   APC injection, thread hijacking, and reflective loading. Uses memory forensics, API monitoring, and behavioral analysis
@@ -29,13 +29,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1027
 - T1055
 - T1059
 - T1218
+capec: []
 ---
 
 # Detecting Process Injection Techniques

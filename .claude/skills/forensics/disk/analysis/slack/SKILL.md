@@ -1,5 +1,5 @@
 ---
-name: slack
+name: disk-analysis-slack
 description: Examine file system slack space, MFT entries, USN journal, and alternate data streams to recover hidden data
 action: slack
   and reconstruct file activity on NTFS volumes.
@@ -21,7 +21,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Analyzing Slack Space and File System Artifacts

@@ -1,5 +1,5 @@
 ---
-name: gdpr
+name: privacy-gdpr
 description: The General Data Protection Regulation (EU) 2016/679 (GDPR) is the EU's comprehensive data protection law governing
 action: gdpr
   the collection, processing, storage, and transfer of personal data. This skill cover
@@ -31,7 +31,7 @@ atlas_techniques:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing GDPR Data Protection Controls

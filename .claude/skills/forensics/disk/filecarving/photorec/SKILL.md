@@ -1,5 +1,5 @@
 ---
-name: photorec
+name: disk-filecarving-photorec
 description: Recover deleted files from disk images and storage media using PhotoRec's file signature-based carving engine
 action: photorec
   regardless of file system damage.
@@ -28,7 +28,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Recovering Deleted Files with PhotoRec

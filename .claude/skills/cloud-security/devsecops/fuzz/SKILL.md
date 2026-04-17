@@ -1,5 +1,5 @@
 ---
-name: fuzz
+name: devsecops-fuzz
 description: Integrate AFL++ coverage-guided fuzz testing into CI/CD pipelines to discover memory corruption, input handling,
 action: fuzz
   and logic vulnerabilities in C/C++ and compiled applications.
@@ -29,9 +29,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
+capec: []
 ---
 
 # Implementing Fuzz Testing in CI/CD with AFL++

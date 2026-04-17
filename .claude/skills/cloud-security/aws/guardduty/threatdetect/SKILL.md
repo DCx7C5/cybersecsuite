@@ -1,5 +1,5 @@
 ---
-name: threatdetect
+name: aws-guardduty-threatdetect
 description: 'This skill teaches security teams how to deploy and operationalize Amazon GuardDuty for continuous threat detection
 action: threatdetect
   across AWS accounts and workloads. It covers enabling protection plans for S3, EKS, EC2 runtime monitoring, and Lambda,
@@ -22,13 +22,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1041
 - T1046
 - T1059
 - T1610
+capec: []
 ---
 
 # Detecting Cloud Threats with GuardDuty

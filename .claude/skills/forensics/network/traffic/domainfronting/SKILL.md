@@ -1,5 +1,5 @@
 ---
-name: domainfronting
+name: network-traffic-domainfronting
 description: Detect domain fronting C2 traffic by analyzing SNI vs HTTP Host header mismatches in proxy logs and TLS certificate
 action: domainfronting
   discrepancies using pyOpenSSL for certificate inspection
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1071
 - T1090.004
+capec: []
 ---
 
 # Hunting for Domain Fronting C2 Traffic

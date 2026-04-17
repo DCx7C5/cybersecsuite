@@ -1,5 +1,5 @@
 ---
-name: athena
+name: log-cloud-athena
 description: 'Uses AWS Athena to query CloudTrail, VPC Flow Logs, S3 access logs, and ALB logs for forensic investigation.
 action: athena
   Covers CREATE TABLE DDL with partition projection, forensic SQL queries for detecting unauthorized access, data exfiltration,
@@ -26,9 +26,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1530
+capec: []
 ---
 
 # Performing Cloud Log Forensics with AWS Athena

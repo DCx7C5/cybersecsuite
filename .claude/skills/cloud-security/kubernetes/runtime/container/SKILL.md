@@ -1,5 +1,5 @@
 ---
-name: container
+name: kubernetes-runtime-container
 description: Container escape is a critical attack technique where an adversary breaks out of container isolation to access
 action: container
   the host system or other containers. Detection involves monitoring for escape indicators
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
 cve:
 - CVE-2022-0185
+capec: []
 ---
 
 # Detecting Container Escape Attempts

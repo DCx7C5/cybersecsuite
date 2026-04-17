@@ -1,5 +1,5 @@
 ---
-name: soc
+name: operations-soc
 description: Build a structured SOC escalation matrix defining severity tiers, response SLAs, escalation paths, and notification
 action: soc
   procedures for security incidents.
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Building SOC Escalation Matrix

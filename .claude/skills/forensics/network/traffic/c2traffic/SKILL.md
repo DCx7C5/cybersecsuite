@@ -1,5 +1,5 @@
 ---
-name: c2traffic
+name: network-traffic-c2traffic
 description: 'Analyzes malware command-and-control (C2) communication protocols to understand beacon patterns, command structures,
 action: c2traffic
   data encoding, and infrastructure. Covers HTTP, HTTPS, DNS, and custom protocol C2 analysis for detection development and
@@ -23,11 +23,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1071
 - T1071.001
+capec: []
 ---
 
 # Analyzing Command-and-Control Communication

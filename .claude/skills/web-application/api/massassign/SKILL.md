@@ -1,5 +1,5 @@
 ---
-name: massassign
+name: api-massassign
 description: 'Tests APIs for mass assignment (auto-binding) vulnerabilities where clients can modify object properties they
 action: massassign
   should not have access to by including additional parameters in API requests. The tester identifies writable endpoints,
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cwe:
 - CWE-915
+capec: []
 ---
 
 # Testing API for Mass Assignment Vulnerability

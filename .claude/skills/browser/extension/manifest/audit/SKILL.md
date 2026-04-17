@@ -19,4 +19,5 @@ mitre:
   - T1176
 cwe:
   - CWE-272
+capec: []
 ---

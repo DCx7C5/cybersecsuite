@@ -1,5 +1,5 @@
 ---
-name: nerc
+name: cloud-nerc
 description: 'This skill covers implementing North American Electric Reliability Corporation Critical Infrastructure Protection
 action: nerc
   (NERC CIP) compliance controls for Bulk Electric System (BES) cyber systems. It addresses asset categorization (CIP-002),
@@ -27,9 +27,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T0855
+capec: []
 ---
 
 # Implementing NERC CIP Compliance Controls

@@ -1,5 +1,5 @@
 ---
-name: ntlmrelay
+name: hunting-ntlmrelay
 description: Detect NTLM relay attacks by analyzing Windows Event 4624 logon type 3 with NTLMSSP authentication, identifying
 action: ntlmrelay
   IP-to-hostname mismatches, Responder traffic signatures, SMB signing status, and suspicious authentication patterns across
@@ -30,12 +30,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021.002
 - T1550.002
 - T1557.001
+capec: []
 ---
 
 # Hunting for NTLM Relay Attacks

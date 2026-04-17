@@ -1,5 +1,5 @@
 ---
-name: secondorder
+name: injection-sqli-secondorder
 description: Detect and exploit second-order SQL injection vulnerabilities where malicious input is stored in a database and
 action: secondorder
   later executed in an unsafe SQL query during a different application operation.
@@ -21,11 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1190
 cwe:
 - CWE-89
+capec: []
 ---
 
 # Performing Second-Order SQL Injection

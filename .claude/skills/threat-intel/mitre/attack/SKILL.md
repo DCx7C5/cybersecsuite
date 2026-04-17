@@ -1,5 +1,5 @@
 ---
-name: attack
+name: mitre-attack
 description: Extract and catalog attack patterns from cyber threat intelligence reports into a structured STIX-based library
 action: attack
   mapped to MITRE ATT&CK for detection engineering and threat-informed defense.
@@ -28,10 +28,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1562.001
+capec: []
 ---
 
 # Building Attack Pattern Library from CTI Reports

@@ -1,5 +1,5 @@
 ---
-name: paw
+name: pam-paw
 description: Design and implement Privileged Access Workstations (PAWs) with device hardening, just-in-time access, and integration
 action: paw
   with CyberArk or BeyondTrust for secure administrative operations.
@@ -20,7 +20,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing Privileged Access Workstation

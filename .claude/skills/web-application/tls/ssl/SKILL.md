@@ -1,5 +1,5 @@
 ---
-name: ssl
+name: tls-ssl
 description: 'Simulates SSL stripping attacks using sslstrip, Bettercap, and mitmproxy in authorized environments to test
 action: ssl
   HSTS enforcement, certificate validation, and HTTPS upgrade mechanisms that protect users from downgrade attacks on encrypted
@@ -22,7 +22,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing SSL Stripping Attack

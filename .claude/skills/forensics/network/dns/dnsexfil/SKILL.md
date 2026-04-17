@@ -1,5 +1,5 @@
 ---
-name: dnsexfil
+name: network-dns-dnsexfil
 description: Detect data exfiltration through DNS tunneling by analyzing query entropy, subdomain length, query volume, TXT
 action: dnsexfil
   record abuse, and response payload sizes using passive DNS monitoring.
@@ -23,12 +23,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1041
 - T1059
 - T1071.004
 - T1595.002
+capec: []
 ---
 
 # Detecting DNS Exfiltration with DNS Query Analysis

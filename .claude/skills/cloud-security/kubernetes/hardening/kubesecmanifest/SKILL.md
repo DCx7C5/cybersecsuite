@@ -1,5 +1,5 @@
 ---
-name: kubesecmanifest
+name: kubernetes-hardening-kubesecmanifest
 description: Perform security risk analysis on Kubernetes resource manifests using Kubesec to identify misconfigurations,
 action: kubesecmanifest
   privilege escalation risks, and deviations from security best practices.
@@ -22,12 +22,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1610
 cwe:
 - CWE-16
+capec: []
 ---
 
 # Scanning Kubernetes Manifests with Kubesec

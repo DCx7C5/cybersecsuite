@@ -1,5 +1,5 @@
 ---
-name: sqli
+name: injection-sqli
 description: Analyze WAF (ModSecurity/AWS WAF/Cloudflare) logs to detect SQL injection attack campaigns. Parses ModSecurity
 action: sqli
   audit logs and JSON WAF event logs to identify SQLi patterns (UNION SELECT, OR 1=1, SLEEP(), BENCHMARK()), tracks attack
@@ -19,12 +19,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1190
 cwe:
 - CWE-89
+capec: []
 ---
 
 # Detecting SQL Injection via WAF Logs

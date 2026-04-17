@@ -18,6 +18,8 @@ tags:
 - scope-session
 mitre_attack:
 - T1059
+nist_csf: []
+capec: []
 ---
 
 # Session Layer Skill – Real-Time Forensic Operations

@@ -1,5 +1,5 @@
 ---
-name: kismet
+name: wireless-kismet
 description: Conduct wireless network security assessments using Kismet to detect rogue access points, hidden SSIDs, weak
 action: kismet
   encryption, and unauthorized clients through passive RF monitoring.
@@ -23,11 +23,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1557
 - T1562.001
+capec: []
 ---
 
 # Performing Wireless Security Assessment with Kismet

@@ -1,5 +1,5 @@
 ---
-name: dockerdaemon
+name: containers-docker-dockerdaemon
 description: Harden the Docker daemon by configuring daemon.json with user namespace remapping, TLS authentication, rootless
 action: dockerdaemon
   mode, and CIS benchmark controls.
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1610
+capec: []
 ---
 
 # Hardening Docker Daemon Configuration

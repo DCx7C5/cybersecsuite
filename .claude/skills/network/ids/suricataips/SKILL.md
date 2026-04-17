@@ -1,5 +1,5 @@
 ---
-name: suricataips
+name: ids-suricataips
 description: Deploy and configure Suricata as a network intrusion prevention system with custom rules, Emerging Threats rulesets,
 action: suricataips
   and inline traffic inspection for real-time threat blocking.
@@ -23,10 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1562.001
+capec: []
 ---
 
 # Implementing Network Intrusion Prevention with Suricata

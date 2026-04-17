@@ -1,5 +1,5 @@
 ---
-name: shadow
+name: api-shadow
 description: Discover and inventory shadow API endpoints that operate outside documented specifications using traffic analysis,
 action: shadow
   code scanning, and API discovery platforms.
@@ -22,10 +22,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1595
+capec: []
 ---
 
 # Detecting Shadow API Endpoints

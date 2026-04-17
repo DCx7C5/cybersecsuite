@@ -1,5 +1,5 @@
 ---
-name: nopac
+name: ad-nopac
 description: Exploit the noPac vulnerability chain (CVE-2021-42278 sAMAccountName spoofing and CVE-2021-42287 KDC PAC confusion)
 action: nopac
   to escalate from standard domain user to Domain Admin in Active Directory environments.
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1068
 cwe:
@@ -34,6 +33,7 @@ cwe:
 cve:
 - CVE-2021-42278
 - CVE-2021-42287
+capec: []
 ---
 
 # Exploiting noPac (CVE-2021-42278 / CVE-2021-42287)

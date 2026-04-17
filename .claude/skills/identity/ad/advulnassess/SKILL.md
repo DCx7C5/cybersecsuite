@@ -1,5 +1,5 @@
 ---
-name: advulnassess
+name: ad-advulnassess
 description: Assess Active Directory security posture using PingCastle, BloodHound, and Purple Knight to identify misconfigurations,
 action: advulnassess
   privilege escalation paths, and attack vectors.
@@ -28,7 +28,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1068
@@ -37,6 +36,7 @@ mitre_attack:
 - T1558
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Performing Active Directory Vulnerability Assessment

@@ -1,5 +1,5 @@
 ---
-name: defanging
+name: ioc-defanging
 description: Build an automated pipeline to defang indicators of compromise (URLs, IPs, domains, emails) for safe sharing
 action: defanging
   and distribute them in STIX format through TAXII feeds and threat intelligence platforms.
@@ -22,9 +22,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1562.001
+capec: []
 ---
 
 # Building IOC Defanging and Sharing Pipeline

@@ -1,5 +1,5 @@
 ---
-name: mispshare
+name: platforms-mispshare
 description: Use PyMISP to create, enrich, and share threat intelligence events on a MISP platform, including IOC management,
 action: mispshare
   feed integration, STIX export, and community sharing workflows.
@@ -22,7 +22,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing Threat Intelligence Sharing with MISP

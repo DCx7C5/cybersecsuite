@@ -1,5 +1,5 @@
 ---
-name: ztna
+name: zerotrust-ztna
 description: 'Implementing Zero Trust Network Access (ZTNA) in cloud environments by configuring identity-aware proxies, micro-segmentation,
 action: ztna
   continuous verification with conditional access policies, and replacing traditional VPN-based access with BeyondCorp-style
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
+capec: []
 ---
 
 # Implementing Zero Trust Network Access

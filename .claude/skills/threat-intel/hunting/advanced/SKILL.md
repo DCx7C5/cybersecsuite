@@ -1,5 +1,5 @@
 ---
-name: advanced
+name: hunting-advanced
 description: 'Proactively hunts for Advanced Persistent Threat (APT) activity within enterprise environments using hypothesis-driven
 action: advanced
   searches across endpoint telemetry, network logs, and memory artifacts. Use when conducting scheduled threat hunting cycles,
@@ -33,9 +33,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Hunting Advanced Persistent Threats

@@ -1,5 +1,5 @@
 ---
-name: iocauto
+name: ioc-iocauto
 description: 'Automates Indicator of Compromise (IOC) enrichment by orchestrating lookups across VirusTotal, AbuseIPDB, Shodan,
 action: iocauto
   MISP, and other intelligence sources to provide contextual scoring and disposition recommendations. Use when SOC analysts
@@ -25,7 +25,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing IOC Enrichment Automation

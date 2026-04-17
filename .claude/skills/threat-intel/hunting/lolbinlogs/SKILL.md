@@ -1,5 +1,5 @@
 ---
-name: lolbinlogs
+name: hunting-lolbinlogs
 description: Hunt for adversary abuse of Living Off the Land Binaries (LOLBins) by analyzing endpoint process creation logs
 action: lolbinlogs
   for suspicious execution patterns of legitimate Windows system binaries used for malicious purposes.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1027
 - T1059
 - T1218
+capec: []
 ---
 
 # Hunting for LOLBins Execution in Endpoint Logs

@@ -1,5 +1,5 @@
 ---
-name: procinjection
+name: memory-injection-procinjection
 description: Detect process injection techniques (T1055) including CreateRemoteThread, process hollowing, and DLL injection
 action: procinjection
   via Sysmon Event IDs 8 and 10 and EDR process telemetry
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1055
 - T1055.001
 - T1059
+capec: []
 ---
 
 # Hunting for Process Injection Techniques

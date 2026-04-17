@@ -1,5 +1,5 @@
 ---
-name: impacket
+name: kerberos-impacket
 description: Perform Kerberoasting attacks using Impacket's GetUserSPNs to extract and crack Kerberos TGS tickets for Active
 action: impacket
   Directory service accounts.
@@ -26,13 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1110
 - T1550.002
 - T1558
 - T1558.003
+capec: []
 ---
 
 # Exploiting Kerberoasting with Impacket

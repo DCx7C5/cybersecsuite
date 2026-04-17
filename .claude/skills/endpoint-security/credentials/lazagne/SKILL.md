@@ -1,5 +1,5 @@
 ---
-name: lazagne
+name: credentials-lazagne
 description: Extract stored credentials from compromised endpoints using the LaZagne post-exploitation tool to recover passwords
 action: lazagne
   from browsers, databases, system vaults, and applications during authorized red team operations.
@@ -26,10 +26,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1021
+capec: []
 ---
 
 # Performing Credential Access with LaZagne

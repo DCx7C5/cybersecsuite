@@ -1,5 +1,5 @@
 ---
-name: actorinfra
+name: analysis-actorinfra
 description: Threat actor infrastructure tracking involves monitoring and mapping adversary-controlled assets including command-and-control
 action: actorinfra
   (C2) servers, phishing domains, exploit kit hosts, bulletproof hosting, a
@@ -23,12 +23,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
 - T1071
 - T1566
 - T1596.002
+capec: []
 ---
 
 # Tracking Threat Actor Infrastructure

@@ -1,5 +1,5 @@
 ---
-name: postman
+name: api-postman
 description: 'Uses Postman to perform structured API security testing by building collections that test for OWASP API Security
 action: postman
   Top 10 vulnerabilities including authentication bypass, authorization flaws, injection, and data exposure. The tester creates
@@ -24,7 +24,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Performing API Security Testing with Postman

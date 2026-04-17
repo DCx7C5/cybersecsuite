@@ -1,5 +1,5 @@
 ---
-name: certificates
+name: transparency-certificates
 description: Monitor Certificate Transparency logs using crt.sh and Certstream to detect phishing domains, lookalike certificates,
 action: certificates
   and unauthorized certificate issuance targeting your organization.
@@ -24,11 +24,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1566
 - T1596.002
+capec: []
 ---
 
 # Analyzing Certificate Transparency for Phishing

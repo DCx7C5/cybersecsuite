@@ -1,5 +1,5 @@
 ---
-name: injection
+name: api-injection
 description: 'Tests APIs for injection vulnerabilities including SQL injection, NoSQL injection, OS command injection, LDAP
 action: injection
   injection, and Server-Side Request Forgery (SSRF) through API parameters, headers, and request bodies. The tester crafts
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1087.002
 - T1190
@@ -34,6 +33,7 @@ cwe:
 - CWE-78
 - CWE-89
 - CWE-918
+capec: []
 ---
 
 # Exploiting API Injection Vulnerabilities

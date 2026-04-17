@@ -1,5 +1,5 @@
 ---
-name: hubcompliance
+name: aws-hubcompliance
 description: 'Implementing AWS Security Hub to aggregate security findings across AWS accounts, enable compliance standards
 action: hubcompliance
   like CIS AWS Foundations and PCI DSS, configure automated remediation with EventBridge and Lambda, and create custom security
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1562.004
+capec: []
 ---
 
 # Implementing AWS Security Hub Compliance

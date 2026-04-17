@@ -1,5 +1,5 @@
 ---
-name: supply
+name: devsecops-supply
 description: 'Scans GitHub Actions workflows and CI/CD pipeline configurations for supply chain attack vectors including unpinned
 action: supply
   actions, script injection via expressions, dependency confusion, and secrets exposure. Uses PyGithub and YAML parsing for
@@ -28,9 +28,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
+capec: []
 ---
 
 # Detecting Supply Chain Attacks in CI/CD

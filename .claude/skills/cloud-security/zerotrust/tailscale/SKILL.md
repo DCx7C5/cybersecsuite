@@ -1,5 +1,5 @@
 ---
-name: tailscale
+name: zerotrust-tailscale
 description: Deploy and configure Tailscale as a WireGuard-based zero trust mesh VPN with identity-aware access controls,
 action: tailscale
   ACLs, and exit nodes for secure peer-to-peer connectivity.
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 cve:
 - CVE-2021-26855
+capec: []
 ---
 
 # Deploying Tailscale for Zero Trust VPN

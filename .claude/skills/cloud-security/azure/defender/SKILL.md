@@ -1,5 +1,5 @@
 ---
-name: defender
+name: azure-defender
 description: 'Implementing Microsoft Defender for Cloud to enable cloud security posture management, workload protection across
 action: defender
   VMs, containers, databases, and storage, configure security recommendations, and set up adaptive security controls with
@@ -31,9 +31,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1078.004
+capec: []
 ---
 
 # Implementing Azure Defender for Cloud

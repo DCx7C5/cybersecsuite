@@ -1,5 +1,5 @@
 ---
-name: vol3core
+name: memory-analysis-vol3core
 description: Analyze volatile memory dumps using Volatility 3 to extract running processes, network connections, loaded modules,
 action: vol3core
   and evidence of malicious activity.
@@ -20,10 +20,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
+capec: []
 ---
 
 # Performing Memory Forensics with Volatility 3

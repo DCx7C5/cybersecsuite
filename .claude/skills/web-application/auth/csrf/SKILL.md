@@ -1,5 +1,5 @@
 ---
-name: csrf
+name: auth-csrf
 description: Testing web applications for Cross-Site Request Forgery vulnerabilities by crafting forged requests that exploit
 action: csrf
   authenticated user sessions during authorized security assessments.
@@ -20,11 +20,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 cwe:
 - CWE-352
+capec: []
 ---
 
 # Performing CSRF Attack Simulation

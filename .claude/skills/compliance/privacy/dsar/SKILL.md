@@ -1,5 +1,5 @@
 ---
-name: dsar
+name: privacy-dsar
 description: 'Automates GDPR Data Subject Access Request (DSAR) workflows including identity verification, PII discovery across
 action: dsar
   databases and files using regex and NER, data mapping, response templating per Article 15 requirements, deadline tracking,
@@ -24,9 +24,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
+capec: []
 ---
 
 # Implementing GDPR Data Subject Access Request (DSAR) Workflow

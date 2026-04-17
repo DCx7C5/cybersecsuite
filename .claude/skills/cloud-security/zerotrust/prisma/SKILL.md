@@ -1,5 +1,5 @@
 ---
-name: prisma
+name: zerotrust-prisma
 description: 'Deploying Palo Alto Networks Prisma Access for SASE-based zero trust network access using GlobalProtect agents,
 action: prisma
   ZTNA Connectors, security policy enforcement, and integration with Strata Cloud Manager for unified security management.
@@ -27,7 +27,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Deploying Palo Alto Prisma Access Zero Trust

@@ -1,5 +1,5 @@
 ---
-name: splunk
+name: detection-splunk
 description: Build effective detection rules using Splunk Search Processing Language (SPL) correlation searches to identify
 action: splunk
   security threats in SOC environments.
@@ -28,10 +28,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
+capec: []
 ---
 
 # Building Detection Rules with Splunk SPL

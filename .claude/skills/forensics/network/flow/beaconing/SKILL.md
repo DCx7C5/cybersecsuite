@@ -1,5 +1,5 @@
 ---
-name: beaconing
+name: network-flow-beaconing
 description: Identify command-and-control beaconing patterns in network traffic by applying statistical frequency analysis,
 action: beaconing
   jitter calculation, and coefficient of variation scoring to detect periodic callbacks from compromised endpoints.
@@ -28,12 +28,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1040
 - T1059
 - T1071
 - T1071.001
+capec: []
 ---
 
 # Hunting for Beaconing with Frequency Analysis

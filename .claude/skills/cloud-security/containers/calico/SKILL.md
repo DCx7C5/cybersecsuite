@@ -1,5 +1,5 @@
 ---
-name: calico
+name: containers-calico
 description: Enforce Kubernetes network segmentation using Calico CNI network policies and global network policies to control
 action: calico
   pod-to-pod traffic, restrict egress, and implement zero-trust microsegmentation.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Implementing Container Network Policies with Calico

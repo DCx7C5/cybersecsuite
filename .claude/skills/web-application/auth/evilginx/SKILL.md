@@ -1,5 +1,5 @@
 ---
-name: evilginx
+name: auth-evilginx
 description: Perform authorized initial access using EvilGinx3 adversary-in-the-middle phishing framework to capture session
 action: evilginx
   tokens and bypass multi-factor authentication during red team engagements.
@@ -26,12 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1557
 - T1566
 - T1583.001
+capec: []
 ---
 
 # Performing Initial Access with EvilGinx3

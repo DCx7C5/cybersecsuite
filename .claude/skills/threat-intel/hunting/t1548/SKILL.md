@@ -1,5 +1,5 @@
 ---
-name: t1548
+name: hunting-t1548
 description: Detect abuse of elevation control mechanisms including UAC bypass, sudo exploitation, and setuid/setgid manipulation
 action: t1548
   by monitoring registry modifications, process elevation flags, and unusual parent-child process relationships.
@@ -26,7 +26,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1068
@@ -35,6 +34,7 @@ mitre_attack:
 - T1548.003
 cwe:
 - CWE-269
+capec: []
 ---
 
 # Detecting T1548 Abuse Elevation Control Mechanism

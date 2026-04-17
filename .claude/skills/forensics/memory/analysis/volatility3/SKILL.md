@@ -1,5 +1,5 @@
 ---
-name: memory-recon
+name: memory-analysis-volatility3
 description: Linux volatile memory forensics. Process injection detection (RWX regions, hollowing, reflective loading), memory-resident malware, DKOM rootkit indicators, heap/stack anomalies, kernel memory integrity, and credential extraction patterns.
 action: volatility3
 model: sonnet
@@ -25,6 +25,8 @@ mitre_attack:
 - T1027
 - T1059
 - T1595
+nist_csf: []
+capec: []
 ---
 
 # Memory Recon

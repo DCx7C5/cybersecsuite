@@ -1,5 +1,5 @@
 ---
-name: inventory
+name: api-inventory
 description: 'Performs API inventory and discovery to identify all API endpoints in an organization''s environment including
 action: inventory
   documented, undocumented, shadow, zombie, and deprecated APIs. The tester uses passive traffic analysis, active scanning,
@@ -25,10 +25,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1082
 - T1595
+capec: []
 ---
 
 # Performing API Inventory and Discovery

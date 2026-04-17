@@ -1,5 +1,5 @@
 ---
-name: schema
+name: api-schema
 description: Implement API schema validation using OpenAPI specifications and JSON Schema to enforce input/output contracts
 action: schema
   and prevent injection, data exposure, and mass assignment attacks.
@@ -22,7 +22,6 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1189
 - T1190
@@ -32,6 +31,7 @@ cwe:
 - CWE-79
 - CWE-89
 - CWE-915
+capec: []
 ---
 
 # Implementing API Schema Validation Security

@@ -16,4 +16,5 @@ nist_csf:
   - PR.DS-02
 mitre:
   - T1557.001
+capec: []
 ---

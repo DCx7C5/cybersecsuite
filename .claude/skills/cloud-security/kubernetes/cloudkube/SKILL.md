@@ -1,5 +1,5 @@
 ---
-name: cloudkube
+name: kubernetes-cloudkube
 description: 'This skill covers hardening managed Kubernetes clusters on EKS, AKS, and GKE by implementing Pod Security Standards,
 action: cloudkube
   network policies, workload identity, RBAC scoping, image admission controls, and runtime security monitoring. It addresses
@@ -23,9 +23,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1610
+capec: []
 ---
 
 # Securing Kubernetes on Cloud

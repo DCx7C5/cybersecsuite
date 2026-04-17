@@ -1,5 +1,5 @@
 ---
-name: scheduled
+name: hunting-scheduled
 description: Hunt for adversary persistence via Windows Scheduled Tasks by analyzing task creation events, suspicious task
 action: scheduled
   actions, and unusual scheduling patterns.
@@ -26,11 +26,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1070
 - T1547
+capec: []
 ---
 
 # Hunting For Scheduled Task Persistence

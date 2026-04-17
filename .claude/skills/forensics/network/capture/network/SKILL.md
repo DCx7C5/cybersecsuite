@@ -1,5 +1,5 @@
 ---
-name: network
+name: network-capture-network
 description: Perform forensic analysis of network packet captures (PCAP/PCAPNG) using Wireshark, tshark, and tcpdump to reconstruct
 action: network
   network communications, extract transferred files, identify malicious traffic, and establish evidence of data exfiltration
@@ -25,12 +25,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1021
 - T1040
 - T1041
 - T1071
+capec: []
 ---
 
 # Performing Network Packet Capture Analysis

@@ -1,5 +1,5 @@
 ---
-name: foresttrust
+name: ad-foresttrust
 description: Enumerate and audit Active Directory forest trust relationships using impacket for SID filtering analysis, trust
 action: foresttrust
   key extraction, cross-forest SID history abuse detection, and inter-realm Kerberos ticket assessment.
@@ -20,9 +20,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1558
+capec: []
 ---
 
 # Performing Active Directory Forest Trust Attack

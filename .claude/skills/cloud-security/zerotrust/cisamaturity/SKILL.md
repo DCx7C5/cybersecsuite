@@ -1,5 +1,5 @@
 ---
-name: cisamaturity
+name: zerotrust-cisamaturity
 description: Implement the CISA Zero Trust Maturity Model v2.0 across the five pillars of identity, devices, networks, applications,
 action: cisamaturity
   and data to achieve progressive organizational zero trust maturity.
@@ -31,7 +31,7 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
+capec: []
 ---
 
 # Implementing CISA Zero Trust Maturity Model

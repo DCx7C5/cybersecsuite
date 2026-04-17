@@ -19,4 +19,5 @@ mitre:
   - T1548
 cwe:
   - CWE-732
+capec: []
 ---

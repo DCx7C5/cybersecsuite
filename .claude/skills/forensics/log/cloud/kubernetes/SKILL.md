@@ -1,5 +1,5 @@
 ---
-name: kubernetes
+name: log-cloud-kubernetes
 description: 'Parses Kubernetes API server audit logs (JSON lines) to detect exec-into-pod, secret access, RBAC modifications,
 action: kubernetes
   privileged pod creation, and anonymous API access. Builds threat detection rules from audit event patterns. Use when investigating
@@ -21,10 +21,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1610
+capec: []
 ---
 
 # Analyzing Kubernetes Audit Logs

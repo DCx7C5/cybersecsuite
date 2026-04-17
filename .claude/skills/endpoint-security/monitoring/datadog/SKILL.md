@@ -1,5 +1,5 @@
 ---
-name: datadog
+name: monitoring-datadog
 description: 'Implements security monitoring using Datadog Cloud SIEM, Cloud Security Management (CSM), and Workload Protection
 action: datadog
   to detect threats, enforce compliance, and respond to security events across cloud and hybrid infrastructure. Covers Agent
@@ -38,12 +38,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1003
 - T1059
 - T1070
 - T1078.004
+capec: []
 ---
 
 # Implementing Security Monitoring with Datadog

@@ -1,5 +1,5 @@
 ---
-name: aircrack
+name: wireless-aircrack
 description: 'Captures WPA/WPA2 handshakes and performs offline password cracking using aircrack-ng, hashcat, and dictionary
 action: aircrack
   attacks during authorized wireless security assessments to evaluate passphrase strength and wireless network security posture.
@@ -21,9 +21,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1557
+capec: []
 ---
 
 # Performing WiFi Password Cracking with Aircrack-ng

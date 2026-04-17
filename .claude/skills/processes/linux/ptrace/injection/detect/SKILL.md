@@ -20,4 +20,5 @@ mitre:
   - T1055
 cwe:
   - CWE-732
+capec: []
 ---

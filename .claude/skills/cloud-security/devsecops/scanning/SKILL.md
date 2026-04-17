@@ -1,5 +1,5 @@
 ---
-name: scanning
+name: devsecops-scanning
 description: 'Integrates Static Application Security Testing (SAST), Dynamic Application Security Testing (DAST), and Software
 action: scanning
   Composition Analysis (SCA) into CI/CD pipelines using open-source tools. Covers Semgrep for SAST, Trivy for SCA and container
@@ -28,9 +28,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1046
+capec: []
 ---
 
 # Implementing DevSecOps Security Scanning

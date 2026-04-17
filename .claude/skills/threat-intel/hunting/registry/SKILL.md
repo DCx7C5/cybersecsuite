@@ -1,5 +1,5 @@
 ---
-name: registry
+name: hunting-registry
 description: Detect MITRE ATT&CK T1547.001 registry Run key persistence by analyzing Sysmon Event ID 13 logs and registry
 action: registry
   queries to identify malicious auto-start entries.
@@ -27,11 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-source: Anthropic-Cybersecurity-Skills
 mitre_attack:
 - T1059
 - T1547
 - T1547.001
+capec: []
 ---
 
 # Hunting for Registry Run Key Persistence
