@@ -82,6 +82,13 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="tab" onclick="showTab('cases')">&#x1f4c2; Cases</div>
     <div class="tab" onclick="showTab('tasks')">&#x23f1; Tasks</div>
     <div class="tab" onclick="showTab('pocs')">&#x1f4a3; PoCs</div>
+    <div class="tab" onclick="showTab('findings')">&#x1f6a8; Findings</div>
+    <div class="tab" onclick="showTab('iocs')">&#x1f4cc; IOCs</div>
+    <div class="tab" onclick="showTab('yara')">&#x1f9ec; YARA</div>
+    <div class="tab" onclick="showTab('network')">&#x1f5a7; Network</div>
+    <div class="tab" onclick="showTab('intel')">&#x1f9e0; Intel</div>
+    <div class="tab" onclick="showTab('audit')">&#x1f4cb; Audit</div>
+    <div class="tab" onclick="showTab('compliance')">&#x2705; Compliance</div>
     <div class="tab" onclick="showTab('explorer')">&#x1f50e; Explorer</div>
   </div>
 
@@ -178,6 +185,95 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
    <div id="tab-pocs" class="card" style="display:none">
      <h3 class="text-lg font-semibold mb-3">&#x1f4a3; Proof-of-Concept Exploits</h3>
      <div id="pocs-content" class="loading">Loading PoC data...</div>
+   </div>
+
+   <!-- Findings tab -->
+   <div id="tab-findings" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f6a8; Security Findings</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="findings-total">—</div><div class="stat-label">Total</div></div>
+       <div class="stat-card"><div class="stat-value" id="findings-critical">—</div><div class="stat-label">Critical</div></div>
+       <div class="stat-card"><div class="stat-value" id="findings-high">—</div><div class="stat-label">High</div></div>
+       <div class="stat-card"><div class="stat-value" id="findings-24h">—</div><div class="stat-label">Last 24h</div></div>
+     </div>
+     <div id="findings-table"></div>
+   </div>
+
+   <!-- IOCs tab -->
+   <div id="tab-iocs" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f4cc; Indicators of Compromise</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="iocs-total">—</div><div class="stat-label">Total IOCs</div></div>
+       <div class="stat-card"><div class="stat-value" id="iocs-active">—</div><div class="stat-label">Active</div></div>
+       <div class="stat-card"><div class="stat-value" id="iocs-high-conf">—</div><div class="stat-label">High Conf</div></div>
+       <div class="stat-card"><div class="stat-value" id="iocs-types">—</div><div class="stat-label">Types</div></div>
+     </div>
+     <div id="iocs-table"></div>
+   </div>
+
+   <!-- YARA tab -->
+   <div id="tab-yara" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f9ec; YARA Rules</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="yara-total">—</div><div class="stat-label">Total Rules</div></div>
+       <div class="stat-card"><div class="stat-value" id="yara-active">—</div><div class="stat-label">Active</div></div>
+       <div class="stat-card"><div class="stat-value" id="yara-detections">—</div><div class="stat-label">Detections</div></div>
+       <div class="stat-card"><div class="stat-value" id="yara-sources">—</div><div class="stat-label">Sources</div></div>
+     </div>
+     <div id="yara-table"></div>
+   </div>
+
+   <!-- Network tab -->
+   <div id="tab-network" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f5a7; Network Assets</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="net-hosts">—</div><div class="stat-label">Hosts</div></div>
+       <div class="stat-card"><div class="stat-value" id="net-compromised">—</div><div class="stat-label">Compromised</div></div>
+       <div class="stat-card"><div class="stat-value" id="net-ips">—</div><div class="stat-label">IP Addresses</div></div>
+       <div class="stat-card"><div class="stat-value" id="net-countries">—</div><div class="stat-label">Countries</div></div>
+     </div>
+     <h4 class="text-sm font-semibold text-gray-400 mb-2 mt-4">Recent Hosts</h4>
+     <div id="network-hosts-table"></div>
+     <h4 class="text-sm font-semibold text-gray-400 mb-2 mt-4">Recent IPs</h4>
+     <div id="network-ips-table"></div>
+   </div>
+
+   <!-- Intel tab -->
+   <div id="tab-intel" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f9e0; Threat Intelligence</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="intel-techniques">—</div><div class="stat-label">MITRE Techniques</div></div>
+       <div class="stat-card"><div class="stat-value" id="intel-cve">—</div><div class="stat-label">CVEs</div></div>
+       <div class="stat-card"><div class="stat-value" id="intel-cwe">—</div><div class="stat-label">CWEs</div></div>
+       <div class="stat-card"><div class="stat-value" id="intel-capec">—</div><div class="stat-label">CAPECs</div></div>
+     </div>
+     <h4 class="text-sm font-semibold text-gray-400 mb-2 mt-4">Recent MITRE Techniques</h4>
+     <div id="intel-mitre-table"></div>
+     <h4 class="text-sm font-semibold text-gray-400 mb-2 mt-4">Recent CVEs</h4>
+     <div id="intel-cve-table"></div>
+   </div>
+
+   <!-- Audit tab -->
+   <div id="tab-audit" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f4cb; Audit Log</h3>
+     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="audit-total">—</div><div class="stat-label">Total Events</div></div>
+       <div class="stat-card"><div class="stat-value" id="audit-last-hour">—</div><div class="stat-label">Last Hour</div></div>
+       <div class="stat-card"><div class="stat-value" id="audit-agents">—</div><div class="stat-label">Active Agents</div></div>
+     </div>
+     <div id="audit-table"></div>
+   </div>
+
+   <!-- Compliance tab -->
+   <div id="tab-compliance" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x2705; Compliance Rules</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+       <div class="stat-card"><div class="stat-value" id="comp-total">—</div><div class="stat-label">Total Rules</div></div>
+       <div class="stat-card"><div class="stat-value" id="comp-critical">—</div><div class="stat-label">Critical</div></div>
+       <div class="stat-card"><div class="stat-value" id="comp-frameworks">—</div><div class="stat-label">Frameworks</div></div>
+       <div class="stat-card"><div class="stat-value" id="comp-high">—</div><div class="stat-label">High</div></div>
+     </div>
+     <div id="compliance-table"></div>
    </div>
 
    <!-- Explorer tab -->
@@ -320,7 +416,8 @@ function renderTable(containerId, schema, rows, opts = {}) {
 
 async function refresh() {
   try {
-    const [ov, pv, uv, hv, cv, av, iv, dv, agv, rtv, fv, pmv, casesv, tasksv, pocv] = await Promise.all([
+    const [ov, pv, uv, hv, cv, av, iv, dv, agv, rtv, fv, pmv, casesv, tasksv, pocv,
+           findingsv, iocsv, yarav, netv, intv, auditv, compv] = await Promise.all([
       fetch('/dashboard/api/overview').then(r => r.json()),
       fetch('/dashboard/api/providers').then(r => r.json()),
       fetch('/dashboard/api/usage').then(r => r.json()),
@@ -336,6 +433,13 @@ async function refresh() {
       fetch('/dashboard/api/cases').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/tasks').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/pocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/findings').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/iocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/yara').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/network').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/intelligence').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/audit').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/dashboard/api/compliance').then(r => r.json()).catch(() => ({error:'unavailable'})),
     ]);
 
     // Stats
@@ -723,6 +827,159 @@ async function refresh() {
         {key: 'tags', label: 'Tags', type: 'json'},
         {key: 'created_at', label: 'Created', type: 'datetime'},
       ], pocv.recent || []);
+    }
+
+    // Findings tab
+    if (!findingsv.error) {
+      $('findings-total').textContent = findingsv.total || 0;
+      $('findings-critical').textContent = (findingsv.by_severity || {}).critical || 0;
+      $('findings-high').textContent = (findingsv.by_severity || {}).high || 0;
+      $('findings-24h').textContent = (findingsv.trend || {}).last_24h || 0;
+      const sevBadge = s => {
+        const m = {critical:'badge-err', high:'badge-err', medium:'badge-standard', low:'badge-budget', info:'badge-ok'};
+        return '<span class="badge ' + (m[s] || '') + '">' + (s || '?').toUpperCase() + '</span>';
+      };
+      const stBadge = s => '<span class="badge ' + (s === 'open' ? 'badge-err' : s === 'resolved' ? 'badge-ok' : 'badge-standard') + '">' + (s || '?').toUpperCase() + '</span>';
+      renderTable('findings-table', [
+        {key: 'title', label: 'Title', type: 'string'},
+        {key: 'severity', label: 'Severity', type: 'string'},
+        {key: 'status', label: 'Status', type: 'string'},
+        {key: 'confidence', label: 'Confidence', type: 'string'},
+        {key: 'location', label: 'Location', type: 'string'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+      ], (findingsv.recent || []).map(f => ({
+        ...f,
+        severity: sevBadge(f.severity),
+        status: stBadge(f.status),
+      })));
+    }
+
+    // IOCs tab
+    if (!iocsv.error) {
+      $('iocs-total').textContent = iocsv.total || 0;
+      $('iocs-active').textContent = (iocsv.by_status || {}).active || 0;
+      $('iocs-high-conf').textContent = (iocsv.by_confidence || {}).high || 0;
+      $('iocs-types').textContent = Object.keys(iocsv.by_type || {}).length;
+      const confBadge = c => '<span class="badge ' + (c === 'high' ? 'badge-err' : c === 'medium' ? 'badge-standard' : 'badge-budget') + '">' + (c || '?').toUpperCase() + '</span>';
+      renderTable('iocs-table', [
+        {key: 'ioc_type', label: 'Type', type: 'string'},
+        {key: 'value', label: 'Value', type: 'string'},
+        {key: 'confidence', label: 'Confidence', type: 'string'},
+        {key: 'status', label: 'Status', type: 'string'},
+        {key: 'sightings', label: 'Sightings', type: 'number'},
+        {key: 'source', label: 'Source', type: 'string'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+      ], (iocsv.recent || []).map(i => ({
+        ...i,
+        confidence: confBadge(i.confidence),
+        status: '<span class="badge ' + (i.status === 'active' ? 'badge-err' : 'badge-ok') + '">' + (i.status || '?').toUpperCase() + '</span>',
+      })));
+    }
+
+    // YARA tab
+    if (!yarav.error) {
+      const yTotal = yarav.total || 0;
+      const yActive = (yarav.by_status || {}).active || 0;
+      const yDet = (yarav.recent || []).reduce((s, r) => s + (r.detection_count || 0), 0);
+      const ySrc = Object.keys(yarav.by_source || {}).length;
+      $('yara-total').textContent = yTotal;
+      $('yara-active').textContent = yActive;
+      $('yara-detections').textContent = yDet;
+      $('yara-sources').textContent = ySrc;
+      renderTable('yara-table', [
+        {key: 'name', label: 'Rule Name', type: 'string'},
+        {key: 'status', label: 'Status', type: 'string'},
+        {key: 'severity', label: 'Severity', type: 'string'},
+        {key: 'source', label: 'Source', type: 'string'},
+        {key: 'detection_count', label: 'Detections', type: 'number'},
+        {key: 'false_positive_rate', label: 'FP Rate', type: 'number'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+      ], (yarav.recent || []).map(y => ({
+        ...y,
+        status: '<span class="badge ' + (y.status === 'active' ? 'badge-ok' : 'badge-standard') + '">' + (y.status || '?').toUpperCase() + '</span>',
+      })));
+    }
+
+    // Network tab
+    if (!netv.error) {
+      $('net-hosts').textContent = (netv.hosts || {}).total || 0;
+      $('net-compromised').textContent = (netv.hosts || {}).compromised || 0;
+      $('net-ips').textContent = (netv.ip_addresses || {}).total || 0;
+      $('net-countries').textContent = (netv.top_countries || []).length;
+      renderTable('network-hosts-table', [
+        {key: 'hostname', label: 'Hostname', type: 'string'},
+        {key: 'os_name', label: 'OS', type: 'string'},
+        {key: 'is_compromised', label: 'Compromised', type: 'bool'},
+        {key: 'is_target', label: 'Target', type: 'bool'},
+      ], netv.recent_hosts || []);
+      renderTable('network-ips-table', [
+        {key: 'address', label: 'IP Address', type: 'string'},
+        {key: 'version', label: 'Ver', type: 'number'},
+        {key: 'is_private', label: 'Private', type: 'bool'},
+        {key: 'geo_country', label: 'Country', type: 'string'},
+        {key: 'last_seen_at', label: 'Last Seen', type: 'datetime'},
+      ], netv.recent_ips || []);
+    }
+
+    // Intel tab
+    if (!intv.error) {
+      $('intel-techniques').textContent = (intv.mitre || {}).techniques || 0;
+      $('intel-cve').textContent = (intv.cve || {}).total || 0;
+      $('intel-cwe').textContent = (intv.cwe || {}).total || 0;
+      $('intel-capec').textContent = (intv.capec || {}).total || 0;
+      renderTable('intel-mitre-table', [
+        {key: 'technique_id', label: 'ID', type: 'string'},
+        {key: 'name', label: 'Name', type: 'string'},
+        {key: 'tactics', label: 'Tactics', type: 'json'},
+        {key: 'platforms', label: 'Platforms', type: 'json'},
+        {key: 'is_sub_technique', label: 'Sub-tech', type: 'bool'},
+      ], intv.recent_mitre || []);
+      const cveSevBadge = s => {
+        const m = {CRITICAL:'badge-err', HIGH:'badge-err', MEDIUM:'badge-standard', LOW:'badge-budget'};
+        return '<span class="badge ' + (m[s] || '') + '">' + (s || '?') + '</span>';
+      };
+      renderTable('intel-cve-table', [
+        {key: 'cve_id', label: 'CVE ID', type: 'string'},
+        {key: 'cvss_score', label: 'CVSS', type: 'number'},
+        {key: 'severity', label: 'Severity', type: 'string'},
+        {key: 'exploit_available', label: 'Exploit', type: 'bool'},
+      ], (intv.recent_cve || []).map(c => ({
+        ...c,
+        severity: cveSevBadge(c.severity),
+      })));
+    }
+
+    // Audit tab
+    if (!auditv.error) {
+      $('audit-total').textContent = auditv.total || 0;
+      $('audit-last-hour').textContent = auditv.last_hour_count || 0;
+      $('audit-agents').textContent = Object.keys(auditv.by_agent || {}).length;
+      renderTable('audit-table', [
+        {key: 'action', label: 'Action', type: 'string'},
+        {key: 'entity_type', label: 'Entity Type', type: 'string'},
+        {key: 'entity_id', label: 'Entity ID', type: 'string'},
+        {key: 'agent', label: 'Agent', type: 'string'},
+        {key: 'resource', label: 'Resource', type: 'string'},
+        {key: 'ip_address', label: 'IP', type: 'string'},
+        {key: 'created_at', label: 'Timestamp', type: 'datetime'},
+      ], auditv.recent || []);
+    }
+
+    // Compliance tab
+    if (!compv.error) {
+      $('comp-total').textContent = compv.total || 0;
+      $('comp-critical').textContent = (compv.by_severity || {}).critical || 0;
+      $('comp-frameworks').textContent = Object.keys(compv.by_framework || {}).length;
+      $('comp-high').textContent = (compv.by_severity || {}).high || 0;
+      renderTable('compliance-table', [
+        {key: 'rule_id', label: 'Rule ID', type: 'string'},
+        {key: 'title', label: 'Title', type: 'string'},
+        {key: 'framework', label: 'Framework', type: 'string'},
+        {key: 'severity', label: 'Severity', type: 'string'},
+        {key: 'audit_frequency', label: 'Frequency', type: 'string'},
+        {key: 'retention_period_days', label: 'Retention (d)', type: 'number'},
+        {key: 'created_at', label: 'Created', type: 'datetime'},
+      ], compv.recent || []);
     }
 
   } catch (e) {
