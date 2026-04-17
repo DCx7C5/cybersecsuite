@@ -85,7 +85,7 @@ opts = ClaudeAgentOptions(
 | `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware |
 | `src/manage.py`       | 329   | CLI management (`manage.py serve`, `case-open`, etc.) |
 | `src/logger.py`       | 30    | Structured logger                                     |
-| `src/mcp/__init__.py` | 0     | EMPTY — needs `all_servers()`, `allowed_tools()`      |
+| `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools |
 
 ### src/a2a/
 | File                | Lines | Purpose                                      |
@@ -156,10 +156,10 @@ Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Find
 ### .claude/ system
 | Component    | Files                                                      | Status                       |
 |--------------|------------------------------------------------------------|------------------------------|
-| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)   | ✅ all consistent frontmatter |
+| `agents/`    | 33 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)   | ✅ all consistent frontmatter |
 | `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json | ⚠️ NEVER AUDITED             |
 | `commands/`  | 7 slash commands + config.py + `__init__.py` + README.md   | ⚠️ NEVER AUDITED             |
-| `skills/`    | **778 SKILL.md** across 19 active domains (24 dirs total)  | ✅ RESTRUCTURED               |
+| `skills/`    | **922 SKILL.md** across 24+ active domains                 | ✅ RESTRUCTURED               |
 | `templates/` | 14 template files across 6 subdirs                         | Not reviewed                 |
 
 #### templates/ structure
@@ -237,20 +237,20 @@ Model tiers:
 **Actions = leaf directory names** (the specific tool/technique applied to a component).
 **Activities ≠ domains** — `red-team/`, `forensics/`, `incident-response/` are methods, not components.
 
-### Current State (778 skills, 19 active domains)
+### Current State (922 skills, 24+ active domains)
 | Type                     | Count   | Description                                              |
 |--------------------------|---------|----------------------------------------------------------|
-| Project-native (full)    | 26      | Rich SKILL.md with MCP examples, DB queries, agent hooks |
+| Project-native (full)    | 170+    | Rich SKILL.md with deep taxonomy, MITRE/CWE/CVE headers  |
 | Anthropic-integrated     | 752     | Full Anthropic workflow + CyberSecSuite integration      |
-| **Total**                | **778** | All in `.claude/skills/`, indexed in `INDEX.md`          |
+| **Total**                | **922** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
 **Frontmatter** — ✅ COMPLETE
 - Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
 - Action collision resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
 
-### Domain Structure (after red-team redistribution ✅)
+### Domain Structure (after classical domain expansion ✅)
 ```
-.claude/skills/               ← root (778 SKILL.md, 19 active / 24 total dirs)
+.claude/skills/               ← root (922 SKILL.md, 24+ active / 30 total dirs)
 ├── cloud-security/ (117)  # aws, azure, gcp, containers, kubernetes, devsecops
 │                             #   + aws/privesc, azure/lateral, k8s/privesc (from red-team)
 ├── web-application/    (97)  # injection, xss, ssrf, api, pentest, owasp (renamed from web-security ✅)
@@ -261,12 +261,22 @@ Model tiers:
 │                             #   + c2/adversary, c2/covenant, c2/havoc, c2/sliver (from red-team)
 ├── identity/           (53)  # ad, kerberos, oauth, saml, pam, mfa, okta
 │                             #   + ad/bloodhound, ad/nopac, ad/zerologon, kerberos/*, ntlm/*
+├── processes/          (43)  # linux/{proc-fs,ptrace,namespace,cgroup,ld-preload,daemon,socket}/
+│                             #   windows/{handle,thread,process,dll,token,wmi}/, memory/, ipc/,
+│                             #   monitoring/, zombie/, privilege/, container/
 ├── network/            (43)  # firewall, ids, wireless, vpn, dns, assessment, lateral
 │                             #   + recon/easm, dns/dnstwist, dns/subfinder, lateral/*
 ├── incident-response/  (39)  # triage, containment, playbooks, phishing, cloud, insider
+├── database/           (37)  # mysql/, postgres/, sqlite/, mssql/, redis/, mongodb/,
+│                             #   elasticsearch/, cassandra/ — injection, privesc, forensics
+├── filesystem/         (28)  # ext4/, ntfs/, fat32/, xfs/, btrfs/, tmpfs/, procfs/, vfs/,
+│                             #   permission/, acl/, integrity/, encryption/, timeline/, lvm/
 ├── vulnerability/      (32)  # scanning, sca, prioritization, remediation, exploit
 │                             #   + exploit/binary, exploit/ms17
+├── browser/            (25)  # chrome/, firefox/, brave/, chromium/, extension/, forensics/,
+│                             #   phishing/, cache/, credential/
 ├── ot-ics/             (25)  # scada, plc, modbus, dnp3, iot + iot/pentest
+├── network-filesystem/ (18)  # smb/, nfs/, cifs/, webdav/, ftp/, rsync/, iscsi/, samba/
 ├── siem-soc/           (25)  # splunk, elastic, detection, correlation, tuning
 │                             #   + splunk/lateral
 ├── endpoint-security/  (23)  # edr, av, policy, dlp, hardening
@@ -279,8 +289,6 @@ Model tiers:
 ├── deception/           (5)  # honeypots, canaries
 ├── red-team/            (2)  # MODE ACTIVATORS ONLY (red-team + purple-team)
 ├── steganography/       (1)  # stego detection
-├── database/                 # (new, empty)
-├── browser/                  # (new, empty)
 └── hardening/                # (index-only, links to */hardening/ skills)
 ```
 
@@ -293,6 +301,8 @@ DNS recon→`network/dns/`, socialeng→`ops/socialeng/`, purple→`ops/purplete
 ### Naming Rules
 - **Taxonomy dirs**: CAN have hyphens (`cloud-security`, `crypto-pki`, `red-team`)
 - **Leaf skill dirs**: Single-word only (`volatility3`, `cobaltstrike`, `kerberoasting`)
+- **Deep taxonomy** (new classical domains): `name:` = join layers 2→last with hyphens; last dir = action verb
+  - Example: `network/protocol/tcp/syn-flood/detect` → `name: protocol-tcp-syn-flood-detect`
 - 224 explicit collision overrides for disambiguation
 
 ### SKILL.md Format
@@ -415,13 +425,18 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
 - Docs — 8 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart)
-- Skills taxonomy — 778 SKILL.md created, indexed, enriched (MITRE/CWE/CVE/tags)
+- Skills taxonomy — 778 → **922** SKILL.md across 24+ domains (web-security→web-application, ot-ics dissolved, 6 classical domains expanded with 189 new deep-hierarchy skills)
+- MCP package split — `src/mcp/` package: `cybersec/` (29 tools) + `dystopian.py` (5 tools) + SDK compat shim → 34 tools, `all_servers()` + `allowed_tools()` — commit f0e8b72
+- New agents — `token-optimizer.md` (haiku, redundancy detection + prompt compression + cache seeds) — 33 agents total
 - Phase A2 — A2A stubs wired to SDK (model mapping, PreToolUse audit hook, real AI execution) — commits 3cfa5a0
 - Phase D (partial) — Telemetry stack complete (MetricsStore, middleware, decorators, collector, TelemetryMiddleware mounted) — commits 44bcdd7, 1a688c6, 3936eaf
 - Dashboard expansion — 30 routes total (was 16+3); 7 data endpoints + telemetry + task CRUD — commits 13af280, 3936eaf
 - NIST fixtures downloaded — `data/fixtures/nist_csf_2.json` (185 subcategories) + `data/fixtures/nist_ai_rmf.json` (72 subcategories)
 - NIST DB models + seeds + CLI + dashboard endpoints — `NistCsfControl`, `NistAiRmfControl`, `seed_nist_csf()`, `seed_nist_ai_rmf()`, `seed-nist-csf/ai-rmf/all` CLI commands, `/api/nist-csf` + `/api/nist-ai-rmf` endpoints (commit 72de387)
 - Skills: web-security renamed → web-application; ot-ics dissolved → 3-6 level hierarchy (ics/, iot/, sector/) (commit 3db39fd)
+- **MCP pkg split** — `src/mcp/cybersec/` (8 submodules, 29 tools) + `src/mcp/dystopian.py` (5 crypto tools) + `_sdk_compat.py` shim → commit f0e8b72
+- **Classical domains expanded** — 189 new SKILL.md: network, network-filesystem, filesystem, database, browser, processes → commit 63b4880
+- **token-optimizer agent** — `.claude/agents/token-optimizer.md` (haiku, redundancy/compression specialist)
 
 ### docs/ — 8 files
 `architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
@@ -437,17 +452,21 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 | ~~6. Generate fixtures~~ | ~~NIST CSF 2.0 + AI RMF → `data/fixtures/`, seed functions~~ | ✅ fixtures downloaded |
 | 7. Sync indexes | Regenerate INDEX.md + skills.tree + MEMORY.md | pending |
 
-### Phase A — MCP Split + SDK Package
-| Order | Todo | Depends on |
-|-------|------|------------|
-| 1 | `mcp-cybersec-helpers` — ScopeState + scope helpers | — |
-| 2 | 8 tool submodules (findings, db, intelligence, layers, cache, proxy, session, cases) | helpers |
-| 3 | `mcp-cybersec-pkg` — assemble all tools | all submodules |
-| 4 | `mcp-pkg-create` — `src/mcp/__init__.py` | cybersec-pkg |
-| 5 | `mcp-dystopian-impl` — crypto tools | pkg-create |
-| 6 | `mcp-shim-update` — slim mcp_server.py | pkg-create |
-| 7 | `mcp-agent-sdk-update` — wire SDK | pkg-create + dystopian |
-| 8 | `dystopian-mcp-scaffold` — mcps/ standalone | — |
+### Phase A — MCP Split + SDK Package ✅ COMPLETE (commit f0e8b72)
+| Order | Todo | Status |
+|-------|------|--------|
+| 1 | `mcp-cybersec-helpers` — ScopeState + scope helpers | ✅ `src/mcp/cybersec/helpers.py` |
+| 2 | 8 tool submodules (findings, db, intelligence, layers, cache, proxy, session, cases) | ✅ all created |
+| 3 | `mcp-cybersec-pkg` — assemble all 29 tools | ✅ `src/mcp/cybersec/__init__.py` |
+| 4 | `mcp-pkg-create` — `src/mcp/__init__.py` | ✅ `all_servers()` + `allowed_tools()` |
+| 5 | `mcp-dystopian-impl` — 5 crypto tools | ✅ `src/mcp/dystopian.py` |
+| 6 | `mcp-shim-update` — slim mcp_server.py | ⚠️ pending — still 1288L with inline helpers |
+| 7 | `mcp-agent-sdk-update` — wire SDK | pending |
+| 8 | `dystopian-mcp-scaffold` — mcps/ standalone | pending |
+
+**Known redundancy**: `mcp_server.py` has 5 helper functions that duplicate `src/mcp/cybersec/helpers.py`
+(`_normalize_scope_value`, `_get_current_scope`, `_coerce_limit`, `_normalize_scope_level`, `get_workspace_dir`).
+FastMCP typed-param pattern prevents trivial merge — refactor deferred to `mcp-shim-update`.
 
 ### ~~Phase A2 — Wire A2A Stubs to SDK~~ ✅ COMPLETE (commit 3cfa5a0)
 `a2a-devagents-wire`, `a2a-cybersec-wire`, `a2a-orchestrator-wire`, `a2a-agentdef-enhance`, `a2a-hooks-add`
