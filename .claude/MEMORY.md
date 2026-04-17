@@ -219,12 +219,20 @@ In-process metrics store with ring-buffer, percentile summaries, ASGI middleware
 Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
 
 ### src/dashboard/ (36 routes, 82 model registry)
-| File           | Lines | Purpose                                                                          |
-|----------------|-------|----------------------------------------------------------------------------------|
-| `routes.py`    | 63    | Thin route wiring — 36 Starlette routes                                          |
-| `_html.py`     | 561   | SPA HTML template (inline JS, CSS, tab navigation)                               |
-| `_handlers.py` | 1228  | All API handlers — 30 REST + 4 SSE + 3 new endpoints (models/tables/agent-query) |
-| `_schema.py`   | 149   | Tortoise model introspector — discovers 82 models, serialization, pagination     |
+| File/Dir             | Lines  | Purpose                                                              |
+|----------------------|--------|----------------------------------------------------------------------|
+| `routes.py`          | 63     | Thin route wiring — 36 Starlette routes                             |
+| `_html.py`           | ~680   | SPA HTML + renderTable() JS component + Explorer tab                 |
+| `_handlers.py`       | 8      | Re-export shim → `api/`                                              |
+| `api/__init__.py`    | 95     | Re-exports all 36 handlers                                          |
+| `api/core.py`        | 153    | overview, providers, usage, health, crypto                           |
+| `api/agents.py`      | 215    | a2a, agents, routing, factory, agent-query                           |
+| `api/forensic.py`    | 396    | findings, iocs, yara, network, intel, audit, compliance, NIST        |
+| `api/ops.py`         | 183    | cases, tasks, task lifecycle, PoCs                                   |
+| `api/tables.py`      | 148    | db counts, investigations, models, generic table, prompts, telemetry |
+| `api/sse.py`         | 153    | 4 SSE streaming endpoints                                           |
+| `api/page.py`        | 12     | dashboard HTML page                                                  |
+| `_schema.py`         | 149    | Tortoise model introspector — 82 models, serialization, pagination   |
 
 **New endpoints (Phase H/I)**:
 - `GET /api/models` — lists all 82 registered DB models with table name + field count
@@ -234,14 +242,14 @@ Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Colle
 **Expanded endpoints** (now return full model fields, not just summaries):
 findings (20 fields), iocs (14), yara (14), network (+hosts +ips), intelligence (+mitre +cve), audit (12), compliance (13), nist-csf (dynamic), nist-ai-rmf (dynamic)
 
-Current tabs in HTML: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit, PoC, NIST, Crypto, A2A.
+Current tabs in HTML: Providers, Usage & Cost, Agents, Routing, Factory, Prompts, Health, Crypto, A2A, Investigations, DB Counts, Cases, Tasks, PoCs, **Explorer** (new — generic table viewer).
 SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 
 ### .claude/ system
 | Component    | Files                                                                                                        | Status                       |
 |--------------|--------------------------------------------------------------------------------------------------------------|------------------------------|
 | `agents/`    | **34 agents** (33 specialists + AGENT_FACTORY) + DEV_SUB_AGENTS + `teams/` (3 modes) + `sub_agents/` (1: cybersec-agent) | ✅ all consistent frontmatter |
-| `hooks/`     | 29 .py files — 3 settings.json-wired (pre_tool_call, post_tool_use, session_end) + 15 custom event handlers + 11 utility modules | ⚠️ Has lint errors |
+| `hooks/`     | 31 .py files — 10 settings.json-wired + 12 programmatic event handlers + 9 utility modules (legacy utils.py deleted) | ✅ lint clean, deduplicated |
 | `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                                                 | ⚠️ NEVER AUDITED             |
 | `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                                             | ✅ RESTRUCTURED               |
 | `templates/` | 14 template files across 6 subdirs                                                                           | Not reviewed                 |
@@ -502,8 +510,10 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - Phase I — Tool inventory (`docs/tools.md`), MEMORY.md sync, `mcp.json` cleanup (stale entries removed)
 - Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
 - Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated, frontmatter cleaned (action: removed, descriptions single-line unquoted)
-- Phase J — All 72 ruff lint errors fixed → 0, hooks/ consolidated to src/hooks/
+- Phase J — All 72 ruff lint errors fixed → 0, hooks/ consolidated to src/hooks/, dead code deduplicated
 - Phase I.6 — All 10 hooks wired to settings.json (was 3): SessionStart, UserPromptSubmit, SubagentStart/Stop, TeammateIdle, PreCompact/PostCompact
+- Phase K.1 — `renderTable()` JS component + Explorer tab (sortable, searchable, paginated, type-aware)
+- Phase M.1 — `_handlers.py` (1228L) split into `dashboard/api/` package (7 modules, 36 handlers)
 - Provider expansion — 60 providers in `registry.py`
 - 34 agents total (33 specialists + AGENT_FACTORY)
 
@@ -514,14 +524,14 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 
 ## Active Roadmap (Current)
 
-### Phase J — Lint Cleanup ✅
-Fixed all 72 ruff errors → 0. Auto-fixed 25 unused imports, fixed 2 undefined names, 8 unused vars, 2 bare excepts, 3 E402 noqa. Hooks consolidated from root `hooks/` → `src/hooks/`. settings.json paths updated.
+### Phase J — Lint Cleanup + Dead Code ✅
+Fixed all 72 ruff errors → 0. Deduplicated hooks: extracted count_lines() + SEVERITY_EMOJI to _utils.py, removed legacy utils.py (41L), migrated 5 files. Settings.json paths updated.
 
 ### Phase I.6 — Hook Wiring ✅
 Wired 10 hooks to settings.json (was 3): PreToolUse, PostToolUse, Stop + SessionStart (chains first_init+session_start), UserPromptSubmit, SubagentStart, SubagentStop, TeammateIdle, PreCompact, PostCompact. Created 3 new scripts. 12 domain-specific events remain programmatic via emit().
 
-### Phase K — Dashboard Full Buildout
-1. `renderTable()` JS component for _html.py (sortable, searchable, paginated, type-aware)
+### Phase K — Dashboard Full Buildout (in progress)
+1. ✅ `renderTable()` JS component + Explorer tab (sortable, searchable, paginated, type-aware)
 2. Expand 14 existing tabs to use renderTable with full-field APIs
 3. Add 14 new tabs (forensic sessions, MITRE, intel feeds, artifacts, machines, baselines, vulns...)
 4. Interactive agent query panel (SSE streaming, agent selection, context enrichment)
@@ -529,11 +539,13 @@ Wired 10 hooks to settings.json (was 3): PreToolUse, PostToolUse, Stop + Session
 6. Team builder + Task chain builder (define phases, assign agents, link skills, execute)
 7. Agent manager, Skill browser (922 skills tree), Hook manager
 
+### Phase M — Code Splits (in progress)
+1. ✅ Split `_handlers.py` (1228L) → `dashboard/api/` package (7 modules: core, agents, forensic, ops, tables, sse, page)
+2. `_commands.py` (484L) — kept as-is (manageable size)
+3. Fix checks/, registry, consolidate a2a/ — pending
+
 ### Phase L — Agent Package Completion
 Complete `src/agent/` stubs: hooks.py (5 hooks), sessions.py (SDK wrapper), runner.py (AgentRunner), streaming.py (SSE)
-
-### Phase M — Code Splits
-Split `_handlers.py` (1228L) → api/ package, `_commands.py` (487L), fix checks/, registry, consolidate a2a/
 
 ### Phase N — Documentation
 Update all 10 docs + MEMORY.md + README.md to reflect current state
