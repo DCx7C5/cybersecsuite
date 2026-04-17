@@ -8,6 +8,7 @@ from typing import Dict, Any, Tuple
 
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[3]
 _FIXTURES_DIR = _PROJECT_ROOT / "data" / "fixtures"
+_INTEL_FIXTURES_DIR = pathlib.Path(__file__).resolve().parents[1] / "fixtures"
 
 
 async def seed_nist_csf() -> Dict[str, Any]:
@@ -82,56 +83,160 @@ async def seed_nist_ai_rmf() -> Dict[str, Any]:
 
 
 
+async def seed_mitre_techniques() -> Dict[str, Any]:
+    """Idempotent seed of MITRE ATT&CK techniques from data/fixtures/mitre_techniques.json."""
+    from db.models.mitre_technique import MitreTechniqueIntel
+
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "mitre_techniques.json").read_text())
+    created = skipped = 0
+    for entry in data:
+        _, was_created = await MitreTechniqueIntel.get_or_create(
+            technique_id=entry["technique_id"],
+            defaults={
+                "name": entry.get("name", ""),
+                "tactics": entry.get("tactics", []),
+                "platforms": entry.get("platforms", []),
+                "is_sub_technique": entry.get("is_sub_technique", False),
+                "parent_technique_id": entry.get("parent_technique_id", ""),
+                "description": entry.get("description", ""),
+                "detection": entry.get("detection", ""),
+                "url": entry.get("url", ""),
+                "tags": entry.get("tags", []),
+            },
+        )
+        created += was_created
+        skipped += not was_created
+    return {"created": created, "skipped": skipped, "total": len(data)}
+
+
+async def seed_mitre_actors() -> Dict[str, Any]:
+    """Idempotent seed of MITRE ATT&CK threat actors from data/fixtures/mitre_actors.json."""
+    from db.models.mitre_actor import MitreThreatActorIntel
+
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "mitre_actors.json").read_text())
+    created = skipped = 0
+    for entry in data:
+        _, was_created = await MitreThreatActorIntel.get_or_create(
+            actor_name=entry["actor_name"],
+            defaults={
+                "description": entry.get("description", ""),
+                "aliases": entry.get("aliases", []),
+                "country_of_origin": entry.get("country_of_origin", ""),
+                "motivation": entry.get("motivation", ""),
+                "target_sectors": entry.get("target_sectors", []),
+                "target_regions": entry.get("target_regions", []),
+                "tools_used": entry.get("tools_used", []),
+                "url": entry.get("url", ""),
+                "tags": entry.get("tags", []),
+            },
+        )
+        created += was_created
+        skipped += not was_created
+    return {"created": created, "skipped": skipped, "total": len(data)}
+
+
+async def seed_mitre_software() -> Dict[str, Any]:
+    """Idempotent seed of MITRE ATT&CK software families from data/fixtures/mitre_software.json."""
+    from db.models.mitre_software import MitreSoftwareFamilyIntel
+
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "mitre_software.json").read_text())
+    created = skipped = 0
+    for entry in data:
+        _, was_created = await MitreSoftwareFamilyIntel.get_or_create(
+            software_id=entry["software_id"],
+            defaults={
+                "name": entry.get("name", ""),
+                "software_type": entry.get("software_type", "tool"),
+                "description": entry.get("description", ""),
+                "aliases": entry.get("aliases", []),
+                "platforms": entry.get("platforms", []),
+                "is_family": entry.get("is_family", False),
+                "url": entry.get("url", ""),
+                "tags": entry.get("tags", []),
+            },
+        )
+        created += was_created
+        skipped += not was_created
+    return {"created": created, "skipped": skipped, "total": len(data)}
+
+
+async def seed_cwe() -> Dict[str, Any]:
+    """Idempotent seed of CWE weaknesses from data/fixtures/cwe_entries.json."""
+    from db.models.cwe import CWEIntel
+
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "cwe_entries.json").read_text())
+    created = skipped = 0
+    for entry in data:
+        _, was_created = await CWEIntel.get_or_create(
+            cwe_id=entry["cwe_id"],
+            defaults={
+                "name": entry.get("name", ""),
+                "abstraction": entry.get("abstraction", ""),
+                "status": entry.get("status", ""),
+                "description": entry.get("description", ""),
+                "likelihood_of_exploit": entry.get("likelihood_of_exploit", ""),
+                "common_consequences": entry.get("common_consequences", []),
+                "tags": entry.get("tags", []),
+            },
+        )
+        created += was_created
+        skipped += not was_created
+    return {"created": created, "skipped": skipped, "total": len(data)}
+
+
+async def seed_capec() -> Dict[str, Any]:
+    """Idempotent seed of CAPEC attack patterns from data/fixtures/capec_entries.json."""
+    from db.models.capec import CapecAttackPatternIntel
+
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "capec_entries.json").read_text())
+    created = skipped = 0
+    for entry in data:
+        _, was_created = await CapecAttackPatternIntel.get_or_create(
+            capec_id=entry["capec_id"],
+            defaults={
+                "name": entry.get("name", ""),
+                "description": entry.get("description", ""),
+                "abstraction": entry.get("abstraction", ""),
+                "domains": entry.get("domains", []),
+                "likelihood_of_attack": entry.get("likelihood_of_attack", ""),
+                "severity": entry.get("severity", ""),
+                "url": entry.get("url", ""),
+                "tags": entry.get("tags", []),
+            },
+        )
+        created += was_created
+        skipped += not was_created
+    return {"created": created, "skipped": skipped, "total": len(data)}
+
+
 async def initialize_default_seed_data(
     force_intel: bool = False,
     include_feeds: bool = True,
 ) -> Dict[str, Any]:
-    """
-    Initialize default seed data.
-
-    Args:
-        force_intel: Force re-bootstrap of intelligence
-        include_feeds: Include threat intelligence feeds
-
-    Returns:
-        Summary dict with components status
-    """
-    summary = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "intelligence": {
-            "components": {
-                "mitre": "seeded",
-                "cve": "seeded",
-                "cwe": "seeded",
-            }
-        }
-    }
-    return summary
+    """Seed all intel tables (NIST, MITRE, CWE, CAPEC). Idempotent."""
+    results: Dict[str, Any] = {"timestamp": datetime.now(timezone.utc).isoformat()}
+    for name, fn in [
+        ("nist_csf", seed_nist_csf),
+        ("nist_ai_rmf", seed_nist_ai_rmf),
+        ("mitre_techniques", seed_mitre_techniques),
+        ("mitre_actors", seed_mitre_actors),
+        ("mitre_software", seed_mitre_software),
+        ("cwe", seed_cwe),
+        ("capec", seed_capec),
+    ]:
+        try:
+            results[name] = await fn()
+        except Exception as exc:
+            results[name] = {"error": str(exc)}
+    return results
 
 
 async def bootstrap_intelligence_async(
     force: bool = False,
     include_feeds: bool = True,
 ) -> Dict[str, Any]:
-    """
-    Bootstrap MITRE/CVE/CWE intelligence.
-
-    Args:
-        force: Force re-bootstrap
-        include_feeds: Include threat feeds
-
-    Returns:
-        Summary with component statuses
-    """
-    summary = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "components": {
-            "mitre": "bootstrapped",
-            "cve": "bootstrapped",
-            "cwe": "bootstrapped",
-        }
-    }
-    return summary
+    """Bootstrap all intelligence tables. Delegates to initialize_default_seed_data."""
+    return await initialize_default_seed_data(force_intel=force, include_feeds=include_feeds)
 
 
 async def seed_local_machine() -> Tuple[Any, bool]:

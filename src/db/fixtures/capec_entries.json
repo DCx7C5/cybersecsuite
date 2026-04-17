@@ -1,0 +1,339 @@
+[
+  {
+    "capec_id": "CAPEC-66",
+    "name": "SQL Injection",
+    "description": "An adversary uses SQL injection techniques to exploit the application's use of SQL to query a database.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "High",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/66.html",
+    "tags": [
+      "sql-injection",
+      "database",
+      "injection"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-86",
+    "name": "XSS via HTTP Request Headers",
+    "description": "An adversary crafts an HTTP request with a malicious header value in order to inject script code into the response.",
+    "abstraction": "Detailed Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "Medium",
+    "url": "https://capec.mitre.org/data/definitions/86.html",
+    "tags": [
+      "xss",
+      "http",
+      "injection"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-17",
+    "name": "Using Malicious Files",
+    "description": "An adversary provides a file that appears legitimate but contains malicious code that executes when opened.",
+    "abstraction": "Meta Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "High",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/17.html",
+    "tags": [
+      "malicious-file",
+      "social-engineering"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-10",
+    "name": "Buffer Overflow via Environment Variables",
+    "description": "An adversary manipulates the length or content of environment variables to trigger a buffer overflow.",
+    "abstraction": "Detailed Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/10.html",
+    "tags": [
+      "buffer-overflow",
+      "environment-variable"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-116",
+    "name": "Excavation",
+    "description": "An adversary engages in probing and exploration activity to determine and map the network perimeter.",
+    "abstraction": "Meta Attack Pattern",
+    "domains": [
+      "Software",
+      "Network"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "Medium",
+    "url": "https://capec.mitre.org/data/definitions/116.html",
+    "tags": [
+      "reconnaissance",
+      "network-enumeration"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-123",
+    "name": "Browser Fingerprinting",
+    "description": "An adversary passively obtains information about a user's browser and system to track or identify them.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software",
+      "Communications"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "Low",
+    "url": "https://capec.mitre.org/data/definitions/123.html",
+    "tags": [
+      "fingerprinting",
+      "browser",
+      "tracking"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-98",
+    "name": "Phishing",
+    "description": "An adversary masquerades as a legitimate entity in electronic communication to deceive victims into providing sensitive information.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software",
+      "Social Engineering"
+    ],
+    "likelihood_of_attack": "High",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/98.html",
+    "tags": [
+      "phishing",
+      "social-engineering"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-196",
+    "name": "Session Fixation",
+    "description": "The adversary takes advantage of the application's predictable session identifier management to gain access to authenticated sessions.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/196.html",
+    "tags": [
+      "session-fixation",
+      "authentication",
+      "web"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-62",
+    "name": "Cross-Site Request Forgery",
+    "description": "An adversary forges HTTP requests from a victim's browser to perform unauthorized actions.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/62.html",
+    "tags": [
+      "csrf",
+      "web",
+      "authentication"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-122",
+    "name": "Privilege Abuse",
+    "description": "An adversary is able to elevate their permissions and access protected data or functionality.",
+    "abstraction": "Meta Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/122.html",
+    "tags": [
+      "privilege-escalation",
+      "access-control"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-549",
+    "name": "Local Execution of Code",
+    "description": "An adversary exploits a vulnerability in an application to execute arbitrary code on the local system.",
+    "abstraction": "Meta Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/549.html",
+    "tags": [
+      "code-execution",
+      "exploit"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-692",
+    "name": "Spear Phishing via Malicious File Downloads",
+    "description": "An adversary sends targeted phishing messages containing links or attachments designed to deliver malware.",
+    "abstraction": "Detailed Attack Pattern",
+    "domains": [
+      "Software",
+      "Social Engineering"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/692.html",
+    "tags": [
+      "spearphishing",
+      "malware-delivery",
+      "social-engineering"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-94",
+    "name": "Adversary in the Middle (AiTM)",
+    "description": "An adversary intercepts and potentially alters communications between two parties.",
+    "abstraction": "Meta Attack Pattern",
+    "domains": [
+      "Software",
+      "Network"
+    ],
+    "likelihood_of_attack": "Low",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/94.html",
+    "tags": [
+      "mitm",
+      "interception",
+      "network"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-60",
+    "name": "Reusing Session IDs (aka Session Replay)",
+    "description": "An adversary steals a session identifier and reuses it to hijack an authenticated session.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "High",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/60.html",
+    "tags": [
+      "session-hijacking",
+      "authentication",
+      "replay"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-24",
+    "name": "Filter Failure through Buffer Overflow",
+    "description": "An adversary exploits a buffer overflow to bypass input filters and inject malicious content.",
+    "abstraction": "Detailed Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/24.html",
+    "tags": [
+      "buffer-overflow",
+      "filter-bypass"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-1",
+    "name": "Accessing/Intercepting/Modifying HTTP Cookies",
+    "description": "An adversary intercepts HTTP cookies to hijack sessions or extract sensitive data.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "High",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/1.html",
+    "tags": [
+      "cookie",
+      "session-hijacking",
+      "http"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-236",
+    "name": "Catching Exception Throw/Signal from Privileged Block",
+    "description": "An adversary uses exception handling mechanisms to intercept signals or exceptions from privileged operations.",
+    "abstraction": "Detailed Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "Medium",
+    "url": "https://capec.mitre.org/data/definitions/236.html",
+    "tags": [
+      "exception-handling",
+      "privilege-escalation"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-560",
+    "name": "Use of Known Domain Credentials",
+    "description": "An adversary uses compromised domain credentials obtained previously to authenticate to additional systems.",
+    "abstraction": "Standard Attack Pattern",
+    "domains": [
+      "Software",
+      "Enterprise"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/560.html",
+    "tags": [
+      "credential-reuse",
+      "lateral-movement",
+      "active-directory"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-165",
+    "name": "File Manipulation",
+    "description": "An adversary manipulates files on the target system to inject malicious content or delete critical data.",
+    "abstraction": "Meta Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/165.html",
+    "tags": [
+      "file-manipulation",
+      "integrity"
+    ]
+  },
+  {
+    "capec_id": "CAPEC-193",
+    "name": "PHP Remote File Inclusion",
+    "description": "An adversary exploits improper handling of file inclusion to execute remote PHP code.",
+    "abstraction": "Detailed Attack Pattern",
+    "domains": [
+      "Software"
+    ],
+    "likelihood_of_attack": "Medium",
+    "severity": "High",
+    "url": "https://capec.mitre.org/data/definitions/193.html",
+    "tags": [
+      "rfi",
+      "php",
+      "code-execution"
+    ]
+  }
+]

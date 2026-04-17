@@ -18,11 +18,16 @@ def show_usage():
     print("  schema     - Create / update all tables (generate_schemas safe=True)")
     print("  shell      - Launch async Python shell with models")
     print("  status     - Show database status")
-    print("  seed       - Seed defaults + bootstrap MITRE/CVE/CWE intelligence")
-    print("  seed-intel - Bootstrap shared MITRE/CVE/CWE intelligence only")
-    print("  seed-nist-csf    - Seed NIST CSF 2.0 controls (185 subcategories)")
-    print("  seed-nist-ai-rmf - Seed NIST AI RMF 1.0 controls (72 subcategories)")
-    print("  seed-nist-all    - Seed both NIST CSF 2.0 and AI RMF 1.0")
+    print("  seed       - Seed ALL intel tables (NIST + MITRE + CWE + CAPEC)")
+    print("  seed-intel          - Seed MITRE techniques, actors, software, CWE, CAPEC")
+    print("  seed-nist-csf       - Seed NIST CSF 2.0 controls (185 subcategories)")
+    print("  seed-nist-ai-rmf    - Seed NIST AI RMF 1.0 controls (72 subcategories)")
+    print("  seed-nist-all       - Seed both NIST CSF 2.0 and AI RMF 1.0")
+    print("  seed-mitre          - Seed MITRE ATT&CK techniques (30 entries)")
+    print("  seed-mitre-actors   - Seed MITRE ATT&CK threat actors (12 entries)")
+    print("  seed-mitre-software - Seed MITRE ATT&CK software families (14 entries)")
+    print("  seed-cwe            - Seed CWE weaknesses (18 entries)")
+    print("  seed-capec          - Seed CAPEC attack patterns (20 entries)")
     print("  machine    - Seed / display local machine hardware inventory")
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
@@ -111,10 +116,14 @@ async def seed_command():
 
     await init_tortoise_async(create_db=True)
     summary = await initialize_default_seed_data(force_intel=False, include_feeds=True)
-    print("✅ Default forensic MITRE techniques seeded")
-    print("✅ Compliance rules seeded")
-    print("✅ Shared intelligence bootstrap completed")
-    _print_intel_components(summary["intelligence"]["components"])
+    for key, val in summary.items():
+        if key == "timestamp":
+            continue
+        if isinstance(val, dict) and "error" not in val:
+            print(f"  ✅ {key}: {val.get('created', 0)} created, {val.get('skipped', 0)} skipped")
+        elif isinstance(val, dict):
+            print(f"  ✗ {key}: {val['error']}")
+    print("✅ All intel tables seeded.")
 
 
 async def seed_nist_csf_command():
@@ -153,14 +162,70 @@ async def seed_nist_all_command():
     print(f"✅ NIST AI RMF 1.0: {rmf['created']} created, {rmf['skipped']} skipped ({rmf['total']} total)")
 
 
-    """Bootstrap shared MITRE/CVE/CWE intelligence only."""
+async def seed_intel_command():
+    """Bootstrap all MITRE/CWE/CAPEC intel tables from curated fixture files."""
     from db.bootstrap import init_tortoise_async
-    from db.intel_loader import bootstrap_intelligence_async
+    from db.models.seeds import (
+        seed_mitre_techniques, seed_mitre_actors, seed_mitre_software,
+        seed_cwe, seed_capec,
+    )
 
     await init_tortoise_async(create_db=True)
-    summary = await bootstrap_intelligence_async(force=False, include_feeds=True)
-    print("✅ Shared intelligence bootstrap completed")
-    _print_intel_components(summary["components"])
+    for label, fn in [
+        ("MITRE Techniques", seed_mitre_techniques),
+        ("MITRE Actors",     seed_mitre_actors),
+        ("MITRE Software",   seed_mitre_software),
+        ("CWE",              seed_cwe),
+        ("CAPEC",            seed_capec),
+    ]:
+        print(f"→ Seeding {label}...")
+        r = await fn()
+        print(f"  ✅ {label}: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_mitre_command():
+    """Seed MITRE ATT&CK techniques (30 canonical entries)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_mitre_techniques
+    await init_tortoise_async(create_db=True)
+    r = await seed_mitre_techniques()
+    print(f"✅ MITRE Techniques: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_mitre_actors_command():
+    """Seed MITRE ATT&CK threat actors (12 canonical entries)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_mitre_actors
+    await init_tortoise_async(create_db=True)
+    r = await seed_mitre_actors()
+    print(f"✅ MITRE Actors: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_mitre_software_command():
+    """Seed MITRE ATT&CK software families (14 canonical entries)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_mitre_software
+    await init_tortoise_async(create_db=True)
+    r = await seed_mitre_software()
+    print(f"✅ MITRE Software: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_cwe_command():
+    """Seed CWE weakness entries (18 canonical entries)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_cwe
+    await init_tortoise_async(create_db=True)
+    r = await seed_cwe()
+    print(f"✅ CWE: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+
+async def seed_capec_command():
+    """Seed CAPEC attack pattern entries (20 canonical entries)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_capec
+    await init_tortoise_async(create_db=True)
+    r = await seed_capec()
+    print(f"✅ CAPEC: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
 
 
 def dashboard_command():
@@ -327,11 +392,16 @@ async def main():
         "schema":           schema_command,
         "shell":            shell_command,
         "status":           status_command,
-        "seed":             seed_command,
-        "seed-intel":       seed_intel_command,
-        "seed-nist-csf":    seed_nist_csf_command,
-        "seed-nist-ai-rmf": seed_nist_ai_rmf_command,
-        "seed-nist-all":    seed_nist_all_command,
+        "seed":                 seed_command,
+        "seed-intel":           seed_intel_command,
+        "seed-nist-csf":        seed_nist_csf_command,
+        "seed-nist-ai-rmf":     seed_nist_ai_rmf_command,
+        "seed-nist-all":        seed_nist_all_command,
+        "seed-mitre":           seed_mitre_command,
+        "seed-mitre-actors":    seed_mitre_actors_command,
+        "seed-mitre-software":  seed_mitre_software_command,
+        "seed-cwe":             seed_cwe_command,
+        "seed-capec":           seed_capec_command,
         "machine":          machine_command,
         "case-open":        case_open_command,
     }

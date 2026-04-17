@@ -1,0 +1,650 @@
+[
+  {
+    "technique_id": "T1059",
+    "name": "Command and Scripting Interpreter",
+    "tactics": [
+      "TA0002"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries.",
+    "detection": "Monitor executed processes and command-line arguments.",
+    "url": "https://attack.mitre.org/techniques/T1059/",
+    "tags": [
+      "execution",
+      "scripting"
+    ]
+  },
+  {
+    "technique_id": "T1059.001",
+    "name": "PowerShell",
+    "tactics": [
+      "TA0002"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1059",
+    "description": "Adversaries may abuse PowerShell commands and scripts for execution.",
+    "detection": "Monitor PowerShell process creation and script block logging.",
+    "url": "https://attack.mitre.org/techniques/T1059/001/",
+    "tags": [
+      "powershell",
+      "execution",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1059.003",
+    "name": "Windows Command Shell",
+    "tactics": [
+      "TA0002"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1059",
+    "description": "Adversaries may abuse the Windows command shell for execution.",
+    "detection": "Monitor cmd.exe spawned from unusual parents.",
+    "url": "https://attack.mitre.org/techniques/T1059/003/",
+    "tags": [
+      "cmd",
+      "execution",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1059.004",
+    "name": "Unix Shell",
+    "tactics": [
+      "TA0002"
+    ],
+    "platforms": [
+      "Linux",
+      "macOS"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1059",
+    "description": "Adversaries may abuse Unix shell for execution.",
+    "detection": "Monitor bash/sh/zsh process invocations with suspicious arguments.",
+    "url": "https://attack.mitre.org/techniques/T1059/004/",
+    "tags": [
+      "bash",
+      "execution",
+      "linux"
+    ]
+  },
+  {
+    "technique_id": "T1055",
+    "name": "Process Injection",
+    "tactics": [
+      "TA0004",
+      "TA0005"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may inject code into processes to evade process-based defenses.",
+    "detection": "Monitor for processes reading/writing to another process's memory.",
+    "url": "https://attack.mitre.org/techniques/T1055/",
+    "tags": [
+      "injection",
+      "defense-evasion",
+      "privilege-escalation"
+    ]
+  },
+  {
+    "technique_id": "T1055.001",
+    "name": "Dynamic-link Library Injection",
+    "tactics": [
+      "TA0004",
+      "TA0005"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1055",
+    "description": "Adversaries may inject DLLs into processes to execute code.",
+    "detection": "Monitor CreateRemoteThread and LoadLibrary calls.",
+    "url": "https://attack.mitre.org/techniques/T1055/001/",
+    "tags": [
+      "dll-injection",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1055.012",
+    "name": "Process Hollowing",
+    "tactics": [
+      "TA0004",
+      "TA0005"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1055",
+    "description": "Adversaries may replace code in a suspended process to evade defenses.",
+    "detection": "Monitor CreateProcess with CREATE_SUSPENDED flag and subsequent NtWriteVirtualMemory.",
+    "url": "https://attack.mitre.org/techniques/T1055/012/",
+    "tags": [
+      "process-hollowing",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1003",
+    "name": "OS Credential Dumping",
+    "tactics": [
+      "TA0006"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may attempt to dump credentials to obtain account login and credential material.",
+    "detection": "Monitor LSASS access, /etc/shadow reads, SAM database access.",
+    "url": "https://attack.mitre.org/techniques/T1003/",
+    "tags": [
+      "credential-dumping",
+      "credential-access"
+    ]
+  },
+  {
+    "technique_id": "T1003.001",
+    "name": "LSASS Memory",
+    "tactics": [
+      "TA0006"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1003",
+    "description": "Adversaries may attempt to access credential material stored in LSASS memory.",
+    "detection": "Monitor for access to LSASS process memory via OpenProcess.",
+    "url": "https://attack.mitre.org/techniques/T1003/001/",
+    "tags": [
+      "lsass",
+      "mimikatz",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1078",
+    "name": "Valid Accounts",
+    "tactics": [
+      "TA0001",
+      "TA0003",
+      "TA0004",
+      "TA0005"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS",
+      "Cloud"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may obtain and abuse credentials of existing accounts.",
+    "detection": "Monitor for anomalous logon activity and use of accounts.",
+    "url": "https://attack.mitre.org/techniques/T1078/",
+    "tags": [
+      "credential-access",
+      "persistence",
+      "valid-accounts"
+    ]
+  },
+  {
+    "technique_id": "T1110",
+    "name": "Brute Force",
+    "tactics": [
+      "TA0006"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS",
+      "Cloud"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may use brute force techniques to gain access to accounts.",
+    "detection": "Monitor for repeated authentication failures.",
+    "url": "https://attack.mitre.org/techniques/T1110/",
+    "tags": [
+      "brute-force",
+      "credential-access"
+    ]
+  },
+  {
+    "technique_id": "T1190",
+    "name": "Exploit Public-Facing Application",
+    "tactics": [
+      "TA0001"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS",
+      "Cloud"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may attempt to exploit vulnerabilities in internet-facing systems.",
+    "detection": "Monitor web server logs for exploit indicators.",
+    "url": "https://attack.mitre.org/techniques/T1190/",
+    "tags": [
+      "initial-access",
+      "exploit",
+      "web-application"
+    ]
+  },
+  {
+    "technique_id": "T1566",
+    "name": "Phishing",
+    "tactics": [
+      "TA0001"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS",
+      "Cloud"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may send phishing messages to gain access to victim systems.",
+    "detection": "Monitor for suspicious email attachments, links, and sender domains.",
+    "url": "https://attack.mitre.org/techniques/T1566/",
+    "tags": [
+      "phishing",
+      "initial-access",
+      "social-engineering"
+    ]
+  },
+  {
+    "technique_id": "T1566.001",
+    "name": "Spearphishing Attachment",
+    "tactics": [
+      "TA0001"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1566",
+    "description": "Adversaries may send spearphishing emails with malicious attachments.",
+    "detection": "Monitor email gateways for suspicious attachment types.",
+    "url": "https://attack.mitre.org/techniques/T1566/001/",
+    "tags": [
+      "spearphishing",
+      "attachment"
+    ]
+  },
+  {
+    "technique_id": "T1547",
+    "name": "Boot or Logon Autostart Execution",
+    "tactics": [
+      "TA0003",
+      "TA0004"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may configure system settings to automatically execute a program during boot or logon.",
+    "detection": "Monitor for modifications to startup directories and registry run keys.",
+    "url": "https://attack.mitre.org/techniques/T1547/",
+    "tags": [
+      "persistence",
+      "boot",
+      "autostart"
+    ]
+  },
+  {
+    "technique_id": "T1547.001",
+    "name": "Registry Run Keys / Startup Folder",
+    "tactics": [
+      "TA0003",
+      "TA0004"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1547",
+    "description": "Adversaries may achieve persistence by adding programs to startup folders or registry run keys.",
+    "detection": "Monitor registry Run/RunOnce keys and startup folder changes.",
+    "url": "https://attack.mitre.org/techniques/T1547/001/",
+    "tags": [
+      "registry",
+      "persistence",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1071",
+    "name": "Application Layer Protocol",
+    "tactics": [
+      "TA0011"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may communicate using application layer protocols to avoid detection.",
+    "detection": "Monitor network traffic for unusual use of application protocols.",
+    "url": "https://attack.mitre.org/techniques/T1071/",
+    "tags": [
+      "c2",
+      "command-and-control",
+      "protocol"
+    ]
+  },
+  {
+    "technique_id": "T1071.001",
+    "name": "Web Protocols",
+    "tactics": [
+      "TA0011"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1071",
+    "description": "Adversaries may communicate using HTTP/HTTPS to avoid detection.",
+    "detection": "Monitor web traffic for beaconing patterns and unusual HTTP headers.",
+    "url": "https://attack.mitre.org/techniques/T1071/001/",
+    "tags": [
+      "http",
+      "https",
+      "c2",
+      "beaconing"
+    ]
+  },
+  {
+    "technique_id": "T1083",
+    "name": "File and Directory Discovery",
+    "tactics": [
+      "TA0007"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may enumerate files and directories to gather information.",
+    "detection": "Monitor for excessive file enumeration commands (ls, dir, find).",
+    "url": "https://attack.mitre.org/techniques/T1083/",
+    "tags": [
+      "discovery",
+      "file-enumeration"
+    ]
+  },
+  {
+    "technique_id": "T1021",
+    "name": "Remote Services",
+    "tactics": [
+      "TA0008"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may use valid accounts to log into a service over a network.",
+    "detection": "Monitor remote service connections and authentication events.",
+    "url": "https://attack.mitre.org/techniques/T1021/",
+    "tags": [
+      "lateral-movement",
+      "remote-services"
+    ]
+  },
+  {
+    "technique_id": "T1021.001",
+    "name": "Remote Desktop Protocol",
+    "tactics": [
+      "TA0008"
+    ],
+    "platforms": [
+      "Windows"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1021",
+    "description": "Adversaries may use Valid Accounts to log into a computer using RDP.",
+    "detection": "Monitor for RDP connections from unusual sources.",
+    "url": "https://attack.mitre.org/techniques/T1021/001/",
+    "tags": [
+      "rdp",
+      "lateral-movement",
+      "windows"
+    ]
+  },
+  {
+    "technique_id": "T1486",
+    "name": "Data Encrypted for Impact",
+    "tactics": [
+      "TA0040"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may encrypt data on target systems or on many systems in a network to interrupt availability.",
+    "detection": "Monitor for large-scale file encryption events and shadow copy deletion.",
+    "url": "https://attack.mitre.org/techniques/T1486/",
+    "tags": [
+      "ransomware",
+      "impact",
+      "encryption"
+    ]
+  },
+  {
+    "technique_id": "T1562",
+    "name": "Impair Defenses",
+    "tactics": [
+      "TA0005"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS",
+      "Cloud"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may maliciously modify components of a victim environment to hinder defense.",
+    "detection": "Monitor for changes to security tools and logging configurations.",
+    "url": "https://attack.mitre.org/techniques/T1562/",
+    "tags": [
+      "defense-evasion",
+      "disable-security-tools"
+    ]
+  },
+  {
+    "technique_id": "T1562.001",
+    "name": "Disable or Modify Tools",
+    "tactics": [
+      "TA0005"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": true,
+    "parent_technique_id": "T1562",
+    "description": "Adversaries may modify and/or disable security tools to avoid detection.",
+    "detection": "Monitor for disabling of antivirus, EDR, or logging tools.",
+    "url": "https://attack.mitre.org/techniques/T1562/001/",
+    "tags": [
+      "disable-av",
+      "disable-edr",
+      "defense-evasion"
+    ]
+  },
+  {
+    "technique_id": "T1068",
+    "name": "Exploitation for Privilege Escalation",
+    "tactics": [
+      "TA0004"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may exploit software vulnerabilities to elevate privileges.",
+    "detection": "Monitor for exploit-like activity targeting kernel or privileged processes.",
+    "url": "https://attack.mitre.org/techniques/T1068/",
+    "tags": [
+      "privilege-escalation",
+      "exploit"
+    ]
+  },
+  {
+    "technique_id": "T1136",
+    "name": "Create Account",
+    "tactics": [
+      "TA0003"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS",
+      "Cloud"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may create accounts to maintain access to victim systems.",
+    "detection": "Monitor for unexpected account creation events.",
+    "url": "https://attack.mitre.org/techniques/T1136/",
+    "tags": [
+      "persistence",
+      "account-creation"
+    ]
+  },
+  {
+    "technique_id": "T1082",
+    "name": "System Information Discovery",
+    "tactics": [
+      "TA0007"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may attempt to get detailed information about the operating system and hardware.",
+    "detection": "Monitor for commands like uname, systeminfo, hostnamectl.",
+    "url": "https://attack.mitre.org/techniques/T1082/",
+    "tags": [
+      "discovery",
+      "system-info"
+    ]
+  },
+  {
+    "technique_id": "T1046",
+    "name": "Network Service Discovery",
+    "tactics": [
+      "TA0007"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may attempt to get a listing of services running on remote hosts.",
+    "detection": "Monitor for port scanning activity (nmap, masscan).",
+    "url": "https://attack.mitre.org/techniques/T1046/",
+    "tags": [
+      "discovery",
+      "port-scan",
+      "network-enumeration"
+    ]
+  },
+  {
+    "technique_id": "T1027",
+    "name": "Obfuscated Files or Information",
+    "tactics": [
+      "TA0005"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may attempt to make an executable or file difficult to detect or analyze.",
+    "detection": "Monitor for encoded payloads, packed executables, and high-entropy files.",
+    "url": "https://attack.mitre.org/techniques/T1027/",
+    "tags": [
+      "obfuscation",
+      "defense-evasion",
+      "encoding"
+    ]
+  },
+  {
+    "technique_id": "T1105",
+    "name": "Ingress Tool Transfer",
+    "tactics": [
+      "TA0011"
+    ],
+    "platforms": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "is_sub_technique": false,
+    "parent_technique_id": "",
+    "description": "Adversaries may transfer tools or other files from an external system into a compromised environment.",
+    "detection": "Monitor for unexpected file downloads via curl, wget, certutil.",
+    "url": "https://attack.mitre.org/techniques/T1105/",
+    "tags": [
+      "c2",
+      "tool-transfer",
+      "staging"
+    ]
+  }
+]
