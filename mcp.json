@@ -1,5 +1,25 @@
 {
   "mcpServers": {
+    "cybersec": {
+      "name": "CyberSecSuite",
+      "description": "Main forensics MCP — 29 tools: findings, IOCs, cases, MITRE, CVE, intel, cache, proxy, crypto (stdio, FastMCP)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${workspaceFolder}",
+        "run",
+        "python",
+        "mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "CYBERSEC_DB_HOST": "localhost",
+        "CYBERSEC_DB_PORT": "5432",
+        "CYBERSEC_DB_USER": "cybersec",
+        "CYBERSEC_DB_NAME": "cybersec_forensics"
+      },
+      "cwd": "${workspaceFolder}"
+    },
     "dystopian-crypto": {
       "name": "Dystopian Crypto",
       "description": "Ed25519 key management, artifact signing/verification (Argon2id + AES-256-GCM)",
@@ -18,51 +38,9 @@
       },
       "cwd": "${workspaceFolder}"
     },
-    "cybersec": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "${workspaceFolder}",
-        "run",
-        "python",
-        "mcp_server.py"
-      ],
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/src:/home/daen/Projects/AI",
-        "PLUGIN_DATA_DIR": "${CLAUDE_PLUGIN_DATA}",
-        "CYBERSEC_BASE_DIR": "${workspaceFolder}/data",
-        "CYBERSEC_DB_HOST": "localhost",
-        "CYBERSEC_DB_PORT": "5432",
-        "CYBERSEC_DB_USER": "cybersec",
-        "CYBERSEC_DB_PASSWORD": "",
-        "CYBERSEC_DB_NAME": "cybersec_forensics",
-        "CYBERSEC_AUTO_CREATE_DB": "true",
-        "CYBERSEC_BOOTSTRAP_INTEL_ON_START": "false",
-        "CYBERSEC_INTEL_DIR": "${workspaceFolder}/data/cybersec-shared/intelligence"
-      }
-    },
-    "kerneldev": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "${workspaceFolder}",
-        "run",
-        "python",
-        "-m",
-        "kerneldev_mcp.server"
-      ],
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/src:/home/daen/Projects/AI",
-        "KERNEL_SRC": "/usr/src/linux-headers",
-        "KERNELDEV_WORKSPACE": "${workspaceFolder}/.claude/skills/kerneldev-forensic/templates",
-        "KERNELDEV_BUILD_OUTPUT": "${workspaceFolder}/kernel-modules-build",
-        "KERNELDEV_SIGNING_KEY": "${workspaceFolder}/.claude/skills/kerneldev-forensic/templates/MOK.priv",
-        "KERNELDEV_FORENSIC_MODE": "true"
-      }
-    },
     "token-optimization-mcp": {
       "name": "Token Optimization MCP",
-      "description": "Token caching and optimization tools for LLM requests",
+      "description": "Token counting, prompt compression, model routing and semantic caching (fastmcp, Redis-backed)",
       "command": "uv",
       "args": [
         "--directory",
@@ -71,21 +49,34 @@
         "python",
         "main.py"
       ],
-      "env": {}
+      "env": {
+        "USE_REDIS": "false",
+        "CACHE_TTL_SECONDS": "86400"
+      }
     },
     "playwright-stealth-mcp": {
       "name": "Playwright Stealth MCP",
-      "description": "Playwright browser automation with stealth anti-detection",
+      "description": "Headless Brave browser with fingerprint spoofing, anti-detection and human-like interaction (navigate, click, type, screenshot)",
       "command": "uv",
       "args": [
         "--directory",
         "${workspaceFolder}/mcps/playwright-stealth-mcp",
         "run",
         "python",
-        "main.py"
+        "server.py"
       ],
       "env": {
-        "PLAYWRIGHT_BROWSERS_PATH": "${workspaceFolder}/.browsers"
+        "BRAVE_PATH": "/usr/bin/brave-browser"
+      }
+    },
+    "kerneldev": {
+      "name": "KernelDev MCP",
+      "description": "Kernel module development — compile, load, inspect LKM; eBPF program analysis; kernel symbol lookup",
+      "command": "python",
+      "args": ["-m", "kerneldev_mcp.server"],
+      "env": {
+        "KERNEL_SRC": "/usr/src/linux",
+        "KERNELDEV_WORKSPACE": "./kernel-modules"
       }
     }
   }

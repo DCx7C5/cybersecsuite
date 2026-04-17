@@ -70,23 +70,23 @@ opts = ClaudeAgentOptions(
 ## Codebase Map
 
 ### Root
-| File                 | Lines | Purpose                                                                 |
-|----------------------|-------|-------------------------------------------------------------------------|
-| `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (→ being replaced by src/mcp/cybersec/) |
-| `mcp.json`           | 91    | 5 MCP servers for Claude Code CLI                                       |
-| `pyproject.toml`     | —     | Python 3.14, uv, all deps                                               |
-| `Makefile`           | —     | `make serve`, `make test`, etc.                                         |
-| `docker-compose.yml` | —     | ASGI + PostgreSQL + Redis, YAML anchors `&common`/`&db-env`/`&ai-keys`  |
-| `PROPOSAL.md`        | ~240  | Plugin separation architecture proposal                                 |
-| `PROPOSAL_MEM.md`    | ~250  | Global uncompressed claude memory cache proposal                        |
+| File                 | Lines | Purpose                                                                |
+|----------------------|-------|------------------------------------------------------------------------|
+| `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (→ being replaced by src/mcp/cybersec/)       |
+| `mcp.json`           | 83    | 5 MCP servers for Claude Code CLI                                      |
+| `pyproject.toml`     | —     | Python 3.14, uv, all deps                                              |
+| `Makefile`           | —     | `make serve`, `make test`, etc.                                        |
+| `docker-compose.yml` | —     | ASGI + PostgreSQL + Redis, YAML anchors `&common`/`&db-env`/`&ai-keys` |
+| `PROPOSAL.md`        | ~240  | Plugin separation architecture proposal                                |
+| `PROPOSAL_MEM.md`    | ~250  | Global uncompressed claude memory cache proposal                       |
 
 ### src/
-| File                  | Lines | Purpose                                                                 |
-|-----------------------|-------|-------------------------------------------------------------------------|
-| `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware    |
+| File                  | Lines | Purpose                                                                        |
+|-----------------------|-------|--------------------------------------------------------------------------------|
+| `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware           |
 | `src/manage.py`       | ~600  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
-| `src/logger.py`       | 30    | Structured logger                                                       |
-| `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools |
+| `src/logger.py`       | 30    | Structured logger                                                              |
+| `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools        |
 
 ### src/a2a/
 | File                | Lines | Purpose                                                              |
@@ -239,13 +239,13 @@ Model tiers:
 **B. A2A Protocol** (external): `POST /a2a` JSON-RPC → OrchestratorAgent → registry → `execute()`
 
 ### mcp.json — 5 MCP servers for Claude Code CLI
-| Key                      | Server                                                         |
-|--------------------------|----------------------------------------------------------------|
-| `cybersec`               | Main forensics (29 tools, stdio, `mcp_server.py`)              |
-| `dystopian-crypto`       | Crypto/CA/GPG (`mcps/dystopian-crypto-mcp/app.py` — **EMPTY**) |
-| `kerneldev`              | Kernel module dev (`kerneldev_mcp.server`)                     |
-| `token-optimization-mcp` | Token caching                                                  |
-| `playwright-stealth-mcp` | Browser automation                                             |
+| Key                      | Server                                                                          |
+|--------------------------|---------------------------------------------------------------------------------|
+| `cybersec`               | Main forensics (29 tools, stdio, `mcp_server.py`, uv)                           |
+| `dystopian-crypto`       | Crypto — Ed25519/Argon2id/AES-256-GCM (`src/mcp/dystopian.py`, uv)             |
+| `token-optimization-mcp` | Token counting, prompt compression, semantic caching (`mcps/token-optimization-mcp/main.py`, uv) |
+| `playwright-stealth-mcp` | Headless Brave browser automation (`mcps/playwright-stealth-mcp/server.py`, uv) |
+| `kerneldev`              | Kernel module dev / eBPF / symbol lookup (`kerneldev_mcp.server`, python)       |
 
 ---
 
@@ -441,6 +441,9 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 - **token-optimizer agent** — `.claude/agents/token-optimizer.md` (haiku, redundancy/compression specialist)
 - **11 new specialist agents added** — audiovideo-analyst, certificate-analyst, cpp-developer, encoding-specialist, frontend-design, logfile-analyst, postgres-db-engineer, process-analyst, senior-frontend, settings-analyst, vuln-scanner (Sonnet) → **33 agents total**
 - **Provider expansion** — 48 → 51 → **60 providers** in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes, replicate, lepton, runpod, writer, reka, zhipu, yi, minimax, stepfun)
+- **Skills MAPPER.md** — `.claude/skills/MAPPER.md` generated: 730 Anthropic-matched skills + 203 project-native; mapping rule: local `<domain>/<path>/SKILL.md` ↔ Anthropic `<slug>/SKILL.md` via normalized body hash
+- **Skills asset sync** — **3,276 non-SKILL.md files** copied from Anthropic-Cybersecurity-Skills to corresponding local skill dirs: 1,280 `references/`, 995 `scripts/`, 729 `LICENSE`, 267 `assets/`; rule: `network/assessment/ciscoise/` ← Anthropic source skill `<slug>/`
+- **SIEM-SOC decentralization** — 27 → 9 skills in `siem-soc/`; 18 skills redistributed to natural domains (identity×3, endpoint-security×2, network×2, ops×6, database×2, forensics×1, kernel-os×1, incident-response×1); new `ops/soc-operations/` domain created; INDEX.md regenerated (933 skills, 25 domains); MAPPER.md extended with reorganization map
 
 ### docs/ — 9 files
 `architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`, `teams.md`
@@ -513,10 +516,75 @@ FastMCP typed-param pattern prevents trivial merge — deferred to `mcp-shim-upd
 ### Phase C — SSL/TLS
 `ssl-dystopian-integrate` → `ssl-cert-generation` → `ssl-cli-commands` → `ssl-dashboard-tab` → `ssl-proxy-config`
 
-### Phase E — SSE Frontend (optional)
+### Phase D.5 — PoC Table (NEW)
+| Step | Todo                  | Purpose                                                                                                                                                                                                                                                                                                          |
+|------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1    | `poc-enums`           | Add `PoCStatus`, `PoCFramework`, `PoCLanguage` enums                                                                                                                                                                                                                                                             |
+| 2    | `poc-model`           | Implement `src/db/models/poc.py` (name, description, cve_intel FK, source_url, repository, language, framework, author, tags, severity, mitre_techniques, requires_auth, requires_network_access, requires_local_access, tested_versions, detection_evasion, payload_type, status, popularity_score, timestamps) |
+| 3    | `poc-seeds`           | Create `src/db/fixtures/poc_entries.json` (5-10 canonical CVEs: Log4Shell, MOVEit, etc.)                                                                                                                                                                                                                         |
+| 4    | `poc-bootstrap`       | Add `seed_poc()` to `src/db/seeds.py`, wire to `initialize_default_seed_data()`                                                                                                                                                                                                                                  |
+| 5    | `poc-seeds-cli`       | Add `seed-poc` command to `manage.py`                                                                                                                                                                                                                                                                            |
+| 6    | `poc-mcp-tools`       | Add MCP tools: `query_poc_by_cve`, `add_poc`, `get_poc_popularity` in `src/mcp/cybersec/`                                                                                                                                                                                                                        |
+| 7    | `poc-dashboard-tab`   | Add PoC inventory tab + `/api/poc` endpoint to dashboard                                                                                                                                                                                                                                                         |
+| 8    | `poc-integrity-check` | Add fixture coverage to `src/checks/integrity.py`                                                                                                                                                                                                                                                                |
+| 9    | `poc-tests`           | CRUD + FK relationship tests                                                                                                                                                                                                                                                                                     |
+| 10   | `memory-sync`         | Update `.claude/MEMORY.md` roadmap                                                                                                                                                                                                                                                                               |
+
+**Rationale**: Track proof-of-concept exploits linked to CVEs. Enables analysts to assess exploitability in forensic investigations.
+**Relationships**: CVEIntel ↔ PoC (1-to-many), Finding can reference PoC.
+
+### Phase D.5 — PoC Table (IN PROGRESS)
+| Step | Todo | Purpose |
+|------|------|---------|
+| 1 | `poc-enums` | Add `PoCStatus`, `PoCFramework`, `PoCLanguage` enums |
+| 2 | `poc-model` | Implement `src/db/models/poc.py` (name, description, cve_intel FK, source_url, repository, language, framework, author, tags, severity, mitre_techniques, requires_auth, requires_network_access, requires_local_access, tested_versions, detection_evasion, payload_type, status, popularity_score, timestamps) |
+| 3 | `poc-seeds` | Create `src/db/fixtures/poc_entries.json` (5-10 canonical CVEs: Log4Shell, MOVEit, etc.) |
+| 4 | `poc-bootstrap` | Add `seed_poc()` to `src/db/seeds.py`, wire to `initialize_default_seed_data()` |
+| 5 | `poc-seeds-cli` | Add `seed-poc` command to `manage.py` |
+| 6 | `poc-mcp-tools` | Add MCP tools: `query_poc_by_cve`, `add_poc`, `get_poc_popularity` in `src/mcp/cybersec/` |
+| 7 | `poc-dashboard-tab` | Add PoC inventory tab + `/api/poc` endpoint to dashboard |
+| 8 | `poc-integrity-check` | Add fixture coverage to `src/checks/integrity.py` |
+| 9 | `poc-tests` | CRUD + FK relationship tests |
+| 10 | `memory-sync` | Update `.claude/MEMORY.md` roadmap |
+
+**Rationale**: Track proof-of-concept exploits linked to CVEs. Enables analysts to assess exploitability in forensic investigations.
+**Relationships**: CVEIntel ↔ PoC (1-to-many), Finding can reference PoC.
+
+### Phase E — File Mapping (QUEUED)
+| Step | Todo | Files |
+|------|------|-------|
+| 1 | `files-inventory` | Generate FILES_INVENTORY.md breakdown |
+| 2-4 | `files-copy-licenses`, `files-copy-agent-py`, `files-copy-api-refs` | Copy universal files (~2,500 total) |
+| 5-7 | `files-copy-process-py`, `files-copy-other-refs`, `files-copy-assets` | Copy selective files (~900 total) |
+| 8-10 | `files-resolve-local-conflicts`, `files-symlink-decision`, `files-update-comprehensive-mapper` | Merge + document |
+
+**Rationale**: Sync supporting assets (LICENSE, scripts, references, templates) from Anthropic source to local tree. Enables offline reference, attribution, and automation.
+
+### Phase D.6 — SIEM-SOC Reorganization (NEW)
+Decentralize SIEM-SOC skills from monolithic domain into first-layer homes (identity, endpoint, network, ops, etc.).
+
+| Step | Todo | Target | Skills |
+|------|------|--------|--------|
+| 1-2 | `siem-new-dirs`, `siem-identify-conflicts` | Prep | New ops/soc-operations/ |
+| 3 | `siem-migrate-identity` | identity/ | credential-detection, bruteforce-detection, credential-dumping (3) |
+| 4 | `siem-migrate-endpoint` | endpoint-security/ | wazuh, ueba (2) |
+| 5 | `siem-migrate-network` | network/ | dns-tunneling, lateral-movement-detection (2) |
+| 6 | `siem-migrate-ops` | ops/soc-operations/ | alert-tuning, onboarding, kpi-metrics, escalation, ticketing, chaos-eng (6) |
+| 7 | `siem-migrate-database` | database/logging/ | log-aggregation, syslog (2) |
+| 8 | `siem-migrate-forensics` | forensics/ | memory-analysis-siem (1) |
+| 9 | `siem-migrate-kernel` | kernel-os/ebpf/ | ebpf-monitoring (1) |
+| 10 | `siem-migrate-incresponse` | incident-response/ | insider-threat (1) |
+| 11 | `siem-cleanup` | siem-soc/ | Remove empty dirs, consolidate (14 remain) |
+| 12-14 | `siem-update-skill-names`, `siem-update-mapper`, `siem-update-index` | Metadata | Update INDEX.md + MAPPER.md |
+| 15-16 | `siem-validate-structure`, `siem-integrity-check` | Validate | Verify structure + check integrity |
+
+**Rationale**: Reorganize 27 SIEM skills into logically appropriate first-layer domains. Consolidate siem-soc/ to 14 platform-specific/generic SIEM skills. Create new `ops/soc-operations/` domain (6 skills).
+**Result**: Better skill discovery, clearer domain taxonomy, decentralized SIEM concerns.
+
+### Phase F — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
 
-### Phase F — OmniRoute
+### Phase G — OmniRoute
 `omniroute-integrate` — add to mcp.json, wire allowed_tools
 
 ---
