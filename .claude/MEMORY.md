@@ -211,12 +211,12 @@ In-process metrics store with ring-buffer, percentile summaries, ASGI middleware
 Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
 
 ### src/dashboard/ (36 routes, 82 model registry)
-| File          | Lines | Purpose                                                                        |
-|---------------|-------|--------------------------------------------------------------------------------|
-| `routes.py`   | 63    | Thin route wiring — 36 Starlette routes                                        |
-| `_html.py`    | 561   | SPA HTML template (inline JS, CSS, tab navigation)                             |
-| `_handlers.py`| 1228  | All API handlers — 30 REST + 4 SSE + 3 new endpoints (models/tables/agent-query)|
-| `_schema.py`  | 149   | Tortoise model introspector — discovers 82 models, serialization, pagination   |
+| File           | Lines | Purpose                                                                          |
+|----------------|-------|----------------------------------------------------------------------------------|
+| `routes.py`    | 63    | Thin route wiring — 36 Starlette routes                                          |
+| `_html.py`     | 561   | SPA HTML template (inline JS, CSS, tab navigation)                               |
+| `_handlers.py` | 1228  | All API handlers — 30 REST + 4 SSE + 3 new endpoints (models/tables/agent-query) |
+| `_schema.py`   | 149   | Tortoise model introspector — discovers 82 models, serialization, pagination     |
 
 **New endpoints (Phase H/I)**:
 - `GET /api/models` — lists all 82 registered DB models with table name + field count
@@ -331,7 +331,7 @@ Both `cybersec` and `dystopian-crypto` use agent-sdk `create_sdk_mcp_server` + `
 
 ### Philosophy
 **Skills = components** (tools, protocols, systems, software).
-**Actions = leaf directory names** (the specific tool/technique applied to a component).
+**Leaf directories = the specific tool/technique** applied to a component.
 **Activities ≠ domains** — `red-team/`, `forensics/`, `incident-response/` are methods, not components.
 
 ### Current State (933 skills, 26 active domains)
@@ -342,7 +342,8 @@ Both `cybersec` and `dystopian-crypto` use agent-sdk `create_sdk_mcp_server` + `
 | **Total**                | **933** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
 **Frontmatter** — ✅ COMPLETE
-- Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
+- Removed: `mcpServers`, `version`, `license`, `author` (redundant/global), `action` (all 933 files)
+- Descriptions: single-line, unquoted (cleaned in Phase I.5)
 - Action collision resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
 
 ### Domain Structure (after Phase 5+7 restructuring ✅)
@@ -379,9 +380,9 @@ Both `cybersec` and `dystopian-crypto` use agent-sdk `create_sdk_mcp_server` + `
 ```
 
 ### Naming Rules
-- **Taxonomy dirs**: CAN have hyphens (`cloud-security`, `crypto-pki`, `red-team`)
+- **Taxonomy dirs**: CAN have hyphens (`cloud-security`, `crypto-pki`)
 - **Leaf skill dirs**: Single-word only (`volatility3`, `cobaltstrike`, `kerberoasting`)
-- **Deep taxonomy** (new classical domains): `name:` = join layers 2→last with hyphens; last dir = action verb
+- **Deep taxonomy**: `name:` = join layers 2→last with hyphens
   - Example: `network/protocol/tcp/syn-flood/detect` → `name: protocol-tcp-syn-flood-detect`
 - 224 explicit collision overrides for disambiguation
 
@@ -389,8 +390,7 @@ Both `cybersec` and `dystopian-crypto` use agent-sdk `create_sdk_mcp_server` + `
 ```yaml
 ---
 name: skill-name
-description: "..."
-action: leaf-dir-name
+description: Single-line unquoted description text.
 domain: cybersecurity             # Anthropic-sourced only
 subdomain: malware-analysis       # Anthropic-sourced only
 tags: [volatility, memory]
@@ -406,11 +406,13 @@ source: Anthropic-Cybersecurity-Skills   # absent for 26 project-native
 ---
 ```
 
-**Field inventory** (all 780 skills):
+**Frontmatter cleanup** (Phase I.5): Removed `action:` line from all 933 files, merged multi-line descriptions into single line, stripped wrapping quotes. All SKILL.md now have clean YAML.
+
+**Field inventory** (933 skills):
 | Field | Present | Notes |
 |-------|---------|-------|
-| `name`, `description`, `action` | 780 | always present |
-| `model`, `maxTurns`, `tools` | 780 | always present |
+| `name`, `description` | 933 | always present, single-line unquoted |
+| `model`, `maxTurns`, `tools` | 780 | Anthropic-sourced + some project-native |
 | `tags` | 780 | 2,283 unique |
 | `mitre_attack` | 644 | 131 unique technique IDs |
 | `nist_csf` | 752 | 46 unique subcategories (all Anthropic) |
@@ -431,13 +433,6 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - `ops/mode/blue-team/SKILL.md` — blue team mode activation
 - `red-team/SKILL.md` — red team orchestrator index
 - `kernel-os/linux/lkm/kerneldev-forensic/` — full skill with config/, examples/, scripts/, templates/
-
----
-
-## ~~mcp_server.py Split Plan~~ — DONE ✅
-
-`mcp_server.py` **DELETED** in Phase H. All tools now in `src/csmcp/cybersec/` (31 tools, agent-sdk).
-Tool naming: `mcp__cybersec__<tool>` (SDK). `mcp.json` uses `python -m csmcp.cybersec.server`.
 
 ---
 
@@ -495,7 +490,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK). `mcp.json` uses `python -m csmcp.cyb
 - Phase H — **mcp_server.py DELETED**, agent-sdk migration complete, `src/csmcp/` rename, `src/agent/` package created
 - Phase I — Tool inventory (`docs/tools.md`), MEMORY.md sync, `mcp.json` cleanup (stale entries removed)
 - Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
-- Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated
+- Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated, frontmatter cleaned (action: removed, descriptions single-line unquoted)
 - Provider expansion — 60 providers in `registry.py`
 - 34 agents total (33 specialists + AGENT_FACTORY)
 
