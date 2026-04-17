@@ -89,6 +89,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="tab" onclick="showTab('intel')">&#x1f9e0; Intel</div>
     <div class="tab" onclick="showTab('audit')">&#x1f4cb; Audit</div>
     <div class="tab" onclick="showTab('compliance')">&#x2705; Compliance</div>
+    <div class="tab" onclick="showTab('agent-query')">&#x1f916; Agent Query</div>
     <div class="tab" onclick="showTab('explorer')">&#x1f50e; Explorer</div>
   </div>
 
@@ -274,6 +275,47 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
        <div class="stat-card"><div class="stat-value" id="comp-high">—</div><div class="stat-label">High</div></div>
      </div>
      <div id="compliance-table"></div>
+   </div>
+
+   <!-- Agent Query tab -->
+   <div id="tab-agent-query" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f916; Interactive Agent Query</h3>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+       <div>
+         <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Agent</label>
+         <select id="aq-agent"
+           class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">
+           <option value="cybersec">cybersec (orchestrator)</option>
+         </select>
+       </div>
+       <div>
+         <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Context Table (optional)</label>
+         <select id="aq-context-table"
+           class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">
+           <option value="">None</option>
+         </select>
+       </div>
+       <div>
+         <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Row IDs (comma-sep)</label>
+         <input id="aq-row-ids" type="text" placeholder="e.g. 1,2,3"
+           class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" />
+       </div>
+     </div>
+     <div class="mb-3">
+       <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Prompt <span class="text-gray-600">(Ctrl+Enter to send)</span></label>
+       <textarea id="aq-prompt" rows="4" placeholder="Ask the agent anything…"
+         class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none resize-y font-mono"
+         onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();runAgentQuery();}"></textarea>
+     </div>
+     <div class="flex items-center gap-3 mb-4">
+       <button onclick="runAgentQuery()"
+         class="px-4 py-2 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors"
+         id="aq-submit">&#x25b6; Run Query</button>
+       <button onclick="clearAgentHistory()"
+         class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg transition-colors">Clear History</button>
+       <span id="aq-status" class="text-xs text-gray-500"></span>
+     </div>
+     <div id="aq-history" class="space-y-4"></div>
    </div>
 
    <!-- Explorer tab -->
@@ -603,6 +645,8 @@ async function refresh() {
         {key: 'table_name', label: 'Table', type: 'string'},
         {key: 'rows', label: 'Rows', type: 'number'},
       ], dbRows, {sortCol: 1, sortDir: 'desc'});
+      // Populate agent-query context table selector
+      _aqPopulateContextTables(Object.keys(dv.counts || {}));
     }
 
     // Agents tab
@@ -632,6 +676,8 @@ async function refresh() {
         {key: 'skills', label: 'Skills', type: 'string'},
         {key: 'url', label: 'URL', type: 'string'},
       ], agentRows);
+      // Populate agent-query selector
+      _aqPopulateAgents(agv.agents || []);
     }
 
     // Routing tab
@@ -1010,6 +1056,100 @@ async function fetchApi(endpoint) {
     console.error('API fetch failed for ' + endpoint, e);
     return { error: 'Failed to fetch: ' + e.message };
   }
+}
+
+// ── Agent Query panel ────────────────────────────────────────────────────────
+let _aqHistory = [];
+
+function _aqPopulateAgents(agents) {
+  const sel = $('aq-agent');
+  const current = sel.value;
+  // preserve existing default option, rebuild the rest
+  while (sel.options.length > 1) sel.remove(1);
+  (agents || []).forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a.name;
+    opt.textContent = a.name + (a.claude_metadata?.role === 'orchestrator' ? ' (orch)' : '');
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+}
+
+function _aqPopulateContextTables(models) {
+  const sel = $('aq-context-table');
+  while (sel.options.length > 1) sel.remove(1);
+  (models || []).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    sel.appendChild(opt);
+  });
+}
+
+async function runAgentQuery() {
+  const agent = $('aq-agent').value || 'cybersec';
+  const prompt = ($('aq-prompt').value || '').trim();
+  if (!prompt) { $('aq-status').textContent = '⚠ Prompt is empty'; return; }
+
+  const contextTable = $('aq-context-table').value || null;
+  const rowIds = ($('aq-row-ids').value || '').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+
+  const btn = $('aq-submit');
+  const status = $('aq-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
+  status.textContent = 'Sending to agent "' + agent + '"…';
+
+  const t0 = Date.now();
+  try {
+    const body = { agent, prompt };
+    if (contextTable) body.context_table = contextTable;
+    if (rowIds.length) body.row_ids = rowIds;
+
+    const res = await fetch('/dashboard/api/agent-query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    const elapsed = Date.now() - t0;
+
+    if (data.status === 'error') {
+      status.textContent = '✗ Error: ' + data.error;
+    } else {
+      status.textContent = '✓ Done in ' + (data.elapsed_ms ?? elapsed) + 'ms';
+      _aqHistory.unshift({ agent: data.agent || agent, prompt, response: data.response || '', ts: new Date().toLocaleTimeString(), elapsed_ms: data.elapsed_ms ?? elapsed });
+      $('aq-prompt').value = '';
+      _aqRenderHistory();
+    }
+  } catch (e) {
+    status.textContent = '✗ ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ Run Query';
+  }
+}
+
+function _aqRenderHistory() {
+  const el = $('aq-history');
+  if (!_aqHistory.length) { el.innerHTML = '<p class="text-xs text-gray-600">No queries yet.</p>'; return; }
+  el.innerHTML = _aqHistory.map((h, i) => {
+    const resp = (h.response || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    return '<div class="border border-gray-700 rounded-lg p-4 bg-gray-900">'
+      + '<div class="flex justify-between items-start mb-2">'
+      + '<span class="text-xs font-semibold text-cyan-400">' + h.agent + '</span>'
+      + '<span class="text-xs text-gray-600">' + h.ts + ' · ' + h.elapsed_ms + 'ms</span>'
+      + '</div>'
+      + '<div class="text-xs text-gray-300 font-mono mb-3 whitespace-pre-wrap border-l-2 border-cyan-800 pl-3">' + (h.prompt.replace(/</g,'&lt;')) + '</div>'
+      + '<div class="text-sm text-gray-100 font-mono whitespace-pre-wrap leading-relaxed">' + resp + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function clearAgentHistory() {
+  _aqHistory = [];
+  _aqRenderHistory();
+  $('aq-status').textContent = '';
 }
 
 // ── Explorer: generic table viewer ──────────────────────────────────────────
