@@ -1,0 +1,20 @@
+---
+name: monitoring-ebpf-tracepoint-deploy
+description: >
+  Deploy eBPF tracepoint programs to monitor system calls, process lifecycle, network events, and file operations with sub-microsecond overhead for live threat detection.
+action: deploy
+domain: cybersecurity
+subdomain: process-forensics
+tags:
+  - ebpf
+  - tracepoint
+  - syscall
+  - bcc
+  - bpftrace
+  - falco
+  - process-monitoring
+nist_csf:
+  - DE.CM-03
+  - DE.CM-04
+  - DE.AE-01
+---

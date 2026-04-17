@@ -1,0 +1,20 @@
+---
+name: samba-config-audit
+description: >
+  Audit Samba server configuration for security misconfigurations including guest access, print server exposure, weak cipher suites, and NTLMv1 compatibility.
+action: audit
+domain: cybersecurity
+subdomain: network-filesystem-security
+tags:
+  - samba
+  - smb
+  - config-audit
+  - guest-access
+  - ntlmv1
+  - linux-samba
+nist_csf:
+  - ID.RA-01
+  - PR.DS-02
+mitre:
+  - T1135
+---

@@ -1,0 +1,19 @@
+---
+name: integrity-tripwire-deploy
+description: >
+  Deploy Tripwire file integrity monitoring to cryptographically sign and verify critical system files, detecting unauthorized modifications and rootkit placement.
+action: deploy
+domain: cybersecurity
+subdomain: filesystem-security
+tags:
+  - tripwire
+  - file-integrity
+  - cryptographic-hash
+  - rootkit-detection
+nist_csf:
+  - PR.DS-01
+  - DE.CM-07
+mitre:
+  - T1070.004
+  - T1014
+---

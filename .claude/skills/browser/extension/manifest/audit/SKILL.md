@@ -1,0 +1,22 @@
+---
+name: extension-manifest-audit
+description: >
+  Audit browser extension manifest.json files for dangerous permissions including all_urls, tabs, webRequest, nativeMessaging, and clipboard access.
+action: audit
+domain: cybersecurity
+subdomain: browser-forensics
+tags:
+  - extension
+  - manifest
+  - permission
+  - all-urls
+  - web-request
+  - audit
+nist_csf:
+  - ID.RA-01
+  - PR.AC-04
+mitre:
+  - T1176
+cwe:
+  - CWE-272
+---

@@ -1,0 +1,21 @@
+---
+name: chrome-history-analyze
+description: >
+  Analyse Chrome browsing history from the History SQLite database to reconstruct visited URLs, search queries, download paths, and visit timestamps.
+action: analyze
+domain: cybersecurity
+subdomain: browser-forensics
+tags:
+  - chrome
+  - history
+  - sqlite
+  - url
+  - download
+  - browsing-activity
+nist_csf:
+  - DE.AE-02
+  - RS.AN-03
+mitre:
+  - T1217
+  - T1005
+---
