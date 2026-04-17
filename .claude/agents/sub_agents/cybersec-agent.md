@@ -19,6 +19,39 @@ tools:
   - TodoWrite
   - WebFetch
   - WebSearch
+hooks:
+  - event: FirstInit
+    command: "python3 \"${workspaceFolder}/hooks/first_init.py\""
+  - event: SessionStart
+    command: "python3 \"${workspaceFolder}/hooks/session_start.py\""
+  - event: SessionEnd
+    command: "python3 \"${workspaceFolder}/hooks/session_end.py\""
+  - event: AgentStart
+    command: "python3 \"${workspaceFolder}/hooks/agent_start.py\""
+  - event: AgentEnd
+    command: "python3 \"${workspaceFolder}/hooks/agent_end.py\""
+  - event: PhaseStart
+    command: "python3 \"${workspaceFolder}/hooks/phase_start.py\""
+  - event: PhaseEnd
+    command: "python3 \"${workspaceFolder}/hooks/phase_end.py\""
+  - event: InvestigationStart
+    command: "python3 \"${workspaceFolder}/hooks/investigation_start.py\""
+  - event: InvestigationEnd
+    command: "python3 \"${workspaceFolder}/hooks/investigation_end.py\""
+  - event: IOCDiscovered
+    command: "python3 \"${workspaceFolder}/hooks/ioc_discovered.py\""
+  - event: EvidenceCollected
+    command: "python3 \"${workspaceFolder}/hooks/evidence_collected.py\""
+  - event: FindingConfirmed
+    command: "python3 \"${workspaceFolder}/hooks/finding_confirmed.py\""
+  - event: ModeSwitch
+    command: "python3 \"${workspaceFolder}/hooks/mode_switch.py\""
+  - event: PermissionViolation
+    command: "python3 \"${workspaceFolder}/hooks/permission_violation.py\""
+  - event: RootCommandExecuted
+    command: "python3 \"${workspaceFolder}/hooks/root_command_executed.py\""
+  - event: BaselineUpdated
+    command: "python3 \"${workspaceFolder}/hooks/baseline_updated.py\""
 ---
 
 # Cybersec Agent — Central Orchestrator & Elite APT/Rootkit Investigator
