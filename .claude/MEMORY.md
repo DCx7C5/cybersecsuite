@@ -130,7 +130,7 @@ Keys: `/etc/dystopian-crypto/keys`. Certs: `~/.omniroute/certs/`.
 | `config.py` | 253 |
 | `cli_integration.py` | 299 |
 
-### src/db/ (42 models, complete ✅)
+### src/db/ (41 models, complete ✅)
 PostgreSQL via Tortoise ORM (asyncpg). DB: `cybersec_forensics`.
 Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, and 25+ more.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
@@ -230,14 +230,9 @@ Model tiers:
 | Anthropic-integrated     | 754     | Full Anthropic workflow + CyberSecSuite integration      |
 | **Total**                | **780** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
-**Frontmatter enrichment** — ✅ COMPLETE (all 780 updated)
-- `action: <leaf_dir>` on all 780 (unique within each domain)
-- `mitre_attack:` on 644 skills (131 unique technique IDs, T1xxx format)
-- `cwe:` on 99 skills (33 unique CWE IDs, CWE-xxx format)
-- `cve:` on 51 skills (58 unique real CVE IDs)
-- `tags:` on all 780 skills (2,283 unique tags)
+**Frontmatter** — ✅ COMPLETE
 - Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
-- Duplicate resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
+- Action collision resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
 
 ### Domain Structure (after red-team redistribution ✅)
 ```
@@ -291,18 +286,36 @@ DNS recon→`network/dns/`, socialeng→`ops/socialeng/`, purple→`ops/purplete
 ---
 name: skill-name
 description: "..."
+action: leaf-dir-name
+domain: cybersecurity             # Anthropic-sourced only
+subdomain: malware-analysis       # Anthropic-sourced only
+tags: [volatility, memory]
+d3fend_techniques: [...]          # Anthropic-sourced only (139 skills)
+nist_csf: [DE.AE-02]             # Anthropic-sourced only (all 754)
+mitre_attack: [T1055, T1003]     # 644 skills
+cwe: [CWE-120]                   # 99 skills
+cve: [CVE-2021-44228]            # 51 skills
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-action: leaf-dir-name
-tags: [volatility, memory]
-mitre_attack: [T1055, T1003]
-cwe: [CWE-120]
-cve: [CVE-2021-44228]
-nist_csf: [DE.AE-02]
-source: Anthropic-Cybersecurity-Skills   # or empty for project-native
+source: Anthropic-Cybersecurity-Skills   # absent for 26 project-native
 ---
 ```
+
+**Field inventory** (all 780 skills):
+| Field | Present | Notes |
+|-------|---------|-------|
+| `name`, `description`, `action` | 780 | always present |
+| `model`, `maxTurns`, `tools` | 780 | always present |
+| `tags` | 780 | 2,283 unique |
+| `mitre_attack` | 644 | 131 unique technique IDs |
+| `nist_csf` | 754 | 46 unique subcategories (all Anthropic) |
+| `d3fend_techniques` | 139 | D3FEND defensive techniques |
+| `domain`, `subdomain` | 754 | Anthropic-sourced only |
+| `source` | 754 | `Anthropic-Cybersecurity-Skills` |
+| `cwe` | 99 | 33 unique CWE IDs |
+| `cve` | 51 | 58 unique CVE IDs |
+| `skills` | 22 | project-native cross-refs |
 
 ### Anthropic Skills Source
 All 754 from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
@@ -388,7 +401,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
 - Docs — 8 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart)
-- Skills taxonomy — 780 SKILL.md created, indexed, author+action metadata applied
+- Skills taxonomy — 780 SKILL.md created, indexed, enriched (MITRE/CWE/CVE/tags)
 
 ### docs/ — 8 files
 `architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
@@ -401,7 +414,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 | 3. Flatten same-name nests | Promote 75× `foo/foo/SKILL.md` → `foo/SKILL.md` | pending |
 | 4. Restructure malware/ | Merge statics, relocate tools to proper dirs | pending |
 | 5. Deep hierarchy + rename | Add 3-5 levels, path-based `name:` fields | pending |
-| 6. Generate fixtures | NIST CSF 2.0 + 2,245 tags → `data/fixtures/`, seed functions | pending |
+| 6. Generate fixtures | NIST CSF 2.0 + 2,283 tags → `data/fixtures/`, seed functions | pending |
 | 7. Sync indexes | Regenerate INDEX.md + skills.tree + MEMORY.md | pending |
 
 ### Phase A — MCP Split + SDK Package
