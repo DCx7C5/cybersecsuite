@@ -52,7 +52,7 @@ opts = ClaudeAgentOptions(
   "keys": { "directory": "/etc/dystopian-crypto/keys", "permissions": {...} },
   "cache": { "integrity_key": "cache_integrity", "default_ttl_hours": 24 },
   "security": { "min_password_length": 32, "require_password_file": true, "audit_logging": true },
-  "hooks_dir": "hooks/",
+  "hooks_dir": "src/hooks/",
   "hooks": {
     "PreToolUse":  [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/pre_tool_call.py\""}] }],
     "PostToolUse": [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/post_tool_use.py\""}] }],
@@ -186,7 +186,7 @@ Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecor
 **Known skips**: `db.models.forensic` (SessionPhase enum missing INIT), `db.models.yara_rule` (YaraRuleSource enum missing IOC_DERIVED) — `_schema.py` silently skips these on import error.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
 
-### src/checks/ (4 files, split from single 699L file)
+### src/checks/ (5 files, split from single 699L file)
 Integrity check module — validates model FK consistency, fixture coverage, and config file paths.
 | File                | Lines | Purpose                                            |
 |---------------------|-------|----------------------------------------------------|
@@ -194,9 +194,10 @@ Integrity check module — validates model FK consistency, fixture coverage, and
 | `_model_check.py`   | 281   | `check_models()` — FK consistency, field validation |
 | `_fixture_check.py` | 117   | `check_fixtures()` — fixture file coverage          |
 | `_config_check.py`  | 254   | `check_config()` — config paths, MCP entries         |
+| `_constants.py`     | —     | Shared constants (`_REPO_ROOT`, `_SRC_ROOT`, etc.) |
 | `__init__.py`       | —     | Re-exports                                          |
 
-**⚠️ 40 lint errors** in checks/ — F821 undefined names (`ast`, `Path`, `_REPO_ROOT`, `_SRC_ROOT`, `_SKIP_STEMS`, `_MODEL_BASES`, `_RELATIONAL_FIELDS`). Split left some imports behind. Fix in Phase J.
+✅ **Lint clean** — 0 ruff errors (was 40, fixed in Phase J).
 
 ### src/telemetry/ (5 files ✅ new)
 In-process metrics store with ring-buffer, percentile summaries, ASGI middleware.
@@ -250,7 +251,7 @@ templates/
   threat-intelligence/  session-index.md, threat-profile.md
 ```
 
-#### hooks/ — 29 .py files (root directory, NOT .claude/hooks)
+#### hooks/ → src/hooks/ (29 .py files, consolidated from root hooks/)
 **3 settings.json-wired** (Claude Code native hook system):
 `pre_tool_call.py` (PreToolUse), `post_tool_use.py` (PostToolUse), `session_end.py` (Stop)
 
@@ -491,6 +492,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - Phase I — Tool inventory (`docs/tools.md`), MEMORY.md sync, `mcp.json` cleanup (stale entries removed)
 - Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
 - Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated, frontmatter cleaned (action: removed, descriptions single-line unquoted)
+- Phase J — All 72 ruff lint errors fixed → 0, hooks/ consolidated to src/hooks/
 - Provider expansion — 60 providers in `registry.py`
 - 34 agents total (33 specialists + AGENT_FACTORY)
 
@@ -501,9 +503,8 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 
 ## Active Roadmap (Current)
 
-### Phase J — Lint Cleanup (NEXT)
-Fix 72 ruff errors across src/: 31 F821 undefined names, 30 F401 unused imports, 7 E402, 3 F841.
-Biggest offenders: `src/checks/` (40 errors). Auto-fix → manual fix → dead code audit → 0 errors.
+### Phase J — Lint Cleanup ✅
+Fixed all 72 ruff errors → 0. Auto-fixed 25 unused imports, fixed 2 undefined names, 8 unused vars, 2 bare excepts, 3 E402 noqa. Hooks consolidated from root `hooks/` → `src/hooks/`. settings.json paths updated.
 
 ### Phase K — Dashboard Full Buildout
 1. `renderTable()` JS component for _html.py (sortable, searchable, paginated, type-aware)
