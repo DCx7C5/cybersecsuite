@@ -17,9 +17,6 @@ tags:
 - crash-triage
 - binary-analysis
 - security-testing
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7
 - MAP-5.1

@@ -15,9 +15,6 @@ tags:
 - NIST-800-61
 - SOAR-integration
 - response-procedures
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - RS.MA-01
 - RS.MA-02

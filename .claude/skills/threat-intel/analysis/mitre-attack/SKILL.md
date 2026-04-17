@@ -14,7 +14,6 @@ tools:
   - WebFetch
 skills:
   - shared-memory
-author: dcx7c5
 tags:
 - threat-intel
 - analysis

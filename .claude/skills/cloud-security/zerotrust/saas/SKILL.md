@@ -16,9 +16,6 @@ tags:
 - conditional-access
 - oauth-governance
 - session-controls
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.AA-01
 - PR.AA-05

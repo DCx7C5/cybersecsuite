@@ -13,9 +13,6 @@ tags:
 - cve-2021-42287
 - privilege-escalation
 - domain-escalation
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Platform Monitoring
 - Process Code Segment Verification

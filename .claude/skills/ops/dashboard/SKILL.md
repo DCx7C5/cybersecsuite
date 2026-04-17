@@ -11,7 +11,6 @@ tools:
   - Glob
   - Grep
   - cybersec
-author: dcx7c5
 tags:
 - ops
 - dashboard

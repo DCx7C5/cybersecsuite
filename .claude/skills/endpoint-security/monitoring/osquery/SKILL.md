@@ -15,9 +15,6 @@ tags:
 - endpoint-monitoring
 - threat-hunting
 - fleet-management
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.PS-01
 - PR.PS-02

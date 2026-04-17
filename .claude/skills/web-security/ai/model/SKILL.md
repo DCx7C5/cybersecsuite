@@ -18,9 +18,6 @@ tags:
 - OWASP-LLM-Top10
 - NLP-classification
 - input-validation
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 atlas_techniques:
 - AML.T0051
 - AML.T0054

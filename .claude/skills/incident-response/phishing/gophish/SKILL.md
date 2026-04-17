@@ -13,9 +13,6 @@ tags:
 - awareness
 - gophish
 - simulation
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.AT-01
 - DE.CM-09

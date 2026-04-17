@@ -14,7 +14,6 @@ skills:
   - shared-memory
   - network/recon
   - threats/mitre-attack-mapper
-author: dcx7c5
 tags:
 - crypto-pki
 - tls

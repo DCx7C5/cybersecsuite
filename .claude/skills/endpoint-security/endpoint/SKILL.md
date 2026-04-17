@@ -15,9 +15,6 @@ tags:
 - data-loss-prevention
 - data-protection
 - content-inspection
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 atlas_techniques:
 - AML.T0024
 - AML.T0056

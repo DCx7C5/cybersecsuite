@@ -14,7 +14,6 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-author: dcx7c5
 tags:
 - red-team
 - mode-red-team

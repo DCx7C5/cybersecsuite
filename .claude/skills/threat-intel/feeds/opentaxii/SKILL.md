@@ -14,9 +14,6 @@ tags:
 - indicator-exchange
 - taxii-server
 - automation
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - ID.RA-01
 - ID.RA-05
@@ -148,7 +145,6 @@ print("[+] TAXII server configuration created")
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
 services:
   taxii-server:
     image: python:3.11-slim

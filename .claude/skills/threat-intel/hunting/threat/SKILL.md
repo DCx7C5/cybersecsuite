@@ -12,9 +12,6 @@ tags:
 - threat-intelligence
 - hunting-framework
 - proactive-detection
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - DE.CM-01
 - DE.AE-02

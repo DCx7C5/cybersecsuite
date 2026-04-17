@@ -14,9 +14,6 @@ tags:
 - correlation
 - siem-integration
 - threat-intelligence
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - ID.RA-01
 - ID.RA-05
@@ -74,7 +71,6 @@ MISP instances can synchronize with other MISP instances via push/pull mechanism
 
 ```yaml
 # docker-compose.yml for MISP deployment
-version: '3.8'
 services:
   misp:
     image: coolacid/misp-docker:core-latest

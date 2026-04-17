@@ -15,9 +15,6 @@ tags:
 - SIEM
 - log-analysis
 - security-monitoring
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 atlas_techniques:
 - AML.T0070
 - AML.T0066

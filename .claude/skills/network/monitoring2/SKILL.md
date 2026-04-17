@@ -15,7 +15,6 @@ skills:
   - shared-memory
   - tls/sslkeylog
   - threats/mitre-attack-mapper
-author: dcx7c5
 tags:
 - network
 - monitoring2

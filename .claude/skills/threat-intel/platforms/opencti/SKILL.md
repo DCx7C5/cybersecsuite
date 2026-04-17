@@ -14,9 +14,6 @@ tags:
 - opencti
 - enrichment
 - virustotal
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - ID.RA-01
 - ID.RA-05
@@ -71,7 +68,6 @@ OpenCTI uses a 0-100 confidence scale for indicators. Enrichment connectors can 
 
 ```yaml
 # docker-compose.yml (key services)
-version: '3'
 services:
   opencti:
     image: opencti/platform:6.4.4

@@ -19,9 +19,6 @@ tags:
 - DPIA
 - data-flow-mapping
 - risk-scoring
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - GV.PO-01
 - PR.DS-01

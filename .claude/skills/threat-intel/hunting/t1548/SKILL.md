@@ -12,9 +12,6 @@ tags:
 - mitre-t1548
 - elevation-control
 - windows-security
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Executable Denylisting
 - Execution Isolation

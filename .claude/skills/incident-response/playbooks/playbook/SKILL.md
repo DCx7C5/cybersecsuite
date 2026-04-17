@@ -14,9 +14,6 @@ tags:
 - incident-response
 - orchestration
 - cortex
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - DE.CM-01
 - DE.AE-02
@@ -115,7 +112,6 @@ sla: 60 minutes
 
 ```yaml
 id: phishing-investigation-full
-version: -1
 name: Phishing Investigation - Full
 description: Automated phishing email investigation with enrichment, analysis, and response
 starttaskid: "0"

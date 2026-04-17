@@ -11,9 +11,6 @@ tags:
 - aes
 - data-at-rest
 - symmetric-encryption
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.DS-01
 - PR.DS-02

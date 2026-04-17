@@ -15,9 +15,6 @@ tags:
 - shift-left
 - ci-cd-security
 - owasp-api-top-10
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.PS-01
 - ID.RA-01
@@ -166,7 +163,6 @@ The conformance scan dynamically tests a running API against its OpenAPI contrac
 
 ```yaml
 # 42c-conf.yaml
-version: "2.0"
 scan:
   target:
     url: https://api.example.com/v1

@@ -15,9 +15,6 @@ tags:
 - supply-chain
 - workflow-security
 - secure-sdlc
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.PS-01
 - GV.SC-07
@@ -64,7 +61,6 @@ mitre_attack:
 
 # Use Dependabot to auto-update pinned SHAs
 # .github/dependabot.yml
-version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"

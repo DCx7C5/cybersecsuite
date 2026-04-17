@@ -5,9 +5,6 @@ action: pci
 domain: cybersecurity
 subdomain: compliance-governance
 nist_csf: [GV.PO-01, PR.DS-01, PR.AA-01, DE.CM-01, ID.RA-01]
-version: "1.0"
-author: dcx7c5
-license: Apache-2.0
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]

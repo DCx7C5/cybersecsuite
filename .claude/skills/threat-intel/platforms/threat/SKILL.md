@@ -14,9 +14,6 @@ tags:
 - platform-building
 - misp
 - opencti
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - ID.RA-01
 - ID.RA-05
@@ -72,7 +69,6 @@ Building a Threat Intelligence Platform (TIP) involves deploying and integrating
 ### Step 1: Deploy Platform with Docker Compose
 
 ```yaml
-version: '3.8'
 services:
   # --- Storage Layer ---
   elasticsearch:

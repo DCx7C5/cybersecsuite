@@ -13,9 +13,6 @@ tags:
 - Event-7045
 - Sysmon
 - Windows-services
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Platform Hardening
 - System Configuration Permissions

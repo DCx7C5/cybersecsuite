@@ -13,9 +13,6 @@ tags:
 - s4u2proxy
 - privilege-escalation
 - lateral-movement
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis
 - Network Isolation

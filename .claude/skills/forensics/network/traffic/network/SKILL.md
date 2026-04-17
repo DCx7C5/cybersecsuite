@@ -13,9 +13,6 @@ tags:
 - network-forensics
 - c2-detection
 - data-exfiltration
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - File Metadata Consistency Validation
 - Certificate Analysis

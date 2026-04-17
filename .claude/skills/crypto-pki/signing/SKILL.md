@@ -11,7 +11,6 @@ tools:
   - Grep
 skills:
   - shared-memory
-author: dcx7c5
 tags:
 - crypto-pki
 - signing

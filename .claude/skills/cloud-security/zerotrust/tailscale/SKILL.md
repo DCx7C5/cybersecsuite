@@ -15,9 +15,6 @@ tags:
 - acl
 - identity-aware
 - headscale
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.AA-01
 - PR.AA-05
@@ -109,7 +106,6 @@ brew install --cask tailscale
 
 ```yaml
 # docker-compose.yml for Tailscale sidecar
-version: '3.8'
 services:
   tailscale:
     image: tailscale/tailscale:latest

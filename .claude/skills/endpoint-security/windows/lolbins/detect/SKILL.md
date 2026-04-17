@@ -12,9 +12,6 @@ tags:
 - lotl
 - fileless-attacks
 - process-monitoring
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Application Protocol Command Analysis
 - Network Isolation
@@ -149,7 +146,6 @@ description: >
 references:
   - https://lolbas-project.github.io/lolbas/Binaries/Certutil/
   - https://attack.mitre.org/techniques/T1105/
-author: Threat Detection Team
 date: 2026/01/20
 logsource:
   category: process_creation

@@ -15,9 +15,6 @@ tags:
 - oauth2
 - google-cloud
 - owasp-api-top-10
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.PS-01
 - ID.RA-01

@@ -17,9 +17,6 @@ tags:
 - networks
 - applications
 - data-security
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1
 - GOVERN-1.7

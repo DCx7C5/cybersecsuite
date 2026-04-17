@@ -15,9 +15,6 @@ tags:
 - compliance
 - prowler
 - scoutsuite
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.IR-01
 - ID.AM-08
@@ -133,7 +130,6 @@ Create a scheduled pipeline that runs CSPM checks daily and routes findings to a
 ```bash
 # Create a daily Prowler scan with EventBridge + CodeBuild (AWS)
 cat > buildspec.yml << 'EOF'
-version: 0.2
 phases:
   install:
     commands:

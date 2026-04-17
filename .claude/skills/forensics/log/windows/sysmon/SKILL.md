@@ -17,9 +17,6 @@ tags:
 - detection
 - threat-hunting
 - windows-security
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Execution Isolation
 - Process Termination

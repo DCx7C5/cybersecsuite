@@ -10,7 +10,6 @@ action: dynamic-analysis
   '
 domain: cybersecurity
 subdomain: mobile-security
-author: dcx7c5
 tags:
 - mobile-security
 - ios
@@ -20,8 +19,6 @@ tags:
 - keychain
 - ipa-analysis
 - owasp-mastg
-version: 1.0.0
-license: Apache-2.0
 nist_csf:
 - PR.PS-01
 - PR.AA-05

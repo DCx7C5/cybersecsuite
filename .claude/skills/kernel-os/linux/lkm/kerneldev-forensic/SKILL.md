@@ -15,7 +15,6 @@ skills:
   - shared-memory
   - threats/mitre-attack-mapper
   - kerneldev
-author: dcx7c5
 tags:
 - kernel-os
 - linux

@@ -16,9 +16,6 @@ tags:
 - policy-as-code
 - kubernetes
 - secure-sdlc
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 nist_ai_rmf:
 - GOVERN-1.1
 - MEASURE-2.7

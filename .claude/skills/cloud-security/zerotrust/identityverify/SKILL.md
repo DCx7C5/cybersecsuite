@@ -11,9 +11,6 @@ tags:
 - authentication
 - mfa
 - identity-verification
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 atlas_techniques:
 - AML.T0052
 nist_ai_rmf:

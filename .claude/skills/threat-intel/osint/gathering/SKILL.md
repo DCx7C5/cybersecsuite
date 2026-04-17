@@ -13,9 +13,6 @@ tags:
 - post-exploitation
 - osint
 - reconnaissance
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - ID.RA-01
 - GV.OV-02

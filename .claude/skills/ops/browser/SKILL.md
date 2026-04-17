@@ -16,7 +16,6 @@ skills:
   - tls/sslkeylog
   - network/recon
   - threats/mitre-attack-mapper
-author: dcx7c5
 tags:
 - ops
 - browser

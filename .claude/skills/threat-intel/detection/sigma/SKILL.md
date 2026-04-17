@@ -18,9 +18,6 @@ tags:
 - splunk
 - elastic
 - sentinel
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 d3fend_techniques:
 - Execution Isolation
 - Process Termination
@@ -75,7 +72,6 @@ description: Detects process accessing lsass.exe memory, indicative of credentia
 references:
     - https://attack.mitre.org/techniques/T1003/001/
     - https://github.com/gentilkiwi/mimikatz
-author: mahipal
 date: 2024/03/15
 modified: 2024/03/15
 tags:

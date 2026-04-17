@@ -10,7 +10,6 @@ action: insecure
   '
 domain: cybersecurity
 subdomain: mobile-security
-author: dcx7c5
 tags:
 - mobile-security
 - android
@@ -18,8 +17,6 @@ tags:
 - data-storage
 - owasp-mobile
 - penetration-testing
-version: 1.0.0
-license: Apache-2.0
 atlas_techniques:
 - AML.T0057
 nist_ai_rmf:

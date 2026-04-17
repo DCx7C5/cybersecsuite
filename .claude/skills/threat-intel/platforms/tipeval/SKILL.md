@@ -19,9 +19,6 @@ tags:
 - STIX-TAXII
 - CTI-program
 - procurement
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - ID.RA-01
 - ID.RA-05

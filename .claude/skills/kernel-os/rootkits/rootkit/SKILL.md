@@ -15,9 +15,6 @@ tags:
 - malware-analysis
 - rkhunter
 - forensics
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - RS.AN-01
 - RS.AN-03

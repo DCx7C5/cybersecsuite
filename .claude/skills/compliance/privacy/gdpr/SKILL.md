@@ -18,9 +18,6 @@ nist_csf:
 - PR.DS-01
 - PR.AA-01
 - ID.AM-02
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_ai_rmf:
 - MEASURE-2.7
 - MAP-5.1

@@ -13,9 +13,6 @@ tags:
 - cloud-metadata
 - internal-network
 - oob-detection
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.PS-01
 - ID.RA-01

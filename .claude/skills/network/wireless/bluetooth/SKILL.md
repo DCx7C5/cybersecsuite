@@ -10,7 +10,6 @@ action: bluetooth
   '
 domain: cybersecurity
 subdomain: wireless-security
-author: dcx7c5
 tags:
 - ble
 - bluetooth
@@ -20,8 +19,6 @@ tags:
 - wireless-security
 - iot-security
 - replay-attack
-version: 1.0.0
-license: Apache-2.0
 nist_csf:
 - PR.IR-01
 - DE.CM-01

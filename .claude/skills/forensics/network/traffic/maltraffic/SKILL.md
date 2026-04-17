@@ -15,9 +15,6 @@ tags:
 - PCAP
 - Wireshark
 - C2-detection
-version: 1.0.0
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - DE.AE-02
 - RS.AN-03

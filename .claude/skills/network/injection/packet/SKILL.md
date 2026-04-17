@@ -13,9 +13,6 @@ tags:
 - scapy
 - hping3
 - protocol-testing
-version: '1.0'
-author: dcx7c5
-license: Apache-2.0
 nist_csf:
 - PR.IR-01
 - DE.CM-01
