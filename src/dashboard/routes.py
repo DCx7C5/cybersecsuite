@@ -584,6 +584,254 @@ async def api_prompts(request: Request) -> JSONResponse:
     })
 
 
+async def api_findings(request: Request) -> JSONResponse:
+    """Security findings summary — totals by severity/status + recent 20."""
+    try:
+        from db.models.investigation import Finding
+        total = await Finding.all().count()
+        by_severity: dict[str, int] = {}
+        for sev in ("critical", "high", "medium", "low", "info"):
+            by_severity[sev] = await Finding.filter(severity=sev).count()
+        by_status: dict[str, int] = {}
+        for st in ("open", "investigating", "confirmed", "resolved", "false_positive"):
+            by_status[st] = await Finding.filter(status=st).count()
+
+        last_24h = await Finding.filter(
+            created_at__gte=__import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+            - __import__("datetime").timedelta(hours=24)
+        ).count()
+        last_7d = await Finding.filter(
+            created_at__gte=__import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+            - __import__("datetime").timedelta(days=7)
+        ).count()
+
+        recent = await Finding.all().order_by("-created_at").limit(20)
+        recent_list = [
+            {
+                "id": f.id,
+                "title": f.title,
+                "severity": f.severity if isinstance(f.severity, str) else f.severity.value,
+                "status": f.status if isinstance(f.status, str) else f.status.value,
+                "created_at": f.created_at.isoformat() if hasattr(f, "created_at") and f.created_at else None,
+            }
+            for f in recent
+        ]
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "by_severity": by_severity,
+        "by_status": by_status,
+        "trend": {"last_24h": last_24h, "last_7d": last_7d},
+        "recent": recent_list,
+    })
+
+
+async def api_iocs(request: Request) -> JSONResponse:
+    """IOC summary — totals by type/status/confidence + recent 20."""
+    try:
+        from db.models.investigation import IOC
+        total = await IOC.all().count()
+
+        # Aggregate by ioc_type (free-form field)
+        all_iocs = await IOC.all().values_list("ioc_type", flat=True)
+        by_type: dict[str, int] = {}
+        for t in all_iocs:
+            by_type[t or "unknown"] = by_type.get(t or "unknown", 0) + 1
+
+        by_status: dict[str, int] = {}
+        for st in ("active", "cleared", "watchlist", "expired"):
+            by_status[st] = await IOC.filter(status=st).count()
+        by_confidence: dict[str, int] = {}
+        for cf in ("low", "medium", "high", "confirmed"):
+            by_confidence[cf] = await IOC.filter(confidence=cf).count()
+
+        recent = await IOC.all().order_by("-updated_at").limit(20)
+        recent_list = [
+            {
+                "ioc_id": ioc.ioc_id,
+                "type": ioc.ioc_type,
+                "value": ioc.value,
+                "status": ioc.status if isinstance(ioc.status, str) else ioc.status.value,
+            }
+            for ioc in recent
+        ]
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "by_type": dict(sorted(by_type.items(), key=lambda x: -x[1])[:10]),
+        "by_status": by_status,
+        "by_confidence": by_confidence,
+        "recent": recent_list,
+    })
+
+
+async def api_yara(request: Request) -> JSONResponse:
+    """YARA rule summary — totals by status/severity/source + recent 10."""
+    try:
+        from db.models.yara_rule import YaraRule
+        total = await YaraRule.all().count()
+        by_status: dict[str, int] = {}
+        for st in ("draft", "tested", "optimized", "active", "deprecated"):
+            by_status[st] = await YaraRule.filter(status=st).count()
+        by_source: dict[str, int] = {}
+        for src in ("ioc_derived", "manual", "imported", "generated"):
+            by_source[src] = await YaraRule.filter(source=src).count()
+
+        recent = await YaraRule.all().order_by("-created_at").limit(10)
+        recent_list = [
+            {
+                "rule_id": r.rule_id,
+                "name": r.name,
+                "status": r.status if isinstance(r.status, str) else r.status.value,
+                "source": r.source if isinstance(r.source, str) else r.source.value,
+                "created_at": r.created_at.isoformat() if hasattr(r, "created_at") and r.created_at else None,
+            }
+            for r in recent
+        ]
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "by_status": by_status,
+        "by_source": by_source,
+        "recent": recent_list,
+    })
+
+
+async def api_network(request: Request) -> JSONResponse:
+    """Network assets summary — hosts and IP addresses."""
+    try:
+        from db.models.network import IPAddress, Host
+        total_hosts = await Host.all().count()
+        compromised = await Host.filter(is_compromised=True).count()
+        targets = await Host.filter(is_target=True).count()
+        total_ips = await IPAddress.all().count()
+        private_ips = await IPAddress.filter(is_private=True).count()
+
+        # Top countries by IP
+        all_countries = await IPAddress.all().values_list("geo_country", flat=True)
+        country_counts: dict[str, int] = {}
+        for c in all_countries:
+            if c:
+                country_counts[c] = country_counts.get(c, 0) + 1
+        top_countries = [
+            {"code": code, "count": cnt}
+            for code, cnt in sorted(country_counts.items(), key=lambda x: -x[1])[:10]
+        ]
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "hosts": {"total": total_hosts, "compromised": compromised, "targets": targets},
+        "ip_addresses": {"total": total_ips, "private": private_ips, "public": total_ips - private_ips},
+        "top_countries": top_countries,
+    })
+
+
+async def api_intelligence(request: Request) -> JSONResponse:
+    """Threat intelligence database counts — MITRE, CVE, CWE, CAPEC."""
+    try:
+        from db.models.mitre_technique import MitreTechniqueIntel
+        from db.models.cve_entry import CVEIntelligenceEntry
+        from db.models.cwe import CWEIntel
+        from db.models.capec import CapecAttackPatternIntel
+
+        mitre_count = await MitreTechniqueIntel.all().count()
+        cve_count = await CVEIntelligenceEntry.all().count()
+        cwe_count = await CWEIntel.all().count()
+        capec_count = await CapecAttackPatternIntel.all().count()
+
+        # Unique tactics from MITRE
+        tactics = await MitreTechniqueIntel.all().values_list("tactic", flat=True)
+        unique_tactics = len({t for t in tactics if t})
+
+        # Last seeded — check feed snapshot or update log
+        last_seeded = None
+        try:
+            from db.models.feed_snapshot import FeedSnapshot
+            snap = await FeedSnapshot.all().order_by("-created_at").first()
+            last_seeded = snap.created_at.isoformat() if snap and snap.created_at else None
+        except Exception:
+            pass
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "mitre": {"techniques": mitre_count, "tactics": unique_tactics},
+        "cve": {"total": cve_count},
+        "cwe": {"total": cwe_count},
+        "capec": {"total": capec_count},
+        "last_seeded": last_seeded,
+    })
+
+
+async def api_audit(request: Request) -> JSONResponse:
+    """Audit log summary — recent entries and action counts."""
+    try:
+        from db.models.audit import AuditLog
+        import datetime as _dt
+
+        total = await AuditLog.all().count()
+        recent = await AuditLog.all().order_by("-created_at").limit(50)
+
+        recent_list = [
+            {
+                "action": e.action if isinstance(e.action, str) else e.action.value,
+                "entity_type": e.entity_type,
+                "agent": e.agent,
+                "created_at": e.created_at.isoformat() if e.created_at else None,
+            }
+            for e in recent
+        ]
+
+        # Count by action
+        by_action: dict[str, int] = {}
+        for e in recent_list:
+            a = e["action"]
+            by_action[a] = by_action.get(a, 0) + 1
+
+        # Count by agent
+        by_agent: dict[str, int] = {}
+        for e in recent_list:
+            ag = e["agent"] or "unknown"
+            by_agent[ag] = by_agent.get(ag, 0) + 1
+
+        cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(hours=1)
+        last_hour_count = await AuditLog.filter(created_at__gte=cutoff).count()
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "last_hour_count": last_hour_count,
+        "by_action": by_action,
+        "by_agent": by_agent,
+        "recent": recent_list,
+    })
+
+
+async def api_compliance(request: Request) -> JSONResponse:
+    """Compliance rules summary — totals by framework and severity."""
+    try:
+        from db.models.compliance import ComplianceRule
+        total = await ComplianceRule.all().count()
+
+        all_rules = await ComplianceRule.all().values_list("framework", "severity")
+        by_framework: dict[str, int] = {}
+        by_severity: dict[str, int] = {}
+        for framework, severity in all_rules:
+            f = framework or "unknown"
+            by_framework[f] = by_framework.get(f, 0) + 1
+            s = severity if isinstance(severity, str) else (severity.value if severity else "unknown")
+            by_severity[s] = by_severity.get(s, 0) + 1
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "by_framework": dict(sorted(by_framework.items(), key=lambda x: -x[1])),
+        "by_severity": by_severity,
+    })
+
+
 # ── Dashboard HTML (self-contained) ──────────────────────────────────────────
 
 _DASHBOARD_HTML = """<!DOCTYPE html>
@@ -1170,6 +1418,13 @@ def create_dashboard_router() -> Router:
         Route("/api/cases", api_cases, methods=["GET"]),
         Route("/api/tasks", api_tasks, methods=["GET"]),
         Route("/api/tasks/{task_id}/cancel", api_task_cancel, methods=["POST"]),
+        Route("/api/findings", api_findings, methods=["GET"]),
+        Route("/api/iocs", api_iocs, methods=["GET"]),
+        Route("/api/yara", api_yara, methods=["GET"]),
+        Route("/api/network", api_network, methods=["GET"]),
+        Route("/api/intelligence", api_intelligence, methods=["GET"]),
+        Route("/api/audit", api_audit, methods=["GET"]),
+        Route("/api/compliance", api_compliance, methods=["GET"]),
         # SSE streaming endpoints
         Route("/sse/cases", sse_cases, methods=["GET"]),
         Route("/sse/tasks", sse_tasks, methods=["GET"]),
