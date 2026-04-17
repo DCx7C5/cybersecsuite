@@ -32,6 +32,8 @@ MODEL_MODULES: list[str] = [
     "db.models.intelligence",
     # Compliance + audit
     "db.models.compliance",
+    "db.models.nist_csf",
+    "db.models.nist_ai_rmf",
     "db.models.audit",
     "db.models.vulnerability",
     "db.models.defense",

@@ -20,6 +20,9 @@ def show_usage():
     print("  status     - Show database status")
     print("  seed       - Seed defaults + bootstrap MITRE/CVE/CWE intelligence")
     print("  seed-intel - Bootstrap shared MITRE/CVE/CWE intelligence only")
+    print("  seed-nist-csf    - Seed NIST CSF 2.0 controls (185 subcategories)")
+    print("  seed-nist-ai-rmf - Seed NIST AI RMF 1.0 controls (72 subcategories)")
+    print("  seed-nist-all    - Seed both NIST CSF 2.0 and AI RMF 1.0")
     print("  machine    - Seed / display local machine hardware inventory")
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
@@ -114,7 +117,42 @@ async def seed_command():
     _print_intel_components(summary["intelligence"]["components"])
 
 
-async def seed_intel_command():
+async def seed_nist_csf_command():
+    """Seed NIST CSF 2.0 controls (185 subcategories)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_nist_csf
+
+    await init_tortoise_async(create_db=True)
+    print("→ Seeding NIST CSF 2.0 controls...")
+    result = await seed_nist_csf()
+    print(f"✅ NIST CSF 2.0: {result['created']} created, {result['skipped']} skipped ({result['total']} total)")
+
+
+async def seed_nist_ai_rmf_command():
+    """Seed NIST AI RMF 1.0 controls (72 subcategories)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_nist_ai_rmf
+
+    await init_tortoise_async(create_db=True)
+    print("→ Seeding NIST AI RMF 1.0 controls...")
+    result = await seed_nist_ai_rmf()
+    print(f"✅ NIST AI RMF 1.0: {result['created']} created, {result['skipped']} skipped ({result['total']} total)")
+
+
+async def seed_nist_all_command():
+    """Seed both NIST CSF 2.0 and AI RMF 1.0."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_nist_csf, seed_nist_ai_rmf
+
+    await init_tortoise_async(create_db=True)
+    print("→ Seeding NIST CSF 2.0 controls...")
+    csf = await seed_nist_csf()
+    print(f"✅ NIST CSF 2.0: {csf['created']} created, {csf['skipped']} skipped ({csf['total']} total)")
+    print("→ Seeding NIST AI RMF 1.0 controls...")
+    rmf = await seed_nist_ai_rmf()
+    print(f"✅ NIST AI RMF 1.0: {rmf['created']} created, {rmf['skipped']} skipped ({rmf['total']} total)")
+
+
     """Bootstrap shared MITRE/CVE/CWE intelligence only."""
     from db.bootstrap import init_tortoise_async
     from db.intel_loader import bootstrap_intelligence_async
@@ -286,13 +324,16 @@ async def main():
     command = sys.argv[1]
 
     async_commands = {
-        "schema":     schema_command,
-        "shell":      shell_command,
-        "status":     status_command,
-        "seed":       seed_command,
-        "seed-intel": seed_intel_command,
-        "machine":    machine_command,
-        "case-open":  case_open_command,
+        "schema":           schema_command,
+        "shell":            shell_command,
+        "status":           status_command,
+        "seed":             seed_command,
+        "seed-intel":       seed_intel_command,
+        "seed-nist-csf":    seed_nist_csf_command,
+        "seed-nist-ai-rmf": seed_nist_ai_rmf_command,
+        "seed-nist-all":    seed_nist_all_command,
+        "machine":          machine_command,
+        "case-open":        case_open_command,
     }
 
     if command not in async_commands:

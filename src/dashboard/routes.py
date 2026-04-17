@@ -832,6 +832,51 @@ async def api_compliance(request: Request) -> JSONResponse:
     })
 
 
+async def api_nist_csf(request: Request) -> JSONResponse:
+    """NIST CSF 2.0 controls — totals by function and category."""
+    try:
+        from db.models.nist_csf import NistCsfControl
+        total = await NistCsfControl.all().count()
+        if total == 0:
+            return JSONResponse({"total": 0, "note": "Run: python3 manage.py seed-nist-csf"})
+        rows = await NistCsfControl.all().values_list("function", "function_code", "category")
+        by_function: dict[str, int] = {}
+        by_category: dict[str, int] = {}
+        for fn, _fc, cat in rows:
+            by_function[fn] = by_function.get(fn, 0) + 1
+            by_category[cat] = by_category.get(cat, 0) + 1
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "by_function": dict(sorted(by_function.items())),
+        "by_category": dict(sorted(by_category.items(), key=lambda x: -x[1])),
+    })
+
+
+async def api_nist_ai_rmf(request: Request) -> JSONResponse:
+    """NIST AI RMF 1.0 controls — totals by function and topic."""
+    try:
+        from db.models.nist_ai_rmf import NistAiRmfControl
+        total = await NistAiRmfControl.all().count()
+        if total == 0:
+            return JSONResponse({"total": 0, "note": "Run: python3 manage.py seed-nist-ai-rmf"})
+        rows = await NistAiRmfControl.all().values_list("function", "topic")
+        by_function: dict[str, int] = {}
+        by_topic: dict[str, int] = {}
+        for fn, topic in rows:
+            by_function[fn] = by_function.get(fn, 0) + 1
+            t = topic or "general"
+            by_topic[t] = by_topic.get(t, 0) + 1
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)})
+    return JSONResponse({
+        "total": total,
+        "by_function": dict(sorted(by_function.items())),
+        "by_topic": dict(sorted(by_topic.items(), key=lambda x: -x[1])),
+    })
+
+
 async def api_telemetry(request: Request) -> JSONResponse:
     """Live telemetry snapshot from MetricsStore + collector history."""
     try:
@@ -1508,6 +1553,8 @@ def create_dashboard_router() -> Router:
         Route("/api/intelligence", api_intelligence, methods=["GET"]),
         Route("/api/audit", api_audit, methods=["GET"]),
         Route("/api/compliance", api_compliance, methods=["GET"]),
+        Route("/api/nist-csf", api_nist_csf, methods=["GET"]),
+        Route("/api/nist-ai-rmf", api_nist_ai_rmf, methods=["GET"]),
         Route("/api/telemetry", api_telemetry, methods=["GET"]),
         Route("/api/tasks/create", api_task_create, methods=["POST"]),
         Route("/api/tasks/{task_id}", api_task_get, methods=["GET"]),
