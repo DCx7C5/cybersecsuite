@@ -663,3 +663,32 @@ web-security:       95 unique actions / 95 skills ✓
 - Phase D: Deep hierarchy restructuring (3-5 levels, semantic grouping)
 - Phase E: Path-based naming (integrate action field into skill names)
 - Phase F: Fixture seeding (NIST CSF 2.0, tag indices)
+
+---
+
+## Todos Tracked in SQL (Active Session)
+
+### Total: 100 todos
+- **Pending**: 71
+- **Done**: 29
+
+### Completed Todos (This Session)
+✓ hierarchy-plan (hierarchical depth analysis)
+✓ author-action-update (all 780 SKILL.md updated with author: dcx7c5 + unique actions)
+
+### Blocking Dependencies
+- **copy-anthropic-content** (Phase 0) blocks all restructuring
+  - Must copy: LICENSE, scripts/, references/, assets/ for 754 Anthropic skills
+  - Uses pre-validated skill_mapping.json (754/754 verified)
+
+### Active Phases
+- **Phase A–C**: Author + action metadata ✅ COMPLETE
+- **Phase D**: Deep hierarchy restructuring (3-5 levels) — PENDING
+- **Phase E**: Path-based naming (integrate action into skill names) — PENDING
+- **Phase F**: Fixture seeding (NIST CSF 2.0, tag indices) — PENDING
+- **Phase G**: OmniRoute MCP integration — PENDING
+
+### SQL Todo Tracking
+Use `SELECT * FROM todos ORDER BY status` to see all todos.
+Use `UPDATE todos SET status = 'in_progress' WHERE id = 'X'` when starting a todo.
+Dependencies tracked in `todo_deps` table (todo_id, depends_on).
