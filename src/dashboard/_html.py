@@ -87,19 +87,14 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
 
   <!-- Providers tab -->
   <div id="tab-providers" class="card">
-    <table>
-      <thead><tr><th>Provider</th><th>Status</th><th>Type</th><th>Format</th><th>Models</th><th>RPM</th><th>Cost Range</th></tr></thead>
-      <tbody id="providers-body"><tr><td colspan="7" class="text-center text-gray-500 loading">Loading...</td></tr></tbody>
-    </table>
+    <h3 class="text-lg font-semibold mb-3">&#x1f310; Provider Registry</h3>
+    <div id="providers-table"><div class="loading text-gray-500">Loading providers...</div></div>
   </div>
 
   <!-- Usage tab -->
   <div id="tab-usage" class="card" style="display:none">
-    <h3 class="text-lg font-semibold mb-3">Recent Requests</h3>
-    <table>
-      <thead><tr><th>Provider</th><th>Model</th><th>Tokens</th><th>Cost</th><th>Latency</th><th>Status</th></tr></thead>
-      <tbody id="usage-body"><tr><td colspan="6" class="text-center text-gray-500">No requests yet</td></tr></tbody>
-    </table>
+    <h3 class="text-lg font-semibold mb-3">&#x1f4c8; Recent Requests</h3>
+    <div id="usage-table"><div class="loading text-gray-500">Loading usage...</div></div>
   </div>
 
   <!-- Health tab -->
@@ -362,36 +357,50 @@ async function refresh() {
     document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
 
     // Providers table
-    const pbody = $('providers-body');
-    pbody.innerHTML = pv.map(p => {
-      const statusBadge = p.status === 'available'
+    renderTable('providers-table', [
+      {key: 'provider', label: 'Provider', type: 'string'},
+      {key: 'status', label: 'Status', type: 'string'},
+      {key: 'type', label: 'Type', type: 'string'},
+      {key: 'format', label: 'Format', type: 'string'},
+      {key: 'models', label: 'Models', type: 'number'},
+      {key: 'rpm', label: 'RPM', type: 'string'},
+      {key: 'cost', label: 'Cost /M', type: 'string'},
+    ], pv.map(p => ({
+      provider: '<strong>' + p.name + '</strong><br><span class="text-xs text-gray-500">' + p.id + '</span>',
+      status: p.status === 'available'
         ? '<span class="badge badge-ok">ON</span>'
-        : '<span class="badge badge-err">' + p.status.toUpperCase() + '</span>';
-      const typeBadge = p.auth_type === 'browser'
+        : '<span class="badge badge-err">' + (p.status || '?').toUpperCase() + '</span>',
+      type: p.auth_type === 'browser'
         ? '<span class="badge badge-browser">BROWSER</span>'
-        : tierBadge(p);
-      const rpm = p.rate_limit.rpm_remaining !== undefined
+        : tierBadge(p),
+      format: p.api_format,
+      models: p.models.length,
+      rpm: p.rate_limit && p.rate_limit.rpm_remaining !== undefined
         ? Math.round(p.rate_limit.rpm_remaining) + '/' + p.rate_limit.rpm_capacity
-        : '-';
-      return '<tr><td><strong>' + p.name + '</strong><br><span class="text-xs text-gray-500">' + p.id + '</span></td>'
-        + '<td>' + statusBadge + '</td>'
-        + '<td>' + typeBadge + '</td>'
-        + '<td class="text-xs">' + p.api_format + '</td>'
-        + '<td>' + p.models.length + '</td>'
-        + '<td class="text-xs">' + rpm + '</td>'
-        + '<td class="text-xs">' + costRange(p.models) + '/M</td></tr>';
-    }).join('');
+        : '—',
+      cost: costRange(p.models) + '/M',
+    })));
 
     // Usage table
-    const ubody = $('usage-body');
-    if (uv.recent.length) {
-      ubody.innerHTML = uv.recent.map(r => {
-        const badge = r.success ? '<span class="badge badge-ok">OK</span>' : '<span class="badge badge-err">FAIL</span>';
-        return '<tr><td>' + r.provider + '</td><td class="text-xs">' + r.model + '</td>'
-          + '<td>' + fmt(r.tokens) + '</td><td>$' + r.cost_usd.toFixed(6) + '</td>'
-          + '<td>' + r.latency_ms.toFixed(0) + 'ms</td><td>' + badge + '</td></tr>';
-      }).join('');
-    }
+    renderTable('usage-table', [
+      {key: 'provider', label: 'Provider', type: 'string'},
+      {key: 'model', label: 'Model', type: 'string'},
+      {key: 'tokens', label: 'Tokens', type: 'number'},
+      {key: 'cost_usd', label: 'Cost USD', type: 'number'},
+      {key: 'latency_ms', label: 'Latency ms', type: 'number'},
+      {key: 'stream', label: 'Stream', type: 'bool'},
+      {key: 'status', label: 'Status', type: 'string'},
+    ], (uv.recent || []).map(r => ({
+      provider: r.provider,
+      model: r.model,
+      tokens: r.tokens,
+      cost_usd: r.cost_usd,
+      latency_ms: r.latency_ms,
+      stream: r.stream,
+      status: r.success
+        ? '<span class="badge badge-ok">OK</span>'
+        : '<span class="badge badge-err">FAIL</span>',
+    })));
 
     // Health
     const hc = $('health-content');
@@ -417,13 +426,20 @@ async function refresh() {
         + '<div class="card text-center"><div class="text-2xl font-bold text-red-400">' + cv.invalid + '</div><div class="text-xs text-gray-500">Invalid Sigs</div></div>'
         + '</div>'
         + '<h4 class="font-semibold mb-2">Recent Signature Logs</h4>'
-        + '<table><thead><tr><th>Artifact</th><th>Action</th><th>Status</th><th>Key</th><th>Time</th></tr></thead><tbody>'
-        + (cv.recent_signature_logs || []).map(l =>
-          '<tr><td>' + l.artifact_id + '</td><td>' + l.action + '</td>'
-          + '<td><span class="badge ' + (l.status === 'valid' ? 'badge-ok' : 'badge-err') + '">' + l.status + '</span></td>'
-          + '<td class="text-xs">' + l.key_id + '</td>'
-          + '<td class="text-xs">' + (l.created_at || '-') + '</td></tr>'
-        ).join('') + '</tbody></table>';
+        + '<div id="crypto-sig-table"></div>';
+      renderTable('crypto-sig-table', [
+        {key: 'artifact_id', label: 'Artifact', type: 'string'},
+        {key: 'action', label: 'Action', type: 'string'},
+        {key: 'status', label: 'Status', type: 'string'},
+        {key: 'key_id', label: 'Key', type: 'string'},
+        {key: 'created_at', label: 'Time', type: 'datetime'},
+      ], (cv.recent_signature_logs || []).map(l => ({
+        artifact_id: l.artifact_id,
+        action: l.action,
+        status: '<span class="badge ' + (l.status === 'valid' ? 'badge-ok' : 'badge-err') + '">' + (l.status || '?') + '</span>',
+        key_id: l.key_id,
+        created_at: l.created_at,
+      })));
     }
 
     // A2A tab
@@ -438,12 +454,18 @@ async function refresh() {
         ).join('')
         + '</div>'
         + '<h4 class="font-semibold mb-2">Recent Tasks</h4>'
-        + '<table><thead><tr><th>ID</th><th>Session</th><th>State</th><th>Updated</th></tr></thead><tbody>'
-        + (av.recent_tasks || []).map(t =>
-          '<tr><td class="text-xs">' + t.id + '</td><td class="text-xs">' + (t.session_id || '-') + '</td>'
-          + '<td><span class="badge ' + (t.state === 'completed' ? 'badge-ok' : t.state === 'failed' ? 'badge-err' : 'badge-budget') + '">' + t.state + '</span></td>'
-          + '<td class="text-xs">' + (t.updated_at || '-') + '</td></tr>'
-        ).join('') + '</tbody></table>';
+        + '<div id="a2a-tasks-table"></div>';
+      renderTable('a2a-tasks-table', [
+        {key: 'id', label: 'ID', type: 'string'},
+        {key: 'session_id', label: 'Session', type: 'string'},
+        {key: 'state', label: 'State', type: 'string'},
+        {key: 'updated_at', label: 'Updated', type: 'datetime'},
+      ], (av.recent_tasks || []).map(t => ({
+        id: '<span class="font-mono text-xs">' + (t.id || '?') + '</span>',
+        session_id: t.session_id || '—',
+        state: '<span class="badge ' + (t.state === 'completed' ? 'badge-ok' : t.state === 'failed' ? 'badge-err' : 'badge-budget') + '">' + (t.state || '?') + '</span>',
+        updated_at: t.updated_at,
+      })));
     }
 
     // Investigations tab

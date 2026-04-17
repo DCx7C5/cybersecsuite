@@ -95,12 +95,12 @@ opts = ClaudeAgentOptions(
 | `PROPOSAL_MEM.md`    | ~250  | Global uncompressed claude memory cache proposal                       |
 
 ### src/
-| File                    | Lines | Purpose                                                                        |
-|-------------------------|-------|--------------------------------------------------------------------------------|
-| `src/proxy/asgi.py`     | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware           |
-| `src/manage.py`         | 161   | CLI management dispatcher (delegates to manage/_commands.py)                    |
-| `src/logger.py`         | 30    | Structured logger                                                              |
-| `src/csmcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 36 tools        |
+| File                    | Lines | Purpose                                                                 |
+|-------------------------|-------|-------------------------------------------------------------------------|
+| `src/proxy/asgi.py`     | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware    |
+| `src/manage.py`         | 161   | CLI management dispatcher (delegates to manage/_commands.py)            |
+| `src/logger.py`         | 30    | Structured logger                                                       |
+| `src/csmcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 36 tools |
 
 ### src/csmcp/ (renamed from src/mcp/ — Phase H)
 **Critical**: `src/mcp/` was renamed to `src/csmcp/` to resolve naming conflict with pip's `mcp` v1.26.0 package (needed by `claude_agent_sdk`). The original `src/mcp/` shadowed pip's `mcp` when `PYTHONPATH=src` was set. `mcp_server.py` (1288L FastMCP duplicate) was **DELETED** in Phase H.
@@ -219,20 +219,20 @@ In-process metrics store with ring-buffer, percentile summaries, ASGI middleware
 Mounted in `src/proxy/asgi.py`: `app.add_middleware(TelemetryMiddleware)`. Collector started in `_on_startup()`, stopped in `_on_shutdown()`.
 
 ### src/dashboard/ (36 routes, 82 model registry)
-| File/Dir             | Lines  | Purpose                                                              |
-|----------------------|--------|----------------------------------------------------------------------|
-| `routes.py`          | 63     | Thin route wiring — 36 Starlette routes                             |
-| `_html.py`           | ~680   | SPA HTML + renderTable() JS component + Explorer tab                 |
-| `_handlers.py`       | 8      | Re-export shim → `api/`                                              |
-| `api/__init__.py`    | 95     | Re-exports all 36 handlers                                          |
-| `api/core.py`        | 153    | overview, providers, usage, health, crypto                           |
-| `api/agents.py`      | 215    | a2a, agents, routing, factory, agent-query                           |
-| `api/forensic.py`    | 396    | findings, iocs, yara, network, intel, audit, compliance, NIST        |
-| `api/ops.py`         | 183    | cases, tasks, task lifecycle, PoCs                                   |
-| `api/tables.py`      | 148    | db counts, investigations, models, generic table, prompts, telemetry |
-| `api/sse.py`         | 153    | 4 SSE streaming endpoints                                           |
-| `api/page.py`        | 12     | dashboard HTML page                                                  |
-| `_schema.py`         | 149    | Tortoise model introspector — 82 models, serialization, pagination   |
+| File/Dir          | Lines | Purpose                                                              |
+|-------------------|-------|----------------------------------------------------------------------|
+| `routes.py`       | 63    | Thin route wiring — 36 Starlette routes                              |
+| `_html.py`        | ~680  | SPA HTML + renderTable() JS component + Explorer tab                 |
+| `_handlers.py`    | 8     | Re-export shim → `api/`                                              |
+| `api/__init__.py` | 95    | Re-exports all 36 handlers                                           |
+| `api/core.py`     | 153   | overview, providers, usage, health, crypto                           |
+| `api/agents.py`   | 215   | a2a, agents, routing, factory, agent-query                           |
+| `api/forensic.py` | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST        |
+| `api/ops.py`      | 183   | cases, tasks, task lifecycle, PoCs                                   |
+| `api/tables.py`   | 148   | db counts, investigations, models, generic table, prompts, telemetry |
+| `api/sse.py`      | 153   | 4 SSE streaming endpoints                                            |
+| `api/page.py`     | 12    | dashboard HTML page                                                  |
+| `_schema.py`      | 149   | Tortoise model introspector — 82 models, serialization, pagination   |
 
 **New endpoints (Phase H/I)**:
 - `GET /api/models` — lists all 82 registered DB models with table name + field count
@@ -246,13 +246,13 @@ Current tabs in HTML: Providers, Usage & Cost, Agents, Routing, Factory, Prompts
 SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 
 ### .claude/ system
-| Component    | Files                                                                                                        | Status                       |
-|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------|
+| Component    | Files                                                                                                                    | Status                       |
+|--------------|--------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | `agents/`    | **34 agents** (33 specialists + AGENT_FACTORY) + DEV_SUB_AGENTS + `teams/` (3 modes) + `sub_agents/` (1: cybersec-agent) | ✅ all consistent frontmatter |
-| `hooks/`     | 31 .py files — 10 settings.json-wired + 12 programmatic event handlers + 9 utility modules (legacy utils.py deleted) | ✅ lint clean, deduplicated |
-| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                                                 | ⚠️ NEVER AUDITED             |
-| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                                             | ✅ RESTRUCTURED               |
-| `templates/` | 14 template files across 6 subdirs                                                                           | Not reviewed                 |
+| `hooks/`     | 31 .py files — 10 settings.json-wired + 12 programmatic event handlers + 9 utility modules (legacy utils.py deleted)     | ✅ lint clean, deduplicated   |
+| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                                                             | ⚠️ NEVER AUDITED             |
+| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                                                         | ✅ RESTRUCTURED               |
+| `templates/` | 14 template files across 6 subdirs                                                                                       | Not reviewed                 |
 
 #### templates/ (14 files across 6 subdirs): artifact.md, baselines/, iocs/, project/, reports/, session/, threat-intelligence/
 
@@ -450,6 +450,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - Phase J — All 72 ruff lint errors → 0; hooks/ deduplicated to src/hooks/; dead code removed
 - Phase K.1 — `renderTable()` JS component + Explorer tab (sortable, searchable, paginated, type-aware)
 - Phase K.2 — Cases + Tasks tabs converted to `renderTable`; PoCs tab panel added (stat cards + table); api/pocs fetch wired
+- Phase K.3 — Providers, Usage, Crypto, A2A tabs converted from raw innerHTML tables to `renderTable`
 - Phase L — `src/agent/` package: runner.py, sessions.py, hooks.py, streaming.py all complete
 - Phase M.1 — `_handlers.py` (1228L) split into `dashboard/api/` package (7 modules, 36 handlers)
 - Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
@@ -467,7 +468,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 ### Phase K — Dashboard Full Buildout (in progress)
 1. ✅ `renderTable()` JS component + Explorer tab
 2. ✅ Cases + Tasks converted to renderTable; PoCs tab panel added
-3. Expand remaining tabs to use renderTable with full-field APIs
+3. ✅ Providers, Usage, Crypto, A2A converted to renderTable
 4. Add new tabs: forensic sessions, MITRE, intel feeds, artifacts, machines, baselines, vulns...
 5. Interactive agent query panel (SSE streaming, agent selection, context enrichment)
 6. Settings dashboard (read/edit settings.json)
