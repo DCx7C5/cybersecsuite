@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-CyberSecSuite has grown into a monolith with 9 top-level modules, 70+ ORM models, 44 model files, and 1000+ line registries. This coupling creates concrete problems:
+CyberSecSuite has grown into a monolith with 9 top-level modules, 82+ ORM models, 44 model files, and 1000+ line registries. This coupling creates concrete problems:
 
 - **Deployment rigidity** — deploying a dashboard fix requires shipping the entire crypto stack and AI proxy.
 - **Version lock-step** — a breaking change in `ai_proxy/` blocks releases for unrelated `crypto/` work.
@@ -52,8 +52,8 @@ graph TD
 | **cybersecsuite-core**      | `db/` (base models, connection), `telemetry/`, `manage.py` | DB connection pool, config loading, structured logging, base `Model`/`TimestampMixin` classes, CLI framework                   |
 | **cybersecsuite-forensics** | `mcp/`                                                     | ForensicProject, Session, Finding models; MCP tool servers (findings, IOCs, cache, layers, sessions); forensic slash commands  |
 | **cybersecsuite-crypto**    | `crypto/`                                                  | Ed25519 key management, SSL CLI, vault operations, artifact signing/verification                                               |
-| **cybersecsuite-proxy**     | `ai_proxy/`, `proxy/`                                      | Provider registry (48 providers), routing strategies, format translation, ASGI server (Starlette mounting, health checks, TLS) |
-| **cybersecsuite-dashboard** | `dashboard/`, `templates/`                                 | 25 REST + 4 SSE endpoints, Jinja2 template rendering, static assets                                                            |
+| **cybersecsuite-proxy**     | `ai_proxy/`, `proxy/`                                      | Provider registry (60 providers), routing strategies, format translation, ASGI server (Starlette mounting, health checks, TLS) |
+| **cybersecsuite-dashboard** | `dashboard/`, `templates/`                                 | 36 REST + SSE endpoints, SPA HTML template, static assets                                                                       |
 | **cybersecsuite-intel**     | `db/` (intel models, fixtures, seeds)                      | CVE, MITRE ATT&CK, CWE, CAPEC models; threat actors, software families; 6 fixture files; seed data loaders                     |
 | **cybersecsuite-a2a**       | `a2a/`                                                     | JSON-RPC 2.0 A2A server, agent cards, `agent_sdk.py`, team dispatch                                                            |
 
@@ -152,73 +152,88 @@ gantt
     section Phase D - Integration
     Plugin registry & dynamic loading   :d1, after c3, 14d
     Meta-package & install tests        :d2, after d1, 7d
-    Delete mcp_server.py (legacy)       :d3, after d2, 3d
+    Delete legacy shims                  :d3, after d2, 3d
 ```
 
 ### Phase A: Extract Core
 
-1. Create `packages/cybersecsuite-core/` with its own `pyproject.toml`.
+1. Create `~/Projects/AI/plugins/cybersecsuite-core/` with its own `pyproject.toml` and git repo.
 2. Move `src/db/base.py`, `src/db/connection.py`, `src/telemetry/`, config loading, and `TimestampMixin` into it.
-3. Root `pyproject.toml` adds `cybersecsuite-core` as a path dependency.
+3. Root `pyproject.toml` adds `cybersecsuite-core` as a path dependency: `cybersecsuite-core = {path = "../AI/plugins/cybersecsuite-core", editable = true}`.
 4. All existing imports rewritten: `from src.db.base import ...` → `from cybersecsuite.core.models import ...`.
 5. CI must pass with the monolith consuming core as a local package before proceeding.
 
 ### Phase B: Split Intel and Forensics
 
-1. Identify the 70 model classes; categorize each as `core`, `intel`, or `forensics`.
-2. Intel models (CVE, MITRE technique, CWE, CAPEC, threat actor, software family) move to `cybersecsuite-intel`.
-3. Forensic models (ForensicProject, Session, Finding, IOC, Layer) move to `cybersecsuite-forensics`.
+1. Identify the 82 model classes; categorize each as `core`, `intel`, or `forensics`.
+2. Intel models (CVE, MITRE technique, CWE, CAPEC, threat actor, software family) move to `~/Projects/AI/plugins/cybersecsuite-intel/`.
+3. Forensic models (ForensicProject, Session, Finding, IOC, Layer) move to `~/Projects/AI/plugins/cybersecsuite-forensics/`.
 4. Fixture JSON files and seed scripts move to `cybersecsuite-intel`.
 5. Migration files split per-plugin; Aerich/Tortoise configured with per-app migration directories.
 
 ### Phase C: Extract Services
 
-- **Crypto**: self-contained — no model dependencies beyond core. Cleanest extraction.
-- **Proxy**: merge `src/ai_proxy/` and `src/proxy/` into one package. The 1000+ line `registry.py` stays intact.
-- **Dashboard**: depends on forensic models for rendering. Declare `cybersecsuite-forensics` as a dependency.
-- **A2A**: depends only on core. Extract `src/a2a/` wholesale.
+- **Crypto**: self-contained — no model dependencies beyond core. Cleanest extraction. → `~/Projects/AI/plugins/cybersecsuite-crypto/`
+- **Proxy**: merge `src/ai_proxy/` and `src/proxy/` into one package. The 1000+ line `registry.py` stays intact. → `~/Projects/AI/plugins/cybersecsuite-proxy/`
+- **Dashboard**: depends on forensic models for rendering. Declare `cybersecsuite-forensics` as a dependency. → `~/Projects/AI/plugins/cybersecsuite-dashboard/`
+- **A2A**: depends only on core. Extract `src/a2a/` wholesale. → `~/Projects/AI/plugins/cybersecsuite-a2a/`
 
 ### Phase D: Plugin Registry
 
 1. Implement `discover_plugins()` in core.
 2. Refactor `manage.py` to dynamically load CLI commands from installed plugins.
 3. Refactor ASGI app to dynamically mount routes from plugins.
-4. Ship `cybersecsuite` meta-package.
-5. Delete `mcp_server.py` from root (legacy FastMCP stdio server).
+4. Ship `cybersecsuite` meta-package with path deps to `~/Projects/AI/plugins/cybersecsuite-*`.
+5. Delete legacy compatibility shims from monolith `src/`.
 
 ## 5. Packaging Strategy
 
 ### Repository Layout (Post-Migration)
 
+Plugins live in the shared AI plugins directory (`~/Projects/AI/plugins/`), not inside the cybersecsuite repo. This keeps each plugin as an independent git repo — consistent with existing plugins (`claude-proxy`, `grok-browser-tunnel`).
+
 ```
-cybersecsuite/
-├── packages/
-│   ├── cybersecsuite-core/
-│   │   ├── pyproject.toml
-│   │   └── src/cybersecsuite/core/
-│   ├── cybersecsuite-forensics/
-│   │   ├── pyproject.toml
-│   │   └── src/cybersecsuite/forensics/
-│   ├── cybersecsuite-crypto/
-│   │   ├── pyproject.toml
-│   │   └── src/cybersecsuite/crypto/
-│   ├── cybersecsuite-proxy/
-│   │   ├── pyproject.toml
-│   │   └── src/cybersecsuite/proxy/
-│   ├── cybersecsuite-dashboard/
-│   │   ├── pyproject.toml
-│   │   └── src/cybersecsuite/dashboard/
-│   ├── cybersecsuite-intel/
-│   │   ├── pyproject.toml
-│   │   └── src/cybersecsuite/intel/
-│   └── cybersecsuite-a2a/
-│       ├── pyproject.toml
-│       └── src/cybersecsuite/a2a/
-├── pyproject.toml          # meta-package
-├── .claude/                # skills, agents, commands (unchanged)
-├── .docker/                # container builds (updated per plugin)
-└── tests/                  # integration tests across plugins
+~/Projects/AI/plugins/                  ← shared plugin directory
+├── claude-proxy/                       ← existing (independent proxy)
+├── grok-browser-tunnel/                ← existing
+├── cybersecsuite-core/                 ← NEW — extracted from src/
+│   ├── pyproject.toml
+│   ├── src/cybersecsuite/core/
+│   └── tests/
+├── cybersecsuite-forensics/            ← NEW
+│   ├── pyproject.toml
+│   ├── src/cybersecsuite/forensics/
+│   └── tests/
+├── cybersecsuite-crypto/               ← NEW
+│   ├── pyproject.toml
+│   ├── src/cybersecsuite/crypto/
+│   └── tests/
+├── cybersecsuite-proxy/                ← NEW
+│   ├── pyproject.toml
+│   ├── src/cybersecsuite/proxy/
+│   └── tests/
+├── cybersecsuite-dashboard/            ← NEW
+│   ├── pyproject.toml
+│   ├── src/cybersecsuite/dashboard/
+│   └── tests/
+├── cybersecsuite-intel/                ← NEW
+│   ├── pyproject.toml
+│   ├── src/cybersecsuite/intel/
+│   └── tests/
+└── cybersecsuite-a2a/                  ← NEW
+    ├── pyproject.toml
+    ├── src/cybersecsuite/a2a/
+    └── tests/
+
+~/Projects/cybersecsuite/               ← stays as meta-package + orchestration
+├── pyproject.toml                      # meta-package (depends on all 7 plugins)
+├── src/                                # thin orchestration layer only
+├── .claude/                            # skills, agents, commands (unchanged)
+├── .docker/                            # container builds (updated per plugin)
+└── tests/                              # integration tests across plugins
 ```
+
+Each plugin is its own git repo under `~/Projects/AI/plugins/`, installable via `uv pip install -e ~/Projects/AI/plugins/cybersecsuite-core` or published to PyPI independently.
 
 ### Namespace Packages
 
@@ -235,7 +250,7 @@ src/cybersecsuite/       ← no __init__.py (namespace package)
 ### Per-Plugin `pyproject.toml`
 
 ```toml
-# packages/cybersecsuite-forensics/pyproject.toml
+# ~/Projects/AI/plugins/cybersecsuite-forensics/pyproject.toml
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -255,7 +270,7 @@ forensics = "cybersecsuite.forensics:plugin"
 ### Meta-Package
 
 ```toml
-# pyproject.toml (root)
+# ~/Projects/cybersecsuite/pyproject.toml (root)
 [project]
 name = "cybersecsuite"
 version = "0.1.0"
@@ -268,6 +283,12 @@ dependencies = [
     "cybersecsuite-intel>=0.1.0",
     "cybersecsuite-a2a>=0.1.0",
 ]
+
+# For local development, use path dependencies:
+# [tool.uv.sources]
+# cybersecsuite-core = {path = "../AI/plugins/cybersecsuite-core", editable = true}
+# cybersecsuite-forensics = {path = "../AI/plugins/cybersecsuite-forensics", editable = true}
+# ...
 ```
 
 ### Versioning
@@ -300,4 +321,4 @@ dependencies = [
 
 ---
 
-*This proposal targets the current codebase as of mid-2025. Implementation should begin with Phase A (core extraction) as a proof-of-concept before committing to the full timeline.*
+*This proposal targets the current codebase as of April 2026. Plugins will be created under `~/Projects/AI/plugins/` as independent repos, consistent with existing plugins (claude-proxy, grok-browser-tunnel). Implementation should begin with Phase A (core extraction) as a proof-of-concept before committing to the full timeline.*
