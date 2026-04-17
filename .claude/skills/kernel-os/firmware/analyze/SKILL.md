@@ -1,5 +1,5 @@
 ---
-name: firmware
+name: firmware-analyze
 description: 'Analyzes firmware images for embedded malware, backdoors, and unauthorized modifications targeting routers,
 action: firmware
   IoT devices, UEFI/BIOS, and embedded systems. Covers firmware extraction, filesystem analysis, binary reverse engineering,

@@ -1,5 +1,5 @@
 ---
-name: firewall
+name: network-firewall-gcp
 description: 'Implementing and auditing GCP VPC firewall rules to enforce network segmentation, restrict ingress and egress
 action: firewall
   traffic, apply hierarchical firewall policies across the organization, and monitor firewall rule effectiveness using VPC

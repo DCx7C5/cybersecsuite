@@ -1,5 +1,5 @@
 ---
-name: linux
+name: forensics-log-linux-auditd
 description: 'Uses the Linux Audit framework (auditd) with ausearch and aureport utilities to detect intrusion attempts, unauthorized
 action: linux
   access, privilege escalation, and suspicious system activity. Covers audit rule configuration, log querying, timeline reconstruction,
