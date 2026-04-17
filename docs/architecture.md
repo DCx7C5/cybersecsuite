@@ -85,7 +85,7 @@ POST /a2a (tasks/send JSON-RPC)
        AgentRegistry
        ┌────────────────────────────────┐
        │  .claude/agents/*.md           │
-       │  (32 agents, loaded at start)  │
+       │  (33 agents, loaded at start)  │
        └────────────────────────────────┘
               │
               ▼
@@ -138,7 +138,7 @@ cybersecsuite/
 │   │   └── template_renderer.py Report templating
 │   │
 │   ├── dashboard/        Monitoring dashboard
-│   │   └── routes.py       16 REST + 3 SSE endpoints + HTML page
+│   │   └── routes.py       ~30 REST + SSE endpoints + HTML page
 │   │
 │   ├── db/               Database layer (Tortoise ORM)
 │   │   ├── bootstrap.py    init_tortoise_async, create_db, health check
@@ -162,7 +162,8 @@ cybersecsuite/
 │   └── token-optimization-mcp/ Token caching/compression MCP
 │
 ├── .claude/
-│   ├── agents/           32 specialist agent definitions (.md)
+│   ├── agents/           33 specialist agent definitions (.md)
+│   │   └── teams/        blue-team.md, red-team.md, purple-team.md
 │   └── settings.json     Claude Code project settings
 │
 ├── Dockerfile
@@ -227,4 +228,35 @@ Models are grouped by domain:
 | Sonnet (standard) | claude-sonnet-4 | most analysts, developers |
 | Opus (heavy) | claude-opus-4.5 | firmware-analyst, reverse-engineer |
 
-32 agents total. 1 orchestrator (`cybersec-agent`). See [agents.md](agents.md).
+33 agents total. 1 orchestrator (`cybersec-agent`). See [agents.md](agents.md).
+
+---
+
+## Flowcharts
+
+### Conceptual — User Flow
+
+```mermaid
+flowchart LR
+    User["👤 User"] --> CLI["Claude Code CLI"]
+    CLI --> MCP["mcp.json\n(5 MCP servers)"]
+    MCP --> Tools["cybersec MCP tools\n(29 cybersec + 5 dystopian)"]
+    Tools --> DB["PostgreSQL\n(7 intel tables)"]
+    Tools --> AIProxy["AI Proxy\n(9 providers)"]
+    DB --> Response["📋 Response"]
+    AIProxy --> Response
+```
+
+### Actual Code — Execution Path
+
+```mermaid
+flowchart TD
+    Entry["mcp_server.py\n(FastMCP stdio)"] --> MCP["src/mcp/cybersec/\n(8 modules, 29 tools)"]
+    MCP --> DB["src/db/\n(Tortoise ORM)\n7 intel tables"]
+    MCP --> A2A["src/a2a/\n(A2A agent protocol)"]
+    MCP --> AIProxy["src/ai_proxy/\n(multi-provider LLM\n9 providers, 13 strategies)"]
+    MCP --> Dashboard["src/dashboard/\n(FastAPI, ~30 routes)"]
+    DB --> PG["PostgreSQL\ncybersec-postgres"]
+    AIProxy --> Providers["Anthropic · OpenAI\nGemini · Groq · DeepSeek\nMistral · xAI · Together · OpenRouter"]
+    A2A --> Agents[".claude/agents/\n33 specialist agents"]
+```

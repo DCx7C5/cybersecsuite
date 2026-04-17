@@ -12,6 +12,12 @@ Copy `.env.example` to `.env` and fill in secrets:
 cp .env.example .env && chmod 600 .env
 ```
 
+### Redis
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `REDIS_URL` | `redis://localhost:6379` | Redis connection URL (used by token optimizer, rate limiter) |
+
 ### PostgreSQL
 
 | Variable | Default | Description |
@@ -94,6 +100,7 @@ TLS activates automatically when both `ASGI_TLS_CERT` and `ASGI_TLS_KEY` exist. 
 | `8080` | HTTP | Alt HTTP (Docker Compose) | — |
 | `8433` | HTTPS | TLS proxy | `ASGI_TLS_PORT` |
 | `5432` | TCP | PostgreSQL | `CYBERSEC_DB_PORT` |
+| `6379` | TCP | Redis | `REDIS_URL` |
 | `9000` | HTTP | Dashboard static server (make dashboard-serve) | — |
 
 ---
@@ -104,6 +111,10 @@ This is the Claude Code project settings file — separate from any application 
 
 ```json
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "agent": "cybersec-agent",
   "asgi": {
     "host": "0.0.0.0",
     "port": 8000,
@@ -113,11 +124,19 @@ This is the Claude Code project settings file — separate from any application 
     "tls_key": "~/.omniroute/certs/key.pem"
   },
   "mcp": {
-    "servers": ["mcp_server.py"],
-    "tool_prefix": "cybersec"
+    "servers": ["cybersec", "dystopian"],
+    "tool_prefix": "mcp__"
   }
 }
 ```
+
+### Key settings
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `"1"` | Enables Claude Code experimental team mode. Allows agent team definitions in `.claude/agents/teams/` (blue-team.md, red-team.md, purple-team.md) to be used for multi-agent coordination. See [teams.md](teams.md). |
+| `agent` | `"cybersec-agent"` | Default orchestrator agent for the project |
+| `mcp.servers` | `["cybersec", "dystopian"]` | MCP servers active in this project |
 
 This file is read by Claude Code for project-level context. It does **not** affect the running application — use environment variables for application config.
 

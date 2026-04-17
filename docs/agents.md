@@ -1,8 +1,10 @@
 # Agents Reference
 
-All 32 specialist agents available in CyberSecSuite, plus 3 team compositions.
+All 33 specialist agents available in CyberSecSuite, plus 3 team compositions.
 
 Agents are defined in `.claude/agents/*.md` and loaded at startup by `AgentRegistry` for A2A routing.
+
+> **Team mode** is enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json`. Team definitions live in `.claude/agents/teams/`. See [teams.md](teams.md) for full details.
 
 ---
 
@@ -80,11 +82,12 @@ Agents are defined in `.claude/agents/*.md` and loaded at startup by `AgentRegis
 
 ---
 
-## Meta
+## Meta / Utility
 
-| Agent           | Model | Description                                                                                                                         |
-|-----------------|-------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `agent-factory` | Opus  | Creates new production-grade agents from description. Generates complete YAML frontmatter + system prompt with 9-chapter blueprint. |
+| Agent             | Model  | Description                                                                                                                         |
+|-------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `agent-factory`   | Opus   | Creates new production-grade agents from description. Generates complete YAML frontmatter + system prompt with 9-chapter blueprint. |
+| `token-optimizer` | Haiku  | Token budget management and compression. Reduces context size, summarises history, and applies caching strategies.                  |
 
 ---
 

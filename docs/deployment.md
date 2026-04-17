@@ -6,16 +6,17 @@ Running CyberSecSuite in production with Docker Compose, TLS, and hardened confi
 
 ## Docker Compose (recommended)
 
-The `docker-compose.yml` defines two services:
+The `docker-compose.yml` defines three services:
 - `cybersec-postgres` — PostgreSQL 15 database
-- `cybersec-app` — ASGI application (all ports)
+- `cybersec-dashboard` — Dashboard and ASGI application (all ports)
+- `cybersec-redis` — Redis cache (port 6379)
 
 ```bash
 # Start everything
 make docker-up
 
 # Check logs
-docker compose logs -f cybersec-app
+docker compose logs -f cybersec-dashboard
 
 # Stop
 make docker-down
@@ -27,6 +28,34 @@ make docker-down
 curl http://localhost:8000/health
 # → {"status": "ok", "initialized": true, ...}
 ```
+
+---
+
+## Redis Service
+
+The `cybersec-redis` service provides caching for token optimization, session state, and rate-limiter counters.
+
+```yaml
+cybersec-redis:
+  build:
+    context: .docker/redis
+    dockerfile: Dockerfile
+  image: cybersec-redis
+  container_name: cybersec-redis
+  restart: unless-stopped
+  ports:
+    - "127.0.0.1:6379:6379"
+  volumes:
+    - redis_data:/data
+  healthcheck:
+    test: ["CMD", "redis-cli", "ping"]
+    interval: 10s
+    timeout: 3s
+    retries: 5
+    start_period: 5s
+```
+
+Redis data is persisted in the `redis_data` Docker volume. The service binds only to `127.0.0.1` (not exposed publicly). Set `REDIS_URL=redis://localhost:6379` in `.env` if your app components need to connect explicitly.
 
 ---
 
@@ -161,13 +190,16 @@ Note: A2A task state is stored in-memory (`TaskStore`) — tasks are not shared 
 
 ```bash
 # App logs
-docker compose logs -f cybersec-app
+docker compose logs -f cybersec-dashboard
 
 # Database logs
 docker compose logs -f cybersec-postgres
 
+# Redis logs
+docker compose logs -f cybersec-redis
+
 # Tail last 100 lines
-docker compose logs --tail=100 cybersec-app
+docker compose logs --tail=100 cybersec-dashboard
 ```
 
 Access logs are available via the dashboard SSE endpoint:

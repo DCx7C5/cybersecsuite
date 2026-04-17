@@ -1,12 +1,14 @@
 # MCP Tools Reference
 
-All 29 MCP tools exposed by `mcp_server.py` via FastMCP stdio transport.
+All 34 MCP tools across two servers: 29 cybersec tools in `mcp_server.py` (FastMCP stdio) and 5 dystopian tools from the `dystopian` MCP server.
 
 Start the MCP server: `make mcp`
 
-Tool name prefix: `cybersec.`
+Tool name prefixes: `mcp__cybersec__` (cybersec server) · `mcp__dystopian__` (dystopian server)
 
 ---
+
+## Cybersec Tools (29)
 
 ## Findings & IOCs
 
@@ -309,6 +311,63 @@ Get a full snapshot of the current session state (scope, findings, IOCs, cases).
 List all registered A2A agents.
 
 **Parameters:** none
+
+---
+
+---
+
+## Dystopian Tools (5)
+
+Tools exposed by the `dystopian` MCP server (`mcp__dystopian__*`). These provide cryptographic utility functions used for artifact signing and verification workflows.
+
+### `mcp__dystopian__sign_artifact`
+Sign a forensic artifact with an Ed25519 private key.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `artifact_path` | string | yes | Path to the artifact file to sign |
+| `key_id` | string | no | Key identifier (uses default key if omitted) |
+
+---
+
+### `mcp__dystopian__verify_artifact`
+Verify an artifact signature against an Ed25519 public key.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `artifact_path` | string | yes | Path to the artifact file |
+| `signature` | string | yes | Base64-encoded detached signature |
+| `key_id` | string | no | Key identifier |
+
+---
+
+### `mcp__dystopian__generate_keypair`
+Generate a new Ed25519 keypair for artifact signing.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `key_id` | string | yes | Identifier for the new keypair |
+| `overwrite` | bool | no | Overwrite existing key (default: false) |
+
+---
+
+### `mcp__dystopian__list_keys`
+List all stored Ed25519 keypairs.
+
+**Parameters:** none
+
+---
+
+### `mcp__dystopian__hash_artifact`
+Compute BLAKE2b hash of an artifact for integrity verification.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `artifact_path` | string | yes | Path to the artifact file |
 
 ---
 

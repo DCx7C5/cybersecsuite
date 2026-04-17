@@ -194,7 +194,7 @@ List all available models across all active providers.
 
 ## Dashboard API
 
-All endpoints return JSON. Mounted at `/dashboard/api/`.
+All endpoints return JSON. Mounted at `/dashboard/api/`. The dashboard exposes approximately 30 routes including REST endpoints, SSE streams, and the HTML dashboard page.
 
 ### `GET /dashboard/api/overview`
 System overview: version, uptime, active modules.

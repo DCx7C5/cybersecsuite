@@ -141,10 +141,11 @@ For Claude Desktop or Claude Code, start the MCP server in a separate terminal:
 
 ```bash
 make mcp
-# Starts FastMCP stdio server with 29 cybersecurity tools
+# Starts FastMCP stdio server with 29 cybersec tools
+# Dystopian MCP server provides 5 additional crypto tools (mcp__dystopian__*)
 ```
 
-Configure in `mcp.json` (already present in repo root). Claude will automatically detect and use the 29 `cybersec.*` tools.
+Configure in `mcp.json` (already present in repo root). Claude will automatically detect and use all 34 tools across the `cybersec` and `dystopian` MCP servers.
 
 ---
 
@@ -200,10 +201,28 @@ This is the fastest path for a fresh developer machine with Docker available.
 
 ---
 
+## 3-step quick start (Docker)
+
+If you have Docker and your `.env` ready:
+
+```bash
+# 1. Start all services (PostgreSQL, Redis, dashboard)
+docker compose up -d
+
+# 2. Seed intelligence databases (first run only)
+python src/manage.py seed
+
+# 3. Open Claude Code with cybersec-agent as orchestrator
+claude
+```
+
+---
+
 ## Next steps
 
 - [architecture.md](architecture.md) — understand the system design
 - [configuration.md](configuration.md) — full env var reference
 - [api.md](api.md) — REST and A2A API reference
-- [agents.md](agents.md) — all 32 available agents
-- [mcp-tools.md](mcp-tools.md) — all 29 MCP tools
+- [agents.md](agents.md) — all 33 available agents
+- [mcp-tools.md](mcp-tools.md) — all 34 MCP tools (29 cybersec + 5 dystopian)
+- [teams.md](teams.md) — blue/red/purple team mode

@@ -123,7 +123,59 @@ When Phase A is complete, tools will move to `src/mcp/cybersec.py`.
 
 ---
 
-## Testing
+## Adding intel fixtures
+
+CyberSecSuite ships with structured intelligence data seeded into PostgreSQL via JSON fixtures.
+
+### Fixture format
+
+Fixtures live in `src/db/fixtures/*.json`. Each file contains a list of records for a specific intel table:
+
+```
+src/db/fixtures/
+├── mitre_techniques.json      # intel_mitre_techniques
+├── mitre_actors.json          # intel_mitre_threat_actors
+├── mitre_software.json        # intel_mitre_software_families
+├── cwes.json                  # intel_cwes
+├── capec_patterns.json        # intel_capec_patterns
+├── nist_csf_controls.json     # nist_csf_controls
+└── nist_ai_rmf_controls.json  # nist_ai_rmf_controls
+```
+
+### Seeding commands
+
+| Command | Description |
+|---------|-------------|
+| `python src/manage.py seed` | Seed all defaults (idempotent) |
+| `python src/manage.py seed-intel` | Seed all intelligence datasets |
+| `python src/manage.py seed-nist-csf` | NIST CSF controls only |
+| `python src/manage.py seed-nist-ai-rmf` | NIST AI RMF controls only |
+| `python src/manage.py seed-nist-all` | All NIST datasets |
+| `python src/manage.py seed-mitre` | MITRE ATT&CK techniques |
+| `python src/manage.py seed-mitre-actors` | MITRE threat actors |
+| `python src/manage.py seed-mitre-software` | MITRE software families |
+| `python src/manage.py seed-cwe` | CWE weakness enumeration |
+| `python src/manage.py seed-capec` | CAPEC attack patterns |
+
+### Adding a new intel dataset
+
+1. Create `src/db/fixtures/your_dataset.json` with records matching the target table schema
+2. Register a seed function in `src/db/seeds.py` (follow the existing pattern)
+3. Wire it to a `manage.py` command (e.g., `seed-your-dataset`)
+4. Add it to `seed-intel` aggregate command
+5. Document the new table in `src/db/README.md`
+
+The intel tables are:
+
+| Table | Description |
+|-------|-------------|
+| `nist_csf_controls` | NIST Cybersecurity Framework controls |
+| `nist_ai_rmf_controls` | NIST AI Risk Management Framework controls |
+| `intel_mitre_techniques` | MITRE ATT&CK techniques |
+| `intel_mitre_threat_actors` | MITRE threat actor groups |
+| `intel_mitre_software_families` | MITRE software/malware families |
+| `intel_cwes` | Common Weakness Enumeration entries |
+| `intel_capec_patterns` | CAPEC attack patterns |
 
 ```bash
 make test              # all tests
