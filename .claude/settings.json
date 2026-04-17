@@ -86,7 +86,6 @@
   },
   "hooks_dir": "src/hooks/",
   "hooks": {
-
     "PreToolUse": [
       {
         "matcher": ".*",
@@ -115,6 +114,76 @@
           {
             "type": "command",
             "command": "python3 \"${workspaceFolder}/src/hooks/session_end.py\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/first_init.py\" && python3 \"${workspaceFolder}/src/hooks/session_start.py\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/user_prompt_submit.py\""
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/agent_start.py\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/agent_end.py\""
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/termmate_idle.py\""
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/pre_compact.py\""
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${workspaceFolder}/src/hooks/post_compact.py\""
           }
         ]
       }
