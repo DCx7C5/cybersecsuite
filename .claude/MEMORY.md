@@ -33,18 +33,25 @@ opts = ClaudeAgentOptions(
 | Path                      | What                                          |
 |---------------------------|-----------------------------------------------|
 | `/health`                 | DB health check (200/503)                     |
-| `/dashboard/*`            | Dashboard UI + 16 REST + 4 SSE endpoints      |
+| `/dashboard/*`            | Dashboard UI + 16 REST + 3 SSE endpoints      |
 | `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here |
 | `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                       |
 
-### settings.json (`.claude/settings.json`)
+### settings.json (`.claude/settings.json`) — 12 sections
 ```json
 {
-  "agent": "cybersec-agent",
   "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
-  "proxy": { "enabled": true, "default_strategy": "cost-optimized" },
+  "agent": "cybersec-agent",
+  "version": "0.1.0",
   "asgi": { "host": "127.0.0.1", "port": 8000, "alt_port": 8080, "tls_port": 8433 },
-  "mcp": { "servers": ["cybersec", "dystopian"], "tool_prefix": "mcp__" }
+  "mcp": { "servers": ["cybersec", "dystopian"], "tool_prefix": "mcp__" },
+  "proxy": { "enabled": true, "default_strategy": "cost-optimized" },
+  "crypto": { "algorithm": "Ed25519", "hash": "blake2b", "hash_digest_size": 32 },
+  "signing": { "algorithm": "Ed25519", "token_format": "frontmatter.payload", "default_expiry_hours": 8760 },
+  "artifacts": { "checksum_algorithm": "blake2b", "signature_log_enabled": true },
+  "keys": { "directory": "/etc/dystopian-crypto/keys" },
+  "cache": { "integrity_key": "cache_integrity", "default_ttl_hours": 24 },
+  "security": { "min_password_length": 16, "audit_logging": true }
 }
 ```
 
@@ -66,7 +73,7 @@ opts = ClaudeAgentOptions(
 | File                 | Lines | Purpose                                                                 |
 |----------------------|-------|-------------------------------------------------------------------------|
 | `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (source of truth → split to src/mcp/cybersec/) |
-| `mcp.json`           | 87    | 5 MCP servers for Claude Code CLI                                       |
+| `mcp.json`           | 86    | 5 MCP servers for Claude Code CLI                                       |
 | `pyproject.toml`     | —     | Python 3.14, uv, all deps                                               |
 | `Makefile`           | —     | `make serve`, `make test`, etc.                                         |
 | `Dockerfile`         | —     | EXPOSE 8000 8080 8433, uvicorn CMD                                      |
@@ -123,7 +130,7 @@ Keys: `/etc/dystopian-crypto/keys`. Certs: `~/.omniroute/certs/`.
 | `config.py` | 253 |
 | `cli_integration.py` | 299 |
 
-### src/db/ (40+ models, complete ✅)
+### src/db/ (42 models, complete ✅)
 PostgreSQL via Tortoise ORM (asyncpg). DB: `cybersec_forensics`.
 Key models: Investigation, Finding, IOC, YaraRule, NetworkEvent, ComplianceRecord, AuditLog, ApiUsageLog, A2ATask, Artifact, MitreTechnique, CVE, CAPEC, CWE, ThreatProfile, and 25+ more.
 Shell scripts: `init_db.sh`, `init_session.sh`, `backup_db.sh`.
@@ -135,14 +142,47 @@ Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Find
 ### .claude/ system
 | Component    | Files                                                     | Status                       |
 |--------------|-----------------------------------------------------------|------------------------------|
-| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams                       | ✅ all consistent frontmatter |
-| `hooks/`     | 18 hook .py files + hooks.json (18 events)                | ⚠️ NEVER AUDITED             |
-| `commands/`  | 6 forensics commands + config.py                          | ⚠️ NEVER AUDITED             |
+| `agents/`    | 32 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)  | ✅ all consistent frontmatter |
+| `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json| ⚠️ NEVER AUDITED             |
+| `commands/`  | 7 slash commands + config.py + README.md                  | ⚠️ NEVER AUDITED             |
 | `skills/`    | **780 SKILL.md** across 20 domains, single-word leaf dirs | ✅ RESTRUCTURED               |
-| `templates/` | artifact.md, baselines/ (kernel/network/persistence)      | Not reviewed                 |
+| `templates/` | 14 template files across 6 subdirs                        | Not reviewed                 |
 
-#### hooks.json — 18 events registered
-`FirstInit`, `PreToolCall`, `PostToolUse`, `SessionStart`, `SessionEnd`, `AgentStart`, `AgentEnd`, `PhaseStart`, `PhaseEnd`, `InvestigationStart`, `InvestigationEnd`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated`
+#### templates/ structure
+```
+templates/
+  artifact.md
+  baselines/    kernel.md, network.md, persistence.md, processes.md
+  iocs/         cleared.md, ioc-db.md, watchlist.md
+  project/      findings.md
+  reports/      investigation-report.md
+  session/      session-manifest.json, timeline.md
+  threat-intelligence/  session-index.md, threat-profile.md
+```
+
+#### hooks/ — 28 .py files
+**18 event handlers** (registered in hooks.json):
+`agent_end`, `agent_start`, `baseline_updated`, `evidence_collected`, `finding_confirmed`,
+`first_init`, `investigation_end`, `investigation_start`, `ioc_discovered`, `mode_switch`,
+`permission_violation`, `phase_end`, `phase_start`, `post_tool_use`, `pre_tool_call`,
+`root_command_executed`, `session_end`, `session_start`
+
+**10 additional modules** (not in hooks.json):
+`_utils`, `utils` (shared utilities), `database`, `exact_match_cache`, `uvloop_integration`,
+`yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`
+
+#### commands/ — 7 slash commands
+| Command | Purpose |
+|---------|---------|
+| `hunt` | Check for suspicious processes and injections |
+| `browser-hunt` | Browser artifact forensics |
+| `memory-dump` | Process injection indicators |
+| `net-hunt` | ARP spoofing detection |
+| `mode-switch` | Switch blue/red/purple mode |
+| `setup` | Run manage.py commands |
+| `test-config` | Test configuration validation |
+
+Supporting files: `config.py`, `__init__.py`, `README.md`
 
 #### hooks/_utils.py — shared utilities
 `ensure_structure`, `get_project_dir`, `get_session_dir`, `audit`, `emit`, `hook_context`
@@ -157,9 +197,9 @@ Accepts `blue|red|purple` mode. Delegates to all 32 specialist sub-agents.
 
 ### All 32 agents — frontmatter consistent ✅
 Model tiers:
-- **Haiku** — watchdog, command-verifier, layer2-6 specialists
-- **Sonnet** — most analysts + developers (default)
-- **Opus** — firmware-analyst, reverse-engineer, agent-factory
+- **Haiku** — watchdog, command-verifier
+- **Sonnet** — 27 agents: all analysts, developers, layer2-7 specialists (default)
+- **Opus** — firmware-analyst, reverse-engineer, AGENT_FACTORY
 
 ### Two Execution Paths (NEVER conflate)
 **A. Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → provider routing → MCP tools + subagents
@@ -265,7 +305,8 @@ All 754 from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
 Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, references/, assets/) NOT YET COPIED.
 
 ### Key Files
-- `INDEX.md` — master sorted list (auto-generated, 780 entries)
+- `INDEX.md` — master sorted list (auto-generated, 780 entries, 47KB)
+- `DEV_REFERENCE.md` — developer reference (724 lines)
 - `ops/mode/blue-team/SKILL.md` — blue team mode activation
 - `red-team/SKILL.md` — red team orchestrator index
 - `kernel-os/linux/lkm/kerneldev-forensic/` — full skill with config/, examples/, scripts/, templates/
@@ -342,8 +383,11 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
-- Docs — 16 docs written (README, docs/, module READMEs)
+- Docs — 8 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart)
 - Skills taxonomy — 780 SKILL.md created, indexed, author+action metadata applied
+
+### docs/ — 8 files
+`architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
 
 ### Skills Restructuring (remaining)
 | Step | What | Status |
