@@ -13,7 +13,7 @@
 - **33 specialist sub-agents** — filesystem, memory, network, kernel, persistence, and more
 - **922 skills** — deep taxonomy across 24+ domains
 - **PostgreSQL** — 44 models (findings, IOCs, MITRE, CVE, CWE, CAPEC, NIST CSF/AI RMF, ...)
-- **AI proxy** — 9 providers, 13 routing strategies, circuit breaker, budget guard
+- **AI proxy** — 60 providers, 13 routing strategies, circuit breaker, budget guard
 
 ## Quick Start
 
@@ -64,7 +64,7 @@ Use `from mcp import all_servers, allowed_tools` for SDK wiring.
 Claude Code / claude-agent-sdk query()
         │  ANTHROPIC_BASE_URL=http://localhost:8000/v1
         ▼
-  ASGI /v1/* (AI Proxy — 9 providers, 13 strategies)
+  ASGI /v1/* (AI Proxy — 60 providers, 13 strategies)
         │
   ┌─────┴──────┐
   │ MCP (stdio)│  mcp_server.py → src/mcp/cybersec/ + src/mcp/dystopian.py
@@ -80,7 +80,7 @@ Claude Code / claude-agent-sdk query()
 | `src/mcp/cybersec/`    | SDK MCP package (29 tools, 8 submodules)                           |
 | `src/mcp/dystopian.py` | Crypto tools (Ed25519, Argon2id, AES-256-GCM)                      |
 | `src/a2a/`             | A2A protocol, agent SDK bridge, orchestrator                       |
-| `src/ai_proxy/`        | AI proxy (9 providers, 13 routing strategies)                      |
+| `src/ai_proxy/`        | AI proxy (60 providers, 13 routing strategies)                     |
 | `src/db/models/`       | 44 Tortoise ORM models                                             |
 | `src/dashboard/`       | Live forensic dashboard (Starlette)                                |
 | `src/telemetry/`       | In-process metrics (ring buffer, p50/p95/p99)                      |

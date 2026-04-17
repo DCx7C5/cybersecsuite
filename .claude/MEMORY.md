@@ -108,7 +108,7 @@ opts = ClaudeAgentOptions(
 | File                        | Lines | Purpose                                                   |
 |-----------------------------|-------|-----------------------------------------------------------|
 | `routes.py`                 | 224   | OpenAI-compat `/v1/*` endpoints                           |
-| `providers/registry.py`     | 1040  | **51 providers**, model lists, cost metadata, auth types  |
+| `providers/registry.py`     | 1140  | **60 providers**, model lists, cost metadata, auth types  |
 | `routing/combo.py`          | 574   | 13-strategy routing engine, circuit breaker, budget guard |
 | `translators/core.py`       | 275   | Request/response translation between formats              |
 | `services/rate_limiter.py`  | 159   | Rate limiting per provider                                |
@@ -484,7 +484,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 - **CVE fixture**: `src/db/fixtures/cve_entries.json` (30 canonical CVEs), `seed_cve()`, `seed-cve` command
 - **Integrity checks**: `src/checks/integrity.py` — `check_models()`, `check_fixtures()`, `check_config()`, `run_all_checks()`
 - **Model fixes**: Duplicate `AuditLog` (audit.py→re-export), duplicate `SharedEntry` removed from investigation.py, empty intelligence.py removed
-- **Providers**: 48 → **51** providers in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes)
+- **Providers**: 48 → 51 → **60** providers in `src/ai_proxy/providers/registry.py` (added kimi, qwen, chutes, replicate, lepton, runpod, writer, reka, zhipu, yi, minimax, stepfun)
 - **Flowcharts**: Updated `docs/architecture.md` — ultimate + actual Mermaid diagrams
 - **Proposals**: `PROPOSAL.md` (plugin separation), `PROPOSAL_MEM.md` (Obsidian memory cache)
 

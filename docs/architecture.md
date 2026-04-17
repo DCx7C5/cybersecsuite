@@ -188,7 +188,7 @@ TLS is activated automatically when `ASGI_TLS_CERT` + `ASGI_TLS_KEY` exist. See 
 
 ## AI Providers
 
-9 providers supported by the AI proxy:
+60 providers supported by the AI proxy (9 core + 51 extended):
 
 | Provider | Models | Notes |
 |----------|--------|-------|
@@ -201,6 +201,8 @@ TLS is activated automatically when `ASGI_TLS_CERT` + `ASGI_TLS_KEY` exist. See 
 | xAI | Grok-2, Grok-beta | High context |
 | Together AI | 60+ open models | BYOM |
 | OpenRouter | 200+ models | Aggregator |
+
+Plus 51 extended providers: AI21, AIML API, Alibaba, Baseten, Cerebras, Chutes, Cloudflare, Cohere, Databricks, DeepInfra, Featherless, Fireworks, FriendliAI, Galadriel, Heroku, HuggingFace, Hyperbolic, Kimi, Lambda, LM Studio, Lepton AI, Meta Llama, MiniMax, Moonshot, NanoGPT, Nebius, Novita, Nscale, NVIDIA, OVHcloud, Ollama, Perplexity, Perplexity Search, Pollinations, Qwen, Reka AI, Replicate, RunPod, SambaNova, Scaleway, SiliconFlow, StepFun, Upstage, Venice, Volcengine, W&B, Writer, Yi (01.AI), Zhipu AI, and browser-based Grok (x.com + grok.com).
 
 ---
 
@@ -242,7 +244,7 @@ flowchart LR
     CLI --> AgentSDK["agent-sdk\nSdkMcpServer"]
     AgentSDK --> MCP["MCP Tool Layer\n(cybersec + dystopian)"]
     MCP --> DB["PostgreSQL\n(8 intel tables\n70 models)"]
-    MCP --> AIProxy["AI Proxy\n(51 providers\n13 strategies)"]
+    MCP --> AIProxy["AI Proxy\n(60 providers\n13 strategies)"]
     MCP --> Crypto["Vault + SSL\n(Ed25519, Argon2id)"]
     MCP --> Checks["Integrity Checks\n(models, fixtures, config)"]
     DB --> Fixtures["Fixtures\n(CVE, MITRE, CWE\nCAPEC, Actors, Software)"]
@@ -259,7 +261,7 @@ flowchart TD
     Entry["mcp_server.py\n(FastMCP stdio — 29 tools)"] --> MCP["src/mcp/cybersec/\n(8 modules)"]
     MCP --> DB["src/db/\n(Tortoise ORM)\n8 intel tables · 70 models"]
     MCP --> A2A["src/a2a/\n(A2A JSON-RPC 2.0)"]
-    MCP --> AIProxy["src/ai_proxy/\n(51 providers\n13 routing strategies)"]
+    MCP --> AIProxy["src/ai_proxy/\n(60 providers\n13 routing strategies)"]
     MCP --> Dashboard["src/dashboard/\n(Starlette, ~30 routes)"]
     MCP --> Crypto["src/crypto/\n(vault, SSL CLI\nkey mgmt, signing)"]
     DB --> PG["PostgreSQL\ncybersec-postgres"]

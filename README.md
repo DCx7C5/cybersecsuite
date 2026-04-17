@@ -7,7 +7,7 @@ Cybersecurity forensics platform with multi-agent AI orchestration, multi-provid
 ## Features
 
 - **A2A Agent Protocol** — Google Agent-to-Agent JSON-RPC 2.0 server with 32 specialist agents
-- **AI Proxy** — OpenAI-compatible `/v1/*` endpoint routing across 9 providers with 13 strategies
+- **AI Proxy** — OpenAI-compatible `/v1/*` endpoint routing across 60 providers with 13 strategies
 - **29 MCP Tools** — FastMCP stdio server for Claude integration (findings, IOCs, cases, intel, routing, cache)
 - **PostgreSQL Threat Intel** — 50 ORM models: MITRE ATT&CK, CVE, CWE, CAPEC, findings, IOCs, cases
 - **Crypto Suite** — Ed25519 artifact signing, BLAKE2b checksums, Argon2id KDF, AES-256-GCM encryption

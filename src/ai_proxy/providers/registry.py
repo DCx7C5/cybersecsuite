@@ -1034,6 +1034,125 @@ _register(ProviderConfig(
 ))
 
 
+# ── Additional inference providers ───────────────────────────────────────────
+
+_register(ProviderConfig(
+    id="replicate",
+    name="Replicate",
+    base_url="https://api.replicate.com/v1",
+    env_key="REPLICATE_API_TOKEN",
+    models=[
+        ModelConfig(id="meta/llama-3.3-70b-instruct", name="Llama 3.3 70B (Replicate)", context_window=128_000,
+                    max_output=8_192, cost=ModelCost(input=0.40, output=0.40), supports_tools=True),
+        ModelConfig(id="meta/llama-4-maverick", name="Llama 4 Maverick (Replicate)", context_window=1_048_576,
+                    max_output=16_384, cost=ModelCost(input=0.30, output=0.50), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="lepton",
+    name="Lepton AI",
+    base_url="https://api.lepton.ai/v1",
+    env_key="LEPTON_API_KEY",
+    models=[
+        ModelConfig(id="llama-3.3-70b", name="Llama 3.3 70B (Lepton)", context_window=128_000,
+                    max_output=8_192, cost=ModelCost(input=0.35, output=0.40)),
+        ModelConfig(id="deepseek-r1", name="DeepSeek R1 (Lepton)", context_window=64_000,
+                    max_output=8_192, cost=ModelCost(input=0.55, output=2.19)),
+    ],
+))
+
+_register(ProviderConfig(
+    id="runpod",
+    name="RunPod",
+    base_url="https://api.runpod.ai/v2",
+    env_key="RUNPOD_API_KEY",
+    api_format=ApiFormat.OPENAI,
+    models=[
+        ModelConfig(id="llama-3.3-70b-instruct", name="Llama 3.3 70B (RunPod)", context_window=128_000,
+                    max_output=8_192, cost=ModelCost(input=0.35, output=0.40)),
+    ],
+))
+
+_register(ProviderConfig(
+    id="writer",
+    name="Writer",
+    base_url="https://api.writer.com/v1",
+    env_key="WRITER_API_KEY",
+    models=[
+        ModelConfig(id="palmyra-x5", name="Palmyra X5", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=2.00, output=6.00), supports_tools=True),
+        ModelConfig(id="palmyra-x4", name="Palmyra X4", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=1.50, output=5.00), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="reka",
+    name="Reka AI",
+    base_url="https://api.reka.ai/v1",
+    env_key="REKA_API_KEY",
+    models=[
+        ModelConfig(id="reka-core", name="Reka Core", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=3.00, output=15.00), supports_tools=True, supports_vision=True),
+        ModelConfig(id="reka-flash", name="Reka Flash", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=0.40, output=1.00), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="zhipu",
+    name="Zhipu AI",
+    base_url="https://open.bigmodel.cn/api/paas/v4",
+    env_key="ZHIPU_API_KEY",
+    models=[
+        ModelConfig(id="glm-5-plus", name="GLM-5 Plus", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=1.00, output=4.00), supports_tools=True),
+        ModelConfig(id="glm-5", name="GLM-5", context_window=128_000, max_output=8_192,
+                    cost=ModelCost(input=0.50, output=2.00), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="yi",
+    name="01.AI",
+    base_url="https://api.01.ai/v1",
+    env_key="YI_API_KEY",
+    models=[
+        ModelConfig(id="yi-large", name="Yi Large", context_window=32_000, max_output=4_096,
+                    cost=ModelCost(input=3.00, output=9.00), supports_tools=True),
+        ModelConfig(id="yi-medium", name="Yi Medium", context_window=16_000, max_output=4_096,
+                    cost=ModelCost(input=0.50, output=1.00), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="minimax",
+    name="MiniMax",
+    base_url="https://api.minimax.chat/v1",
+    env_key="MINIMAX_API_KEY",
+    models=[
+        ModelConfig(id="minimax-01", name="MiniMax-01", context_window=1_000_000, max_output=16_384,
+                    cost=ModelCost(input=0.50, output=2.20), supports_tools=True),
+        ModelConfig(id="minimax-text-01", name="MiniMax Text 01", context_window=245_760, max_output=16_384,
+                    cost=ModelCost(input=0.30, output=1.10), supports_tools=True),
+    ],
+))
+
+_register(ProviderConfig(
+    id="stepfun",
+    name="StepFun",
+    base_url="https://api.stepfun.com/v1",
+    env_key="STEPFUN_API_KEY",
+    models=[
+        ModelConfig(id="step-2-16k", name="Step 2 16K", context_window=16_000, max_output=4_096,
+                    cost=ModelCost(input=1.00, output=4.00), supports_tools=True),
+        ModelConfig(id="step-1-256k", name="Step 1 256K", context_window=256_000, max_output=8_192,
+                    cost=ModelCost(input=2.00, output=8.00), supports_tools=True),
+    ],
+))
+
+
 # ── Auto-load custom providers on module import ──────────────────────────────
 
 load_custom_providers()

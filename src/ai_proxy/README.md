@@ -26,7 +26,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ## Providers
 
-9 providers supported:
+60 providers supported (9 core + 51 extended). Core providers:
 
 | ID | Name | Free tier | Notes |
 |----|------|-----------|-------|
@@ -39,6 +39,8 @@ curl http://localhost:8000/v1/chat/completions \
 | `xai` | xAI Grok | No | Grok-2, Grok-beta |
 | `together` | Together AI | No | 60+ open models |
 | `openrouter` | OpenRouter | No | 200+ models aggregator |
+
+Extended providers include: AI21, AIML API, Alibaba, Baseten, Cerebras, Chutes, Cloudflare, Cohere, Databricks, DeepInfra, Featherless, Fireworks, FriendliAI, Galadriel, Heroku, HuggingFace, Hyperbolic, Kimi, Lambda, LM Studio, Lepton AI, Meta Llama, MiniMax, Moonshot, NanoGPT, Nebius, Novita, Nscale, NVIDIA, OVHcloud, Ollama, Perplexity, Perplexity Search, Pollinations, Qwen, Reka AI, Replicate, RunPod, SambaNova, Scaleway, SiliconFlow, StepFun, Upstage, Venice, Volcengine, W&B, Writer, Yi (01.AI), Zhipu AI, and browser-based Grok (x.com + grok.com).
 
 A provider is active when its API key env var is set. See [configuration.md](../../docs/configuration.md) for key names.
 
