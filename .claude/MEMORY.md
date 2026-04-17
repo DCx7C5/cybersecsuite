@@ -631,3 +631,35 @@ Restructure script: `/tmp/skills_restructure2.py` (taxonomy routing + single-wor
 - `author-action-map` — Generate mapping (pending)
 - `author-action-update` — Update all 780 SKILL.md (pending)
 - `author-action-validate` — Verify + regenerate INDEX (pending)
+
+---
+
+## ✅ COMPLETED: Author + Action Metadata Update (ALL 780 SKILLS)
+
+### Changes Applied
+✓ **Author field**: Set `author: dcx7c5` for all 780 skills (754 Anthropic + 26 project-native)
+✓ **Action field**: Added to all 780 skills (extracted from leaf directory)
+✓ **Duplicate resolution**: Multi-level action names for conflicts
+  - Example: `cloud-security/aws/aws/SKILL.md` → action: `aws-aws`
+  - Example: `forensics/memory/analysis/volatility/SKILL.md` → action: `analysis-volatility`
+✓ **Uniqueness**: All 780 actions unique within their domain (verified 100%)
+✓ **Git commit**: 1188 files changed, 24564 insertions
+
+### Philosophy Implemented
+**Skills = components** (cloud, network, malware, etc.)
+**Actions = leaf directory names** (iam, volatility, sliver, analysis-volatility, etc.)
+
+### Verification Stats
+```
+cloud-security:     113 unique actions / 113 skills ✓
+forensics:          89 unique actions / 89 skills ✓
+malware:            70 unique actions / 70 skills ✓
+threat-intel:       87 unique actions / 87 skills ✓
+web-security:       95 unique actions / 95 skills ✓
+(all 23 domains verified)
+```
+
+### Next Phase
+- Phase D: Deep hierarchy restructuring (3-5 levels, semantic grouping)
+- Phase E: Path-based naming (integrate action field into skill names)
+- Phase F: Fixture seeding (NIST CSF 2.0, tag indices)
