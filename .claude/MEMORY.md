@@ -231,13 +231,12 @@ Model tiers:
 | **Total**                | **780** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
 **Frontmatter enrichment** — ✅ COMPLETE (all 780 updated)
-- `author: dcx7c5` on all 780 skills
 - `action: <leaf_dir>` on all 780 (unique within each domain)
 - `mitre_attack:` on 644 skills (131 unique technique IDs, T1xxx format)
 - `cwe:` on 99 skills (33 unique CWE IDs, CWE-xxx format)
 - `cve:` on 51 skills (58 unique real CVE IDs)
 - `tags:` on all 780 skills (2,283 unique tags)
-- `mcpServers:` REMOVED from all 780 (was redundant)
+- Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
 - Duplicate resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
 
 ### Domain Structure (after red-team redistribution ✅)
@@ -296,7 +295,6 @@ model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
 action: leaf-dir-name
-author: dcx7c5
 tags: [volatility, memory]
 mitre_attack: [T1055, T1003]
 cwe: [CWE-120]
