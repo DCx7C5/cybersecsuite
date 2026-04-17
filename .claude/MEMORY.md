@@ -517,72 +517,70 @@ FastMCP typed-param pattern prevents trivial merge — deferred to `mcp-shim-upd
 `ssl-dystopian-integrate` → `ssl-cert-generation` → `ssl-cli-commands` → `ssl-dashboard-tab` → `ssl-proxy-config`
 
 ### Phase D.5 — PoC Table (IN PROGRESS)
-| Step | Todo                  | Status |
-|------|-----------------------|--------|
-| 1    | `poc-enums`           | ✅ `PocStatus` in `src/db/models/enums.py` |
-| 2    | `poc-model`           | ✅ `src/db/models/poc.py` (`ProofOfConcept`, table `intel_pocs`) |
-| 3    | `poc-seeds`           | ✅ `src/db/fixtures/poc_entries.json` (8 canonical PoCs) |
-| 4    | `poc-bootstrap`       | ✅ `seed_poc()` in `seeds.py`, wired to `initialize_default_seed_data()` |
-| 5    | `poc-seeds-cli`       | ✅ `seed-poc` command in `manage.py` |
+| Step | Todo                  | Status                                                                            |
+|------|-----------------------|-----------------------------------------------------------------------------------|
+| 1    | `poc-enums`           | ✅ `PocStatus` in `src/db/models/enums.py`                                         |
+| 2    | `poc-model`           | ✅ `src/db/models/poc.py` (`ProofOfConcept`, table `intel_pocs`)                   |
+| 3    | `poc-seeds`           | ✅ `src/db/fixtures/poc_entries.json` (8 canonical PoCs)                           |
+| 4    | `poc-bootstrap`       | ✅ `seed_poc()` in `seeds.py`, wired to `initialize_default_seed_data()`           |
+| 5    | `poc-seeds-cli`       | ✅ `seed-poc` command in `manage.py`                                               |
 | 6    | `poc-mcp-tools`       | ✅ `src/mcp/cybersec/poc.py` — `query_poc_by_cve`, `add_poc`, `get_poc_popularity` |
-| 7    | `poc-dashboard-tab`   | ⚠️ Tab button added; tab panel div + JS fetch still missing |
-| 8    | `poc-integrity-check` | ⚠️ `poc_entries.json` fixture present; integrity auto-discovers `intel_pocs` |
-| 9    | `poc-tests`           | pending |
-| 10   | `memory-sync`         | pending |
+| 7    | `poc-dashboard-tab`   | ⚠️ Tab button added; tab panel div + JS fetch still missing                       |
+| 8    | `poc-integrity-check` | ⚠️ `poc_entries.json` fixture present; integrity auto-discovers `intel_pocs`      |
+| 9    | `poc-tests`           | pending                                                                           |
+| 10   | `memory-sync`         | pending                                                                           |
 
 **Rationale**: Track proof-of-concept exploits linked to CVEs. Enables analysts to assess exploitability in forensic investigations.
 **Relationships**: CVEIntel ↔ PoC (1-to-many), Finding can reference PoC.
 
-### Phase E.1 — Type Safety Fixes ✅ (2026-04-17)
+### Phase E.1 — Type Safety Fixes ✅ (2026-04-17, commits f0e8b72 + 2b58d569)
 Surgical pyright fixes in `src/` — only real bugs, no annotation-only cleanup:
-- **`src/db/intel_loader.py`**: `_map_tactic_name` return type `type[MITRETactic[Any]] | Literal[...]` → `MITRETactic`; removed unused `Literal` import; renamed 3× `to_create` variable in `bootstrap_mitre_intelligence_async` to `techniques_to_create`, `actors_to_create`, `software_to_create` (was causing pyright `reportRedeclaration` + `Iterable` type errors)
-- **`src/telemetry/middleware.py`**: initialized `status = 0` before try/except to prevent `possibly unbound` in finally block
-- **`src/ai_proxy/routing/combo.py`**: extracted `_context_window` helper to avoid double `get_model()` call in lambda (null-safety + double evaluation bug)
+- **`src/db/intel_loader.py`**: `_map_tactic_name` return type → `MITRETactic`; removed `Literal` import; renamed 3× `to_create` in `bootstrap_mitre_intelligence_async` (`techniques_to_create`, `actors_to_create`, `software_to_create`)
+- **`src/telemetry/middleware.py`**: `status = 0` before try/except — unbound in finally fixed
+- **`src/ai_proxy/routing/combo.py`**: extracted `_context_window` helper, no double `get_model()` call
+- **`mcp_server.py`**: removed 4 duplicate helper functions (`_normalize_choice`, `_coerce_limit`, `_normalize_target_scopes`, `_normalize_scope_level`); now imports from `mcp.cybersec.helpers`
 
 ### Phase E — File Mapping (QUEUED)
-| Step | Todo | Files |
-|------|------|-------|
-| 1 | `files-inventory` | Generate FILES_INVENTORY.md breakdown |
-| 2-4 | `files-copy-licenses`, `files-copy-agent-py`, `files-copy-api-refs` | Copy universal files (~2,500 total) |
-| 5-7 | `files-copy-process-py`, `files-copy-other-refs`, `files-copy-assets` | Copy selective files (~900 total) |
-| 8-10 | `files-resolve-local-conflicts`, `files-symlink-decision`, `files-update-comprehensive-mapper` | Merge + document |
+| Step | Todo                                                                                           | Files                                 |
+|------|------------------------------------------------------------------------------------------------|---------------------------------------|
+| 1    | `files-inventory`                                                                              | Generate FILES_INVENTORY.md breakdown |
+| 2-4  | `files-copy-licenses`, `files-copy-agent-py`, `files-copy-api-refs`                            | Copy universal files (~2,500 total)   |
+| 5-7  | `files-copy-process-py`, `files-copy-other-refs`, `files-copy-assets`                          | Copy selective files (~900 total)     |
+| 8-10 | `files-resolve-local-conflicts`, `files-symlink-decision`, `files-update-comprehensive-mapper` | Merge + document                      |
 
 **Rationale**: Sync supporting assets (LICENSE, scripts, references, templates) from Anthropic source to local tree. Enables offline reference, attribution, and automation.
 
 ### Phase D.6 — SIEM-SOC Reorganization (NEW)
 Decentralize SIEM-SOC skills from monolithic domain into first-layer homes (identity, endpoint, network, ops, etc.).
 
-| Step | Todo | Target | Skills |
-|------|------|--------|--------|
-| 1-2 | `siem-new-dirs`, `siem-identify-conflicts` | Prep | New ops/soc-operations/ |
-| 3 | `siem-migrate-identity` | identity/ | credential-detection, bruteforce-detection, credential-dumping (3) |
-| 4 | `siem-migrate-endpoint` | endpoint-security/ | wazuh, ueba (2) |
-| 5 | `siem-migrate-network` | network/ | dns-tunneling, lateral-movement-detection (2) |
-| 6 | `siem-migrate-ops` | ops/soc-operations/ | alert-tuning, onboarding, kpi-metrics, escalation, ticketing, chaos-eng (6) |
-| 7 | `siem-migrate-database` | database/logging/ | log-aggregation, syslog (2) |
-| 8 | `siem-migrate-forensics` | forensics/ | memory-analysis-siem (1) |
-| 9 | `siem-migrate-kernel` | kernel-os/ebpf/ | ebpf-monitoring (1) |
-| 10 | `siem-migrate-incresponse` | incident-response/ | insider-threat (1) |
-| 11 | `siem-cleanup` | siem-soc/ | Remove empty dirs, consolidate (14 remain) |
-| 12-14 | `siem-update-skill-names`, `siem-update-mapper`, `siem-update-index` | Metadata | Update INDEX.md + MAPPER.md |
-| 15-16 | `siem-validate-structure`, `siem-integrity-check` | Validate | Verify structure + check integrity |
+| Step  | Todo                                                                 | Target              | Skills                                                                      |
+|-------|----------------------------------------------------------------------|---------------------|-----------------------------------------------------------------------------|
+| 1-2   | `siem-new-dirs`, `siem-identify-conflicts`                           | Prep                | New ops/soc-operations/                                                     |
+| 3     | `siem-migrate-identity`                                              | identity/           | credential-detection, bruteforce-detection, credential-dumping (3)          |
+| 4     | `siem-migrate-endpoint`                                              | endpoint-security/  | wazuh, ueba (2)                                                             |
+| 5     | `siem-migrate-network`                                               | network/            | dns-tunneling, lateral-movement-detection (2)                               |
+| 6     | `siem-migrate-ops`                                                   | ops/soc-operations/ | alert-tuning, onboarding, kpi-metrics, escalation, ticketing, chaos-eng (6) |
+| 7     | `siem-migrate-database`                                              | database/logging/   | log-aggregation, syslog (2)                                                 |
+| 8     | `siem-migrate-forensics`                                             | forensics/          | memory-analysis-siem (1)                                                    |
+| 9     | `siem-migrate-kernel`                                                | kernel-os/ebpf/     | ebpf-monitoring (1)                                                         |
+| 10    | `siem-migrate-incresponse`                                           | incident-response/  | insider-threat (1)                                                          |
+| 11    | `siem-cleanup`                                                       | siem-soc/           | Remove empty dirs, consolidate (14 remain)                                  |
+| 12-14 | `siem-update-skill-names`, `siem-update-mapper`, `siem-update-index` | Metadata            | Update INDEX.md + MAPPER.md                                                 |
+| 15-16 | `siem-validate-structure`, `siem-integrity-check`                    | Validate            | Verify structure + check integrity                                          |
 
 **Rationale**: Reorganize 27 SIEM skills into logically appropriate first-layer domains. Consolidate siem-soc/ to 14 platform-specific/generic SIEM skills. Create new `ops/soc-operations/` domain (6 skills).
 **Result**: Better skill discovery, clearer domain taxonomy, decentralized SIEM concerns.
 
-### Phase F — File-Splitting (Token Efficiency) — PLANNED
-Large files to split into submodules. Rule: never break public API — all existing imports work via re-exports.
+### Phase F — File-Splitting (Token Efficiency) — ✅ COMPLETE
+Large files split into submodules. Public API preserved — all existing imports still work.
 
-| File | Lines | Plan |
-|------|-------|------|
-| `src/db/intel_loader.py` | 2062 | → `src/db/intel/` package (5 modules) |
-| `src/dashboard/routes.py` | 1614 | → `api/core`, `api/intel`, `api/ops`, `api/telemetry`, `_html.py` |
-| `mcp_server.py` | 1288 | → thin shim ≤200L, delegate to `src/mcp/cybersec/` |
-| `src/ai_proxy/providers/registry.py` | 1163 | → split provider defs into groups |
-| `src/checks/integrity.py` | 699 | → `_model_check`, `_fixture_check`, `_config_check` |
-| `src/manage.py` | 611 | → `src/manage/` package |
-
-Each phase: implement → smoke test → commit.
+| File                                 | Before | After (new structure)                                                                           | Commit     |
+|--------------------------------------|--------|-------------------------------------------------------------------------------------------------|------------|
+| `src/db/intel_loader.py`             | 2062L  | `src/db/intel/`: `_utils`(332L) `_snapshot`(60L) `_loaders`(276L) `bootstrap`(1475L) shim(8L) | `2687c778` |
+| `src/dashboard/routes.py`            | 1614L  | `_html.py`(561L) + `_handlers.py`(1008L) + thin `routes.py`(55L)                              | `9c136218` |
+| `src/ai_proxy/providers/registry.py` | 1163L  | core `registry.py`(319L) + `_providers.py` registrations(854L)                                 | `449addfd` |
+| `src/manage.py`                      | 611L   | `manage/_commands.py`(487L) + thin `manage.py` dispatcher(162L)                                | `ffebc600` |
+| `src/checks/integrity.py`            | 699L   | `_model_check`(282L) + `_fixture_check`(120L) + `_config_check`(255L) + thin(71L)              | `4e7244f4` |
 
 ### Phase G — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
