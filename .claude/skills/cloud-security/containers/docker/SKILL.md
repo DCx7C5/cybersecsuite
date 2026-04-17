@@ -1,7 +1,7 @@
 ---
 name: docker
 description: Hardening Docker containers for production involves applying security best practices aligned with CIS Docker
-action: containers-docker
+action: docker
   Benchmark v1.8.0 to minimize attack surface, prevent privilege escalation, and enforce leas
 domain: cybersecurity
 subdomain: container-security

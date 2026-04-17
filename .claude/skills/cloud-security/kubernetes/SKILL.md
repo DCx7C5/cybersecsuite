@@ -1,7 +1,7 @@
 ---
 name: kubernetes
 description: 'Auditing Kubernetes cluster RBAC configurations to identify overly permissive roles, wildcard permissions, dangerous
-action: cloud-security-kubernetes
+action: kubernetes
   ClusterRoleBindings, service account abuse, and privilege escalation paths using kubectl, rbac-tool, KubiScan, and Kubeaudit.
 
   '

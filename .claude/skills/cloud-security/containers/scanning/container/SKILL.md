@@ -1,7 +1,7 @@
 ---
 name: container
 description: 'This skill covers hardening container images by minimizing attack surface, removing unnecessary packages, implementing
-action: scanning-container
+action: container
   multi-stage builds, configuring non-root users, and applying CIS Docker Benchmark recommendations to produce secure production-ready
   images.
 

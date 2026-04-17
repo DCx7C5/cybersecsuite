@@ -1,7 +1,7 @@
 ---
 name: dnsexfil
 description: Detect data exfiltration through DNS tunneling by analyzing query entropy, subdomain length, query volume, TXT
-action: dns-dnsexfil
+action: dnsexfil
   record abuse, and response payload sizes using passive DNS monitoring.
 domain: cybersecurity
 subdomain: network-security

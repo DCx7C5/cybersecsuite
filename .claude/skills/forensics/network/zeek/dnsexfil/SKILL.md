@@ -1,7 +1,7 @@
 ---
 name: dnsexfil
 description: Detect DNS-based data exfiltration by analyzing Zeek dns.log for high-entropy subdomains and anomalous query
-action: zeek-dnsexfil
+action: dnsexfil
   patterns
 domain: cybersecurity
 subdomain: network-security

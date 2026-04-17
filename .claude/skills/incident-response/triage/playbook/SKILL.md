@@ -1,7 +1,7 @@
 ---
 name: playbook
 description: Classify and prioritize security incidents using structured IR playbooks to determine severity, assign response
-action: triage-playbook
+action: playbook
   teams, and initiate appropriate response procedures.
 domain: cybersecurity
 subdomain: incident-response

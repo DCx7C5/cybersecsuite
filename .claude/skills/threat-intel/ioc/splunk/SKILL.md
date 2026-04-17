@@ -1,7 +1,7 @@
 ---
 name: splunk
 description: Build automated threat intelligence enrichment pipelines in Splunk Enterprise Security using lookup tables, modular
-action: ioc-splunk
+action: splunk
   inputs, and the Threat Intelligence Framework.
 domain: cybersecurity
 subdomain: soc-operations

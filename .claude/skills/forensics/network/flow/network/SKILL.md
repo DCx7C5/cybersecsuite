@@ -1,7 +1,7 @@
 ---
 name: network
 description: Parse NetFlow v9 and IPFIX records to detect volumetric anomalies, port scanning, data exfiltration, and C2 beaconing
-action: flow-network
+action: network
   patterns. Uses the Python netflow library to decode flow records, builds traffic baselines, and applies statistical analysis
   to identify flows with abnormal byte counts, connection durations, and periodic timing patterns.
 domain: cybersecurity

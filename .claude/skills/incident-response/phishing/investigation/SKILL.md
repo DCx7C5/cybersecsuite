@@ -1,7 +1,7 @@
 ---
 name: investigation
 description: 'Investigates phishing email incidents from initial user report through header analysis, URL/attachment detonation,
-action: phishing-investigation
+action: investigation
   impacted user identification, and containment actions using SOC tools like Splunk, Microsoft Defender, and sandbox analysis
   platforms. Use when a reported phishing email requires full incident investigation to determine scope and impact.
 

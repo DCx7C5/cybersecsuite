@@ -1,7 +1,7 @@
 ---
 name: cloud
 description: Conduct forensic investigations in cloud environments by collecting and analyzing logs, snapshots, and metadata
-action: forensics-cloud-cloud
+action: cloud
   from AWS, Azure, and GCP services.
 domain: cybersecurity
 subdomain: digital-forensics

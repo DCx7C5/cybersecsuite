@@ -1,7 +1,7 @@
 ---
 name: burpsuite
 description: Identifying and validating cross-site scripting vulnerabilities using Burp Suite's scanner, intruder, and repeater
-action: xss-burpsuite
+action: burpsuite
   tools during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security

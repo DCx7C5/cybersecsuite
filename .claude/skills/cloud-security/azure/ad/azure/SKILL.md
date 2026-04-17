@@ -1,7 +1,7 @@
 ---
 name: azure
 description: 'Auditing Microsoft Entra ID (Azure Active Directory) configuration to identify risky authentication policies,
-action: ad-azure
+action: azure
   overly permissive role assignments, stale accounts, conditional access gaps, and guest user risks using AzureAD PowerShell,
   Microsoft Graph API, and ScoutSuite.
 

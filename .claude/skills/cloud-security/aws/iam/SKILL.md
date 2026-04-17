@@ -1,7 +1,7 @@
 ---
 name: iam
 description: Configure IAM permission boundaries in AWS to delegate role creation to developers while enforcing maximum privilege
-action: aws-iam
+action: iam
   limits set by the security team.
 domain: cybersecurity
 subdomain: identity-access-management

@@ -1,7 +1,7 @@
 ---
 name: credential
 description: 'Detects credential stuffing attacks by analyzing authentication logs for login velocity anomalies, ASN diversity,
-action: siem-soc-credential
+action: credential
   password spray patterns, and geographic distribution of failed logins. Uses statistical analysis on Splunk or raw log data.
   Use when investigating account takeover campaigns or building detection rules for auth abuse.
 

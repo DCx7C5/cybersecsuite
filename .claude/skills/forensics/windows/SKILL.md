@@ -1,7 +1,7 @@
 ---
 name: windows
 description: Perform comprehensive Windows forensic artifact analysis using Eric Zimmerman's open-source EZ Tools suite including
-action: forensics-windows
+action: windows
   KAPE, MFTECmd, PECmd, LECmd, JLECmd, and Timeline Explorer for parsing registry hives, prefetch files, event logs, and file
   system metadata.
 domain: cybersecurity

@@ -1,7 +1,7 @@
 ---
 name: network
 description: Perform forensic analysis of network packet captures (PCAP/PCAPNG) using Wireshark, tshark, and tcpdump to reconstruct
-action: capture-network
+action: network
   network communications, extract transferred files, identify malicious traffic, and establish evidence of data exfiltration
   or command-and-control activity.
 domain: cybersecurity

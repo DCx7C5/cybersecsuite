@@ -1,7 +1,7 @@
 ---
 name: azure
 description: Detect and investigate Azure service principal abuse including privilege escalation, credential compromise, admin
-action: cloud-security-azure
+action: azure
   consent bypass, and unauthorized enumeration in Microsoft Entra ID environments.
 domain: cybersecurity
 subdomain: cloud-security

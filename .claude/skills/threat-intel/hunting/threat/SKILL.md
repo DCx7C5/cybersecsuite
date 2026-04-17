@@ -1,7 +1,7 @@
 ---
 name: threat
 description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and
-action: hunting-threat
+action: threat
   environmental data into testable hunting hypotheses.
 domain: cybersecurity
 subdomain: threat-hunting

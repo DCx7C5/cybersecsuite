@@ -1,7 +1,7 @@
 ---
 name: firmware-recon
 description: Firmware and bootloader forensic reconnaissance. UEFI/BIOS integrity, Secure Boot key chain, TPM PCR state, initramfs inspection, GRUB configuration, ACPI table analysis, and firmware rootkit/implant detection.
-action: kernel-os-firmware
+action: firmware
 model: opus
 maxTurns: 30
 tools:

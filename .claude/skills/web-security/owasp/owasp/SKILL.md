@@ -1,7 +1,7 @@
 ---
 name: owasp
 description: 'This skill covers integrating OWASP ZAP (Zed Attack Proxy) for Dynamic Application Security Testing in CI/CD
-action: owasp-owasp
+action: owasp
   pipelines. It addresses configuring baseline, full, and API scans against running applications, interpreting ZAP findings,
   tuning scan policies, and establishing DAST quality gates in GitHub Actions and GitLab CI.
 

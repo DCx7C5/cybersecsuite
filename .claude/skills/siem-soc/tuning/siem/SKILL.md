@@ -1,7 +1,7 @@
 ---
 name: siem
 description: Perform systematic SIEM false positive reduction through rule tuning, threshold adjustment, correlation refinement,
-action: tuning-siem
+action: siem
   and threat intelligence enrichment to combat alert fatigue.
 domain: cybersecurity
 subdomain: soc-operations

@@ -1,7 +1,7 @@
 ---
 name: supply
 description: Implement software supply chain integrity verification for container builds using the in-toto framework to create
-action: containers-supply
+action: supply
   cryptographically signed attestations across CI/CD pipeline steps.
 domain: cybersecurity
 subdomain: container-security

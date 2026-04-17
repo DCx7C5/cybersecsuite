@@ -53,11 +53,11 @@ Zero Standing Privileges (ZSP) is a security model where no user or identity ret
 
 ### TEA Framework (Time, Entitlements, Approvals)
 
-| Component | Description | Configuration |
-|-----------|-------------|---------------|
-| **Time** | Duration of the privileged session | Min 15 minutes, max 8 hours, default 1 hour |
-| **Entitlements** | Permissions granted during the session | Dynamically scoped IAM roles/policies |
-| **Approvals** | Authorization workflow before access | Auto-approve, manager approval, or multi-level |
+| Component        | Description                            | Configuration                                  |
+|------------------|----------------------------------------|------------------------------------------------|
+| **Time**         | Duration of the privileged session     | Min 15 minutes, max 8 hours, default 1 hour    |
+| **Entitlements** | Permissions granted during the session | Dynamically scoped IAM roles/policies          |
+| **Approvals**    | Authorization workflow before access   | Auto-approve, manager approval, or multi-level |
 
 ### ZSP Architecture
 

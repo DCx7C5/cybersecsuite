@@ -1,7 +1,7 @@
 ---
 name: cloud
 description: Detect abnormal access patterns in AWS S3, GCS, and Azure Blob Storage by analyzing CloudTrail Data Events, GCS
-action: log-cloud-cloud
+action: cloud
   audit logs, and Azure Storage Analytics. Identifies after-hours bulk downloads, access from new IP addresses, unusual API
   calls (GetObject spikes), and potential data exfiltration using statistical baselines and time-series anomaly detection.
 domain: cybersecurity

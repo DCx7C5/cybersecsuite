@@ -1,7 +1,7 @@
 ---
 name: aws
 description: 'Detecting exposed AWS credentials in source code repositories, CI/CD pipelines, and configuration files using
-action: cloud-security-aws
+action: aws
   TruffleHog, git-secrets, and AWS-native detection mechanisms to prevent credential theft and unauthorized account access.
 
   '

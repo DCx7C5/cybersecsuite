@@ -1,7 +1,7 @@
 ---
 name: playbook
 description: Implement automated incident response playbooks in Cortex XSOAR to orchestrate security workflows across SOC
-action: playbooks-playbook
+action: playbook
   tools and reduce manual response time.
 domain: cybersecurity
 subdomain: soc-operations

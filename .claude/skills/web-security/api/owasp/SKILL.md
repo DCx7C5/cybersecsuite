@@ -1,7 +1,7 @@
 ---
 name: owasp
 description: Systematically assessing REST and GraphQL API endpoints against the OWASP API Security Top 10 risks using automated
-action: api-owasp
+action: owasp
   and manual testing techniques.
 domain: cybersecurity
 subdomain: web-application-security

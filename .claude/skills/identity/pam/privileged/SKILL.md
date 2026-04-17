@@ -1,7 +1,7 @@
 ---
 name: privileged
 description: Conduct systematic reviews of privileged accounts to validate access rights, identify excessive permissions,
-action: pam-privileged
+action: privileged
   and enforce least privilege across PAM infrastructure.
 domain: cybersecurity
 subdomain: identity-access-management

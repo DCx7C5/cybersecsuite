@@ -1,7 +1,7 @@
 ---
 name: firmware
 description: 'Analyzes firmware images for embedded malware, backdoors, and unauthorized modifications targeting routers,
-action: firmware-firmware
+action: firmware
   IoT devices, UEFI/BIOS, and embedded systems. Covers firmware extraction, filesystem analysis, binary reverse engineering,
   and bootkit detection. Activates for requests involving firmware security analysis, IoT malware investigation, UEFI rootkit
   detection, or embedded device compromise assessment.

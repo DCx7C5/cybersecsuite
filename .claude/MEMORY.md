@@ -195,33 +195,47 @@ Model tiers:
 - `action: <leaf_dir>` on all 780 (unique within each domain)
 - Duplicate resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
 
-### Domain Structure
+### Domain Structure (after red-team redistribution ✅)
 ```
 .claude/skills/               ← root (780 SKILL.md, 20 domains)
-├── cloud-security/    (113)  # aws, azure, gcp, containers, kubernetes, devsecops
-├── web-security/       (95)  # injection, xss, ssrf, api, pentest, owasp
+├── cloud-security/    (117)  # aws, azure, gcp, containers, kubernetes, devsecops
+│                             #   + aws/privesc, azure/lateral, k8s/privesc (from red-team)
+├── web-security/       (97)  # injection, xss, ssrf, api, pentest, owasp
+│                             #   + auth/enum, auth/evilginx (from red-team)
 ├── forensics/          (89)  # disk, memory, network, log, email, mobile, cloud, usb
 ├── threat-intel/       (87)  # platforms, feeds, ioc, osint, darkweb, mitre, hunting
-├── malware/            (70)  # static, dynamic, reversing, persistence, c2, yara, triage
-├── red-team/           (51)  # TO REDISTRIBUTE ⚠️ → component domains
-├── identity/           (44)  # ad, kerberos, oauth, saml, pam, mfa, okta
+├── malware/            (74)  # static, dynamic, reversing, persistence, c2, yara, triage
+│                             #   + c2/adversary, c2/covenant, c2/havoc, c2/sliver (from red-team)
+├── identity/           (53)  # ad, kerberos, oauth, saml, pam, mfa, okta
+│                             #   + ad/bloodhound, ad/nopac, ad/zerologon, kerberos/*, ntlm/*
+├── network/            (43)  # firewall, ids, wireless, vpn, dns, assessment, lateral
+│                             #   + recon/easm, dns/dnstwist, dns/subfinder, lateral/*
 ├── incident-response/  (39)  # triage, containment, playbooks, phishing, cloud, insider
-├── network/            (36)  # firewall, ids, wireless, vpn, dns, assessment
-├── vulnerability/      (30)  # scanning, sca, prioritization, remediation, management
-├── ot-ics/             (24)  # scada, plc, modbus, dnp3, iot, protocols
-├── siem-soc/           (24)  # splunk, elastic, detection, correlation, tuning
+├── vulnerability/      (32)  # scanning, sca, prioritization, remediation, exploit
+│                             #   + exploit/binary, exploit/ms17
+├── ot-ics/             (25)  # scada, plc, modbus, dnp3, iot + iot/pentest
+├── siem-soc/           (25)  # splunk, elastic, detection, correlation, tuning
+│                             #   + splunk/lateral
+├── endpoint-security/  (23)  # edr, av, policy, dlp, hardening
+│                             #   + windows/wmiexec, windows/lolbins, privesc, credentials/*
 ├── crypto-pki/         (20)  # tls, certificates, pki, key-management, hashing
-├── endpoint-security/  (16)  # edr, av, policy, dlp, hardening
+├── ops/                (19)  # mode, scope, engagement, purpleteam, socialeng, physical
 ├── compliance/         (13)  # cis, nist, gdpr, hipaa, pci, sox, iso
-├── ops/                 (9)  # mode, scope, engagement, socialeng, purpleteam
 ├── mobile/              (8)  # android, ios, apk analysis
-├── kernel-os/           (7)  # linux, firmware, lkm, ebpf
+├── kernel-os/           (8)  # linux, firmware, lkm, ebpf + linux/privesc
 ├── deception/           (5)  # honeypots, canaries
+├── red-team/            (2)  # MODE ACTIVATORS ONLY (red-team + purple-team)
 ├── steganography/       (1)  # stego detection
 ├── database/                 # (new, empty)
 ├── browser/                  # (new, empty)
 └── hardening/                # (index-only, links to */hardening/ skills)
 ```
+
+#### Red-team Redistribution ✅
+47 skills moved to component domains. Only 2 mode activators remain.
+Key moves: C2→`malware/c2/`, AD attacks→`identity/ad/`, Kerberos→`identity/kerberos/`,
+lateral→`network/lateral/`+`endpoint-security/windows/`, privesc→per-platform,
+DNS recon→`network/dns/`, socialeng→`ops/socialeng/`, purple→`ops/purpleteam/`
 
 ### Naming Rules
 - **Taxonomy dirs**: CAN have hyphens (`cloud-security`, `crypto-pki`, `red-team`)
@@ -332,15 +346,15 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 - Skills taxonomy — 780 SKILL.md created, indexed, author+action metadata applied
 
 ### Skills Restructuring (remaining)
-| Step | What | Blocker |
-|------|------|---------|
-| 1. Copy Anthropic content | LICENSE + scripts/ + references/ + assets/ for 754 skills (~2,648 files) | — |
-| 2. Redistribute red-team/ | Move 51 skills to component domains, keep orchestrator index | Step 1 |
-| 3. Flatten same-name nests | Promote 75× `foo/foo/SKILL.md` → `foo/SKILL.md` | Step 2 |
-| 4. Restructure malware/ | Merge statics, relocate tools to proper dirs | Step 3 |
-| 5. Deep hierarchy + rename | Add 3-5 levels, path-based `name:` fields | Step 4 |
-| 6. Generate fixtures | NIST CSF 2.0 + 2,245 tags → `data/fixtures/`, seed functions | Step 5 |
-| 7. Sync indexes | Regenerate INDEX.md + skills.tree + MEMORY.md | Step 6 |
+| Step | What | Status |
+|------|------|--------|
+| 1. Copy Anthropic content | LICENSE + scripts/ + references/ + assets/ for 754 skills | pending |
+| ~~2. Redistribute red-team/~~ | ~~Move 47 skills to component domains~~ | ✅ done |
+| 3. Flatten same-name nests | Promote 75× `foo/foo/SKILL.md` → `foo/SKILL.md` | pending |
+| 4. Restructure malware/ | Merge statics, relocate tools to proper dirs | pending |
+| 5. Deep hierarchy + rename | Add 3-5 levels, path-based `name:` fields | pending |
+| 6. Generate fixtures | NIST CSF 2.0 + 2,245 tags → `data/fixtures/`, seed functions | pending |
+| 7. Sync indexes | Regenerate INDEX.md + skills.tree + MEMORY.md | pending |
 
 ### Phase A — MCP Split + SDK Package
 | Order | Todo | Depends on |
