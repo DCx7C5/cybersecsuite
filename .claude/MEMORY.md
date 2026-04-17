@@ -54,16 +54,23 @@ opts = ClaudeAgentOptions(
   "security": { "min_password_length": 32, "require_password_file": true, "audit_logging": true },
   "hooks_dir": "src/hooks/",
   "hooks": {
-    "PreToolUse":  [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/pre_tool_call.py\""}] }],
-    "PostToolUse": [{ "matcher": ".*", "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/post_tool_use.py\""}] }],
-    "Stop":        [{ "hooks": [{"type":"command","command":"python3 \"${workspaceFolder}/hooks/session_end.py\""}] }]
+    "PreToolUse":        [{ "matcher": ".*", "hooks": [{"type":"command","command":"...pre_tool_call.py"}] }],
+    "PostToolUse":       [{ "matcher": ".*", "hooks": [{"type":"command","command":"...post_tool_use.py"}] }],
+    "Stop":              [{ "hooks": [{"type":"command","command":"...session_end.py"}] }],
+    "SessionStart":      [{ "hooks": [{"type":"command","command":"...first_init.py && ...session_start.py"}] }],
+    "UserPromptSubmit":  [{ "hooks": [{"type":"command","command":"...user_prompt_submit.py"}] }],
+    "SubagentStart":     [{ "hooks": [{"type":"command","command":"...agent_start.py"}] }],
+    "SubagentStop":      [{ "hooks": [{"type":"command","command":"...agent_end.py"}] }],
+    "TeammateIdle":      [{ "hooks": [{"type":"command","command":"...termmate_idle.py"}] }],
+    "PreCompact":        [{ "hooks": [{"type":"command","command":"...pre_compact.py"}] }],
+    "PostCompact":       [{ "hooks": [{"type":"command","command":"...post_compact.py"}] }]
   }
 }
 ```
 
-**Workspace-level hooks** (3, in settings.json `hooks` key): `PreToolUse`, `PostToolUse`, `Stop` — fire globally for all agents via Claude Code hook system. These are the ONLY hooks the Claude Code settings.json schema supports.
-**Agent-scoped hooks** (15, defined in `.claude/hooks/*.py` + `hooks.json`): `FirstInit`, `SessionStart/End`, `AgentStart/End`, `PhaseStart/End`, `InvestigationStart/End`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated` — these are **custom event handlers** invoked via `hooks/_utils.py emit()`, NOT native Claude Code settings.json properties.
-**Root hooks/** directory (29 .py files): `pre_tool_call.py`, `post_tool_use.py`, `session_end.py` are wired via settings.json; remaining 26 are event handlers + utility modules invoked programmatically.
+**Workspace-level hooks** (10, in settings.json `hooks` key): `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `UserPromptSubmit`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `PreCompact`, `PostCompact` — fire globally via Claude Code hook system.
+**Agent-scoped hooks** (12, defined in `src/hooks/*.py` + `hooks.json`): `PhaseStart/End`, `InvestigationStart/End`, `IOCDiscovered`, `EvidenceCollected`, `FindingConfirmed`, `ModeSwitch`, `PermissionViolation`, `RootCommandExecuted`, `BaselineUpdated`, `ThreatDetected` — **custom event handlers** invoked via `_utils.py emit()`, NOT native Claude Code settings.json properties.
+**Root src/hooks/ directory (32 .py files)**: 10 settings.json-wired + 12 programmatic event handlers + 10 utility modules.
 
 ### Ports
 | Port | What                | Status                        |
@@ -251,19 +258,22 @@ templates/
   threat-intelligence/  session-index.md, threat-profile.md
 ```
 
-#### hooks/ → src/hooks/ (29 .py files, consolidated from root hooks/)
-**3 settings.json-wired** (Claude Code native hook system):
-`pre_tool_call.py` (PreToolUse), `post_tool_use.py` (PostToolUse), `session_end.py` (Stop)
+#### hooks/ → src/hooks/ (32 .py files, consolidated from root hooks/)
+**10 settings.json-wired** (Claude Code native hook system):
+`pre_tool_call.py` (PreToolUse), `post_tool_use.py` (PostToolUse), `session_end.py` (Stop),
+`first_init.py` + `session_start.py` (SessionStart, chained), `user_prompt_submit.py` (UserPromptSubmit),
+`agent_start.py` (SubagentStart), `agent_end.py` (SubagentStop), `termmate_idle.py` (TeammateIdle),
+`pre_compact.py` (PreCompact), `post_compact.py` (PostCompact)
 
-**15 custom event handlers** (invoked via `_utils.py emit()`, NOT native Claude Code):
-`agent_end`, `agent_start`, `baseline_updated`, `evidence_collected`, `finding_confirmed`,
-`first_init`, `investigation_end`, `investigation_start`, `ioc_discovered`, `mode_switch`,
-`permission_violation`, `phase_end`, `phase_start`, `root_command_executed`, `session_start`
+**12 custom event handlers** (invoked via `_utils.py emit()`, NOT native Claude Code):
+`investigation_end`, `investigation_start`, `phase_end`, `phase_start`,
+`ioc_discovered`, `evidence_collected`, `finding_confirmed`, `mode_switch`,
+`permission_violation`, `root_command_executed`, `baseline_updated`, `threat_detected`
 
-**11 utility/support modules** (not event handlers):
+**10 utility/support modules** (not event handlers):
 `_utils`, `utils` (shared utilities), `database`, `exact_match_cache`,
-`yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`,
-`uvloop_integration` (moved from .claude/hooks/), `hooks.json` (event registry)
+`yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`,
+`uvloop_integration`, `hooks.json` (event registry), `__init__.py`
 
 #### commands/ — 8 slash commands
 | Command        | Purpose                                       |
@@ -493,6 +503,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
 - Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated, frontmatter cleaned (action: removed, descriptions single-line unquoted)
 - Phase J — All 72 ruff lint errors fixed → 0, hooks/ consolidated to src/hooks/
+- Phase I.6 — All 10 hooks wired to settings.json (was 3): SessionStart, UserPromptSubmit, SubagentStart/Stop, TeammateIdle, PreCompact/PostCompact
 - Provider expansion — 60 providers in `registry.py`
 - 34 agents total (33 specialists + AGENT_FACTORY)
 
@@ -505,6 +516,9 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 
 ### Phase J — Lint Cleanup ✅
 Fixed all 72 ruff errors → 0. Auto-fixed 25 unused imports, fixed 2 undefined names, 8 unused vars, 2 bare excepts, 3 E402 noqa. Hooks consolidated from root `hooks/` → `src/hooks/`. settings.json paths updated.
+
+### Phase I.6 — Hook Wiring ✅
+Wired 10 hooks to settings.json (was 3): PreToolUse, PostToolUse, Stop + SessionStart (chains first_init+session_start), UserPromptSubmit, SubagentStart, SubagentStop, TeammateIdle, PreCompact, PostCompact. Created 3 new scripts. 12 domain-specific events remain programmatic via emit().
 
 ### Phase K — Dashboard Full Buildout
 1. `renderTable()` JS component for _html.py (sortable, searchable, paginated, type-aware)
