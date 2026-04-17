@@ -452,6 +452,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - Phase K.2 — Cases + Tasks tabs converted to `renderTable`; PoCs tab panel added (stat cards + table); api/pocs fetch wired
 - Phase K.3 — Providers, Usage, Crypto, A2A tabs converted from raw innerHTML tables to `renderTable`
 - Phase K.4 — 7 new forensic tabs: Findings, IOCs, YARA, Network, Intel, Audit, Compliance (stat cards + renderTable, wired in Promise.all)
+- Phase K.5 — Interactive Agent Query panel: agent selector, context table + row IDs enrichment, conversation history, Ctrl+Enter submit
 - Phase L — `src/agent/` package: runner.py, sessions.py, hooks.py, streaming.py all complete
 - Phase M.1 — `_handlers.py` (1228L) split into `dashboard/api/` package (7 modules, 36 handlers)
 - Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
@@ -471,7 +472,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 2. ✅ Cases + Tasks converted to renderTable; PoCs tab panel added
 3. ✅ Providers, Usage, Crypto, A2A converted to renderTable
 4. ✅ 7 new forensic tabs: Findings, IOCs, YARA, Network, Intel, Audit, Compliance
-5. Interactive agent query panel (SSE streaming, agent selection, context enrichment)
+5. ✅ Interactive Agent Query panel (agent selector, context enrichment, conversation history, Ctrl+Enter)
 6. Settings dashboard (read/edit settings.json)
 7. Team builder + Task chain builder; Agent manager; Skill browser; Hook manager
 
