@@ -1,4 +1,5 @@
 """Tests for A2A protocol — task orchestration, agent registry."""
+
 import pytest
 
 from a2a.models import Task, TaskStatus
@@ -212,4 +213,3 @@ class TestA2AProtocol:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

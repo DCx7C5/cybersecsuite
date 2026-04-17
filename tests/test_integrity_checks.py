@@ -1,4 +1,5 @@
 """Tests for integrity checks — model FK consistency, fixture coverage, config validation."""
+
 import pytest
 
 from checks.integrity import run_all_checks, check_models, check_fixtures, check_config
@@ -87,22 +88,17 @@ class TestIntegrityCheckFiltering:
     def test_error_count_accuracy(self):
         """Test that error count matches actual errors."""
         report = run_all_checks()
-        all_findings = (
-            report["models"] + report["fixtures"] + report["config"]
-        )
+        all_findings = report["models"] + report["fixtures"] + report["config"]
         error_findings = [f for f in all_findings if f["level"] == "error"]
         assert len(error_findings) == report["summary"]["errors"]
 
     def test_warning_count_accuracy(self):
         """Test that warning count matches actual warnings."""
         report = run_all_checks()
-        all_findings = (
-            report["models"] + report["fixtures"] + report["config"]
-        )
+        all_findings = report["models"] + report["fixtures"] + report["config"]
         warning_findings = [f for f in all_findings if f["level"] == "warning"]
         assert len(warning_findings) == report["summary"]["warnings"]
 
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

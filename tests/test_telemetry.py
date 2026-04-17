@@ -1,5 +1,5 @@
 """Tests for telemetry — metrics store, middleware, collectors."""
-import asyncio
+
 import pytest
 
 from telemetry import (
@@ -38,10 +38,12 @@ class TestTelemetryStore:
         """Test that metrics store uses ring buffer (max 1000 events)."""
         # Record many events
         for i in range(1500):
-            record_event(TelemetryEvent(
-                metric_name=f"metric_{i}",
-                value=i,
-            ))
+            record_event(
+                TelemetryEvent(
+                    metric_name=f"metric_{i}",
+                    value=i,
+                )
+            )
         # Should not exceed 1000 (ring buffer limit)
         assert len(metrics_store.events) <= 1000
 
@@ -52,11 +54,14 @@ class TestTelemetryMiddleware:
     @pytest.mark.asyncio
     async def test_middleware_initialization(self):
         """Test middleware initializes."""
+
         async def dummy_app(scope, receive, send):
-            await send({
-                "type": "http.response.start",
-                "status": 200,
-            })
+            await send(
+                {
+                    "type": "http.response.start",
+                    "status": 200,
+                }
+            )
 
         middleware = TelemetryMiddleware(dummy_app)
         assert middleware.app == dummy_app
@@ -122,10 +127,12 @@ class TestMetricsAggregation:
         """Test that snapshots include aggregated metrics."""
         # Record multiple events of same metric
         for i in range(10):
-            record_event(TelemetryEvent(
-                metric_name="response_time",
-                value=50 + i * 10,
-            ))
+            record_event(
+                TelemetryEvent(
+                    metric_name="response_time",
+                    value=50 + i * 10,
+                )
+            )
 
         snapshot = get_snapshot()
         # Snapshot should have timestamp and metrics
@@ -136,10 +143,12 @@ class TestMetricsAggregation:
         # Record latencies
         latencies = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         for lat in latencies:
-            record_event(TelemetryEvent(
-                metric_name="latency_ms",
-                value=lat,
-            ))
+            record_event(
+                TelemetryEvent(
+                    metric_name="latency_ms",
+                    value=lat,
+                )
+            )
 
         snapshot = get_snapshot()
         assert snapshot is not None
@@ -147,4 +156,3 @@ class TestMetricsAggregation:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

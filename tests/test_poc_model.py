@@ -1,4 +1,5 @@
 """Tests for ProofOfConcept model, PocStatus enum, and seed_poc()."""
+
 from __future__ import annotations
 
 import pytest
@@ -8,6 +9,7 @@ from db.models.enums import PocStatus, Severity
 
 
 # ── Tortoise in-memory SQLite fixture ────────────────────────────────────────
+
 
 @pytest.fixture(scope="module", autouse=True)
 async def tortoise_ctx():
@@ -31,6 +33,7 @@ async def tortoise_ctx():
 
 # ── PocStatus enum ───────────────────────────────────────────────────────────
 
+
 class TestPocStatusEnum:
     def test_values(self):
         assert PocStatus.UNVERIFIED == "unverified"
@@ -48,6 +51,7 @@ class TestPocStatusEnum:
 
 
 # ── ProofOfConcept model ─────────────────────────────────────────────────────
+
 
 class TestProofOfConceptModel:
     async def test_create_minimal(self):
@@ -185,7 +189,9 @@ class TestProofOfConceptModel:
         from db.models.poc import ProofOfConcept
 
         p1 = await ProofOfConcept.create(poc_url="https://example.com/wf-true", is_weaponized=True)
-        p2 = await ProofOfConcept.create(poc_url="https://example.com/wf-false", is_weaponized=False)
+        p2 = await ProofOfConcept.create(
+            poc_url="https://example.com/wf-false", is_weaponized=False
+        )
 
         results = await ProofOfConcept.filter(
             is_weaponized=True, poc_url__in=[p1.poc_url, p2.poc_url]
@@ -198,6 +204,7 @@ class TestProofOfConceptModel:
 
 
 # ── seed_poc() ───────────────────────────────────────────────────────────────
+
 
 class TestSeedPoc:
     async def test_seed_creates_records(self):
@@ -247,4 +254,3 @@ class TestSeedPoc:
         verified_status = await ProofOfConcept.filter(status=PocStatus.VERIFIED).count()
         assert weaponized_status >= 2
         assert verified_status >= 3
-

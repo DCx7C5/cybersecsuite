@@ -1,9 +1,10 @@
 """Tests for MCP server tools — cybersec + dystopian."""
-import json
+
 import pytest
 
 try:
     from csmcp import all_servers, allowed_tools
+
     MCP_AVAILABLE = True
 except ImportError:
     MCP_AVAILABLE = False
@@ -50,7 +51,3 @@ async def test_crypto_tools_available():
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-
-
-
-

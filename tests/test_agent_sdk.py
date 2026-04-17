@@ -1,9 +1,11 @@
 """Tests for Agent SDK integration — AgentRunner, SessionManager."""
+
 import pytest
 
 try:
     from agent import AgentRunner, SessionManager
     from agent.models import SessionRecord
+
     AGENT_SDK_AVAILABLE = True
 except ImportError as e:
     AGENT_SDK_AVAILABLE = False
@@ -107,6 +109,7 @@ class TestSessionHooks:
     async def test_security_hook_runs(self):
         """Test that security hook executes."""
         from agent.hooks import security_hook
+
         result = await security_hook({"prompt": "test"})
         assert isinstance(result, dict)
 
@@ -114,6 +117,7 @@ class TestSessionHooks:
     async def test_audit_hook_runs(self):
         """Test that audit hook executes."""
         from agent.hooks import audit_hook
+
         result = await audit_hook({"agent": "analyst", "prompt": "test"})
         assert isinstance(result, dict)
 
@@ -121,6 +125,7 @@ class TestSessionHooks:
     async def test_ioc_hook_runs(self):
         """Test that IOC hook executes."""
         from agent.hooks import ioc_hook
+
         result = await ioc_hook({"response": "IP: 192.168.1.1"})
         assert isinstance(result, dict)
 
@@ -128,14 +133,16 @@ class TestSessionHooks:
     async def test_cost_hook_runs(self):
         """Test that cost hook executes."""
         from agent.hooks import cost_hook
-        result = await cost_hook({
-            "model": "claude-opus",
-            "input_tokens": 100,
-            "output_tokens": 200,
-        })
+
+        result = await cost_hook(
+            {
+                "model": "claude-opus",
+                "input_tokens": 100,
+                "output_tokens": 200,
+            }
+        )
         assert isinstance(result, dict)
 
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

@@ -1,19 +1,19 @@
 """
 Conftest — pytest fixtures shared across all tests.
 """
+
 import asyncio
 import os
 import sys
 from pathlib import Path
+
+import pytest  # noqa: E402 — must come after sys.path manipulation below
 
 # Add src to path FIRST — before any imports
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
-
-import pytest
-
 
 
 @pytest.fixture(scope="session")
@@ -65,4 +65,3 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "asyncio: mark test as async")
     config.addinivalue_line("markers", "integration: mark test as integration test")
     config.addinivalue_line("markers", "slow: mark test as slow")
-
