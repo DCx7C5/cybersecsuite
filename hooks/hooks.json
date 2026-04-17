@@ -1,0 +1,254 @@
+{
+  "FirstInit": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/first_init.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "scope/project-scope", "scope/session-scope"]
+    }
+  ],
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "scope/session-scope"]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session_end.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "scope/session-scope"]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Layer2-Specialist", "Layer3-Specialist", "Layer4-Specialist", "Layer5-Specialist", "Layer6-Specialist", "Layer7-Specialist", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Kernel-Analyst", "Process-Analyst", "Filesystem-Analyst", "Persistence-Analyst", "Steganography-Analyst", "Logfile-Analyst", "Settings-Analyst", "AudioVideo-Analyst"],
+      "skills": ["shared-memory"]
+    }
+  ],
+  "AgentStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/agent_start.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Layer2-Specialist", "Layer3-Specialist", "Layer4-Specialist", "Layer5-Specialist", "Layer6-Specialist", "Layer7-Specialist", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Kernel-Analyst", "Process-Analyst", "Filesystem-Analyst", "Persistence-Analyst", "Steganography-Analyst", "Logfile-Analyst", "Settings-Analyst", "AudioVideo-Analyst"],
+      "skills": ["shared-memory", "scope/session-scope"]
+    }
+  ],
+  "AgentEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/agent_end.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Layer2-Specialist", "Layer3-Specialist", "Layer4-Specialist", "Layer5-Specialist", "Layer6-Specialist", "Layer7-Specialist", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Kernel-Analyst", "Process-Analyst", "Filesystem-Analyst", "Persistence-Analyst", "Steganography-Analyst", "Logfile-Analyst", "Settings-Analyst", "AudioVideo-Analyst"],
+      "skills": ["shared-memory", "scope/session-scope"]
+    }
+  ],
+  "PhaseStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/phase_start.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "threats/mitre-attack-mapper"]
+    }
+  ],
+  "PhaseEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/phase_end.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "threats/mitre-attack-mapper"]
+    }
+  ],
+  "InvestigationStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/investigation_start.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "scope/project-scope", "threats/mitre-attack-mapper", "network/recon", "processes/recon", "filesystem/recon", "firmware/recon"]
+    }
+  ],
+  "InvestigationEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/investigation_end.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "scope/project-scope", "threats/mitre-attack-mapper"]
+    }
+  ],
+  "ThreatDetected": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/threat_detected.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Kernel-Analyst", "Process-Analyst", "Persistence-Analyst"],
+      "skills": ["shared-memory", "threats/mitre-attack-mapper"]
+    }
+  ],
+  "IOCDiscovered": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/ioc_discovered.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Layer2-Specialist", "Layer3-Specialist", "Layer4-Specialist", "Layer5-Specialist", "Layer6-Specialist", "Layer7-Specialist", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Kernel-Analyst", "Process-Analyst", "Filesystem-Analyst", "Persistence-Analyst", "Steganography-Analyst", "Logfile-Analyst"],
+      "skills": ["shared-memory", "threats/mitre-attack-mapper"]
+    }
+  ],
+  "EvidenceCollected": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/evidence_collected.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Filesystem-Analyst", "Steganography-Analyst", "Logfile-Analyst", "AudioVideo-Analyst"],
+      "skills": ["shared-memory", "scope/session-scope"]
+    }
+  ],
+  "ModeSwitch": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/mode_switch.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "scope/project-scope"]
+    }
+  ],
+  "FindingConfirmed": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/finding_confirmed.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory"]
+    }
+  ],
+  "RootCommandExecuted": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/root_command_executed.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Kernel-Analyst", "Firmware-Analyst", "Memory-Analyst"],
+      "skills": ["scope/system-scope"]
+    }
+  ],
+  "BaselineUpdated": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/baseline_updated.py\""
+        }
+      ],
+      "agents": ["HUNTER"],
+      "skills": ["shared-memory", "network/recon", "processes/recon", "filesystem/recon", "kerneldev-forensic"]
+    }
+  ],
+  "PermissionViolation": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/permission_violation.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Layer2-Specialist", "Layer3-Specialist", "Layer4-Specialist", "Layer5-Specialist", "Layer6-Specialist", "Layer7-Specialist", "Memory-Analyst", "Firmware-Analyst", "Reverse-Engineer", "Kernel-Analyst", "Process-Analyst", "Filesystem-Analyst", "Persistence-Analyst", "Steganography-Analyst", "Logfile-Analyst", "Settings-Analyst", "AudioVideo-Analyst"],
+      "skills": ["scope/system-scope"]
+    }
+  ],
+  "YaraRuleGeneration": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/yara_rule_generator.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Reverse-Engineer", "Memory-Analyst"],
+      "skills": ["shared-memory"]
+    }
+  ],
+  "YaraRuleOptimization": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/yara_rule_optimizer.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Reverse-Engineer"],
+      "skills": ["shared-memory"]
+    }
+  ],
+  "YaraRuleTesting": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/yara_rule_tester.py\""
+        }
+      ],
+      "agents": ["HUNTER", "Reverse-Engineer"],
+      "skills": ["shared-memory"]
+    }
+  ]
+}

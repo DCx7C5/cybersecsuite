@@ -1,0 +1,50 @@
+{
+  mcpServer: {
+    "dystopian-crypto": {
+      "name": "Dystopian Crypto",
+      "description": "Dystopian-resistant SSL CA & GPG key management tools (MCP server)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "mcp_server",
+        "run",
+        "mcp_server/app.py"
+      ],
+      "env": {},
+      "cwd": "${workspaceFolder}"
+    },
+    "cybersec": {
+      "command": "python3",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp_server.py"
+      ],
+      "env": {
+        "PLUGIN_DATA_DIR": "${CLAUDE_PLUGIN_DATA}",
+        "CYBERSEC_BASE_DIR": "${CLAUDE_PLUGIN_ROOT}/data",
+        "CYBERSEC_DB_HOST": "localhost",
+        "CYBERSEC_DB_PORT": "5433",
+        "CYBERSEC_DB_USER": "postgres",
+        "CYBERSEC_DB_PASSWORD": "",
+        "CYBERSEC_DB_NAME": "cybersec",
+        "CYBERSEC_AUTO_CREATE_DB": "true",
+        "CYBERSEC_BOOTSTRAP_INTEL_ON_START": "true",
+        "CYBERSEC_INTEL_DIR": "${CLAUDE_PLUGIN_ROOT}/data/cybersec-shared/intelligence"
+      }
+    },
+    "kerneldev": {
+      "command": "python3",
+      "args": [
+        "-m",
+        "kerneldev_mcp.server"
+      ],
+      "env": {
+        "KERNEL_SRC": "/usr/src/linux-headers",
+        "KERNELDEV_WORKSPACE": "${CLAUDE_PLUGIN_ROOT}/skills/kerneldev-forensic/templates",
+        "KERNELDEV_BUILD_OUTPUT": "${CLAUDE_PLUGIN_ROOT}/kernel-modules-build",
+        "KERNELDEV_SIGNING_KEY": "${CLAUDE_PLUGIN_ROOT}/skills/kerneldev-forensic/templates/MOK.priv",
+        "KERNELDEV_FORENSIC_MODE": "true"
+      },
+    },
+
+  }
+}

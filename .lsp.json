@@ -1,0 +1,27 @@
+{
+  "c": {
+    "command": "clangd",
+    "args": [],
+    "extensionToLanguage": {
+      ".c": "c",
+      ".h": "c"
+    }
+  },
+  "cpp": {
+    "command": "clangd",
+    "args": [],
+    "extensionToLanguage": {
+      ".cpp": "cpp",
+      ".cc": "cpp",
+      ".cxx": "cpp",
+      ".hpp": "cpp"
+    }
+  },
+  "python": {
+    "command": "pylsp",
+    "args": [],
+    "extensionToLanguage": {
+      ".py": "python"
+    }
+  }
+}

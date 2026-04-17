@@ -1,0 +1,204 @@
+---
+name: scope-project
+description: Project-specific persistent forensic intelligence hub. Stores project baselines, IOCs, threat actor profiles, attack surface analysis, defense mechanisms, and hardening strategies in ./cybersec-shared/.
+model: sonnet
+maxTurns: 20
+tools:
+  - Read
+  - Write
+  - Bash
+  - Glob
+  - Grep
+mcpServers:
+  - cybersec
+---
+
+# Project Layer Skill – Project Forensic Intelligence Hub
+
+**Purpose:**  
+Middle layer in the hierarchy. Maintains project-specific forensic intelligence, threat actor profiles, attack pattern analysis, defense mechanisms, and hardening strategies. Provides specialized forensic capabilities tailored to the specific project's threat model and investigation scope.
+
+**Storage Location:**  
+`./cybersec-shared/` (current project directory)
+
+
+## Project-Specific IOC Categories
+
+### 🎯 **Project-Targeted IOCs**
+| IOC Category                | Project Context                                 | Risk Assessment | Detection Priority |
+|-----------------------------|-------------------------------------------------|-----------------|--------------------|
+| Threat Actor Infrastructure | Known C2 domains/IPs for project threats        | CRITICAL        | Continuous         |
+| Target-Specific Malware     | Malware families targeting this project type    | HIGH            | Real-time          |
+| Attack Signatures           | TTPs observed in similar project contexts       | HIGH            | Behavioral         |
+| Evasion Techniques          | Anti-forensic methods used against this project | MEDIUM          | Periodic           |
+| Social Engineering          | Phishing/SE tactics targeting project personnel | MEDIUM          | Email/Web          |
+
+### 📊 **Project Threat Intelligence**
+- **Threat actor profiling**: Actors known to target this project domain
+- **Campaign tracking**: Multi-session attack campaign correlation
+- **TTP evolution**: Evolution of techniques observed in this project
+- **Infrastructure mapping**: Threat actor infrastructure specific to the project
+- **Attribution confidence**: Project-specific attribution assessments
+
+---
+
+## Automatic Behavior
+
+### On Session Start (LOAD from Project Layer)
+```bash
+PROJECT_DIR="./cybersec-shared"
+SYSTEM_LAYER="$HOME/.config/cybersec-system"
+
+echo "Loading project-layer forensic intelligence..."
+
+# Load project-specific IOCs
+if [ -f "$PROJECT_DIR/ioc-db.md" ]; then
+  PROJECT_IOCS=$(grep -c "^|" "$PROJECT_DIR/ioc-db.md" 2>/dev/null || echo "0")
+  echo "Loaded $PROJECT_IOCS project-specific IOCs"
+fi
+
+# Load threat actor profiles
+if [ -f "$PROJECT_DIR/threat-profile.md" ]; then
+  THREAT_ACTORS=$(grep -c "# " "$PROJECT_DIR/threat-profile.md" 2>/dev/null || echo "0")
+  echo "Loaded $THREAT_ACTORS threat actor profiles"
+fi
+
+# Merge with system-layer intelligence (if available)
+if [ -d "$SYSTEM_LAYER" ] && [ -f "$SYSTEM_LAYER/global-intelligence/ioc-global.md" ]; then
+  echo "Merging with system-layer global intelligence..."
+  # Cross-reference project IOCs with global threat intelligence
+  # Escalate confidence for IOCs seen system-wide
+fi
+
+# Load project threat model
+if [ -f "$PROJECT_DIR/threat-model.md" ]; then
+  echo "Loaded project-specific threat model and attack surface"
+fi
+
+echo "Project-layer loaded: focusing on project-specific threats and context"
+```
+
+### On Session End (SYNC to Project Layer)
+1. **Merge session IOCs** → update the project IOC database with session findings
+2. **Update threat profiles** → enhance threat actor intelligence with session data
+3. **Correlate attack patterns** → identify multi-session attack campaigns
+4. **Update attack surface** → refine a project-specific attack surface model
+5. **Sync hardening status** → update applied/pending hardening measures
+6. **Archive session evidence** → preserve project-specific evidence
+
+---
+
+## Project File Structure
+
+```
+./cybersec-shared/
+├── intelligence/
+│   ├── ioc-db.md             ← Project-specific IOC database
+│   ├── threat-profile.md     ← Project threat actor profiles
+│   ├── attack-campaigns.md   ← Multi-session campaign tracking
+│   ├── technique-library.md  ← Observed attack techniques
+│   └── attribution.md        ← Threat actor attribution assessments
+├── forensics/
+│   ├── evidence-timeline.md  ← Project-wide evidence timeline
+│   ├── artifact-catalog.md   ← Cross-session artifact correlation
+│   ├── memory-analysis.md    ← Project memory forensics results
+│   ├── network-forensics.md  ← Project network analysis results
+│   └── anti-forensics.md     ← Detected evasion techniques
+├── defense/
+│   ├── detection-rules.md    ← Project-specific detection rules
+│   ├── mitigation-status.md  ← Applied defensive measures
+│   ├── incident-response.md  ← Project IR procedures and lessons
+│   ├── threat-hunting.md     ← Active threat hunting results
+│   └── countermeasures.md    ← Anti-forensic countermeasures
+├── attack-surface/
+│   ├── threat-model.md       ← Project-specific threat model
+│   ├── attack-paths.md       ← Known attack path analysis
+│   ├── vulnerabilities.md    ← Project-specific vulnerabilities
+│   ├── risk-assessment.md    ← Current risk posture assessment
+│   └── kill-chain.md         ← Observed kill chain analysis
+├── hardening/
+│   ├── security-baseline.md  ← Project security baseline requirements
+│   ├── hardening-status.md   ← Current hardening implementation
+│   ├── compliance-check.md   ← Project compliance requirements
+│   ├── configuration.md      ← Security configuration management
+│   └── remediation.md        ← Outstanding security remediations
+├── baselines/
+│   ├── network.md            ← Project network baseline
+│   ├── processes.md          ← Project process baseline  
+│   ├── kernel.md             ← Project kernel baseline
+│   ├── persistence.md        ← Project persistence baseline
+│   └── applications.md       ← Project-specific application baseline
+├── sessions/
+│   ├── session-index.md      ← Session registry and metrics
+│   ├── findings-log.md       ← Project findings accumulation
+│   ├── timeline-master.md    ← Master timeline across sessions
+│   └── verdict-history.md    ← Session verdicts and conclusions
+└── meta/
+    ├── project-manifest.json ← Project configuration and metadata
+    ├── data-retention.md     ← Evidence retention policies
+    ├── chain-of-custody.md   ← Project-wide custody documentation
+    └── investigation-scope.md ← Project investigation boundaries
+```
+
+---
+
+## Project Threat Intelligence
+
+### 🎯 **Project-Specific Threat Actors**
+Track threat actors known to target this specific project domain:
+- **APT groups**: Nation-state actors targeting this industry/region
+- **Criminal organizations**: Financially motivated groups
+- **Insider threats**: Project-specific insider threat profiles
+- **Hacktivist groups**: Ideologically motivated threat actors
+
+### 📈 **Attack Campaign Correlation**
+- **Multi-session campaigns**: Track attacks spanning multiple sessions
+- **TTP evolution**: Monitor how threat actors adapt over time
+- **Infrastructure reuse**: Correlate C2 infrastructure across sessions
+- **Temporal patterns**: Identify time-based attack patterns
+
+### 🔍 **Forensic Pattern Recognition**
+- **Attack signatures**: Project-specific attack fingerprints
+- **Evasion patterns**: Anti-forensic techniques seen in this project
+- **Artifact patterns**: Consistent artifacts left by specific threats
+- **Behavioral analysis**: Project-context behavioral indicators
+
+
+## Cross-Layer Intelligence Sharing
+
+### 📤 **To System Layer**
+- **Critical IOCs**: Escalate high-confidence project IOCs to a global database
+- **Threat actor intel**: Share validated threat actor profiles system-wide
+- **Attack techniques**: Contribute proven attack techniques to the global library
+- **Hardening insights**: Share effective hardening strategies globally
+
+### 📥 **From System Layer**
+- **Global threat intel**: Inherit system-wide threat intelligence
+- **Hardware baselines**: Use system-wide hardware trust anchors
+- **Cryptographic trust**: Leverage system cryptographic infrastructure
+- **Global IOC correlation**: Cross-reference project IOCs with a global database
+
+### 🔄 **To Session Layer**
+- **Active IOCs**: Current project-specific indicators for monitoring
+- **Threat context**: Project threat landscape for focused investigation
+- **Detection rules**: Project-specific detection signatures
+- **Hardening requirements**: Project security baseline requirements
+
+---
+
+## Rules for Agents
+
+1. **Always correlate findings** with existing project threat intelligence
+2. **Maintain project threat context** throughout all investigation phases
+3. **Update threat actor profiles** with new TTPs and infrastructure
+4. **Preserve evidence integrity** according to project retention policies
+5. **Cross-reference with global intelligence** for attribution confidence
+6. **Document anti-forensic techniques** in a project-specific evasion library
+7. **Update attack surface model** based on new findings and vulnerabilities
+8. **Apply project-specific hardening** based on the current threat landscape
+9. **Escalate critical findings** to system layer for global intelligence
+10. **Maintain investigation scope** within defined project boundaries
+
+---
+
+**Ready for project-specific forensic intelligence operations.**

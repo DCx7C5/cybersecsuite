@@ -1,0 +1,323 @@
+#!/usr/bin/env python3
+"""
+Memory Forensics - Advanced memory analysis for APT investigation
+Part of MalwareHunter project for any Linux system
+
+Usage: memory-dump [--analyze] [--target process|all] [--pid PID]
+"""
+import argparse
+import subprocess
+import json
+import os
+import re
+import sys
+from datetime import datetime
+from pathlib import Path
+
+# Add current directory to path for config import
+sys.path.insert(0, str(Path(__file__).parent))
+from config import get_config
+
+class MemoryForensics:
+    def __init__(self):
+        self.config = get_config()
+        self.session_dir = self.config.create_session_dir()
+        self.memory_dir = self.session_dir / "artifacts" / "memory"
+        self.memory_dir.mkdir(parents=True, exist_ok=True)
+        self.findings = []
+
+    def log_finding(self, severity, title, description, evidence=None):
+        finding = {
+            "timestamp": datetime.now().isoformat(),
+            "severity": severity,
+            "title": title,
+            "description": description,
+            "evidence": evidence or [],
+            "source": "memory-dump"
+        }
+        self.findings.append(finding)
+
+        # Write to session findings
+        findings_file = self.session_dir / "findings.md"
+        with open(findings_file, "a") as f:
+            f.write(f"## {finding['timestamp']} - {title}\n")
+            f.write(f"**Severity:** {severity.upper()}\n")
+            f.write(f"**Source:** memory-dump\n\n")
+            f.write(f"{description}\n\n")
+            if evidence:
+                f.write("**Evidence:**\n")
+                for item in evidence:
+                    f.write(f"- {item}\n")
+            f.write("\n---\n\n")
+
+    def check_process_injection(self, pid):
+        """Check for process injection indicators"""
+        print(f"[*] Checking process {pid} for injection...")
+
+        try:
+            # Check memory maps for suspicious patterns
+            maps_file = f"/proc/{pid}/maps"
+            if not os.path.exists(maps_file):
+                return
+
+            with open(maps_file, 'r') as f:
+                maps_content = f.read()
+
+            # Look for suspicious memory regions
+            suspicious_indicators = [
+                'deleted',  # Deleted executables
+                '/tmp/',    # Temporary files
+                'anonymous',  # Anonymous mappings
+                'rwx',      # Read-write-execute permissions
+            ]
+
+            for line in maps_content.split('\n'):
+                for indicator in suspicious_indicators:
+                    if indicator in line and 'libc' not in line:
+                        self.log_finding("medium", "Suspicious Memory Mapping",
+                                       f"PID {pid}: Suspicious memory region: {line.strip()}")
+
+            # Check for gaps in memory layout (possible injection)
+            regions = []
+            for line in maps_content.split('\n'):
+                if line.strip():
+                    parts = line.split()
+                    if parts:
+                        addr_range = parts[0]
+                        if '-' in addr_range:
+                            start, end = addr_range.split('-')
+                            regions.append((int(start, 16), int(end, 16), line))
+
+            # Look for unusual gaps or overlaps
+            regions.sort()
+            for i in range(len(regions) - 1):
+                current_end = regions[i][1]
+                next_start = regions[i + 1][0]
+                gap = next_start - current_end
+
+                # Unusual large gaps might indicate injection
+                if gap > 0x100000:  # More than 1MB gap
+                    self.log_finding("low", "Large Memory Gap",
+                                   f"PID {pid}: Large gap ({gap:x}) between memory regions")
+
+        except Exception as e:
+            print(f"[!] Error checking process {pid}: {e}")
+
+    def dump_process_memory(self, pid, suspicious_only=True):
+        """Dump process memory for analysis"""
+        print(f"[*] Dumping memory for process {pid}...")
+
+        try:
+            # Create process-specific directory
+            proc_dir = self.memory_dir / f"pid_{pid}"
+            proc_dir.mkdir(exist_ok=True)
+
+            # Use gcore to dump process memory
+            dump_file = proc_dir / f"core.{pid}"
+            result = subprocess.run(['sudo', 'gcore', '-o', str(dump_file.with_suffix('')), str(pid)],
+                                  capture_output=True, text=True)
+
+            if result.returncode != 0:
+                print(f"[!] Failed to dump process {pid}: {result.stderr}")
+                return None
+
+            # Basic analysis of the dump
+            if dump_file.exists():
+                # Extract strings from memory dump
+                strings_file = proc_dir / f"strings_{pid}.txt"
+                result = subprocess.run(['strings', str(dump_file)],
+                                      capture_output=True, text=True)
+                if result.returncode == 0:
+                    with open(strings_file, 'w') as f:
+                        f.write(result.stdout)
+
+                    # Look for suspicious patterns in strings
+                    suspicious_patterns = [
+                        r'https?://(?!.*(?:google|facebook|twitter|github|microsoft))',  # Non-mainstream URLs
+                        r'(?:cmd|powershell|bash|sh)\s+.*-[a-zA-Z]',  # Shell commands
+                        r'(?:key|pass|token|secret|auth).*[:=]\s*[a-zA-Z0-9+/=]{10,}',  # Potential credentials
+                        r'/tmp/[a-zA-Z0-9]{8,}',  # Temporary files with random names
+                        r'(?:rootkit|backdoor|keylog|stealth)',  # Malware indicators
+                    ]
+
+                    for pattern in suspicious_patterns:
+                        matches = re.findall(pattern, result.stdout, re.IGNORECASE)
+                        if matches:
+                            self.log_finding("medium", "Suspicious Strings in Memory",
+                                           f"PID {pid}: Found suspicious patterns: {matches[:5]}")
+
+                print(f"[+] Memory dump saved to: {dump_file}")
+                return dump_file
+
+        except Exception as e:
+            print(f"[!] Error dumping process memory: {e}")
+            return None
+
+    def analyze_browser_memory(self):
+        """Analyze browser process memory for indicators"""
+        print("[*] Analyzing browser memory...")
+
+        try:
+            # Find Brave browser processes
+            result = subprocess.run(['pgrep', '-f', 'brave'], capture_output=True, text=True)
+            if result.returncode != 0:
+                print("[!] No Brave browser processes found")
+                return
+
+            pids = result.stdout.strip().split('\n')
+            for pid in pids:
+                if pid:
+                    self.check_process_injection(pid)
+
+                    # Look for specific browser injection indicators
+                    cmdline_file = f"/proc/{pid}/cmdline"
+                    if os.path.exists(cmdline_file):
+                        with open(cmdline_file, 'rb') as f:
+                            cmdline = f.read().decode('utf-8', errors='ignore')
+
+                        # Check for unusual command line arguments
+                        suspicious_args = [
+                            '--disable-web-security',
+                            '--allow-running-insecure-content',
+                            '--disable-features',
+                            '--remote-debugging-port',
+                        ]
+
+                        for arg in suspicious_args:
+                            if arg in cmdline:
+                                self.log_finding("high", "Suspicious Browser Arguments",
+                                               f"PID {pid}: Suspicious argument: {arg}")
+
+                    # Check environment variables for injection
+                    environ_file = f"/proc/{pid}/environ"
+                    if os.path.exists(environ_file):
+                        with open(environ_file, 'rb') as f:
+                            environ = f.read().decode('utf-8', errors='ignore')
+
+                        if 'LD_PRELOAD' in environ:
+                            self.log_finding("high", "LD_PRELOAD Detected",
+                                           f"PID {pid}: LD_PRELOAD environment variable set")
+
+        except Exception as e:
+            print(f"[!] Error analyzing browser memory: {e}")
+
+    def check_system_memory_integrity(self):
+        """Check overall system memory integrity"""
+        print("[*] Checking system memory integrity...")
+
+        try:
+            # Check for kernel memory corruption indicators
+            dmesg_result = subprocess.run(['sudo', 'dmesg'], capture_output=True, text=True)
+            if dmesg_result.returncode == 0:
+                corruption_indicators = [
+                    'kernel BUG',
+                    'Oops',
+                    'panic',
+                    'corruption',
+                    'invalid opcode',
+                    'segfault',
+                ]
+
+                for indicator in corruption_indicators:
+                    if indicator in dmesg_result.stdout:
+                        self.log_finding("high", "Kernel Memory Issue",
+                                       f"Kernel memory issue detected: {indicator}")
+
+            # Check /proc/meminfo for anomalies
+            with open('/proc/meminfo', 'r') as f:
+                meminfo = f.read()
+
+            # Parse memory info
+            mem_values = {}
+            for line in meminfo.split('\n'):
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    # Extract numeric value in kB
+                    value_kb = re.search(r'(\d+)', value.strip())
+                    if value_kb:
+                        mem_values[key.strip()] = int(value_kb.group(1))
+
+            # Check for unusual memory usage patterns
+            if 'MemTotal' in mem_values and 'MemFree' in mem_values:
+                used_percent = (mem_values['MemTotal'] - mem_values['MemFree']) / mem_values['MemTotal'] * 100
+                if used_percent > 95:
+                    self.log_finding("medium", "High Memory Usage",
+                                   f"Memory usage at {used_percent:.1f}% - possible memory exhaustion attack")
+
+            # Check for unusual slab usage (kernel objects)
+            slabinfo_file = '/proc/slabinfo'
+            if os.path.exists(slabinfo_file):
+                with open(slabinfo_file, 'r') as f:
+                    slabinfo = f.read()
+
+                # Look for unusually large slab allocations
+                for line in slabinfo.split('\n')[2:]:  # Skip header
+                    if line.strip():
+                        parts = line.split()
+                        if len(parts) >= 6:
+                            name = parts[0]
+                            active_objs = int(parts[1])
+                            total_objs = int(parts[2])
+
+                            # Flag unusual allocations
+                            if total_objs > 100000:  # More than 100k objects
+                                self.log_finding("low", "Large Slab Allocation",
+                                               f"Large slab allocation: {name} ({total_objs} objects)")
+
+        except Exception as e:
+            print(f"[!] Error checking system memory: {e}")
+
+    def run_analysis(self, target="all", specific_pid=None):
+        """Run memory forensics analysis"""
+        print(f"[+] Starting memory forensics - Target: {target}")
+        print(f"[+] Session directory: {self.session_dir}")
+
+        if specific_pid:
+            self.check_process_injection(specific_pid)
+            self.dump_process_memory(specific_pid)
+        elif target in ["all", "process"]:
+            # Check all running processes for injection
+            result = subprocess.run(['ps', 'axo', 'pid'], capture_output=True, text=True)
+            if result.returncode == 0:
+                pids = []
+                for line in result.stdout.split('\n')[1:]:  # Skip header
+                    if line.strip().isdigit():
+                        pids.append(int(line.strip()))
+
+                # Check high-privilege processes first
+                for pid in sorted(pids)[:50]:  # Limit to first 50 PIDs
+                    self.check_process_injection(pid)
+
+        if target in ["all", "browser"]:
+            self.analyze_browser_memory()
+
+        if target in ["all", "system"]:
+            self.check_system_memory_integrity()
+
+        # Save findings
+        findings_json = self.session_dir / "memory_forensics_findings.json"
+        with open(findings_json, 'w') as f:
+            json.dump(self.findings, f, indent=2)
+
+        print(f"\n[+] Memory analysis complete. Found {len(self.findings)} indicators.")
+        print(f"[+] Results saved to: {findings_json}")
+
+        if self.findings:
+            print("\n[!] FINDINGS SUMMARY:")
+            for finding in self.findings:
+                print(f"  {finding['severity'].upper()}: {finding['title']}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Memory Forensics - Advanced memory analysis")
+    parser.add_argument("--analyze", action="store_true", help="Perform full analysis")
+    parser.add_argument("--target", choices=["process", "browser", "system", "all"],
+                       default="all", help="Target area to analyze (default: all)")
+    parser.add_argument("--pid", type=int, help="Specific PID to analyze")
+
+    args = parser.parse_args()
+
+    forensics = MemoryForensics()
+    forensics.run_analysis(args.target, args.pid)
+
+if __name__ == "__main__":
+    main()

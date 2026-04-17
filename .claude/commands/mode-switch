@@ -1,0 +1,220 @@
+#!/usr/bin/env python3
+"""
+MalwareHunter Mode Switcher - Red Team vs Blue Team Configuration
+Usage: mode-switch [red|blue|status]
+"""
+import argparse
+import json
+import sys
+from pathlib import Path
+
+def get_settings_path():
+    """Get the settings.json path"""
+    return Path(__file__).parent.parent / "settings.json"
+
+def read_settings():
+    """Read current settings"""
+    settings_path = get_settings_path()
+    try:
+        with open(settings_path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"❌ Error reading settings: {e}")
+        sys.exit(1)
+
+def write_settings(settings):
+    """Write updated settings"""
+    settings_path = get_settings_path()
+    try:
+        with open(settings_path, 'w') as f:
+            json.dump(settings, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"❌ Error writing settings: {e}")
+        return False
+
+def configure_red_team_mode(settings):
+    """Configure settings for Red Team (Offensive) mode"""
+    print("🔴 Configuring Red Team (Offensive) mode...")
+
+    # Red Team specific settings
+    red_team_config = {
+        "mode": "red",
+        "agents": {
+            "default_model": "opus",  # More aggressive model for red team
+            "elite_model": "opus",
+            "non_destructive": False,  # Allow destructive testing
+            "cross_validation_min_sources": 1,  # Faster validation
+            "require_ioc_logging": True,
+            "require_mitre_mapping": True,
+            "offensive_techniques": True,
+            "exploit_suggestions": True
+        },
+        "skills": {
+            "shared-memory": {"enabled": True, "auto_activate": True},
+            "reverse-engineering:malware-analyst": {"enabled": True},
+            "reverse-engineering:binary-analysis-patterns": {"enabled": True},
+            "reverse-engineering:anti-reversing-techniques": {"enabled": True}
+        },
+        "red_team": {
+            "enable_exploit_suggestions": True,
+            "enable_payload_generation": True,
+            "enable_persistence_techniques": True,
+            "focus_areas": ["privilege_escalation", "persistence", "lateral_movement", "data_exfiltration"],
+            "attack_simulation": True,
+            "vulnerability_assessment": True
+        },
+        "severity": {
+            "critical": {"action": "Exploit immediately — document steps"},
+            "high": {"action": "Prioritize for exploitation"},
+            "medium": {"action": "Note for later exploitation"},
+            "low": {"action": "Document for reconnaissance"}
+        }
+    }
+
+    # Update settings with red team configuration
+    for key, value in red_team_config.items():
+        if isinstance(value, dict) and key in settings:
+            settings[key].update(value)
+        else:
+            settings[key] = value
+
+    return settings
+
+def configure_blue_team_mode(settings):
+    """Configure settings for Blue Team (Defensive) mode"""
+    print("🔵 Configuring Blue Team (Defensive) mode...")
+
+    # Blue Team specific settings
+    blue_team_config = {
+        "mode": "blue",
+        "agents": {
+            "default_model": "sonnet",  # Balanced model for analysis
+            "elite_model": "opus",
+            "non_destructive": True,  # Strictly defensive
+            "cross_validation_min_sources": 2,  # Thorough validation
+            "require_ioc_logging": True,
+            "require_mitre_mapping": True,
+            "offensive_techniques": False,
+            "exploit_suggestions": False
+        },
+        "skills": {
+            "shared-memory": {"enabled": True, "auto_activate": True},
+            "reverse-engineering:memory-forensics": {"enabled": True},
+            "reverse-engineering:protocol-reverse-engineering": {"enabled": True}
+        },
+        "blue_team": {
+            "enable_threat_hunting": True,
+            "enable_incident_response": True,
+            "enable_forensic_analysis": True,
+            "focus_areas": ["threat_detection", "incident_response", "forensic_analysis", "threat_hunting"],
+            "defensive_analysis": True,
+            "ioc_enrichment": True
+        },
+        "severity": {
+            "critical": {"action": "STOP — report immediately — consider offline analysis"},
+            "high": {"action": "Escalate before continuing"},
+            "medium": {"action": "Investigate, cross-validate, continue"},
+            "low": {"action": "Document, continue"}
+        }
+    }
+
+    # Update settings with blue team configuration
+    for key, value in blue_team_config.items():
+        if isinstance(value, dict) and key in settings:
+            settings[key].update(value)
+        else:
+            settings[key] = value
+
+    # Remove red team specific settings if they exist
+    if "red_team" in settings:
+        del settings["red_team"]
+
+    return settings
+
+def show_status(settings):
+    """Show current mode and configuration"""
+    current_mode = settings.get("mode", "blue")
+
+    print(f"\n📊 MalwareHunter Configuration Status")
+    print("=" * 50)
+    print(f"Current Mode: {'🔴 RED TEAM (Offensive)' if current_mode == 'red' else '🔵 BLUE TEAM (Defensive)'}")
+    print(f"Default Model: {settings.get('agents', {}).get('default_model', 'sonnet')}")
+    print(f"Destructive Actions: {'✅ Enabled' if not settings.get('agents', {}).get('non_destructive', True) else '❌ Disabled'}")
+    print(f"Cross-validation Sources: {settings.get('agents', {}).get('cross_validation_min_sources', 2)}")
+
+    if current_mode == "red":
+        red_config = settings.get("red_team", {})
+        print("\n🔴 Red Team Configuration:")
+        print(f"  Exploit Suggestions: {'✅' if red_config.get('enable_exploit_suggestions', False) else '❌'}")
+        print(f"  Payload Generation: {'✅' if red_config.get('enable_payload_generation', False) else '❌'}")
+        print(f"  Attack Simulation: {'✅' if red_config.get('attack_simulation', False) else '❌'}")
+        print(f"  Focus Areas: {', '.join(red_config.get('focus_areas', []))}")
+    else:
+        blue_config = settings.get("blue_team", {})
+        print("\n🔵 Blue Team Configuration:")
+        print(f"  Threat Hunting: {'✅' if blue_config.get('enable_threat_hunting', False) else '❌'}")
+        print(f"  Incident Response: {'✅' if blue_config.get('enable_incident_response', False) else '❌'}")
+        print(f"  Forensic Analysis: {'✅' if blue_config.get('enable_forensic_analysis', False) else '❌'}")
+        print(f"  Focus Areas: {', '.join(blue_config.get('focus_areas', []))}")
+
+    print(f"\nEnabled Skills:")
+    skills = settings.get("skills", {})
+    for skill, config in skills.items():
+        if config.get("enabled", False):
+            print(f"  ✅ {skill}")
+
+def main():
+    parser = argparse.ArgumentParser(description="MalwareHunter Red/Blue Team Mode Switcher")
+    parser.add_argument("mode", choices=["red", "blue", "status"],
+                       help="Switch to red team mode, blue team mode, or show current status")
+
+    if len(sys.argv) == 1:
+        parser.print_help()
+        return
+
+    args = parser.parse_args()
+
+    # Read current settings
+    settings = read_settings()
+    current_mode = settings.get("mode", "blue")
+
+    if args.mode == "status":
+        show_status(settings)
+        return
+
+    # Check if already in requested mode
+    if current_mode == args.mode:
+        print(f"✅ Already in {args.mode.upper()} team mode")
+        show_status(settings)
+        return
+
+    # Switch modes
+    if args.mode == "red":
+        settings = configure_red_team_mode(settings)
+    else:
+        settings = configure_blue_team_mode(settings)
+
+    # Write updated settings
+    if write_settings(settings):
+        print(f"✅ Successfully switched to {args.mode.upper()} team mode")
+        print("\n📋 Updated Configuration:")
+        show_status(settings)
+
+        print(f"\n🚀 Next Steps:")
+        if args.mode == "red":
+            print("  • Run offensive security assessments")
+            print("  • Use exploit suggestion features")
+            print("  • Perform attack simulation")
+            print("  • Focus on finding vulnerabilities")
+        else:
+            print("  • Run defensive threat hunting")
+            print("  • Perform incident response")
+            print("  • Conduct forensic analysis")
+            print("  • Focus on threat detection")
+    else:
+        print("❌ Failed to update settings")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

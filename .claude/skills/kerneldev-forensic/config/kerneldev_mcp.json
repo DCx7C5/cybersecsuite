@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "kerneldev": {
+      "command": "python",
+      "args": ["-m", "kerneldev_mcp.server"],
+      "env": {
+        "KERNEL_SRC": "/usr/src/linux",
+        "KERNELDEV_WORKSPACE": "./kernel-modules"
+      }
+    }
+  }
+}
+

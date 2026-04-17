@@ -1,0 +1,11 @@
+[project]
+name = "playwright-stealth-mcp"
+version = "0.1.0"
+description = "Headless Brave browser with anti-detection, fingerprint spoofing, and human-like interaction patterns"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastmcp>=3.1.0",
+    "playwright>=1.49.1",
+    "playwright-stealth>=1.0.6",
+]

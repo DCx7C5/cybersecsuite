@@ -1,0 +1,40 @@
+[project]
+name = "token-optimization-mcp"
+version = "0.2.0"
+description = "Production-ready MCP server: token counting, prompt compression, model routing, semantic caching"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=3.1.0",
+    "redis>=5.0.0",
+]
+
+[project.scripts]
+token-optimization-mcp = "main:mcp"
+
+[dependency-groups]
+test = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "pytest-mock>=3.14",
+    "hypothesis>=6.130",
+    "pytest-xdist>=3.6",
+]
+dev = [
+    { include-group = "test" },
+    "ruff>=0.9",
+    "mypy>=1.13",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=main --cov-report=term-missing --cov-branch -q"
+
+[tool.coverage.run]
+omit = ["tests/*", ".venv/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]

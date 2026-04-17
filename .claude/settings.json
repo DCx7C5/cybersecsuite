@@ -1,0 +1,62 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+
+  "agent": "cybersec-agent",
+  "version": "1.0.0",
+
+  "crypto": {
+    "algorithm": "Ed25519",
+    "hash": "blake2b",
+    "hash_digest_size": 32,
+    "key_derivation": {
+      "algorithm": "Argon2id",
+      "memory_cost": 262144,
+      "iterations": 4,
+      "lanes": 4,
+      "salt_length": 32
+    },
+    "encryption": {
+      "algorithm": "AES-256-GCM",
+      "nonce_length": 12,
+      "tag_length": 16
+    }
+  },
+
+  "signing": {
+    "algorithm": "Ed25519",
+    "token_format": "frontmatter.payload",
+    "default_expiry_hours": 8760,
+    "key_id": "default"
+  },
+
+  "artifacts": {
+    "checksum_algorithm": "blake2b",
+    "checksum_key": "artifact_integrity",
+    "signature_log_enabled": true,
+    "version_history_limit": 50
+  },
+
+  "keys": {
+    "directory": "/etc/dystopian-crypto/keys",
+    "metadata_subdir": ".metadata",
+    "backup_subdir": ".backups",
+    "permissions": {
+      "private_key": "0600",
+      "public_key": "0644",
+      "metadata": "0600"
+    }
+  },
+
+  "cache": {
+    "integrity_key": "cache_integrity",
+    "default_ttl_hours": 24
+  },
+
+  "security": {
+    "min_password_length": 16,
+    "require_password_file": true,
+    "audit_logging": true
+  }
+}

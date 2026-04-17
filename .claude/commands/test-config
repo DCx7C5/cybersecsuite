@@ -1,0 +1,162 @@
+#!/bin/bash
+"""
+MalwareHunter System Configuration Test
+Tests system compatibility and shows detected configuration
+"""
+
+# Set default base directory if not set
+export MALWAREHUNTER_BASE_DIR=${MALWAREHUNTER_BASE_DIR:-"$HOME/MalwareHunter"}
+
+echo "🔍 MalwareHunter System Detection Test"
+echo "======================================"
+echo
+
+# Test Python and config module
+echo "[*] Testing Python configuration detection..."
+cd "$(dirname "$0")"
+
+python3 -c "
+import sys
+sys.path.insert(0, '.')
+from config import get_config
+import json
+
+config = get_config()
+print('✅ Configuration system loaded successfully')
+print()
+
+print('📊 System Configuration:')
+print('=' * 40)
+
+# Basic system info
+sys_config = config.config
+print(f'OS: {sys_config[\"os\"]} - {sys_config[\"distribution\"]}')
+print(f'Kernel: {sys_config[\"kernel\"]}')
+print(f'Architecture: {sys_config[\"architecture\"]}')
+print(f'Desktop: {sys_config[\"desktop\"][\"environment\"]} on {sys_config[\"desktop\"][\"display_server\"]}')
+print()
+
+# GPU info
+gpu = sys_config['gpu']
+print('🎮 GPU Configuration:')
+if gpu['nvidia_devices']:
+    print(f'  NVIDIA devices: {gpu[\"nvidia_devices\"]}')
+if gpu['framebuffer_devices']:
+    print(f'  Framebuffer devices: {gpu[\"framebuffer_devices\"]}')
+if gpu['dri_devices']:
+    print(f'  DRI devices: {len(gpu[\"dri_devices\"])} found')
+if gpu['accessible_devices']:
+    print(f'  ⚠️  World-accessible devices: {gpu[\"accessible_devices\"]}')
+print()
+
+# Browser info
+browsers = sys_config['browsers']
+print('🌐 Browser Detection:')
+for browser, info in browsers.items():
+    if info['installed']:
+        print(f'  ✅ {browser.title()}: {info[\"config_dir\"]}')
+    else:
+        print(f'  ❌ {browser.title()}: Not installed')
+print()
+
+# Tools availability
+tools = sys_config['tools']
+print('🛠️  Available Tools:')
+for category, tool_dict in tools.items():
+    available = [tool for tool, avail in tool_dict.items() if avail]
+    if available:
+        print(f'  {category}: {', '.join(available)}')
+print()
+
+# Security features
+security = sys_config['security']
+print('🔒 Security Features:')
+for feature, value in security.items():
+    print(f'  {feature}: {value}')
+print()
+
+# Package manager
+pkg_mgr = sys_config['package_manager']
+print('📦 Package Manager:')
+print(f'  Type: {pkg_mgr[\"type\"]}')
+print(f'  Available: {pkg_mgr[\"available\"]}')
+print()
+
+# Session directory
+session_dir = config.create_session_dir()
+print(f'📁 Test session created: {session_dir}')
+
+# Save config
+config_file = config.save_config()
+print(f'💾 Configuration saved to: {config_file}')
+print()
+
+print('🎯 MalwareHunter Compatibility Summary:')
+print('=' * 40)
+
+# Compatibility checks
+compat_score = 0
+total_checks = 5
+
+# Check 1: Basic tools
+if any(tool_dict.values() for tool_dict in tools.values()):
+    print('✅ Forensic tools available')
+    compat_score += 1
+else:
+    print('❌ No forensic tools detected')
+
+# Check 2: Browser detection
+if any(info['installed'] for info in browsers.values()):
+    print('✅ Browser analysis supported')
+    compat_score += 1
+else:
+    print('❌ No browsers detected')
+
+# Check 3: GPU analysis
+if gpu['framebuffer_devices'] or gpu['nvidia_devices'] or gpu['dri_devices']:
+    print('✅ GPU/framebuffer analysis available')
+    compat_score += 1
+else:
+    print('❌ No GPU devices detected')
+
+# Check 4: Network tools
+net_tools = tools.get('network_analysis', {})
+if any(net_tools.values()):
+    print('✅ Network analysis supported')
+    compat_score += 1
+else:
+    print('❌ No network tools available')
+
+# Check 5: System analysis
+sys_tools = tools.get('system_analysis', {})
+if any(sys_tools.values()):
+    print('✅ System/process analysis supported')
+    compat_score += 1
+else:
+    print('❌ No system analysis tools available')
+
+print()
+print(f'Compatibility Score: {compat_score}/{total_checks} ({compat_score/total_checks*100:.0f}%)')
+
+if compat_score >= 4:
+    print('🟢 Excellent compatibility - Full MalwareHunter functionality available')
+elif compat_score >= 3:
+    print('🟡 Good compatibility - Most features available')
+elif compat_score >= 2:
+    print('🟠 Limited compatibility - Basic features available')
+else:
+    print('🔴 Poor compatibility - Consider installing additional tools')
+
+print()
+print('To install missing tools, refer to the documentation for your distribution.')
+"
+
+echo
+echo "🚀 Ready to run MalwareHunter commands!"
+echo "Base directory: $MALWAREHUNTER_BASE_DIR"
+echo
+echo "Quick start:"
+echo "  ./apt-hunt --target all"
+echo "  ./browser-hunt --browser all"
+echo "  ./net-hunt"
+echo

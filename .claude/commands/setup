@@ -1,0 +1,323 @@
+#!/usr/bin/env python3
+"""
+CyberSec Setup — PostgreSQL Database Initialization & Migration
+
+Usage:
+    setup init          Initialize PostgreSQL database + run migrations
+    setup status        Show database connection & table status
+    setup reset         Drop all tables and re-migrate (⚠ destructive)
+"""
+import argparse
+import json
+import os
+import sqlite3
+import subprocess
+import sys
+from pathlib import Path
+
+# Resolve project root (commands/ is one level down)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from db.bootstrap import init_tortoise, get_database_config
+from hooks.database import write_entry_sync as write_entry
+
+
+# ──────────────────── Helpers ────────────────────
+
+def _env(key: str, default: str = "") -> str:
+    return os.environ.get(key, default)
+
+
+DB_NAME = _env("CYBERSEC_DB_NAME", "cybersec_forensics")
+DB_USER = _env("CYBERSEC_DB_USER", "cybersec")
+DB_PASSWORD = _env("CYBERSEC_DB_PASSWORD", "change-me-now")
+DB_HOST = _env("CYBERSEC_DB_HOST", '')
+DB_PORT = _env("CYBERSEC_DB_PORT", '')
+
+
+def _print_header(text: str):
+    print(f"\n{'─' * 50}")
+    print(f"  {text}")
+    print(f"{'─' * 50}\n")
+
+
+def _run_manage(*args: str) -> subprocess.CompletedProcess:
+    """Run manage.py with the given arguments."""
+    cmd = [sys.executable, str(PROJECT_ROOT / "manage.py"), *args]
+    return subprocess.run(cmd, cwd=str(PROJECT_ROOT), capture_output=True, text=True)
+
+
+def _check_psql() -> bool:
+    """Check if psql is available."""
+    try:
+        subprocess.run(["psql", "--version"], capture_output=True, check=True)
+        return True
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return False
+
+
+def _check_pg_connection() -> bool:
+    """Test PostgreSQL connection via Tortoise ORM."""
+    try:
+        init_tortoise()
+        get_database_config()
+        # Simple check - if we can get config and init doesn't throw, connection is good
+        return True
+    except Exception:
+        return False
+
+
+# ──────────────────── Commands ────────────────────
+
+def cmd_init(args):
+    """Initialize database: create user/db if needed, run migrations."""
+    _print_header("🔐 CyberSec Database Setup")
+
+    print(f"  Database : {DB_NAME}")
+    print(f"  User     : {DB_USER}")
+    print(f"  Host     : {DB_HOST}:{DB_PORT}")
+    print()
+
+    # ── Step 1: Create PG user + database (needs psql + superuser access) ──
+    if _check_psql() and not args.skip_create:
+        print("→ Creating PostgreSQL user (if not exists)...")
+        env = os.environ.copy()
+        if DB_PASSWORD:
+            env["PGPASSWORD"] = DB_PASSWORD
+
+        # Check if user exists
+        r = subprocess.run(
+            ["psql", "-h", DB_HOST, "-p", DB_PORT, "-U", "postgres",
+             "-tAc", f"SELECT 1 FROM pg_roles WHERE rolname='{DB_USER}'"],
+            capture_output=True, text=True, env=env,
+        )
+        if "1" not in (r.stdout or ""):
+            pwd_clause = f"WITH PASSWORD '{DB_PASSWORD}'" if DB_PASSWORD else ""
+            subprocess.run(
+                ["psql", "-h", DB_HOST, "-p", DB_PORT, "-U", "postgres",
+                 "-c", f"CREATE USER {DB_USER} {pwd_clause} CREATEDB;"],
+                capture_output=True, text=True, env=env,
+            )
+            print(f"  ✅ User '{DB_USER}' created")
+        else:
+            print(f"  ✔  User '{DB_USER}' exists")
+
+        # Check if database exists
+        print("→ Creating database (if not exists)...")
+        r = subprocess.run(
+            ["psql", "-h", DB_HOST, "-p", DB_PORT, "-U", "postgres",
+             "-tAc", f"SELECT 1 FROM pg_database WHERE datname='{DB_NAME}'"],
+            capture_output=True, text=True, env=env,
+        )
+        if "1" not in (r.stdout or ""):
+            subprocess.run(
+                ["psql", "-h", DB_HOST, "-p", DB_PORT, "-U", "postgres",
+                 "-c", f"CREATE DATABASE {DB_NAME} OWNER {DB_USER};"],
+                capture_output=True, text=True, env=env,
+            )
+            print(f"  ✅ Database '{DB_NAME}' created")
+        else:
+            print(f"  ✔  Database '{DB_NAME}' exists")
+    else:
+        if not args.skip_create:
+            print("  ⚠  psql not found — skipping user/database creation")
+            print("     Make sure the database exists before continuing.")
+
+    # ── Step 2: Generate schemas (no migrations — Tortoise ORM) ──
+    print("\n→ Creating tables (generate_schemas safe=True)...")
+    r = _run_manage("schema")
+    if r.returncode == 0:
+        for line in r.stdout.strip().splitlines():
+            print(f"  {line}")
+        print("  ✅ Schema applied")
+    else:
+        print(f"  ❌ schema failed:\n{r.stderr}")
+        return False
+
+    # ── Step 3: Verify ──
+    print("\n→ Verifying connection...")
+    if _check_pg_connection():
+        print("  ✅ PostgreSQL connection OK")
+    else:
+        print("  ❌ Could not connect to PostgreSQL")
+        return False
+
+    _print_header("✅ Database ready")
+    return True
+
+
+def cmd_migrate_sqlite(args):
+    """Migrate existing SQLite entries to PostgreSQL."""
+    _print_header("🔄 SQLite → PostgreSQL Migration")
+
+    if not _check_pg_connection():
+        print("❌ Cannot connect to PostgreSQL. Run 'setup init' first.")
+        return False
+
+    # Initialize Tortoise ORM
+    init_tortoise()
+
+    migrated_total = 0
+
+    sqlite_paths: dict[str, Path] = {}
+    system_db = Path.home() / ".claude" / "cybersec" / "cybersec.db"
+    if system_db.exists():
+        sqlite_paths["system"] = system_db
+
+    for candidate in [
+        PROJECT_ROOT / "cybersec.db",
+        PROJECT_ROOT / "cybersec-shared" / "cybersec.db",
+    ]:
+        if candidate.exists():
+            sqlite_paths["project"] = candidate
+            break
+
+    session_dir = os.environ.get("CYBERSEC_SESSION_DIR")
+    if session_dir:
+        sdb = Path(session_dir) / "cybersec.db"
+        if sdb.exists():
+            sqlite_paths["session"] = sdb
+
+    if not sqlite_paths:
+        print("  ℹ  No SQLite databases found. Nothing to migrate.")
+        return True
+
+    for layer, db_path in sqlite_paths.items():
+        print(f"\n→ Migrating {layer} layer: {db_path}")
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+
+        try:
+            rows = conn.execute(
+                "SELECT value_type, key, data FROM entries ORDER BY created_at"
+            ).fetchall()
+        except sqlite3.OperationalError as e:
+            print(f"  ⚠  Cannot read: {e}")
+            conn.close()
+            continue
+
+        count = 0
+        for row in rows:
+            try:
+                data = json.loads(row["data"])
+            except (json.JSONDecodeError, TypeError):
+                data = {"raw": row["data"]}
+
+            if row["key"] and "key" not in data:
+                data["key"] = row["key"]
+
+            try:
+                write_entry(layer, row["value_type"], data)
+                count += 1
+            except Exception as e:
+                print(f"  ⚠  Failed: {row['value_type']}:{row['key']} — {e}")
+
+        conn.close()
+        print(f"  ✅ {count} entries migrated")
+        migrated_total += count
+
+    _print_header(f"✅ {migrated_total} entries migrated to PostgreSQL")
+    return True
+
+
+def cmd_status(args):
+    """Show database status."""
+    _print_header("📊 CyberSec Database Status")
+
+    print(f"  Database : {DB_NAME}")
+    print(f"  User     : {DB_USER}")
+    print(f"  Host     : {DB_HOST}:{DB_PORT}")
+    print()
+
+    if not _check_pg_connection():
+        print("  ❌ Cannot connect to PostgreSQL")
+        print("     Run 'setup init' to initialize.")
+        return
+
+    r = _run_manage("status")
+    if r.returncode == 0:
+        for line in r.stdout.strip().splitlines():
+            print(f"  {line}")
+    else:
+        print(f"  ❌ status failed:\n{r.stderr}")
+
+
+def cmd_reset(args):
+    """Drop all tables and re-migrate."""
+    _print_header("⚠  CyberSec Database RESET")
+
+    if not args.confirm:
+        print("  This will DROP ALL DATA in the cybersec database!")
+        print("  Pass --confirm to proceed.\n")
+        return False
+
+    print("→ Dropping all tables...")
+    r = _run_manage("drop")
+    if r.returncode == 0:
+        print("  ✅ All tables dropped")
+    else:
+        print(f"  ❌ Drop failed:\n{r.stderr}")
+        return False
+
+    print("→ Recreating schema...")
+    r = _run_manage("schema")
+    if r.returncode == 0:
+        print("  ✅ Schema re-applied")
+    else:
+        print(f"  ❌ Schema failed:\n{r.stderr}")
+        return False
+
+    _print_header("✅ Database reset complete")
+    return True
+
+
+# ──────────────────── CLI ────────────────────
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="setup",
+        description="CyberSec — PostgreSQL Database Setup & Management",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  setup init                 Create database, run migrations
+  setup init --skip-create   Skip psql user/db creation (DB already exists)
+  setup status               Show table counts and connection info
+  setup migrate              Import old SQLite data into PostgreSQL
+  setup reset --confirm      Drop all data and re-initialize
+        """,
+    )
+
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    # init
+    p_init = sub.add_parser("init", help="Initialize PostgreSQL database & run migrations")
+    p_init.add_argument("--skip-create", action="store_true",
+                        help="Skip psql CREATE USER / CREATE DATABASE (assume DB exists)")
+
+    # migrate
+    sub.add_parser("migrate", help="Migrate old SQLite data to PostgreSQL")
+
+    # status
+    sub.add_parser("status", help="Show database connection & table status")
+
+    # reset
+    p_reset = sub.add_parser("reset", help="Drop all data and re-migrate (⚠ destructive)")
+    p_reset.add_argument("--confirm", action="store_true",
+                         help="Confirm destructive reset")
+
+    args = parser.parse_args()
+
+    if args.command == "init":
+        cmd_init(args)
+    elif args.command == "migrate":
+        cmd_migrate_sqlite(args)
+    elif args.command == "status":
+        cmd_status(args)
+    elif args.command == "reset":
+        cmd_reset(args)
+
+
+if __name__ == "__main__":
+    main()
