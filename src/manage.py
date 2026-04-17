@@ -16,7 +16,6 @@ from manage._commands import (
     schema_command,
     shell_command,
     status_command,
-    _print_intel_components,
     seed_command,
     seed_nist_csf_command,
     seed_nist_ai_rmf_command,

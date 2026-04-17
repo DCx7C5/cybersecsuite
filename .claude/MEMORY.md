@@ -167,13 +167,13 @@ SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
 ### .claude/ system
-| Component    | Files                                                                         | Status                       |
-|--------------|-------------------------------------------------------------------------------|------------------------------|
-| `agents/`    | **33 agents** + AGENT_FACTORY + DEV_SUB_AGENTS + 3 teams (in `teams/` subdir) | ✅ all consistent frontmatter |
-| `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json                    | ⚠️ NEVER AUDITED             |
-| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                  | ⚠️ NEVER AUDITED             |
-| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)              | ✅ RESTRUCTURED               |
-| `templates/` | 14 template files across 6 subdirs                                            | Not reviewed                 |
+| Component    | Files                                                                                   | Status                       |
+|--------------|-----------------------------------------------------------------------------------------|------------------------------|
+| `agents/`    | **33 specialists** + AGENT_FACTORY + DEV_SUB_AGENTS + `teams/` (3 modes) + `sub_agents/` (1: cybersec-agent) | ✅ all consistent frontmatter |
+| `hooks/`     | 27 .py files (18 event handlers + 9 modules) + hooks.json                               | ⚠️ NEVER AUDITED             |
+| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                            | ⚠️ NEVER AUDITED             |
+| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                        | ✅ RESTRUCTURED               |
+| `templates/` | 14 template files across 6 subdirs                                                      | Not reviewed                 |
 
 #### templates/ structure
 ```
@@ -187,16 +187,18 @@ templates/
   threat-intelligence/  session-index.md, threat-profile.md
 ```
 
-#### hooks/ — 28 .py files
+#### hooks/ — 27 .py files
 **18 event handlers** (registered in hooks.json):
 `agent_end`, `agent_start`, `baseline_updated`, `evidence_collected`, `finding_confirmed`,
 `first_init`, `investigation_end`, `investigation_start`, `ioc_discovered`, `mode_switch`,
 `permission_violation`, `phase_end`, `phase_start`, `post_tool_use`, `pre_tool_call`,
 `root_command_executed`, `session_end`, `session_start`
 
-**10 additional modules** (not in hooks.json):
-`_utils`, `utils` (shared utilities), `database`, `exact_match_cache`, `uvloop_integration`,
+**9 additional modules** (not in hooks.json):
+`_utils`, `utils` (shared utilities), `database`, `exact_match_cache`,
 `yara_rule_generator`, `yara_rule_optimizer`, `yara_rule_tester`, `termmate_idle`, `threat_detected`
+
+> **Note:** `uvloop_integration.py` moved to `src/hooks/uvloop_integration.py` (proper Python package). Import: `from hooks.uvloop_integration import run_with_uvloop`.
 
 #### commands/ — 8 slash commands
 | Command        | Purpose                                       |
@@ -222,6 +224,17 @@ Supporting files: `config.py`, `__init__.py`, `README.md`
 ### `"agent": "cybersec-agent"` — Default Claude Code Agent
 Loads `.claude/agents/cybersec-agent.md`. Orchestrator with `role: orchestrator`.
 Accepts `blue|red|purple` mode. Delegates to all 32 specialist sub-agents.
+
+### agents/ directory structure
+```
+.claude/agents/
+├── <33 specialist agents>.md     ← all specialists (filesystem, memory, network, ...)
+├── AGENT_FACTORY.md              ← agent creation orchestrator (Opus)
+├── DEV_SUB_AGENTS.md             ← dev sub-agent reference
+├── teams/                        ← blue.md, red.md, purple.md team modes
+└── sub_agents/
+    └── cybersec-agent.md         ← orchestrator in sub_agents context
+```
 
 ### All 33 agents — frontmatter consistent ✅
 Model tiers:
