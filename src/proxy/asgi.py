@@ -37,6 +37,8 @@ from ai_proxy.routing.combo import cleanup_executors
 from ai_proxy.services.rate_limiter import rate_limiter, ProviderLimits
 from ai_proxy.providers.registry import get_enabled_providers
 from dashboard.routes import create_dashboard_router
+from telemetry.middleware import TelemetryMiddleware
+from telemetry.collector import collector as _telemetry_collector
 
 
 # ── Port / TLS configuration ─────────────────────────────────────────────────
@@ -78,8 +80,11 @@ async def _on_startup() -> None:
             tpm=provider.rate_limit_tpm,
         ))
 
+    _telemetry_collector.start()
+
 
 async def _on_shutdown() -> None:
+    _telemetry_collector.stop()
     await cleanup_executors()
     await close_tortoise()
 
@@ -113,4 +118,6 @@ app = Starlette(
     ],
     on_startup=[_on_startup],
     on_shutdown=[_on_shutdown],
+    middleware=[],
 )
+app.add_middleware(TelemetryMiddleware)

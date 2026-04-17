@@ -865,6 +865,56 @@ async def sse_telemetry(request: Request) -> StreamingResponse:
     )
 
 
+async def api_task_create(request: Request) -> JSONResponse:
+    """Submit a new A2A task — body: {agent, message, session_id?, metadata?}."""
+    try:
+        import uuid
+        body = await request.json()
+        agent: str = body.get("agent", "orchestrator")
+        message: str = body.get("message", "")
+        session_id: str = body.get("session_id") or str(uuid.uuid4())
+        metadata: dict = body.get("metadata") or {}
+
+        if not message:
+            return JSONResponse({"status": "error", "error": "message is required"}, status_code=400)
+
+        from db.models.a2a_task import A2ATask
+        task_id = str(uuid.uuid4())
+        task = await A2ATask.create(
+            id=task_id,
+            session_id=session_id,
+            state="submitted",
+            history=[{"role": "user", "content": message}],
+            artifacts=[],
+            metadata={"agent": agent, **metadata},
+        )
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)}, status_code=500)
+    return JSONResponse({"task_id": task.id, "status": task.state}, status_code=201)
+
+
+async def api_task_get(request: Request) -> JSONResponse:
+    """Get a single A2A task by ID."""
+    try:
+        task_id = request.path_params["task_id"]
+        from db.models.a2a_task import A2ATask
+        task = await A2ATask.get_or_none(id=task_id)
+        if task is None:
+            return JSONResponse({"status": "error", "error": "task not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"status": "error", "error": str(e)}, status_code=500)
+    return JSONResponse({
+        "id": task.id,
+        "state": task.state,
+        "session_id": task.session_id,
+        "agent": (task.metadata or {}).get("agent"),
+        "history_count": len(task.history or []),
+        "artifacts_count": len(task.artifacts or []),
+        "created_at": task.created_at.isoformat() if task.created_at else None,
+        "updated_at": task.updated_at.isoformat() if task.updated_at else None,
+    })
+
+
 # ── Dashboard HTML (self-contained) ──────────────────────────────────────────
 
 _DASHBOARD_HTML = """<!DOCTYPE html>
@@ -1459,6 +1509,8 @@ def create_dashboard_router() -> Router:
         Route("/api/audit", api_audit, methods=["GET"]),
         Route("/api/compliance", api_compliance, methods=["GET"]),
         Route("/api/telemetry", api_telemetry, methods=["GET"]),
+        Route("/api/tasks/create", api_task_create, methods=["POST"]),
+        Route("/api/tasks/{task_id}", api_task_get, methods=["GET"]),
         # SSE streaming endpoints
         Route("/sse/cases", sse_cases, methods=["GET"]),
         Route("/sse/tasks", sse_tasks, methods=["GET"]),
