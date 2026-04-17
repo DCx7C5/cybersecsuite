@@ -1,6 +1,7 @@
 ---
 name: btrfs-snapshot-compare
-description: > Compare Btrfs snapshots to identify file changes between known-good and potentially compromised filesystem states for rootkit and tampering detection.
+description: > 
+  Compare Btrfs snapshots to identify file changes between known-good and potentially compromised filesystem states for rootkit and tampering detection.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:
