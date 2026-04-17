@@ -1,8 +1,6 @@
 ---
 name: identity-bruteforce-detection
-description: Detect RDP brute force attacks by analyzing Windows Security Event Logs for failed authentication patterns (Event
-action: bruteforce-detection
-  ID 4625), successful logons after failures (Event ID 4624), NLA failures, and source IP frequency analysis.
+description: Detect RDP brute force attacks by analyzing Windows Security Event Logs for failed authentication patterns (Event ID 4625), successful logons after failures (Event ID 4624), NLA failures, and source IP frequency analysis.
 domain: cybersecurity
 subdomain: threat-detection
 tags:

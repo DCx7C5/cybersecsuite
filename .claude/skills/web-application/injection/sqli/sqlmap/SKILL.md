@@ -1,8 +1,6 @@
 ---
 name: injection-sqli-sqlmap
-description: Detecting and exploiting SQL injection vulnerabilities using sqlmap to extract database contents during authorized
-action: sqlmap
-  penetration tests.
+description: Detecting and exploiting SQL injection vulnerabilities using sqlmap to extract database contents during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

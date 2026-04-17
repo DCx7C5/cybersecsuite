@@ -1,11 +1,6 @@
 ---
 name: ops-soc-operations-kpi-metrics
-description: 'Builds SOC performance metrics and KPI tracking dashboards measuring Mean Time to Detect (MTTD), Mean Time to
-action: kpi-metrics
-  Respond (MTTR), alert quality ratios, analyst productivity, and detection coverage using SIEM data. Use when SOC leadership
-  needs operational visibility, continuous improvement tracking, or executive-level reporting on security operations effectiveness.
-
-  '
+description: Builds SOC performance metrics and KPI tracking dashboards measuring Mean Time to Detect (MTTD), Mean Time to Respond (MTTR), alert quality ratios, analyst productivity, and detection coverage using SIEM data. Use when SOC leadership needs operational visibility, continuous improvement tracking, or executive-level reporting on security operations effectiveness.
 domain: cybersecurity
 subdomain: soc-operations
 tags:

@@ -1,10 +1,6 @@
 ---
 name: network-zeek-zeekanomaly
-description: 'Deploys and configures Zeek (formerly Bro) network security monitor to passively analyze network traffic, generate
-action: zeekanomaly
-  structured logs, detect anomalous behavior, and create custom detection scripts for threat hunting and incident response.
-
-  '
+description: Deploys and configures Zeek (formerly Bro) network security monitor to passively analyze network traffic, generate structured logs, detect anomalous behavior, and create custom detection scripts for threat hunting and incident response.
 domain: cybersecurity
 subdomain: network-security
 tags:

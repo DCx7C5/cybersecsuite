@@ -1,8 +1,6 @@
 ---
 name: kerberos-impacket
-description: Perform Kerberoasting attacks using Impacket's GetUserSPNs to extract and crack Kerberos TGS tickets for Active
-action: impacket
-  Directory service accounts.
+description: Perform Kerberoasting attacks using Impacket's GetUserSPNs to extract and crack Kerberos TGS tickets for Active Directory service accounts.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

@@ -1,8 +1,6 @@
 ---
 name: hunting-t1098
-description: Hunt for MITRE ATT&CK T1098 account manipulation including shadow admin creation, SID history injection, group
-action: t1098
-  membership changes, and credential modifications using Windows Security Event Logs.
+description: Hunt for MITRE ATT&CK T1098 account manipulation including shadow admin creation, SID history injection, group membership changes, and credential modifications using Windows Security Event Logs.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

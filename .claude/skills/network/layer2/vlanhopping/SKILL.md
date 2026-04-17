@@ -1,10 +1,6 @@
 ---
 name: layer2-vlanhopping
-description: 'Simulates VLAN hopping attacks using switch spoofing and double tagging techniques in authorized environments
-action: vlanhopping
-  to test VLAN segmentation effectiveness and validate switch port security configurations against Layer 2 bypass attacks.
-
-  '
+description: Simulates VLAN hopping attacks using switch spoofing and double tagging techniques in authorized environments to test VLAN segmentation effectiveness and validate switch port security configurations against Layer 2 bypass attacks.
 domain: cybersecurity
 subdomain: network-security
 tags:

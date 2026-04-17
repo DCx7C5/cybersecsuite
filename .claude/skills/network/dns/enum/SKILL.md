@@ -1,10 +1,6 @@
 ---
 name: dns-enum
-description: 'Enumerates DNS records, attempts zone transfers, brute-forces subdomains, and maps DNS infrastructure during
-action: enum
-  authorized reconnaissance to identify attack surface, misconfigurations, and information disclosure in target domains.
-
-  '
+description: Enumerates DNS records, attempts zone transfers, brute-forces subdomains, and maps DNS infrastructure during authorized reconnaissance to identify attack surface, misconfigurations, and information disclosure in target domains.
 domain: cybersecurity
 subdomain: network-security
 tags:

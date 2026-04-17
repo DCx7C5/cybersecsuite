@@ -1,8 +1,6 @@
 ---
 name: email-dmarcrollout
-description: Execute a phased DMARC rollout from p=none monitoring through p=quarantine to p=reject enforcement, ensuring
-action: dmarcrollout
-  all legitimate email sources are authenticated before blocking unauthorized senders.
+description: Execute a phased DMARC rollout from p=none monitoring through p=quarantine to p=reject enforcement, ensuring all legitimate email sources are authenticated before blocking unauthorized senders.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

@@ -1,11 +1,6 @@
 ---
 name: ioc-iocauto
-description: 'Automates Indicator of Compromise (IOC) enrichment by orchestrating lookups across VirusTotal, AbuseIPDB, Shodan,
-action: iocauto
-  MISP, and other intelligence sources to provide contextual scoring and disposition recommendations. Use when SOC analysts
-  need rapid multi-source enrichment of IPs, domains, URLs, and file hashes during alert triage or incident investigation.
-
-  '
+description: Automates Indicator of Compromise (IOC) enrichment by orchestrating lookups across VirusTotal, AbuseIPDB, Shodan, MISP, and other intelligence sources to provide contextual scoring and disposition recommendations. Use when SOC analysts need rapid multi-source enrichment of IPs, domains, URLs, and file hashes during alert triage or incident investigation.
 domain: cybersecurity
 subdomain: soc-operations
 tags:

@@ -1,8 +1,6 @@
 ---
 name: dns-subfinder
-description: Enumerate subdomains of target domains using ProjectDiscovery's Subfinder passive reconnaissance tool to map
-action: subfinder
-  the attack surface during security assessments.
+description: Enumerate subdomains of target domains using ProjectDiscovery's Subfinder passive reconnaissance tool to map the attack surface during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

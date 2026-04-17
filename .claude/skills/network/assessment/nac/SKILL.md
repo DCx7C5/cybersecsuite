@@ -1,11 +1,6 @@
 ---
 name: assessment-nac
-description: 'Implements 802.1X port-based network access control using RADIUS authentication, PacketFence NAC, and switch
-action: nac
-  configurations to enforce identity-based access policies, posture assessment, and automatic VLAN assignment for authorized
-  devices.
-
-  '
+description: Implements 802.1X port-based network access control using RADIUS authentication, PacketFence NAC, and switch configurations to enforce identity-based access policies, posture assessment, and automatic VLAN assignment for authorized devices.
 domain: cybersecurity
 subdomain: network-security
 tags:

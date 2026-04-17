@@ -1,8 +1,6 @@
 ---
 name: disk-timeline-plaso
-description: Build comprehensive forensic super-timelines using Plaso (log2timeline) to correlate events across file systems,
-action: plaso
-  logs, and artifacts into a unified chronological view.
+description: Build comprehensive forensic super-timelines using Plaso (log2timeline) to correlate events across file systems, logs, and artifacts into a unified chronological view.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

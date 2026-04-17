@@ -1,8 +1,6 @@
 ---
 name: mobile-cellebrite
-description: Acquire and analyze mobile device data using Cellebrite UFED and open-source tools to extract communications,
-action: cellebrite
-  location data, and application artifacts.
+description: Acquire and analyze mobile device data using Cellebrite UFED and open-source tools to extract communications, location data, and application artifacts.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

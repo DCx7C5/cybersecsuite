@@ -1,8 +1,6 @@
 ---
 name: log-cloud-cloudtrailforensics
-description: Perform forensic investigation of AWS environments using CloudTrail logs to reconstruct attacker activity, identify
-action: cloudtrailforensics
-  compromised credentials, and analyze API call patterns.
+description: Perform forensic investigation of AWS environments using CloudTrail logs to reconstruct attacker activity, identify compromised credentials, and analyze API call patterns.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

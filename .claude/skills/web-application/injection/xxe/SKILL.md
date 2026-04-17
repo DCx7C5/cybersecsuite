@@ -1,8 +1,6 @@
 ---
 name: injection-xxe
-description: Discovering and exploiting XML External Entity injection vulnerabilities to read server files, perform SSRF,
-action: xxe
-  and exfiltrate data during authorized penetration tests.
+description: Discovering and exploiting XML External Entity injection vulnerabilities to read server files, perform SSRF, and exfiltrate data during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

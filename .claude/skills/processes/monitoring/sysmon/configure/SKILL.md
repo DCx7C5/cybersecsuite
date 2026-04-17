@@ -1,8 +1,6 @@
 ---
 name: monitoring-sysmon-configure
-description: >
-  Configure Sysmon with a comprehensive ruleset covering process creation, network connections, registry modifications, and file creation for endpoint threat detection.
-action: configure
+description: > Configure Sysmon with a comprehensive ruleset covering process creation, network connections, registry modifications, and file creation for endpoint threat detection.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

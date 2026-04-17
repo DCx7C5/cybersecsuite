@@ -1,7 +1,6 @@
 ---
 name: tool-steghide-execute
-description: 'Runs steghide to embed or extract hidden data from JPEG, BMP, WAV, and AU files.'
-action: execute
+description: Runs steghide to embed or extract hidden data from JPEG, BMP, WAV, and AU files.
 domain: cybersecurity
 subdomain: steganography
 tags:

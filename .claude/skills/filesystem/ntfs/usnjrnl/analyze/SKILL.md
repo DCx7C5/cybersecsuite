@@ -1,8 +1,6 @@
 ---
 name: ntfs-usnjrnl-analyze
-description: >
-  Analyse the NTFS USN Change Journal (UsnJrnl:\$J) to reconstruct file creation, deletion, and modification events for timeline analysis and forensic investigation.
-action: analyze
+description: > Analyse the NTFS USN Change Journal (UsnJrnl:\$J) to reconstruct file creation, deletion, and modification events for timeline analysis and forensic investigation.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

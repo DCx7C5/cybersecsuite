@@ -1,8 +1,6 @@
 ---
 name: scanning-host-discovery-enum
-description: >
-  Enumerate live hosts on a network segment using ARP scanning, ICMP probes, TCP SYN pings, and passive traffic observation with nmap, masscan, and fping.
-action: enum
+description: > Enumerate live hosts on a network segment using ARP scanning, ICMP probes, TCP SYN pings, and passive traffic observation with nmap, masscan, and fping.
 domain: cybersecurity
 subdomain: network-reconnaissance
 tags:

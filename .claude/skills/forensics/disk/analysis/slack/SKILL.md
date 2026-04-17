@@ -1,8 +1,6 @@
 ---
 name: disk-analysis-slack
-description: Examine file system slack space, MFT entries, USN journal, and alternate data streams to recover hidden data
-action: slack
-  and reconstruct file activity on NTFS volumes.
+description: Examine file system slack space, MFT entries, USN journal, and alternate data streams to recover hidden data and reconstruct file activity on NTFS volumes.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: dhcp-rogue-server-detect
-description: >
-  Detect rogue DHCP servers on the network segment using DHCP snooping alerts, network scanning for unauthorized DHCP responses, and log correlation.
-action: detect
+description: > Detect rogue DHCP servers on the network segment using DHCP snooping alerts, network scanning for unauthorized DHCP responses, and log correlation.
 domain: cybersecurity
 subdomain: network-security
 tags:

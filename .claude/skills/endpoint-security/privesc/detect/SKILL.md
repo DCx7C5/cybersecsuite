@@ -1,8 +1,6 @@
 ---
 name: privesc-detect
-description: Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel
-action: detect
-  exploits, and sudo/doas abuse across Windows and Linux.
+description: Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel exploits, and sudo/doas abuse across Windows and Linux.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

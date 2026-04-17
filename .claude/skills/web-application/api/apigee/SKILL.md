@@ -1,8 +1,6 @@
 ---
 name: api-apigee
-description: Implement API threat protection using Google Apigee policies including JSON/XML threat protection, OAuth 2.0,
-action: apigee
-  SpikeArrest, and Advanced API Security for OWASP Top 10 defense.
+description: Implement API threat protection using Google Apigee policies including JSON/XML threat protection, OAuth 2.0, SpikeArrest, and Advanced API Security for OWASP Top 10 defense.
 domain: cybersecurity
 subdomain: api-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: azure-ad-saml
-description: Establish SAML 2.0 identity federation between on-premises Active Directory and Azure AD (Microsoft Entra ID)
-action: saml
-  for seamless cross-domain authentication and SSO to cloud applications.
+description: Establish SAML 2.0 identity federation between on-premises Active Directory and Azure AD (Microsoft Entra ID) for seamless cross-domain authentication and SSO to cloud applications.
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

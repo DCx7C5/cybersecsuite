@@ -1,8 +1,6 @@
 ---
 name: rapid7
-description: Deploy and configure Rapid7 InsightVM Security Console and Scan Engines for authenticated and unauthenticated
-action: rapid7
-  vulnerability scanning across enterprise environments.
+description: Deploy and configure Rapid7 InsightVM Security Console and Scan Engines for authenticated and unauthenticated vulnerability scanning across enterprise environments.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

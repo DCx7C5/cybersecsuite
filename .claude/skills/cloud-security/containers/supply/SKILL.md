@@ -1,8 +1,6 @@
 ---
 name: containers-supply
-description: Implement software supply chain integrity verification for container builds using the in-toto framework to create
-action: supply
-  cryptographically signed attestations across CI/CD pipeline steps.
+description: Implement software supply chain integrity verification for container builds using the in-toto framework to create cryptographically signed attestations across CI/CD pipeline steps.
 domain: cybersecurity
 subdomain: container-security
 tags:

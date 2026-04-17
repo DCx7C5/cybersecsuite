@@ -1,8 +1,6 @@
 ---
 name: log
-description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines
-action: log
-  during forensic investigations.
+description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines during forensic investigations.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

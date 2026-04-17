@@ -1,8 +1,6 @@
 ---
 name: mysql-privilege-enum
-description: >
-  Enumerate MySQL user privileges, grants, and stored procedure permissions to identify over-privileged accounts, FILE privilege abuse, and UDF execution rights.
-action: enum
+description: > Enumerate MySQL user privileges, grants, and stored procedure permissions to identify over-privileged accounts, FILE privilege abuse, and UDF execution rights.
 domain: cybersecurity
 subdomain: database-security
 tags:

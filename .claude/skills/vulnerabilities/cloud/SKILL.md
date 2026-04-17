@@ -1,8 +1,6 @@
 ---
 name: cloud
-description: Implement Cloud Security Posture Management using AWS Security Hub, Azure Defender for Cloud, and open-source
-action: cloud
-  tools like Prowler and ScoutSuite for multi-cloud vulnerability detection.
+description: Implement Cloud Security Posture Management using AWS Security Hub, Azure Defender for Cloud, and open-source tools like Prowler and ScoutSuite for multi-cloud vulnerability detection.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

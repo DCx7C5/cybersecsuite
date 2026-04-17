@@ -1,7 +1,6 @@
 ---
 name: monitoring2
 description: Network forensic reconnaissance. Active connection inventory, suspicious listeners, routing anomalies, DNS/mDNS analysis, ARP cache poisoning detection, firewall rule audit, and IOC infrastructure correlation.
-action: monitoring2
 model: sonnet
 maxTurns: 30
 tools:

@@ -1,8 +1,6 @@
 ---
 name: wireless-kismet
-description: Conduct wireless network security assessments using Kismet to detect rogue access points, hidden SSIDs, weak
-action: kismet
-  encryption, and unauthorized clients through passive RF monitoring.
+description: Conduct wireless network security assessments using Kismet to detect rogue access points, hidden SSIDs, weak encryption, and unauthorized clients through passive RF monitoring.
 domain: cybersecurity
 subdomain: network-security
 tags:

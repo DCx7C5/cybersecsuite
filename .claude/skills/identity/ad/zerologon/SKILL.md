@@ -1,8 +1,6 @@
 ---
 name: ad-zerologon
-description: Exploit the Zerologon vulnerability (CVE-2020-1472) in the Netlogon Remote Protocol to achieve domain controller
-action: zerologon
-  compromise by resetting the machine account password to empty.
+description: Exploit the Zerologon vulnerability (CVE-2020-1472) in the Netlogon Remote Protocol to achieve domain controller compromise by resetting the machine account password to empty.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

@@ -1,8 +1,6 @@
 ---
 name: ntfs-mft-parse
-description: >
-  Parse the NTFS Master File Table (MFT) to extract file metadata, timestamps, attribute records, resident data, and ADS entries using Mftparser and Autopsy.
-action: parse
+description: > Parse the NTFS Master File Table (MFT) to extract file metadata, timestamps, attribute records, resident data, and ADS entries using Mftparser and Autopsy.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

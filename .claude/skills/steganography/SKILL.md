@@ -1,7 +1,6 @@
 ---
 name: steganography
 description: Steganography reconnaissance and steganalysis. Detects hidden payloads in image, audio, video, and document carriers via entropy analysis, LSB detection, metadata anomalies, and statistical steganalysis. Maps to MITRE T1027.003 and T1001.003.
-action: steganography
 model: sonnet
 maxTurns: 30
 tools:

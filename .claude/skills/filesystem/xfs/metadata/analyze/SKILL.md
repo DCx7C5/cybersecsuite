@@ -1,8 +1,6 @@
 ---
 name: xfs-metadata-analyze
-description: >
-  Analyse XFS filesystem metadata including B-tree structures, inode allocation groups, and journal to reconstruct file activity and recover deleted entries.
-action: analyze
+description: > Analyse XFS filesystem metadata including B-tree structures, inode allocation groups, and journal to reconstruct file activity and recover deleted entries.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

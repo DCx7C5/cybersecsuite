@@ -1,8 +1,6 @@
 ---
 name: hunting-scheduled
-description: Hunt for adversary persistence via Windows Scheduled Tasks by analyzing task creation events, suspicious task
-action: scheduled
-  actions, and unusual scheduling patterns.
+description: Hunt for adversary persistence via Windows Scheduled Tasks by analyzing task creation events, suspicious task actions, and unusual scheduling patterns.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

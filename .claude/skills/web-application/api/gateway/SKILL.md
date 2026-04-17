@@ -1,13 +1,6 @@
 ---
 name: api-gateway
-description: 'Implements security controls at the API gateway layer including authentication enforcement, rate limiting, request
-action: gateway
-  validation, IP allowlisting, TLS termination, and threat protection. The engineer configures API gateways (Kong, AWS API
-  Gateway, Azure APIM, Apigee) to act as a centralized security enforcement point that validates, throttles, and monitors
-  all API traffic before it reaches backend services. Activates for requests involving API gateway security, API management
-  security, gateway authentication, or centralized API protection.
-
-  '
+description: Implements security controls at the API gateway layer including authentication enforcement, rate limiting, request validation, IP allowlisting, TLS termination, and threat protection. The engineer configures API gateways (Kong, AWS API Gateway, Azure APIM, Apigee) to act as a centralized security enforcement point that validates, throttles, and monitors all API traffic before it reaches backend services. Activates for requests involving API gateway security, API management security, gateway authentication, or centralized API protection.
 domain: cybersecurity
 subdomain: api-security
 tags:

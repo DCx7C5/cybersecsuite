@@ -1,8 +1,6 @@
 ---
 name: disk-artifacts-lnkfiles
-description: Parse Windows LNK shortcut files to extract target paths, timestamps, volume information, and machine identifiers
-action: lnkfiles
-  for forensic timeline reconstruction.
+description: Parse Windows LNK shortcut files to extract target paths, timestamps, volume information, and machine identifiers for forensic timeline reconstruction.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

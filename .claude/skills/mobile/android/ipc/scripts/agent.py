@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Agent for testing Android intents for vulnerabilities.
+"""Agent for testing Android ipc for vulnerabilities.
 
 Uses ADB and Drozer to enumerate exported components, test
 intent injection, content provider SQL injection, broadcast
@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 class AndroidIntentTestAgent:
-    """Tests Android app IPC through intents for security flaws."""
+    """Tests Android app IPC through ipc for security flaws."""
 
     def __init__(self, package_name, output_dir="./android_intent_test"):
         self.package = package_name

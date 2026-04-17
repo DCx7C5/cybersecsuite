@@ -1,8 +1,6 @@
 ---
 name: api-ratelimit
-description: Implement API abuse detection using token bucket, sliding window, and adaptive rate limiting algorithms to prevent
-action: ratelimit
-  DDoS, brute force, and credential stuffing attacks.
+description: Implement API abuse detection using token bucket, sliding window, and adaptive rate limiting algorithms to prevent DDoS, brute force, and credential stuffing attacks.
 domain: cybersecurity
 subdomain: api-security
 tags:

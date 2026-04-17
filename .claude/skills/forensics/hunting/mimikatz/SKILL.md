@@ -1,8 +1,6 @@
 ---
 name: hunting-mimikatz
-description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory
-action: mimikatz
-  detection of known modules.
+description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory detection of known modules.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

@@ -1,9 +1,6 @@
 ---
 name: supply
-description: Simulate and detect software supply chain attacks including typosquatting detection via Levenshtein distance,
-action: supply
-  dependency confusion testing against private registries, package hash verification with pip, and known vulnerability scanning
-  with pip-audit.
+description: Simulate and detect software supply chain attacks including typosquatting detection via Levenshtein distance, dependency confusion testing against private registries, package hash verification with pip, and known vulnerability scanning with pip-audit.
 domain: cybersecurity
 subdomain: application-security
 tags:

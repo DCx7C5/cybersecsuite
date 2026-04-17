@@ -1,8 +1,6 @@
 ---
 name: containers-container
-description: Detect unauthorized modifications to running containers by monitoring for binary execution drift, file system
-action: container
-  changes, and configuration deviations from the original container image.
+description: Detect unauthorized modifications to running containers by monitoring for binary execution drift, file system changes, and configuration deviations from the original container image.
 domain: cybersecurity
 subdomain: container-security
 tags:

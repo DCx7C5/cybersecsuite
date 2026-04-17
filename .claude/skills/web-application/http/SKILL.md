@@ -1,8 +1,6 @@
 ---
 name: http
-description: Execute HTTP Parameter Pollution attacks to bypass input validation, WAF rules, and security controls by injecting
-action: http
-  duplicate parameters that are processed differently by front-end and back-end systems.
+description: Execute HTTP Parameter Pollution attacks to bypass input validation, WAF rules, and security controls by injecting duplicate parameters that are processed differently by front-end and back-end systems.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

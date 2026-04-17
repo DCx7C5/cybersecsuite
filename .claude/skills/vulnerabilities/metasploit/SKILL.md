@@ -1,8 +1,6 @@
 ---
 name: metasploit
-description: The Metasploit Framework is the world's most widely used penetration testing platform, maintained by Rapid7.
-action: metasploit
-  It contains over 2,300 exploits, 1,200 auxiliary modules, and 400 post-exploitation modules
+description: The Metasploit Framework is the world's most widely used penetration testing platform, maintained by Rapid7. It contains over 2,300 exploits, 1,200 auxiliary modules, and 400 post-exploitation modules
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

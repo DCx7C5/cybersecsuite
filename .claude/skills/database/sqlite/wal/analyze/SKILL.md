@@ -1,8 +1,6 @@
 ---
 name: sqlite-wal-analyze
-description: >
-  Analyse SQLite Write-Ahead Log (WAL) files to recover uncommitted transactions, reconstruct modification history, and identify database tampering.
-action: analyze
+description: > Analyse SQLite Write-Ahead Log (WAL) files to recover uncommitted transactions, reconstruct modification history, and identify database tampering.
 domain: cybersecurity
 subdomain: database-security
 tags:

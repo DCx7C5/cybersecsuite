@@ -1,7 +1,6 @@
 ---
 name: image-bmp-lsb-detect
-description: 'Detects least-significant-bit steganography in BMP images via statistical tests.'
-action: detect
+description: Detects least-significant-bit steganography in BMP images via statistical tests.
 domain: cybersecurity
 subdomain: steganography
 tags:

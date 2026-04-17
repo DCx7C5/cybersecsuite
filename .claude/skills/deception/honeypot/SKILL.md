@@ -1,8 +1,6 @@
 ---
 name: honeypot
-description: Deploy and manage network honeypots using OpenCanary, T-Pot, or Cowrie to detect unauthorized access, lateral
-action: honeypot
-  movement, and attacker reconnaissance.
+description: Deploy and manage network honeypots using OpenCanary, T-Pot, or Cowrie to detect unauthorized access, lateral movement, and attacker reconnaissance.
 domain: cybersecurity
 subdomain: deception-technology
 tags:

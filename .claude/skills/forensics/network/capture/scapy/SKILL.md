@@ -1,8 +1,6 @@
 ---
 name: network-capture-scapy
-description: Craft, send, sniff, and dissect network packets using Scapy for protocol analysis, network reconnaissance, and
-action: scapy
-  traffic anomaly detection in authorized security testing
+description: Craft, send, sniff, and dissect network packets using Scapy for protocol analysis, network reconnaissance, and traffic anomaly detection in authorized security testing
 domain: cybersecurity
 subdomain: network-security
 tags:

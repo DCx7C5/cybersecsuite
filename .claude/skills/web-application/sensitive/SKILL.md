@@ -1,8 +1,6 @@
 ---
 name: sensitive
-description: Identifying sensitive data exposure vulnerabilities including API key leakage, PII in responses, insecure storage,
-action: sensitive
-  and unprotected data transmission during security assessments.
+description: Identifying sensitive data exposure vulnerabilities including API key leakage, PII in responses, insecure storage, and unprotected data transmission during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

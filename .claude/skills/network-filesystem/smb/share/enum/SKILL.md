@@ -1,8 +1,6 @@
 ---
 name: smb-share-enum
-description: >
-  Enumerate SMB shares, permissions, and accessible files using smbclient, CrackMapExec, and enum4linux to identify exposed sensitive data and misconfigured ACLs.
-action: enum
+description: > Enumerate SMB shares, permissions, and accessible files using smbclient, CrackMapExec, and enum4linux to identify exposed sensitive data and misconfigured ACLs.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

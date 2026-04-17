@@ -1,8 +1,6 @@
 ---
 name: management-defectdojo
-description: Deploy DefectDojo as a centralized vulnerability management dashboard with scanner integrations, deduplication,
-action: defectdojo
-  metrics tracking, and Jira ticketing workflows.
+description: Deploy DefectDojo as a centralized vulnerability management dashboard with scanner integrations, deduplication, metrics tracking, and Jira ticketing workflows.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

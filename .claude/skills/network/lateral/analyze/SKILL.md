@@ -1,10 +1,6 @@
 ---
 name: lateral-analyze
-description: 'Identifies lateral movement techniques in enterprise networks by analyzing authentication logs, network flows,
-action: analyze
-  SMB traffic, and RDP sessions using Zeek, Velociraptor, and SIEM correlation rules to detect attackers moving between systems.
-
-  '
+description: Identifies lateral movement techniques in enterprise networks by analyzing authentication logs, network flows, SMB traffic, and RDP sessions using Zeek, Velociraptor, and SIEM correlation rules to detect attackers moving between systems.
 domain: cybersecurity
 subdomain: network-security
 tags:

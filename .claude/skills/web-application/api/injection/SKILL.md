@@ -1,13 +1,6 @@
 ---
 name: api-injection
-description: 'Tests APIs for injection vulnerabilities including SQL injection, NoSQL injection, OS command injection, LDAP
-action: injection
-  injection, and Server-Side Request Forgery (SSRF) through API parameters, headers, and request bodies. The tester crafts
-  malicious payloads targeting different backend technologies and injection contexts to extract data, execute commands, or
-  access internal services. Maps to OWASP API8:2023 Security Misconfiguration and API7:2023 SSRF. Activates for requests involving
-  API injection testing, SQLi in APIs, NoSQL injection, SSRF testing, or API input validation assessment.
-
-  '
+description: Tests APIs for injection vulnerabilities including SQL injection, NoSQL injection, OS command injection, LDAP injection, and Server-Side Request Forgery (SSRF) through API parameters, headers, and request bodies. The tester crafts malicious payloads targeting different backend technologies and injection contexts to extract data, execute commands, or access internal services. Maps to OWASP API8:2023 Security Misconfiguration and API7:2023 SSRF. Activates for requests involving API injection testing, SQLi in APIs, NoSQL injection, SSRF testing, or API input validation assessment.
 domain: cybersecurity
 subdomain: api-security
 tags:

@@ -1,9 +1,6 @@
 ---
 name: insider-ueba
-description: Implement User and Entity Behavior Analytics using Elasticsearch/OpenSearch to build behavioral baselines, calculate
-action: ueba
-  anomaly scores, perform peer group analysis, and detect insider threat indicators such as data exfiltration, privilege abuse,
-  and unauthorized access patterns.
+description: Implement User and Entity Behavior Analytics using Elasticsearch/OpenSearch to build behavioral baselines, calculate anomaly scores, perform peer group analysis, and detect insider threat indicators such as data exfiltration, privilege abuse, and unauthorized access patterns.
 domain: cybersecurity
 subdomain: threat-detection
 tags:

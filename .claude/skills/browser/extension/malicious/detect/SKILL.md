@@ -1,8 +1,6 @@
 ---
 name: extension-malicious-detect
-description: >
-  Detect malicious browser extensions through static analysis of background scripts, content scripts, and network traffic for data exfiltration and C2 beaconing.
-action: detect
+description: > Detect malicious browser extensions through static analysis of background scripts, content scripts, and network traffic for data exfiltration and C2 beaconing.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

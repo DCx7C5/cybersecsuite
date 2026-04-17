@@ -1,8 +1,6 @@
 ---
 name: prioritization-epss
-description: Integrate FIRST's Exploit Prediction Scoring System (EPSS) API to prioritize vulnerability remediation based
-action: epss
-  on real-world exploitation probability within 30 days.
+description: Integrate FIRST's Exploit Prediction Scoring System (EPSS) API to prioritize vulnerability remediation based on real-world exploitation probability within 30 days.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

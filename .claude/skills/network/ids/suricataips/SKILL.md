@@ -1,8 +1,6 @@
 ---
 name: ids-suricataips
-description: Deploy and configure Suricata as a network intrusion prevention system with custom rules, Emerging Threats rulesets,
-action: suricataips
-  and inline traffic inspection for real-time threat blocking.
+description: Deploy and configure Suricata as a network intrusion prevention system with custom rules, Emerging Threats rulesets, and inline traffic inspection for real-time threat blocking.
 domain: cybersecurity
 subdomain: network-security
 tags:

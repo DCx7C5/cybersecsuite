@@ -1,8 +1,6 @@
 ---
 name: aws-privesc-detect
-description: Detect AWS IAM privilege escalation paths using boto3 and Cloudsplaining policy analysis to identify overly permissive
-action: detect
-  policies, dangerous permission combinations, and least-privilege violations
+description: Detect AWS IAM privilege escalation paths using boto3 and Cloudsplaining policy analysis to identify overly permissive policies, dangerous permission combinations, and least-privilege violations
 domain: cybersecurity
 subdomain: cloud-security
 tags:

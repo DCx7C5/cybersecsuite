@@ -1,8 +1,6 @@
 ---
 name: containers-opa
-description: Enforce Kubernetes admission policies using OPA Gatekeeper with ConstraintTemplates, Rego rules, and the Gatekeeper
-action: opa
-  policy library.
+description: Enforce Kubernetes admission policies using OPA Gatekeeper with ConstraintTemplates, Rego rules, and the Gatekeeper policy library.
 domain: cybersecurity
 subdomain: container-security
 tags:

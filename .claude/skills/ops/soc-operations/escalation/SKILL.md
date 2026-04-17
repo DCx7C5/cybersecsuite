@@ -1,8 +1,6 @@
 ---
 name: ops-soc-operations-escalation
-description: Build a structured SOC escalation matrix defining severity tiers, response SLAs, escalation paths, and notification
-action: escalation
-  procedures for security incidents.
+description: Build a structured SOC escalation matrix defining severity tiers, response SLAs, escalation paths, and notification procedures for security incidents.
 domain: cybersecurity
 subdomain: soc-operations
 tags:

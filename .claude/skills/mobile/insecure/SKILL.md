@@ -1,13 +1,6 @@
 ---
 name: insecure
-description: 'Identifies and exploits insecure local data storage vulnerabilities in Android and iOS mobile applications including
-action: insecure
-  unencrypted databases, world-readable files, insecure SharedPreferences, plaintext credential storage, and improper keychain/keystore
-  usage. Use when performing mobile penetration testing focused on OWASP M9 (Insecure Data Storage) or assessing compliance
-  with MASVS-STORAGE requirements. Activates for requests involving mobile data storage security, local storage exploitation,
-  SharedPreferences analysis, or mobile data leakage assessment.
-
-  '
+description: Identifies and exploits insecure local data storage vulnerabilities in Android and iOS mobile applications including unencrypted databases, world-readable files, insecure SharedPreferences, plaintext credential storage, and improper keychain/keystore usage. Use when performing mobile penetration testing focused on OWASP M9 (Insecure Data Storage) or assessing compliance with MASVS-STORAGE requirements. Activates for requests involving mobile data storage security, local storage exploitation, SharedPreferences analysis, or mobile data leakage assessment.
 domain: cybersecurity
 subdomain: mobile-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: mongodb-nosql-injection-detect
-description: >
-  Detect NoSQL injection vulnerabilities in MongoDB applications through operator injection ($where, $regex), query manipulation, and JavaScript injection via mapReduce.
-action: detect
+description: > Detect NoSQL injection vulnerabilities in MongoDB applications through operator injection ($where, $regex), query manipulation, and JavaScript injection via mapReduce.
 domain: cybersecurity
 subdomain: database-security
 tags:

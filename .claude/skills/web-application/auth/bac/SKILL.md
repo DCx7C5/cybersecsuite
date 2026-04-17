@@ -1,8 +1,6 @@
 ---
 name: auth-bac
-description: Systematically testing web applications for broken access control vulnerabilities including privilege escalation,
-action: bac
-  missing function-level checks, and insecure direct object references.
+description: Systematically testing web applications for broken access control vulnerabilities including privilege escalation, missing function-level checks, and insecure direct object references.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: injection-ssrf
-description: Detect and exploit blind Server-Side Request Forgery vulnerabilities using out-of-band techniques, DNS interactions,
-action: ssrf
-  and timing analysis to access internal services and cloud metadata endpoints.
+description: Detect and exploit blind Server-Side Request Forgery vulnerabilities using out-of-band techniques, DNS interactions, and timing analysis to access internal services and cloud metadata endpoints.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: ad-dcsync
-description: Perform DCSync attacks to replicate Active Directory credentials and establish domain persistence by extracting
-action: dcsync
-  KRBTGT, Domain Admin, and service account hashes for Golden Ticket creation.
+description: Perform DCSync attacks to replicate Active Directory credentials and establish domain persistence by extracting KRBTGT, Domain Admin, and service account hashes for Golden Ticket creation.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

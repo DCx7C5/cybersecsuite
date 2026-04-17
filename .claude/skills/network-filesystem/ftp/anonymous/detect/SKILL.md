@@ -1,8 +1,6 @@
 ---
 name: ftp-anonymous-detect
-description: >
-  Detect FTP servers with anonymous access enabled using nmap NSE scripts and ftp-client checks, identifying accessible file paths and download/upload permissions.
-action: detect
+description: > Detect FTP servers with anonymous access enabled using nmap NSE scripts and ftp-client checks, identifying accessible file paths and download/upload permissions.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

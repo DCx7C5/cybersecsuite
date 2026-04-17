@@ -1,8 +1,6 @@
 ---
 name: business
-description: Identifying flaws in application business logic that allow price manipulation, workflow bypass, and privilege
-action: business
-  escalation beyond what technical vulnerability scanners can detect.
+description: Identifying flaws in application business logic that allow price manipulation, workflow bypass, and privilege escalation beyond what technical vulnerability scanners can detect.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

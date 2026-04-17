@@ -1,8 +1,6 @@
 ---
 name: mongodb-exposure-detect
-description: >
-  Detect unauthenticated MongoDB instances exposed on the internet using Shodan queries, nmap scanning, and Metasploit auxiliary modules for version fingerprinting.
-action: detect
+description: > Detect unauthenticated MongoDB instances exposed on the internet using Shodan queries, nmap scanning, and Metasploit auxiliary modules for version fingerprinting.
 domain: cybersecurity
 subdomain: database-security
 tags:

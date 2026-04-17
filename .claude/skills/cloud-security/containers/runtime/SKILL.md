@@ -1,8 +1,6 @@
 ---
 name: containers-runtime
-description: Implement eBPF-based runtime security observability and enforcement in Kubernetes clusters using Cilium Tetragon
-action: runtime
-  for kernel-level threat detection and policy enforcement.
+description: Implement eBPF-based runtime security observability and enforcement in Kubernetes clusters using Cilium Tetragon for kernel-level threat detection and policy enforcement.
 domain: cybersecurity
 subdomain: container-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: ad-nopac
-description: Exploit the noPac vulnerability chain (CVE-2021-42278 sAMAccountName spoofing and CVE-2021-42287 KDC PAC confusion)
-action: nopac
-  to escalate from standard domain user to Domain Admin in Active Directory environments.
+description: Exploit the noPac vulnerability chain (CVE-2021-42278 sAMAccountName spoofing and CVE-2021-42287 KDC PAC confusion) to escalate from standard domain user to Domain Admin in Active Directory environments.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

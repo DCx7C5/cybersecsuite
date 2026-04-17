@@ -1,8 +1,6 @@
 ---
 name: smuggling-http
-description: Detecting and exploiting HTTP request smuggling vulnerabilities caused by Content-Length and Transfer-Encoding
-action: http
-  parsing discrepancies between front-end and back-end servers.
+description: Detecting and exploiting HTTP request smuggling vulnerabilities caused by Content-Length and Transfer-Encoding parsing discrepancies between front-end and back-end servers.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

@@ -1,10 +1,6 @@
 ---
 name: windows-lolbins-detect
-description: 'Detect abuse of legitimate Windows binaries (LOLBins) used for living off the land attacks. Monitors process
-action: detect
-  creation, command-line arguments, and parent-child relationships to identify suspicious LOLBin execution patterns.
-
-  '
+description: Detect abuse of legitimate Windows binaries (LOLBins) used for living off the land attacks. Monitors process creation, command-line arguments, and parent-child relationships to identify suspicious LOLBin execution patterns.
 domain: cybersecurity
 subdomain: threat-detection
 tags:

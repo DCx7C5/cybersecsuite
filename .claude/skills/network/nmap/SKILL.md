@@ -1,11 +1,6 @@
 ---
 name: nmap
-description: 'Performs advanced network reconnaissance using Nmap''s scripting engine, timing controls, evasion techniques,
-action: nmap
-  and output parsing to discover hosts, enumerate services, detect vulnerabilities, and fingerprint operating systems across
-  authorized target networks.
-
-  '
+description: Performs advanced network reconnaissance using Nmap''s scripting engine, timing controls, evasion techniques, and output parsing to discover hosts, enumerate services, detect vulnerabilities, and fingerprint operating systems across authorized target networks.
 domain: cybersecurity
 subdomain: network-security
 tags:

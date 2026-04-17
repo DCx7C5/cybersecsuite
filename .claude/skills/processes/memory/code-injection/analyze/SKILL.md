@@ -1,8 +1,6 @@
 ---
 name: memory-code-injection-analyze
-description: >
-  Analyse code injection artefacts including PE images in process memory, reflective DLL loading, module stomping, and transacted hollow using memory forensics tools.
-action: analyze
+description: > Analyse code injection artefacts including PE images in process memory, reflective DLL loading, module stomping, and transacted hollow using memory forensics tools.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

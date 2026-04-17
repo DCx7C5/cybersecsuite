@@ -1,10 +1,6 @@
 ---
 name: ids-snort
-description: 'Installs, configures, and tunes Snort 3 intrusion detection system to monitor network traffic for malicious
-action: snort
-  activity using custom and community rulesets, preprocessors, and alert output plugins on authorized network segments.
-
-  '
+description: Installs, configures, and tunes Snort 3 intrusion detection system to monitor network traffic for malicious activity using custom and community rulesets, preprocessors, and alert output plugins on authorized network segments.
 domain: cybersecurity
 subdomain: network-security
 tags:

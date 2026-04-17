@@ -1,8 +1,6 @@
 ---
 name: containers-helm
-description: Secure Helm chart deployments by validating chart integrity, scanning plugins for misconfigurations, and enforcing
-action: helm
-  security contexts in Kubernetes releases.
+description: Secure Helm chart deployments by validating chart integrity, scanning plugins for misconfigurations, and enforcing security contexts in Kubernetes releases.
 domain: cybersecurity
 subdomain: container-security
 tags:

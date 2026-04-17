@@ -1,8 +1,6 @@
 ---
 name: devsecops-fuzz
-description: Integrate AFL++ coverage-guided fuzz testing into CI/CD pipelines to discover memory corruption, input handling,
-action: fuzz
-  and logic vulnerabilities in C/C++ and compiled applications.
+description: Integrate AFL++ coverage-guided fuzz testing into CI/CD pipelines to discover memory corruption, input handling, and logic vulnerabilities in C/C++ and compiled applications.
 domain: cybersecurity
 subdomain: devsecops
 tags:

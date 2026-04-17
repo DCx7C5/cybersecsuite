@@ -1,8 +1,6 @@
 ---
 name: chromium-localstorage-extract
-description: >
-  Extract LocalStorage LevelDB data from Chromium-based browsers to recover web application state, authentication tokens, and user preferences.
-action: extract
+description: > Extract LocalStorage LevelDB data from Chromium-based browsers to recover web application state, authentication tokens, and user preferences.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: hunting-supply
-description: Hunt for supply chain compromise indicators including trojanized software updates, compromised dependencies,
-action: supply
-  unauthorized code modifications, and tampered build artifacts.
+description: Hunt for supply chain compromise indicators including trojanized software updates, compromised dependencies, unauthorized code modifications, and tampered build artifacts.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

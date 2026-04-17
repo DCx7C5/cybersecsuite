@@ -1,7 +1,6 @@
 ---
 name: okta
 description: Implement automated user provisioning and deprovisioning using SCIM 2.0 protocol with Okta as the identity provider.
-action: okta
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

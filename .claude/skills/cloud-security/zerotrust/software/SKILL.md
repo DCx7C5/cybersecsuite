@@ -1,8 +1,6 @@
 ---
 name: zerotrust-software
-description: Deploy a Software-Defined Perimeter using the CSA v2.0 specification with Single Packet Authorization, mutual
-action: software
-  TLS, and SDP controller/gateway configuration to enforce zero trust network access.
+description: Deploy a Software-Defined Perimeter using the CSA v2.0 specification with Single Packet Authorization, mutual TLS, and SDP controller/gateway configuration to enforce zero trust network access.
 domain: cybersecurity
 subdomain: zero-trust-architecture
 tags:

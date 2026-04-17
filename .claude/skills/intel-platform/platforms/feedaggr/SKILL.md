@@ -1,8 +1,6 @@
 ---
 name: platforms-feedaggr
-description: Deploy MISP (Malware Information Sharing Platform) to aggregate, correlate, and distribute threat intelligence
-action: feedaggr
-  feeds from multiple sources for centralized IOC management and automated SIEM integration.
+description: Deploy MISP (Malware Information Sharing Platform) to aggregate, correlate, and distribute threat intelligence feeds from multiple sources for centralized IOC management and automated SIEM integration.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

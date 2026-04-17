@@ -1,11 +1,6 @@
 ---
 name: signing-code
-description: 'This skill covers implementing code signing for build artifacts to ensure integrity and authenticity throughout
-action: code
-  the software supply chain. It addresses signing binaries, packages, and containers using GPG, Sigstore, and platform-specific
-  signing tools, establishing trust chains, and verifying signatures in deployment pipelines.
-
-  '
+description: This skill covers implementing code signing for build artifacts to ensure integrity and authenticity throughout the software supply chain. It addresses signing binaries, packages, and containers using GPG, Sigstore, and platform-specific signing tools, establishing trust chains, and verifying signatures in deployment pipelines.
 domain: cybersecurity
 subdomain: devsecops
 tags:

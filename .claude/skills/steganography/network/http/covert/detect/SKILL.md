@@ -1,7 +1,6 @@
 ---
 name: network-http-covert-detect
-description: 'Detects HTTP header steganography and covert communication channels.'
-action: detect
+description: Detects HTTP header steganography and covert communication channels.
 domain: cybersecurity
 subdomain: steganography
 tags:

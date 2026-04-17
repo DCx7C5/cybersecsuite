@@ -1,8 +1,6 @@
 ---
 name: mount-bind-detect
-description: >
-  Detect suspicious bind mounts and over-mounts used by rootkits and containers to obscure malicious files or gain unauthorized access to host paths.
-action: detect
+description: > Detect suspicious bind mounts and over-mounts used by rootkits and containers to obscure malicious files or gain unauthorized access to host paths.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

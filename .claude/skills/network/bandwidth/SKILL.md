@@ -1,10 +1,6 @@
 ---
 name: bandwidth
-description: 'Simulates bandwidth throttling and network degradation attacks using tc, iperf3, and Scapy in authorized environments
-action: bandwidth
-  to test quality-of-service controls, application resilience, and network monitoring detection of traffic manipulation attacks.
-
-  '
+description: Simulates bandwidth throttling and network degradation attacks using tc, iperf3, and Scapy in authorized environments to test quality-of-service controls, application resilience, and network monitoring detection of traffic manipulation attacks.
 domain: cybersecurity
 subdomain: network-security
 tags:

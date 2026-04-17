@@ -1,8 +1,6 @@
 ---
 name: chromium-session-reconstruct
-description: >
-  Reconstruct Chromium browsing sessions from Session and Tabs files to identify open tabs, navigation history, and form data at time of forensic acquisition.
-action: reconstruct
+description: > Reconstruct Chromium browsing sessions from Session and Tabs files to identify open tabs, navigation history, and form data at time of forensic acquisition.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

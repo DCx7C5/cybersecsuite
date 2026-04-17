@@ -1,8 +1,6 @@
 ---
 name: management-exceptions
-description: Build a vulnerability exception and risk acceptance tracking system with approval workflows, compensating controls
-action: exceptions
-  documentation, and expiration management.
+description: Build a vulnerability exception and risk acceptance tracking system with approval workflows, compensating controls documentation, and expiration management.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

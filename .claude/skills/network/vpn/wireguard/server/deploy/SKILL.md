@@ -1,8 +1,6 @@
 ---
 name: vpn-wireguard-server-deploy
-description: >
-  Deploy a WireGuard VPN server with peer management, split-tunnel routing, DNS leak prevention, and firewall rules for road-warrior and site-to-site configurations.
-action: deploy
+description: > Deploy a WireGuard VPN server with peer management, split-tunnel routing, DNS leak prevention, and firewall rules for road-warrior and site-to-site configurations.
 domain: cybersecurity
 subdomain: network-security
 tags:

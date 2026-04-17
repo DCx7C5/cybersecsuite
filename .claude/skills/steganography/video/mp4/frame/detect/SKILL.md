@@ -1,7 +1,6 @@
 ---
 name: video-mp4-frame-detect
-description: 'Detects inter-frame steganography in MP4 video via frame-difference analysis.'
-action: detect
+description: Detects inter-frame steganography in MP4 video via frame-difference analysis.
 domain: cybersecurity
 subdomain: steganography
 tags:

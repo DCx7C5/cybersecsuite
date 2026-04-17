@@ -1,8 +1,6 @@
 ---
 name: containers-pod
-description: Implement Kubernetes Pod Security Admission to enforce baseline and restricted security profiles at namespace
-action: pod
-  level using built-in admission controller.
+description: Implement Kubernetes Pod Security Admission to enforce baseline and restricted security profiles at namespace level using built-in admission controller.
 domain: cybersecurity
 subdomain: container-security
 tags:

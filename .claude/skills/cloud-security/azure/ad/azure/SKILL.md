@@ -1,11 +1,6 @@
 ---
 name: azure-ad-azure
-description: 'Auditing Microsoft Entra ID (Azure Active Directory) configuration to identify risky authentication policies,
-action: azure
-  overly permissive role assignments, stale accounts, conditional access gaps, and guest user risks using AzureAD PowerShell,
-  Microsoft Graph API, and ScoutSuite.
-
-  '
+description: Auditing Microsoft Entra ID (Azure Active Directory) configuration to identify risky authentication policies, overly permissive role assignments, stale accounts, conditional access gaps, and guest user risks using AzureAD PowerShell, Microsoft Graph API, and ScoutSuite.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

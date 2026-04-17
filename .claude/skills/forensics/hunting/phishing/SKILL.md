@@ -1,8 +1,6 @@
 ---
 name: hunting-phishing
-description: Hunt for spearphishing campaign indicators across email logs, endpoint telemetry, and network data to detect
-action: phishing
-  targeted email attacks.
+description: Hunt for spearphishing campaign indicators across email logs, endpoint telemetry, and network data to detect targeted email attacks.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

@@ -1,12 +1,6 @@
 ---
 name: feeds-feedintegr
-description: 'Builds automated threat intelligence feed integration pipelines connecting STIX/TAXII feeds, open-source threat
-action: feedintegr
-  intel, and commercial TI platforms into SIEM and security tools for real-time IOC matching and alerting. Use when SOC teams
-  need to operationalize threat intelligence by automating feed ingestion, normalization, scoring, and distribution to detection
-  systems.
-
-  '
+description: Builds automated threat intelligence feed integration pipelines connecting STIX/TAXII feeds, open-source threat intel, and commercial TI platforms into SIEM and security tools for real-time IOC matching and alerting. Use when SOC teams need to operationalize threat intelligence by automating feed ingestion, normalization, scoring, and distribution to detection systems.
 domain: cybersecurity
 subdomain: soc-operations
 tags:

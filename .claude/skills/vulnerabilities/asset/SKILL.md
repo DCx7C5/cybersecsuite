@@ -1,8 +1,6 @@
 ---
 name: asset
-description: Develop and apply a multi-factor asset criticality scoring model to weight vulnerability prioritization based
-action: asset
-  on business impact, data sensitivity, and operational importance.
+description: Develop and apply a multi-factor asset criticality scoring model to weight vulnerability prioritization based on business impact, data sensitivity, and operational importance.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

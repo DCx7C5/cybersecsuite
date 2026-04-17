@@ -1,8 +1,6 @@
 ---
 name: kubernetes-privesc-detect
-description: Detect and prevent privilege escalation in Kubernetes pods by monitoring security contexts, capabilities, and
-action: detect
-  syscall patterns with Falco and OPA policies.
+description: Detect and prevent privilege escalation in Kubernetes pods by monitoring security contexts, capabilities, and syscall patterns with Falco and OPA policies.
 domain: cybersecurity
 subdomain: container-security
 tags:

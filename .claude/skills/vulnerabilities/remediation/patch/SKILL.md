@@ -1,8 +1,6 @@
 ---
 name: remediation-patch
-description: Establish a structured operational process to triage, test, and deploy Microsoft Patch Tuesday security updates
-action: patch
-  within risk-based remediation SLAs.
+description: Establish a structured operational process to triage, test, and deploy Microsoft Patch Tuesday security updates within risk-based remediation SLAs.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

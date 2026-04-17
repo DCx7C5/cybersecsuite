@@ -1,8 +1,6 @@
 ---
 name: kerberos-constrained
-description: Exploit Kerberos Constrained Delegation misconfigurations in Active Directory to impersonate privileged users
-action: constrained
-  via S4U2self and S4U2proxy extensions for lateral movement and privilege escalation.
+description: Exploit Kerberos Constrained Delegation misconfigurations in Active Directory to impersonate privileged users via S4U2self and S4U2proxy extensions for lateral movement and privilege escalation.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

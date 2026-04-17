@@ -1,8 +1,6 @@
 ---
 name: nat-slipstream-detect
-description: >
-  Detect NAT slipstreaming attacks that bypass firewalls by injecting forged SIP/H.323 packets to create arbitrary port mappings through the ALG subsystem.
-action: detect
+description: > Detect NAT slipstreaming attacks that bypass firewalls by injecting forged SIP/H.323 packets to create arbitrary port mappings through the ALG subsystem.
 domain: cybersecurity
 subdomain: network-security
 tags:

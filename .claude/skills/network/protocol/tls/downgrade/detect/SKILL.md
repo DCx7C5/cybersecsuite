@@ -1,8 +1,6 @@
 ---
 name: protocol-tls-downgrade-detect
-description: >
-  Detect TLS downgrade attacks, BEAST, POODLE, CRIME, and DROWN vulnerabilities by auditing cipher suites, protocol versions, and certificate validation failures.
-action: detect
+description: > Detect TLS downgrade attacks, BEAST, POODLE, CRIME, and DROWN vulnerabilities by auditing cipher suites, protocol versions, and certificate validation failures.
 domain: cybersecurity
 subdomain: network-protocol-analysis
 tags:

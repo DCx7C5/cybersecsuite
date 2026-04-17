@@ -1,13 +1,6 @@
 ---
 name: darkweb
-description: 'Monitors dark web forums, marketplaces, paste sites, and ransomware leak sites for mentions of organizational
-action: darkweb
-  assets, leaked credentials, threatened attacks, and threat actor communications to provide early warning intelligence. Use
-  when establishing dark web monitoring coverage, investigating specific data breach claims, or enriching incident investigations
-  with dark web context. Activates for requests involving dark web OSINT, leak site monitoring, credential exposure, Recorded
-  Future dark web, or Tor hidden service intelligence.
-
-  '
+description: Monitors dark web forums, marketplaces, paste sites, and ransomware leak sites for mentions of organizational assets, leaked credentials, threatened attacks, and threat actor communications to provide early warning intelligence. Use when establishing dark web monitoring coverage, investigating specific data breach claims, or enriching incident investigations with dark web context. Activates for requests involving dark web OSINT, leak site monitoring, credential exposure, Recorded Future dark web, or Tor hidden service intelligence.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

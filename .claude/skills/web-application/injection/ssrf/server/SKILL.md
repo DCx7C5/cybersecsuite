@@ -1,8 +1,6 @@
 ---
 name: injection-ssrf-server
-description: Identifying and exploiting SSRF vulnerabilities to access internal services, cloud metadata, and restricted network
-action: server
-  resources during authorized penetration tests.
+description: Identifying and exploiting SSRF vulnerabilities to access internal services, cloud metadata, and restricted network resources during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

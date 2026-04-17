@@ -1,8 +1,6 @@
 ---
 name: prioritization-cve
-description: Leverage the CISA Known Exploited Vulnerabilities catalog alongside EPSS and CVSS to prioritize CVE remediation
-action: cve
-  based on real-world exploitation evidence.
+description: Leverage the CISA Known Exploited Vulnerabilities catalog alongside EPSS and CVSS to prioritize CVE remediation based on real-world exploitation evidence.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

@@ -1,8 +1,6 @@
 ---
 name: postgres-privilege-enum
-description: >
-  Enumerate PostgreSQL roles, membership, schema privileges, and superuser grants to identify over-privileged accounts and dangerous role assignments.
-action: enum
+description: > Enumerate PostgreSQL roles, membership, schema privileges, and superuser grants to identify over-privileged accounts and dangerous role assignments.
 domain: cybersecurity
 subdomain: database-security
 tags:

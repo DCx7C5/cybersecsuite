@@ -1,8 +1,6 @@
 ---
 name: smb-brute-execute
-description: >
-  Execute SMB credential brute-force and password spray attacks against SMB endpoints using CrackMapExec, Medusa, and Hydra with lockout-aware rate limiting.
-action: execute
+description: > Execute SMB credential brute-force and password spray attacks against SMB endpoints using CrackMapExec, Medusa, and Hydra with lockout-aware rate limiting.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

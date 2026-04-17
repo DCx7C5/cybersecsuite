@@ -1,8 +1,6 @@
 ---
 name: ntfs-alternate-data-stream-detect
-description: >
-  Detect NTFS Alternate Data Streams (ADS) used to hide malicious payloads, scripts, or executables behind legitimate files using Streams.exe and PowerShell.
-action: detect
+description: > Detect NTFS Alternate Data Streams (ADS) used to hide malicious payloads, scripts, or executables behind legitimate files using Streams.exe and PowerShell.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

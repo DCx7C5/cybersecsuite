@@ -1,13 +1,6 @@
 ---
 name: auth-jwt
-description: 'Exploits JWT algorithm confusion vulnerabilities where the server''s token verification library accepts the
-action: jwt
-  algorithm specified in the JWT header rather than enforcing a fixed algorithm. The tester manipulates the alg header to
-  switch from RS256 to HS256 (using the RSA public key as the HMAC secret), sets alg to none to bypass signature verification,
-  or exploits kid/jku/x5u header injection to supply attacker-controlled keys. Activates for requests involving JWT algorithm
-  confusion, alg none attack, key confusion attack, or JWT signature bypass.
-
-  '
+description: Exploits JWT algorithm confusion vulnerabilities where the server''s token verification library accepts the algorithm specified in the JWT header rather than enforcing a fixed algorithm. The tester manipulates the alg header to switch from RS256 to HS256 (using the RSA public key as the HMAC secret), sets alg to none to bypass signature verification, or exploits kid/jku/x5u header injection to supply attacker-controlled keys. Activates for requests involving JWT algorithm confusion, alg none attack, key confusion attack, or JWT signature bypass.
 domain: cybersecurity
 subdomain: api-security
 tags:

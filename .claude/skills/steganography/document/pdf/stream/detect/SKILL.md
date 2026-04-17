@@ -1,7 +1,6 @@
 ---
 name: document-pdf-stream-detect
-description: 'Detects hidden data in PDF stream objects and unused byte ranges.'
-action: detect
+description: Detects hidden data in PDF stream objects and unused byte ranges.
 domain: cybersecurity
 subdomain: steganography
 tags:

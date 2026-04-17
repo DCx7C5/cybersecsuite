@@ -1,8 +1,6 @@
 ---
 name: tmpfs-artifact-collect
-description: >
-  Collect volatile filesystem artifacts from tmpfs, /dev/shm, and /run before system shutdown, capturing malware drop zones and in-memory execution traces.
-action: collect
+description: > Collect volatile filesystem artifacts from tmpfs, /dev/shm, and /run before system shutdown, capturing malware drop zones and in-memory execution traces.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

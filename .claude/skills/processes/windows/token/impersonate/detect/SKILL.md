@@ -1,8 +1,6 @@
 ---
 name: windows-token-impersonate-detect
-description: >
-  Detect Windows token impersonation and privilege abuse including SeImpersonatePrivilege exploitation via Potato attacks and token stealing techniques.
-action: detect
+description: > Detect Windows token impersonation and privilege abuse including SeImpersonatePrivilege exploitation via Potato attacks and token stealing techniques.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

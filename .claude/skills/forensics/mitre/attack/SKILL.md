@@ -1,8 +1,6 @@
 ---
 name: mitre-attack
-description: Extract and catalog attack patterns from cyber threat intelligence reports into a structured STIX-based library
-action: attack
-  mapped to MITRE ATT&CK for detection engineering and threat-informed defense.
+description: Extract and catalog attack patterns from cyber threat intelligence reports into a structured STIX-based library mapped to MITRE ATT&CK for detection engineering and threat-informed defense.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

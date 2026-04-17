@@ -1,8 +1,6 @@
 ---
 name: chrome-indexeddb-extract
-description: >
-  Extract IndexedDB content from Chrome profiles to recover web application state, authentication tokens, and locally stored sensitive data.
-action: extract
+description: > Extract IndexedDB content from Chrome profiles to recover web application state, authentication tokens, and locally stored sensitive data.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

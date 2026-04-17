@@ -1,8 +1,6 @@
 ---
 name: api-mass
-description: Discover and exploit mass assignment vulnerabilities in REST APIs to escalate privileges, modify restricted fields,
-action: mass
-  and bypass authorization controls by injecting unexpected parameters in API requests.
+description: Discover and exploit mass assignment vulnerabilities in REST APIs to escalate privileges, modify restricted fields, and bypass authorization controls by injecting unexpected parameters in API requests.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: deserialization-insecure
-description: Identifying and exploiting insecure deserialization vulnerabilities in Java, PHP, Python, and .NET applications
-action: insecure
-  to achieve remote code execution during authorized penetration tests.
+description: Identifying and exploiting insecure deserialization vulnerabilities in Java, PHP, Python, and .NET applications to achieve remote code execution during authorized penetration tests.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

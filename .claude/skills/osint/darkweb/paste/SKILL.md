@@ -1,8 +1,6 @@
 ---
 name: darkweb-paste
-description: Monitor paste sites like Pastebin and GitHub Gists for leaked credentials, API keys, and sensitive data dumps
-action: paste
-  using automated scraping and keyword matching to detect breaches early.
+description: Monitor paste sites like Pastebin and GitHub Gists for leaked credentials, API keys, and sensitive data dumps using automated scraping and keyword matching to detect breaches early.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

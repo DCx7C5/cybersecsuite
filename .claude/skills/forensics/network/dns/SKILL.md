@@ -1,11 +1,6 @@
 ---
 name: network-dns
-description: 'Analyzes DNS query logs to detect data exfiltration via DNS tunneling, DGA domain communication, and covert
-action: dns
-  C2 channels using entropy analysis, query volume anomalies, and subdomain length detection in SIEM platforms. Use when SOC
-  teams need to identify DNS-based threats that bypass traditional network security controls.
-
-  '
+description: Analyzes DNS query logs to detect data exfiltration via DNS tunneling, DGA domain communication, and covert C2 channels using entropy analysis, query volume anomalies, and subdomain length detection in SIEM platforms. Use when SOC teams need to identify DNS-based threats that bypass traditional network security controls.
 domain: cybersecurity
 subdomain: soc-operations
 tags:

@@ -1,8 +1,6 @@
 ---
 name: phishing-fingerprint-detect
-description: >
-  Detect browser fingerprinting techniques used by phishing sites including canvas, WebGL, AudioContext, and font enumeration to identify targeted credential harvesting.
-action: detect
+description: > Detect browser fingerprinting techniques used by phishing sites including canvas, WebGL, AudioContext, and font enumeration to identify targeted credential harvesting.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

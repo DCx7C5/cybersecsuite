@@ -1,8 +1,6 @@
 ---
 name: disk-artifacts-registry
-description: Extract and analyze Windows Registry hives to uncover user activity, installed software, autostart entries, and
-action: registry
-  evidence of system compromise.
+description: Extract and analyze Windows Registry hives to uncover user activity, installed software, autostart entries, and evidence of system compromise.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

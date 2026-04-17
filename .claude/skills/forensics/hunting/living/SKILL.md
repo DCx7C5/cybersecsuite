@@ -1,8 +1,6 @@
 ---
 name: hunting-living
-description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse
-action: living
-  of Azure, AWS, GCP services, and SaaS platforms.
+description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse of Azure, AWS, GCP services, and SaaS platforms.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

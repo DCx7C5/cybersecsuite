@@ -1,8 +1,6 @@
 ---
 name: vulnerability
-description: Deploy and operate Greenbone/OpenVAS vulnerability management using the python-gvm library to create scan targets,
-action: vulnerability
-  execute vulnerability scans, and parse scan reports via GMP protocol.
+description: Deploy and operate Greenbone/OpenVAS vulnerability management using the python-gvm library to create scan targets, execute vulnerability scans, and parse scan reports via GMP protocol.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

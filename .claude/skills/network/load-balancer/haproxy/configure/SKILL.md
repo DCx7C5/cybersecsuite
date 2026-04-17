@@ -1,8 +1,6 @@
 ---
 name: load-balancer-haproxy-configure
-description: >
-  Configure HAProxy for high-availability TCP/HTTP load balancing with ACL-based routing, connection limits, health monitoring, and backend stick-table rate limiting.
-action: configure
+description: > Configure HAProxy for high-availability TCP/HTTP load balancing with ACL-based routing, connection limits, health monitoring, and backend stick-table rate limiting.
 domain: cybersecurity
 subdomain: network-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: tftp-exposure-detect
-description: >
-  Detect exposed TFTP servers and enumerate accessible files using TFTP clients, identifying network device configurations, firmware, and sensitive data.
-action: detect
+description: > Detect exposed TFTP servers and enumerate accessible files using TFTP clients, identifying network device configurations, firmware, and sensitive data.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

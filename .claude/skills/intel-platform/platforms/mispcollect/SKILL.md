@@ -1,8 +1,6 @@
 ---
 name: platforms-mispcollect
-description: MISP (Malware Information Sharing Platform) is an open-source threat intelligence platform for gathering, sharing,
-action: mispcollect
-  storing, and correlating Indicators of Compromise (IOCs) of targeted attacks, threat
+description: MISP (Malware Information Sharing Platform) is an open-source threat intelligence platform for gathering, sharing, storing, and correlating Indicators of Compromise (IOCs) of targeted attacks, threat
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

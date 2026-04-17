@@ -1,12 +1,6 @@
 ---
 name: serverless-serverlessharden
-description: 'This skill covers security hardening for serverless compute platforms including AWS Lambda, Azure Functions,
-action: serverlessharden
-  and Google Cloud Functions. It addresses least privilege IAM roles, dependency vulnerability scanning, secrets management
-  integration, input validation, function URL authentication, and runtime monitoring to protect against injection attacks,
-  credential theft, and supply chain compromises.
-
-  '
+description: This skill covers security hardening for serverless compute platforms including AWS Lambda, Azure Functions, and Google Cloud Functions. It addresses least privilege IAM roles, dependency vulnerability scanning, secrets management integration, input validation, function URL authentication, and runtime monitoring to protect against injection attacks, credential theft, and supply chain compromises.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

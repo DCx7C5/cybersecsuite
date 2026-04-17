@@ -1,8 +1,6 @@
 ---
 name: kubernetes-hardening-rbacharden
-description: Harden Kubernetes Role-Based Access Control by implementing least-privilege policies, auditing role bindings,
-action: rbacharden
-  eliminating cluster-admin sprawl, and integrating external identity providers.
+description: Harden Kubernetes Role-Based Access Control by implementing least-privilege policies, auditing role bindings, eliminating cluster-admin sprawl, and integrating external identity providers.
 domain: cybersecurity
 subdomain: container-security
 tags:

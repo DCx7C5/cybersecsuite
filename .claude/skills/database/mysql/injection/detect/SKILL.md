@@ -1,8 +1,6 @@
 ---
 name: mysql-injection-detect
-description: >
-  Detect SQL injection vulnerabilities in MySQL applications using sqlmap, manual payload testing, and query log analysis to identify blind and error-based injection points.
-action: detect
+description: > Detect SQL injection vulnerabilities in MySQL applications using sqlmap, manual payload testing, and query log analysis to identify blind and error-based injection points.
 domain: cybersecurity
 subdomain: database-security
 tags:

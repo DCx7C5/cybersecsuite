@@ -1,8 +1,6 @@
 ---
 name: auth-oauth-misconfig
-description: Identifying and exploiting OAuth 2.0 and OpenID Connect misconfigurations including redirect URI manipulation,
-action: misconfig
-  token leakage, and authorization code theft during security assessments.
+description: Identifying and exploiting OAuth 2.0 and OpenID Connect misconfigurations including redirect URI manipulation, token leakage, and authorization code theft during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

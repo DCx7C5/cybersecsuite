@@ -1,8 +1,6 @@
 ---
 name: hashcat
-description: Hash cracking is an essential skill for penetration testers and security auditors to evaluate password strength.
-action: hashcat
-  Hashcat is the world's fastest password recovery tool, supporting over 300 hash types w
+description: Hash cracking is an essential skill for penetration testers and security auditors to evaluate password strength. Hashcat is the world's fastest password recovery tool, supporting over 300 hash types w
 domain: cybersecurity
 subdomain: cryptography
 tags:

@@ -1,8 +1,6 @@
 ---
 name: gcp-gcppolicy
-description: Implement GCP Organization Policy constraints to enforce security guardrails across the entire resource hierarchy,
-action: gcppolicy
-  restricting risky configurations and ensuring compliance at organization, folder, and project levels.
+description: Implement GCP Organization Policy constraints to enforce security guardrails across the entire resource hierarchy, restricting risky configurations and ensuring compliance at organization, folder, and project levels.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: phishing
-description: Implement a phishing report button in email clients with automated triage workflow that analyzes user-reported
-action: phishing
-  suspicious emails and provides feedback to reporters.
+description: Implement a phishing report button in email clients with automated triage workflow that analyzes user-reported suspicious emails and provides feedback to reporters.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

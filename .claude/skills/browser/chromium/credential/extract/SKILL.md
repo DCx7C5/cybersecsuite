@@ -1,8 +1,6 @@
 ---
 name: chromium-credential-extract
-description: >
-  Extract and decrypt credentials stored by Chromium-based browsers using DPAPI key retrieval, AES-GCM decryption, and platform-specific keychain access.
-action: extract
+description: > Extract and decrypt credentials stored by Chromium-based browsers using DPAPI key retrieval, AES-GCM decryption, and platform-specific keychain access.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

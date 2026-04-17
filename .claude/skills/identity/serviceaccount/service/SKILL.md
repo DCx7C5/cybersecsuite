@@ -1,8 +1,6 @@
 ---
 name: serviceaccount-service
-description: Detect abuse of service accounts through anomalous interactive logons, privilege escalation, lateral movement,
-action: service
-  and unauthorized access patterns.
+description: Detect abuse of service accounts through anomalous interactive logons, privilege escalation, lateral movement, and unauthorized access patterns.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

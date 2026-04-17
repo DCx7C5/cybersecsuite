@@ -1,8 +1,6 @@
 ---
 name: containers-image
-description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations,
-action: image
-  and Kubernetes admission enforcement.
+description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations, and Kubernetes admission enforcement.
 domain: cybersecurity
 subdomain: container-security
 tags:

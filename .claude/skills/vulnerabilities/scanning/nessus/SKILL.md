@@ -1,12 +1,6 @@
 ---
 name: scanning-nessus
-description: 'Performs authenticated and unauthenticated vulnerability scanning using Tenable Nessus to identify known vulnerabilities,
-action: nessus
-  misconfigurations, default credentials, and missing patches across network infrastructure, servers, and applications. The
-  scanner correlates findings with CVE databases and CVSS scores to produce prioritized remediation guidance. Activates for
-  requests involving vulnerability scanning, Nessus assessment, patch compliance checking, or automated vulnerability detection.
-
-  '
+description: Performs authenticated and unauthenticated vulnerability scanning using Tenable Nessus to identify known vulnerabilities, misconfigurations, default credentials, and missing patches across network infrastructure, servers, and applications. The scanner correlates findings with CVE databases and CVSS scores to produce prioritized remediation guidance. Activates for requests involving vulnerability scanning, Nessus assessment, patch compliance checking, or automated vulnerability detection.
 domain: cybersecurity
 subdomain: penetration-testing
 tags:

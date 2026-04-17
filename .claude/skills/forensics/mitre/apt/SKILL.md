@@ -1,8 +1,6 @@
 ---
 name: mitre-apt
-description: Analyze advanced persistent threat (APT) group techniques using MITRE ATT&CK Navigator to create layered heatmaps
-action: apt
-  of adversary TTPs for detection gap analysis and threat-informed defense.
+description: Analyze advanced persistent threat (APT) group techniques using MITRE ATT&CK Navigator to create layered heatmaps of adversary TTPs for detection gap analysis and threat-informed defense.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

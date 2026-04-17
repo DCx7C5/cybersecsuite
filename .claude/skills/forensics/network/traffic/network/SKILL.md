@@ -1,8 +1,6 @@
 ---
 name: network-traffic-network
-description: Detect and analyze covert communication channels used by malware including DNS tunneling, ICMP exfiltration,
-action: network
-  steganographic HTTP, and protocol abuse for C2 and data exfiltration.
+description: Detect and analyze covert communication channels used by malware including DNS tunneling, ICMP exfiltration, steganographic HTTP, and protocol abuse for C2 and data exfiltration.
 domain: cybersecurity
 subdomain: malware-analysis
 tags:

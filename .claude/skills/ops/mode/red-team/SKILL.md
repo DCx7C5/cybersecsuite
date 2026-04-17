@@ -1,7 +1,6 @@
 ---
 name: mode-red-team
 description: Activates Red Team offensive/adversary emulation mode. Aggressive, stealth-focused, living-off-the-land APT-style attack simulation. All actions subject to AgentRootPermission boundaries and must be logged.
-action: red-team
 model: sonnet
 maxTurns: 15
 tools:

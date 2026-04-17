@@ -1,8 +1,6 @@
 ---
 name: attack
-description: Deploy XM Cyber's continuous exposure management platform to map attack paths, identify choke points, and prioritize
-action: attack
-  the 2% of exposures that threaten critical assets.
+description: Deploy XM Cyber's continuous exposure management platform to map attack paths, identify choke points, and prioritize the 2% of exposures that threaten critical assets.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

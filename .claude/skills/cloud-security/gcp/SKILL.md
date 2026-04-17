@@ -1,8 +1,6 @@
 ---
 name: gcp
-description: Implement GCP Binary Authorization to enforce deploy-time security controls that ensure only trusted, attested
-action: gcp
-  container images are deployed to Google Kubernetes Engine and Cloud Run.
+description: Implement GCP Binary Authorization to enforce deploy-time security controls that ensure only trusted, attested container images are deployed to Google Kubernetes Engine and Cloud Run.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

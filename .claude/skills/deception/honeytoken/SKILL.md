@@ -1,11 +1,6 @@
 ---
 name: honeytoken
-description: 'Deploys canary tokens and honeytokens (fake AWS credentials, DNS canaries, document beacons, database records)
-action: honeytoken
-  that trigger alerts when accessed by attackers. Uses the Canarytokens API and custom webhook integrations for breach detection.
-  Use when building deception-based early warning systems for intrusion detection.
-
-  '
+description: Deploys canary tokens and honeytokens (fake AWS credentials, DNS canaries, document beacons, database records) that trigger alerts when accessed by attackers. Uses the Canarytokens API and custom webhook integrations for breach detection. Use when building deception-based early warning systems for intrusion detection.
 domain: cybersecurity
 subdomain: security-operations
 tags:

@@ -1,7 +1,6 @@
 ---
 name: log-linux
 description: Linux log forensics and event correlation. Authentication events, auditd analysis, journald forensics, web server logs, cron/systemd-timer abuse, sudo trail, timeline reconstruction, and log tampering detection.
-action: linux
 model: sonnet
 maxTurns: 30
 tools:

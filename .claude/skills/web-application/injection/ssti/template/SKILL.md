@@ -1,8 +1,6 @@
 ---
 name: injection-ssti-template
-description: Detecting and exploiting Server-Side Template Injection (SSTI) vulnerabilities across Jinja2, Twig, Freemarker,
-action: template
-  and other template engines to achieve remote code execution.
+description: Detecting and exploiting Server-Side Template Injection (SSTI) vulnerabilities across Jinja2, Twig, Freemarker, and other template engines to achieve remote code execution.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

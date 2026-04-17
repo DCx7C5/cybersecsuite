@@ -1,8 +1,6 @@
 ---
 name: browser
-description: Extract and analyze browser history, cookies, cache, downloads, and bookmarks from Chrome, Firefox, and Edge
-action: browser
-  for forensic evidence of user web activity.
+description: Extract and analyze browser history, cookies, cache, downloads, and bookmarks from Chrome, Firefox, and Edge for forensic evidence of user web activity.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

@@ -1,13 +1,6 @@
 ---
 name: cloud-nerc
-description: 'This skill covers implementing North American Electric Reliability Corporation Critical Infrastructure Protection
-action: nerc
-  (NERC CIP) compliance controls for Bulk Electric System (BES) cyber systems. It addresses asset categorization (CIP-002),
-  electronic security perimeters (CIP-005), system security management (CIP-007), configuration management (CIP-010), supply
-  chain risk management (CIP-013), and the 2025 updates including mandatory MFA for remote access and expanded low-impact
-  asset requirements.
-
-  '
+description: This skill covers implementing North American Electric Reliability Corporation Critical Infrastructure Protection (NERC CIP) compliance controls for Bulk Electric System (BES) cyber systems. It addresses asset categorization (CIP-002), electronic security perimeters (CIP-005), system security management (CIP-007), configuration management (CIP-010), supply chain risk management (CIP-013), and the 2025 updates including mandatory MFA for remote access and expanded low-impact asset requirements.
 domain: cybersecurity
 subdomain: ot-ics-security
 tags:

@@ -1,9 +1,6 @@
 ---
 name: log-web
-description: Parse Apache and Nginx access logs to detect SQL injection attempts, local file inclusion, directory traversal,
-action: web
-  web scanner fingerprints, and brute-force patterns. Uses regex-based pattern matching against OWASP attack signatures, GeoIP
-  enrichment for source attribution, and statistical anomaly detection for request frequency and response size outliers.
+description: Parse Apache and Nginx access logs to detect SQL injection attempts, local file inclusion, directory traversal, web scanner fingerprints, and brute-force patterns. Uses regex-based pattern matching against OWASP attack signatures, GeoIP enrichment for source attribution, and statistical anomaly detection for request frequency and response size outliers.
 domain: cybersecurity
 subdomain: security-operations
 tags:

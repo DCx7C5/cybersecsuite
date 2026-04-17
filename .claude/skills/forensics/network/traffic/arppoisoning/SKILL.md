@@ -1,8 +1,6 @@
 ---
 name: network-traffic-arppoisoning
-description: Detect and prevent ARP spoofing attacks using ARPWatch, Dynamic ARP Inspection, Wireshark analysis, and custom
-action: arppoisoning
-  monitoring scripts to protect against man-in-the-middle interception.
+description: Detect and prevent ARP spoofing attacks using ARPWatch, Dynamic ARP Inspection, Wireshark analysis, and custom monitoring scripts to protect against man-in-the-middle interception.
 domain: cybersecurity
 subdomain: network-security
 tags:

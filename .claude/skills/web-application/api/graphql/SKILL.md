@@ -1,8 +1,6 @@
 ---
 name: api-graphql
-description: Execute and test GraphQL depth limit attacks using deeply nested recursive queries to identify denial-of-service
-action: graphql
-  vulnerabilities in GraphQL APIs.
+description: Execute and test GraphQL depth limit attacks using deeply nested recursive queries to identify denial-of-service vulnerabilities in GraphQL APIs.
 domain: cybersecurity
 subdomain: api-security
 tags:

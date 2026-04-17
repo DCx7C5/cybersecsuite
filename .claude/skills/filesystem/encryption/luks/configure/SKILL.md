@@ -1,8 +1,6 @@
 ---
 name: encryption-luks-configure
-description: >
-  Configure LUKS2 full-disk encryption with Argon2id key derivation, secure header backup, and TPM2/FIDO2 integration for at-rest data protection.
-action: configure
+description: > Configure LUKS2 full-disk encryption with Argon2id key derivation, secure header backup, and TPM2/FIDO2 integration for at-rest data protection.
 domain: cybersecurity
 subdomain: filesystem-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: network-capture-tshark
-description: Automate network traffic analysis using tshark and pyshark for protocol statistics, suspicious flow detection,
-action: tshark
-  DNS anomaly identification, and IOC extraction from PCAP files
+description: Automate network traffic analysis using tshark and pyshark for protocol statistics, suspicious flow detection, DNS anomaly identification, and IOC extraction from PCAP files
 domain: cybersecurity
 subdomain: network-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: cors
-description: Identifying and exploiting Cross-Origin Resource Sharing misconfigurations that allow unauthorized cross-domain
-action: cors
-  data access and credential theft during security assessments.
+description: Identifying and exploiting Cross-Origin Resource Sharing misconfigurations that allow unauthorized cross-domain data access and credential theft during security assessments.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

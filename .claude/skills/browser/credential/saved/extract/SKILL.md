@@ -1,8 +1,6 @@
 ---
 name: credential-saved-extract
-description: >
-  Extract and decrypt saved passwords across all installed browsers on a system using cross-browser credential harvesting tools for forensic or red-team operations.
-action: extract
+description: > Extract and decrypt saved passwords across all installed browsers on a system using cross-browser credential harvesting tools for forensic or red-team operations.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: cassandra-auth-audit
-description: >
-  Audit Apache Cassandra authentication and authorization configuration, checking for AllowAll authenticator, default credentials, and JMX unauthenticated access.
-action: audit
+description: > Audit Apache Cassandra authentication and authorization configuration, checking for AllowAll authenticator, default credentials, and JMX unauthenticated access.
 domain: cybersecurity
 subdomain: database-security
 tags:

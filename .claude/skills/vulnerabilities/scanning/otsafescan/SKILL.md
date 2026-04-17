@@ -1,11 +1,6 @@
 ---
 name: scanning-otsafescan
-description: 'Perform vulnerability scanning in OT/ICS environments safely using passive monitoring, native protocol queries,
-action: otsafescan
-  and carefully controlled active scanning with Tenable OT Security to identify vulnerabilities without disrupting industrial
-  processes or crashing legacy controllers.
-
-  '
+description: Perform vulnerability scanning in OT/ICS environments safely using passive monitoring, native protocol queries, and carefully controlled active scanning with Tenable OT Security to identify vulnerabilities without disrupting industrial processes or crashing legacy controllers.
 domain: cybersecurity
 subdomain: ot-ics-security
 tags:

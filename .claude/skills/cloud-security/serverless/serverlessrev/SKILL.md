@@ -1,11 +1,6 @@
 ---
 name: serverless-serverlessrev
-description: 'Performing security reviews of serverless functions across AWS Lambda, Azure Functions, and GCP Cloud Functions
-action: serverlessrev
-  to identify overly permissive execution roles, insecure environment variables, injection vulnerabilities, and missing runtime
-  protections.
-
-  '
+description: Performing security reviews of serverless functions across AWS Lambda, Azure Functions, and GCP Cloud Functions to identify overly permissive execution roles, insecure environment variables, injection vulnerabilities, and missing runtime protections.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

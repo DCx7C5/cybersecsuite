@@ -676,7 +676,7 @@
 
 - [`mobile`](mobile/SKILL.md) — `mobile`
 - [`mobile/android/apk/static-analysis`](mobile/android/apk/static-analysis/SKILL.md) — `android-apk-static-analysis`
-- [`mobile/android/intents`](mobile/android/intents/SKILL.md) — `android-intents`
+- [`mobile/android/intents`](mobile/android/ipc/SKILL.md) — `android-intents`
 - [`mobile/deeplink`](mobile/deeplink/SKILL.md) — `deeplink`
 - [`mobile/insecure`](mobile/insecure/SKILL.md) — `insecure`
 - [`mobile/ios/app/dynamic-analysis`](mobile/ios/app/dynamic-analysis/SKILL.md) — `ios-app-dynamic-analysis`

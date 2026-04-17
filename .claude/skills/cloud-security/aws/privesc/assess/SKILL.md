@@ -1,11 +1,6 @@
 ---
 name: aws-privesc-assess
-description: 'Performing authorized privilege escalation assessments in AWS environments to identify IAM misconfigurations
-action: assess
-  that allow users or roles to elevate their permissions using Pacu, CloudFox, Principal Mapper, and manual IAM policy analysis
-  techniques.
-
-  '
+description: Performing authorized privilege escalation assessments in AWS environments to identify IAM misconfigurations that allow users or roles to elevate their permissions using Pacu, CloudFox, Principal Mapper, and manual IAM policy analysis techniques.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

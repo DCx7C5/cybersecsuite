@@ -1,8 +1,6 @@
 ---
 name: windows-process-hollow-detect
-description: >
-  Detect process hollowing (RunPE) by identifying processes with mismatched image paths between PEB and VAD tree, or unmapped PE headers in memory.
-action: detect
+description: > Detect process hollowing (RunPE) by identifying processes with mismatched image paths between PEB and VAD tree, or unmapped PE headers in memory.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

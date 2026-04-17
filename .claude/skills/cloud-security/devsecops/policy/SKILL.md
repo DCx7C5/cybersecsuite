@@ -1,11 +1,6 @@
 ---
 name: devsecops-policy
-description: 'This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes
-action: policy
-  and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller,
-  testing policies in development, and integrating policy evaluation into deployment pipelines.
-
-  '
+description: This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller, testing policies in development, and integrating policy evaluation into deployment pipelines.
 domain: cybersecurity
 subdomain: devsecops
 tags:

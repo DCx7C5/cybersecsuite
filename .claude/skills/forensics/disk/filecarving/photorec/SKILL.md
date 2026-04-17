@@ -1,8 +1,6 @@
 ---
 name: disk-filecarving-photorec
-description: Recover deleted files from disk images and storage media using PhotoRec's file signature-based carving engine
-action: photorec
-  regardless of file system damage.
+description: Recover deleted files from disk images and storage media using PhotoRec's file signature-based carving engine regardless of file system damage.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

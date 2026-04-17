@@ -1,8 +1,6 @@
 ---
 name: firewall
-description: Design and implement network segmentation using firewall security zones, VLANs, ACLs, and microsegmentation policies
-action: firewall
-  to restrict lateral movement and enforce least-privilege network access.
+description: Design and implement network segmentation using firewall security zones, VLANs, ACLs, and microsegmentation policies to restrict lateral movement and enforce least-privilege network access.
 domain: cybersecurity
 subdomain: network-security
 tags:

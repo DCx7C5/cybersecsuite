@@ -1,13 +1,6 @@
 ---
 name: api-bfla
-description: 'Tests APIs for Broken Function Level Authorization (BFLA) vulnerabilities where regular users can invoke administrative
-action: bfla
-  functions or access privileged API endpoints by directly calling them. The tester identifies admin and privileged endpoints,
-  then attempts to access them with regular user credentials by manipulating HTTP methods, URL paths, and request parameters.
-  Maps to OWASP API5:2023 Broken Function Level Authorization. Activates for requests involving BFLA testing, admin endpoint
-  bypass, function-level access control testing, or API privilege escalation.
-
-  '
+description: Tests APIs for Broken Function Level Authorization (BFLA) vulnerabilities where regular users can invoke administrative functions or access privileged API endpoints by directly calling them. The tester identifies admin and privileged endpoints, then attempts to access them with regular user credentials by manipulating HTTP methods, URL paths, and request parameters. Maps to OWASP API5:2023 Broken Function Level Authorization. Activates for requests involving BFLA testing, admin endpoint bypass, function-level access control testing, or API privilege escalation.
 domain: cybersecurity
 subdomain: api-security
 tags:

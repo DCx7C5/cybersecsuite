@@ -1,8 +1,6 @@
 ---
 name: memory-heap-spray-detect
-description: >
-  Detect heap spray attacks in browser and application memory by analysing large blocks of repeating NOP sleds, shellcode patterns, and suspicious allocation sizes.
-action: detect
+description: > Detect heap spray attacks in browser and application memory by analysing large blocks of repeating NOP sleds, shellcode patterns, and suspicious allocation sizes.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

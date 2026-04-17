@@ -1,7 +1,6 @@
 ---
 name: document-docx-metadata-detect
-description: 'Detects hidden content in DOCX metadata, revisions, and XML comments.'
-action: detect
+description: Detects hidden content in DOCX metadata, revisions, and XML comments.
 domain: cybersecurity
 subdomain: steganography
 tags:

@@ -1,8 +1,6 @@
 ---
 name: windows-wmi-persistence-detect
-description: >
-  Detect WMI event subscription persistence by enumerating ActiveScriptEventConsumer, CommandLineEventConsumer, and permanent subscriptions in the WMI repository.
-action: detect
+description: > Detect WMI event subscription persistence by enumerating ActiveScriptEventConsumer, CommandLineEventConsumer, and permanent subscriptions in the WMI repository.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

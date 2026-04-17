@@ -1,8 +1,6 @@
 ---
 name: protocol-http-request-smuggling-detect
-description: >
-  Detect HTTP request smuggling attacks exploiting discrepancies between front-end proxy and back-end server parsing of Content-Length and Transfer-Encoding headers.
-action: detect
+description: > Detect HTTP request smuggling attacks exploiting discrepancies between front-end proxy and back-end server parsing of Content-Length and Transfer-Encoding headers.
 domain: cybersecurity
 subdomain: network-protocol-analysis
 tags:

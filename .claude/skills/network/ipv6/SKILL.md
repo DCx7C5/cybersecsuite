@@ -1,10 +1,6 @@
 ---
 name: ipv6
-description: 'Identifies and exploits IPv6-specific vulnerabilities including SLAAC spoofing, Router Advertisement flooding,
-action: ipv6
-  and IPv6 tunneling during authorized assessments to test dual-stack security controls and IPv6-aware network defenses.
-
-  '
+description: Identifies and exploits IPv6-specific vulnerabilities including SLAAC spoofing, Router Advertisement flooding, and IPv6 tunneling during authorized assessments to test dual-stack security controls and IPv6-aware network defenses.
 domain: cybersecurity
 subdomain: network-security
 tags:

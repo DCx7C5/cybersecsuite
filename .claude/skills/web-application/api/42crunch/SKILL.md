@@ -1,8 +1,6 @@
 ---
 name: api-42crunch
-description: Implement comprehensive API security testing using the 42Crunch platform to perform static audit and dynamic
-action: 42crunch
-  conformance scanning of OpenAPI specifications.
+description: Implement comprehensive API security testing using the 42Crunch platform to perform static audit and dynamic conformance scanning of OpenAPI specifications.
 domain: cybersecurity
 subdomain: api-security
 tags:

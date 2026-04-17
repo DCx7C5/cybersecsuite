@@ -1,8 +1,6 @@
 ---
 name: cloudflare
-description: Configure Cloudflare DDoS protection with managed rulesets, rate limiting, WAF rules, Bot Management, and origin
-action: cloudflare
-  protection to mitigate volumetric, protocol, and application-layer attacks.
+description: Configure Cloudflare DDoS protection with managed rulesets, rate limiting, WAF rules, Bot Management, and origin protection to mitigate volumetric, protocol, and application-layer attacks.
 domain: cybersecurity
 subdomain: network-security
 tags:

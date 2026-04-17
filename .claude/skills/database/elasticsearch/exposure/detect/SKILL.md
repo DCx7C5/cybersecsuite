@@ -1,8 +1,6 @@
 ---
 name: elasticsearch-exposure-detect
-description: >
-  Detect publicly exposed Elasticsearch clusters with no authentication, identifying accessible indices, sensitive data fields, and cluster metadata via REST API enumeration.
-action: detect
+description: > Detect publicly exposed Elasticsearch clusters with no authentication, identifying accessible indices, sensitive data fields, and cluster metadata via REST API enumeration.
 domain: cybersecurity
 subdomain: database-security
 tags:

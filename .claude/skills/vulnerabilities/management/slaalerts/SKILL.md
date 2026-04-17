@@ -1,8 +1,6 @@
 ---
 name: management-slaalerts
-description: Build automated alerting for vulnerability remediation SLA breaches with severity-based timelines, escalation
-action: slaalerts
-  workflows, and compliance reporting dashboards.
+description: Build automated alerting for vulnerability remediation SLA breaches with severity-based timelines, escalation workflows, and compliance reporting dashboards.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

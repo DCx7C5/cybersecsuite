@@ -1,8 +1,6 @@
 ---
 name: ipc-dbus-service-enum
-description: >
-  Enumerate D-Bus services and method calls to identify over-privileged interfaces, missing PolicyKit authentication, and local privilege escalation via bus services.
-action: enum
+description: > Enumerate D-Bus services and method calls to identify over-privileged interfaces, missing PolicyKit authentication, and local privilege escalation via bus services.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: tunnel-ssh-reverse-create
-description: >
-  Create and manage reverse SSH tunnels for firewall traversal, redirecting remote port access through an SSH connection initiated from a controlled endpoint.
-action: create
+description: > Create and manage reverse SSH tunnels for firewall traversal, redirecting remote port access through an SSH connection initiated from a controlled endpoint.
 domain: cybersecurity
 subdomain: network-security
 tags:

@@ -1,10 +1,6 @@
 ---
 name: zerotrust-prisma
-description: 'Deploying Palo Alto Networks Prisma Access for SASE-based zero trust network access using GlobalProtect agents,
-action: prisma
-  ZTNA Connectors, security policy enforcement, and integration with Strata Cloud Manager for unified security management.
-
-  '
+description: Deploying Palo Alto Networks Prisma Access for SASE-based zero trust network access using GlobalProtect agents, ZTNA Connectors, security policy enforcement, and integration with Strata Cloud Manager for unified security management.
 domain: cybersecurity
 subdomain: zero-trust-architecture
 tags:

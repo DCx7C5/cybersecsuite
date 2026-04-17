@@ -1,8 +1,6 @@
 ---
 name: hunting-email
-description: Detect malicious email forwarding rules created by adversaries to maintain persistent access to email communications
-action: email
-  for intelligence collection and BEC attacks.
+description: Detect malicious email forwarding rules created by adversaries to maintain persistent access to email communications for intelligence collection and BEC attacks.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

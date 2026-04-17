@@ -1,8 +1,6 @@
 ---
 name: auth-oauth-consent
-description: Detect risky OAuth application consent grants in Azure AD / Microsoft Entra ID using Microsoft Graph API, audit
-action: consent
-  logs, and permission analysis to identify illicit consent grant attacks.
+description: Detect risky OAuth application consent grants in Azure AD / Microsoft Entra ID using Microsoft Graph API, audit logs, and permission analysis to identify illicit consent grant attacks.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

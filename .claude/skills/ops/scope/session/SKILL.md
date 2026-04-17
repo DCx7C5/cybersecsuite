@@ -1,7 +1,6 @@
 ---
 name: scope-session
 description: Per-session ephemeral forensic layer. Real-time IOC detection, live threat monitoring, active defense coordination, and evidence preservation during active investigation sessions in ./cybersec-sessions/YYYYMMDD_HHMMSS/.
-action: session
 model: sonnet
 maxTurns: 20
 tools:

@@ -1,8 +1,6 @@
 ---
 name: tunnel-dns-covert-detect
-description: >
-  Detect DNS tunnelling C2 channels by analysing query frequency, subdomain length entropy, TXT/NULL record abuse, and comparing against authoritative DNS baseline.
-action: detect
+description: > Detect DNS tunnelling C2 channels by analysing query frequency, subdomain length entropy, TXT/NULL record abuse, and comparing against authoritative DNS baseline.
 domain: cybersecurity
 subdomain: network-security
 tags:

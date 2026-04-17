@@ -1,8 +1,6 @@
 ---
 name: cryptographic
-description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and
-action: cryptographic
-  key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
+description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
 domain: cybersecurity
 subdomain: cryptography
 tags:

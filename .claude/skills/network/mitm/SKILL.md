@@ -1,10 +1,6 @@
 ---
 name: mitm
-description: 'Simulates man-in-the-middle attacks using Ettercap, mitmproxy, and Bettercap in authorized environments to intercept,
-action: mitm
-  analyze, and modify network traffic for testing encryption enforcement, certificate validation, and detection capabilities.
-
-  '
+description: Simulates man-in-the-middle attacks using Ettercap, mitmproxy, and Bettercap in authorized environments to intercept, analyze, and modify network traffic for testing encryption enforcement, certificate validation, and detection capabilities.
 domain: cybersecurity
 subdomain: network-security
 tags:

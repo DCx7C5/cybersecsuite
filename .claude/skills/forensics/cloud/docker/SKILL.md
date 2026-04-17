@@ -1,8 +1,6 @@
 ---
 name: cloud-docker
-description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to
-action: docker
-  identify malicious activity and evidence.
+description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to identify malicious activity and evidence.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

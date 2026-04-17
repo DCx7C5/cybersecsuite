@@ -1,12 +1,6 @@
 ---
 name: phishing-ir
-description: 'Responds to phishing incidents by analyzing reported emails, extracting indicators, assessing credential compromise,
-action: ir
-  quarantining malicious messages across the organization, and remediating affected accounts. Covers email header analysis,
-  URL/attachment sandboxing, and mailbox-wide purge operations. Activates for requests involving phishing response, email
-  incident, credential phishing, spear phishing investigation, or phishing remediation.
-
-  '
+description: Responds to phishing incidents by analyzing reported emails, extracting indicators, assessing credential compromise, quarantining malicious messages across the organization, and remediating affected accounts. Covers email header analysis, URL/attachment sandboxing, and mailbox-wide purge operations. Activates for requests involving phishing response, email incident, credential phishing, spear phishing investigation, or phishing remediation.
 domain: cybersecurity
 subdomain: incident-response
 tags:

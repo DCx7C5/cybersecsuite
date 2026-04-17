@@ -1,9 +1,6 @@
 ---
 name: database-logging-syslog
-description: Configure rsyslog for centralized log collection with TLS encryption, custom plugins, and log rotation. Generates
-action: syslog
-  server and client configuration files with GnuTLS stream drivers, x509 certificate authentication, per-host log segregation,
-  and reliable queue settings for high-availability syslog infrastructure.
+description: Configure rsyslog for centralized log collection with TLS encryption, custom plugins, and log rotation. Generates server and client configuration files with GnuTLS stream drivers, x509 certificate authentication, per-host log segregation, and reliable queue settings for high-availability syslog infrastructure.
 domain: cybersecurity
 subdomain: security-operations
 tags:

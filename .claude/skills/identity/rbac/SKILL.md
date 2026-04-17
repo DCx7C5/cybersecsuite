@@ -1,8 +1,6 @@
 ---
 name: rbac
-description: Apply bottom-up and top-down role mining techniques to discover optimal RBAC roles from existing user-permission
-action: rbac
-  assignments, reducing role explosion and enforcing least privilege.
+description: Apply bottom-up and top-down role mining techniques to discover optimal RBAC roles from existing user-permission assignments, reducing role explosion and enforcing least privilege.
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

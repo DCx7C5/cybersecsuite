@@ -1,8 +1,6 @@
 ---
 name: headers-content
-description: Analyze and bypass Content Security Policy implementations to achieve cross-site scripting by exploiting misconfigurations,
-action: content
-  JSONP endpoints, unsafe directives, and policy injection techniques.
+description: Analyze and bypass Content Security Policy implementations to achieve cross-site scripting by exploiting misconfigurations, JSONP endpoints, unsafe directives, and policy injection techniques.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

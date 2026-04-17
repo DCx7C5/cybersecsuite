@@ -1,8 +1,6 @@
 ---
 name: redirect-open
-description: Identify and test open redirect vulnerabilities in web applications by analyzing URL redirection parameters,
-action: open
-  bypass techniques, and exploitation chains for phishing and token theft.
+description: Identify and test open redirect vulnerabilities in web applications by analyzing URL redirection parameters, bypass techniques, and exploitation chains for phishing and token theft.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

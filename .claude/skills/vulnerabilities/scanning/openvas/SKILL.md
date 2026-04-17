@@ -1,8 +1,6 @@
 ---
 name: scanning-openvas
-description: Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone Vulnerability Management with
-action: openvas
-  SSH and SMB credentials for comprehensive host-level assessment.
+description: Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone Vulnerability Management with SSH and SMB credentials for comprehensive host-level assessment.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

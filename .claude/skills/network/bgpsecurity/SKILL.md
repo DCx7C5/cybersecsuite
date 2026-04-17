@@ -1,8 +1,6 @@
 ---
 name: bgpsecurity
-description: Implement BGP route origin validation using RPKI with Route Origin Authorizations, RPKI-to-Router protocol, and
-action: bgpsecurity
-  ROV policies on Cisco and Juniper routers to prevent route hijacking.
+description: Implement BGP route origin validation using RPKI with Route Origin Authorizations, RPKI-to-Router protocol, and ROV policies on Cisco and Juniper routers to prevent route hijacking.
 domain: cybersecurity
 subdomain: network-security
 tags:

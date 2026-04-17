@@ -1,8 +1,6 @@
 ---
 name: aws-scoutsuite
-description: Perform comprehensive security posture assessment of AWS accounts using ScoutSuite to enumerate resources, identify
-action: scoutsuite
-  misconfigurations, and generate actionable security reports.
+description: Perform comprehensive security posture assessment of AWS accounts using ScoutSuite to enumerate resources, identify misconfigurations, and generate actionable security reports.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

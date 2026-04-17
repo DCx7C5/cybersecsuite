@@ -1,8 +1,6 @@
 ---
 name: broken
-description: Discover and exploit broken link hijacking vulnerabilities by identifying references to expired domains, decommissioned
-action: broken
-  cloud resources, and dead external services that can be claimed by an attacker.
+description: Discover and exploit broken link hijacking vulnerabilities by identifying references to expired domains, decommissioned cloud resources, and dead external services that can be claimed by an attacker.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: api-websocket
-description: Testing WebSocket implementations for authentication bypass, cross-site hijacking, injection attacks, and insecure
-action: websocket
-  message handling during authorized security assessments.
+description: Testing WebSocket implementations for authentication bypass, cross-site hijacking, injection attacks, and insecure message handling during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

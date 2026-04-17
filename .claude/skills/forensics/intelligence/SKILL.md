@@ -1,13 +1,6 @@
 ---
 name: intelligence
-description: 'Manages the end-to-end cyber threat intelligence lifecycle from planning and direction through collection, processing,
-action: intelligence
-  analysis, dissemination, and feedback to ensure intelligence products meet stakeholder requirements and continuously improve.
-  Use when establishing or maturing a CTI program, defining intelligence requirements with business stakeholders, or building
-  feedback loops between intelligence consumers and producers. Activates for requests involving CTI program maturity, intelligence
-  requirements, PIRs, or intelligence lifecycle management.
-
-  '
+description: Manages the end-to-end cyber threat intelligence lifecycle from planning and direction through collection, processing, analysis, dissemination, and feedback to ensure intelligence products meet stakeholder requirements and continuously improve. Use when establishing or maturing a CTI program, defining intelligence requirements with business stakeholders, or building feedback loops between intelligence consumers and producers. Activates for requests involving CTI program maturity, intelligence requirements, PIRs, or intelligence lifecycle management.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

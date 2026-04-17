@@ -1,7 +1,6 @@
 ---
 name: tool-stegseek-execute
-description: 'Runs stegseek for fast dictionary-based extraction of steghide-embedded payloads.'
-action: execute
+description: Runs stegseek for fast dictionary-based extraction of steghide-embedded payloads.
 domain: cybersecurity
 subdomain: steganography
 tags:

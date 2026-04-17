@@ -1,7 +1,6 @@
 ---
 name: mode-purple-team
 description: Activates Purple Team hybrid mode. Combines offensive adversary emulation with defensive gap analysis. Simultaneously tests attack paths and strengthens detection/hardening within AgentRootPermission boundaries.
-action: purple-team
 model: sonnet
 maxTurns: 15
 tools:

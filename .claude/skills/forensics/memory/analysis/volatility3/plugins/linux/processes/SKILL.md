@@ -1,7 +1,6 @@
 ---
 name: memory-analysis-volatility3-plugins-linux-processes
 description: Process forensic reconnaissance. Parent-child tree anomalies, injected memory regions (RWX), deleted executables, LD_PRELOAD/VDSO abuse, ptrace attach state, capability audit, namespaces, and runtime behavior triage.
-action: processes
 model: sonnet
 maxTurns: 30
 tools:

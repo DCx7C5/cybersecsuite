@@ -1,8 +1,6 @@
 ---
 name: idor
-description: Identifying and exploiting Insecure Direct Object Reference vulnerabilities to access unauthorized resources
-action: idor
-  by manipulating object identifiers in API requests and URLs.
+description: Identifying and exploiting Insecure Direct Object Reference vulnerabilities to access unauthorized resources by manipulating object identifiers in API requests and URLs.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

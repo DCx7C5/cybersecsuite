@@ -1,11 +1,6 @@
 ---
 name: aws-cwpp
-description: 'Implements cloud workload protection using boto3 and google-cloud APIs for runtime security monitoring, process
-action: cwpp
-  anomaly detection, and file integrity checking on EC2/GCE instances. Scans for cryptomining, reverse shells, and unauthorized
-  binaries. Use when building runtime security controls for cloud compute workloads.
-
-  '
+description: Implements cloud workload protection using boto3 and google-cloud APIs for runtime security monitoring, process anomaly detection, and file integrity checking on EC2/GCE instances. Scans for cryptomining, reverse shells, and unauthorized binaries. Use when building runtime security controls for cloud compute workloads.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

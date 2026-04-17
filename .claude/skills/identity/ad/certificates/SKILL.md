@@ -1,8 +1,6 @@
 ---
 name: ad-certificates
-description: Exploit misconfigured Active Directory Certificate Services (AD CS) ESC1 vulnerability to request certificates
-action: certificates
-  as high-privileged users and escalate domain privileges during authorized red team assessments.
+description: Exploit misconfigured Active Directory Certificate Services (AD CS) ESC1 vulnerability to request certificates as high-privileged users and escalate domain privileges during authorized red team assessments.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

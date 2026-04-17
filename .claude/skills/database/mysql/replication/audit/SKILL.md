@@ -1,8 +1,6 @@
 ---
 name: mysql-replication-audit
-description: >
-  Audit MySQL replication configurations for insecure binlog access, unencrypted replica connections, and weak replica user credentials.
-action: audit
+description: > Audit MySQL replication configurations for insecure binlog access, unencrypted replica connections, and weak replica user credentials.
 domain: cybersecurity
 subdomain: database-security
 tags:

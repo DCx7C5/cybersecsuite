@@ -1,8 +1,6 @@
 ---
 name: ntlm-passthehash
-description: Detect Pass-the-Hash attacks by analyzing NTLM authentication patterns, identifying Type 3 logons with NTLM where
-action: passthehash
-  Kerberos is expected, and correlating with credential dumping.
+description: Detect Pass-the-Hash attacks by analyzing NTLM authentication patterns, identifying Type 3 logons with NTLM where Kerberos is expected, and correlating with credential dumping.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

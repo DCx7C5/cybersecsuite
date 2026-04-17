@@ -1,7 +1,6 @@
 ---
 name: audio-wav-echo-hiding-detect
-description: 'Detects echo-hiding steganography in WAV audio via cepstrum analysis.'
-action: detect
+description: Detects echo-hiding steganography in WAV audio via cepstrum analysis.
 domain: cybersecurity
 subdomain: steganography
 tags:

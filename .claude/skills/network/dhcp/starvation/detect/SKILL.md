@@ -1,8 +1,6 @@
 ---
 name: dhcp-starvation-detect
-description: >
-  Detect DHCP starvation attacks that exhaust the address pool by monitoring lease rates, MAC diversity anomalies, and pool exhaustion events with DHCP server logs.
-action: detect
+description: > Detect DHCP starvation attacks that exhaust the address pool by monitoring lease rates, MAC diversity anomalies, and pool exhaustion events with DHCP server logs.
 domain: cybersecurity
 subdomain: network-security
 tags:

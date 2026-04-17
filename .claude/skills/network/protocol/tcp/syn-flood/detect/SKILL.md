@@ -1,8 +1,6 @@
 ---
 name: protocol-tcp-syn-flood-detect
-description: >
-  Detect TCP SYN flood denial-of-service attacks by monitoring half-open connection state, SYN cookie effectiveness, and rate-based anomalies with netstat, ss, and iptables counters.
-action: detect
+description: > Detect TCP SYN flood denial-of-service attacks by monitoring half-open connection state, SYN cookie effectiveness, and rate-based anomalies with netstat, ss, and iptables counters.
 domain: cybersecurity
 subdomain: network-protocol-analysis
 tags:

@@ -1,8 +1,6 @@
 ---
 name: engagement-execute
-description: Plan and execute a comprehensive red team engagement covering reconnaissance through post-exploitation using
-action: execute
-  MITRE ATT&CK-aligned TTPs to evaluate an organization's detection and response capabilities.
+description: Plan and execute a comprehensive red team engagement covering reconnaissance through post-exploitation using MITRE ATT&CK-aligned TTPs to evaluate an organization's detection and response capabilities.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

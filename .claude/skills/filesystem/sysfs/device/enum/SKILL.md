@@ -1,8 +1,6 @@
 ---
 name: sysfs-device-enum
-description: >
-  Enumerate sysfs device nodes, driver bindings, and USB device history to identify unauthorized hardware devices and persistence mechanisms via kernel subsystems.
-action: enum
+description: > Enumerate sysfs device nodes, driver bindings, and USB device history to identify unauthorized hardware devices and persistence mechanisms via kernel subsystems.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

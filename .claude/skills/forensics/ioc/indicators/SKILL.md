@@ -1,12 +1,6 @@
 ---
 name: ioc-indicators
-description: 'Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs, and email artifacts
-action: indicators
-  to determine maliciousness confidence, campaign attribution, and blocking priority. Use when triaging IOCs from phishing
-  emails, security alerts, or external threat feeds; enriching raw IOCs with multi-source intelligence; or making block/monitor/whitelist
-  decisions. Activates for requests involving VirusTotal, AbuseIPDB, MalwareBazaar, MISP, or IOC enrichment pipelines.
-
-  '
+description: Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs, and email artifacts to determine maliciousness confidence, campaign attribution, and blocking priority. Use when triaging IOCs from phishing emails, security alerts, or external threat feeds; enriching raw IOCs with multi-source intelligence; or making block/monitor/whitelist decisions. Activates for requests involving VirusTotal, AbuseIPDB, MalwareBazaar, MISP, or IOC enrichment pipelines.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

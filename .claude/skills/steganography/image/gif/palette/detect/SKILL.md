@@ -1,7 +1,6 @@
 ---
 name: image-gif-palette-detect
-description: 'Detects palette-manipulation steganography in GIF images.'
-action: detect
+description: Detects palette-manipulation steganography in GIF images.
 domain: cybersecurity
 subdomain: steganography
 tags:

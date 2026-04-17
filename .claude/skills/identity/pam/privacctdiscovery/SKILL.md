@@ -1,8 +1,6 @@
 ---
 name: pam-privacctdiscovery
-description: Discover and inventory all privileged accounts across enterprise infrastructure including domain admins, local
-action: privacctdiscovery
-  admins, service accounts, database admins, cloud IAM roles, and application admin account
+description: Discover and inventory all privileged accounts across enterprise infrastructure including domain admins, local admins, service accounts, database admins, cloud IAM roles, and application admin account
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

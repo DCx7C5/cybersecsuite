@@ -1,8 +1,6 @@
 ---
 name: pam-paw
-description: Design and implement Privileged Access Workstations (PAWs) with device hardening, just-in-time access, and integration
-action: paw
-  with CyberArk or BeyondTrust for secure administrative operations.
+description: Design and implement Privileged Access Workstations (PAWs) with device hardening, just-in-time access, and integration with CyberArk or BeyondTrust for secure administrative operations.
 domain: cybersecurity
 subdomain: identity-and-access-management
 tags:

@@ -1,8 +1,6 @@
 ---
 name: network-flow-c2beaconing
-description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation
-action: c2beaconing
-  to identify compromised endpoints communicating with adversary infrastructure.
+description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation to identify compromised endpoints communicating with adversary infrastructure.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

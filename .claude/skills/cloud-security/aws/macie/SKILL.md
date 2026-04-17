@@ -1,8 +1,6 @@
 ---
 name: aws-macie
-description: Implement Amazon Macie to automatically discover, classify, and protect sensitive data in S3 buckets using machine
-action: macie
-  learning and pattern matching for PII, financial data, and credentials detection.
+description: Implement Amazon Macie to automatically discover, classify, and protect sensitive data in S3 buckets using machine learning and pattern matching for PII, financial data, and credentials detection.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

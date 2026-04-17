@@ -1,8 +1,6 @@
 ---
 name: socialeng-vishing
-description: Plan and execute authorized vishing (voice phishing) pretext calls to assess employee susceptibility to social
-action: vishing
-  engineering and evaluate security awareness controls.
+description: Plan and execute authorized vishing (voice phishing) pretext calls to assess employee susceptibility to social engineering and evaluate security awareness controls.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

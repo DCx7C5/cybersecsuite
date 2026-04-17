@@ -1,7 +1,6 @@
 ---
 name: image-png-lsb-detect
-description: 'Detects LSB steganography in PNG images via chi-square analysis and bit-plane inspection.'
-action: detect
+description: Detects LSB steganography in PNG images via chi-square analysis and bit-plane inspection.
 domain: cybersecurity
 subdomain: steganography
 tags:

@@ -1,8 +1,6 @@
 ---
 name: encryption-veracrypt-deploy
-description: >
-  Deploy VeraCrypt encrypted containers and hidden volumes for portable file-level encryption with plausible deniability using cascaded cipher algorithms.
-action: deploy
+description: > Deploy VeraCrypt encrypted containers and hidden volumes for portable file-level encryption with plausible deniability using cascaded cipher algorithms.
 domain: cybersecurity
 subdomain: filesystem-security
 tags:

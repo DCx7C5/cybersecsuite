@@ -1,9 +1,6 @@
 ---
 name: zerotrust-beyondcorp
-description: Deploy Google BeyondCorp Enterprise zero trust access controls using Identity-Aware Proxy (IAP), context-aware
-action: beyondcorp
-  access policies, device trust validation, and Access Context Manager to enforce identity and posture-based access to GCP
-  resources and internal applications.
+description: Deploy Google BeyondCorp Enterprise zero trust access controls using Identity-Aware Proxy (IAP), context-aware access policies, device trust validation, and Access Context Manager to enforce identity and posture-based access to GCP resources and internal applications.
 domain: cybersecurity
 subdomain: zero-trust
 tags:

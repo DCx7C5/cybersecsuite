@@ -1,8 +1,6 @@
 ---
 name: proxy-socks5-tunnel-create
-description: >
-  Create SOCKS5 proxy tunnels for traffic pivoting and C2 redirection using SSH dynamic port forwarding, Chisel, Ligolo-ng, and microsocks for post-exploitation access.
-action: create
+description: > Create SOCKS5 proxy tunnels for traffic pivoting and C2 redirection using SSH dynamic port forwarding, Chisel, Ligolo-ng, and microsocks for post-exploitation access.
 domain: cybersecurity
 subdomain: network-security
 tags:

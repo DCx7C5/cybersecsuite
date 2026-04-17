@@ -1,10 +1,6 @@
 ---
 name: feeds-security
-description: 'Create, validate, and share STIX 2.1 threat intelligence objects using the stix2 Python library. Covers indicators,
-action: security
-  malware, campaigns, relationships, bundles, and TAXII 2.1 publishing.
-
-  '
+description: Create, validate, and share STIX 2.1 threat intelligence objects using the stix2 Python library. Covers indicators, malware, campaigns, relationships, bundles, and TAXII 2.1 publishing.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

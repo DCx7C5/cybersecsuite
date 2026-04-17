@@ -1,8 +1,6 @@
 ---
 name: ad-active
-description: Detect dangerous ACL misconfigurations in Active Directory using ldap3 to identify GenericAll, WriteDACL, and
-action: active
-  WriteOwner abuse paths
+description: Detect dangerous ACL misconfigurations in Active Directory using ldap3 to identify GenericAll, WriteDACL, and WriteOwner abuse paths
 domain: cybersecurity
 subdomain: identity-security
 tags:

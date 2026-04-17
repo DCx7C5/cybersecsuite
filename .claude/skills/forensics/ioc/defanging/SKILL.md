@@ -1,8 +1,6 @@
 ---
 name: ioc-defanging
-description: Build an automated pipeline to defang indicators of compromise (URLs, IPs, domains, emails) for safe sharing
-action: defanging
-  and distribute them in STIX format through TAXII feeds and threat intelligence platforms.
+description: Build an automated pipeline to defang indicators of compromise (URLs, IPs, domains, emails) for safe sharing and distribute them in STIX format through TAXII feeds and threat intelligence platforms.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

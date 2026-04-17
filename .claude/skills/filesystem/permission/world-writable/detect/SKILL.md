@@ -1,8 +1,6 @@
 ---
 name: permission-world-writable-detect
-description: >
-  Detect world-writable files, directories, and scripts used in privilege escalation, cron job hijacking, and library path injection attacks.
-action: detect
+description: > Detect world-writable files, directories, and scripts used in privilege escalation, cron job hijacking, and library path injection attacks.
 domain: cybersecurity
 subdomain: filesystem-security
 tags:

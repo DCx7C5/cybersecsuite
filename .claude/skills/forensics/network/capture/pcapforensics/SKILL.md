@@ -1,8 +1,6 @@
 ---
 name: network-capture-pcapforensics
-description: Capture and analyze network traffic using Wireshark and tshark to reconstruct network events, extract artifacts,
-action: pcapforensics
-  and identify malicious communications.
+description: Capture and analyze network traffic using Wireshark and tshark to reconstruct network events, extract artifacts, and identify malicious communications.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

@@ -1,13 +1,6 @@
 ---
 name: sca-sbom
-description: 'Parses Software Bill of Materials (SBOM) in CycloneDX and SPDX JSON formats to identify supply chain vulnerabilities
-action: sbom
-  by correlating components against the NVD CVE database via the NVD 2.0 API. Builds dependency graphs, calculates risk scores,
-  identifies transitive vulnerability paths, and generates compliance reports. Activates for requests involving SBOM analysis,
-  software composition analysis, supply chain security assessment, dependency vulnerability scanning, CycloneDX/SPDX parsing,
-  or CVE correlation.
-
-  '
+description: Parses Software Bill of Materials (SBOM) in CycloneDX and SPDX JSON formats to identify supply chain vulnerabilities by correlating components against the NVD CVE database via the NVD 2.0 API. Builds dependency graphs, calculates risk scores, identifies transitive vulnerability paths, and generates compliance reports. Activates for requests involving SBOM analysis, software composition analysis, supply chain security assessment, dependency vulnerability scanning, CycloneDX/SPDX parsing, or CVE correlation.
 domain: cybersecurity
 subdomain: supply-chain-security
 tags:

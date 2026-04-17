@@ -1,10 +1,6 @@
 ---
 name: network-capture-wireshark
-description: 'Captures and analyzes network packet data using Wireshark and tshark to identify malicious traffic patterns,
-action: wireshark
-  diagnose protocol issues, extract artifacts, and support incident response investigations on authorized network segments.
-
-  '
+description: Captures and analyzes network packet data using Wireshark and tshark to identify malicious traffic patterns, diagnose protocol issues, extract artifacts, and support incident response investigations on authorized network segments.
 domain: cybersecurity
 subdomain: network-security
 tags:

@@ -1,13 +1,6 @@
 ---
 name: pam-sessionmon
-description: 'Implements privileged session monitoring and recording using Privileged Access Management (PAM) solutions, focusing
-action: sessionmon
-  on CyberArk Privileged Session Manager (PSM) and open-source alternatives. Covers session recording configuration, keystroke
-  logging, real-time monitoring, risk-based session analysis, and compliance audit trail generation. Activates for requests
-  involving privileged session recording, PAM session monitoring, CyberArk PSM configuration, administrator activity monitoring,
-  or compliance session auditing.
-
-  '
+description: Implements privileged session monitoring and recording using Privileged Access Management (PAM) solutions, focusing on CyberArk Privileged Session Manager (PSM) and open-source alternatives. Covers session recording configuration, keystroke logging, real-time monitoring, risk-based session analysis, and compliance audit trail generation. Activates for requests involving privileged session recording, PAM session monitoring, CyberArk PSM configuration, administrator activity monitoring, or compliance session auditing.
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

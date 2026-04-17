@@ -1,7 +1,6 @@
 ---
 name: tool-zsteg-execute
-description: 'Runs zsteg to detect and extract steganographic payloads from PNG/BMP files.'
-action: execute
+description: Runs zsteg to detect and extract steganographic payloads from PNG/BMP files.
 domain: cybersecurity
 subdomain: steganography
 tags:

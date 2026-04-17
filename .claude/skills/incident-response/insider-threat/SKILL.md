@@ -1,11 +1,6 @@
 ---
 name: incident-response-insider-threat
-description: 'Detects insider data exfiltration by analyzing DLP policy violations, file access patterns, upload volume anomalies,
-action: insider-threat
-  and off-hours activity in endpoint and cloud logs. Uses pandas for behavioral analytics and statistical baselines. Use when
-  investigating insider threats or building user behavior analytics for data loss prevention.
-
-  '
+description: Detects insider data exfiltration by analyzing DLP policy violations, file access patterns, upload volume anomalies, and off-hours activity in endpoint and cloud logs. Uses pandas for behavioral analytics and statistical baselines. Use when investigating insider threats or building user behavior analytics for data loss prevention.
 domain: cybersecurity
 subdomain: security-operations
 tags:

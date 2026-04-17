@@ -1,11 +1,6 @@
 ---
 name: azure-defender
-description: 'Implementing Microsoft Defender for Cloud to enable cloud security posture management, workload protection across
-action: defender
-  VMs, containers, databases, and storage, configure security recommendations, and set up adaptive security controls with
-  automated remediation.
-
-  '
+description: Implementing Microsoft Defender for Cloud to enable cloud security posture management, workload protection across VMs, containers, databases, and storage, configure security recommendations, and set up adaptive security controls with automated remediation.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: ad-bloodhound-analyze
-description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised
-action: analyze
-  users to Domain Admin.
+description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised users to Domain Admin.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

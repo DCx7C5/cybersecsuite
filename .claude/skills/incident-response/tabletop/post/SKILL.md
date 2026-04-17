@@ -1,8 +1,6 @@
 ---
 name: tabletop-post
-description: Facilitate structured post-incident reviews to identify root causes, document what worked and failed, and produce
-action: post
-  actionable recommendations to improve future incident response.
+description: Facilitate structured post-incident reviews to identify root causes, document what worked and failed, and produce actionable recommendations to improve future incident response.
 domain: cybersecurity
 subdomain: incident-response
 tags:

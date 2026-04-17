@@ -1,8 +1,6 @@
 ---
 name: smb-signing-audit
-description: >
-  Audit SMB signing configuration across the network to identify hosts with signing disabled that are susceptible to NTLM relay and MitM attacks.
-action: audit
+description: > Audit SMB signing configuration across the network to identify hosts with signing disabled that are susceptible to NTLM relay and MitM attacks.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

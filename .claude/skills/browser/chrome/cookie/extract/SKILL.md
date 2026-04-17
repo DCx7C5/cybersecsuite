@@ -1,8 +1,6 @@
 ---
 name: chrome-cookie-extract
-description: >
-  Extract Chrome session cookies from the SQLite Cookies database, decrypt AES-256-GCM protected values using the DPAPI-derived key, and identify session tokens.
-action: extract
+description: > Extract Chrome session cookies from the SQLite Cookies database, decrypt AES-256-GCM protected values using the DPAPI-derived key, and identify session tokens.
 domain: cybersecurity
 subdomain: browser-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: kubernetes-etcd-kubernetes
-description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration,
-action: kubernetes
-  access controls, backup encryption, and network isolation.
+description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration, access controls, backup encryption, and network isolation.
 domain: cybersecurity
 subdomain: container-security
 tags:

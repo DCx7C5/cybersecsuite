@@ -1,8 +1,6 @@
 ---
 name: api-shadow
-description: Discover and inventory shadow API endpoints that operate outside documented specifications using traffic analysis,
-action: shadow
-  code scanning, and API discovery platforms.
+description: Discover and inventory shadow API endpoints that operate outside documented specifications using traffic analysis, code scanning, and API discovery platforms.
 domain: cybersecurity
 subdomain: api-security
 tags:

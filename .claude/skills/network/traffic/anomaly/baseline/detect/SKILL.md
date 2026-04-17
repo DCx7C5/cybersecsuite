@@ -1,8 +1,6 @@
 ---
 name: traffic-anomaly-baseline-detect
-description: >
-  Establish traffic baselines and detect statistical deviations indicating scanning, DDoS, exfiltration, or C2 activity using ML-assisted network anomaly detection tools.
-action: detect
+description: > Establish traffic baselines and detect statistical deviations indicating scanning, DDoS, exfiltration, or C2 activity using ML-assisted network anomaly detection tools.
 domain: cybersecurity
 subdomain: network-traffic-analysis
 tags:

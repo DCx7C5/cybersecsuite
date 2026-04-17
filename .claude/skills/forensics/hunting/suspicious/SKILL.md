@@ -1,8 +1,6 @@
 ---
 name: hunting-suspicious
-description: Detect suspicious PowerShell execution patterns including encoded commands, download cradles, AMSI bypass attempts,
-action: suspicious
-  and constrained language mode evasion.
+description: Detect suspicious PowerShell execution patterns including encoded commands, download cradles, AMSI bypass attempts, and constrained language mode evasion.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

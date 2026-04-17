@@ -1,8 +1,6 @@
 ---
 name: scanning-agentless
-description: Configure and execute agentless vulnerability scanning using network protocols, cloud snapshot analysis, and
-action: agentless
-  API-based discovery to assess systems without installing endpoint agents.
+description: Configure and execute agentless vulnerability scanning using network protocols, cloud snapshot analysis, and API-based discovery to assess systems without installing endpoint agents.
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

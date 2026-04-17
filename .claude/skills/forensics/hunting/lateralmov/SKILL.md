@@ -1,11 +1,6 @@
 ---
 name: hunting-lateralmov
-description: 'Hunt for DCOM-based lateral movement by detecting abuse of MMC20.Application, ShellBrowserWindow, and ShellWindows
-action: lateralmov
-  COM objects through Sysmon Event ID 1 (process creation) and Event ID 3 (network connection) correlation, WMI event analysis,
-  RPC endpoint mapper traffic on port 135, and DCOM-specific parent-child process relationships.
-
-  '
+description: Hunt for DCOM-based lateral movement by detecting abuse of MMC20.Application, ShellBrowserWindow, and ShellWindows COM objects through Sysmon Event ID 1 (process creation) and Event ID 3 (network connection) correlation, WMI event analysis, RPC endpoint mapper traffic on port 135, and DCOM-specific parent-child process relationships.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

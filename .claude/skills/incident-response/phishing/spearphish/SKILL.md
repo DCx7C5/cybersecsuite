@@ -1,8 +1,6 @@
 ---
 name: phishing-spearphish
-description: Spearphishing simulation is a targeted social engineering attack vector used by red teams to gain initial access.
-action: spearphish
-  Unlike broad phishing campaigns, spearphishing uses OSINT-derived intelligence to craf
+description: Spearphishing simulation is a targeted social engineering attack vector used by red teams to gain initial access. Unlike broad phishing campaigns, spearphishing uses OSINT-derived intelligence to craf
 domain: cybersecurity
 subdomain: red-teaming
 tags:

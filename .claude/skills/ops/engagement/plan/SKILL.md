@@ -1,8 +1,6 @@
 ---
 name: engagement-plan
-description: Red team engagement planning is the foundational phase that defines scope, objectives, rules of engagement (ROE),
-action: plan
-  threat model selection, and operational timelines before any offensive testing begins.
+description: Red team engagement planning is the foundational phase that defines scope, objectives, rules of engagement (ROE), threat model selection, and operational timelines before any offensive testing begins.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

@@ -1,8 +1,6 @@
 ---
 name: hunting-cloud
-description: Hunt for threats in AWS environments using Detective behavior graphs, entity investigation timelines, GuardDuty
-action: cloud
-  finding correlation, and automated entity profiling across IAM users, EC2 instances, and IP addresses.
+description: Hunt for threats in AWS environments using Detective behavior graphs, entity investigation timelines, GuardDuty finding correlation, and automated entity profiling across IAM users, EC2 instances, and IP addresses.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

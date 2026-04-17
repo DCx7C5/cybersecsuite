@@ -1,8 +1,6 @@
 ---
 name: hunting-threat
-description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and
-action: threat
-  environmental data into testable hunting hypotheses.
+description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and environmental data into testable hunting hypotheses.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

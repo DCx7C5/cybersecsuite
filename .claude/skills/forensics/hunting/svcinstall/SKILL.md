@@ -1,8 +1,6 @@
 ---
 name: hunting-svcinstall
-description: Detect suspicious Windows service installations (MITRE ATT&CK T1543.003) by parsing System event logs for Event
-action: svcinstall
-  ID 7045, analyzing service binary paths, and identifying indicators of persistence mechanisms.
+description: Detect suspicious Windows service installations (MITRE ATT&CK T1543.003) by parsing System event logs for Event ID 7045, analyzing service binary paths, and identifying indicators of persistence mechanisms.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

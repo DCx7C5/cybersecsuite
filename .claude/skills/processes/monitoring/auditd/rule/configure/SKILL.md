@@ -1,8 +1,6 @@
 ---
 name: monitoring-auditd-rule-configure
-description: >
-  Configure Linux auditd rules to monitor privileged command execution, file access, network connections, and user authentication for SIEM integration.
-action: configure
+description: > Configure Linux auditd rules to monitor privileged command execution, file access, network connections, and user authentication for SIEM integration.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

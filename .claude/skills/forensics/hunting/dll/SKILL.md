@@ -1,8 +1,6 @@
 ---
 name: hunting-dll
-description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack
-action: dll
-  execution flow for defense evasion.
+description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack execution flow for defense evasion.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

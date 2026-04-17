@@ -1,8 +1,6 @@
 ---
 name: scanning-port-service-fingerprint
-description: >
-  Fingerprint open TCP/UDP ports and associated service banners, version strings, and OS signatures using nmap service detection, grab, and ZGrab2.
-action: fingerprint
+description: > Fingerprint open TCP/UDP ports and associated service banners, version strings, and OS signatures using nmap service detection, grab, and ZGrab2.
 domain: cybersecurity
 subdomain: network-reconnaissance
 tags:

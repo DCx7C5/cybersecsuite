@@ -1,7 +1,6 @@
 ---
 name: audio-mp3-metadata-detect
-description: 'Detects hidden data in MP3 ID3 tags and metadata fields.'
-action: detect
+description: Detects hidden data in MP3 ID3 tags and metadata fields.
 domain: cybersecurity
 subdomain: steganography
 tags:

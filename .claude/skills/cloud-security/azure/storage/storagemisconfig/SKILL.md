@@ -1,8 +1,6 @@
 ---
 name: azure-storage-storagemisconfig
-description: Audit Azure Blob and ADLS storage accounts for public access exposure, weak or long-lived SAS tokens, missing
-action: storagemisconfig
-  encryption at rest, disabled HTTPS-only traffic, and outdated TLS versions using the azure-mgmt-storage Python SDK.
+description: Audit Azure Blob and ADLS storage accounts for public access exposure, weak or long-lived SAS tokens, missing encryption at rest, disabled HTTPS-only traffic, and outdated TLS versions using the azure-mgmt-storage Python SDK.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: iscsi-target-enum
-description: >
-  Enumerate iSCSI targets, LUNs, and authentication requirements using iscsiadm and iscsiadm discovery to identify unauthenticated storage access.
-action: enum
+description: > Enumerate iSCSI targets, LUNs, and authentication requirements using iscsiadm and iscsiadm discovery to identify unauthenticated storage access.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

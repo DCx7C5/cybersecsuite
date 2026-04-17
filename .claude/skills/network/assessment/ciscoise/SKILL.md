@@ -1,8 +1,6 @@
 ---
 name: assessment-ciscoise
-description: Deploy Cisco Identity Services Engine for 802.1X wired and wireless authentication, MAC Authentication Bypass,
-action: ciscoise
-  posture assessment, and dynamic VLAN assignment for network access control.
+description: Deploy Cisco Identity Services Engine for 802.1X wired and wireless authentication, MAC Authentication Bypass, posture assessment, and dynamic VLAN assignment for network access control.
 domain: cybersecurity
 subdomain: network-security
 tags:

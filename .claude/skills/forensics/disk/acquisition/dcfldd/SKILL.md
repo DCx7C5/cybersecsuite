@@ -1,8 +1,6 @@
 ---
 name: disk-acquisition-dcfldd
-description: Create forensically sound bit-for-bit disk images using dd and dcfldd while preserving evidence integrity through
-action: dcfldd
-  hash verification.
+description: Create forensically sound bit-for-bit disk images using dd and dcfldd while preserving evidence integrity through hash verification.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

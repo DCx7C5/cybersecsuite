@@ -1,7 +1,6 @@
 ---
 name: network-dns-covert-detect
-description: 'Detects DNS-based covert channel steganography via query entropy analysis.'
-action: detect
+description: Detects DNS-based covert channel steganography via query entropy analysis.
 domain: cybersecurity
 subdomain: steganography
 tags:

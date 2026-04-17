@@ -1,8 +1,6 @@
 ---
 name: hunting-persistence
-description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI
-action: persistence
-  consumer, filter, and binding creation events that execute malicious code triggered by system events.
+description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI consumer, filter, and binding creation events that execute malicious code triggered by system events.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

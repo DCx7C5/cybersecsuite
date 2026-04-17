@@ -1,12 +1,6 @@
 ---
 name: deeplink
-description: 'Tests and exploits deep link (URL scheme and App Link) vulnerabilities in Android and iOS mobile applications
-action: deeplink
-  to identify unauthorized access, data injection, intent hijacking, and redirect manipulation. Use when assessing mobile
-  app attack surface through custom URI schemes, Android App Links, iOS Universal Links, or intent-based navigation. Activates
-  for requests involving deep link security testing, URL scheme exploitation, mobile intent abuse, or link hijacking.
-
-  '
+description: Tests and exploits deep link (URL scheme and App Link) vulnerabilities in Android and iOS mobile applications to identify unauthorized access, data injection, intent hijacking, and redirect manipulation. Use when assessing mobile app attack surface through custom URI schemes, Android App Links, iOS Universal Links, or intent-based navigation. Activates for requests involving deep link security testing, URL scheme exploitation, mobile intent abuse, or link hijacking.
 domain: cybersecurity
 subdomain: mobile-security
 tags:

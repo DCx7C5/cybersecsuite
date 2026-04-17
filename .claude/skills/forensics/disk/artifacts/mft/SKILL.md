@@ -1,8 +1,6 @@
 ---
 name: disk-artifacts-mft
-description: Analyze the NTFS Master File Table ($MFT) to recover metadata and content of deleted files by examining MFT record
-action: mft
-  entries, $LogFile, $UsnJrnl, and MFT slack space using MFTECmd, analyzeMFT, and X-Ways Forensics.
+description: Analyze the NTFS Master File Table ($MFT) to recover metadata and content of deleted files by examining MFT record entries, $LogFile, $UsnJrnl, and MFT slack space using MFTECmd, analyzeMFT, and X-Ways Forensics.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

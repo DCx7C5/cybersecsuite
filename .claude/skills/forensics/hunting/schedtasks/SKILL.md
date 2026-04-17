@@ -1,8 +1,6 @@
 ---
 name: hunting-schedtasks
-description: Hunt for adversary persistence and execution via Windows scheduled tasks by analyzing task creation events, suspicious
-action: schedtasks
-  task properties, and unusual execution patterns that indicate T1053.005 abuse.
+description: Hunt for adversary persistence and execution via Windows scheduled tasks by analyzing task creation events, suspicious task properties, and unusual execution patterns that indicate T1053.005 abuse.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

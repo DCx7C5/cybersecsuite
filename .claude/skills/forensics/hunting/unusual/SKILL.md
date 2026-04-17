@@ -1,8 +1,6 @@
 ---
 name: hunting-unusual
-description: Hunt for unusual network connections by analyzing outbound traffic patterns, rare destinations, non-standard
-action: unusual
-  ports, and anomalous connection frequencies from endpoints.
+description: Hunt for unusual network connections by analyzing outbound traffic patterns, rare destinations, non-standard ports, and anomalous connection frequencies from endpoints.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

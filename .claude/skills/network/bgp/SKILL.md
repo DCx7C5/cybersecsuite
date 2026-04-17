@@ -1,10 +1,6 @@
 ---
 name: bgp
-description: 'Analyzes and simulates BGP hijacking scenarios in authorized lab environments to assess route origin validation,
-action: bgp
-  RPKI deployment, and BGP monitoring defenses against prefix hijacking and route leak attacks on internet routing infrastructure.
-
-  '
+description: Analyzes and simulates BGP hijacking scenarios in authorized lab environments to assess route origin validation, RPKI deployment, and BGP monitoring defenses against prefix hijacking and route leak attacks on internet routing infrastructure.
 domain: cybersecurity
 subdomain: network-security
 tags:

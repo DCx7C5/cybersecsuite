@@ -1,8 +1,6 @@
 ---
 name: injection-sqli-nosql
-description: Detect and exploit NoSQL injection vulnerabilities in MongoDB, CouchDB, and other NoSQL databases to demonstrate
-action: nosql
-  authentication bypass, data extraction, and unauthorized access risks.
+description: Detect and exploit NoSQL injection vulnerabilities in MongoDB, CouchDB, and other NoSQL databases to demonstrate authentication bypass, data extraction, and unauthorized access risks.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

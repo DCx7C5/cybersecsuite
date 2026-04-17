@@ -1,8 +1,6 @@
 ---
 name: zero
-description: Deploy CyberArk Secure Cloud Access to eliminate standing privileges in hybrid and multi-cloud environments using
-action: zero
-  just-in-time access with time, entitlement, and approval controls.
+description: Deploy CyberArk Secure Cloud Access to eliminate standing privileges in hybrid and multi-cloud environments using just-in-time access with time, entitlement, and approval controls.
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

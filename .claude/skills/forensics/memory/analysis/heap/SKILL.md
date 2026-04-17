@@ -1,8 +1,6 @@
 ---
 name: memory-analysis-heap
-description: Detect and analyze heap spray attacks in memory dumps using Volatility3 plugins to identify NOP sled patterns,
-action: heap
-  shellcode landing zones, and suspicious large allocations in process virtual address space.
+description: Detect and analyze heap spray attacks in memory dumps using Volatility3 plugins to identify NOP sled patterns, shellcode landing zones, and suspicious large allocations in process virtual address space.
 domain: cybersecurity
 subdomain: malware-analysis
 tags:

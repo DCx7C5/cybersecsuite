@@ -1,8 +1,6 @@
 ---
 name: postgres-log-analyze
-description: >
-  Analyse PostgreSQL audit logs, pg_stat_activity, and statement history to detect SQL injection attempts, privilege abuse, and anomalous query patterns.
-action: analyze
+description: > Analyse PostgreSQL audit logs, pg_stat_activity, and statement history to detect SQL injection attempts, privilege abuse, and anomalous query patterns.
 domain: cybersecurity
 subdomain: database-security
 tags:

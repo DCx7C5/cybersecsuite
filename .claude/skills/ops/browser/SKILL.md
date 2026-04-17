@@ -1,7 +1,6 @@
 ---
 name: browser
 description: Browser forensic reconnaissance for Chromium/Firefox/Brave artifacts, extensions, history, cookies, IndexedDB, saved credentials, and session theft detection. Covers Playwright/Selenium automation and SSLKEYLOG TLS correlation.
-action: browser
 model: sonnet
 maxTurns: 30
 tools:

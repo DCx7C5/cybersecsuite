@@ -1,8 +1,6 @@
 ---
 name: scanning-authenticated
-description: Authenticated (credentialed) vulnerability scanning uses valid system credentials to log into target hosts and
-action: authenticated
-  perform deep inspection of installed software, patches, configurations, and security sett
+description: Authenticated (credentialed) vulnerability scanning uses valid system credentials to log into target hosts and perform deep inspection of installed software, patches, configurations, and security sett
 domain: cybersecurity
 subdomain: vulnerability-management
 tags:

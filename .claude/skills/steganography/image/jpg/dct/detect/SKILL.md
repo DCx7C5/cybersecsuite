@@ -1,7 +1,6 @@
 ---
 name: image-jpg-dct-detect
-description: 'Detects DCT-domain steganography in JPEG images using StegDetect or F5 analysis.'
-action: detect
+description: Detects DCT-domain steganography in JPEG images using StegDetect or F5 analysis.
 domain: cybersecurity
 subdomain: steganography
 tags:

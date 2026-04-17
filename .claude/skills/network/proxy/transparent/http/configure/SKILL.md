@@ -1,8 +1,6 @@
 ---
 name: proxy-transparent-http-configure
-description: >
-  Configure a transparent HTTP/HTTPS proxy with mitmproxy or Squid for traffic interception, SSL inspection, content filtering, and security policy enforcement.
-action: configure
+description: > Configure a transparent HTTP/HTTPS proxy with mitmproxy or Squid for traffic interception, SSL inspection, content filtering, and security policy enforcement.
 domain: cybersecurity
 subdomain: network-security
 tags:

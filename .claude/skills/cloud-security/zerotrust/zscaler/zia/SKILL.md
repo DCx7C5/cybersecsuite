@@ -1,8 +1,6 @@
 ---
 name: zerotrust-zscaler-zia
-description: Implement Zero Trust Network Access using Zscaler Private Access (ZPA) to replace traditional VPN with identity-based,
-action: zia
-  context-aware access to private applications through the Zscaler Zero Trust Exchange.
+description: Implement Zero Trust Network Access using Zscaler Private Access (ZPA) to replace traditional VPN with identity-based, context-aware access to private applications through the Zscaler Zero Trust Exchange.
 domain: cybersecurity
 subdomain: zero-trust-architecture
 tags:

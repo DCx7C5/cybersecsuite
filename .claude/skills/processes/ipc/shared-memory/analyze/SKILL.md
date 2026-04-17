@@ -1,8 +1,6 @@
 ---
 name: ipc-shared-memory-analyze
-description: >
-  Analyse shared memory segments (POSIX shm, SysV IPC) for data leakage, injection, and cross-process communication abuse in containerised environments.
-action: analyze
+description: > Analyse shared memory segments (POSIX shm, SysV IPC) for data leakage, injection, and cross-process communication abuse in containerised environments.
 domain: cybersecurity
 subdomain: process-forensics
 tags:

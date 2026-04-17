@@ -1,8 +1,6 @@
 ---
 name: smb-relay-execute
-description: >
-  Execute NTLM relay attacks against SMB targets without signing using Responder and ntlmrelayx to capture hashes and relay credentials for lateral movement.
-action: execute
+description: > Execute NTLM relay attacks against SMB targets without signing using Responder and ntlmrelayx to capture hashes and relay credentials for lateral movement.
 domain: cybersecurity
 subdomain: network-filesystem-security
 tags:

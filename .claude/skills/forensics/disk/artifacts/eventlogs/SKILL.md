@@ -1,8 +1,6 @@
 ---
 name: disk-artifacts-eventlogs
-description: Extract, parse, and analyze Windows Event Logs (EVTX) using Chainsaw, Hayabusa, and EvtxECmd to detect lateral
-action: eventlogs
-  movement, persistence, and privilege escalation.
+description: Extract, parse, and analyze Windows Event Logs (EVTX) using Chainsaw, Hayabusa, and EvtxECmd to detect lateral movement, persistence, and privilege escalation.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

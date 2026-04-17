@@ -1,10 +1,6 @@
 ---
 name: ids-suricata
-description: 'Deploys and configures Suricata IDS/IPS with Emerging Threats rulesets, EVE JSON logging, and custom rules for
-action: suricata
-  real-time network traffic inspection, threat detection, and integration with SIEM platforms for centralized security monitoring.
-
-  '
+description: Deploys and configures Suricata IDS/IPS with Emerging Threats rulesets, EVE JSON logging, and custom rules for real-time network traffic inspection, threat detection, and integration with SIEM platforms for centralized security monitoring.
 domain: cybersecurity
 subdomain: network-security
 tags:

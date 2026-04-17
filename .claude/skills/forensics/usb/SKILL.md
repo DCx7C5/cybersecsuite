@@ -1,8 +1,6 @@
 ---
 name: usb
-description: Investigate USB device connection history from Windows registry, event logs, and setupapi logs to track removable
-action: usb
-  media usage and potential data exfiltration.
+description: Investigate USB device connection history from Windows registry, event logs, and setupapi logs to track removable media usage and potential data exfiltration.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

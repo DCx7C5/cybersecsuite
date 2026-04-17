@@ -1,8 +1,6 @@
 ---
 name: ad-bloodhound-recon
-description: Conduct internal Active Directory reconnaissance using BloodHound Community Edition to map attack paths, identify
-action: recon
-  privilege escalation chains, and discover misconfigurations in domain environments.
+description: Conduct internal Active Directory reconnaissance using BloodHound Community Edition to map attack paths, identify privilege escalation chains, and discover misconfigurations in domain environments.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

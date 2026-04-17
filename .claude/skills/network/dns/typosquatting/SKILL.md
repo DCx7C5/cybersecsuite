@@ -1,14 +1,6 @@
 ---
 name: dns-typosquatting
-description: 'Detects typosquatting attacks in npm and PyPI package registries by analyzing package name similarity using
-action: typosquatting
-  Levenshtein distance and other string metrics, examining publish date heuristics to identify recently created packages mimicking
-  established ones, and flagging download count anomalies where suspicious packages have disproportionately low usage compared
-  to their legitimate targets. The analyst queries the PyPI JSON API and npm registry API to gather package metadata for automated
-  comparison. Activates for requests involving package typosquatting detection, dependency confusion analysis, malicious package
-  identification, or software supply chain threat hunting in package registries.
-
-  '
+description: Detects typosquatting attacks in npm and PyPI package registries by analyzing package name similarity using Levenshtein distance and other string metrics, examining publish date heuristics to identify recently created packages mimicking established ones, and flagging download count anomalies where suspicious packages have disproportionately low usage compared to their legitimate targets. The analyst queries the PyPI JSON API and npm registry API to gather package metadata for automated comparison. Activates for requests involving package typosquatting detection, dependency confusion analysis, malicious package identification, or software supply chain threat hunting in package registries.
 domain: cybersecurity
 subdomain: supply-chain-security
 tags:

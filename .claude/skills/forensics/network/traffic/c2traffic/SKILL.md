@@ -1,12 +1,6 @@
 ---
 name: network-traffic-c2traffic
-description: 'Analyzes malware command-and-control (C2) communication protocols to understand beacon patterns, command structures,
-action: c2traffic
-  data encoding, and infrastructure. Covers HTTP, HTTPS, DNS, and custom protocol C2 analysis for detection development and
-  threat intelligence. Activates for requests involving C2 analysis, beacon detection, C2 protocol reverse engineering, or
-  command-and-control infrastructure mapping.
-
-  '
+description: Analyzes malware command-and-control (C2) communication protocols to understand beacon patterns, command structures, data encoding, and infrastructure. Covers HTTP, HTTPS, DNS, and custom protocol C2 analysis for detection development and threat intelligence. Activates for requests involving C2 analysis, beacon detection, C2 protocol reverse engineering, or command-and-control infrastructure mapping.
 domain: cybersecurity
 subdomain: malware-analysis
 tags:

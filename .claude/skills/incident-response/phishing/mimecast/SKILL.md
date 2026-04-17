@@ -1,8 +1,6 @@
 ---
 name: phishing-mimecast
-description: Deploy Mimecast Targeted Threat Protection including URL Protect, Attachment Protect, Impersonation Protect,
-action: mimecast
-  and Internal Email Protect to defend against advanced phishing and spearphishing attacks.
+description: Deploy Mimecast Targeted Threat Protection including URL Protect, Attachment Protect, Impersonation Protect, and Internal Email Protect to defend against advanced phishing and spearphishing attacks.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

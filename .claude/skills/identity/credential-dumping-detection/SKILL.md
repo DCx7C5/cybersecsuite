@@ -1,8 +1,6 @@
 ---
 name: identity-credential-dumping-detection
-description: Detect LSASS credential dumping, SAM database extraction, and NTDS.dit theft using Sysmon Event ID 10, Windows
-action: credential-dumping-detection
-  Security logs, and SIEM correlation rules
+description: Detect LSASS credential dumping, SAM database extraction, and NTDS.dit theft using Sysmon Event ID 10, Windows Security logs, and SIEM correlation rules
 domain: cybersecurity
 subdomain: threat-detection
 tags:

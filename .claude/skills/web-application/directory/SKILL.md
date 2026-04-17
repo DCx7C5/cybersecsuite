@@ -1,8 +1,6 @@
 ---
 name: directory
-description: Testing web applications for path traversal vulnerabilities that allow reading or writing arbitrary files on
-action: directory
-  the server by manipulating file path parameters.
+description: Testing web applications for path traversal vulnerabilities that allow reading or writing arbitrary files on the server by manipulating file path parameters.
 domain: cybersecurity
 subdomain: web-application-security
 tags:

@@ -1,8 +1,6 @@
 ---
 name: ntfs-prefetch-parse
-description: >
-  Parse Windows Prefetch files to reconstruct application execution history, file paths accessed, and execution timestamps for malware investigation.
-action: parse
+description: > Parse Windows Prefetch files to reconstruct application execution history, file paths accessed, and execution timestamps for malware investigation.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: containers-scanning-distroless
-description: Reduce container attack surface by building application images on Google distroless base images that contain
-action: distroless
-  only the application runtime with no shell, package manager, or unnecessary OS utilities.
+description: Reduce container attack surface by building application images on Google distroless base images that contain only the application runtime with no shell, package manager, or unnecessary OS utilities.
 domain: cybersecurity
 subdomain: container-security
 tags:

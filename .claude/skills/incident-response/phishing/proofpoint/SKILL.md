@@ -1,8 +1,6 @@
 ---
 name: phishing-proofpoint
-description: Deploy and configure Proofpoint Email Protection as a secure email gateway to detect and block phishing, malware,
-action: proofpoint
-  BEC, and spam before messages reach user inboxes.
+description: Deploy and configure Proofpoint Email Protection as a secure email gateway to detect and block phishing, malware, BEC, and spam before messages reach user inboxes.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

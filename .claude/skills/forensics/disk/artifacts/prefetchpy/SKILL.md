@@ -1,8 +1,6 @@
 ---
 name: disk-artifacts-prefetchpy
-description: Parse Windows Prefetch files using the windowsprefetch Python library to reconstruct application execution history,
-action: prefetchpy
-  detect renamed or masquerading binaries, and identify suspicious program execution patterns.
+description: Parse Windows Prefetch files using the windowsprefetch Python library to reconstruct application execution history, detect renamed or masquerading binaries, and identify suspicious program execution patterns.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

@@ -1,8 +1,6 @@
 ---
 name: acl-extended-audit
-description: >
-  Audit POSIX extended ACLs (getfacl) and SELinux/AppArmor file contexts to verify least-privilege access control and detect unexpected permission grants.
-action: audit
+description: > Audit POSIX extended ACLs (getfacl) and SELinux/AppArmor file contexts to verify least-privilege access control and detect unexpected permission grants.
 domain: cybersecurity
 subdomain: filesystem-security
 tags:

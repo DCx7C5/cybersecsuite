@@ -1,8 +1,6 @@
 ---
 name: encryption-e2eencryption
-description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary
-action: e2eencryption
-  (including the server) able to decrypt them. This skill implements a simplified version
+description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary (including the server) able to decrypt them. This skill implements a simplified version
 domain: cybersecurity
 subdomain: cryptography
 tags:

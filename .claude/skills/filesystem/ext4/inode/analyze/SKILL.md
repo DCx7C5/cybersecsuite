@@ -1,8 +1,6 @@
 ---
 name: ext4-inode-analyze
-description: >
-  Analyse ext4 inode structures, timestamps, link counts, and xattr metadata to reconstruct file activity timelines and detect timestamp manipulation.
-action: analyze
+description: > Analyse ext4 inode structures, timestamps, link counts, and xattr metadata to reconstruct file activity timelines and detect timestamp manipulation.
 domain: cybersecurity
 subdomain: filesystem-forensics
 tags:
