@@ -11,6 +11,12 @@ from db.bootstrap import (
     init_tortoise_async,
     bootstrap_intelligence_async as bootstrap_intelligence_db_async,
 )
+from mcp.cybersec.helpers import (
+    _normalize_choice,
+    _coerce_limit,
+    _normalize_target_scopes,
+    _normalize_scope_level,
+)
 
 JsonDict = dict[str, Any]
 
@@ -77,43 +83,6 @@ def _build_scope_context(scope: ScopeState) -> ScopeContext:
         project_name=scope["project"],
         session_id=scope["session"],
     )
-
-
-def _normalize_choice(value: Any, allowed: tuple[str, ...], default: str) -> str:
-    if value is None:
-        return default
-    normalized = str(value).strip().lower()
-    return normalized if normalized in allowed else default
-
-
-def _coerce_limit(value: Any, default: int, maximum: int = 500) -> int:
-    try:
-        limit = int(value)
-    except (TypeError, ValueError):
-        return default
-    return max(1, min(limit, maximum))
-
-
-def _normalize_target_scopes(value: Any) -> list[str]:
-    if value is None:
-        return list(SCOPE_LEVELS)
-    if not isinstance(value, list):
-        raise ValueError("target_scopes must be an array of scope names")
-    normalized: list[str] = []
-    for item in value:
-        scope_name = str(item).strip().lower()
-        if scope_name not in SCOPE_LEVELS:
-            raise ValueError(f"Unsupported scope '{item}'. Allowed scopes: {', '.join(SCOPE_LEVELS)}")
-        if scope_name not in normalized:
-            normalized.append(scope_name)
-    return normalized or list(SCOPE_LEVELS)
-
-
-def _normalize_scope_level(value: Any, default: str = "project") -> str:
-    normalized = str(value).strip().lower() if value is not None else default
-    if normalized not in SCOPE_LEVELS:
-        raise ValueError(f"Unsupported scope '{normalized}'. Allowed scopes: {', '.join(SCOPE_LEVELS)}")
-    return normalized
 
 
 def get_workspace_dir(scope: ScopeState | None = None) -> Path:

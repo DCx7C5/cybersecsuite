@@ -643,7 +643,7 @@ def _extract_cwe_records(path: Path) -> dict[str, dict[str, Any]]:
             },
         }
         # De-duplicate mitigation texts while preserving order.
-        mitigation_values = [text for text in record["mitigations"] if isinstance(text, str)]
+        mitigation_values = [text for text in record['mitigations'] if isinstance(text, str)]
         record["mitigations"] = list(dict.fromkeys(text for text in mitigation_values if text))
         records[f"CWE-{cwe_id}"] = record
         elem.clear()
@@ -652,7 +652,7 @@ def _extract_cwe_records(path: Path) -> dict[str, dict[str, Any]]:
 
 def _map_tactic_name(values: list[str]) -> MITRETactic:
     for value in values:
-        normalized = value.strip().replace("-", "_").replace(" ", "_").upper()
+        normalized: str = value.strip().replace("-", "_").replace(" ", "_").upper()
         if normalized in MITRETactic.__members__:
             return MITRETactic[normalized]
     return MITRETactic.DISCOVERY
