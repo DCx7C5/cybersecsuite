@@ -254,17 +254,7 @@ SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 | `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                                             | ✅ RESTRUCTURED               |
 | `templates/` | 14 template files across 6 subdirs                                                                           | Not reviewed                 |
 
-#### templates/ structure
-```
-templates/
-  artifact.md
-  baselines/    kernel.md, network.md, persistence.md, processes.md
-  iocs/         cleared.md, ioc-db.md, watchlist.md
-  project/      findings.md
-  reports/      investigation-report.md
-  session/      session-manifest.json, timeline.md
-  threat-intelligence/  session-index.md, threat-profile.md
-```
+#### templates/ (14 files across 6 subdirs): artifact.md, baselines/, iocs/, project/, reports/, session/, threat-intelligence/
 
 #### hooks/ → src/hooks/ (32 .py files, consolidated from root hooks/)
 **10 settings.json-wired** (Claude Code native hook system):
@@ -360,10 +350,7 @@ Both `cybersec` and `dystopian-crypto` use agent-sdk `create_sdk_mcp_server` + `
 | Anthropic-integrated     | 752     | Full Anthropic workflow + CyberSecSuite integration      |
 | **Total**                | **933** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
-**Frontmatter** — ✅ COMPLETE
-- Removed: `mcpServers`, `version`, `license`, `author` (redundant/global), `action` (all 933 files)
-- Descriptions: single-line, unquoted (cleaned in Phase I.5)
-- Action collision resolution: multi-level path names (e.g., `analysis-volatility`, `persistence-malware`)
+**Frontmatter** — ✅ COMPLETE (action:, mcpServers, version, license, author fields removed; single-line unquoted descriptions; Phase I.5 cleanup applied to all 933 files).
 
 ### Domain Structure (after Phase 5+7 restructuring ✅)
 ```
@@ -425,22 +412,7 @@ source: Anthropic-Cybersecurity-Skills   # absent for 26 project-native
 ---
 ```
 
-**Frontmatter cleanup** (Phase I.5): Removed `action:` line from all 933 files, merged multi-line descriptions into single line, stripped wrapping quotes. All SKILL.md now have clean YAML.
-
-**Field inventory** (933 skills):
-| Field | Present | Notes |
-|-------|---------|-------|
-| `name`, `description` | 933 | always present, single-line unquoted |
-| `model`, `maxTurns`, `tools` | 780 | Anthropic-sourced + some project-native |
-| `tags` | 780 | 2,283 unique |
-| `mitre_attack` | 644 | 131 unique technique IDs |
-| `nist_csf` | 752 | 46 unique subcategories (all Anthropic) |
-| `d3fend_techniques` | 139 | D3FEND defensive techniques |
-| `domain`, `subdomain` | 752 | Anthropic-sourced only |
-| `source` | 752 | `Anthropic-Cybersecurity-Skills` |
-| `cwe` | 99 | 33 unique CWE IDs |
-| `cve` | 51 | 58 unique CVE IDs |
-| `skills` | 22 | project-native cross-refs |
+**Field inventory**: `name`+`description` (933), `model`+`maxTurns`+`tools`+`tags` (780), `mitre_attack` (644), `nist_csf` (752), `d3fend_techniques` (139), `domain`+`subdomain`+`source` (752 Anthropic), `cwe` (99), `cve` (51), `skills` (22 cross-refs).
 
 ### Anthropic Skills Source
 All 752 from `/home/daen/Projects/Anthropic-Cybersecurity-Skills/skills/`
@@ -457,41 +429,7 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 
 ## OmniRoute Integration
 
-### OmniRoute MCP Server — 16+ Tools
-**Location**: `/home/daen/Projects/OmniRoute/open-sse/mcp-server/`
-**Status**: PENDING (todo: `omniroute-integrate`)
-
-#### Essential Tools (8)
-| Tool                            | Purpose                                  |
-|---------------------------------|------------------------------------------|
-| `omniroute_get_health`          | Gateway health, circuit breakers, uptime |
-| `omniroute_list_combos`         | All configured combos with models        |
-| `omniroute_get_combo_metrics`   | Performance metrics for a specific combo |
-| `omniroute_switch_combo`        | Switch active combo by ID/name           |
-| `omniroute_check_quota`         | Quota status per provider or all         |
-| `omniroute_route_request`       | Send a chat completion through OmniRoute |
-| `omniroute_cost_report`         | Cost analytics for a time period         |
-| `omniroute_list_models_catalog` | Full model catalog with capabilities     |
-
-#### Advanced Tools (8)
-| Tool                               | Purpose                                 |
-|------------------------------------|-----------------------------------------|
-| `omniroute_simulate_route`         | Dry-run routing simulation              |
-| `omniroute_set_budget_guard`       | Session budget with degrade/block/alert |
-| `omniroute_set_routing_strategy`   | Runtime strategy switch                 |
-| `omniroute_set_resilience_profile` | Apply resilience presets                |
-| `omniroute_test_combo`             | Live-test all models in a combo         |
-| `omniroute_get_provider_metrics`   | Detailed per-provider metrics           |
-| `omniroute_best_combo_for_task`    | Task-fitness recommendation             |
-| `omniroute_explain_route`          | Explain a past routing decision         |
-
-#### Skill Tools (3)
-`omniroute_skills_list`, `omniroute_skills_enable`, `omniroute_skills_execute`
-
-#### Integration
-- Register as external MCP in `mcp.json`
-- Env: `OMNIROUTE_API_KEY`, `OMNIROUTE_BASE_URL=http://localhost:8888`
-- Allowed tools: `mcp__omniroute__*`
+**Status**: PENDING (`omniroute-integrate`). External MCP at `/home/daen/Projects/OmniRoute/open-sse/mcp-server/` — 19 tools (`omniroute_*`): health, combos, metrics, route, quota, cost, catalog, simulate, budget, strategy, resilience, test, best-combo, explain + 3 skill tools. Register in `mcp.json`, env: `OMNIROUTE_API_KEY`, `OMNIROUTE_BASE_URL=http://localhost:8888`.
 
 ---
 
@@ -506,14 +444,16 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 - Phase D.5 — PoC table (model, seeds, CLI, MCP tools, dashboard tab)
 - Phase E.1 — Type safety fixes
 - Phase F — File splitting (`intel_loader`, `routes.py`, `registry.py`, `manage.py`, `integrity.py`)
-- Phase H — **mcp_server.py DELETED**, agent-sdk migration complete, `src/csmcp/` rename, `src/agent/` package created
+- Phase H — `mcp_server.py` DELETED, agent-sdk migration complete, `src/csmcp/` rename, `src/agent/` package created
 - Phase I — Tool inventory (`docs/tools.md`), MEMORY.md sync, `mcp.json` cleanup (stale entries removed)
-- Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
-- Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated, frontmatter cleaned (action: removed, descriptions single-line unquoted)
-- Phase J — All 72 ruff lint errors fixed → 0, hooks/ consolidated to src/hooks/, dead code deduplicated
-- Phase I.6 — All 10 hooks wired to settings.json (was 3): SessionStart, UserPromptSubmit, SubagentStart/Stop, TeammateIdle, PreCompact/PostCompact
+- Phase I.6 — All 10 hooks wired to settings.json (was 3); 3 new scripts created
+- Phase J — All 72 ruff lint errors → 0; hooks/ deduplicated to src/hooks/; dead code removed
 - Phase K.1 — `renderTable()` JS component + Explorer tab (sortable, searchable, paginated, type-aware)
+- Phase K.2 — Cases + Tasks tabs converted to `renderTable`; PoCs tab panel added (stat cards + table); api/pocs fetch wired
+- Phase L — `src/agent/` package: runner.py, sessions.py, hooks.py, streaming.py all complete
 - Phase M.1 — `_handlers.py` (1228L) split into `dashboard/api/` package (7 modules, 36 handlers)
+- Dashboard expansion — 36 routes, 82-model registry, generic table endpoint, agent-query bridge, expanded handlers
+- Skills taxonomy — 933 SKILL.md across 26 domains, 752 Anthropic-integrated, frontmatter cleaned
 - Provider expansion — 60 providers in `registry.py`
 - 34 agents total (33 specialists + AGENT_FACTORY)
 
@@ -524,43 +464,27 @@ Full content copied with adapted frontmatter. Extra content (LICENSE, scripts/, 
 
 ## Active Roadmap (Current)
 
-### Phase J — Lint Cleanup + Dead Code ✅
-Fixed all 72 ruff errors → 0. Deduplicated hooks: extracted count_lines() + SEVERITY_EMOJI to _utils.py, removed legacy utils.py (41L), migrated 5 files. Settings.json paths updated.
-
-### Phase I.6 — Hook Wiring ✅
-Wired 10 hooks to settings.json (was 3): PreToolUse, PostToolUse, Stop + SessionStart (chains first_init+session_start), UserPromptSubmit, SubagentStart, SubagentStop, TeammateIdle, PreCompact, PostCompact. Created 3 new scripts. 12 domain-specific events remain programmatic via emit().
-
 ### Phase K — Dashboard Full Buildout (in progress)
-1. ✅ `renderTable()` JS component + Explorer tab (sortable, searchable, paginated, type-aware)
-2. Expand 14 existing tabs to use renderTable with full-field APIs
-3. Add 14 new tabs (forensic sessions, MITRE, intel feeds, artifacts, machines, baselines, vulns...)
-4. Interactive agent query panel (SSE streaming, agent selection, context enrichment)
-5. Settings dashboard (read/edit settings.json project + global)
-6. Team builder + Task chain builder (define phases, assign agents, link skills, execute)
-7. Agent manager, Skill browser (922 skills tree), Hook manager
+1. ✅ `renderTable()` JS component + Explorer tab
+2. ✅ Cases + Tasks converted to renderTable; PoCs tab panel added
+3. Expand remaining tabs to use renderTable with full-field APIs
+4. Add new tabs: forensic sessions, MITRE, intel feeds, artifacts, machines, baselines, vulns...
+5. Interactive agent query panel (SSE streaming, agent selection, context enrichment)
+6. Settings dashboard (read/edit settings.json)
+7. Team builder + Task chain builder; Agent manager; Skill browser; Hook manager
 
 ### Phase M — Code Splits (in progress)
-1. ✅ Split `_handlers.py` (1228L) → `dashboard/api/` package (7 modules: core, agents, forensic, ops, tables, sse, page)
-2. `_commands.py` (484L) — kept as-is (manageable size)
+1. ✅ Split `_handlers.py` → `dashboard/api/` package
+2. `_commands.py` (484L) — kept as-is (manageable)
 3. Fix checks/, registry, consolidate a2a/ — pending
-
-### Phase L — Agent Package Completion
-Complete `src/agent/` stubs: hooks.py (5 hooks), sessions.py (SDK wrapper), runner.py (AgentRunner), streaming.py (SSE)
 
 ### Phase N — Documentation
 Update all 10 docs + MEMORY.md + README.md to reflect current state
 
-### Completed Phase Details (reference)
-
-**Phase F — File-Splitting** ✅: intel_loader(2062L→intel/ pkg), routes.py(1614L→_html+_handlers+routes), registry.py(1163L→core+_providers), manage.py(611L→manage/ pkg), integrity.py(699L→3 submodules)
-
-**Phase D.5 — PoC Table** ✅: model, enums, seeds (8 PoCs), CLI, MCP tools (add_poc, query_pocs), dashboard tab
-
-**Phase E — File Mapping** — DEFERRED (asset sync from Anthropic source)
-
 ### Queued / Optional
 - Phase G — SSE Frontend: `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
 - OmniRoute integration: add to mcp.json + wire allowed_tools
+- Phase E — Asset sync from Anthropic source (deferred)
 
 ---
 
