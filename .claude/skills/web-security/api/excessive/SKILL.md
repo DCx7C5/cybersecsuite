@@ -27,9 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+cwe:
+- CWE-200
 ---
+
 # Exploiting Excessive Data Exposure in API
 
 ## When to Use

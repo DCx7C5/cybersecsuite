@@ -14,11 +14,6 @@ tags:
 - rapid7
 - threat-hunting
 - incident-response
-mitre_attack:
-- T1059
-- T1003
-- T1070
-- T1547
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -36,8 +31,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1059
+- T1003
+- T1070
+- T1547
 ---
 
 # Implementing Velociraptor for IR Collection

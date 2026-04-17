@@ -31,8 +31,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1021
+- T1059
+- T1068
+- T1070
+- T1078.004
+cwe:
+- CWE-269
 ---
 
 # Detecting Azure Service Principal Abuse

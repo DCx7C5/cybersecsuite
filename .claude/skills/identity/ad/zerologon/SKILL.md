@@ -29,8 +29,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1068
+cwe:
+- CWE-269
+cve:
+- CVE-2020-1472
 ---
 
 # Exploiting Zerologon Vulnerability (CVE-2020-1472)

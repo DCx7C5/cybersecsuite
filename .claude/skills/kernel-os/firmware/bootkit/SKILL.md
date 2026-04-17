@@ -26,8 +26,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1014
+- T1542
+cve:
+- CVE-2022-21894
 ---
 
 # Analyzing Bootkit and Rootkit Samples

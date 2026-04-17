@@ -28,9 +28,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1082
+- T1566
+- T1583.001
+- T1595.002
+- T1596.002
 ---
+
 # Auditing TLS Certificate Transparency Logs
 
 ## When to Use

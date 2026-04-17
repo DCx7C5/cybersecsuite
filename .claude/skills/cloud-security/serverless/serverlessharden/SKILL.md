@@ -26,8 +26,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1046
+- T1059.009
+- T1078.004
+- T1195
+cve:
+- CVE-2023-45857
+- CVE-2022-23529
+- CVE-2021-23337
 ---
 
 # Securing Serverless Functions

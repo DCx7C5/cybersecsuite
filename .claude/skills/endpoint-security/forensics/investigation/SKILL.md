@@ -13,9 +13,16 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- endpoint-security
+- forensics
+- investigation
+- filesystem-recon
+mitre_attack:
+- T1059
+- T1548.001
+- T1595
 ---
 
 # Filesystem Recon

@@ -13,9 +13,20 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- forensics
+- memory
+- analysis
+- volatility3
+- plugins
+- linux
+- processes
+- processes-recon
+mitre_attack:
+- T1014
+- T1055.008
+- T1595
 ---
 
 # Process Recon

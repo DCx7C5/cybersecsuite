@@ -47,8 +47,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1021.002
+- T1059
+- T1087.002
+- T1550.002
+- T1557.001
+cve:
+- CVE-2021-36942
 ---
 
 # Detecting NTLM Relay with Event Correlation

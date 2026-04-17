@@ -25,8 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1059
+- T1195
+- T1583.001
 ---
 
 # Performing Supply Chain Attack Simulation

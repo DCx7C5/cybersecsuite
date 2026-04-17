@@ -21,9 +21,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+cve:
+- CVE-2021-26855
 ---
+
 # Implementing End-to-End Encryption for Messaging
 
 ## Overview

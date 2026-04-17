@@ -13,9 +13,18 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- forensics
+- log
+- linux
+- logfile-recon
+mitre_attack:
+- T1053.003
+- T1059
+- T1110
+- T1548.003
+- T1595
 ---
 
 # Logfile Recon

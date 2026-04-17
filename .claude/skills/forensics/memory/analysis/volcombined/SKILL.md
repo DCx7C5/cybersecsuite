@@ -15,11 +15,6 @@ tags:
 - RAM-analysis
 - process-injection
 - DFIR
-mitre_attack:
-- T1003
-- T1055
-- T1620
-- T1574
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1055
+- T1620
+- T1574
+- T1003.001
+- T1014
+- T1027
+- T1486
 ---
 
 # Conducting Memory Forensics with Volatility

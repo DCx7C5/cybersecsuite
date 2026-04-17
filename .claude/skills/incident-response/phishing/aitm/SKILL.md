@@ -25,9 +25,17 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1059
+- T1550
+- T1566
+- T1583.001
+cwe:
+- CWE-384
 ---
+
 # Performing Adversary-in-the-Middle Phishing Detection
 
 ## Overview

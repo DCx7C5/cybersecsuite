@@ -28,8 +28,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T0801
+- T0843
+- T0855
+- T1059
+- T1562.001
+cwe:
+- CWE-78
 ---
 
 # Detecting Modbus Command Injection Attacks

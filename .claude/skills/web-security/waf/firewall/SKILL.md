@@ -24,8 +24,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1027
+- T1059
+- T1189
+- T1190
+- T1562.004
+cwe:
+- CWE-79
+- CWE-89
 ---
 
 # Performing Web Application Firewall Bypass

@@ -25,8 +25,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1498
+cwe:
+- CWE-200
 ---
 
 # Performing GraphQL Depth Limit Attack

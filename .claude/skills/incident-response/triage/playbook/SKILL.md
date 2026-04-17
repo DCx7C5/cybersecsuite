@@ -11,10 +11,6 @@ tags:
 - playbook
 - severity-classification
 - soc
-mitre_attack:
-- T1190
-- T1566
-- T1078
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -26,8 +22,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1190
+- T1566
+- T1078
+- T1059
+- T1070
 ---
 
 # Triaging Security Incidents with IR Playbooks

@@ -13,10 +13,6 @@ tags:
 - mimikatz
 - password-hashes
 - incident-response
-mitre_attack:
-- T1003
-- T1558
-- T1552
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -28,8 +24,14 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1558
+- T1552
+- T1021
+- T1550.002
+- T1550.003
 ---
 
 # Extracting Credentials from Memory Dump

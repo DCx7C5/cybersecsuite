@@ -14,9 +14,13 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- red-team
+- purple-team
+- mode-purple-team
+mitre_attack:
+- T1059
 ---
 
 # Purple Team Mode – Hybrid Offensive + Defensive Posture

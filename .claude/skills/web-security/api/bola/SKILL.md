@@ -29,9 +29,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+cwe:
+- CWE-200
+- CWE-639
 ---
+
 # Testing API for Broken Object Level Authorization
 
 ## When to Use

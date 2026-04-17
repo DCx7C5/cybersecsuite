@@ -15,9 +15,16 @@ skills:
   - shared-memory
   - tls/sslkeylog
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- network
+- monitoring2
+- network-recon
+mitre_attack:
+- T1059
+- T1071
+- T1562.004
+- T1595
 ---
 
 # Network Recon

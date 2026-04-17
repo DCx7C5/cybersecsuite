@@ -28,9 +28,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+cve:
+- CVE-2023-23397
 ---
+
 # Analyzing Cyber Kill Chain
 
 ## When to Use

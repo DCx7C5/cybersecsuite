@@ -23,8 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1190
+cwe:
+- CWE-502
+cve:
+- CVE-2015-7501
 ---
 
 # Exploiting Insecure Deserialization

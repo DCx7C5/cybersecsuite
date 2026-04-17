@@ -29,8 +29,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1110
+- T1550.002
+- T1558
+- T1558.003
 ---
 
 # Exploiting Kerberoasting with Impacket

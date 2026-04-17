@@ -14,9 +14,13 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- red-team
+- mode-red-team
+mitre_attack:
+- T1218
+- T1547
 ---
 
 # Red Team Mode – Offensive / Adversary Posture

@@ -29,9 +29,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1068
+cwe:
+- CWE-269
+cve:
+- CVE-2021-42278
+- CVE-2021-42287
 ---
+
 # Exploiting noPac (CVE-2021-42278 / CVE-2021-42287)
 
 

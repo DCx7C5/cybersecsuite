@@ -27,8 +27,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1021
+- T1036
+- T1059
+- T1070
 ---
 
 # Implementing Canary Tokens for Network Intrusion Detection

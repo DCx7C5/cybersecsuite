@@ -10,9 +10,13 @@ tools:
   - Bash
   - Glob
   - Grep
-mcpServers:
   - cybersec
 author: dcx7c5
+tags:
+- ops
+- dashboard
+mitre_attack:
+- T1059.004
 ---
 
 # Dashboard Skill — CyberSec Health & Status Monitor

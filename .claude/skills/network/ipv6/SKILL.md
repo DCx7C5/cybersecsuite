@@ -24,9 +24,14 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1059
+- T1557
+- T1562.001
+- T1562.004
 ---
+
 # Exploiting IPv6 Vulnerabilities
 
 ## When to Use

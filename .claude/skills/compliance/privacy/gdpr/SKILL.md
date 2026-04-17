@@ -34,9 +34,9 @@ atlas_techniques:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
 ---
+
 # Implementing GDPR Data Protection Controls
 
 ## Overview

@@ -24,9 +24,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1078.004
+- T1550
 ---
+
 # Implementing SAML SSO with Okta
 
 ## Overview

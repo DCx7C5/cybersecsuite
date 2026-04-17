@@ -33,8 +33,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1021.002
+- T1550.002
+- T1557.001
 ---
 
 # Hunting for NTLM Relay Attacks

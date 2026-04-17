@@ -15,13 +15,6 @@ tags:
 - endpoint-monitoring
 - threat-hunting
 - fleet-management
-mitre_attack:
-- T1547
-- T1049
-- T1620
-- T1053.003
-- T1548.001
-- T1552
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -33,9 +26,18 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1547
+- T1049
+- T1620
+- T1053.003
+- T1548.001
+- T1552
+- T1059
+- T1070
 ---
+
 # Deploying Osquery for Endpoint Monitoring
 
 ## When to Use

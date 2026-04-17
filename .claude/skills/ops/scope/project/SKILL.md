@@ -10,9 +10,13 @@ tools:
   - Bash
   - Glob
   - Grep
-mcpServers:
   - cybersec
 author: dcx7c5
+tags:
+- ops
+- scope
+- project
+- scope-project
 ---
 
 # Project Layer Skill – Project Forensic Intelligence Hub

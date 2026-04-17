@@ -15,10 +15,6 @@ tags:
 - SIEM
 - log-analysis
 - security-monitoring
-mitre_attack:
-- T1070
-- T1562
-- T1059
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -46,8 +42,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1070
+- T1562
+- T1059
+- T1021
+- T1041
 ---
 
 # Analyzing Security Logs with Splunk

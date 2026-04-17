@@ -29,9 +29,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1087.002
+- T1190
+cwe:
+- CWE-78
+- CWE-89
+- CWE-918
 ---
+
 # Exploiting API Injection Vulnerabilities
 
 ## When to Use

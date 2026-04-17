@@ -11,9 +11,11 @@ tools:
   - Grep
 skills:
   - shared-memory
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- crypto-pki
+- signing
+- artifact-signing
 ---
 
 # Artifact Signing — Ed25519 + BLAKE2b Integrity Skill

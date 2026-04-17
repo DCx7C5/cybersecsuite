@@ -16,9 +16,17 @@ skills:
   - tls/sslkeylog
   - network/recon
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- crypto-pki
+- certificates
+- transparency
+- certificate-recon
+mitre_attack:
+- T1059
+- T1553.002
+- T1557
+- T1595
 ---
 
 # Certificate Recon

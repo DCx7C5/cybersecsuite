@@ -28,9 +28,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1404
+- T1550
+cwe:
+- CWE-347
+- CWE-639
 ---
+
 # Testing Mobile API Authentication
 
 ## When to Use

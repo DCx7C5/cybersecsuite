@@ -27,8 +27,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1046
+- T1610
+cve:
+- CVE-2023-44487
+- CVE-2024-21626
 ---
 
 # Scanning Containers with Trivy in CI/CD

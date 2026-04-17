@@ -26,8 +26,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1041
+- T1071.004
 ---
 
 # Implementing Zero Trust DNS with NextDNS

@@ -28,8 +28,12 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T0855
+- T1021
+cve:
+- CVE-2025-0921
 ---
 
 # Detecting Attacks on Historian Servers

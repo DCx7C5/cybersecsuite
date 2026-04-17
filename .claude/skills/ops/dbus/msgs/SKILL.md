@@ -13,9 +13,15 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- ops
+- dbus
+- msgs
+- dbus-msgs
+mitre_attack:
+- T1003
+- T1021
 ---
 
 # D-Bus Messages

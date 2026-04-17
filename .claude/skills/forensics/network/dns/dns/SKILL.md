@@ -32,9 +32,17 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1041
+- T1059
+- T1070
+- T1071
+- T1071.001
+- T1071.004
+- T1562.004
 ---
+
 # Analyzing DNS Logs for Exfiltration
 
 ## When to Use

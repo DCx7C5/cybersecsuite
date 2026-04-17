@@ -10,9 +10,13 @@ tools:
   - Bash
   - Glob
   - Grep
-mcpServers:
   - cybersec
 author: dcx7c5
+tags:
+- ops
+- scope
+- user
+- scope-user
 ---
 
 # System Layer Skill – Global Forensic Intelligence

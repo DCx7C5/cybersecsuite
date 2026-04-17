@@ -29,9 +29,9 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
 ---
+
 # Processing STIX/TAXII Feeds
 
 ## When to Use

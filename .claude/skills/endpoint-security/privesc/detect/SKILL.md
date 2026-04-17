@@ -29,8 +29,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1059
+- T1068
+- T1070
+- T1134
+- T1548.002
+cwe:
+- CWE-269
 ---
 
 # Detecting Privilege Escalation Attempts

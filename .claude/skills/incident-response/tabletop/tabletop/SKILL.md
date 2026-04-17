@@ -17,10 +17,6 @@ tags:
 - training
 - nist
 - playbook-validation
-mitre_attack:
-- T1566
-- T1486
-- T1078
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -32,9 +28,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1566
+- T1486
+- T1078
 ---
+
 # Performing SOC Tabletop Exercise
 
 ## When to Use

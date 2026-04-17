@@ -15,11 +15,6 @@ tags:
 - data-exfiltration
 - privilege-misuse
 - DFIR
-mitre_attack:
-- T1078
-- T1048
-- T1567
-- T1114
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1078
+- T1048
+- T1567
+- T1114
+- T1041
 ---
 
 # Performing Insider Threat Investigation

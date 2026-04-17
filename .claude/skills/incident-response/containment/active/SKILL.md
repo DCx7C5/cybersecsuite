@@ -15,11 +15,6 @@ tags:
 - network-isolation
 - credential-revocation
 - live-response
-mitre_attack:
-- T1021
-- T1570
-- T1210
-- T1072
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1021
+- T1570
+- T1210
+- T1072
+- T1003
+- T1071
+- T1486
 ---
 
 # Containing Active Breaches

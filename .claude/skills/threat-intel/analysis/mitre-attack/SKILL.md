@@ -14,9 +14,12 @@ tools:
   - WebFetch
 skills:
   - shared-memory
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- threat-intel
+- analysis
+- mitre-attack
+- threats-mitre-attack-mapper
 ---
 
 # MITRE ATT&CK Mapper Skill — Comprehensive Threat Intelligence Engine

@@ -31,9 +31,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1059
 ---
+
 # Analyzing APT Group with MITRE ATT&CK Navigator
 
 ## Overview

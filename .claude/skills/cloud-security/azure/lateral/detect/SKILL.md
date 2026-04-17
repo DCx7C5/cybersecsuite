@@ -25,8 +25,14 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1021
+- T1021.001
+- T1021.002
+- T1059
+- T1078.004
+- T1550
 ---
 
 # Detecting Azure Lateral Movement

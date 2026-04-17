@@ -15,11 +15,6 @@ tags:
 - Azure-incident-response
 - GCP-security
 - identity-containment
-mitre_attack:
-- T1078
-- T1537
-- T1580
-- T1525
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1078
+- T1537
+- T1580
+- T1525
+- T1078.004
 ---
 
 # Conducting Cloud Incident Response

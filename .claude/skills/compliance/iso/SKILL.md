@@ -4,7 +4,6 @@ description: ISO/IEC 27001:2022 is the international standard for establishing, 
 action: iso
 domain: cybersecurity
 subdomain: compliance-governance
-tags: [compliance, governance, iso27001, isms, risk-management, certification]
 nist_csf: [GV.OC-01, GV.RM-01, GV.PO-01, ID.RA-01, PR.DS-01]
 version: "1.0"
 author: dcx7c5
@@ -12,9 +11,12 @@ license: Apache-2.0
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+tags:
+- compliance
+- iso
 ---
+
 # Implementing ISO 27001 Information Security Management
 
 ## Overview

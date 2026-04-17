@@ -14,9 +14,17 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- kernel-os
+- firmware
+- firmware-recon
+mitre_attack:
+- T1014
+- T1059
+- T1195
+- T1547
+- T1595
 ---
 
 # Firmware Recon

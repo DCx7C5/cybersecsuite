@@ -29,9 +29,14 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1068
+cwe:
+- CWE-16
+- CWE-269
 ---
+
 # Exploiting Active Directory Certificate Services ESC1
 
 ## Overview

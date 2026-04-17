@@ -27,8 +27,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+cve:
+- CVE-2021-42373
+- CVE-2021-42374
+- CVE-2016-3116
 ---
 
 # Performing Firmware Extraction with Binwalk

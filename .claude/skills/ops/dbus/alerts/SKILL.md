@@ -13,9 +13,16 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- ops
+- dbus
+- alerts
+- dbus-alerts
+mitre_attack:
+- T1021
+cve:
+- CVE-2021-3560
 ---
 
 # D-Bus Alerts

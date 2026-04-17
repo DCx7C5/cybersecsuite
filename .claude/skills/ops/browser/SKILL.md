@@ -16,9 +16,14 @@ skills:
   - tls/sslkeylog
   - network/recon
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- ops
+- browser
+mitre_attack:
+- T1003
+- T1059
+- T1595
 ---
 
 # Browser Forensic Recon

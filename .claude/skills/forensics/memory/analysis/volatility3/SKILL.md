@@ -13,9 +13,19 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- forensics
+- memory
+- analysis
+- volatility3
+- memory-recon
+mitre_attack:
+- T1003
+- T1014
+- T1027
+- T1059
+- T1595
 ---
 
 # Memory Recon

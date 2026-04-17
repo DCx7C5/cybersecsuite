@@ -14,10 +14,18 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
   - kerneldev
 author: dcx7c5
+tags:
+- kernel-os
+- linux
+- lkm
+- kerneldev-forensic
+mitre_attack:
+- T1014
+- T1059
+- T1547
+- T1547.006
 ---
 
 # KernelDev Forensic — Advanced Kernel Development for Cybersecurity

@@ -15,11 +15,6 @@ tags:
 - Wireshark
 - Zeek
 - traffic-analysis
-mitre_attack:
-- T1071
-- T1095
-- T1573
-- T1572
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,18 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1071
+- T1095
+- T1573
+- T1572
+- T1021
+- T1040
+- T1041
+- T1070
+- T1071.001
+- T1562.001
 ---
 
 # Analyzing Network Traffic for Incidents

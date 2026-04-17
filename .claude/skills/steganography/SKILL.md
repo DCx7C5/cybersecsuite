@@ -13,9 +13,13 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- steganography
+mitre_attack:
+- T1027.003
+- T1059
+- T1595
 ---
 
 # Steganography Recon

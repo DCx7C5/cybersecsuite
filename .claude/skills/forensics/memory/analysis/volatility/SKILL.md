@@ -15,11 +15,6 @@ tags:
 - Volatility
 - RAM-analysis
 - incident-response
-mitre_attack:
-- T1055
-- T1003
-- T1059
-- T1620
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,14 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1055
+- T1003
+- T1059
+- T1620
+- T1014
+- T1027
 ---
 
 # Analyzing Memory Dumps with Volatility

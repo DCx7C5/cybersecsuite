@@ -28,8 +28,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T0843
+- T0855
 ---
 
 # Performing PLC Firmware Security Analysis

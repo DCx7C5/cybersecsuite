@@ -11,9 +11,12 @@ tools:
   - Grep
 skills:
   - shared-memory
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- ops
+- mode
+- blue-team
+- mode-blue-team
 ---
 
 # Blue Team Mode – Defensive Posture

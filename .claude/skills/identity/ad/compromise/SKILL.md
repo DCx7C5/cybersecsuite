@@ -14,12 +14,6 @@ tags:
 - dfir
 - ntds-dit
 - golden-ticket
-mitre_attack:
-- T1003
-- T1558
-- T1021
-- T1078
-- T1484
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -37,8 +31,16 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1558
+- T1021
+- T1078
+- T1484
+- T1003.003
+- T1547
+- T1558.001
 ---
 
 # Performing Active Directory Compromise Investigation

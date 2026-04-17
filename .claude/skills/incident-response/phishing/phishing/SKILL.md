@@ -13,10 +13,6 @@ tags:
 - outlook
 - microsoft-365
 - soar
-mitre_attack:
-- T1566
-- T1204
-- T1534
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -28,9 +24,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1566
+- T1204
+- T1534
 ---
+
 # Building Phishing Reporting Button Workflow
 
 ## Overview

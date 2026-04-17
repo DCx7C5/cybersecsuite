@@ -23,8 +23,10 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+cwe:
+- CWE-16
+- CWE-942
 ---
 
 # Testing CORS Misconfiguration

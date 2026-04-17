@@ -23,8 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1190
+cwe:
+- CWE-611
+- CWE-91
+- CWE-918
 ---
 
 # Testing for XXE Injection Vulnerabilities

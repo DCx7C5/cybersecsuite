@@ -10,9 +10,15 @@ tools:
   - Bash
   - Glob
   - Grep
-mcpServers:
   - cybersec
 author: dcx7c5
+tags:
+- ops
+- scope
+- session
+- scope-session
+mitre_attack:
+- T1059
 ---
 
 # Session Layer Skill – Real-Time Forensic Operations

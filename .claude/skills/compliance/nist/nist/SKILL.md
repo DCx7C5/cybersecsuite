@@ -9,7 +9,6 @@ action: nist
   cybersecurity posture and create improvement roadmaps.
 domain: cybersecurity
 subdomain: compliance-governance
-tags: [compliance, governance, nist, csf, maturity-assessment, risk-management]
 nist_csf: [GV.OC-01, GV.RM-01, GV.PO-01, ID.RA-01, GV.OV-01]
 version: "1.0"
 author: dcx7c5
@@ -17,9 +16,12 @@ license: Apache-2.0
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+tags:
+- compliance
+- nist
 ---
+
 # Performing NIST CSF Maturity Assessment
 
 ## Overview

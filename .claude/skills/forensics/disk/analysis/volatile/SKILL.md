@@ -12,11 +12,6 @@ tags:
 - volatile-evidence
 - memory-forensics
 - chain-of-custody
-mitre_attack:
-- T1003
-- T1055
-- T1059
-- T1547
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -28,8 +23,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1055
+- T1059
+- T1547
+- T1027
 ---
 
 # Collecting Volatile Evidence from Compromised Hosts

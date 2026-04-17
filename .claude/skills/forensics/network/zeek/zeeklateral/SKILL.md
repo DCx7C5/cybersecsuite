@@ -26,8 +26,14 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1021
+- T1021.002
+- T1041
+- T1550.002
+- T1550.003
+- T1558
 ---
 
 # Detecting Lateral Movement with Zeek

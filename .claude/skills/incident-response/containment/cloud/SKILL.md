@@ -14,12 +14,6 @@ tags:
 - cloud-forensics
 - credential-revocation
 - network-isolation
-mitre_attack:
-- T1078
-- T1537
-- T1580
-- T1525
-- T1098
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -37,8 +31,15 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1078
+- T1537
+- T1580
+- T1525
+- T1098
+- T1003
+- T1078.004
 ---
 
 # Performing Cloud Incident Containment Procedures

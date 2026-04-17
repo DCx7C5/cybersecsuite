@@ -24,8 +24,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1059.009
+- T1068
+- T1078.004
+cwe:
+- CWE-269
 ---
 
 # Detecting AWS IAM Privilege Escalation

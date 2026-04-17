@@ -28,9 +28,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1003
+- T1059
+- T1070
 ---
+
 # Performing User Behavior Analytics
 
 ## When to Use

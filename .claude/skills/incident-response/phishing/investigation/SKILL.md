@@ -16,11 +16,6 @@ tags:
 - splunk
 - defender
 - sandbox
-mitre_attack:
-- T1566.001
-- T1566.002
-- T1204.001
-- T1598.003
 version: '1.0'
 author: dcx7c5
 license: Apache-2.0
@@ -32,9 +27,18 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1566.001
+- T1566.002
+- T1204.001
+- T1598.003
+- T1003
+- T1059
+- T1070
+- T1566
 ---
+
 # Investigating Phishing Email Incident
 
 ## When to Use

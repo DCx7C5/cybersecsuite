@@ -15,11 +15,6 @@ tags:
 - credential-compromise
 - email-header-analysis
 - mailbox-remediation
-mitre_attack:
-- T1566
-- T1204
-- T1534
-- T1598
 version: 1.0.0
 author: dcx7c5
 license: Apache-2.0
@@ -31,8 +26,13 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1566
+- T1204
+- T1534
+- T1598
+- T1003
 ---
 
 # Conducting Phishing Incident Response

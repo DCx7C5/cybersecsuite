@@ -30,8 +30,11 @@ nist_csf:
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
-mcpServers: [cybersec]
 source: Anthropic-Cybersecurity-Skills
+mitre_attack:
+- T1055
+- T1055.001
+- T1059
 ---
 
 # Hunting for Process Injection Techniques

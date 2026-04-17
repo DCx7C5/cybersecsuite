@@ -14,9 +14,14 @@ skills:
   - shared-memory
   - network/recon
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- crypto-pki
+- tls
+- sslkeylog
+- tls-sslkeylog
+mitre_attack:
+- T1041
 ---
 
 # SSLKEYLOG Skill – TLS Key Logging Management & Analysis

@@ -13,9 +13,20 @@ tools:
 skills:
   - shared-memory
   - threats/mitre-attack-mapper
-mcpServers:
-  - cybersec
 author: dcx7c5
+tags:
+- endpoint-security
+- hardening
+- linux
+- settings-recon
+mitre_attack:
+- T1059
+- T1548.001
+- T1548.003
+- T1562.004
+- T1595
+cwe:
+- CWE-16
 ---
 
 # Settings Recon
