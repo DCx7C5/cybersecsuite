@@ -30,12 +30,12 @@ opts = ClaudeAgentOptions(
 ```
 
 ### ASGI Mount Map (`src/proxy/asgi.py`)
-| Path                      | What                                          |
-|---------------------------|-----------------------------------------------|
-| `/health`                 | DB health check (200/503)                     |
+| Path                      | What                                                       |
+|---------------------------|------------------------------------------------------------|
+| `/health`                 | DB health check (200/503)                                  |
 | `/dashboard/*`            | Dashboard UI + 25 REST + 4 SSE endpoints (30 routes total) |
-| `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here |
-| `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                       |
+| `/v1/*`                   | AI Proxy (OpenAI-compat) ← Claude routes here              |
+| `/a2a/*`, `/.well-known/` | A2A JSON-RPC 2.0 server                                    |
 
 ### settings.json (`.claude/settings.json`) — 12 sections
 ```json
@@ -80,28 +80,28 @@ opts = ClaudeAgentOptions(
 | `docker-compose.yml` | —     | ASGI + PostgreSQL, healthcheck → 8000/health                            |
 
 ### src/
-| File                  | Lines | Purpose                                               |
-|-----------------------|-------|-------------------------------------------------------|
-| `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware |
-| `src/manage.py`       | 329   | CLI management (`manage.py serve`, `case-open`, etc.) |
-| `src/logger.py`       | 30    | Structured logger                                     |
+| File                  | Lines | Purpose                                                                 |
+|-----------------------|-------|-------------------------------------------------------------------------|
+| `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware    |
+| `src/manage.py`       | 329   | CLI management (`manage.py serve`, `case-open`, etc.)                   |
+| `src/logger.py`       | 30    | Structured logger                                                       |
 | `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools |
 
 ### src/a2a/
-| File                | Lines | Purpose                                      |
-|---------------------|-------|----------------------------------------------|
+| File                | Lines | Purpose                                                              |
+|---------------------|-------|----------------------------------------------------------------------|
 | `agent_sdk.py`      | 358   | SDK bridge — model mapping, PreToolUse audit hook, run_agent_query() |
-| `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards     |
-| `orchestrator.py`   | 365   | A2A task orchestration                       |
-| `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)               |
-| `cybersec_agent.py` | 350   | CybersecAgent (SDK-wired ✅)                 |
-| `server.py`         | 236   | A2A JSON-RPC server                          |
-| `client.py`         | 205   | A2A client                                   |
-| `registry.py`       | 257   | AgentRegistry — remote A2A discovery         |
-| `task_store.py`     | 157   | In-memory + DB task store                    |
-| `models.py`         | 215   | A2A Pydantic models                          |
-| `enums.py`          | —     | A2A enums                                    |
-| `agent.py`          | —     | BaseA2AAgent                                 |
+| `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards                             |
+| `orchestrator.py`   | 365   | A2A task orchestration                                               |
+| `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)                                        |
+| `cybersec_agent.py` | 350   | CybersecAgent (SDK-wired ✅)                                          |
+| `server.py`         | 236   | A2A JSON-RPC server                                                  |
+| `client.py`         | 205   | A2A client                                                           |
+| `registry.py`       | 257   | AgentRegistry — remote A2A discovery                                 |
+| `task_store.py`     | 157   | In-memory + DB task store                                            |
+| `models.py`         | 215   | A2A Pydantic models                                                  |
+| `enums.py`          | —     | A2A enums                                                            |
+| `agent.py`          | —     | BaseA2AAgent                                                         |
 
 ### src/ai_proxy/
 | File                        | Lines | Purpose                                                   |
@@ -159,7 +159,7 @@ Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Find
 | `agents/`    | 33 agents + AGENT_FACTORY + 3 teams (in `teams/` subdir)   | ✅ all consistent frontmatter |
 | `hooks/`     | 28 .py files (18 event handlers + 10 modules) + hooks.json | ⚠️ NEVER AUDITED             |
 | `commands/`  | 7 slash commands + config.py + `__init__.py` + README.md   | ⚠️ NEVER AUDITED             |
-| `skills/`    | **922 SKILL.md** across 24+ active domains                 | ✅ RESTRUCTURED               |
+| `skills/`    | **933 SKILL.md** across 28 active domains                 | ✅ RESTRUCTURED               |
 | `templates/` | 14 template files across 6 subdirs                         | Not reviewed                 |
 
 #### templates/ structure
@@ -237,12 +237,12 @@ Model tiers:
 **Actions = leaf directory names** (the specific tool/technique applied to a component).
 **Activities ≠ domains** — `red-team/`, `forensics/`, `incident-response/` are methods, not components.
 
-### Current State (922 skills, 24+ active domains)
+### Current State (933 skills, 28 active domains)
 | Type                     | Count   | Description                                              |
 |--------------------------|---------|----------------------------------------------------------|
 | Project-native (full)    | 170+    | Rich SKILL.md with deep taxonomy, MITRE/CWE/CVE headers  |
 | Anthropic-integrated     | 752     | Full Anthropic workflow + CyberSecSuite integration      |
-| **Total**                | **922** | All in `.claude/skills/`, indexed in `INDEX.md`          |
+| **Total**                | **933** | All in `.claude/skills/`, indexed in `INDEX.md`          |
 
 **Frontmatter** — ✅ COMPLETE
 - Removed: `mcpServers`, `version`, `license`, `author` (redundant/global)
@@ -250,7 +250,7 @@ Model tiers:
 
 ### Domain Structure (after classical domain expansion ✅)
 ```
-.claude/skills/               ← root (922 SKILL.md, 24+ active / 30 total dirs)
+.claude/skills/               ← root (933 SKILL.md, 28 active domains)
 ├── cloud-security/ (117)  # aws, azure, gcp, containers, kubernetes, devsecops
 │                             #   + aws/privesc, azure/lateral, k8s/privesc (from red-team)
 ├── web-application/    (97)  # injection, xss, ssrf, api, pentest, owasp (renamed from web-security ✅)
@@ -387,28 +387,28 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 **Status**: PENDING (todo: `omniroute-integrate`)
 
 #### Essential Tools (8)
-| Tool | Purpose |
-|------|---------|
-| `omniroute_get_health` | Gateway health, circuit breakers, uptime |
-| `omniroute_list_combos` | All configured combos with models |
-| `omniroute_get_combo_metrics` | Performance metrics for a specific combo |
-| `omniroute_switch_combo` | Switch active combo by ID/name |
-| `omniroute_check_quota` | Quota status per provider or all |
-| `omniroute_route_request` | Send a chat completion through OmniRoute |
-| `omniroute_cost_report` | Cost analytics for a time period |
-| `omniroute_list_models_catalog` | Full model catalog with capabilities |
+| Tool                            | Purpose                                  |
+|---------------------------------|------------------------------------------|
+| `omniroute_get_health`          | Gateway health, circuit breakers, uptime |
+| `omniroute_list_combos`         | All configured combos with models        |
+| `omniroute_get_combo_metrics`   | Performance metrics for a specific combo |
+| `omniroute_switch_combo`        | Switch active combo by ID/name           |
+| `omniroute_check_quota`         | Quota status per provider or all         |
+| `omniroute_route_request`       | Send a chat completion through OmniRoute |
+| `omniroute_cost_report`         | Cost analytics for a time period         |
+| `omniroute_list_models_catalog` | Full model catalog with capabilities     |
 
 #### Advanced Tools (8)
-| Tool | Purpose |
-|------|---------|
-| `omniroute_simulate_route` | Dry-run routing simulation |
-| `omniroute_set_budget_guard` | Session budget with degrade/block/alert |
-| `omniroute_set_routing_strategy` | Runtime strategy switch |
-| `omniroute_set_resilience_profile` | Apply resilience presets |
-| `omniroute_test_combo` | Live-test all models in a combo |
-| `omniroute_get_provider_metrics` | Detailed per-provider metrics |
-| `omniroute_best_combo_for_task` | Task-fitness recommendation |
-| `omniroute_explain_route` | Explain a past routing decision |
+| Tool                               | Purpose                                 |
+|------------------------------------|-----------------------------------------|
+| `omniroute_simulate_route`         | Dry-run routing simulation              |
+| `omniroute_set_budget_guard`       | Session budget with degrade/block/alert |
+| `omniroute_set_routing_strategy`   | Runtime strategy switch                 |
+| `omniroute_set_resilience_profile` | Apply resilience presets                |
+| `omniroute_test_combo`             | Live-test all models in a combo         |
+| `omniroute_get_provider_metrics`   | Detailed per-provider metrics           |
+| `omniroute_best_combo_for_task`    | Task-fitness recommendation             |
+| `omniroute_explain_route`          | Explain a past routing decision         |
 
 #### Skill Tools (3)
 `omniroute_skills_list`, `omniroute_skills_enable`, `omniroute_skills_execute`
@@ -425,7 +425,7 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### ✅ Done
 - Phase 0 — agent frontmatter, ports, docker, settings, deleted dead middleware
 - Docs — 8 docs written (docs/architecture, api, agents, configuration, contributing, deployment, mcp-tools, quickstart)
-- Skills taxonomy — 778 → **922** SKILL.md across 24+ domains (web-security→web-application, ot-ics dissolved, 6 classical domains expanded with 189 new deep-hierarchy skills)
+- Skills taxonomy — 778 → **933** SKILL.md across 24+ domains (web-security→web-application, ot-ics dissolved, 6 classical domains expanded with 189 new deep-hierarchy skills)
 - MCP package split — `src/mcp/` package: `cybersec/` (29 tools) + `dystopian.py` (5 tools) + SDK compat shim → 34 tools, `all_servers()` + `allowed_tools()` — commit f0e8b72
 - New agents — `token-optimizer.md` (haiku, redundancy detection + prompt compression + cache seeds) — 33 agents total
 - Phase A2 — A2A stubs wired to SDK (model mapping, PreToolUse audit hook, real AI execution) — commits 3cfa5a0
@@ -441,50 +441,62 @@ Tool naming: `mcp__cybersec__<tool>` (SDK) / `cybersec.<tool>` (FastMCP stdio).
 ### docs/ — 8 files
 `architecture.md`, `api.md`, `agents.md`, `configuration.md`, `contributing.md`, `deployment.md`, `mcp-tools.md`, `quickstart.md`
 
-### Skills Restructuring (remaining)
-| Step | What | Status |
-|------|------|--------|
-| 1. Copy Anthropic content | LICENSE + scripts/ + references/ + assets/ for 752 skills | pending |
-| ~~2. Redistribute red-team/~~ | ~~Move 47 skills to component domains~~ | ✅ done |
-| 3. Flatten same-name nests | Promote 75× `foo/foo/SKILL.md` → `foo/SKILL.md` | pending |
-| 4. Restructure malware/ | Merge statics, relocate tools to proper dirs | pending |
-| 5. Deep hierarchy + rename | Add 3-5 levels, path-based `name:` fields | pending |
-| ~~6. Generate fixtures~~ | ~~NIST CSF 2.0 + AI RMF → `data/fixtures/`, seed functions~~ | ✅ fixtures downloaded |
-| 7. Sync indexes | Regenerate INDEX.md + skills.tree + MEMORY.md | pending |
+---
+
+## Active Roadmap (Mega-Iteration)
+
+### ✅ Phase 1 — Config, Docker, CLAUDE.md — COMPLETE (commit a3ac1d9)
+- Created `CLAUDE.md` at project root (project overview, MCP tools, arch, env vars)
+- Fixed `mcp.json` dystopian-crypto path (→ `src/mcp/dystopian.py`)
+- Moved root `Dockerfile` → `.docker/dashboard/Dockerfile`; created `.docker/redis/Dockerfile`
+- Added `cybersec-redis` service to `docker-compose.yml`
+
+### ✅ Phase 2 — Intel DB Seeds — COMPLETE (commit 90c40be)
+- Created `src/db/fixtures/`: mitre_techniques.json (30), mitre_actors.json (12), mitre_software.json (14), cwe_entries.json (18), capec_entries.json (20)
+- Added `seed_mitre_techniques()`, `seed_mitre_actors()`, `seed_mitre_software()`, `seed_cwe()`, `seed_capec()` to `seeds.py`
+- `initialize_default_seed_data()` now runs all 7 seeders (NIST + MITRE + CWE + CAPEC)
+- `manage.py` commands: `seed`, `seed-intel`, `seed-mitre`, `seed-mitre-actors`, `seed-mitre-software`, `seed-cwe`, `seed-capec`
+
+**Intel tables seeded**: `intel_mitre_techniques`, `intel_mitre_threat_actors`, `intel_mitre_software_families`, `intel_cwes`, `intel_capec_patterns`, `nist_csf_controls`, `nist_ai_rmf_controls`
+
+### ✅ Phase 3 — Documentation — COMPLETE (commit 0984fda)
+- Updated all 8 docs: architecture.md (2 Mermaid flowcharts), api.md, agents.md, configuration.md, contributing.md, deployment.md, mcp-tools.md, quickstart.md
+- Created `docs/teams.md` — team mode, blue/red/purple responsibilities, team-task command
+
+### ✅ Phase 4 — SKILL.md Mass Updates — COMPLETE (commit 0984fda)
+- Removed `source:` field (748 files); renamed `name:` to path-based pattern (919 files)
+- Added `nist_csf: []` and `capec: []` frontmatter headers to all 919 files
+- **Name pattern**: `network/ids/wazuh/install/SKILL.md` → `name: ids-wazuh-install`
+
+### ✅ Phase 5 — Domain Restructuring — COMPLETE (commit dacc0c0)
+- `vulnerability/` → `vulnerabilities/` (32 skills)
+- `ot-ics/` → `industrial/` (25 skills)
+- `threat-intel/` dissolved (86 skills): hunting/ioc/analysis/intelligence/threat/mitre → `forensics/`; detection → `siem-soc/`; platforms/feeds → `intel-platform/` (new); osint/shodan/darkweb → `osint/` (new); brand → `ops/`
+- `steganography/`: 14 new SKILL.md files (image/audio/video/document/tool/network)
+- **New domains**: `intel-platform/`, `osint/`
+- **Total**: 933 SKILL.md across **28 active domains**
+
+### ✅ Phase 6 — Agent Team Task — COMPLETE
+- `.claude/commands/team-task` slash command
+- `manage.py team-task --team blue|red|purple --task "..." [--agents a,b]`
 
 ### Phase A — MCP Split + SDK Package ✅ COMPLETE (commit f0e8b72)
-| Order | Todo | Status |
-|-------|------|--------|
-| 1 | `mcp-cybersec-helpers` — ScopeState + scope helpers | ✅ `src/mcp/cybersec/helpers.py` |
-| 2 | 8 tool submodules (findings, db, intelligence, layers, cache, proxy, session, cases) | ✅ all created |
-| 3 | `mcp-cybersec-pkg` — assemble all 29 tools | ✅ `src/mcp/cybersec/__init__.py` |
-| 4 | `mcp-pkg-create` — `src/mcp/__init__.py` | ✅ `all_servers()` + `allowed_tools()` |
-| 5 | `mcp-dystopian-impl` — 5 crypto tools | ✅ `src/mcp/dystopian.py` |
-| 6 | `mcp-shim-update` — slim mcp_server.py | ⚠️ pending — still 1288L with inline helpers |
-| 7 | `mcp-agent-sdk-update` — wire SDK | pending |
-| 8 | `dystopian-mcp-scaffold` — mcps/ standalone | pending |
+| Order | Todo                                              | Status                                       |
+|-------|---------------------------------------------------|----------------------------------------------|
+| 1-5   | helpers, 8 submodules, pkg, `__init__`, dystopian | ✅ all done                                   |
+| 6     | `mcp-shim-update` — slim mcp_server.py            | ⚠️ pending — still 1288L with inline helpers |
+| 7     | `mcp-agent-sdk-update` — wire SDK to `src/mcp/`   | pending                                      |
 
-**Known redundancy**: `mcp_server.py` has 5 helper functions that duplicate `src/mcp/cybersec/helpers.py`
-(`_normalize_scope_value`, `_get_current_scope`, `_coerce_limit`, `_normalize_scope_level`, `get_workspace_dir`).
-FastMCP typed-param pattern prevents trivial merge — refactor deferred to `mcp-shim-update`.
+**Known redundancy**: `mcp_server.py` has 5 helpers duplicating `src/mcp/cybersec/helpers.py`.
+FastMCP typed-param pattern prevents trivial merge — deferred to `mcp-shim-update`.
 
-### ~~Phase A2 — Wire A2A Stubs to SDK~~ ✅ COMPLETE (commit 3cfa5a0)
-`a2a-devagents-wire`, `a2a-cybersec-wire`, `a2a-orchestrator-wire`, `a2a-agentdef-enhance`, `a2a-hooks-add`
+### ~~Phase A2~~ ✅ COMPLETE (commit 3cfa5a0) · ~~Phase D / D2~~ ✅ COMPLETE
 
-### Phase A-Audit (parallel)
-`hooks-audit`, `commands-audit`, `skills-audit`, `fix-brave-profile-gitignore`
-
-### Phase B — Code Review (after A/A2)
+### Phase B — Code Review (after A)
 `review-dashboard-routes`, `review-combo-routing`, `review-mcp-server`, `review-a2a-modules`, `review-db-models`, `review-manage-cli`
 
-### Phase C — SSL/TLS (after A)
+### Phase C — SSL/TLS
 `ssl-dystopian-integrate` → `ssl-cert-generation` → `ssl-cli-commands` → `ssl-dashboard-tab` → `ssl-proxy-config`
-
-### ~~Phase D — Telemetry + Extended Dashboard~~ ✅ COMPLETE
-Telemetry stack: `src/telemetry/` (store, middleware, decorators, collector — 5 files, mounted in asgi.py)
-Dashboard: 30 routes total, 7 data endpoints + telemetry REST/SSE + task CRUD → `dashboard-html-rewrite` still pending
-
-~~Phase D2 — NIST Integration (next)~~ ✅ COMPLETE (commit 72de387)
 
 ### Phase E — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`

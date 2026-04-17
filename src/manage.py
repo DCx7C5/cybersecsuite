@@ -32,6 +32,8 @@ def show_usage():
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
     print("  case-open  - Open a new investigation case (Phase 0 — interactive intake)")
+    print("  team-task  - Dispatch task to blue/red/purple team")
+    print("               Flags: --team blue|red|purple  --task \"desc\"  --agents a,b  --mode blue|red|purple")
     print("  ssl-genkey - Generate SSL/TLS certificate for proxy (port 8433)")
     print("  ssl-info   - Display SSL/TLS certificate information")
     print("  ssl-verify - Verify SSL/TLS certificate validity")
@@ -381,6 +383,56 @@ async def case_open_command():
     print("   Ready for Phase 1 (Recon).")
 
 
+async def team_task_command():
+    """Create and dispatch an A2A task to a CyberSec team (blue/red/purple)."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="manage.py team-task",
+        description="Dispatch a task to a CyberSec agent team.",
+    )
+    parser.add_argument("--team", choices=["blue", "red", "purple"], default="blue", help="Target team (default: blue)")
+    parser.add_argument("--task", required=True, help="Task description")
+    parser.add_argument("--agents", default="", help="Comma-separated additional agent names")
+    parser.add_argument("--mode", default="", help="Override mode (blue/red/purple)")
+
+    args = parser.parse_args(sys.argv[2:])
+    team = args.team
+    task_desc = args.task
+    extra_agents = [a.strip() for a in args.agents.split(",") if a.strip()]
+    mode_override = args.mode or team
+
+    team_map = {
+        "blue": {
+            "agents": ["filesystem-analyst", "logfile-analyst", "memory-analyst",
+                       "network-analyst", "process-analyst", "persistence-analyst"],
+            "goal": "Defensive forensics: threat hunting, IR, log analysis, hardening",
+        },
+        "red": {
+            "agents": ["reverse-engineer", "vulnerability-scanner", "layer7-specialist",
+                       "layer4-specialist", "layer3-specialist"],
+            "goal": "Offensive operations: recon, exploitation, persistence, C2",
+        },
+        "purple": {
+            "agents": ["cybersec-analyst", "threat-modeler", "kernel-analyst",
+                       "filesystem-analyst", "network-analyst"],
+            "goal": "Purple team: validate detections, map ATT&CK coverage",
+        },
+    }
+
+    config = team_map[team]
+    agents = config["agents"] + extra_agents
+
+    print(f"🎯 {team.upper()}-TEAM TASK DISPATCH")
+    print(f"   Task    : {task_desc}")
+    print(f"   Mode    : {mode_override}")
+    print(f"   Goal    : {config['goal']}")
+    print(f"   Agents  : {', '.join(agents)}")
+    print()
+    print(f"   Team file: .claude/agents/teams/{team}-team.md")
+    print(f'   Execute : claude --agent teams/{team}-team --task "{task_desc}"')
+
+
 async def main():
     if len(sys.argv) < 2:
         show_usage()
@@ -389,9 +441,9 @@ async def main():
     command = sys.argv[1]
 
     async_commands = {
-        "schema":           schema_command,
-        "shell":            shell_command,
-        "status":           status_command,
+        "schema":               schema_command,
+        "shell":                shell_command,
+        "status":               status_command,
         "seed":                 seed_command,
         "seed-intel":           seed_intel_command,
         "seed-nist-csf":        seed_nist_csf_command,
@@ -402,8 +454,9 @@ async def main():
         "seed-mitre-software":  seed_mitre_software_command,
         "seed-cwe":             seed_cwe_command,
         "seed-capec":           seed_capec_command,
-        "machine":          machine_command,
-        "case-open":        case_open_command,
+        "machine":              machine_command,
+        "case-open":            case_open_command,
+        "team-task":            team_task_command,
     }
 
     if command not in async_commands:
