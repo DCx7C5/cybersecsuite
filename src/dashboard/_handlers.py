@@ -598,16 +598,17 @@ async def api_findings(request: Request) -> JSONResponse:
             - __import__("datetime").timedelta(days=7)
         ).count()
 
-        recent = await Finding.all().order_by("-created_at").limit(20)
+        _FINDING_FIELDS = [
+            "id", "title", "description", "severity", "status", "confidence",
+            "location", "evidence", "evidence_hash", "command_output",
+            "cross_validation", "next_action", "analyst_notes", "remediation",
+            "resolved_at", "tags", "created_at", "updated_at", "is_active",
+        ]
+        recent = await Finding.all().order_by("-created_at").limit(20).values(*_FINDING_FIELDS)
         recent_list = [
-            {
-                "id": f.id,
-                "title": f.title,
-                "severity": f.severity if isinstance(f.severity, str) else f.severity.value,
-                "status": f.status if isinstance(f.status, str) else f.status.value,
-                "created_at": f.created_at.isoformat() if hasattr(f, "created_at") and f.created_at else None,
-            }
-            for f in recent
+            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
+             for k, v in row.items()}
+            for row in recent
         ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
@@ -639,15 +640,16 @@ async def api_iocs(request: Request) -> JSONResponse:
         for cf in ("low", "medium", "high", "confirmed"):
             by_confidence[cf] = await IOC.filter(confidence=cf).count()
 
-        recent = await IOC.all().order_by("-updated_at").limit(20)
+        _IOC_FIELDS = [
+            "id", "ioc_id", "ioc_type", "value", "confidence", "status",
+            "sightings", "context", "source", "evidence_hash", "tags",
+            "created_at", "updated_at", "is_active",
+        ]
+        recent = await IOC.all().order_by("-updated_at").limit(20).values(*_IOC_FIELDS)
         recent_list = [
-            {
-                "ioc_id": ioc.ioc_id,
-                "type": ioc.ioc_type,
-                "value": ioc.value,
-                "status": ioc.status if isinstance(ioc.status, str) else ioc.status.value,
-            }
-            for ioc in recent
+            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
+             for k, v in row.items()}
+            for row in recent
         ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
@@ -672,16 +674,23 @@ async def api_yara(request: Request) -> JSONResponse:
         for src in ("ioc_derived", "manual", "imported", "generated"):
             by_source[src] = await YaraRule.filter(source=src).count()
 
-        recent = await YaraRule.all().order_by("-created_at").limit(10)
+        _YARA_FIELDS = [
+            "id", "rule_id", "name", "description", "content", "status", "source",
+            "severity", "detection_count", "false_positive_rate",
+            "test_results", "tags", "created_at", "updated_at",
+        ]
+        # Use values() to avoid enum instantiation issues
+        try:
+            recent = await YaraRule.all().order_by("-created_at").limit(20).values(*_YARA_FIELDS)
+        except Exception:
+            # Fallback if some fields don't exist on this model version
+            recent = await YaraRule.all().order_by("-created_at").limit(20).values(
+                "id", "rule_id", "name", "status", "source", "created_at"
+            )
         recent_list = [
-            {
-                "rule_id": r.rule_id,
-                "name": r.name,
-                "status": r.status if isinstance(r.status, str) else r.status.value,
-                "source": r.source if isinstance(r.source, str) else r.source.value,
-                "created_at": r.created_at.isoformat() if hasattr(r, "created_at") and r.created_at else None,
-            }
-            for r in recent
+            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
+             for k, v in row.items()}
+            for row in recent
         ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
@@ -694,7 +703,7 @@ async def api_yara(request: Request) -> JSONResponse:
 
 
 async def api_network(request: Request) -> JSONResponse:
-    """Network assets summary — hosts and IP addresses."""
+    """Network assets summary — hosts and IP addresses with full fields."""
     try:
         from db.models.network import IPAddress, Host
         total_hosts = await Host.all().count()
@@ -713,12 +722,32 @@ async def api_network(request: Request) -> JSONResponse:
             {"code": code, "count": cnt}
             for code, cnt in sorted(country_counts.items(), key=lambda x: -x[1])[:10]
         ]
+
+        recent_hosts = await Host.all().order_by("-created_at").limit(20).values(
+            "id", "hostname", "os_name", "os_version", "architecture",
+            "is_localhost", "is_target", "is_compromised", "notes", "created_at",
+        )
+        recent_hosts_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()}
+            for row in recent_hosts
+        ]
+
+        recent_ips = await IPAddress.all().order_by("-last_seen_at").limit(20).values(
+            "id", "address", "version", "is_private", "geo_country",
+            "first_seen_at", "last_seen_at", "notes",
+        )
+        recent_ips_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()}
+            for row in recent_ips
+        ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
     return JSONResponse({
         "hosts": {"total": total_hosts, "compromised": compromised, "targets": targets},
         "ip_addresses": {"total": total_ips, "private": private_ips, "public": total_ips - private_ips},
         "top_countries": top_countries,
+        "recent_hosts": recent_hosts_list,
+        "recent_ips": recent_ips_list,
     })
 
 
@@ -747,6 +776,32 @@ async def api_intelligence(request: Request) -> JSONResponse:
             last_seeded = snap.created_at.isoformat() if snap and snap.created_at else None
         except Exception:
             pass
+
+        # Recent MITRE techniques with full fields
+        _MITRE_FIELDS = [
+            "id", "technique_id", "name", "description", "tactics",
+            "platforms", "data_sources", "is_sub_technique", "parent_technique_id",
+            "detection", "url", "tags", "created_at", "updated_at",
+        ]
+        recent_mitre = await MitreTechniqueIntel.all().order_by("-created_at").limit(10).values(*_MITRE_FIELDS)
+        recent_mitre_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()}
+            for row in recent_mitre
+        ]
+
+        # Recent CVE entries with full fields
+        _CVE_FIELDS = ["id", "cve_id", "cvss_score", "severity", "description",
+                       "exploit_available", "patch_available", "published_at", "tags", "created_at"]
+        try:
+            from db.models.cve import CVEIntel
+            recent_cve = await CVEIntel.all().order_by("-published_at").limit(10).values(*_CVE_FIELDS)
+        except Exception:
+            recent_cve = []
+        recent_cve_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
+             for k, v in row.items()}
+            for row in recent_cve
+        ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
     return JSONResponse({
@@ -755,6 +810,8 @@ async def api_intelligence(request: Request) -> JSONResponse:
         "cwe": {"total": cwe_count},
         "capec": {"total": capec_count},
         "last_seeded": last_seeded,
+        "recent_mitre": recent_mitre_list,
+        "recent_cve": recent_cve_list,
     })
 
 
@@ -765,28 +822,29 @@ async def api_audit(request: Request) -> JSONResponse:
         import datetime as _dt
 
         total = await AuditLog.all().count()
-        recent = await AuditLog.all().order_by("-created_at").limit(50)
+        _AUDIT_FIELDS = [
+            "id", "action", "entity_type", "entity_id", "entity_repr",
+            "agent", "resource", "ip_address", "old_value", "new_value",
+            "metadata", "created_at",
+        ]
+        recent = await AuditLog.all().order_by("-created_at").limit(50).values(*_AUDIT_FIELDS)
 
         recent_list = [
-            {
-                "action": e.action if isinstance(e.action, str) else e.action.value,
-                "entity_type": e.entity_type,
-                "agent": e.agent,
-                "created_at": e.created_at.isoformat() if e.created_at else None,
-            }
-            for e in recent
+            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
+             for k, v in row.items()}
+            for row in recent
         ]
 
         # Count by action
         by_action: dict[str, int] = {}
         for e in recent_list:
-            a = e["action"]
+            a = e.get("action") or "unknown"
             by_action[a] = by_action.get(a, 0) + 1
 
         # Count by agent
         by_agent: dict[str, int] = {}
         for e in recent_list:
-            ag = e["agent"] or "unknown"
+            ag = e.get("agent") or "unknown"
             by_agent[ag] = by_agent.get(ag, 0) + 1
 
         cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(hours=1)
@@ -803,7 +861,7 @@ async def api_audit(request: Request) -> JSONResponse:
 
 
 async def api_compliance(request: Request) -> JSONResponse:
-    """Compliance rules summary — totals by framework and severity."""
+    """Compliance rules summary — totals by framework and severity + recent rules."""
     try:
         from db.models.compliance import ComplianceRule
         total = await ComplianceRule.all().count()
@@ -816,17 +874,30 @@ async def api_compliance(request: Request) -> JSONResponse:
             by_framework[f] = by_framework.get(f, 0) + 1
             s = severity if isinstance(severity, str) else (severity.value if severity else "unknown")
             by_severity[s] = by_severity.get(s, 0) + 1
+
+        _COMPLIANCE_FIELDS = [
+            "id", "rule_id", "title", "description", "framework", "severity",
+            "check_procedures", "remediation_steps", "evidence_requirements",
+            "retention_period_days", "audit_frequency", "created_at", "updated_at",
+        ]
+        recent = await ComplianceRule.all().order_by("-created_at").limit(20).values(*_COMPLIANCE_FIELDS)
+        recent_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
+             for k, v in row.items()}
+            for row in recent
+        ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
     return JSONResponse({
         "total": total,
         "by_framework": dict(sorted(by_framework.items(), key=lambda x: -x[1])),
         "by_severity": by_severity,
+        "recent": recent_list,
     })
 
 
 async def api_nist_csf(request: Request) -> JSONResponse:
-    """NIST CSF 2.0 controls — totals by function and category."""
+    """NIST CSF 2.0 controls — totals by function/category + recent controls."""
     try:
         from db.models.nist_csf import NistCsfControl
         total = await NistCsfControl.all().count()
@@ -838,17 +909,31 @@ async def api_nist_csf(request: Request) -> JSONResponse:
         for fn, _fc, cat in rows:
             by_function[fn] = by_function.get(fn, 0) + 1
             by_category[cat] = by_category.get(cat, 0) + 1
+
+        # Full fields for recent controls
+        _CSF_FIELDS = list(NistCsfControl._meta.fields_map.keys())
+        _CSF_SCALAR = [f for f in _CSF_FIELDS
+                       if type(NistCsfControl._meta.fields_map[f]).__name__ not in (
+                           "ForeignKeyFieldInstance", "ManyToManyFieldInstance",
+                           "BackwardsOneToOneRelation", "BackwardsFKRelation",
+                       )]
+        recent = await NistCsfControl.all().order_by("function_code").limit(20).values(*_CSF_SCALAR)
+        recent_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()}
+            for row in recent
+        ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
     return JSONResponse({
         "total": total,
         "by_function": dict(sorted(by_function.items())),
         "by_category": dict(sorted(by_category.items(), key=lambda x: -x[1])),
+        "recent": recent_list,
     })
 
 
 async def api_nist_ai_rmf(request: Request) -> JSONResponse:
-    """NIST AI RMF 1.0 controls — totals by function and topic."""
+    """NIST AI RMF 1.0 controls — totals by function/topic + recent controls."""
     try:
         from db.models.nist_ai_rmf import NistAiRmfControl
         total = await NistAiRmfControl.all().count()
@@ -861,12 +946,25 @@ async def api_nist_ai_rmf(request: Request) -> JSONResponse:
             by_function[fn] = by_function.get(fn, 0) + 1
             t = topic or "general"
             by_topic[t] = by_topic.get(t, 0) + 1
+
+        _RMF_FIELDS = list(NistAiRmfControl._meta.fields_map.keys())
+        _RMF_SCALAR = [f for f in _RMF_FIELDS
+                       if type(NistAiRmfControl._meta.fields_map[f]).__name__ not in (
+                           "ForeignKeyFieldInstance", "ManyToManyFieldInstance",
+                           "BackwardsOneToOneRelation", "BackwardsFKRelation",
+                       )]
+        recent = await NistAiRmfControl.all().order_by("function").limit(20).values(*_RMF_SCALAR)
+        recent_list = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()}
+            for row in recent
+        ]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
     return JSONResponse({
         "total": total,
         "by_function": dict(sorted(by_function.items())),
         "by_topic": dict(sorted(by_topic.items(), key=lambda x: -x[1])),
+        "recent": recent_list,
     })
 
 
@@ -995,6 +1093,127 @@ async def api_pocs(request: Request) -> JSONResponse:
         "by_status": by_status,
         "by_severity": by_severity,
         "recent": recent_list,
+    })
+
+
+# ── Generic table endpoint ───────────────────────────────────────────────────
+
+async def api_models(request: Request) -> JSONResponse:
+    """List all registered DB models with table name and field count."""
+    from dashboard._schema import list_models
+    return JSONResponse({"models": list_models()})
+
+
+async def api_table(request: Request) -> JSONResponse:
+    """Generic paginated endpoint: GET /api/tables/{model}?page&limit&sort&filter_<field>=value.
+
+    Returns {schema, rows, total, page, limit}.
+    Supports all 82+ Tortoise models by name (CamelCase, snake_case, or db_table).
+    """
+    from dashboard._schema import resolve_model, fetch_rows
+
+    model_name = request.path_params.get("model", "")
+    info = resolve_model(model_name)
+    if info is None:
+        return JSONResponse(
+            {"status": "error", "error": f"Unknown model: {model_name!r}. GET /api/models for list."},
+            status_code=404,
+        )
+
+    params = dict(request.query_params)
+    try:
+        page = max(1, int(params.pop("page", 1)))
+        limit = min(200, max(1, int(params.pop("limit", 50))))
+    except ValueError:
+        return JSONResponse({"status": "error", "error": "page and limit must be integers"}, status_code=400)
+
+    sort = params.pop("sort", None)
+
+    # Remaining params are treated as equality filters
+    filters = {k: v for k, v in params.items() if not k.startswith("_")}
+
+    try:
+        rows, total = await fetch_rows(
+            model_cls=info["model_cls"],
+            scalar_fields=info["scalar_fields"],
+            page=page,
+            limit=limit,
+            sort=sort,
+            filters=filters,
+        )
+    except Exception as exc:
+        return JSONResponse({"status": "error", "error": str(exc)}, status_code=500)
+
+    return JSONResponse({
+        "model": model_name,
+        "table": info["table"],
+        "schema": info["fields"],
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "rows": rows,
+    })
+
+
+# ── Agent-SDK query endpoint ──────────────────────────────────────────────────
+
+async def api_agent_query(request: Request) -> JSONResponse:
+    """POST /api/agent-query — run a prompt through an agent via the agent-sdk.
+
+    Body: {agent: str, prompt: str, context_table?: str, row_ids?: list[int]}
+    Returns: {agent, response, session_id, elapsed_ms}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"status": "error", "error": "invalid JSON body"}, status_code=400)
+
+    agent_name: str = body.get("agent", "cybersec")
+    prompt: str = body.get("prompt", "")
+    context_table: str | None = body.get("context_table")
+    row_ids: list[int] = body.get("row_ids") or []
+
+    if not prompt:
+        return JSONResponse({"status": "error", "error": "prompt is required"}, status_code=400)
+
+    # Optionally enrich prompt with DB context
+    if context_table and row_ids:
+        from dashboard._schema import resolve_model, fetch_rows
+        info = resolve_model(context_table)
+        if info:
+            rows, _ = await fetch_rows(
+                model_cls=info["model_cls"],
+                scalar_fields=info["scalar_fields"],
+                page=1,
+                limit=min(len(row_ids), 20),
+                sort=None,
+                filters={"id__in": row_ids} if "id" in info["scalar_fields"] else {},
+            )
+            if rows:
+                import json
+                context_snippet = json.dumps(rows[:5], default=str)
+                prompt = f"{prompt}\n\nContext ({context_table} rows):\n{context_snippet}"
+
+    try:
+        import time
+        import asyncio
+        from a2a.agent_sdk import run_agent_query
+
+        t0 = time.monotonic()
+        result = await asyncio.wait_for(
+            run_agent_query(agent_name=agent_name, prompt=prompt),
+            timeout=120,
+        )
+        elapsed_ms = int((time.monotonic() - t0) * 1000)
+    except asyncio.TimeoutError:
+        return JSONResponse({"status": "error", "error": "agent query timed out (120s)"}, status_code=504)
+    except Exception as exc:
+        return JSONResponse({"status": "error", "error": str(exc)}, status_code=500)
+
+    return JSONResponse({
+        "agent": agent_name,
+        "response": result,
+        "elapsed_ms": elapsed_ms,
     })
 
 

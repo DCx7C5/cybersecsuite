@@ -2,14 +2,15 @@
   "mcpServers": {
     "cybersec": {
       "name": "CyberSecSuite",
-      "description": "Main forensics MCP — 29 tools: findings, IOCs, cases, MITRE, CVE, intel, cache, proxy, crypto (stdio, FastMCP)",
+      "description": "Main forensics SDK — 31 tools via agent-sdk in-process MCP: findings, IOCs, cases, MITRE, intel, cache, AI proxy, PoC management (stdio)",
       "command": "uv",
       "args": [
         "--directory",
         "${workspaceFolder}",
         "run",
         "python",
-        "mcp_server.py"
+        "-m",
+        "csmcp.cybersec.server"
       ],
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src",
@@ -22,52 +23,21 @@
     },
     "dystopian-crypto": {
       "name": "Dystopian Crypto",
-      "description": "Ed25519 key management, artifact signing/verification (Argon2id + AES-256-GCM)",
+      "description": "5 crypto tools — Ed25519 key management, artifact signing/verification, key rotation (Argon2id + AES-256-GCM, stdio)",
       "command": "uv",
       "args": [
         "--directory",
         "${workspaceFolder}",
         "run",
         "python",
-        "-c",
-        "import asyncio; from mcp.dystopian import dystopian_server; asyncio.run(dystopian_server.run_stdio())"
+        "-m",
+        "csmcp.dystopian_server"
       ],
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src",
         "DYSTOPIAN_KEYS_DIR": "/etc/dystopian-crypto/keys"
       },
       "cwd": "${workspaceFolder}"
-    },
-    "token-optimization-mcp": {
-      "name": "Token Optimization MCP",
-      "description": "Token counting, prompt compression, model routing and semantic caching (fastmcp, Redis-backed)",
-      "command": "uv",
-      "args": [
-        "--directory",
-        "${workspaceFolder}/mcps/token-optimization-mcp",
-        "run",
-        "python",
-        "main.py"
-      ],
-      "env": {
-        "USE_REDIS": "false",
-        "CACHE_TTL_SECONDS": "86400"
-      }
-    },
-    "playwright-stealth-mcp": {
-      "name": "Playwright Stealth MCP",
-      "description": "Headless Brave browser with fingerprint spoofing, anti-detection and human-like interaction (navigate, click, type, screenshot)",
-      "command": "uv",
-      "args": [
-        "--directory",
-        "${workspaceFolder}/mcps/playwright-stealth-mcp",
-        "run",
-        "python",
-        "server.py"
-      ],
-      "env": {
-        "BRAVE_PATH": "/usr/bin/brave-browser"
-      }
     },
     "kerneldev": {
       "name": "KernelDev MCP",
