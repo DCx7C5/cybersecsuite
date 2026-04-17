@@ -91,7 +91,8 @@ class PythonDeveloperAgent(BaseA2AAgent):
             await self._write(task, text)
 
     async def _write(self, task: Task, prompt: str) -> None:
-        code = self._generate_python(prompt)
+        from a2a.agent_sdk import run_agent_query
+        code = await run_agent_query("python-developer", f"Write Python code for: {prompt}") or _stub_python(prompt)
         self.store.add_artifact(task.id, TaskArtifact(
             name="python-code.py",
             parts=[TextPart(type=PartType.TEXT, text=code)],
@@ -99,63 +100,25 @@ class PythonDeveloperAgent(BaseA2AAgent):
         self._reply(task.id, "Python implementation complete. See artifact.")
 
     async def _review(self, task: Task, prompt: str) -> None:
-        review = (
-            f"## Python Code Review\n\n"
-            f"**Input:** {prompt[:200]}...\n\n"
-            "### Findings\n"
-            "- Check for SQL injection via parameterized queries\n"
-            "- Validate all external inputs\n"
-            "- Ensure secrets are loaded from env, not hardcoded\n"
-            "- Use `blake2b` instead of MD5/SHA1 for integrity\n\n"
-            "*(Wire to an LLM for full static analysis)*"
-        )
+        from a2a.agent_sdk import run_agent_query
+        review = await run_agent_query("python-developer", f"Review this Python code for bugs, security issues, and style: {prompt}") or _stub_review(prompt, "Python")
         self._add_text_artifact(task.id, review, name="python-review.md")
         self._reply(task.id, "Code review complete.")
 
     async def _debug(self, task: Task, prompt: str) -> None:
-        analysis = (
-            f"## Python Debug Analysis\n\n"
-            f"**Trace:** {prompt[:300]}\n\n"
-            "### Likely Cause\n"
-            "- Check import paths and virtual environment activation\n"
-            "- Verify async/await usage is consistent\n"
-            "- Inspect None dereferences with `assert x is not None`\n\n"
-            "*(Wire to an LLM for exact root cause)*"
-        )
+        from a2a.agent_sdk import run_agent_query
+        analysis = await run_agent_query("python-developer", f"Debug this Python error and identify the root cause: {prompt}") or _stub_debug(prompt, "Python")
         self._add_text_artifact(task.id, analysis, name="debug-analysis.md")
         self._reply(task.id, "Debug analysis complete.")
 
     async def _test(self, task: Task, prompt: str) -> None:
-        tests = self._generate_tests(prompt)
+        from a2a.agent_sdk import run_agent_query
+        tests = await run_agent_query("python-developer", f"Write a pytest test suite for: {prompt}") or _stub_tests(prompt)
         self.store.add_artifact(task.id, TaskArtifact(
             name="test_generated.py",
             parts=[TextPart(type=PartType.TEXT, text=tests)],
         ))
         self._reply(task.id, "pytest test suite generated.")
-
-    @staticmethod
-    def _generate_python(prompt: str) -> str:
-        return (
-            f'"""\nGenerated Python module.\nTask: {prompt[:120]}\n"""\n\n'
-            "# TODO: implement with LLM backend\n\n\n"
-            "def main() -> None:\n"
-            '    """Entry point."""\n'
-            "    pass\n\n\n"
-            'if __name__ == "__main__":\n'
-            "    main()\n"
-        )
-
-    @staticmethod
-    def _generate_tests(prompt: str) -> str:
-        return (
-            '"""Generated pytest suite."""\n'
-            "import pytest\n\n\n"
-            "class TestGenerated:\n"
-            f'    """Tests for: {prompt[:80]}"""\n\n'
-            "    def test_placeholder(self) -> None:\n"
-            "        # TODO: implement with LLM backend\n"
-            "        assert True\n"
-        )
 
     @staticmethod
     def _get_text(message: Message) -> str:
@@ -164,6 +127,55 @@ class PythonDeveloperAgent(BaseA2AAgent):
             if isinstance(part, TextPart):
                 parts.append(part.text)
         return " ".join(parts)
+
+
+# ─── Stub fallbacks (used if SDK query returns None) ─────────────────────────
+
+def _stub_python(prompt: str) -> str:
+    return (
+        f'"""\nGenerated Python module.\nTask: {prompt[:120]}\n"""\n\n'
+        "# TODO: SDK query returned no result\n\n\n"
+        "def main() -> None:\n"
+        '    """Entry point."""\n'
+        "    pass\n\n\n"
+        'if __name__ == "__main__":\n'
+        "    main()\n"
+    )
+
+
+def _stub_review(prompt: str, lang: str) -> str:
+    return f"## {lang} Code Review\n\n**Input:** {prompt[:200]}\n\n*(SDK query returned no result)*"
+
+
+def _stub_debug(prompt: str, lang: str) -> str:
+    return f"## {lang} Debug Analysis\n\n**Trace:** {prompt[:300]}\n\n*(SDK query returned no result)*"
+
+
+def _stub_tests(prompt: str) -> str:
+    return (
+        '"""Generated pytest suite."""\n'
+        "import pytest\n\n\n"
+        "class TestGenerated:\n"
+        f'    """Tests for: {prompt[:80]}"""\n\n'
+        "    def test_placeholder(self) -> None:\n"
+        "        # TODO: SDK query returned no result\n"
+        "        assert True\n"
+    )
+
+
+def _stub_cpp(prompt: str) -> str:
+    return (
+        f"// Generated C++ module\n"
+        f"// Task: {prompt[:120]}\n\n"
+        "#include <iostream>\n"
+        "#include <string>\n"
+        "#include <memory>\n\n"
+        "// TODO: SDK query returned no result\n\n"
+        "int main() {\n"
+        '    std::cout << "Hello from CppDeveloperAgent\\n";\n'
+        "    return 0;\n"
+        "}\n"
+    )
 
 
 # ─── C++ Developer Agent ──────────────────────────────────────────────────────
@@ -238,7 +250,8 @@ class CppDeveloperAgent(BaseA2AAgent):
             await self._write(task, text)
 
     async def _write(self, task: Task, prompt: str) -> None:
-        code = self._generate_cpp(prompt)
+        from a2a.agent_sdk import run_agent_query
+        code = await run_agent_query("cpp-developer", f"Write C++20 code for: {prompt}") or _stub_cpp(prompt)
         self.store.add_artifact(task.id, TaskArtifact(
             name="generated.cpp",
             parts=[TextPart(type=PartType.TEXT, text=code)],
@@ -246,62 +259,22 @@ class CppDeveloperAgent(BaseA2AAgent):
         self._reply(task.id, "C++ implementation complete. See artifact.")
 
     async def _review(self, task: Task, prompt: str) -> None:
-        review = (
-            "## C++ Code Review\n\n"
-            "### Memory Safety\n"
-            "- Prefer `std::unique_ptr` / `std::shared_ptr` over raw `new`\n"
-            "- Check array bounds — use `.at()` or `std::span`\n"
-            "- Avoid `reinterpret_cast` without strict aliasing justification\n\n"
-            "### Security\n"
-            "- Sanitize all external inputs (buffer overflows)\n"
-            "- Use `-D_FORTIFY_SOURCE=2 -fstack-protector-strong` in build\n"
-            "- Run with AddressSanitizer: `-fsanitize=address,undefined`\n\n"
-            "*(Wire to an LLM for full static analysis)*"
-        )
+        from a2a.agent_sdk import run_agent_query
+        review = await run_agent_query("cpp-developer", f"Review this C++ code for memory safety, UB, and security issues: {prompt}") or _stub_review(prompt, "C++")
         self._add_text_artifact(task.id, review, name="cpp-review.md")
         self._reply(task.id, "C++ code review complete.")
 
     async def _debug(self, task: Task, prompt: str) -> None:
-        analysis = (
-            "## C++ Debug Analysis\n\n"
-            "### Steps\n"
-            "1. Compile with `-g -fsanitize=address,undefined`\n"
-            "2. Run under `valgrind --leak-check=full`\n"
-            "3. Check for dangling references and use-after-free\n"
-            "4. Inspect with `gdb -ex run -ex bt ./binary`\n\n"
-            "*(Wire to an LLM for exact root cause)*"
-        )
+        from a2a.agent_sdk import run_agent_query
+        analysis = await run_agent_query("cpp-developer", f"Debug this C++ crash or error and identify root cause: {prompt}") or _stub_debug(prompt, "C++")
         self._add_text_artifact(task.id, analysis, name="debug-analysis.md")
         self._reply(task.id, "C++ debug analysis complete.")
 
     async def _optimize(self, task: Task, prompt: str) -> None:
-        tips = (
-            "## C++ Optimization Report\n\n"
-            "### Quick Wins\n"
-            "- Enable `-O3 -march=native` in release builds\n"
-            "- Use `[[likely]]` / `[[unlikely]]` hints on branches\n"
-            "- Prefer `std::array` over `std::vector` for fixed-size data\n"
-            "- Consider SIMD via `<immintrin.h>` or `std::experimental::simd`\n"
-            "- Profile with `perf stat` / `perf record` before micro-optimizing\n\n"
-            "*(Wire to an LLM + profiler output for detailed recommendations)*"
-        )
+        from a2a.agent_sdk import run_agent_query
+        tips = await run_agent_query("cpp-developer", f"Provide C++ performance optimization recommendations for: {prompt}") or _stub_review(prompt, "C++ Optimization")
         self._add_text_artifact(task.id, tips, name="optimization-report.md")
         self._reply(task.id, "C++ optimization report complete.")
-
-    @staticmethod
-    def _generate_cpp(prompt: str) -> str:
-        return (
-            f"// Generated C++ module\n"
-            f"// Task: {prompt[:120]}\n\n"
-            "#include <iostream>\n"
-            "#include <string>\n"
-            "#include <memory>\n\n"
-            "// TODO: implement with LLM backend\n\n"
-            "int main() {\n"
-            '    std::cout << "Hello from CppDeveloperAgent\\n";\n'
-            "    return 0;\n"
-            "}\n"
-        )
 
     @staticmethod
     def _get_text(message: Message) -> str:

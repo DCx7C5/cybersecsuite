@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -29,12 +30,14 @@ from claude_agent_sdk import (
     query,
     ClaudeAgentOptions,
     AgentDefinition,
+    HookMatcher,
     ResultMessage,
     SystemMessage,
     tool,
     create_sdk_mcp_server,
     ToolAnnotations,
 )
+from claude_agent_sdk.types import PreToolUseHookInput, HookContext
 
 from a2a.agent_loader import (
     ClaudeAgentCard,
@@ -77,6 +80,14 @@ def load_claude_agents() -> dict[str, ClaudeAgentCard]:
 # ── AgentDefinition Conversion ───────────────────────────────────────────────
 
 
+# Map .claude model shorthand → full Claude API model IDs
+_MODEL_MAP: dict[str, str] = {
+    "haiku":  "claude-haiku-4-5",
+    "sonnet": "claude-sonnet-4-5",
+    "opus":   "claude-opus-4-5",
+}
+
+
 def _claude_card_to_agent_def(card: ClaudeAgentCard) -> AgentDefinition:
     """Convert a ClaudeAgentCard to an SDK AgentDefinition."""
     # Map .claude tools to SDK built-in tool names
@@ -89,16 +100,19 @@ def _claude_card_to_agent_def(card: ClaudeAgentCard) -> AgentDefinition:
     if not sdk_tools:
         sdk_tools = ["Read", "Glob", "Grep"]
 
+    # Resolve model — prefer frontmatter shorthand, fall back to sonnet
+    model_id = _MODEL_MAP.get(card.model.lower(), card.model) if card.model else None
+
     return AgentDefinition(
         description=card.card.description,
         prompt=(
             f"You are {card.card.name}, a specialist agent in cybersecsuite.\n"
             f"Role: {card.role or 'specialist'}\n"
-            f"Model preference: {card.model}\n"
             f"Max turns: {card.max_turns}\n\n"
             f"{card.card.description}"
         ),
         tools=sdk_tools,
+        model=model_id,
     )
 
 
@@ -210,6 +224,45 @@ def create_cybersec_mcp_server():
     )
 
 
+# ── Hooks ───────────────────────────────────────────────────────────────────
+
+
+_AI_HOOKS_DIR = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "/home/daen/Projects/AI")
+_HOOKS_OK = False
+
+try:
+    import sys as _sys
+    if _AI_HOOKS_DIR not in _sys.path:
+        _sys.path.insert(0, _AI_HOOKS_DIR)
+    from hooks.database import write_scoped_entry_async  # type: ignore[import]
+    _HOOKS_OK = True
+except ImportError:
+    pass
+
+
+async def _audit_hook(
+    input_data: PreToolUseHookInput,
+    tool_use_id: str | None,
+    context: HookContext,
+) -> dict[str, Any]:
+    """PreToolUse hook — logs every tool invocation to the audit trail."""
+    if _HOOKS_OK:
+        try:
+            await write_scoped_entry_async(  # type: ignore[name-defined]
+                entry_type="tool_call",
+                data={
+                    "tool_name": input_data["tool_name"],
+                    "tool_input": input_data.get("tool_input", {}),
+                    "tool_use_id": tool_use_id,
+                    "agent_id": input_data.get("agent_id", ""),
+                    "agent_type": input_data.get("agent_type", ""),
+                },
+            )
+        except Exception:
+            pass  # never block execution on audit failure
+    return {}
+
+
 # ── High-Level Query Runner ──────────────────────────────────────────────────
 
 
@@ -235,6 +288,7 @@ def build_agent_options(
     opts = ClaudeAgentOptions(
         allowed_tools=allowed,
         agents=agents,
+        hooks={"PreToolUse": [HookMatcher(hooks=[_audit_hook])]},
     )
     if include_mcp:
         opts.mcp_servers = {"cybersec": create_cybersec_mcp_server()}

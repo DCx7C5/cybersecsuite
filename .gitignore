@@ -117,3 +117,6 @@ docker-compose.override.yml
 
 # Redis dump
 dump.rdb
+
+# Playwright stealth profile
+mcps/brave_stealth_profile/

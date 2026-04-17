@@ -165,20 +165,32 @@ class OrchestratorAgent(BaseA2AAgent):
     # ── Delegation strategies ─────────────────────────────────────────────────
 
     async def _auto_route(self, task: Task, text: str, message: Message) -> None:
-        """Auto-detect best agent from message keywords."""
+        """Auto-detect best agent from message keywords, fallback to SDK query."""
         keywords = text.lower().split()
         agent = self.registry.best_for(keywords)
 
-        if not agent:
+        if agent:
+            result = await self._call_agent(agent, text)
+            self._deliver_result(task.id, agent.card.name, result)
+            return
+
+        # No registry match — fall back to SDK orchestrator query
+        try:
+            from a2a.agent_sdk import run_orchestrator_query
+            sdk_result = await run_orchestrator_query(text)
+            result_text = sdk_result.get("result") or "No response from orchestrator."
+            self.store.add_artifact(task.id, TaskArtifact(
+                name="orchestrator-result",
+                parts=[TextPart(type=PartType.TEXT, text=result_text)],
+            ))
+            self._reply(task.id, result_text[:500] if len(result_text) > 500 else result_text)
+        except Exception as exc:
             self._reply(
                 task.id,
                 f"No suitable agent found for: {text!r}\n\n"
-                f"Registered agents:\n" + self._agents_summary(),
+                f"Registered agents:\n{self._agents_summary()}\n\n"
+                f"SDK fallback error: {exc}",
             )
-            return
-
-        result = await self._call_agent(agent, text)
-        self._deliver_result(task.id, agent.card.name, result)
 
     async def _delegate_to_named(
         self, task: Task, name: str, prompt: str, message: Message
