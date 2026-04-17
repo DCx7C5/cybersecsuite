@@ -1,5 +1,5 @@
 ---
-name: extracting-browser-history-artifacts
+name: browser
 description: Extract and analyze browser history, cookies, cache, downloads, and bookmarks from Chrome, Firefox, and Edge
   for forensic evidence of user web activity.
 domain: cybersecurity
@@ -357,7 +357,7 @@ Browser Forensics Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "extracting-browser-history-artifacts" --type investigation
+mcp__cybersec__case_open --title "browser" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

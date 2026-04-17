@@ -1,5 +1,5 @@
 ---
-name: analyzing-windows-shellbag-artifacts
+name: shellbags
 description: Analyze Windows Shellbag registry artifacts to reconstruct folder browsing activity, detect access to removable
   media and network shares, and establish user interaction with directories even after deletion using SBECmd and ShellBags
   Explorer.
@@ -228,7 +228,7 @@ Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-windows-shellbag-artifacts" --type investigation
+mcp__cybersec__case_open --title "shellbags" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

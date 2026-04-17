@@ -1,5 +1,5 @@
 ---
-name: hunting-for-ntlm-relay-attacks
+name: ntlmrelay
 description: Detect NTLM relay attacks by analyzing Windows Event 4624 logon type 3 with NTLMSSP authentication, identifying
   IP-to-hostname mismatches, Responder traffic signatures, SMB signing status, and suspicious authentication patterns across
   the domain.
@@ -76,7 +76,7 @@ JSON report with suspected relay events, IP-hostname correlation anomalies, SMB 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-ntlm-relay-attacks" --type investigation
+mcp__cybersec__case_open --title "ntlmrelay" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

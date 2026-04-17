@@ -1,5 +1,5 @@
 ---
-name: detecting-network-anomalies-with-zeek
+name: zeekanomaly
 description: 'Deploys and configures Zeek (formerly Bro) network security monitor to passively analyze network traffic, generate
   structured logs, detect anomalous behavior, and create custom detection scripts for threat hunting and incident response.
 
@@ -415,7 +415,7 @@ sudo zeekctl netstats
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-network-anomalies-with-zeek" --type investigation
+mcp__cybersec__case_open --title "zeekanomaly" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

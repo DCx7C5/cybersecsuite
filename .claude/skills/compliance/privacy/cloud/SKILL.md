@@ -1,5 +1,5 @@
 ---
-name: implementing-cloud-dlp-for-data-protection
+name: cloud
 description: 'Implementing Cloud Data Loss Prevention (DLP) using Amazon Macie, Azure Information Protection, and Google Cloud
   DLP API to discover, classify, and protect sensitive data across cloud storage, databases, and data pipelines.
 
@@ -468,7 +468,7 @@ REMEDIATION ACTIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-cloud-dlp-for-data-protection" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

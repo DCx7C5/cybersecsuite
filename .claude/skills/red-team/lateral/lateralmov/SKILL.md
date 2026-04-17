@@ -1,5 +1,5 @@
 ---
-name: detecting-azure-lateral-movement
+name: lateralmov
 description: Detect lateral movement in Azure AD/Entra ID environments using Microsoft Graph API audit logs, Azure Sentinel
   KQL hunting queries, and sign-in anomaly correlation to identify privilege escalation, token theft, and cross-tenant pivoting.
 domain: cybersecurity
@@ -89,7 +89,7 @@ JSON report containing detected lateral movement indicators, correlated event ch
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-azure-lateral-movement" --type investigation
+mcp__cybersec__case_open --title "lateralmov" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

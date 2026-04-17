@@ -1,5 +1,5 @@
 ---
-name: securing-azure-with-microsoft-defender
+name: msdefender
 description: 'This skill instructs security practitioners on deploying Microsoft Defender for Cloud as a cloud-native application
   protection platform for Azure, multi-cloud, and hybrid environments. It covers enabling Defender plans for servers, containers,
   storage, and databases, configuring security recommendations, managing Secure Score, and integrating with the unified Defender
@@ -280,7 +280,7 @@ ALERT SUMMARY (Last 30 Days):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-azure-with-microsoft-defender" --type investigation
+mcp__cybersec__case_open --title "msdefender" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

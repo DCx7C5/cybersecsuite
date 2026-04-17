@@ -1,5 +1,5 @@
 ---
-name: analyzing-threat-intelligence-feeds
+name: threat
 description: 'Analyzes structured and unstructured threat intelligence feeds to extract actionable indicators, adversary tactics,
   and campaign context. Use when ingesting commercial or open-source CTI feeds, evaluating feed quality, normalizing data
   into STIX 2.1 format, or enriching existing IOCs with campaign attribution. Activates for requests involving ThreatConnect,
@@ -129,7 +129,7 @@ Export enriched indicators via TAXII 2.1 push to SIEM (Splunk, Microsoft Sentine
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-threat-intelligence-feeds" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-incident-containment-procedures
+name: cloud
 description: Execute cloud-native incident containment across AWS, Azure, and GCP by isolating compromised resources, revoking
   credentials, preserving forensic evidence, and applying security group restrictions to prevent lateral movement.
 domain: cybersecurity
@@ -321,7 +321,7 @@ gcloud compute instances delete-access-config compromised-instance \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-incident-containment-procedures" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

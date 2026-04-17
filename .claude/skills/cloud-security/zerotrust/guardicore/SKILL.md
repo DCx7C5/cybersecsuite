@@ -1,5 +1,5 @@
 ---
-name: implementing-microsegmentation-with-guardicore
+name: guardicore
 description: 'Implementing microsegmentation using Akamai Guardicore Segmentation to map application dependencies, create
   granular network policies, visualize east-west traffic flows, and enforce least-privilege communication between workloads
   across data centers and cloud.
@@ -355,7 +355,7 @@ PCI CDE ISOLATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-microsegmentation-with-guardicore" --type investigation
+mcp__cybersec__case_open --title "guardicore" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-hardware-security-module-integration
+name: hardware
 description: Integrate Hardware Security Modules (HSMs) using PKCS#11 interface for cryptographic key management, signing
   operations, and secure key storage with python-pkcs11, AWS CloudHSM, and YubiHSM2.
 domain: cybersecurity
@@ -78,7 +78,7 @@ Hardware Security Modules (HSMs) provide tamper-resistant cryptographic key stor
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-hardware-security-module-integration" --type investigation
+mcp__cybersec__case_open --title "hardware" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

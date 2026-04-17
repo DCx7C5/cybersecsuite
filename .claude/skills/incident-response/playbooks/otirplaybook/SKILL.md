@@ -1,5 +1,5 @@
 ---
-name: implementing-ot-incident-response-playbook
+name: otirplaybook
 description: 'Develop and implement OT-specific incident response playbooks aligned with SANS PICERL framework, IEC 62443,
   and NIST SP 800-82 that address unique ICS challenges including safety-critical systems, limited downtime tolerance, and
   coordination between IT SOC, OT engineering, and plant operations teams.
@@ -396,7 +396,7 @@ RECOVERY STATUS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-ot-incident-response-playbook" --type investigation
+mcp__cybersec__case_open --title "otirplaybook" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

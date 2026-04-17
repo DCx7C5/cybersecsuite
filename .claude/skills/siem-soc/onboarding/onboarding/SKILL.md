@@ -1,5 +1,5 @@
 ---
-name: performing-log-source-onboarding-in-siem
+name: onboarding
 description: Perform structured log source onboarding into SIEM platforms by configuring collectors, parsers, normalization,
   and validation for complete security visibility.
 domain: cybersecurity
@@ -303,7 +303,7 @@ search = index=new_source sourcetype=new_sourcetype action=failure \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-log-source-onboarding-in-siem" --type investigation
+mcp__cybersec__case_open --title "onboarding" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

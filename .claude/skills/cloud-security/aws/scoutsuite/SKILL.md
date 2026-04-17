@@ -1,5 +1,5 @@
 ---
-name: performing-aws-account-enumeration-with-scout-suite
+name: scoutsuite
 description: Perform comprehensive security posture assessment of AWS accounts using ScoutSuite to enumerate resources, identify
   misconfigurations, and generate actionable security reports.
 domain: cybersecurity
@@ -269,7 +269,7 @@ scout aws --profile production
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-aws-account-enumeration-with-scout-suite" --type investigation
+mcp__cybersec__case_open --title "scoutsuite" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

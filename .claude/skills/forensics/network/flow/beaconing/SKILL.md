@@ -1,5 +1,5 @@
 ---
-name: hunting-for-beaconing-with-frequency-analysis
+name: beaconing
 description: Identify command-and-control beaconing patterns in network traffic by applying statistical frequency analysis,
   jitter calculation, and coefficient of variation scoring to detect periodic callbacks from compromised endpoints.
 domain: cybersecurity
@@ -181,7 +181,7 @@ Indicators: [List of triggered risk factors]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-beaconing-with-frequency-analysis" --type investigation
+mcp__cybersec__case_open --title "beaconing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-network-traffic-with-wireshark
+name: wireshark
 description: 'Captures and analyzes network packet data using Wireshark and tshark to identify malicious traffic patterns,
   diagnose protocol issues, extract artifacts, and support incident response investigations on authorized network segments.
 
@@ -239,7 +239,7 @@ sha256sum capture.pcapng > capture_hash.txt
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-network-traffic-with-wireshark" --type investigation
+mcp__cybersec__case_open --title "wireshark" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

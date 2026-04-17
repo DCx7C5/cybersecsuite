@@ -1,5 +1,5 @@
 ---
-name: investigating-phishing-email-incident
+name: investigation
 description: 'Investigates phishing email incidents from initial user report through header analysis, URL/attachment detonation,
   impacted user identification, and containment actions using SOC tools like Splunk, Microsoft Defender, and sandbox analysis
   platforms. Use when a reported phishing email requires full incident investigation to determine scope and impact.
@@ -311,7 +311,7 @@ Status:       RESOLVED — No evidence of lateral movement post-compromise
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "investigating-phishing-email-incident" --type investigation
+mcp__cybersec__case_open --title "investigation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: executing-active-directory-attack-simulation
+name: adsimulation
 description: 'Executes authorized attack simulations against Active Directory environments to identify misconfigurations,
   weak credentials, dangerous privilege paths, and exploitable trust relationships that could lead to domain compromise. The
   tester uses BloodHound for attack path analysis, Mimikatz for credential extraction, and Impacket for protocol-level attacks
@@ -200,7 +200,7 @@ could access all 5,000 user accounts, 800 computer objects, and all data within 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "executing-active-directory-attack-simulation" --type investigation
+mcp__cybersec__case_open --title "adsimulation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

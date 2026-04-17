@@ -1,5 +1,5 @@
 ---
-name: implementing-application-whitelisting-with-applocker
+name: application
 description: 'Implements application whitelisting using Windows AppLocker to restrict unauthorized software execution on endpoints,
   reducing attack surface from malware, unauthorized tools, and shadow IT. Use when enforcing application control policies,
   meeting compliance requirements for software restriction, or preventing execution of unsigned or untrusted binaries. Activates
@@ -263,7 +263,7 @@ Get-WinEvent -LogName "Microsoft-Windows-AppLocker/EXE and DLL" `
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-application-whitelisting-with-applocker" --type investigation
+mcp__cybersec__case_open --title "application" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

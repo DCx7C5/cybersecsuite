@@ -1,5 +1,5 @@
 ---
-name: performing-open-source-intelligence-gathering
+name: gathering
 description: Open Source Intelligence (OSINT) gathering is the first active phase of a red team engagement, where operators
   collect publicly available information about the target organization to identify attack s
 domain: cybersecurity
@@ -146,7 +146,7 @@ Open Source Intelligence (OSINT) gathering is the first active phase of a red te
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-open-source-intelligence-gathering" --type investigation
+mcp__cybersec__case_open --title "gathering" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-purple-team-atomic-testing
+name: purple
 description: 'Executes Atomic Red Team tests mapped to MITRE ATT&CK techniques, performs coverage gap analysis across the
   ATT&CK matrix, and runs detection validation loops to measure blue team visibility. Covers Invoke-AtomicRedTeam PowerShell
   execution, ATT&CK Navigator layer generation for heatmaps, Sigma rule correlation, and continuous atomic testing pipelines.
@@ -1017,7 +1017,7 @@ RECOMMENDATIONS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-purple-team-atomic-testing" --type investigation
+mcp__cybersec__case_open --title "purple" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

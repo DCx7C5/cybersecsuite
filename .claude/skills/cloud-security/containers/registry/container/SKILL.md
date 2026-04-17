@@ -1,5 +1,5 @@
 ---
-name: securing-container-registry-images
+name: container
 description: 'Securing container registry images by implementing vulnerability scanning with Trivy and Grype, enforcing image
   signing with Cosign and Sigstore, configuring registry access controls, and building CI/CD pipelines that prevent deploying
   unscanned or unsigned images.
@@ -314,7 +314,7 @@ REGISTRY CONFIGURATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-container-registry-images" --type investigation
+mcp__cybersec__case_open --title "container" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-service-account-credential-rotation
+name: sarotation
 description: Automate credential rotation for service accounts across Active Directory, cloud platforms, and application databases
   to eliminate stale secrets and reduce compromise risk.
 domain: cybersecurity
@@ -281,7 +281,7 @@ def verify_service_health(service_endpoints, max_retries=3, delay=10):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-service-account-credential-rotation" --type investigation
+mcp__cybersec__case_open --title "sarotation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

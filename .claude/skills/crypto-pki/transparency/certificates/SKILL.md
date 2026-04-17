@@ -1,5 +1,5 @@
 ---
-name: analyzing-certificate-transparency-for-phishing
+name: certificates
 description: Monitor Certificate Transparency logs using crt.sh and Certstream to detect phishing domains, lookalike certificates,
   and unauthorized certificate issuance targeting your organization.
 domain: cybersecurity
@@ -347,7 +347,7 @@ generate_ct_report(suspicious, alerts if 'alerts' in dir() else [], "mycompany.c
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-certificate-transparency-for-phishing" --type investigation
+mcp__cybersec__case_open --title "certificates" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

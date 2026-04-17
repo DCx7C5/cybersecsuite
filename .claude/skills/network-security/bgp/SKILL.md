@@ -1,5 +1,5 @@
 ---
-name: exploiting-bgp-hijacking-vulnerabilities
+name: bgp
 description: 'Analyzes and simulates BGP hijacking scenarios in authorized lab environments to assess route origin validation,
   RPKI deployment, and BGP monitoring defenses against prefix hijacking and route leak attacks on internet routing infrastructure.
 
@@ -362,7 +362,7 @@ curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=AS65001&p
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-bgp-hijacking-vulnerabilities" --type investigation
+mcp__cybersec__case_open --title "bgp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

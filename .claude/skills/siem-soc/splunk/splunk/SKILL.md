@@ -1,5 +1,5 @@
 ---
-name: analyzing-security-logs-with-splunk
+name: splunk
 description: 'Leverages Splunk Enterprise Security and SPL (Search Processing Language) to investigate security incidents
   through log correlation, timeline reconstruction, and anomaly detection. Covers Windows event logs, firewall logs, proxy
   logs, and authentication data analysis. Activates for requests involving Splunk investigation, SPL queries, SIEM log analysis,
@@ -278,7 +278,7 @@ RECOMMENDED DETECTIONS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-security-logs-with-splunk" --type investigation
+mcp__cybersec__case_open --title "splunk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

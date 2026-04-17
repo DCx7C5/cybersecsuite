@@ -1,5 +1,5 @@
 ---
-name: implementing-cisa-zero-trust-maturity-model
+name: cisamaturity
 description: Implement the CISA Zero Trust Maturity Model v2.0 across the five pillars of identity, devices, networks, applications,
   and data to achieve progressive organizational zero trust maturity.
 domain: cybersecurity
@@ -355,7 +355,7 @@ class ZTMMAssessment:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-cisa-zero-trust-maturity-model" --type investigation
+mcp__cybersec__case_open --title "cisamaturity" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

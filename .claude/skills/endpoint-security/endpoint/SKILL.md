@@ -1,5 +1,5 @@
 ---
-name: implementing-endpoint-dlp-controls
+name: endpoint
 description: 'Implements endpoint Data Loss Prevention (DLP) controls to detect and prevent sensitive data exfiltration through
   email, USB, cloud storage, and printing. Use when deploying DLP agents, creating content inspection policies, or preventing
   unauthorized data movement from endpoints. Activates for requests involving DLP, data exfiltration prevention, content inspection,
@@ -179,7 +179,7 @@ DLP incident response:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-endpoint-dlp-controls" --type investigation
+mcp__cybersec__case_open --title "endpoint" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

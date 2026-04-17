@@ -1,5 +1,5 @@
 ---
-name: implementing-hashicorp-vault-dynamic-secrets
+name: hashicorp
 description: 'Implements HashiCorp Vault dynamic secrets engines for database credentials, AWS IAM keys, and PKI certificates
   with automatic generation, lease management, and credential rotation to eliminate static secrets in application configurations.
   Activates for requests involving Vault secrets engine configuration, dynamic database credentials, ephemeral cloud credentials,
@@ -601,7 +601,7 @@ Policy Violations (24h):        7 (permission denied)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-hashicorp-vault-dynamic-secrets" --type investigation
+mcp__cybersec__case_open --title "hashicorp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

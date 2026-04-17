@@ -1,5 +1,5 @@
 ---
-name: analyzing-windows-registry-for-artifacts
+name: registry
 description: Extract and analyze Windows Registry hives to uncover user activity, installed software, autostart entries, and
   evidence of system compromise.
 domain: cybersecurity
@@ -304,7 +304,7 @@ Registry Analysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-windows-registry-for-artifacts" --type investigation
+mcp__cybersec__case_open --title "registry" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

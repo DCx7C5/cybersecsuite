@@ -1,5 +1,5 @@
 ---
-name: securing-container-registry-with-harbor
+name: harbor
 description: Harbor is an open-source container registry that provides security features including vulnerability scanning
   (integrated Trivy), image signing (Notary/Cosign), RBAC, content trust policies, replicatio
 domain: cybersecurity
@@ -249,7 +249,7 @@ curl -k "https://harbor.example.com/api/v2.0/audit-logs?page=1&page_size=10" \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-container-registry-with-harbor" --type investigation
+mcp__cybersec__case_open --title "harbor" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

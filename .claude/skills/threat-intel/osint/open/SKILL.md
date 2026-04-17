@@ -1,5 +1,5 @@
 ---
-name: collecting-open-source-intelligence
+name: open
 description: 'Collects and synthesizes open-source intelligence (OSINT) about threat actors, malicious infrastructure, and
   attack campaigns using publicly available data sources, passive reconnaissance tools, and dark web monitoring. Use when
   investigating external threat actor infrastructure, performing pre-engagement reconnaissance for authorized red team assessments,
@@ -154,7 +154,7 @@ python sf.py -s evil-domain.com -m sfp_shodan,sfp_virustotal,sfp_passivetotal \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "collecting-open-source-intelligence" --type investigation
+mcp__cybersec__case_open --title "open" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

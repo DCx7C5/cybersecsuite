@@ -1,5 +1,5 @@
 ---
-name: detecting-suspicious-powershell-execution
+name: suspicious
 description: Detect suspicious PowerShell execution patterns including encoded commands, download cradles, AMSI bypass attempts,
   and constrained language mode evasion.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-suspicious-powershell-execution" --type investigation
+mcp__cybersec__case_open --title "suspicious" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

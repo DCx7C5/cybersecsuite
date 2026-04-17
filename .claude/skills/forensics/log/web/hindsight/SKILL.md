@@ -1,5 +1,5 @@
 ---
-name: analyzing-browser-forensics-with-hindsight
+name: hindsight
 description: Analyze Chromium-based browser artifacts using Hindsight to extract browsing history, downloads, cookies, cached
   content, autofill data, saved passwords, and browser extensions from Chrome, Edge, Brave, and Opera for forensic investigation.
 domain: cybersecurity
@@ -307,7 +307,7 @@ Report saved to: /analysis/hindsight_output/Hindsight_Report.xlsx
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-browser-forensics-with-hindsight" --type investigation
+mcp__cybersec__case_open --title "hindsight" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

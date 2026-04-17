@@ -1,5 +1,5 @@
 ---
-name: performing-adversary-in-the-middle-phishing-detection
+name: aitm
 description: Detect and respond to Adversary-in-the-Middle (AiTM) phishing attacks that use reverse proxy kits like EvilProxy,
   Evilginx, and Tycoon 2FA to bypass MFA and steal session tokens.
 domain: cybersecurity
@@ -132,7 +132,7 @@ Adversary-in-the-Middle (AiTM) phishing attacks use reverse-proxy infrastructure
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-adversary-in-the-middle-phishing-detection" --type investigation
+mcp__cybersec__case_open --title "aitm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

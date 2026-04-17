@@ -1,5 +1,5 @@
 ---
-name: deploying-osquery-for-endpoint-monitoring
+name: osquery
 description: 'Deploys and configures osquery for real-time endpoint monitoring using SQL-based queries to inspect running
   processes, open ports, installed software, and system configuration. Use when building visibility into endpoint state, threat
   hunting across fleet, or implementing compliance monitoring. Activates for requests involving osquery deployment, endpoint
@@ -215,7 +215,7 @@ WHERE a.result != 'trusted';
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-osquery-for-endpoint-monitoring" --type investigation
+mcp__cybersec__case_open --title "osquery" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

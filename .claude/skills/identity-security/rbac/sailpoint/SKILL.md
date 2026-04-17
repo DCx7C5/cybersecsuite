@@ -1,5 +1,5 @@
 ---
-name: implementing-identity-governance-with-sailpoint
+name: sailpoint
 description: Deploy SailPoint IdentityNow or IdentityIQ for identity governance and administration. Covers identity lifecycle
   management, access request workflows, certification campaigns, role mining, SOD policy
 domain: cybersecurity
@@ -76,7 +76,7 @@ Deploy SailPoint IdentityNow or IdentityIQ for identity governance and administr
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-identity-governance-with-sailpoint" --type investigation
+mcp__cybersec__case_open --title "sailpoint" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

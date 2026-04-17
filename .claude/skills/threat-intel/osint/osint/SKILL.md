@@ -1,5 +1,5 @@
 ---
-name: building-threat-actor-profile-from-osint
+name: osint
 description: Build comprehensive threat actor profiles using open-source intelligence (OSINT) techniques to document adversary
   motivations, capabilities, infrastructure, and TTPs for proactive defense.
 domain: cybersecurity
@@ -387,7 +387,7 @@ generate_dossier("APT29", {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-threat-actor-profile-from-osint" --type investigation
+mcp__cybersec__case_open --title "osint" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

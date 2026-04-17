@@ -1,5 +1,5 @@
 ---
-name: detecting-container-escape-attempts
+name: container
 description: Container escape is a critical attack technique where an adversary breaks out of container isolation to access
   the host system or other containers. Detection involves monitoring for escape indicators
 domain: cybersecurity
@@ -331,7 +331,7 @@ ausearch -k container_escape --interpret
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-container-escape-attempts" --type investigation
+mcp__cybersec__case_open --title "container" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

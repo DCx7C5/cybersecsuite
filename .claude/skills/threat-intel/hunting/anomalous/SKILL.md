@@ -1,5 +1,5 @@
 ---
-name: hunting-for-anomalous-powershell-execution
+name: anomalous
 description: 'Hunt for malicious PowerShell activity by analyzing Script Block Logging (Event 4104), Module Logging (Event
   4103), and process creation events. The analyst parses Windows Event Log EVTX files to detect obfuscated commands, AMSI
   bypass attempts, encoded payloads, credential dumping keywords, and suspicious download cradles. Activates for requests
@@ -84,7 +84,7 @@ and fileless attack techniques even when the attacker uses obfuscation layers.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-anomalous-powershell-execution" --type investigation
+mcp__cybersec__case_open --title "anomalous" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

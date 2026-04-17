@@ -1,5 +1,5 @@
 ---
-name: analyzing-network-covert-channels-in-malware
+name: network
 description: Detect and analyze covert communication channels used by malware including DNS tunneling, ICMP exfiltration,
   steganographic HTTP, and protocol abuse for C2 and data exfiltration.
 domain: cybersecurity
@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-network-covert-channels-in-malware" --type investigation
+mcp__cybersec__case_open --title "network" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

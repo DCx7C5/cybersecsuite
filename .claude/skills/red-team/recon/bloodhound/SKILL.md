@@ -1,5 +1,5 @@
 ---
-name: conducting-internal-reconnaissance-with-bloodhound-ce
+name: bloodhound
 description: Conduct internal Active Directory reconnaissance using BloodHound Community Edition to map attack paths, identify
   privilege escalation chains, and discover misconfigurations in domain environments.
 domain: cybersecurity
@@ -205,7 +205,7 @@ BloodHound Community Edition (CE) is a modern, web-based Active Directory reconn
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-internal-reconnaissance-with-bloodhound-ce" --type investigation
+mcp__cybersec__case_open --title "bloodhound" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

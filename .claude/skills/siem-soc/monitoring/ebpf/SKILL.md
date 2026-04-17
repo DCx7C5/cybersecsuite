@@ -1,5 +1,5 @@
 ---
-name: implementing-ebpf-security-monitoring
+name: ebpf
 description: 'Implements eBPF-based security monitoring using Cilium Tetragon for real-time process execution tracking, network
   connection observability, file access auditing, and runtime enforcement. Covers TracingPolicy CRD authoring with kprobe/tracepoint
   hooks, in-kernel filtering via matchArgs/matchBinaries selectors, JSON event export, and integration with SIEM pipelines.
@@ -394,7 +394,7 @@ tetra getevents -o json | jq -c 'select(.process_kprobe != null)' | \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-ebpf-security-monitoring" --type investigation
+mcp__cybersec__case_open --title "ebpf" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

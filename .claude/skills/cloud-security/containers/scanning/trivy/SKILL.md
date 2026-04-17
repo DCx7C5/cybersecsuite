@@ -1,5 +1,5 @@
 ---
-name: performing-container-security-scanning-with-trivy
+name: trivy
 description: Scan container images, filesystems, and Kubernetes manifests for vulnerabilities, misconfigurations, exposed
   secrets, and license compliance issues using Aqua Security Trivy with SBOM generation and CI/CD integration.
 domain: cybersecurity
@@ -79,7 +79,7 @@ JSON/table report listing CVEs with severity, CVSS scores, fixed versions, affec
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-container-security-scanning-with-trivy" --type investigation
+mcp__cybersec__case_open --title "trivy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

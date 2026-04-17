@@ -1,5 +1,5 @@
 ---
-name: detecting-process-injection-techniques
+name: detection
 description: 'Detects and analyzes process injection techniques used by malware including classic DLL injection, process hollowing,
   APC injection, thread hijacking, and reflective loading. Uses memory forensics, API monitoring, and behavioral analysis
   to identify injection artifacts. Activates for requests involving process injection detection, code injection analysis,
@@ -375,7 +375,7 @@ T1036.005  Match Legitimate Name (svchost.exe)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-process-injection-techniques" --type investigation
+mcp__cybersec__case_open --title "detection" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

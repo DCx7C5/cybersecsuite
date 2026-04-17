@@ -1,5 +1,5 @@
 ---
-name: detecting-evasion-techniques-in-endpoint-logs
+name: evasion
 description: 'Detects defense evasion techniques used by adversaries in endpoint logs including log tampering, timestomping,
   process injection, and security tool disabling. Use when investigating suspicious endpoint behavior, building detection
   rules for evasion tactics, or conducting threat hunting for stealthy adversary activity. Activates for requests involving
@@ -272,7 +272,7 @@ index=sysmon host=*
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-evasion-techniques-in-endpoint-logs" --type investigation
+mcp__cybersec__case_open --title "evasion" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

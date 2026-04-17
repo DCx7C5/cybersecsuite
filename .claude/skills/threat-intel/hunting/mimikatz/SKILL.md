@@ -1,5 +1,5 @@
 ---
-name: detecting-mimikatz-execution-patterns
+name: mimikatz
 description: Detect Mimikatz execution through command-line patterns, LSASS access signatures, binary indicators, and in-memory
   detection of known modules.
 domain: cybersecurity
@@ -109,7 +109,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-mimikatz-execution-patterns" --type investigation
+mcp__cybersec__case_open --title "mimikatz" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

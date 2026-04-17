@@ -1,5 +1,5 @@
 ---
-name: implementing-aws-security-hub-compliance
+name: hubcompliance
 description: 'Implementing AWS Security Hub to aggregate security findings across AWS accounts, enable compliance standards
   like CIS AWS Foundations and PCI DSS, configure automated remediation with EventBridge and Lambda, and create custom security
   insights for organizational risk management.
@@ -321,7 +321,7 @@ AUTO-REMEDIATION ACTIONS (Last 30 Days):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aws-security-hub-compliance" --type investigation
+mcp__cybersec__case_open --title "hubcompliance" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: exploiting-constrained-delegation-abuse
+name: constrained
 description: Exploit Kerberos Constrained Delegation misconfigurations in Active Directory to impersonate privileged users
   via S4U2self and S4U2proxy extensions for lateral movement and privilege escalation.
 domain: cybersecurity
@@ -209,7 +209,7 @@ Kerberos Constrained Delegation (KCD) is a Windows Active Directory feature that
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-constrained-delegation-abuse" --type investigation
+mcp__cybersec__case_open --title "constrained" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

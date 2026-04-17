@@ -1,5 +1,5 @@
 ---
-name: implementing-supply-chain-security-with-in-toto
+name: supply
 description: Implement software supply chain integrity verification for container builds using the in-toto framework to create
   cryptographically signed attestations across CI/CD pipeline steps.
 domain: cybersecurity
@@ -309,7 +309,7 @@ in-toto attestations map directly to SLSA (Supply chain Levels for Software Arti
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-supply-chain-security-with-in-toto" --type investigation
+mcp__cybersec__case_open --title "supply" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

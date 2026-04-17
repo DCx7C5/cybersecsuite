@@ -1,5 +1,5 @@
 ---
-name: auditing-gcp-iam-permissions
+name: iam
 description: 'Auditing Google Cloud Platform IAM permissions to identify overly permissive bindings, primitive role usage,
   service account key proliferation, and cross-project access risks using gcloud CLI, Policy Analyzer, and IAM Recommender.
 
@@ -330,7 +330,7 @@ RECOMMENDER SUGGESTIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "auditing-gcp-iam-permissions" --type investigation
+mcp__cybersec__case_open --title "iam" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

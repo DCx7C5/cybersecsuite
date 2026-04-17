@@ -1,5 +1,5 @@
 ---
-name: hunting-for-registry-run-key-persistence
+name: registry
 description: Detect MITRE ATT&CK T1547.001 registry Run key persistence by analyzing Sysmon Event ID 13 logs and registry
   queries to identify malicious auto-start entries.
 domain: cybersecurity
@@ -78,7 +78,7 @@ A JSON report listing suspicious Run key entries with the registry path, value w
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-registry-run-key-persistence" --type investigation
+mcp__cybersec__case_open --title "registry" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

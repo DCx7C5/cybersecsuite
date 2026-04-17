@@ -1,5 +1,5 @@
 ---
-name: hunting-for-lateral-movement-via-wmi
+name: wmilateral
 description: Detect WMI-based lateral movement by analyzing Windows Event ID 4688 process creation and Sysmon Event ID 1 for
   WmiPrvSE.exe child process patterns, remote process execution, and WMI event subscription persistence.
 domain: cybersecurity
@@ -71,7 +71,7 @@ JSON report with WMI-spawned processes, suspicious command lines, WMI event subs
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-lateral-movement-via-wmi" --type investigation
+mcp__cybersec__case_open --title "wmilateral" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

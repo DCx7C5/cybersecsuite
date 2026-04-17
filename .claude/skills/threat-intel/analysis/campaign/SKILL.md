@@ -1,5 +1,5 @@
 ---
-name: analyzing-campaign-attribution-evidence
+name: campaign
 description: Campaign attribution analysis involves systematically evaluating evidence to determine which threat actor or
   group is responsible for a cyber operation. This skill covers collecting and weighting attr
 domain: cybersecurity
@@ -248,7 +248,7 @@ def generate_attribution_report(analyzer):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-campaign-attribution-evidence" --type investigation
+mcp__cybersec__case_open --title "campaign" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

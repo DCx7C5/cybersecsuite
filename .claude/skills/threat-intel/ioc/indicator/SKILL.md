@@ -1,5 +1,5 @@
 ---
-name: performing-indicator-lifecycle-management
+name: indicator
 description: Indicator lifecycle management tracks IOCs from initial discovery through validation, enrichment, deployment,
   monitoring, and eventual retirement. This skill covers implementing systematic processes f
 domain: cybersecurity
@@ -151,7 +151,7 @@ class IOCLifecycle:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-indicator-lifecycle-management" --type investigation
+mcp__cybersec__case_open --title "indicator" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

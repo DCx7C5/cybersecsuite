@@ -1,5 +1,5 @@
 ---
-name: monitoring-darkweb-sources
+name: darkweb
 description: 'Monitors dark web forums, marketplaces, paste sites, and ransomware leak sites for mentions of organizational
   assets, leaked credentials, threatened attacks, and threat actor communications to provide early warning intelligence. Use
   when establishing dark web monitoring coverage, investigating specific data breach claims, or enriching incident investigations
@@ -155,7 +155,7 @@ For each dark web finding:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "monitoring-darkweb-sources" --type investigation
+mcp__cybersec__case_open --title "darkweb" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

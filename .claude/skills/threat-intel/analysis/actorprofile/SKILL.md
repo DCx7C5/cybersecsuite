@@ -1,5 +1,5 @@
 ---
-name: profiling-threat-actor-groups
+name: actorprofile
 description: 'Develops comprehensive threat actor profiles for APT groups, criminal organizations, and hacktivist collectives
   by aggregating TTP documentation, historical campaign data, tooling fingerprints, and attribution indicators from multiple
   intelligence sources. Use when briefing executives on sector-specific threats, updating threat model assumptions, or prioritizing
@@ -146,7 +146,7 @@ Classify TLP:AMBER for internal distribution; seek ISAC approval before external
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "profiling-threat-actor-groups" --type investigation
+mcp__cybersec__case_open --title "actorprofile" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

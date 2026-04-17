@@ -1,5 +1,5 @@
 ---
-name: implementing-google-workspace-admin-security
+name: google
 description: 'Implements comprehensive Google Workspace security hardening including admin console configuration, phishing-resistant
   MFA enforcement, DLP policies, email authentication (SPF/DKIM/DMARC), OAuth app control, and external sharing restrictions.
   Activates for requests involving Google Workspace hardening, G Suite security configuration, or cloud office security administration.
@@ -492,7 +492,7 @@ Shared Drive Creation:  ADMIN ONLY
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-google-workspace-admin-security" --type investigation
+mcp__cybersec__case_open --title "google" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

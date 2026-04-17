@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-for-saas-applications
+name: saas
 description: 'Implementing zero trust access controls for SaaS applications using CASB, SSPM, conditional access policies,
   OAuth app governance, and session controls to enforce identity verification, device compliance, and data protection for
   cloud-hosted services.
@@ -331,7 +331,7 @@ SSPM FINDINGS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-for-saas-applications" --type investigation
+mcp__cybersec__case_open --title "saas" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

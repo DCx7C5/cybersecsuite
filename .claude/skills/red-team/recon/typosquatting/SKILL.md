@@ -1,5 +1,5 @@
 ---
-name: detecting-typosquatting-packages-in-npm-pypi
+name: typosquatting
 description: 'Detects typosquatting attacks in npm and PyPI package registries by analyzing package name similarity using
   Levenshtein distance and other string metrics, examining publish date heuristics to identify recently created packages mimicking
   established ones, and flagging download count anomalies where suspicious packages have disproportionately low usage compared
@@ -179,7 +179,7 @@ Combine signals into a composite risk score and generate an actionable report:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-typosquatting-packages-in-npm-pypi" --type investigation
+mcp__cybersec__case_open --title "typosquatting" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

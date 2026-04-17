@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-native-threat-hunting-with-aws-detective
+name: cloud
 description: Hunt for threats in AWS environments using Detective behavior graphs, entity investigation timelines, GuardDuty
   finding correlation, and automated entity profiling across IAM users, EC2 instances, and IP addresses.
 domain: cybersecurity
@@ -177,7 +177,7 @@ Indicators are retrieved separately via `list-indicators` and include types such
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-native-threat-hunting-with-aws-detective" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: hunting-for-domain-fronting-c2-traffic
+name: domainfronting
 description: Detect domain fronting C2 traffic by analyzing SNI vs HTTP Host header mismatches in proxy logs and TLS certificate
   discrepancies using pyOpenSSL for certificate inspection
 domain: cybersecurity
@@ -75,7 +75,7 @@ JSON report containing detected domain fronting indicators with SNI-Host pairs, 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-domain-fronting-c2-traffic" --type investigation
+mcp__cybersec__case_open --title "domainfronting" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

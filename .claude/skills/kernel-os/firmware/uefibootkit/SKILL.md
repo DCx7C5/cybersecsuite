@@ -1,5 +1,5 @@
 ---
-name: analyzing-uefi-bootkit-persistence
+name: uefibootkit
 description: 'Analyzes UEFI bootkit persistence mechanisms including firmware implants in SPI flash, EFI System Partition
   (ESP) modifications, Secure Boot bypass techniques, and UEFI variable manipulation. Covers detection of known bootkit families
   (BlackLotus, LoJax, MosaicRegressor, MoonBounce, CosmicStrand), ESP partition forensic inspection, chipsec-based firmware
@@ -374,7 +374,7 @@ REMEDIATION
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-uefi-bootkit-persistence" --type investigation
+mcp__cybersec__case_open --title "uefibootkit" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

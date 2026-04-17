@@ -1,5 +1,5 @@
 ---
-name: hunting-advanced-persistent-threats
+name: advanced
 description: 'Proactively hunts for Advanced Persistent Threat (APT) activity within enterprise environments using hypothesis-driven
   searches across endpoint telemetry, network logs, and memory artifacts. Use when conducting scheduled threat hunting cycles,
   investigating anomalous behavior flagged by UEBA, or validating that known APT TTPs are not present in the environment.
@@ -149,7 +149,7 @@ Convert successful hunt queries into SIEM detection rules using Sigma format for
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-advanced-persistent-threats" --type investigation
+mcp__cybersec__case_open --title "advanced" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

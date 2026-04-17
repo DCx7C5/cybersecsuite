@@ -1,5 +1,5 @@
 ---
-name: conducting-spearphishing-simulation-campaign
+name: spearphish
 description: Spearphishing simulation is a targeted social engineering attack vector used by red teams to gain initial access.
   Unlike broad phishing campaigns, spearphishing uses OSINT-derived intelligence to craf
 domain: cybersecurity
@@ -147,7 +147,7 @@ Spearphishing simulation is a targeted social engineering attack vector used by 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-spearphishing-simulation-campaign" --type investigation
+mcp__cybersec__case_open --title "spearphish" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

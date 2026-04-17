@@ -1,5 +1,5 @@
 ---
-name: performing-container-escape-detection
+name: escapedetect
 description: 'Detects container escape attempts by analyzing namespace configurations, privileged container checks, dangerous
   capability assignments, and host path mounts using the kubernetes Python client. Identifies CVE-2022-0492 style escapes
   via cgroup abuse. Use when auditing container security posture or investigating escape attempts.
@@ -85,7 +85,7 @@ for vol in pod.spec.volumes or []:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-container-escape-detection" --type investigation
+mcp__cybersec__case_open --title "escapedetect" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

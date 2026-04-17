@@ -1,5 +1,5 @@
 ---
-name: analyzing-email-headers-for-phishing-investigation
+name: phishing
 description: Parse and analyze email headers to trace the origin of phishing emails, verify sender authenticity, and identify
   spoofing through SPF, DKIM, and DMARC validation.
 domain: cybersecurity
@@ -338,7 +338,7 @@ Email Header Analysis Report:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-email-headers-for-phishing-investigation" --type investigation
+mcp__cybersec__case_open --title "phishing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

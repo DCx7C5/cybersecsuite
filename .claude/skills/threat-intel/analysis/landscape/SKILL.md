@@ -1,5 +1,5 @@
 ---
-name: performing-threat-landscape-assessment-for-sector
+name: landscape
 description: Conduct a sector-specific threat landscape assessment by analyzing threat actor targeting patterns, common attack
   vectors, and industry-specific vulnerabilities to inform organizational risk management.
 domain: cybersecurity
@@ -305,7 +305,7 @@ generate_sector_report(assessment)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-threat-landscape-assessment-for-sector" --type investigation
+mcp__cybersec__case_open --title "landscape" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

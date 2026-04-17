@@ -1,5 +1,5 @@
 ---
-name: detecting-credential-dumping-techniques
+name: credential
 description: Detect LSASS credential dumping, SAM database extraction, and NTDS.dit theft using Sysmon Event ID 10, Windows
   Security logs, and SIEM correlation rules
 domain: cybersecurity
@@ -75,7 +75,7 @@ JSON report containing detected credential dumping indicators with technique cla
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-credential-dumping-techniques" --type investigation
+mcp__cybersec__case_open --title "credential" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

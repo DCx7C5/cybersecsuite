@@ -1,5 +1,5 @@
 ---
-name: implementing-patch-management-for-ot-systems
+name: patch
 description: 'This skill covers implementing a structured patch management program for OT/ICS environments where traditional
   IT patching approaches can cause process disruption or safety hazards. It addresses vendor compatibility testing, risk-based
   patch prioritization, staged deployment through test environments, maintenance window coordination, rollback procedures,
@@ -355,7 +355,7 @@ COMPLIANCE:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-patch-management-for-ot-systems" --type investigation
+mcp__cybersec__case_open --title "patch" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

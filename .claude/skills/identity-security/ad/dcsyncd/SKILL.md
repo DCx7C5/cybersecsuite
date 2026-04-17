@@ -1,5 +1,5 @@
 ---
-name: detecting-dcsync-attack-in-active-directory
+name: dcsyncd
 description: Detect DCSync attacks where adversaries abuse Active Directory replication privileges to extract password hashes
   by monitoring for non-domain-controller accounts requesting directory replication via DsGetNCChanges.
 domain: cybersecurity
@@ -165,7 +165,7 @@ Risk Assessment: [Critical - non-DC replication detected]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-dcsync-attack-in-active-directory" --type investigation
+mcp__cybersec__case_open --title "dcsyncd" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: collecting-volatile-evidence-from-compromised-host
+name: volatile
 description: Collect volatile forensic evidence from a compromised system following order of volatility, preserving memory,
   network connections, processes, and system state before they are lost.
 domain: cybersecurity
@@ -262,7 +262,7 @@ EOF
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "collecting-volatile-evidence-from-compromised-host" --type investigation
+mcp__cybersec__case_open --title "volatile" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

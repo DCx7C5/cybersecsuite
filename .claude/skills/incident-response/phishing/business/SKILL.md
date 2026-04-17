@@ -1,5 +1,5 @@
 ---
-name: detecting-business-email-compromise
+name: business
 description: Business Email Compromise (BEC) is a sophisticated fraud scheme where attackers impersonate executives, vendors,
   or trusted partners to trick employees into transferring funds, sharing sensitive data,
 domain: cybersecurity
@@ -120,7 +120,7 @@ Business Email Compromise (BEC) is a sophisticated fraud scheme where attackers 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-business-email-compromise" --type investigation
+mcp__cybersec__case_open --title "business" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

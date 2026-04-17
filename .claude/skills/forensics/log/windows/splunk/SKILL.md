@@ -1,5 +1,5 @@
 ---
-name: analyzing-windows-event-logs-in-splunk
+name: splunk
 description: 'Analyzes Windows Security, System, and Sysmon event logs in Splunk to detect authentication attacks, privilege
   escalation, persistence mechanisms, and lateral movement using SPL queries mapped to MITRE ATT&CK techniques. Use when SOC
   analysts need to investigate Windows-based threats, build detection queries, or perform forensic timeline analysis of Windows
@@ -309,7 +309,7 @@ ATT&CK Mapping:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-windows-event-logs-in-splunk" --type investigation
+mcp__cybersec__case_open --title "splunk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

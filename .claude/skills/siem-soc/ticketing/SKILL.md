@@ -1,5 +1,5 @@
 ---
-name: implementing-ticketing-system-for-incidents
+name: ticketing
 description: 'Implements an integrated incident ticketing system connecting SIEM alerts to ServiceNow, Jira, or TheHive for
   structured incident tracking, SLA management, escalation workflows, and compliance documentation. Use when SOC teams need
   formalized incident lifecycle management with automated ticket creation, assignment routing, and resolution tracking.
@@ -434,7 +434,7 @@ Metrics:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-ticketing-system-for-incidents" --type investigation
+mcp__cybersec__case_open --title "ticketing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

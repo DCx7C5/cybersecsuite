@@ -1,5 +1,5 @@
 ---
-name: conducting-cloud-incident-response
+name: ir
 description: 'Responds to security incidents in cloud environments (AWS, Azure, GCP) by performing identity-based containment,
   cloud-native log analysis, resource isolation, and forensic evidence acquisition adapted for ephemeral cloud infrastructure.
   Activates for requests involving cloud incident response, AWS security incident, Azure compromise, GCP breach, cloud forensics,
@@ -305,7 +305,7 @@ POST-INCIDENT HARDENING
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-cloud-incident-response" --type investigation
+mcp__cybersec__case_open --title "ir" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

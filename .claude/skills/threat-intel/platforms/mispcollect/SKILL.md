@@ -1,5 +1,5 @@
 ---
-name: collecting-threat-intelligence-with-misp
+name: mispcollect
 description: MISP (Malware Information Sharing Platform) is an open-source threat intelligence platform for gathering, sharing,
   storing, and correlating Indicators of Compromise (IOCs) of targeted attacks, threat
 domain: cybersecurity
@@ -197,7 +197,7 @@ csv_output = misp.search(
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "collecting-threat-intelligence-with-misp" --type investigation
+mcp__cybersec__case_open --title "mispcollect" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: building-incident-response-dashboard
+name: ir
 description: 'Builds real-time incident response dashboards in Splunk, Elastic, or Grafana to provide SOC analysts and leadership
   with situational awareness during active incidents, tracking affected systems, containment status, IOC spread, and response
   timeline. Use when IR teams need unified visibility during incident coordination and post-incident reporting.
@@ -313,7 +313,7 @@ Business Impact: LOW — Finance file server offline, no customer-facing systems
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-incident-response-dashboard" --type investigation
+mcp__cybersec__case_open --title "ir" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

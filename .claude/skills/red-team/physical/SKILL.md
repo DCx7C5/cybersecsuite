@@ -1,5 +1,5 @@
 ---
-name: performing-physical-intrusion-assessment
+name: physical
 description: Conduct authorized physical penetration testing using tailgating, badge cloning, lock bypassing, and rogue device
   deployment to evaluate facility security controls.
 domain: cybersecurity
@@ -228,7 +228,7 @@ Search external waste containers and recycling bins for:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-physical-intrusion-assessment" --type investigation
+mcp__cybersec__case_open --title "physical" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

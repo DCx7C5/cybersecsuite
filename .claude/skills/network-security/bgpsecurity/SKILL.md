@@ -1,5 +1,5 @@
 ---
-name: implementing-bgp-security-with-rpki
+name: bgpsecurity
 description: Implement BGP route origin validation using RPKI with Route Origin Authorizations, RPKI-to-Router protocol, and
   ROV policies on Cisco and Juniper routers to prevent route hijacking.
 domain: cybersecurity
@@ -341,7 +341,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-bgp-security-with-rpki" --type investigation
+mcp__cybersec__case_open --title "bgpsecurity" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

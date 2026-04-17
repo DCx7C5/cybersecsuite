@@ -1,5 +1,5 @@
 ---
-name: implementing-memory-protection-with-dep-aslr
+name: memory
 description: 'Implements memory protection mechanisms including DEP (Data Execution Prevention), ASLR (Address Space Layout
   Randomization), CFG (Control Flow Guard), and other exploit mitigations to prevent memory corruption attacks. Use when hardening
   endpoints against buffer overflow exploits, ROP chains, and code injection. Activates for requests involving memory protection,
@@ -112,7 +112,7 @@ GPO: Computer Configuration → Admin Templates → Windows Components
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-memory-protection-with-dep-aslr" --type investigation
+mcp__cybersec__case_open --title "memory" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

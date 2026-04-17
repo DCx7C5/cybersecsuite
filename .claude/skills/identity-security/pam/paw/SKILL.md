@@ -1,5 +1,5 @@
 ---
-name: implementing-privileged-access-workstation
+name: paw
 description: Design and implement Privileged Access Workstations (PAWs) with device hardening, just-in-time access, and integration
   with CyberArk or BeyondTrust for secure administrative operations.
 domain: cybersecurity
@@ -70,7 +70,7 @@ A Privileged Access Workstation (PAW) is a hardened device dedicated to performi
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-privileged-access-workstation" --type investigation
+mcp__cybersec__case_open --title "paw" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-lateral-movement-in-network
+name: netlateral
 description: 'Identifies lateral movement techniques in enterprise networks by analyzing authentication logs, network flows,
   SMB traffic, and RDP sessions using Zeek, Velociraptor, and SIEM correlation rules to detect attackers moving between systems.
 
@@ -456,7 +456,7 @@ sudo iptables -I FORWARD -s 10.10.5.23 -j DROP
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-lateral-movement-in-network" --type investigation
+mcp__cybersec__case_open --title "netlateral" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

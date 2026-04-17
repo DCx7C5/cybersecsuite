@@ -1,5 +1,5 @@
 ---
-name: hunting-for-persistence-via-wmi-subscriptions
+name: persistence
 description: Hunt for adversary persistence through Windows Management Instrumentation event subscriptions by monitoring WMI
   consumer, filter, and binding creation events that execute malicious code triggered by system events.
 domain: cybersecurity
@@ -153,7 +153,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-persistence-via-wmi-subscriptions" --type investigation
+mcp__cybersec__case_open --title "persistence" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

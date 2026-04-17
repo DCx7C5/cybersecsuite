@@ -1,5 +1,5 @@
 ---
-name: performing-mobile-app-certificate-pinning-bypass
+name: certificates
 description: 'Bypasses SSL/TLS certificate pinning implementations in Android and iOS applications to enable traffic interception
   during authorized security assessments. Covers OkHttp, TrustManager, NSURLSession, and third-party pinning library bypass
   techniques using Frida, Objection, and custom scripts. Activates for requests involving certificate pinning bypass, SSL
@@ -246,7 +246,7 @@ After applying the bypass:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-mobile-app-certificate-pinning-bypass" --type investigation
+mcp__cybersec__case_open --title "certificates" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

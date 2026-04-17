@@ -1,5 +1,5 @@
 ---
-name: analyzing-azure-activity-logs-for-threats
+name: azure
 description: 'Queries Azure Monitor activity logs and sign-in logs via azure-monitor-query to detect suspicious administrative
   operations, impossible travel, privilege escalation, and resource modifications. Builds KQL queries for threat hunting in
   Azure environments. Use when investigating suspicious Azure tenant activity or building cloud SIEM detections.
@@ -89,7 +89,7 @@ AuditLogs
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-azure-activity-logs-for-threats" --type investigation
+mcp__cybersec__case_open --title "azure" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

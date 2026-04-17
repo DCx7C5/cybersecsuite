@@ -1,5 +1,5 @@
 ---
-name: performing-lateral-movement-with-wmiexec
+name: wmiexec
 description: Perform lateral movement across Windows networks using WMI-based remote execution techniques including Impacket
   wmiexec.py, CrackMapExec, and native WMI commands for stealthy post-exploitation during red team engagements.
 domain: cybersecurity
@@ -217,7 +217,7 @@ WMI (Windows Management Instrumentation) is a legitimate Windows administration 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-lateral-movement-with-wmiexec" --type investigation
+mcp__cybersec__case_open --title "wmiexec" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

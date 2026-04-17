@@ -1,5 +1,5 @@
 ---
-name: implementing-mtls-for-zero-trust-services
+name: mtls
 description: 'Configures mutual TLS (mTLS) authentication between microservices using Python cryptography library for certificate
   generation and ssl module for TLS verification. Validates certificate chains, checks expiration, and audits mTLS deployment
   status. Use when implementing zero-trust service-to-service authentication.
@@ -86,7 +86,7 @@ context.verify_mode = ssl.CERT_REQUIRED
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-mtls-for-zero-trust-services" --type investigation
+mcp__cybersec__case_open --title "mtls" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

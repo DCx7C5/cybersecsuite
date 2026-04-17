@@ -1,5 +1,5 @@
 ---
-name: implementing-network-access-control
+name: nac
 description: 'Implements 802.1X port-based network access control using RADIUS authentication, PacketFence NAC, and switch
   configurations to enforce identity-based access policies, posture assessment, and automatic VLAN assignment for authorized
   devices.
@@ -447,7 +447,7 @@ wpa_cli -i eth0 status
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-access-control" --type investigation
+mcp__cybersec__case_open --title "nac" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

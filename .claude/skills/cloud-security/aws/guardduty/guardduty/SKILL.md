@@ -1,5 +1,5 @@
 ---
-name: detecting-aws-guardduty-findings-automation
+name: guardduty
 description: Automate AWS GuardDuty threat detection findings processing using EventBridge and Lambda to enable real-time
   incident response, automatic quarantine of compromised resources, and security notification workflows.
 domain: cybersecurity
@@ -350,7 +350,7 @@ aws guardduty update-organization-configuration \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-aws-guardduty-findings-automation" --type investigation
+mcp__cybersec__case_open --title "guardduty" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

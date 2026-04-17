@@ -1,5 +1,5 @@
 ---
-name: configuring-certificate-authority-with-openssl
+name: openssl
 description: A Certificate Authority (CA) is the trust anchor in a PKI hierarchy, responsible for issuing, signing, and revoking
   digital certificates. This skill covers building a two-tier CA hierarchy (Root CA +
 domain: cybersecurity
@@ -105,7 +105,7 @@ Root CA (offline, air-gapped)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-certificate-authority-with-openssl" --type investigation
+mcp__cybersec__case_open --title "openssl" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-privilege-escalation-on-linux
+name: linuxprivesc
 description: Linux privilege escalation involves elevating from a low-privilege user account to root access on a compromised
   system. Red teams exploit misconfigurations, vulnerable services, kernel exploits, and w
 domain: cybersecurity
@@ -124,7 +124,7 @@ Linux privilege escalation involves elevating from a low-privilege user account 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-privilege-escalation-on-linux" --type investigation
+mcp__cybersec__case_open --title "linuxprivesc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-privileged-account-discovery
+name: privacctdiscovery
 description: Discover and inventory all privileged accounts across enterprise infrastructure including domain admins, local
   admins, service accounts, database admins, cloud IAM roles, and application admin account
 domain: cybersecurity
@@ -75,7 +75,7 @@ Discover and inventory all privileged accounts across enterprise infrastructure 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-privileged-account-discovery" --type investigation
+mcp__cybersec__case_open --title "privacctdiscovery" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

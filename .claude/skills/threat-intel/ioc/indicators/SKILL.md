@@ -1,5 +1,5 @@
 ---
-name: analyzing-indicators-of-compromise
+name: indicators
 description: 'Analyzes indicators of compromise (IOCs) including IP addresses, domains, file hashes, URLs, and email artifacts
   to determine maliciousness confidence, campaign attribution, and blocking priority. Use when triaging IOCs from phishing
   emails, security alerts, or external threat feeds; enriching raw IOCs with multi-source intelligence; or making block/monitor/whitelist
@@ -174,7 +174,7 @@ Export to STIX indicator object with confidence field set appropriately.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-indicators-of-compromise" --type investigation
+mcp__cybersec__case_open --title "indicators" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

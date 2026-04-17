@@ -1,5 +1,5 @@
 ---
-name: implementing-privileged-session-monitoring
+name: sessionmon
 description: 'Implements privileged session monitoring and recording using Privileged Access Management (PAM) solutions, focusing
   on CyberArk Privileged Session Manager (PSM) and open-source alternatives. Covers session recording configuration, keystroke
   logging, real-time monitoring, risk-based session analysis, and compliance audit trail generation. Activates for requests
@@ -345,7 +345,7 @@ Example CEF Event:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-privileged-session-monitoring" --type investigation
+mcp__cybersec__case_open --title "sessionmon" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

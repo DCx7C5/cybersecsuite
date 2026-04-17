@@ -1,5 +1,5 @@
 ---
-name: detecting-service-account-abuse
+name: service
 description: Detect abuse of service accounts through anomalous interactive logons, privilege escalation, lateral movement,
   and unauthorized access patterns.
 domain: cybersecurity
@@ -107,7 +107,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-service-account-abuse" --type investigation
+mcp__cybersec__case_open --title "service" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: extracting-credentials-from-memory-dump
+name: credentials
 description: Extract cached credentials, password hashes, Kerberos tickets, and authentication tokens from memory dumps using
   Volatility and Mimikatz for forensic investigation.
 domain: cybersecurity
@@ -347,7 +347,7 @@ Credential Extraction Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "extracting-credentials-from-memory-dump" --type investigation
+mcp__cybersec__case_open --title "credentials" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: hunting-for-living-off-the-land-binaries
+name: lolbins
 description: Proactively hunt for adversary abuse of legitimate system binaries (LOLBins) to execute malicious payloads while
   evading detection.
 domain: cybersecurity
@@ -126,7 +126,7 @@ Recommendations: [Next steps]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-living-off-the-land-binaries" --type investigation
+mcp__cybersec__case_open --title "lolbins" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

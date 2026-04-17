@@ -1,5 +1,5 @@
 ---
-name: executing-phishing-simulation-campaign
+name: simulation
 description: 'Executes authorized phishing simulation campaigns to assess an organization''s susceptibility to email-based
   social engineering attacks. The tester designs realistic phishing scenarios, builds credential harvesting infrastructure,
   sends targeted phishing emails, and tracks open rates, click-through rates, and credential submission rates to measure human
@@ -204,7 +204,7 @@ Analyze campaign results and produce the assessment report:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "executing-phishing-simulation-campaign" --type investigation
+mcp__cybersec__case_open --title "simulation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

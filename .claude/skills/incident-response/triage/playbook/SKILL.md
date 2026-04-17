@@ -1,5 +1,5 @@
 ---
-name: triaging-security-incident-with-ir-playbook
+name: playbook
 description: Classify and prioritize security incidents using structured IR playbooks to determine severity, assign response
   teams, and initiate appropriate response procedures.
 domain: cybersecurity
@@ -240,7 +240,7 @@ curl -X PATCH "https://thehive.local/api/v1/case/$CASE_ID" \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "triaging-security-incident-with-ir-playbook" --type investigation
+mcp__cybersec__case_open --title "playbook" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

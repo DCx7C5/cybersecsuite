@@ -1,5 +1,5 @@
 ---
-name: performing-mobile-device-forensics-with-cellebrite
+name: cellebrite
 description: Acquire and analyze mobile device data using Cellebrite UFED and open-source tools to extract communications,
   location data, and application artifacts.
 domain: cybersecurity
@@ -355,7 +355,7 @@ Mobile Forensics Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-mobile-device-forensics-with-cellebrite" --type investigation
+mcp__cybersec__case_open --title "cellebrite" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

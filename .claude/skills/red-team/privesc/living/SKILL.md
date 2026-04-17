@@ -1,5 +1,5 @@
 ---
-name: detecting-living-off-the-land-attacks
+name: living
 description: 'Detect abuse of legitimate Windows binaries (LOLBins) used for living off the land attacks. Monitors process
   creation, command-line arguments, and parent-child relationships to identify suspicious LOLBin execution patterns.
 
@@ -530,7 +530,7 @@ foreach ($binary in $lolbins_to_restrict) {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-living-off-the-land-attacks" --type investigation
+mcp__cybersec__case_open --title "living" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

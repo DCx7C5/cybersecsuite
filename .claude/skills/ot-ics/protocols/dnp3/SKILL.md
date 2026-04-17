@@ -1,5 +1,5 @@
 ---
-name: detecting-dnp3-protocol-anomalies
+name: dnp3
 description: 'Detect anomalies in DNP3 (Distributed Network Protocol 3) communications used in SCADA systems by monitoring
   for unauthorized control commands, firmware update attempts, protocol violations, and deviations from baseline traffic patterns
   using deep packet inspection and machine learning approaches.
@@ -374,7 +374,7 @@ RECOMMENDATIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-dnp3-protocol-anomalies" --type investigation
+mcp__cybersec__case_open --title "dnp3" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

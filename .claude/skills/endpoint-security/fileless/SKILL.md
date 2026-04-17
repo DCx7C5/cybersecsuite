@@ -1,5 +1,5 @@
 ---
-name: detecting-fileless-attacks-on-endpoints
+name: fileless
 description: 'Detects fileless malware and in-memory attacks that execute entirely in RAM without writing persistent files
   to disk, evading traditional antivirus. Use when building detections for PowerShell-based attacks, reflective DLL injection,
   WMI persistence, and registry-resident malware. Activates for requests involving fileless malware detection, in-memory attacks,
@@ -185,7 +185,7 @@ index=sysmon EventCode=13
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-fileless-attacks-on-endpoints" --type investigation
+mcp__cybersec__case_open --title "fileless" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

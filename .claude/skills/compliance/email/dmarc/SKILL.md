@@ -1,5 +1,5 @@
 ---
-name: implementing-dmarc-dkim-spf-email-security
+name: dmarc
 description: SPF, DKIM, and DMARC form the three pillars of email authentication. Together they prevent domain spoofing, validate
   message integrity, and define policies for handling unauthenticated mail. Proper im
 domain: cybersecurity
@@ -136,7 +136,7 @@ Use the `scripts/process.py` to parse DMARC aggregate XML reports and identify a
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-dmarc-dkim-spf-email-security" --type investigation
+mcp__cybersec__case_open --title "dmarc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

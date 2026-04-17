@@ -1,5 +1,5 @@
 ---
-name: detecting-stuxnet-style-attacks
+name: stuxnet
 description: 'This skill covers detecting sophisticated cyber-physical attacks that follow the Stuxnet attack pattern of modifying
   PLC logic while spoofing sensor readings to hide the manipulation from operators. It addresses PLC logic integrity monitoring,
   physics-based process anomaly detection, engineering workstation compromise indicators, USB-borne attack vectors, and multi-stage
@@ -498,7 +498,7 @@ ENGINEERING WORKSTATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-stuxnet-style-attacks" --type investigation
+mcp__cybersec__case_open --title "stuxnet" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

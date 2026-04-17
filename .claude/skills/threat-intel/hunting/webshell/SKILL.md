@@ -1,5 +1,5 @@
 ---
-name: hunting-for-webshell-activity
+name: webshell
 description: Hunt for web shell deployments on internet-facing servers by analyzing file creation in web directories, suspicious
   process spawning from web servers, and anomalous HTTP patterns.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-webshell-activity" --type investigation
+mcp__cybersec__case_open --title "webshell" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-pod-security-admission-controller
+name: pod
 description: Implement Kubernetes Pod Security Admission to enforce baseline and restricted security profiles at namespace
   level using built-in admission controller.
 domain: cybersecurity
@@ -331,7 +331,7 @@ kubectl get namespaces -L pod-security.kubernetes.io/enforce
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-pod-security-admission-controller" --type investigation
+mcp__cybersec__case_open --title "pod" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

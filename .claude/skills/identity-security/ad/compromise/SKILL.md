@@ -1,5 +1,5 @@
 ---
-name: performing-active-directory-compromise-investigation
+name: compromise
 description: Investigate Active Directory compromise by analyzing authentication logs, replication metadata, Group Policy
   changes, and Kerberos ticket anomalies to identify attacker persistence and lateral movement paths.
 domain: cybersecurity
@@ -220,7 +220,7 @@ Track modifications to these critical groups:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-active-directory-compromise-investigation" --type investigation
+mcp__cybersec__case_open --title "compromise" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

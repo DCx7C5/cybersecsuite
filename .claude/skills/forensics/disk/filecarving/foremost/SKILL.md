@@ -1,5 +1,5 @@
 ---
-name: performing-file-carving-with-foremost
+name: foremost
 description: Recover files from disk images and unallocated space using Foremost's header-footer signature carving to extract
   evidence regardless of file system state.
 domain: cybersecurity
@@ -338,7 +338,7 @@ File Carving Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-file-carving-with-foremost" --type investigation
+mcp__cybersec__case_open --title "foremost" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

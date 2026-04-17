@@ -1,5 +1,5 @@
 ---
-name: performing-entitlement-review-with-sailpoint-iiq
+name: entitlement
 description: 'Performs entitlement review and access certification campaigns using SailPoint IdentityIQ including manager
   certifications, targeted entitlement reviews, role-based access validation, SOD violation remediation, and automated revocation
   workflows. Activates for requests involving access reviews, entitlement certifications, SailPoint IIQ governance, or periodic
@@ -470,7 +470,7 @@ Audit Evidence:         Exported to /reports/Q1-2026-cert-evidence.pdf
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-entitlement-review-with-sailpoint-iiq" --type investigation
+mcp__cybersec__case_open --title "entitlement" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

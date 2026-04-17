@@ -1,5 +1,5 @@
 ---
-name: performing-dns-enumeration-and-zone-transfer
+name: dns
 description: 'Enumerates DNS records, attempts zone transfers, brute-forces subdomains, and maps DNS infrastructure during
   authorized reconnaissance to identify attack surface, misconfigurations, and information disclosure in target domains.
 
@@ -279,7 +279,7 @@ cat all_subdomains.txt | httpx -screenshot -o screenshots/
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-dns-enumeration-and-zone-transfer" --type investigation
+mcp__cybersec__case_open --title "dns" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

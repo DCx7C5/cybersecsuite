@@ -1,5 +1,5 @@
 ---
-name: hardening-docker-containers-for-production
+name: docker
 description: Hardening Docker containers for production involves applying security best practices aligned with CIS Docker
   Benchmark v1.8.0 to minimize attack surface, prevent privilege escalation, and enforce leas
 domain: cybersecurity
@@ -242,7 +242,7 @@ docker ps -q | xargs docker inspect --format '{{.Id}}: User={{.Config.User}}'
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hardening-docker-containers-for-production" --type investigation
+mcp__cybersec__case_open --title "docker" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

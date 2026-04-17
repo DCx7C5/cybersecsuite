@@ -1,5 +1,5 @@
 ---
-name: tracking-threat-actor-infrastructure
+name: actorinfra
 description: Threat actor infrastructure tracking involves monitoring and mapping adversary-controlled assets including command-and-control
   (C2) servers, phishing domains, exploit kit hosts, bulletproof hosting, a
 domain: cybersecurity
@@ -310,7 +310,7 @@ def build_infrastructure_timeline(indicators):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "tracking-threat-actor-infrastructure" --type investigation
+mcp__cybersec__case_open --title "actorinfra" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

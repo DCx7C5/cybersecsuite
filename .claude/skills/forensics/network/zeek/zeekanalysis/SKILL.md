@@ -1,5 +1,5 @@
 ---
-name: performing-network-traffic-analysis-with-zeek
+name: zeekanalysis
 description: Deploy Zeek network security monitor to capture, parse, and analyze network traffic metadata for threat detection,
   anomaly identification, and forensic investigation.
 domain: cybersecurity
@@ -428,7 +428,7 @@ cat ssl.log | zeek-cut server_name not_valid_after | awk -F'\t' '$2 < systime()'
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-network-traffic-analysis-with-zeek" --type investigation
+mcp__cybersec__case_open --title "zeekanalysis" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

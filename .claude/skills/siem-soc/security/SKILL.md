@@ -1,5 +1,5 @@
 ---
-name: implementing-security-chaos-engineering
+name: security
 description: 'Implements security chaos engineering experiments that deliberately disable or degrade security controls to
   verify detection and response capabilities. Tests WAF bypass, firewall rule removal, log pipeline disruption, and EDR disablement
   scenarios using boto3 and subprocess. Use when validating SOC detection coverage and resilience.
@@ -99,7 +99,7 @@ def run_experiment(setup_fn, verify_fn, rollback_fn, timeout=300):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-security-chaos-engineering" --type investigation
+mcp__cybersec__case_open --title "security" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

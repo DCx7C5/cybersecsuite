@@ -1,5 +1,5 @@
 ---
-name: collecting-indicators-of-compromise
+name: ioccollect
 description: 'Systematically collects, categorizes, and distributes indicators of compromise (IOCs) during and after security
   incidents to enable detection, blocking, and threat intelligence sharing. Covers network, host, email, and behavioral indicators
   using STIX/TAXII formats and threat intelligence platforms. Activates for requests involving IOC collection, indicator extraction,
@@ -279,7 +279,7 @@ TOTAL: 14 indicators | HIGH confidence avg: 91
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "collecting-indicators-of-compromise" --type investigation
+mcp__cybersec__case_open --title "ioccollect" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

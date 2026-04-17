@@ -1,5 +1,5 @@
 ---
-name: implementing-saml-sso-with-okta
+name: okta
 description: Implement SAML 2.0 Single Sign-On (SSO) using Okta as the Identity Provider (IdP). This skill covers end-to-end
   configuration of SAML authentication flows, attribute mapping, certificate management, a
 domain: cybersecurity
@@ -149,7 +149,7 @@ Implement SAML 2.0 Single Sign-On (SSO) using Okta as the Identity Provider (IdP
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-saml-sso-with-okta" --type investigation
+mcp__cybersec__case_open --title "okta" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

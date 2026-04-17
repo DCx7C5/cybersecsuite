@@ -1,5 +1,5 @@
 ---
-name: implementing-soar-playbook-with-palo-alto-xsoar
+name: playbook
 description: Implement automated incident response playbooks in Cortex XSOAR to orchestrate security workflows across SOC
   tools and reduce manual response time.
 domain: cybersecurity
@@ -352,7 +352,7 @@ calculate_risk_score()
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-soar-playbook-with-palo-alto-xsoar" --type investigation
+mcp__cybersec__case_open --title "playbook" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

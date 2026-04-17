@@ -1,5 +1,5 @@
 ---
-name: implementing-network-segmentation-for-ot
+name: network
 description: 'This skill covers implementing network segmentation in Operational Technology environments using VLANs, industrial
   firewalls, data diodes, and software-defined networking. It addresses the Purdue Model-based segmentation strategy, migration
   from flat networks to segmented architectures without disrupting operations, configuring OT-aware firewalls with industrial
@@ -500,7 +500,7 @@ VALIDATION RESULTS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-segmentation-for-ot" --type investigation
+mcp__cybersec__case_open --title "network" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

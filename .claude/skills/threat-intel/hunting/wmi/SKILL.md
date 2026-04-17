@@ -1,5 +1,5 @@
 ---
-name: detecting-wmi-persistence
+name: wmi
 description: Detect WMI event subscription persistence by analyzing Sysmon Event IDs 19, 20, and 21 for malicious EventFilter,
   EventConsumer, and FilterToConsumerBinding creation.
 domain: cybersecurity
@@ -105,7 +105,7 @@ Recommended Action: [Remove subscription, investigate lateral movement]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-wmi-persistence" --type investigation
+mcp__cybersec__case_open --title "wmi" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

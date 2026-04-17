@@ -1,5 +1,5 @@
 ---
-name: hardening-windows-endpoint-with-cis-benchmark
+name: windowscis
 description: 'Hardens Windows endpoints using CIS (Center for Internet Security) Benchmark recommendations to reduce attack
   surface, enforce security baselines, and meet compliance requirements. Use when deploying new Windows workstations or servers,
   remediating audit findings, or establishing organization-wide security baselines. Activates for requests involving Windows
@@ -214,7 +214,7 @@ Feed results into SIEM for drift detection and dashboard reporting.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hardening-windows-endpoint-with-cis-benchmark" --type investigation
+mcp__cybersec__case_open --title "windowscis" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

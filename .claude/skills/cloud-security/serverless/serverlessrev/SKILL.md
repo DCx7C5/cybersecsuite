@@ -1,5 +1,5 @@
 ---
-name: performing-serverless-function-security-review
+name: serverlessrev
 description: 'Performing security reviews of serverless functions across AWS Lambda, Azure Functions, and GCP Cloud Functions
   to identify overly permissive execution roles, insecure environment variables, injection vulnerabilities, and missing runtime
   protections.
@@ -310,7 +310,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-serverless-function-security-review" --type investigation
+mcp__cybersec__case_open --title "serverlessrev" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

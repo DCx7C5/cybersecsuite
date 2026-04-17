@@ -1,5 +1,5 @@
 ---
-name: implementing-log-integrity-with-blockchain
+name: blockchain
 description: Build an append-only log integrity chain using SHA-256 hash chaining for tamper detection. Each log entry is
   hashed with the previous entry's hash to create a blockchain-like structure where modifying any entry invalidates all subsequent
   hashes. Implements log ingestion, chain verification, tamper detection with pinpoint identification, and periodic checkpoint
@@ -75,7 +75,7 @@ If entry 42 is modified, chain_hash[42] will not match SHA256(chain_hash[41] + .
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-log-integrity-with-blockchain" --type investigation
+mcp__cybersec__case_open --title "blockchain" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

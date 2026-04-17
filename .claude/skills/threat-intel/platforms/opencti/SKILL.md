@@ -1,5 +1,5 @@
 ---
-name: building-ioc-enrichment-pipeline-with-opencti
+name: opencti
 description: OpenCTI is an open-source platform for managing cyber threat intelligence knowledge, built on STIX 2.1 as its
   native data model. This skill covers building an automated IOC enrichment pipeline using O
 domain: cybersecurity
@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-ioc-enrichment-pipeline-with-opencti" --type investigation
+mcp__cybersec__case_open --title "opencti" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

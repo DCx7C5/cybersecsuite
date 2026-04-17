@@ -1,5 +1,5 @@
 ---
-name: analyzing-heap-spray-exploitation
+name: heap
 description: Detect and analyze heap spray attacks in memory dumps using Volatility3 plugins to identify NOP sled patterns,
   shellcode landing zones, and suspicious large allocations in process virtual address space.
 domain: cybersecurity
@@ -70,7 +70,7 @@ JSON report with suspicious processes, heap spray indicators, NOP sled locations
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-heap-spray-exploitation" --type investigation
+mcp__cybersec__case_open --title "heap" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

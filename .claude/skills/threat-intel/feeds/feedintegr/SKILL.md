@@ -1,5 +1,5 @@
 ---
-name: building-threat-intelligence-feed-integration
+name: feedintegr
 description: 'Builds automated threat intelligence feed integration pipelines connecting STIX/TAXII feeds, open-source threat
   intel, and commercial TI platforms into SIEM and security tools for real-time IOC matching and alerting. Use when SOC teams
   need to operationalize threat intelligence by automating feed ingestion, normalization, scoring, and distribution to detection
@@ -348,7 +348,7 @@ Actions Today:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-threat-intelligence-feed-integration" --type investigation
+mcp__cybersec__case_open --title "feedintegr" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

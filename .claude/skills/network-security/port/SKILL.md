@@ -1,5 +1,5 @@
 ---
-name: detecting-port-scanning-with-fail2ban
+name: port
 description: 'Configures Fail2ban with custom filters and actions to detect port scanning activity, SSH brute force attempts,
   and network reconnaissance, automatically banning offending IP addresses and alerting security teams to suspicious network
   probing.
@@ -382,7 +382,7 @@ sudo netfilter-persistent save
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-port-scanning-with-fail2ban" --type investigation
+mcp__cybersec__case_open --title "port" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

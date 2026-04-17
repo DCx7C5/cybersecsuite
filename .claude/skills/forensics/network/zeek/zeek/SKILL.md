@@ -1,5 +1,5 @@
 ---
-name: detecting-beaconing-patterns-with-zeek
+name: zeek
 description: 'Performs statistical analysis of Zeek conn.log connection intervals to detect C2 beaconing patterns. Uses the
   ZAT library to load Zeek logs into Pandas DataFrames, calculates inter-arrival time standard deviation, and flags periodic
   connections with low jitter. Use when hunting for command-and-control callbacks in network data.
@@ -89,7 +89,7 @@ print(df[['id.orig_h', 'id.resp_h', 'ts', 'duration']].head())
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-beaconing-patterns-with-zeek" --type investigation
+mcp__cybersec__case_open --title "zeek" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

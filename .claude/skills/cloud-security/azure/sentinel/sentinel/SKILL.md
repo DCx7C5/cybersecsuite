@@ -1,5 +1,5 @@
 ---
-name: building-cloud-siem-with-sentinel
+name: sentinel
 description: 'This skill covers deploying Microsoft Sentinel as a cloud-native SIEM and SOAR platform for centralized security
   operations. It details configuring data connectors for multi-cloud log ingestion, writing KQL detection queries, building
   automated response playbooks with Logic Apps, and leveraging the Sentinel data lake for petabyte-scale threat hunting across
@@ -328,7 +328,7 @@ AUTOMATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-cloud-siem-with-sentinel" --type investigation
+mcp__cybersec__case_open --title "sentinel" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

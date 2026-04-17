@@ -1,5 +1,5 @@
 ---
-name: performing-user-behavior-analytics
+name: user
 description: 'Performs User and Entity Behavior Analytics (UEBA) to detect anomalous user activities including impossible
   travel, unusual access patterns, privilege abuse, and insider threats using SIEM-based behavioral baselines and statistical
   analysis. Use when SOC teams need to identify compromised accounts or insider threats through deviation from established
@@ -264,7 +264,7 @@ INVESTIGATION STATUS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-user-behavior-analytics" --type investigation
+mcp__cybersec__case_open --title "user" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

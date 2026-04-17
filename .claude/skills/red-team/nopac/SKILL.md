@@ -1,5 +1,5 @@
 ---
-name: exploiting-nopac-cve-2021-42278-42287
+name: nopac
 description: Exploit the noPac vulnerability chain (CVE-2021-42278 sAMAccountName spoofing and CVE-2021-42287 KDC PAC confusion)
   to escalate from standard domain user to Domain Admin in Active Directory environments.
 domain: cybersecurity
@@ -204,7 +204,7 @@ noPac is a critical exploit chain combining two Active Directory vulnerabilities
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-nopac-cve-2021-42278-42287" --type investigation
+mcp__cybersec__case_open --title "nopac" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

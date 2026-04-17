@@ -1,5 +1,5 @@
 ---
-name: analyzing-powershell-script-block-logging
+name: powershell
 description: Parse Windows PowerShell Script Block Logs (Event ID 4104) from EVTX files to detect obfuscated commands, encoded
   payloads, and living-off-the-land techniques. Uses python-evtx to extract and reconstruct multi-block scripts, applies entropy
   analysis and pattern matching for Base64-encoded commands, Invoke-Expression abuse, download cradles, and AMSI bypass attempts.
@@ -79,7 +79,7 @@ Scripts split across multiple 4104 events share a `ScriptBlockId`. Concatenate b
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-powershell-script-block-logging" --type investigation
+mcp__cybersec__case_open --title "powershell" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

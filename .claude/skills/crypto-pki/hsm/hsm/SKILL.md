@@ -1,5 +1,5 @@
 ---
-name: configuring-hsm-for-key-storage
+name: hsm
 description: Hardware Security Modules (HSMs) are tamper-resistant physical devices that safeguard cryptographic keys and
   perform cryptographic operations in a hardened environment. Keys stored in an HSM never lea
 domain: cybersecurity
@@ -115,7 +115,7 @@ Application --> PKCS#11 API --> HSM Provider --> Hardware HSM
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-hsm-for-key-storage" --type investigation
+mcp__cybersec__case_open --title "hsm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

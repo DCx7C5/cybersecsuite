@@ -1,5 +1,5 @@
 ---
-name: securing-github-actions-workflows
+name: ghaworkflows
 description: 'This skill covers hardening GitHub Actions workflows against supply chain attacks, credential theft, and privilege
   escalation. It addresses pinning actions to SHA digests, minimizing GITHUB_TOKEN permissions, protecting secrets from exfiltration,
   preventing script injection in workflow expressions, and implementing required reviewers for workflow changes.
@@ -266,7 +266,7 @@ SCORE: 6/10 (Remediate 5 HIGH findings)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-github-actions-workflows" --type investigation
+mcp__cybersec__case_open --title "ghaworkflows" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-gdpr-data-protection-controls
+name: gdpr
 description: The General Data Protection Regulation (EU) 2016/679 (GDPR) is the EU's comprehensive data protection law governing
   the collection, processing, storage, and transfer of personal data. This skill cover
 domain: cybersecurity
@@ -202,7 +202,7 @@ The regulation requires organizations to implement measures appropriate to the r
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-gdpr-data-protection-controls" --type investigation
+mcp__cybersec__case_open --title "gdpr" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

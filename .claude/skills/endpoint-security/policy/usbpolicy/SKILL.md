@@ -1,5 +1,5 @@
 ---
-name: implementing-usb-device-control-policy
+name: usbpolicy
 description: 'Implements USB device control policies to restrict unauthorized removable media access on endpoints, preventing
   data exfiltration and malware introduction via USB devices. Use when deploying device control via Group Policy, Intune,
   or EDR platforms to enforce USB restrictions. Activates for requests involving USB control, removable media policy, device
@@ -160,7 +160,7 @@ Computer Configuration → Administrative Templates → System → Device Instal
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-usb-device-control-policy" --type investigation
+mcp__cybersec__case_open --title "usbpolicy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

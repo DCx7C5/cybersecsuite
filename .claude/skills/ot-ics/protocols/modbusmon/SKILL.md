@@ -1,5 +1,5 @@
 ---
-name: monitoring-scada-modbus-traffic-anomalies
+name: modbusmon
 description: 'Monitors Modbus TCP traffic on SCADA and ICS networks to detect anomalous function code usage, unauthorized
   register writes, and suspicious communication patterns. The analyst uses deep packet inspection with pymodbus, Scapy, and
   Zeek to baseline normal PLC/RTU communication behavior, then applies statistical and rule-based anomaly detection to identify
@@ -352,7 +352,7 @@ indicators. Block FC 43 from non-engineering subnets at OT firewall.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "monitoring-scada-modbus-traffic-anomalies" --type investigation
+mcp__cybersec__case_open --title "modbusmon" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

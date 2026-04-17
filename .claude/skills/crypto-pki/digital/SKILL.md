@@ -1,5 +1,5 @@
 ---
-name: implementing-digital-signatures-with-ed25519
+name: digital
 description: Ed25519 is a high-performance digital signature algorithm using the Edwards curve Curve25519. It provides 128-bit
   security with 64-byte signatures and 32-byte keys, offering significant advantages ove
 domain: cybersecurity
@@ -99,7 +99,7 @@ Ed25519 is a high-performance digital signature algorithm using the Edwards curv
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-digital-signatures-with-ed25519" --type investigation
+mcp__cybersec__case_open --title "digital" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

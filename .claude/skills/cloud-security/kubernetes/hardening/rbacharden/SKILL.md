@@ -1,5 +1,5 @@
 ---
-name: implementing-rbac-hardening-for-kubernetes
+name: rbacharden
 description: Harden Kubernetes Role-Based Access Control by implementing least-privilege policies, auditing role bindings,
   eliminating cluster-admin sprawl, and integrating external identity providers.
 domain: cybersecurity
@@ -272,7 +272,7 @@ kubectl access-matrix --sa payments:payment-processor
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-rbac-hardening-for-kubernetes" --type investigation
+mcp__cybersec__case_open --title "rbacharden" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

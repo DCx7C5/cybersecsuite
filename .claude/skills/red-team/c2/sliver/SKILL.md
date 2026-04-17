@@ -1,5 +1,5 @@
 ---
-name: building-c2-infrastructure-with-sliver-framework
+name: sliver
 description: Build and configure a resilient command-and-control infrastructure using BishopFox's Sliver C2 framework with
   redirectors, HTTPS listeners, and multi-operator support for authorized red team engagements.
 domain: cybersecurity
@@ -217,7 +217,7 @@ Sliver is an open-source, cross-platform adversary emulation framework developed
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-c2-infrastructure-with-sliver-framework" --type investigation
+mcp__cybersec__case_open --title "sliver" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

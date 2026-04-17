@@ -1,5 +1,5 @@
 ---
-name: implementing-velociraptor-for-ir-collection
+name: velociraptor
 description: Deploy and configure Velociraptor for scalable endpoint forensic artifact collection during incident response
   using VQL queries, hunts, and pre-built artifact packs across Windows, Linux, and macOS environments.
 domain: cybersecurity
@@ -312,7 +312,7 @@ Monitoring:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-velociraptor-for-ir-collection" --type investigation
+mcp__cybersec__case_open --title "velociraptor" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-with-hashicorp-boundary
+name: boundary
 description: Implement HashiCorp Boundary for identity-aware zero trust infrastructure access management with dynamic credential
   brokering, session recording, and Vault integration.
 domain: cybersecurity
@@ -508,7 +508,7 @@ resource "boundary_host_set_plugin" "web_tier" {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-with-hashicorp-boundary" --type investigation
+mcp__cybersec__case_open --title "boundary" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-office365-audit-logs-for-compromise
+name: office365
 description: Parse Office 365 Unified Audit Logs via Microsoft Graph API to detect email forwarding rule creation, inbox delegation,
   suspicious OAuth app grants, and other indicators of account compromise.
 domain: cybersecurity
@@ -70,7 +70,7 @@ Business Email Compromise (BEC) attacks often leave traces in Office 365 audit l
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-office365-audit-logs-for-compromise" --type investigation
+mcp__cybersec__case_open --title "office365" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: building-threat-intelligence-enrichment-in-splunk
+name: splunk
 description: Build automated threat intelligence enrichment pipelines in Splunk Enterprise Security using lookup tables, modular
   inputs, and the Threat Intelligence Framework.
 domain: cybersecurity
@@ -320,7 +320,7 @@ index=firewall sourcetype=pan:traffic action=allowed
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-threat-intelligence-enrichment-in-splunk" --type investigation
+mcp__cybersec__case_open --title "splunk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

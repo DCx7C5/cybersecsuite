@@ -1,5 +1,5 @@
 ---
-name: detecting-insider-data-exfiltration-via-dlp
+name: insider
 description: 'Detects insider data exfiltration by analyzing DLP policy violations, file access patterns, upload volume anomalies,
   and off-hours activity in endpoint and cloud logs. Uses pandas for behavioral analytics and statistical baselines. Use when
   investigating insider threats or building user behavior analytics for data loss prevention.
@@ -86,7 +86,7 @@ suspicious = off_hours.groupby("user").size().sort_values(ascending=False)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-insider-data-exfiltration-via-dlp" --type investigation
+mcp__cybersec__case_open --title "insider" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

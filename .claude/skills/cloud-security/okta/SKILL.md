@@ -1,5 +1,5 @@
 ---
-name: managing-cloud-identity-with-okta
+name: okta
 description: 'This skill covers implementing Okta as a centralized identity provider for cloud environments, configuring SSO
   integration with AWS, Azure, and GCP, deploying phishing- resistant MFA with Okta FastPass, managing lifecycle automation
   for user provisioning and deprovisioning, and enforcing adaptive access policies based on device posture and risk signals.
@@ -283,7 +283,7 @@ RECOMMENDATIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "managing-cloud-identity-with-okta" --type investigation
+mcp__cybersec__case_open --title "okta" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

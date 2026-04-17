@@ -1,5 +1,5 @@
 ---
-name: exploiting-kerberoasting-with-impacket
+name: impacket
 description: Perform Kerberoasting attacks using Impacket's GetUserSPNs to extract and crack Kerberos TGS tickets for Active
   Directory service accounts.
 domain: cybersecurity
@@ -234,7 +234,7 @@ tags:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-kerberoasting-with-impacket" --type investigation
+mcp__cybersec__case_open --title "impacket" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

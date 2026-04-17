@@ -1,5 +1,5 @@
 ---
-name: performing-privilege-escalation-assessment
+name: assessment
 description: 'Performs privilege escalation assessments on compromised Linux and Windows systems to identify paths from low-privilege
   access to root or SYSTEM-level control. The tester enumerates misconfigurations, vulnerable services, kernel exploits, SUID
   binaries, unquoted service paths, and credential stores to demonstrate the full impact of an initial compromise. Activates
@@ -223,7 +223,7 @@ read access to 75,000 customer records including names, emails, and addresses.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-privilege-escalation-assessment" --type investigation
+mcp__cybersec__case_open --title "assessment" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

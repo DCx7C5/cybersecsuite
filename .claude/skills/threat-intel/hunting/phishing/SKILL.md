@@ -1,5 +1,5 @@
 ---
-name: hunting-for-spearphishing-indicators
+name: phishing
 description: Hunt for spearphishing campaign indicators across email logs, endpoint telemetry, and network data to detect
   targeted email attacks.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-spearphishing-indicators" --type investigation
+mcp__cybersec__case_open --title "phishing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

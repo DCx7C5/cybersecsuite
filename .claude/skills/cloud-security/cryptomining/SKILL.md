@@ -1,5 +1,5 @@
 ---
-name: detecting-cryptomining-in-cloud
+name: cryptomining
 description: 'This skill teaches security teams how to detect and respond to unauthorized cryptocurrency mining operations
   in cloud environments. It covers identifying cryptomining indicators through compute usage anomalies, network traffic patterns
   to mining pools, GuardDuty CryptoCurrency findings, and runtime process monitoring on EC2, ECS, EKS, and Azure Automation
@@ -343,7 +343,7 @@ REMEDIATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-cryptomining-in-cloud" --type investigation
+mcp__cybersec__case_open --title "cryptomining" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

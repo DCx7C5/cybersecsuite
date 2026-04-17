@@ -1,5 +1,5 @@
 ---
-name: securing-aws-iam-permissions
+name: iamharden
 description: 'This skill guides practitioners through hardening AWS Identity and Access Management configurations to enforce
   least privilege access across cloud accounts. It covers IAM policy scoping, permission boundaries, Access Analyzer integration,
   and credential rotation strategies to reduce the blast radius of compromised identities.
@@ -326,7 +326,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-aws-iam-permissions" --type investigation
+mcp__cybersec__case_open --title "iamharden" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

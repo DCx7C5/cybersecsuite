@@ -1,5 +1,5 @@
 ---
-name: performing-ios-app-security-assessment
+name: ios
 description: 'Performs comprehensive iOS application security assessments using Frida for dynamic instrumentation, Objection
   for runtime exploration, SSL pinning bypass for traffic interception, keychain extraction for credential analysis, and IPA
   static analysis for binary-level review. Use when conducting authorized iOS penetration tests, evaluating mobile app security
@@ -291,7 +291,7 @@ and enable biometric protection via kSecAccessControlBiometryCurrentSet.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ios-app-security-assessment" --type investigation
+mcp__cybersec__case_open --title "ios" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

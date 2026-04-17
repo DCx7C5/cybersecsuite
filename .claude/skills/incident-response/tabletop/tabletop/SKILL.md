@@ -1,5 +1,5 @@
 ---
-name: performing-soc-tabletop-exercise
+name: tabletop
 description: 'Performs tabletop exercises for SOC teams simulating security incidents through discussion-based scenarios to
   test incident response procedures, communication workflows, and decision-making under pressure without impacting production
   systems. Use when organizations need to validate IR playbooks, train analysts, or meet compliance requirements for incident
@@ -417,7 +417,7 @@ NEXT EXERCISE: TTX-2024-Q2 (June 2024) — Insider Threat Scenario
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-soc-tabletop-exercise" --type investigation
+mcp__cybersec__case_open --title "tabletop" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

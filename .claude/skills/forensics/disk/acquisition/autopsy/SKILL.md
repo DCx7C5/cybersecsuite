@@ -1,5 +1,5 @@
 ---
-name: analyzing-disk-image-with-autopsy
+name: autopsy
 description: Perform comprehensive forensic analysis of disk images using Autopsy to recover files, examine artifacts, and
   build investigation timelines.
 domain: cybersecurity
@@ -275,7 +275,7 @@ Autopsy Case Analysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-disk-image-with-autopsy" --type investigation
+mcp__cybersec__case_open --title "autopsy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

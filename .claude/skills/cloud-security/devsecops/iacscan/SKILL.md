@@ -1,5 +1,5 @@
 ---
-name: implementing-infrastructure-as-code-security-scanning
+name: iacscan
 description: 'This skill covers implementing automated security scanning for Infrastructure as Code (IaC) templates using
   tools like Checkov, tfsec, and KICS. It addresses detecting misconfigurations in Terraform, CloudFormation, Kubernetes manifests,
   and Helm charts before deployment, establishing policy-based governance, and integrating IaC scanning into CI/CD pipelines
@@ -271,7 +271,7 @@ QUALITY GATE: FAILED (2 HIGH severity findings)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-infrastructure-as-code-security-scanning" --type investigation
+mcp__cybersec__case_open --title "iacscan" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

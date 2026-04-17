@@ -1,5 +1,5 @@
 ---
-name: implementing-siem-use-cases-for-detection
+name: detectionuc
 description: 'Implements SIEM detection use cases by designing correlation rules, threshold alerts, and behavioral analytics
   mapped to MITRE ATT&CK techniques across Splunk, Elastic, and Sentinel. Use when SOC teams need to expand detection coverage,
   formalize use case lifecycle management, or build a detection library aligned to organizational threat profile.
@@ -330,7 +330,7 @@ Health Metrics:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-siem-use-cases-for-detection" --type investigation
+mcp__cybersec__case_open --title "detectionuc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

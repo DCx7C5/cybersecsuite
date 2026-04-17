@@ -1,5 +1,5 @@
 ---
-name: performing-ot-vulnerability-assessment-with-claroty
+name: clarotyassess
 description: 'This skill covers performing vulnerability assessments in OT environments using the Claroty xDome platform for
   comprehensive asset discovery, risk scoring, vulnerability correlation, and remediation prioritization. It addresses passive
   vulnerability identification through traffic analysis, active safe querying of OT devices, integration with CVE databases
@@ -325,7 +325,7 @@ TOP RISKS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ot-vulnerability-assessment-with-claroty" --type investigation
+mcp__cybersec__case_open --title "clarotyassess" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

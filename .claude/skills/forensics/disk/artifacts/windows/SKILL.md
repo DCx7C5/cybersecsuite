@@ -1,5 +1,5 @@
 ---
-name: analyzing-windows-amcache-artifacts
+name: windows
 description: 'Parses and analyzes the Windows Amcache.hve registry hive to extract evidence of program execution, application
   installation, and driver loading for digital forensics investigations. Uses Eric Zimmerman''s AmcacheParser and Timeline
   Explorer for artifact extraction, SHA-1 hash correlation with threat intel, and timeline reconstruction. Activates for requests
@@ -258,7 +258,7 @@ Combine Amcache data with other artifacts for a comprehensive timeline:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-windows-amcache-artifacts" --type investigation
+mcp__cybersec__case_open --title "windows" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

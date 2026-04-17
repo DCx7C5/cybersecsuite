@@ -1,5 +1,5 @@
 ---
-name: building-threat-feed-aggregation-with-misp
+name: feedaggr
 description: Deploy MISP (Malware Information Sharing Platform) to aggregate, correlate, and distribute threat intelligence
   feeds from multiple sources for centralized IOC management and automated SIEM integration.
 domain: cybersecurity
@@ -351,7 +351,7 @@ exporter.export_ioc_list("blocklist_ips.txt", ioc_types=["ip-dst"], days=7)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-threat-feed-aggregation-with-misp" --type investigation
+mcp__cybersec__case_open --title "feedaggr" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

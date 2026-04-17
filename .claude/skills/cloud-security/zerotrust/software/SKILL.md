@@ -1,5 +1,5 @@
 ---
-name: deploying-software-defined-perimeter
+name: software
 description: Deploy a Software-Defined Perimeter using the CSA v2.0 specification with Single Packet Authorization, mutual
   TLS, and SDP controller/gateway configuration to enforce zero trust network access.
 domain: cybersecurity
@@ -197,7 +197,7 @@ SDP connections are provisioned on-demand based on real-time policy evaluation. 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-software-defined-perimeter" --type investigation
+mcp__cybersec__case_open --title "software" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-identity-verification-for-zero-trust
+name: identityverify
 description: Implement continuous identity verification for zero trust using phishing-resistant MFA (FIDO2/WebAuthn), risk-based
   conditional access, and identity governance aligned with the CISA Zero Trust Maturity Model.
 domain: cybersecurity
@@ -219,7 +219,7 @@ AI-driven analytics detect compromised identities through impossible travel dete
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-identity-verification-for-zero-trust" --type investigation
+mcp__cybersec__case_open --title "identityverify" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

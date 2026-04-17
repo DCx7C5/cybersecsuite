@@ -1,5 +1,5 @@
 ---
-name: performing-binary-exploitation-analysis
+name: binary
 description: 'Analyze binary exploitation techniques including buffer overflows and ROP chains using pwntools Python library.
   Covers checksec analysis, gadget discovery with ROPgadget, and exploit development for CTF and authorized security assessments.
 
@@ -464,7 +464,7 @@ exploit(local)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-binary-exploitation-analysis" --type investigation
+mcp__cybersec__case_open --title "binary" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

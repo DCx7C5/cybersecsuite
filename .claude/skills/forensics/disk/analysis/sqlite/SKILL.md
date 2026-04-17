@@ -1,5 +1,5 @@
 ---
-name: performing-sqlite-database-forensics
+name: sqlite
 description: Perform forensic analysis of SQLite databases to recover deleted records from freelists and WAL files, decode
   encoded timestamps, and extract evidence from browser history, messaging apps, and mobile device databases.
 domain: cybersecurity
@@ -375,7 +375,7 @@ Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-sqlite-database-forensics" --type investigation
+mcp__cybersec__case_open --title "sqlite" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

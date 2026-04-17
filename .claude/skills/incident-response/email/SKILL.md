@@ -1,5 +1,5 @@
 ---
-name: detecting-email-account-compromise
+name: email
 description: Detect compromised O365 and Google Workspace email accounts by analyzing inbox rule creation, suspicious sign-in
   locations, mail forwarding rules, and unusual API access patterns via Microsoft Graph and audit logs.
 domain: cybersecurity
@@ -76,7 +76,7 @@ A JSON report listing compromised or suspicious accounts, malicious inbox rules 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-email-account-compromise" --type investigation
+mcp__cybersec__case_open --title "email" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

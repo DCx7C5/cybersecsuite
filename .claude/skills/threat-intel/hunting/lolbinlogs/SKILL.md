@@ -1,5 +1,5 @@
 ---
-name: hunting-for-lolbins-execution-in-endpoint-logs
+name: lolbinlogs
 description: Hunt for adversary abuse of Living Off the Land Binaries (LOLBins) by analyzing endpoint process creation logs
   for suspicious execution patterns of legitimate Windows system binaries used for malicious purposes.
 domain: cybersecurity
@@ -186,7 +186,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-lolbins-execution-in-endpoint-logs" --type investigation
+mcp__cybersec__case_open --title "lolbinlogs" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-exfiltration-over-dns-with-zeek
+name: dnsexfil
 description: Detect DNS-based data exfiltration by analyzing Zeek dns.log for high-entropy subdomains and anomalous query
   patterns
 domain: cybersecurity
@@ -97,7 +97,7 @@ This skill analyzes Zeek dns.log files (TSV format) to detect exfiltration indic
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-exfiltration-over-dns-with-zeek" --type investigation
+mcp__cybersec__case_open --title "dnsexfil" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

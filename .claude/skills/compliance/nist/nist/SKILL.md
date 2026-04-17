@@ -1,5 +1,5 @@
 ---
-name: performing-nist-csf-maturity-assessment
+name: nist
 description: >-
   The NIST Cybersecurity Framework (CSF) 2.0, released in February 2024, provides a
   comprehensive taxonomy for managing cybersecurity risk through six core Functions -
@@ -142,7 +142,7 @@ The NIST Cybersecurity Framework (CSF) 2.0, released in February 2024, provides 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-nist-csf-maturity-assessment" --type investigation
+mcp__cybersec__case_open --title "nist" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

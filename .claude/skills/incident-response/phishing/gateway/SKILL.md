@@ -1,5 +1,5 @@
 ---
-name: detecting-spearphishing-with-email-gateway
+name: gateway
 description: Spearphishing targets specific individuals using personalized, researched content that bypasses generic spam
   filters. Email security gateways (SEGs) like Microsoft Defender for Office 365, Proofpoint,
 domain: cybersecurity
@@ -122,7 +122,7 @@ Use the `scripts/process.py` to analyze email gateway logs, identify spearphishi
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-spearphishing-with-email-gateway" --type investigation
+mcp__cybersec__case_open --title "gateway" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: building-detection-rule-with-splunk-spl
+name: splunk
 description: Build effective detection rules using Splunk Search Processing Language (SPL) correlation searches to identify
   security threats in SOC environments.
 domain: cybersecurity
@@ -265,7 +265,7 @@ index=notable
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-detection-rule-with-splunk-spl" --type investigation
+mcp__cybersec__case_open --title "splunk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

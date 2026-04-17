@@ -1,5 +1,5 @@
 ---
-name: implementing-scim-provisioning-with-okta
+name: okta
 description: Implement automated user provisioning and deprovisioning using SCIM 2.0 protocol with Okta as the identity provider.
 domain: cybersecurity
 subdomain: identity-access-management
@@ -232,7 +232,7 @@ Okta provides an automated SCIM test suite (via Runscope/BlazeMeter) that valida
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-scim-provisioning-with-okta" --type investigation
+mcp__cybersec__case_open --title "okta" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

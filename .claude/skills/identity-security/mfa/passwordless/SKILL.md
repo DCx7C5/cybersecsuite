@@ -1,5 +1,5 @@
 ---
-name: implementing-passwordless-auth-with-microsoft-entra
+name: passwordless
 description: 'Implements passwordless authentication using Microsoft Entra ID with FIDO2 security keys, Windows Hello for
   Business, Microsoft Authenticator passkeys, and certificate-based authentication to eliminate password-based attacks. Activates
   for requests involving passwordless deployment, FIDO2 passkey configuration, phishing-resistant MFA, or Microsoft Entra
@@ -555,7 +555,7 @@ Avg Sign-In Time:        8.2s (passwordless) vs 24.1s (password)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-passwordless-auth-with-microsoft-entra" --type investigation
+mcp__cybersec__case_open --title "passwordless" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

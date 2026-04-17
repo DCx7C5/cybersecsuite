@@ -1,5 +1,5 @@
 ---
-name: detecting-bluetooth-low-energy-attacks
+name: bluetooth
 description: 'Detects and analyzes Bluetooth Low Energy (BLE) security attacks including sniffing, replay attacks, GATT enumeration
   abuse, and Man-in-the-Middle interception. Uses Ubertooth One and nRF52840 sniffers for packet capture, the bleak Python
   library for GATT service enumeration, and crackle for BLE encryption cracking. Use when assessing IoT device BLE security,
@@ -318,7 +318,7 @@ capture of the pairing exchange.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-bluetooth-low-energy-attacks" --type investigation
+mcp__cybersec__case_open --title "bluetooth" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

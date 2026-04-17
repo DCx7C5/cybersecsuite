@@ -1,5 +1,5 @@
 ---
-name: hunting-for-command-and-control-beaconing
+name: c2beaconing
 description: Detect C2 beaconing patterns in network traffic using frequency analysis, jitter detection, and domain reputation
   to identify compromised endpoints communicating with adversary infrastructure.
 domain: cybersecurity
@@ -124,7 +124,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-command-and-control-beaconing" --type investigation
+mcp__cybersec__case_open --title "c2beaconing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

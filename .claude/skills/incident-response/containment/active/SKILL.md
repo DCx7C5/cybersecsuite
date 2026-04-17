@@ -1,5 +1,5 @@
 ---
-name: containing-active-breach
+name: active
 description: 'Executes containment strategies to stop active adversary operations and prevent lateral movement during a confirmed
   security breach. Implements short-term and long-term containment using network segmentation, endpoint isolation, credential
   revocation, and access control modifications. Activates for requests involving breach containment, lateral movement prevention,
@@ -239,7 +239,7 @@ BUSINESS IMPACT
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "containing-active-breach" --type investigation
+mcp__cybersec__case_open --title "active" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

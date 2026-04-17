@@ -1,5 +1,5 @@
 ---
-name: performing-access-recertification-with-saviynt
+name: access
 description: Configure and execute access recertification campaigns in Saviynt Enterprise Identity Cloud to validate user
   entitlements, revoke excessive access, and maintain compliance with SOX, SOC2, and HIPAA.
 domain: cybersecurity
@@ -265,7 +265,7 @@ After campaign closes:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-access-recertification-with-saviynt" --type investigation
+mcp__cybersec__case_open --title "access" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

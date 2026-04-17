@@ -1,5 +1,5 @@
 ---
-name: performing-red-team-with-covenant
+name: covenant
 description: Conduct red team operations using the Covenant C2 framework for authorized adversary simulation, including listener
   setup, grunt deployment, task execution, and lateral movement tracking.
 domain: cybersecurity
@@ -73,7 +73,7 @@ JSON report with listener configuration, active grunts, executed tasks, and task
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-red-team-with-covenant" --type investigation
+mcp__cybersec__case_open --title "covenant" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

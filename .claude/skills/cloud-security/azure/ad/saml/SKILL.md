@@ -1,5 +1,5 @@
 ---
-name: building-identity-federation-with-saml-azure-ad
+name: saml
 description: Establish SAML 2.0 identity federation between on-premises Active Directory and Azure AD (Microsoft Entra ID)
   for seamless cross-domain authentication and SSO to cloud applications.
 domain: cybersecurity
@@ -243,7 +243,7 @@ Remove-AdfsCertificate -CertificateType Token-Signing -Thumbprint $oldThumbprint
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-identity-federation-with-saml-azure-ad" --type investigation
+mcp__cybersec__case_open --title "saml" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

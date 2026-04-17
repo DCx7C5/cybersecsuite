@@ -1,5 +1,5 @@
 ---
-name: analyzing-api-gateway-access-logs
+name: api
 description: 'Parses API Gateway access logs (AWS API Gateway, Kong, Nginx) to detect BOLA/IDOR attacks, rate limit bypass,
   credential scanning, and injection attempts. Uses pandas for statistical analysis of request patterns and anomaly detection.
   Use when investigating API abuse or building API-specific threat detection rules.
@@ -82,7 +82,7 @@ scanners = scanner_ips[scanner_ips > 100]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-api-gateway-access-logs" --type investigation
+mcp__cybersec__case_open --title "api" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

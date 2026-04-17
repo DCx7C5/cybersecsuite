@@ -1,5 +1,5 @@
 ---
-name: performing-privileged-account-access-review
+name: privileged
 description: Conduct systematic reviews of privileged accounts to validate access rights, identify excessive permissions,
   and enforce least privilege across PAM infrastructure.
 domain: cybersecurity
@@ -183,7 +183,7 @@ Generate review reports including:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-privileged-account-access-review" --type investigation
+mcp__cybersec__case_open --title "privileged" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

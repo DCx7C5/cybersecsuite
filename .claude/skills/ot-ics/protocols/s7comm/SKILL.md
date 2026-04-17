@@ -1,5 +1,5 @@
 ---
-name: performing-s7comm-protocol-security-analysis
+name: s7comm
 description: 'Perform security analysis of Siemens S7comm and S7CommPlus protocols used by SIMATIC S7 PLCs to identify vulnerabilities
   including replay attacks, integrity bypass, unauthorized CPU stop commands, and program download manipulation exploiting
   weaknesses in S7-300, S7-400, S7-1200, and S7-1500 controllers.
@@ -443,7 +443,7 @@ RECOMMENDATIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-s7comm-protocol-security-analysis" --type investigation
+mcp__cybersec__case_open --title "s7comm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-threat-modeling-with-mitre-attack
+name: threatmodel
 description: 'Implements threat modeling using the MITRE ATT&CK framework to map adversary TTPs against organizational assets,
   assess detection coverage gaps, and prioritize defensive investments. Use when SOC teams need to align detection engineering
   with threat landscape, conduct threat assessments for new environments, or justify security tool procurement.
@@ -401,7 +401,7 @@ INVESTMENT RECOMMENDATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-threat-modeling-with-mitre-attack" --type investigation
+mcp__cybersec__case_open --title "threatmodel" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

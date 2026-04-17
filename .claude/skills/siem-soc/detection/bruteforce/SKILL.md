@@ -1,5 +1,5 @@
 ---
-name: detecting-rdp-brute-force-attacks
+name: bruteforce
 description: Detect RDP brute force attacks by analyzing Windows Security Event Logs for failed authentication patterns (Event
   ID 4625), successful logons after failures (Event ID 4624), NLA failures, and source IP frequency analysis.
 domain: cybersecurity
@@ -82,7 +82,7 @@ JSON report containing:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-rdp-brute-force-attacks" --type investigation
+mcp__cybersec__case_open --title "bruteforce" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-typosquatting-domains-with-dnstwist
+name: dnstwist
 description: Detect typosquatting, homograph phishing, and brand impersonation domains using dnstwist to generate domain permutations
   and identify registered lookalike domains targeting your organization.
 domain: cybersecurity
@@ -334,7 +334,7 @@ generate_takedown_report(analysis["high"])
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-typosquatting-domains-with-dnstwist" --type investigation
+mcp__cybersec__case_open --title "dnstwist" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

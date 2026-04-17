@@ -1,5 +1,5 @@
 ---
-name: hunting-for-dcsync-attacks
+name: dcsync
 description: Detect DCSync attacks by analyzing Windows Event ID 4662 for unauthorized DS-Replication-Get-Changes requests
   from non-domain-controller accounts.
 domain: cybersecurity
@@ -104,7 +104,7 @@ Recommended Action: [Disable account, reset krbtgt, investigate]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-dcsync-attacks" --type investigation
+mcp__cybersec__case_open --title "dcsync" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

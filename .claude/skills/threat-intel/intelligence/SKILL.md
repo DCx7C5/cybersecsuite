@@ -1,5 +1,5 @@
 ---
-name: managing-intelligence-lifecycle
+name: intelligence
 description: 'Manages the end-to-end cyber threat intelligence lifecycle from planning and direction through collection, processing,
   analysis, dissemination, and feedback to ensure intelligence products meet stakeholder requirements and continuously improve.
   Use when establishing or maturing a CTI program, defining intelligence requirements with business stakeholders, or building
@@ -136,7 +136,7 @@ Track metrics quarterly: PIR coverage rate, IOC true positive rate, time-to-diss
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "managing-intelligence-lifecycle" --type investigation
+mcp__cybersec__case_open --title "intelligence" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

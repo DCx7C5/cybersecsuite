@@ -1,5 +1,5 @@
 ---
-name: performing-container-image-hardening
+name: container
 description: 'This skill covers hardening container images by minimizing attack surface, removing unnecessary packages, implementing
   multi-stage builds, configuring non-root users, and applying CIS Docker Benchmark recommendations to produce secure production-ready
   images.
@@ -267,7 +267,7 @@ VULNERABILITY COMPARISON:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-container-image-hardening" --type investigation
+mcp__cybersec__case_open --title "container" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

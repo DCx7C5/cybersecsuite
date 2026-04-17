@@ -1,5 +1,5 @@
 ---
-name: analyzing-threat-actor-ttps-with-mitre-navigator
+name: ttps
 description: 'Map advanced persistent threat (APT) group tactics, techniques, and procedures (TTPs) to the MITRE ATT&CK framework
   using the ATT&CK Navigator and attackcti Python library. The analyst queries STIX/TAXII data for group-technique associations,
   generates Navigator layer files for visualization, and compares defensive coverage against adversary profiles. Activates
@@ -95,7 +95,7 @@ multiple groups, and assess detection coverage gaps against known adversaries.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-threat-actor-ttps-with-mitre-navigator" --type investigation
+mcp__cybersec__case_open --title "ttps" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

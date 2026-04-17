@@ -1,5 +1,5 @@
 ---
-name: implementing-gcp-binary-authorization
+name: gcp
 description: Implement GCP Binary Authorization to enforce deploy-time security controls that ensure only trusted, attested
   container images are deployed to Google Kubernetes Engine and Cloud Run.
 domain: cybersecurity
@@ -294,7 +294,7 @@ spec:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-gcp-binary-authorization" --type investigation
+mcp__cybersec__case_open --title "gcp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: configuring-pfsense-firewall-rules
+name: pfsense
 description: 'Configures pfSense firewall rules, NAT policies, VPN tunnels, and traffic shaping to enforce network segmentation,
   control traffic flow, and protect internal network zones in enterprise and small-to-medium business environments.
 
@@ -356,7 +356,7 @@ Enable automatic backups to Netgate cloud or local storage
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-pfsense-firewall-rules" --type investigation
+mcp__cybersec__case_open --title "pfsense" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

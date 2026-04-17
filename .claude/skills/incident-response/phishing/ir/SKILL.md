@@ -1,5 +1,5 @@
 ---
-name: conducting-phishing-incident-response
+name: ir
 description: 'Responds to phishing incidents by analyzing reported emails, extracting indicators, assessing credential compromise,
   quarantining malicious messages across the organization, and remediating affected accounts. Covers email header analysis,
   URL/attachment sandboxing, and mailbox-wide purge operations. Activates for requests involving phishing response, email
@@ -264,7 +264,7 @@ RECOMMENDATIONS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-phishing-incident-response" --type investigation
+mcp__cybersec__case_open --title "ir" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

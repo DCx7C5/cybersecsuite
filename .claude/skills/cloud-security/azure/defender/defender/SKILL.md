@@ -1,5 +1,5 @@
 ---
-name: implementing-azure-defender-for-cloud
+name: defender
 description: 'Implementing Microsoft Defender for Cloud to enable cloud security posture management, workload protection across
   VMs, containers, databases, and storage, configure security recommendations, and set up adaptive security controls with
   automated remediation.
@@ -331,7 +331,7 @@ SECURITY ALERTS (Last 7 Days):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-azure-defender-for-cloud" --type investigation
+mcp__cybersec__case_open --title "defender" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

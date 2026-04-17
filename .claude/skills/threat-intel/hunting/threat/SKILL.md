@@ -1,5 +1,5 @@
 ---
-name: building-threat-hunt-hypothesis-framework
+name: threat
 description: Build a systematic threat hunt hypothesis framework that transforms threat intelligence, attack patterns, and
   environmental data into testable hunting hypotheses.
 domain: cybersecurity
@@ -102,7 +102,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-threat-hunt-hypothesis-framework" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

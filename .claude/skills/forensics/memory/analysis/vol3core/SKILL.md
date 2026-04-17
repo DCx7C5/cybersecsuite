@@ -1,5 +1,5 @@
 ---
-name: performing-memory-forensics-with-volatility3
+name: vol3core
 description: Analyze volatile memory dumps using Volatility 3 to extract running processes, network connections, loaded modules,
   and evidence of malicious activity.
 domain: cybersecurity
@@ -307,7 +307,7 @@ Memory Forensics Analysis:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-memory-forensics-with-volatility3" --type investigation
+mcp__cybersec__case_open --title "vol3core" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-usb-device-connection-history
+name: usb
 description: Investigate USB device connection history from Windows registry, event logs, and setupapi logs to track removable
   media usage and potential data exfiltration.
 domain: cybersecurity
@@ -375,7 +375,7 @@ USB Device History Analysis:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-usb-device-connection-history" --type investigation
+mcp__cybersec__case_open --title "usb" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

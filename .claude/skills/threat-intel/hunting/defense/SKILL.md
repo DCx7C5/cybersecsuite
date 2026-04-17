@@ -1,5 +1,5 @@
 ---
-name: hunting-for-defense-evasion-via-timestomping
+name: defense
 description: 'Detect NTFS timestamp manipulation (MITRE T1070.006) by comparing $STANDARD_INFORMATION vs $FILE_NAME timestamps
   in the MFT. Uses analyzeMFT and Python to identify files with anomalous temporal patterns indicating anti-forensic timestomping
   activity.
@@ -364,7 +364,7 @@ generate_report(stomped_files, "D:\\Evidence\\timestomping_report.json")
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-defense-evasion-via-timestomping" --type investigation
+mcp__cybersec__case_open --title "defense" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

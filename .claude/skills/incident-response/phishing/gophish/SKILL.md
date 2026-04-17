@@ -1,5 +1,5 @@
 ---
-name: performing-phishing-simulation-with-gophish
+name: gophish
 description: GoPhish is an open-source phishing simulation framework used by security teams to conduct authorized phishing
   awareness campaigns. It provides campaign management, email template creation, landing pag
 domain: cybersecurity
@@ -125,7 +125,7 @@ Use the automation script to pull campaign data via GoPhish API and generate det
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-phishing-simulation-with-gophish" --type investigation
+mcp__cybersec__case_open --title "gophish" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

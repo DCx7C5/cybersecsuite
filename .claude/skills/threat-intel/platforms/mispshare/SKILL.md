@@ -1,5 +1,5 @@
 ---
-name: performing-threat-intelligence-sharing-with-misp
+name: mispshare
 description: Use PyMISP to create, enrich, and share threat intelligence events on a MISP platform, including IOC management,
   feed integration, STIX export, and community sharing workflows.
 domain: cybersecurity
@@ -73,7 +73,7 @@ A JSON report summarizing events created, attributes added, tags applied, feed s
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-threat-intelligence-sharing-with-misp" --type investigation
+mcp__cybersec__case_open --title "mispshare" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

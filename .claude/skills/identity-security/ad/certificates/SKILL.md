@@ -1,5 +1,5 @@
 ---
-name: exploiting-active-directory-certificate-services-esc1
+name: certificates
 description: Exploit misconfigured Active Directory Certificate Services (AD CS) ESC1 vulnerability to request certificates
   as high-privileged users and escalate domain privileges during authorized red team assessments.
 domain: cybersecurity
@@ -189,7 +189,7 @@ ESC1 (Escalation Scenario 1) is a critical misconfiguration in Active Directory 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-active-directory-certificate-services-esc1" --type investigation
+mcp__cybersec__case_open --title "certificates" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

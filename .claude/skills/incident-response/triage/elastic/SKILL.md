@@ -1,5 +1,5 @@
 ---
-name: performing-alert-triage-with-elastic-siem
+name: elastic
 description: Perform systematic alert triage in Elastic Security SIEM to rapidly classify, prioritize, and investigate security
   alerts for SOC operations.
 domain: cybersecurity
@@ -260,7 +260,7 @@ Elastic's Attack Discovery automatically:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-alert-triage-with-elastic-siem" --type investigation
+mcp__cybersec__case_open --title "elastic" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

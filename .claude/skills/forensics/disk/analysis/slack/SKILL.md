@@ -1,5 +1,5 @@
 ---
-name: analyzing-slack-space-and-file-system-artifacts
+name: slack
 description: Examine file system slack space, MFT entries, USN journal, and alternate data streams to recover hidden data
   and reconstruct file activity on NTFS volumes.
 domain: cybersecurity
@@ -406,7 +406,7 @@ File System Artifact Analysis:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-slack-space-and-file-system-artifacts" --type investigation
+mcp__cybersec__case_open --title "slack" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

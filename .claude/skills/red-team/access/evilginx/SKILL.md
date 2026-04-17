@@ -1,5 +1,5 @@
 ---
-name: performing-initial-access-with-evilginx3
+name: evilginx
 description: Perform authorized initial access using EvilGinx3 adversary-in-the-middle phishing framework to capture session
   tokens and bypass multi-factor authentication during red team engagements.
 domain: cybersecurity
@@ -193,7 +193,7 @@ EvilGinx3 is a man-in-the-middle attack framework used for phishing login creden
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-initial-access-with-evilginx3" --type investigation
+mcp__cybersec__case_open --title "evilginx" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

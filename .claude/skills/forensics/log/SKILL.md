@@ -1,5 +1,5 @@
 ---
-name: performing-log-analysis-for-forensic-investigation
+name: log
 description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines
   during forensic investigations.
 domain: cybersecurity
@@ -331,7 +331,7 @@ Log Analysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-log-analysis-for-forensic-investigation" --type investigation
+mcp__cybersec__case_open --title "log" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

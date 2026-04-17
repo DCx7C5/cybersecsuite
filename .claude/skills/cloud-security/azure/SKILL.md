@@ -1,5 +1,5 @@
 ---
-name: detecting-azure-service-principal-abuse
+name: azure
 description: Detect and investigate Azure service principal abuse including privilege escalation, credential compromise, admin
   consent bypass, and unauthorized enumeration in Microsoft Entra ID environments.
 domain: cybersecurity
@@ -252,7 +252,7 @@ Create analytics rules for:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-azure-service-principal-abuse" --type investigation
+mcp__cybersec__case_open --title "azure" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

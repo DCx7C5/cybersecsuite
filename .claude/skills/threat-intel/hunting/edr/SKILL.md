@@ -1,5 +1,5 @@
 ---
-name: detecting-t1003-credential-dumping-with-edr
+name: edr
 description: Detect OS credential dumping techniques targeting LSASS memory, SAM database, NTDS.dit, and cached credentials
   using EDR telemetry, Sysmon process access monitoring, and Windows security event correlation.
 domain: cybersecurity
@@ -167,7 +167,7 @@ Credentials at Risk: [Scope assessment]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-t1003-credential-dumping-with-edr" --type investigation
+mcp__cybersec__case_open --title "edr" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: correlating-threat-campaigns
+name: threat
 description: 'Correlates disparate security incidents, IOCs, and adversary behaviors across time and organizations to identify
   unified threat campaigns, attribute them to common threat actors, and extract shared indicators for improved detection.
   Use when multiple incidents exhibit overlapping indicators, when sector-wide attack campaigns require cross-organizational
@@ -171,7 +171,7 @@ Structure the campaign report:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "correlating-threat-campaigns" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

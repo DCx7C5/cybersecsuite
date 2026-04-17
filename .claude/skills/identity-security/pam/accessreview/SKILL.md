@@ -1,5 +1,5 @@
 ---
-name: performing-access-review-and-certification
+name: accessreview
 description: Conduct systematic access reviews and certifications to ensure users have appropriate access rights aligned with
   their roles. This skill covers review campaign design, reviewer selection, risk-based p
 domain: cybersecurity
@@ -151,7 +151,7 @@ Conduct systematic access reviews and certifications to ensure users have approp
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-access-review-and-certification" --type investigation
+mcp__cybersec__case_open --title "accessreview" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-stix-taxii-feed-integration
+name: stix
 description: STIX (Structured Threat Information eXpression) and TAXII (Trusted Automated eXchange of Intelligence Information)
   are OASIS open standards for representing and transporting cyber threat intelligence.
 domain: cybersecurity
@@ -321,7 +321,7 @@ def push_to_taxii(server_url, collection_id, stix_bundle, user, password):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-stix-taxii-feed-integration" --type investigation
+mcp__cybersec__case_open --title "stix" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

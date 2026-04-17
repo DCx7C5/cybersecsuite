@@ -1,5 +1,5 @@
 ---
-name: configuring-ldap-security-hardening
+name: ldap
 description: Harden LDAP directory services against common attacks including credential harvesting, LDAP injection, anonymous
   binding, and channel binding bypass. Covers LDAPS enforcement, channel binding, LDAP si
 domain: cybersecurity
@@ -75,7 +75,7 @@ Harden LDAP directory services against common attacks including credential harve
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-ldap-security-hardening" --type investigation
+mcp__cybersec__case_open --title "ldap" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

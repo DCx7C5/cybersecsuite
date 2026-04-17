@@ -1,5 +1,5 @@
 ---
-name: implementing-network-traffic-analysis-with-arkime
+name: arkime
 description: Deploy and query Arkime (formerly Moloch) for full packet capture network traffic analysis. Uses the Arkime API
   v3 to search sessions, download PCAPs, analyze connection patterns, detect beaconing behavior, and identify suspicious network
   flows. Monitors DNS queries, HTTP traffic, and TLS certificate anomalies across captured traffic.
@@ -75,7 +75,7 @@ Verdict: HIGH confidence C2 beaconing (jitter < 5%)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-traffic-analysis-with-arkime" --type investigation
+mcp__cybersec__case_open --title "arkime" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

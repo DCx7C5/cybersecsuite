@@ -1,5 +1,5 @@
 ---
-name: configuring-identity-aware-proxy-with-google-iap
+name: identity
 description: 'Configuring Google Cloud Identity-Aware Proxy (IAP) to enforce per-request identity verification for Compute
   Engine, App Engine, Cloud Run, and GKE services using access levels, context-aware policies, and programmatic access with
   service accounts.
@@ -395,7 +395,7 @@ ACCESS LOGS (last 24h):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-identity-aware-proxy-with-google-iap" --type investigation
+mcp__cybersec__case_open --title "identity" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

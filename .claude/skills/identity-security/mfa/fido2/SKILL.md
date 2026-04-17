@@ -1,5 +1,5 @@
 ---
-name: implementing-passwordless-authentication-with-fido2
+name: fido2
 description: Deploy FIDO2/WebAuthn passwordless authentication using security keys and platform authenticators. Covers WebAuthn
   API integration, FIDO2 server configuration, passkey enrollment, biometric authentica
 domain: cybersecurity
@@ -85,7 +85,7 @@ Deploy FIDO2/WebAuthn passwordless authentication using security keys and platfo
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-passwordless-authentication-with-fido2" --type investigation
+mcp__cybersec__case_open --title "fido2" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

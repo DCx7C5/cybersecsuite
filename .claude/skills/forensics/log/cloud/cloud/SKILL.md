@@ -1,5 +1,5 @@
 ---
-name: analyzing-cloud-storage-access-patterns
+name: cloud
 description: Detect abnormal access patterns in AWS S3, GCS, and Azure Blob Storage by analyzing CloudTrail Data Events, GCS
   audit logs, and Azure Storage Analytics. Identifies after-hours bulk downloads, access from new IP addresses, unusual API
   calls (GetObject spikes), and potential data exfiltration using statistical baselines and time-series anomaly detection.
@@ -81,7 +81,7 @@ python scripts/agent.py --bucket my-sensitive-data --hours-back 24 --output s3_a
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-cloud-storage-access-patterns" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

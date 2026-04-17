@@ -1,5 +1,5 @@
 ---
-name: implementing-threat-intelligence-lifecycle-management
+name: tilcm
 description: Implement a structured threat intelligence lifecycle encompassing planning, collection, processing, analysis,
   dissemination, and feedback stages to produce actionable intelligence for organizational decision-making.
 domain: cybersecurity
@@ -396,7 +396,7 @@ disseminator = IntelligenceDisseminator()
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-threat-intelligence-lifecycle-management" --type investigation
+mcp__cybersec__case_open --title "tilcm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

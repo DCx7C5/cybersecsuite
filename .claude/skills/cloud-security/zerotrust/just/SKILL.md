@@ -1,5 +1,5 @@
 ---
-name: implementing-just-in-time-access-provisioning
+name: just
 description: Implement Just-In-Time (JIT) access provisioning to eliminate standing privileges by granting temporary, time-bound
   access only when needed. This skill covers JIT architecture design, approval workflo
 domain: cybersecurity
@@ -137,7 +137,7 @@ Implement Just-In-Time (JIT) access provisioning to eliminate standing privilege
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-just-in-time-access-provisioning" --type investigation
+mcp__cybersec__case_open --title "just" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

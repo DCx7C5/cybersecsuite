@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-storage-forensic-acquisition
+name: cloud
 description: Perform forensic acquisition and analysis of cloud storage services including Google Drive, OneDrive, Dropbox,
   and Box by collecting both API-based remote data and local sync client artifacts from endpoint devices.
 domain: cybersecurity
@@ -364,7 +364,7 @@ Acquisition Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-storage-forensic-acquisition" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-dark-web-monitoring-for-threats
+name: darkweb
 description: Dark web monitoring involves systematically scanning Tor hidden services, underground forums, paste sites, and
   dark web marketplaces to identify threats targeting an organization, including leaked cre
 domain: cybersecurity
@@ -275,7 +275,7 @@ def generate_dark_web_report(findings, organization):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-dark-web-monitoring-for-threats" --type investigation
+mcp__cybersec__case_open --title "darkweb" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

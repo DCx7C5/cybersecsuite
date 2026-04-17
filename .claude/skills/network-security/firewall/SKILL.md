@@ -1,5 +1,5 @@
 ---
-name: implementing-network-segmentation-with-firewall-zones
+name: firewall
 description: Design and implement network segmentation using firewall security zones, VLANs, ACLs, and microsegmentation policies
   to restrict lateral movement and enforce least-privilege network access.
 domain: cybersecurity
@@ -351,7 +351,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-segmentation-with-firewall-zones" --type investigation
+mcp__cybersec__case_open --title "firewall" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

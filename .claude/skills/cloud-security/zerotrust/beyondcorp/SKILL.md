@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-with-beyondcorp
+name: beyondcorp
 description: Deploy Google BeyondCorp Enterprise zero trust access controls using Identity-Aware Proxy (IAP), context-aware
   access policies, device trust validation, and Access Context Manager to enforce identity and posture-based access to GCP
   resources and internal applications.
@@ -75,7 +75,7 @@ JSON report containing IAP-protected resources, access level definitions, policy
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-with-beyondcorp" --type investigation
+mcp__cybersec__case_open --title "beyondcorp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

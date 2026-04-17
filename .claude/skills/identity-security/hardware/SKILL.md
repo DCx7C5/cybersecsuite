@@ -1,5 +1,5 @@
 ---
-name: implementing-hardware-security-key-authentication
+name: hardware
 description: 'Implements FIDO2/WebAuthn hardware security key authentication including registration ceremonies, authentication
   flows, YubiKey enrollment, and passkey migration strategies. Builds a complete relying party server using the python-fido2
   library that supports cross-platform authenticators, resident key (discoverable credential) workflows, and user verification
@@ -234,7 +234,7 @@ Plan and execute migration from passwords to passkeys:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-hardware-security-key-authentication" --type investigation
+mcp__cybersec__case_open --title "hardware" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

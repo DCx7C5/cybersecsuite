@@ -1,5 +1,5 @@
 ---
-name: configuring-network-segmentation-with-vlans
+name: network
 description: 'Designs and implements VLAN-based network segmentation on managed switches to isolate network zones, enforce
   access control between segments, and reduce the attack surface by limiting lateral movement paths in enterprise network
   environments.
@@ -431,7 +431,7 @@ show ip access-lists
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-network-segmentation-with-vlans" --type investigation
+mcp__cybersec__case_open --title "network" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

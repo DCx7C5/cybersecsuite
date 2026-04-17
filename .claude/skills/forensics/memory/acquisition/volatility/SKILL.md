@@ -1,5 +1,5 @@
 ---
-name: analyzing-memory-forensics-with-lime-and-volatility
+name: volatility
 description: 'Performs Linux memory acquisition using LiME (Linux Memory Extractor) kernel module and analysis with Volatility
   3 framework. Extracts process lists, network connections, bash history, loaded kernel modules, and injected code from Linux
   memory images. Use when performing incident response on compromised Linux systems.
@@ -93,7 +93,7 @@ vol3 -f memory.lime linux.lsmod
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-memory-forensics-with-lime-and-volatility" --type investigation
+mcp__cybersec__case_open --title "volatility" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

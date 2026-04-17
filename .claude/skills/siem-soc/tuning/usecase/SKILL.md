@@ -1,5 +1,5 @@
 ---
-name: implementing-siem-use-case-tuning
+name: usecase
 description: Tune SIEM detection rules to reduce false positives by analyzing alert volumes, creating whitelists, adjusting
   thresholds, and measuring detection efficacy metrics in Splunk and Elastic
 domain: cybersecurity
@@ -69,7 +69,7 @@ JSON report with per-rule tuning recommendations including current FP rate, sugg
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-siem-use-case-tuning" --type investigation
+mcp__cybersec__case_open --title "usecase" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

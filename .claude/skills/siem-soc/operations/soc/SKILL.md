@@ -1,5 +1,5 @@
 ---
-name: building-soc-escalation-matrix
+name: soc
 description: Build a structured SOC escalation matrix defining severity tiers, response SLAs, escalation paths, and notification
   procedures for security incidents.
 domain: cybersecurity
@@ -227,7 +227,7 @@ auto_escalation_rules:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-soc-escalation-matrix" --type investigation
+mcp__cybersec__case_open --title "soc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

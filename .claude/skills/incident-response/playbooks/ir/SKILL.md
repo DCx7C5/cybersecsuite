@@ -1,5 +1,5 @@
 ---
-name: building-incident-response-playbook
+name: ir
 description: 'Designs and documents structured incident response playbooks that define step-by-step procedures for specific
   incident types aligned with NIST SP 800-61r3 and SANS PICERL frameworks. Covers playbook structure, decision trees, escalation
   criteria, RACI matrices, and integration with SOAR platforms. Activates for requests involving IR playbook creation, incident
@@ -277,7 +277,7 @@ Target MTTR: 4 hours
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-incident-response-playbook" --type investigation
+mcp__cybersec__case_open --title "ir" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

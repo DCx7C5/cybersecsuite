@@ -1,5 +1,5 @@
 ---
-name: implementing-pci-dss-compliance-controls
+name: pci
 description: PCI DSS 4.0.1 establishes 12 requirements across 6 control objectives for organizations that store, process, or transmit cardholder data. With PCI DSS 3.2.1 retiring April 2024 and 51 new requirements
 domain: cybersecurity
 subdomain: compliance-governance
@@ -142,7 +142,7 @@ PCI DSS 4.0.1 establishes 12 requirements across 6 control objectives for organi
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-pci-dss-compliance-controls" --type investigation
+mcp__cybersec__case_open --title "pci" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

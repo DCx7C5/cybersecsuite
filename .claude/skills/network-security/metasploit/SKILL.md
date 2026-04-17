@@ -1,5 +1,5 @@
 ---
-name: exploiting-smb-vulnerabilities-with-metasploit
+name: metasploit
 description: 'Identifies and exploits SMB protocol vulnerabilities using Metasploit Framework during authorized penetration
   tests to demonstrate risks from unpatched Windows systems, misconfigured shares, and weak authentication in enterprise networks.
 
@@ -262,7 +262,7 @@ crackmapexec smb 10.10.5.23 -u Administrator -H <hash> -x "dir C:\Windows\Temp\p
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-smb-vulnerabilities-with-metasploit" --type investigation
+mcp__cybersec__case_open --title "metasploit" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

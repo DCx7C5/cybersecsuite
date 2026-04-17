@@ -1,5 +1,5 @@
 ---
-name: configuring-windows-defender-advanced-settings
+name: defender
 description: 'Configures Microsoft Defender for Endpoint (MDE) advanced protection settings including attack surface reduction
   rules, controlled folder access, network protection, and exploit protection. Use when hardening Windows endpoints beyond
   default Defender settings, deploying enterprise-grade endpoint protection, or meeting compliance requirements for advanced
@@ -296,7 +296,7 @@ Dashboard monitoring:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-windows-defender-advanced-settings" --type investigation
+mcp__cybersec__case_open --title "defender" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-network-access
+name: ztna
 description: 'Implementing Zero Trust Network Access (ZTNA) in cloud environments by configuring identity-aware proxies, micro-segmentation,
   continuous verification with conditional access policies, and replacing traditional VPN-based access with BeyondCorp-style
   architectures across AWS, Azure, and GCP.
@@ -370,7 +370,7 @@ MIGRATION STATUS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-network-access" --type investigation
+mcp__cybersec__case_open --title "ztna" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

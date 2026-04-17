@@ -1,5 +1,5 @@
 ---
-name: mapping-mitre-attack-techniques
+name: attackmap
 description: 'Maps observed adversary behaviors, security alerts, and detection rules to MITRE ATT&CK techniques and sub-techniques
   to quantify detection coverage and guide control prioritization. Use when building an ATT&CK-based coverage heatmap, tagging
   SIEM alerts with technique IDs, aligning security controls to adversary playbooks, or reporting threat exposure to executives.
@@ -168,7 +168,7 @@ Summarize coverage by tactic category (Initial Access, Execution, Persistence, e
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "mapping-mitre-attack-techniques" --type investigation
+mcp__cybersec__case_open --title "attackmap" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

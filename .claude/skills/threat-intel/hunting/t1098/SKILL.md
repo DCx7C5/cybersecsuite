@@ -1,5 +1,5 @@
 ---
-name: hunting-for-t1098-account-manipulation
+name: t1098
 description: Hunt for MITRE ATT&CK T1098 account manipulation including shadow admin creation, SID history injection, group
   membership changes, and credential modifications using Windows Security Event Logs.
 domain: cybersecurity
@@ -77,7 +77,7 @@ JSON report with detected account manipulation events, privileged group changes,
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-t1098-account-manipulation" --type investigation
+mcp__cybersec__case_open --title "t1098" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

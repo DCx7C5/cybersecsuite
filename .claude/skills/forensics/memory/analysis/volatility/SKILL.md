@@ -1,5 +1,5 @@
 ---
-name: analyzing-memory-dumps-with-volatility
+name: volatility
 description: 'Analyzes RAM memory dumps from compromised systems using the Volatility framework to identify malicious processes,
   injected code, network connections, loaded modules, and extracted credentials. Supports Windows, Linux, and macOS memory
   forensics. Activates for requests involving memory forensics, RAM analysis, volatile data examination, process injection
@@ -324,7 +324,7 @@ TIMELINE
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-memory-dumps-with-volatility" --type investigation
+mcp__cybersec__case_open --title "volatility" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

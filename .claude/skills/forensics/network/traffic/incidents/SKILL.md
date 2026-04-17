@@ -1,5 +1,5 @@
 ---
-name: analyzing-network-traffic-for-incidents
+name: incidents
 description: 'Analyzes network traffic captures and flow data to identify adversary activity during security incidents, including
   command-and-control communications, lateral movement, data exfiltration, and exploitation attempts. Uses Wireshark, Zeek,
   and NetFlow analysis techniques. Activates for requests involving network traffic analysis, packet capture investigation,
@@ -277,7 +277,7 @@ Zeek Logs:        /logs/zeek/2025-11-15/ (conn.log, ssl.log, dns.log)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-network-traffic-for-incidents" --type investigation
+mcp__cybersec__case_open --title "incidents" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

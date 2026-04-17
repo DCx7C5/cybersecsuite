@@ -1,5 +1,5 @@
 ---
-name: performing-ot-network-security-assessment
+name: network
 description: 'This skill covers conducting comprehensive security assessments of Operational Technology (OT) networks including
   SCADA systems, DCS architectures, and industrial control system communication paths. It addresses the Purdue Reference Model
   layers, identifies IT/OT convergence risks, evaluates firewall rules between zones, and maps industrial protocol traffic
@@ -605,7 +605,7 @@ DETAILED FINDINGS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ot-network-security-assessment" --type investigation
+mcp__cybersec__case_open --title "network" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

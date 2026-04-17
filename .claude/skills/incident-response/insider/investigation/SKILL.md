@@ -1,5 +1,5 @@
 ---
-name: performing-insider-threat-investigation
+name: investigation
 description: 'Investigates insider threat incidents involving employees, contractors, or trusted partners who misuse authorized
   access to steal data, sabotage systems, or violate security policies. Combines digital forensics, user behavior analytics,
   and HR/legal coordination to build an evidence-based case. Activates for requests involving insider threat investigation,
@@ -267,7 +267,7 @@ RECOMMENDATIONS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-insider-threat-investigation" --type investigation
+mcp__cybersec__case_open --title "investigation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

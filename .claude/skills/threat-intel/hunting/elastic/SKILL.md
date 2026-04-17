@@ -1,5 +1,5 @@
 ---
-name: performing-threat-hunting-with-elastic-siem
+name: elastic
 description: 'Performs proactive threat hunting in Elastic Security SIEM using KQL/EQL queries, detection rules, and Timeline
   investigation to identify threats that evade automated detection. Use when SOC teams need to hunt for specific ATT&CK techniques,
   investigate anomalous behaviors, or validate detection coverage gaps using Elasticsearch and Kibana Security.
@@ -296,7 +296,7 @@ Verdict:      HYPOTHESIS CONFIRMED — 3 true positive findings escalated to IR
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-threat-hunting-with-elastic-siem" --type investigation
+mcp__cybersec__case_open --title "elastic" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

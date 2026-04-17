@@ -1,5 +1,5 @@
 ---
-name: performing-network-traffic-analysis-with-tshark
+name: tshark
 description: Automate network traffic analysis using tshark and pyshark for protocol statistics, suspicious flow detection,
   DNS anomaly identification, and IOC extraction from PCAP files
 domain: cybersecurity
@@ -70,7 +70,7 @@ This skill automates packet capture analysis using tshark (Wireshark CLI) and py
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-network-traffic-analysis-with-tshark" --type investigation
+mcp__cybersec__case_open --title "tshark" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

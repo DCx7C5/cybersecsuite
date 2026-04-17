@@ -1,5 +1,5 @@
 ---
-name: implementing-devsecops-security-scanning
+name: scanning
 description: 'Integrates Static Application Security Testing (SAST), Dynamic Application Security Testing (DAST), and Software
   Composition Analysis (SCA) into CI/CD pipelines using open-source tools. Covers Semgrep for SAST, Trivy for SCA and container
   scanning, OWASP ZAP for DAST, and Gitleaks for secrets detection. Activates for requests involving DevSecOps pipeline setup,
@@ -396,7 +396,7 @@ pre-commit run --all-files  # Test against existing codebase
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-devsecops-security-scanning" --type investigation
+mcp__cybersec__case_open --title "scanning" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

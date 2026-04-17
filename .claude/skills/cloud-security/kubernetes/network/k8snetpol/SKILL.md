@@ -1,5 +1,5 @@
 ---
-name: implementing-network-policies-for-kubernetes
+name: k8snetpol
 description: Kubernetes NetworkPolicies provide pod-level network segmentation by defining ingress and egress rules that control
   traffic flow between pods, namespaces, and external endpoints. Combined with CNI plu
 domain: cybersecurity
@@ -244,7 +244,7 @@ kubectl run frontend-test --image=busybox --labels=app=frontend --restart=Never 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-policies-for-kubernetes" --type investigation
+mcp__cybersec__case_open --title "k8snetpol" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

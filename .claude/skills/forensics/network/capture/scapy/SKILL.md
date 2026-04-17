@@ -1,5 +1,5 @@
 ---
-name: analyzing-network-packets-with-scapy
+name: scapy
 description: Craft, send, sniff, and dissect network packets using Scapy for protocol analysis, network reconnaissance, and
   traffic anomaly detection in authorized security testing
 domain: cybersecurity
@@ -68,7 +68,7 @@ JSON report containing packet statistics, protocol distribution, top source/dest
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-network-packets-with-scapy" --type investigation
+mcp__cybersec__case_open --title "scapy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-aes-encryption-for-data-at-rest
+name: aes
 description: AES (Advanced Encryption Standard) is a symmetric block cipher standardized by NIST (FIPS 197) used to protect
   classified and sensitive data. This skill covers implementing AES-256 encryption in GCM m
 domain: cybersecurity
@@ -118,7 +118,7 @@ Never use raw passwords as encryption keys. Always derive keys using:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aes-encryption-for-data-at-rest" --type investigation
+mcp__cybersec__case_open --title "aes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

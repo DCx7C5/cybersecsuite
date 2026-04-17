@@ -1,5 +1,5 @@
 ---
-name: performing-kubernetes-etcd-security-assessment
+name: kubernetes
 description: Assess the security posture of Kubernetes etcd clusters by evaluating encryption at rest, TLS configuration,
   access controls, backup encryption, and network isolation.
 domain: cybersecurity
@@ -229,7 +229,7 @@ kubectl get secrets --all-namespaces -o json | \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-kubernetes-etcd-security-assessment" --type investigation
+mcp__cybersec__case_open --title "kubernetes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

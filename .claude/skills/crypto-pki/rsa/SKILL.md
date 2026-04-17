@@ -1,5 +1,5 @@
 ---
-name: implementing-rsa-key-pair-management
+name: rsa
 description: RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic algorithm, used for digital
   signatures, key exchange, and encryption. This skill covers generating, storing, rotating,
 domain: cybersecurity
@@ -105,7 +105,7 @@ RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-rsa-key-pair-management" --type investigation
+mcp__cybersec__case_open --title "rsa" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

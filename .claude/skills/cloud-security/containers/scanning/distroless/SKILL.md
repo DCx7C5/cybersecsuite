@@ -1,5 +1,5 @@
 ---
-name: implementing-container-image-minimal-base-with-distroless
+name: distroless
 description: Reduce container attack surface by building application images on Google distroless base images that contain
   only the application runtime with no shell, package manager, or unnecessary OS utilities.
 domain: cybersecurity
@@ -220,7 +220,7 @@ trivy image myapp:distroless
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-container-image-minimal-base-with-distroless" --type investigation
+mcp__cybersec__case_open --title "distroless" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

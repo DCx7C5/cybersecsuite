@@ -1,5 +1,5 @@
 ---
-name: implementing-diamond-model-analysis
+name: iam
 description: The Diamond Model of Intrusion Analysis provides a structured framework for analyzing cyber intrusions by examining
   four core features - Adversary, Capability, Infrastructure, and Victim. This skill covers implementing the Diamond Model
   programmatically to classify and correlate intrusion events, build activity threads, and generate pivot-ready intelligence.
@@ -188,7 +188,7 @@ class DiamondAnalysis:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-diamond-model-analysis" --type investigation
+mcp__cybersec__case_open --title "iam" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

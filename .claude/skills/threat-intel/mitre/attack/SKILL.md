@@ -1,5 +1,5 @@
 ---
-name: building-attack-pattern-library-from-cti-reports
+name: attack
 description: Extract and catalog attack patterns from cyber threat intelligence reports into a structured STIX-based library
   mapped to MITRE ATT&CK for detection engineering and threat-informed defense.
 domain: cybersecurity
@@ -333,7 +333,7 @@ templates = library.generate_detection_templates(mapped_behaviors)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-attack-pattern-library-from-cti-reports" --type investigation
+mcp__cybersec__case_open --title "attack" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

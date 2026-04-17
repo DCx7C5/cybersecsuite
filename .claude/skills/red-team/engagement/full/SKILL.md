@@ -1,5 +1,5 @@
 ---
-name: conducting-full-scope-red-team-engagement
+name: full
 description: Plan and execute a comprehensive red team engagement covering reconnaissance through post-exploitation using
   MITRE ATT&CK-aligned TTPs to evaluate an organization's detection and response capabilities.
 domain: cybersecurity
@@ -209,7 +209,7 @@ The report should include:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-full-scope-red-team-engagement" --type investigation
+mcp__cybersec__case_open --title "full" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

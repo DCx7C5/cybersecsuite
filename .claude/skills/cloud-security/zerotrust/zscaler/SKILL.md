@@ -1,5 +1,5 @@
 ---
-name: configuring-zscaler-private-access-for-ztna
+name: zscaler
 description: 'Configuring Zscaler Private Access (ZPA) to replace traditional VPN with zero trust network access by deploying
   App Connectors, defining application segments, configuring access policies based on user identity and device posture, and
   integrating with IdPs.
@@ -321,7 +321,7 @@ VPN MIGRATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-zscaler-private-access-for-ztna" --type investigation
+mcp__cybersec__case_open --title "zscaler" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

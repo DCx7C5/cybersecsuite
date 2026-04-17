@@ -1,5 +1,5 @@
 ---
-name: auditing-terraform-infrastructure-for-security
+name: terraform
 description: 'Auditing Terraform infrastructure-as-code for security misconfigurations using Checkov, tfsec, Terrascan, and
   OPA/Rego policies to detect overly permissive IAM policies, public resource exposure, missing encryption, and insecure defaults
   before cloud deployment.
@@ -362,7 +362,7 @@ SUMMARY BY SEVERITY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "auditing-terraform-infrastructure-for-security" --type investigation
+mcp__cybersec__case_open --title "terraform" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

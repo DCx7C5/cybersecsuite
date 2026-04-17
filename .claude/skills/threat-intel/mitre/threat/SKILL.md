@@ -1,5 +1,5 @@
 ---
-name: analyzing-threat-actor-ttps-with-mitre-attack
+name: threat
 description: MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics, techniques, and procedures (TTPs)
   based on real-world observations. This skill covers systematically mapping threat actor beh
 domain: cybersecurity
@@ -293,7 +293,7 @@ for gname, techs in group_techniques.items():
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-threat-actor-ttps-with-mitre-attack" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

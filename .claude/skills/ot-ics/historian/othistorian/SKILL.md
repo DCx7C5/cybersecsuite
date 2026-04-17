@@ -1,5 +1,5 @@
 ---
-name: securing-historian-server-in-ot-environment
+name: othistorian
 description: 'This skill covers hardening and securing process historian servers (OSIsoft PI, Honeywell PHD, GE Proficy, AVEVA
   Historian) in OT environments. It addresses network placement across Purdue levels, access control for historian interfaces,
   data replication through DMZ using data diodes or PI-to-PI connectors, SQL injection prevention in historian queries, and
@@ -394,7 +394,7 @@ DMZ REPLICATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-historian-server-in-ot-environment" --type investigation
+mcp__cybersec__case_open --title "othistorian" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

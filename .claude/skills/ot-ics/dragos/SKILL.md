@@ -1,5 +1,5 @@
 ---
-name: implementing-dragos-platform-for-ot-monitoring
+name: dragos
 description: 'Deploy and configure the Dragos Platform for OT network monitoring, leveraging its 600+ industrial protocol
   parsers, intelligence-driven threat detection analytics, and asset visibility capabilities to protect ICS environments against
   threat groups like VOLTZITE, GRAPHITE, and BAUXITE.
@@ -379,7 +379,7 @@ SIEM INTEGRATION:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-dragos-platform-for-ot-monitoring" --type investigation
+mcp__cybersec__case_open --title "dragos" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

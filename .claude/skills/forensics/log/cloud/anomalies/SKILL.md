@@ -1,5 +1,5 @@
 ---
-name: detecting-aws-cloudtrail-anomalies
+name: anomalies
 description: Detect unusual API call patterns in AWS CloudTrail logs using boto3, statistical baselining, and behavioral analysis
   to identify credential compromise, privilege escalation, and unauthorized resource access.
 domain: cybersecurity
@@ -71,7 +71,7 @@ JSON report with event statistics, baseline deviations, anomalous users/IPs, sen
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-aws-cloudtrail-anomalies" --type investigation
+mcp__cybersec__case_open --title "anomalies" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

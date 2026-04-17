@@ -1,5 +1,5 @@
 ---
-name: configuring-microsegmentation-for-zero-trust
+name: zerotrust
 description: Configure microsegmentation policies to enforce least-privilege workload-to-workload access using tools like
   VMware NSX, Illumio, and Calico, preventing lateral movement in zero trust architectures.
 domain: cybersecurity
@@ -182,7 +182,7 @@ Isolate critical applications (PCI cardholder data environment, SWIFT financial 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-microsegmentation-for-zero-trust" --type investigation
+mcp__cybersec__case_open --title "zerotrust" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

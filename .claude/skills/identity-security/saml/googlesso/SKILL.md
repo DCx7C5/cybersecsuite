@@ -1,5 +1,5 @@
 ---
-name: implementing-google-workspace-sso-configuration
+name: googlesso
 description: Configure SAML 2.0 single sign-on for Google Workspace with a third-party identity provider, enabling centralized
   authentication and enforcing organization-wide access policies.
 domain: cybersecurity
@@ -191,7 +191,7 @@ This is useful for allowing direct Google login from corporate network while enf
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-google-workspace-sso-configuration" --type investigation
+mcp__cybersec__case_open --title "googlesso" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

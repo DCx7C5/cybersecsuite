@@ -1,5 +1,5 @@
 ---
-name: detecting-email-forwarding-rules-attack
+name: email
 description: Detect malicious email forwarding rules created by adversaries to maintain persistent access to email communications
   for intelligence collection and BEC attacks.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-email-forwarding-rules-attack" --type investigation
+mcp__cybersec__case_open --title "email" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

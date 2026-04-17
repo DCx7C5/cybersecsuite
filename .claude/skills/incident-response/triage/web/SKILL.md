@@ -1,5 +1,5 @@
 ---
-name: performing-web-application-vulnerability-triage
+name: web
 description: Triage web application vulnerability findings from DAST/SAST scanners using OWASP risk rating methodology to
   separate true positives from false positives and prioritize remediation.
 domain: cybersecurity
@@ -254,7 +254,7 @@ GET /page#<img src=x onerror=alert(1)> HTTP/1.1
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-web-application-vulnerability-triage" --type investigation
+mcp__cybersec__case_open --title "web" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

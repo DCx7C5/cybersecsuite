@@ -1,5 +1,5 @@
 ---
-name: triaging-security-incident
+name: security
 description: 'Performs initial triage of security incidents to determine severity, scope, and required response actions using
   the NIST SP 800-61r3 and SANS PICERL frameworks. Classifies incidents by type, assigns priority based on business impact,
   and routes to appropriate response teams. Activates for requests involving incident triage, security alert classification,
@@ -240,7 +240,7 @@ SLA Target:      [Containment deadline]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "triaging-security-incident" --type investigation
+mcp__cybersec__case_open --title "security" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

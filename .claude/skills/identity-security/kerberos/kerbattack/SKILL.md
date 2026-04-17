@@ -1,5 +1,5 @@
 ---
-name: performing-kerberoasting-attack
+name: kerbattack
 description: Kerberoasting is a post-exploitation technique that targets service accounts in Active Directory by requesting
   Kerberos TGS (Ticket Granting Service) tickets for accounts with Service Principal Names
 domain: cybersecurity
@@ -120,7 +120,7 @@ Kerberoasting is a post-exploitation technique that targets service accounts in 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-kerberoasting-attack" --type investigation
+mcp__cybersec__case_open --title "kerbattack" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

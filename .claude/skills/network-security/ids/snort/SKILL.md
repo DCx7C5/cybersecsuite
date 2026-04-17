@@ -1,5 +1,5 @@
 ---
-name: configuring-snort-ids-for-intrusion-detection
+name: snort
 description: 'Installs, configures, and tunes Snort 3 intrusion detection system to monitor network traffic for malicious
   activity using custom and community rulesets, preprocessors, and alert output plugins on authorized network segments.
 
@@ -416,7 +416,7 @@ snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq -T 2>&1 | g
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-snort-ids-for-intrusion-detection" --type investigation
+mcp__cybersec__case_open --title "snort" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

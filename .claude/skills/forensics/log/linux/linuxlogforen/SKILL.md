@@ -1,5 +1,5 @@
 ---
-name: performing-linux-log-forensics-investigation
+name: linuxlogforen
 description: Perform forensic investigation of Linux system logs including syslog, auth.log, systemd journal, kern.log, and
   application logs to reconstruct user activity, detect unauthorized access, and establish event timelines on compromised
   Linux systems.
@@ -305,7 +305,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-linux-log-forensics-investigation" --type investigation
+mcp__cybersec__case_open --title "linuxlogforen" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

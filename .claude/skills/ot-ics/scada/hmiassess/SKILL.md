@@ -1,5 +1,5 @@
 ---
-name: performing-scada-hmi-security-assessment
+name: hmiassess
 description: 'Perform security assessments of SCADA Human-Machine Interface (HMI) systems to identify vulnerabilities in web-based
   HMIs, thin-client configurations, authentication mechanisms, and communication channels between HMI and PLCs, aligned with
   IEC 62443 and NIST SP 800-82 guidelines.
@@ -325,7 +325,7 @@ COMPLIANCE STATUS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-scada-hmi-security-assessment" --type investigation
+mcp__cybersec__case_open --title "hmiassess" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

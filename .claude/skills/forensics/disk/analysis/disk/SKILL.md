@@ -1,5 +1,5 @@
 ---
-name: performing-disk-forensics-investigation
+name: disk
 description: 'Conducts disk forensics investigations using forensic imaging, file system analysis, artifact recovery, and
   timeline reconstruction to support incident response cases. Utilizes tools such as FTK Imager, Autopsy, and The Sleuth Kit
   for evidence acquisition, deleted file recovery, and artifact examination. Activates for requests involving disk forensics,
@@ -281,7 +281,7 @@ TOOLS USED
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-disk-forensics-investigation" --type investigation
+mcp__cybersec__case_open --title "disk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

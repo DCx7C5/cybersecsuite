@@ -1,5 +1,5 @@
 ---
-name: analyzing-windows-lnk-files-for-artifacts
+name: lnkfiles
 description: Parse Windows LNK shortcut files to extract target paths, timestamps, volume information, and machine identifiers
   for forensic timeline reconstruction.
 domain: cybersecurity
@@ -333,7 +333,7 @@ LNK File Analysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-windows-lnk-files-for-artifacts" --type investigation
+mcp__cybersec__case_open --title "lnkfiles" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

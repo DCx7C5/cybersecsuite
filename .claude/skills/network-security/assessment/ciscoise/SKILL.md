@@ -1,5 +1,5 @@
 ---
-name: implementing-network-access-control-with-cisco-ise
+name: ciscoise
 description: Deploy Cisco Identity Services Engine for 802.1X wired and wireless authentication, MAC Authentication Bypass,
   posture assessment, and dynamic VLAN assignment for network access control.
 domain: cybersecurity
@@ -352,7 +352,7 @@ test aaa server radius ISE-PRIMARY username testuser password testpass
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-access-control-with-cisco-ise" --type investigation
+mcp__cybersec__case_open --title "ciscoise" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

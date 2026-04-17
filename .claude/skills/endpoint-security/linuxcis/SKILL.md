@@ -1,5 +1,5 @@
 ---
-name: hardening-linux-endpoint-with-cis-benchmark
+name: linuxcis
 description: 'Hardens Linux endpoints using CIS Benchmark recommendations for Ubuntu, RHEL, and CentOS to reduce attack surface,
   enforce security baselines, and meet compliance requirements. Use when deploying new Linux servers, remediating audit findings,
   or establishing security baselines for Linux infrastructure. Activates for requests involving Linux hardening, CIS benchmarks
@@ -242,7 +242,7 @@ oscap xccdf eval \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hardening-linux-endpoint-with-cis-benchmark" --type investigation
+mcp__cybersec__case_open --title "linuxcis" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

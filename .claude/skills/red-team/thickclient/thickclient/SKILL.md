@@ -1,5 +1,5 @@
 ---
-name: performing-thick-client-application-penetration-test
+name: thickclient
 description: Conduct a thick client application penetration test to identify insecure local storage, hardcoded credentials,
   DLL hijacking, memory manipulation, and insecure API communication in desktop applications using dnSpy, Procmon, and Burp
   Suite.
@@ -276,7 +276,7 @@ strings process_dump.dmp | findstr -i "password\|token\|session\|bearer"
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-thick-client-application-penetration-test" --type investigation
+mcp__cybersec__case_open --title "thickclient" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

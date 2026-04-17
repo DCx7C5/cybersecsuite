@@ -1,5 +1,5 @@
 ---
-name: performing-packet-injection-attack
+name: packet
 description: 'Crafts and injects custom network packets using Scapy, hping3, and Nemesis during authorized security assessments
   to test firewall rules, IDS detection, protocol handling, and network stack resilience against malformed and spoofed traffic.
 
@@ -338,7 +338,7 @@ EOF
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-packet-injection-attack" --type investigation
+mcp__cybersec__case_open --title "packet" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-qr-code-phishing-with-email-security
+name: quishing
 description: Detect and prevent QR code phishing (quishing) attacks that bypass traditional email security by embedding malicious
   URLs in QR code images within emails.
 domain: cybersecurity
@@ -132,7 +132,7 @@ QR code phishing (quishing) is a rapidly growing attack vector where malicious U
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-qr-code-phishing-with-email-security" --type investigation
+mcp__cybersec__case_open --title "quishing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

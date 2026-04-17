@@ -1,5 +1,5 @@
 ---
-name: analyzing-ethereum-smart-contract-vulnerabilities
+name: ethereum
 description: Perform static and symbolic analysis of Solidity smart contracts using Slither and Mythril to detect reentrancy,
   integer overflow, access control, and other vulnerability classes before deployment to Ethereum mainnet.
 domain: cybersecurity
@@ -78,7 +78,7 @@ JSON report listing vulnerabilities with SWC (Smart Contract Weakness Classifica
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-ethereum-smart-contract-vulnerabilities" --type investigation
+mcp__cybersec__case_open --title "ethereum" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

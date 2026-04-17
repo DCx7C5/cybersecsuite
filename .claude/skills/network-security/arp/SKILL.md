@@ -1,5 +1,5 @@
 ---
-name: performing-arp-spoofing-attack-simulation
+name: arp
 description: 'Simulates ARP spoofing attacks in authorized lab or pentest environments using arpspoof, Ettercap, and Scapy
   to demonstrate man-in-the-middle risks, test network detection capabilities, and validate ARP inspection countermeasures.
 
@@ -284,7 +284,7 @@ arp -a
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-arp-spoofing-attack-simulation" --type investigation
+mcp__cybersec__case_open --title "arp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

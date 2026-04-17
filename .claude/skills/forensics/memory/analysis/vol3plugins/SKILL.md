@@ -1,5 +1,5 @@
 ---
-name: performing-memory-forensics-with-volatility3-plugins
+name: vol3plugins
 description: Analyze memory dumps using Volatility3 plugins to detect injected code, rootkits, credential theft, and malware
   artifacts in Windows, Linux, and macOS memory images.
 domain: cybersecurity
@@ -247,7 +247,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-memory-forensics-with-volatility3-plugins" --type investigation
+mcp__cybersec__case_open --title "vol3plugins" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

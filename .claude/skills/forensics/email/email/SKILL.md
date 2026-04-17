@@ -1,5 +1,5 @@
 ---
-name: testing-for-email-header-injection
+name: email
 description: Test web application email functionality for SMTP header injection vulnerabilities that allow attackers to inject
   additional email headers, modify recipients, and abuse contact forms for spam relay.
 domain: cybersecurity
@@ -236,7 +236,7 @@ curl -X POST http://target.com/api/send-email \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "testing-for-email-header-injection" --type investigation
+mcp__cybersec__case_open --title "email" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

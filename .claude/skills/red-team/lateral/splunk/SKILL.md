@@ -1,5 +1,5 @@
 ---
-name: detecting-lateral-movement-with-splunk
+name: splunk
 description: Detect adversary lateral movement across networks using Splunk SPL queries against Windows authentication logs,
   SMB traffic, and remote service abuse.
 domain: cybersecurity
@@ -120,7 +120,7 @@ Lateral Movement Path: [A -> B -> C -> D]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-lateral-movement-with-splunk" --type investigation
+mcp__cybersec__case_open --title "splunk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

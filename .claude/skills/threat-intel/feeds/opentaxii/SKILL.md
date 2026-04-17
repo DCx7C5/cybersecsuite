@@ -1,5 +1,5 @@
 ---
-name: implementing-taxii-server-with-opentaxii
+name: opentaxii
 description: Deploy and configure an OpenTAXII server to share and consume STIX-formatted cyber threat intelligence using
   the TAXII 2.1 protocol for automated indicator exchange between organizations.
 domain: cybersecurity
@@ -381,7 +381,7 @@ def push_to_elasticsearch(iocs, es_url, index="threat-intel"):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-taxii-server-with-opentaxii" --type investigation
+mcp__cybersec__case_open --title "opentaxii" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-endpoint-detection-with-wazuh
+name: endpoint
 description: Deploy and configure Wazuh SIEM/XDR for endpoint detection including agent management, custom decoder and rule
   XML creation, alert querying via the Wazuh REST API, and automated response actions.
 domain: cybersecurity
@@ -77,7 +77,7 @@ JSON report with agent inventory, alert statistics, rule coverage, and logtest v
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-endpoint-detection-with-wazuh" --type investigation
+mcp__cybersec__case_open --title "endpoint" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

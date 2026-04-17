@@ -1,5 +1,5 @@
 ---
-name: performing-active-directory-vulnerability-assessment
+name: advulnassess
 description: Assess Active Directory security posture using PingCastle, BloodHound, and Purple Knight to identify misconfigurations,
   privilege escalation paths, and attack vectors.
 domain: cybersecurity
@@ -253,7 +253,7 @@ foreach ($group in $groups) {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-active-directory-vulnerability-assessment" --type investigation
+mcp__cybersec__case_open --title "advulnassess" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

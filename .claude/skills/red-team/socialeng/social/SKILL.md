@@ -1,5 +1,5 @@
 ---
-name: conducting-social-engineering-pretext-call
+name: social
 description: Plan and execute authorized vishing (voice phishing) pretext calls to assess employee susceptibility to social
   engineering and evaluate security awareness controls.
 domain: cybersecurity
@@ -194,7 +194,7 @@ Track the following for each call:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-social-engineering-pretext-call" --type investigation
+mcp__cybersec__case_open --title "social" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

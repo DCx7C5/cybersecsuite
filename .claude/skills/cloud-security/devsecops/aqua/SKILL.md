@@ -1,5 +1,5 @@
 ---
-name: implementing-aqua-security-for-container-scanning
+name: aqua
 description: Deploy Aqua Security's Trivy scanner to detect vulnerabilities, misconfigurations, secrets, and license issues
   in container images across CI/CD pipelines and registries.
 domain: cybersecurity
@@ -270,7 +270,7 @@ trivy sbom sbom-cyclonedx.json
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aqua-security-for-container-scanning" --type investigation
+mcp__cybersec__case_open --title "aqua" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

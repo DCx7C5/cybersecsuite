@@ -1,5 +1,5 @@
 ---
-name: acquiring-disk-image-with-dd-and-dcfldd
+name: dcfldd
 description: Create forensically sound bit-for-bit disk images using dd and dcfldd while preserving evidence integrity through
   hash verification.
 domain: cybersecurity
@@ -253,7 +253,7 @@ Acquisition Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "acquiring-disk-image-with-dd-and-dcfldd" --type investigation
+mcp__cybersec__case_open --title "dcfldd" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

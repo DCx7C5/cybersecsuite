@@ -1,5 +1,5 @@
 ---
-name: configuring-suricata-for-network-monitoring
+name: suricata
 description: 'Deploys and configures Suricata IDS/IPS with Emerging Threats rulesets, EVE JSON logging, and custom rules for
   real-time network traffic inspection, threat detection, and integration with SIEM platforms for centralized security monitoring.
 
@@ -411,7 +411,7 @@ cat /var/log/suricata/eve.json | jq 'select(.event_type=="stats") | .stats.captu
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-suricata-for-network-monitoring" --type investigation
+mcp__cybersec__case_open --title "suricata" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

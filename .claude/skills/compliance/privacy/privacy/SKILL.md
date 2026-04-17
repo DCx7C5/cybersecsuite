@@ -1,5 +1,5 @@
 ---
-name: performing-privacy-impact-assessment
+name: privacy
 description: 'Automates the Privacy Impact Assessment (PIA) workflow including data flow mapping, privacy risk scoring matrices,
   GDPR Article 35 DPIA and CCPA/CPRA alignment checks, data inventory cataloging, and remediation tracking. Implements the
   NIST Privacy Framework PRAM methodology and ICO DPIA guidance for systematic identification and mitigation of privacy risks
@@ -293,7 +293,7 @@ for function_id, outcomes in profile["functions"].items():
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-privacy-impact-assessment" --type investigation
+mcp__cybersec__case_open --title "privacy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

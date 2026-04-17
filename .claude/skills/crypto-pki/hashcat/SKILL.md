@@ -1,5 +1,5 @@
 ---
-name: performing-hash-cracking-with-hashcat
+name: hashcat
 description: Hash cracking is an essential skill for penetration testers and security auditors to evaluate password strength.
   Hashcat is the world's fastest password recovery tool, supporting over 300 hash types w
 domain: cybersecurity
@@ -101,7 +101,7 @@ Hash cracking is an essential skill for penetration testers and security auditor
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-hash-cracking-with-hashcat" --type investigation
+mcp__cybersec__case_open --title "hashcat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

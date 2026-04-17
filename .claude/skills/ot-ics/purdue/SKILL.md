@@ -1,5 +1,5 @@
 ---
-name: implementing-purdue-model-network-segmentation
+name: purdue
 description: 'Implement network segmentation based on the Purdue Enterprise Reference Architecture (PERA) model to separate
   industrial control system networks into hierarchical security zones from Level 0 physical process through Level 5 enterprise,
   enforcing strict traffic control between OT and IT domains.
@@ -454,7 +454,7 @@ MIGRATION STEPS: [count] phases planned
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-purdue-model-network-segmentation" --type investigation
+mcp__cybersec__case_open --title "purdue" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

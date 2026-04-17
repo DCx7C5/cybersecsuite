@@ -1,5 +1,5 @@
 ---
-name: exploiting-ipv6-vulnerabilities
+name: ipv6
 description: 'Identifies and exploits IPv6-specific vulnerabilities including SLAAC spoofing, Router Advertisement flooding,
   and IPv6 tunneling during authorized assessments to test dual-stack security controls and IPv6-aware network defenses.
 
@@ -316,7 +316,7 @@ sudo killall mitm6 parasite6 2>/dev/null
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-ipv6-vulnerabilities" --type investigation
+mcp__cybersec__case_open --title "ipv6" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

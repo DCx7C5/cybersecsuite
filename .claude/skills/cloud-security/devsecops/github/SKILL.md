@@ -1,5 +1,5 @@
 ---
-name: implementing-github-advanced-security-for-code-scanning
+name: github
 description: Configure GitHub Advanced Security with CodeQL to perform automated static analysis and vulnerability detection
   across repositories at enterprise scale.
 domain: cybersecurity
@@ -220,7 +220,7 @@ The organization-level security overview provides:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-github-advanced-security-for-code-scanning" --type investigation
+mcp__cybersec__case_open --title "github" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

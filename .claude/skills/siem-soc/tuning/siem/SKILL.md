@@ -1,5 +1,5 @@
 ---
-name: performing-false-positive-reduction-in-siem
+name: siem
 description: Perform systematic SIEM false positive reduction through rule tuning, threshold adjustment, correlation refinement,
   and threat intelligence enrichment to combat alert fatigue.
 domain: cybersecurity
@@ -243,7 +243,7 @@ earliest=-24h
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-false-positive-reduction-in-siem" --type investigation
+mcp__cybersec__case_open --title "siem" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

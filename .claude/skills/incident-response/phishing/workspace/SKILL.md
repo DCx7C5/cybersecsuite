@@ -1,5 +1,5 @@
 ---
-name: implementing-google-workspace-phishing-protection
+name: workspace
 description: Configure Google Workspace advanced phishing and malware protection settings including pre-delivery scanning,
   attachment protection, spoofing detection, and Enhanced Safe Browsing.
 domain: cybersecurity
@@ -112,7 +112,7 @@ Google Workspace provides advanced phishing and malware protection through the A
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-google-workspace-phishing-protection" --type investigation
+mcp__cybersec__case_open --title "workspace" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-privilege-escalation-attempts
+name: privescdetect
 description: Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel
   exploits, and sudo/doas abuse across Windows and Linux.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-privilege-escalation-attempts" --type investigation
+mcp__cybersec__case_open --title "privescdetect" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

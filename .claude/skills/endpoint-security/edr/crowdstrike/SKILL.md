@@ -1,5 +1,5 @@
 ---
-name: deploying-edr-agent-with-crowdstrike
+name: crowdstrike
 description: 'Deploys and configures CrowdStrike Falcon EDR agents across enterprise endpoints to enable real-time threat
   detection, behavioral analysis, and automated response. Use when onboarding endpoints to EDR coverage, configuring detection
   policies, or integrating Falcon telemetry with SIEM platforms. Activates for requests involving CrowdStrike deployment,
@@ -278,7 +278,7 @@ reg query "HKLM\SYSTEM\CrowdStrike\{9b03c1d9-3138-44ed-9fae-d9f4c034b88d}\{16e04
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-edr-agent-with-crowdstrike" --type investigation
+mcp__cybersec__case_open --title "crowdstrike" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

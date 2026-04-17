@@ -1,5 +1,5 @@
 ---
-name: exploiting-ms17-010-eternalblue-vulnerability
+name: ms17
 description: MS17-010 (EternalBlue) is a critical vulnerability in Microsoft's SMBv1 implementation that allows remote code
   execution. Originally discovered by the NSA and leaked by the Shadow Brokers in 2017, it
 domain: cybersecurity
@@ -112,7 +112,7 @@ MS17-010 (EternalBlue) is a critical vulnerability in Microsoft's SMBv1 implemen
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-ms17-010-eternalblue-vulnerability" --type investigation
+mcp__cybersec__case_open --title "ms17" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

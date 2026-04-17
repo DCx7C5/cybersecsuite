@@ -1,5 +1,5 @@
 ---
-name: detecting-ntlm-relay-with-event-correlation
+name: ntlm
 description: 'Detect NTLM relay attacks through Windows Security Event correlation by analyzing Event 4624 LogonType 3 for
   IP-to-hostname mismatches, identifying Responder/LLMNR poisoning artifacts, auditing SMB and LDAP signing enforcement across
   the domain, and detecting NTLM downgrade attacks from NTLMv2 to NTLMv1 using event log analysis.
@@ -777,7 +777,7 @@ Recommended Actions:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-ntlm-relay-with-event-correlation" --type investigation
+mcp__cybersec__case_open --title "ntlm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

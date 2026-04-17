@@ -1,5 +1,5 @@
 ---
-name: performing-service-account-audit
+name: saaudit
 description: Audit service accounts across enterprise infrastructure to identify orphaned, over-privileged, and non-compliant
   accounts. This skill covers discovery of service accounts in Active Directory, cloud pl
 domain: cybersecurity
@@ -136,7 +136,7 @@ Audit service accounts across enterprise infrastructure to identify orphaned, ov
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-service-account-audit" --type investigation
+mcp__cybersec__case_open --title "saaudit" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

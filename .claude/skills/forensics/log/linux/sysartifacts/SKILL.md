@@ -1,5 +1,5 @@
 ---
-name: analyzing-linux-system-artifacts
+name: sysartifacts
 description: Examine Linux system artifacts including auth logs, cron jobs, shell history, and system configuration to uncover
   evidence of compromise or unauthorized activity.
 domain: cybersecurity
@@ -343,7 +343,7 @@ Linux Forensics Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-linux-system-artifacts" --type investigation
+mcp__cybersec__case_open --title "sysartifacts" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

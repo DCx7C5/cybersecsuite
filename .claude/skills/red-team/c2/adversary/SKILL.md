@@ -1,5 +1,5 @@
 ---
-name: building-adversary-infrastructure-tracking-system
+name: adversary
 description: Build an automated system to track adversary infrastructure using passive DNS, certificate transparency, WHOIS
   data, and IP enrichment to map and monitor threat actor command-and-control networks.
 domain: cybersecurity
@@ -351,7 +351,7 @@ monitor = InfrastructureMonitor(tracker, known_indicators=set())
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-adversary-infrastructure-tracking-system" --type investigation
+mcp__cybersec__case_open --title "adversary" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

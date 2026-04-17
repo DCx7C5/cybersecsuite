@@ -1,5 +1,5 @@
 ---
-name: analyzing-outlook-pst-for-email-forensics
+name: outlook
 description: Analyze Microsoft Outlook PST and OST files for email forensic evidence including message content, headers, attachments,
   deleted items, and metadata using libpff, pst-utils, and forensic email analysis tools for legal investigations and incident
   response.
@@ -364,7 +364,7 @@ Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-outlook-pst-for-email-forensics" --type investigation
+mcp__cybersec__case_open --title "outlook" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

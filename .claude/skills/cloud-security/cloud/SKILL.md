@@ -1,5 +1,5 @@
 ---
-name: implementing-cloud-security-posture-management
+name: cloud
 description: 'Implementing Cloud Security Posture Management (CSPM) to continuously monitor multi-cloud environments for misconfigurations,
   compliance violations, and security risks using Prowler, ScoutSuite, AWS Security Hub, Azure Defender, and GCP Security
   Command Center.
@@ -307,7 +307,7 @@ AUTO-REMEDIATION (Last 7 Days):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-cloud-security-posture-management" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

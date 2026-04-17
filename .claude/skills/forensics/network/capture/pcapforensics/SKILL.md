@@ -1,5 +1,5 @@
 ---
-name: performing-network-forensics-with-wireshark
+name: pcapforensics
 description: Capture and analyze network traffic using Wireshark and tshark to reconstruct network events, extract artifacts,
   and identify malicious communications.
 domain: cybersecurity
@@ -324,7 +324,7 @@ Network Forensics Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-network-forensics-with-wireshark" --type investigation
+mcp__cybersec__case_open --title "pcapforensics" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

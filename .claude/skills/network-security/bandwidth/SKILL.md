@@ -1,5 +1,5 @@
 ---
-name: performing-bandwidth-throttling-attack-simulation
+name: bandwidth
 description: 'Simulates bandwidth throttling and network degradation attacks using tc, iperf3, and Scapy in authorized environments
   to test quality-of-service controls, application resilience, and network monitoring detection of traffic manipulation attacks.
 
@@ -338,7 +338,7 @@ iperf3 -c 10.10.20.10 -t 10 -f m -p 5201
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-bandwidth-throttling-attack-simulation" --type investigation
+mcp__cybersec__case_open --title "bandwidth" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

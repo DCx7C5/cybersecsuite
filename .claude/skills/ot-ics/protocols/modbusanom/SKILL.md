@@ -1,5 +1,5 @@
 ---
-name: detecting-modbus-protocol-anomalies
+name: modbusanom
 description: 'This skill covers detecting anomalies in Modbus/TCP and Modbus RTU communications in industrial control systems.
   It addresses function code monitoring, register range validation, timing analysis, unauthorized client detection, and deep
   packet inspection for malformed Modbus frames. The skill leverages Zeek with Modbus protocol analyzers, Suricata IDS with
@@ -407,7 +407,7 @@ ANOMALIES: [N]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-modbus-protocol-anomalies" --type investigation
+mcp__cybersec__case_open --title "modbusanom" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

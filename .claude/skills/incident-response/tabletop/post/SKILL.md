@@ -1,5 +1,5 @@
 ---
-name: conducting-post-incident-lessons-learned
+name: post
 description: Facilitate structured post-incident reviews to identify root causes, document what worked and failed, and produce
   actionable recommendations to improve future incident response.
 domain: cybersecurity
@@ -200,7 +200,7 @@ tags:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-post-incident-lessons-learned" --type investigation
+mcp__cybersec__case_open --title "post" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

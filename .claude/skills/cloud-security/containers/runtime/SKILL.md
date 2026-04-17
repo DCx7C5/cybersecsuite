@@ -1,5 +1,5 @@
 ---
-name: implementing-runtime-security-with-tetragon
+name: runtime
 description: Implement eBPF-based runtime security observability and enforcement in Kubernetes clusters using Cilium Tetragon
   for kernel-level threat detection and policy enforcement.
 domain: cybersecurity
@@ -306,7 +306,7 @@ spec:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-runtime-security-with-tetragon" --type investigation
+mcp__cybersec__case_open --title "runtime" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

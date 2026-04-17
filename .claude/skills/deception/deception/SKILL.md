@@ -1,5 +1,5 @@
 ---
-name: performing-deception-technology-deployment
+name: deception
 description: 'Deploys deception technology including honeypots, honeytokens, and decoy systems to detect attackers who have
   bypassed perimeter defenses, providing high-fidelity alerts with near-zero false positive rates. Use when SOC teams need
   early warning of lateral movement, credential abuse, or internal reconnaissance by deploying convincing traps across the
@@ -309,7 +309,7 @@ Automated Response:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-deception-technology-deployment" --type investigation
+mcp__cybersec__case_open --title "deception" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-next-generation-firewall-with-palo-alto
+name: ngfw
 description: Configure and deploy Palo Alto Networks next-generation firewalls with App-ID, User-ID, zone-based policies,
   SSL decryption, and threat prevention profiles for enterprise network security.
 domain: cybersecurity
@@ -285,7 +285,7 @@ show system resources
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-next-generation-firewall-with-palo-alto" --type investigation
+mcp__cybersec__case_open --title "ngfw" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

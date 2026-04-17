@@ -1,5 +1,5 @@
 ---
-name: performing-android-app-static-analysis-with-mobsf
+name: android
 description: 'Performs automated static analysis of Android applications using Mobile Security Framework (MobSF) to identify
   hardcoded secrets, insecure permissions, vulnerable components, weak cryptography, and code-level security flaws without
   executing the application. Use when assessing Android APK/AAB files for security vulnerabilities before deployment, during
@@ -181,7 +181,7 @@ Add MobSF scanning as a build gate:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-android-app-static-analysis-with-mobsf" --type investigation
+mcp__cybersec__case_open --title "android" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

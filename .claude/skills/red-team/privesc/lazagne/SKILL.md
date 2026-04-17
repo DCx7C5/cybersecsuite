@@ -1,5 +1,5 @@
 ---
-name: performing-credential-access-with-lazagne
+name: lazagne
 description: Extract stored credentials from compromised endpoints using the LaZagne post-exploitation tool to recover passwords
   from browsers, databases, system vaults, and applications during authorized red team operations.
 domain: cybersecurity
@@ -234,7 +234,7 @@ LaZagne is an open-source post-exploitation tool designed to retrieve credential
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-credential-access-with-lazagne" --type investigation
+mcp__cybersec__case_open --title "lazagne" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-kubernetes-audit-logs
+name: kubernetes
 description: 'Parses Kubernetes API server audit logs (JSON lines) to detect exec-into-pod, secret access, RBAC modifications,
   privileged pod creation, and anonymous API access. Builds threat detection rules from audit event patterns. Use when investigating
   Kubernetes cluster compromise or building k8s-specific SIEM detection rules.
@@ -84,7 +84,7 @@ if verb in ("get", "list") and resource == "secrets":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-kubernetes-audit-logs" --type investigation
+mcp__cybersec__case_open --title "kubernetes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

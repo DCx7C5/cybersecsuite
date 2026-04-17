@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-in-cloud
+name: cloudzt
 description: 'This skill guides organizations through implementing zero trust architecture in cloud environments following
   NIST SP 800-207 and Google BeyondCorp principles. It covers identity-centric access controls, micro-segmentation, continuous
   verification, device trust assessment, and deploying Identity-Aware Proxy to eliminate implicit network trust in AWS, Azure,
@@ -330,7 +330,7 @@ RECOMMENDATIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-in-cloud" --type investigation
+mcp__cybersec__case_open --title "cloudzt" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-mobile-application-management
+name: mobile
 description: 'Implements Mobile Application Management (MAM) policies to protect enterprise data on managed and unmanaged
   mobile devices through app-level controls including data loss prevention, selective wipe, app configuration, and containerization.
   Use when securing corporate apps on BYOD devices, implementing Intune App Protection Policies, or enforcing data separation
@@ -186,7 +186,7 @@ Configure MAM monitoring dashboards:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-mobile-application-management" --type investigation
+mcp__cybersec__case_open --title "mobile" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

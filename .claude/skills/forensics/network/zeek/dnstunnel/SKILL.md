@@ -1,5 +1,5 @@
 ---
-name: hunting-for-dns-tunneling-with-zeek
+name: dnstunnel
 description: Detect DNS tunneling and data exfiltration by analyzing Zeek dns.log for high-entropy subdomain queries, excessive
   query volume, long query lengths, and unusual DNS record types indicating covert channel communication.
 domain: cybersecurity
@@ -158,7 +158,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-dns-tunneling-with-zeek" --type investigation
+mcp__cybersec__case_open --title "dnstunnel" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: executing-red-team-engagement-planning
+name: engagementplan
 description: Red team engagement planning is the foundational phase that defines scope, objectives, rules of engagement (ROE),
   threat model selection, and operational timelines before any offensive testing begins.
 domain: cybersecurity
@@ -162,7 +162,7 @@ Map organizational threats using MITRE ATT&CK Navigator to select relevant adver
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "executing-red-team-engagement-planning" --type investigation
+mcp__cybersec__case_open --title "engagementplan" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

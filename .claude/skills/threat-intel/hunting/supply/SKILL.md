@@ -1,5 +1,5 @@
 ---
-name: hunting-for-supply-chain-compromise
+name: supply
 description: Hunt for supply chain compromise indicators including trojanized software updates, compromised dependencies,
   unauthorized code modifications, and tampered build artifacts.
 domain: cybersecurity
@@ -107,7 +107,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-supply-chain-compromise" --type investigation
+mcp__cybersec__case_open --title "supply" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

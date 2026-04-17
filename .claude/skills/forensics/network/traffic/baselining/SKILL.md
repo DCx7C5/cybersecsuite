@@ -1,5 +1,5 @@
 ---
-name: implementing-network-traffic-baselining
+name: baselining
 description: Build network traffic baselines from NetFlow/IPFIX data using Python pandas for statistical analysis, z-score
   anomaly detection, and hourly/daily traffic pattern profiling
 domain: cybersecurity
@@ -68,7 +68,7 @@ JSON report containing traffic baselines (hourly/daily profiles), per-host stati
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-traffic-baselining" --type investigation
+mcp__cybersec__case_open --title "baselining" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-vlan-hopping-attack
+name: vlanhopping
 description: 'Simulates VLAN hopping attacks using switch spoofing and double tagging techniques in authorized environments
   to test VLAN segmentation effectiveness and validate switch port security configurations against Layer 2 bypass attacks.
 
@@ -337,7 +337,7 @@ EOF
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-vlan-hopping-attack" --type investigation
+mcp__cybersec__case_open --title "vlanhopping" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

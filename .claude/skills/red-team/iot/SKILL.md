@@ -1,5 +1,5 @@
 ---
-name: performing-iot-security-assessment
+name: iot
 description: 'Performs comprehensive security assessments of IoT devices and their ecosystems by testing hardware interfaces,
   firmware, network communications, cloud APIs, and companion mobile applications. The tester uses firmware extraction and
   analysis, hardware debugging via UART and JTAG, network protocol analysis, and runtime exploitation to identify vulnerabilities
@@ -205,7 +205,7 @@ network entry point with root-level command execution capability.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-iot-security-assessment" --type investigation
+mcp__cybersec__case_open --title "iot" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

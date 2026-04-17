@@ -1,5 +1,5 @@
 ---
-name: performing-active-directory-forest-trust-attack
+name: foresttrust
 description: Enumerate and audit Active Directory forest trust relationships using impacket for SID filtering analysis, trust
   key extraction, cross-forest SID history abuse detection, and inter-realm Kerberos ticket assessment.
 domain: cybersecurity
@@ -72,7 +72,7 @@ Active Directory forest trusts enable authentication across organizational bound
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-active-directory-forest-trust-attack" --type investigation
+mcp__cybersec__case_open --title "foresttrust" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

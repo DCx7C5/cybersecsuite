@@ -1,5 +1,5 @@
 ---
-name: detecting-insider-threat-with-ueba
+name: ueba
 description: Implement User and Entity Behavior Analytics using Elasticsearch/OpenSearch to build behavioral baselines, calculate
   anomaly scores, perform peer group analysis, and detect insider threat indicators such as data exfiltration, privilege abuse,
   and unauthorized access patterns.
@@ -75,7 +75,7 @@ JSON report containing per-user risk scores, anomalous activity details, peer gr
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-insider-threat-with-ueba" --type investigation
+mcp__cybersec__case_open --title "ueba" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

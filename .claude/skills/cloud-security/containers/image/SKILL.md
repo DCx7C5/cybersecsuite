@@ -1,5 +1,5 @@
 ---
-name: implementing-image-provenance-verification-with-cosign
+name: image
 description: Sign and verify container image provenance using Sigstore Cosign with keyless OIDC-based signing, attestations,
   and Kubernetes admission enforcement.
 domain: cybersecurity
@@ -337,7 +337,7 @@ cosign verify ghcr.io/myorg/myapp:v1.0.0 \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-image-provenance-verification-with-cosign" --type investigation
+mcp__cybersec__case_open --title "image" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: building-identity-governance-lifecycle-process
+name: identity
 description: 'Builds comprehensive identity governance and lifecycle management processes including joiner-mover-leaver automation,
   role mining, access request workflows, periodic recertification, and orphaned account remediation using IGA platforms. Activates
   for requests involving identity lifecycle management, JML processes, role-based access provisioning, or identity governance
@@ -702,7 +702,7 @@ SOD Violations Flagged:    12
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-identity-governance-lifecycle-process" --type investigation
+mcp__cybersec__case_open --title "identity" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

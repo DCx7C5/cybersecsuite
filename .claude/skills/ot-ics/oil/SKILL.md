@@ -1,5 +1,5 @@
 ---
-name: performing-oil-gas-cybersecurity-assessment
+name: oil
 description: 'This skill covers conducting cybersecurity assessments specific to oil and gas facilities including upstream
   (exploration/production), midstream (pipeline/transport), and downstream (refining/distribution) operations. It addresses
   SCADA systems controlling pipeline operations, DCS for refinery process control, safety instrumented systems for hazardous
@@ -380,7 +380,7 @@ COMPLIANCE STATUS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-oil-gas-cybersecurity-assessment" --type investigation
+mcp__cybersec__case_open --title "oil" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

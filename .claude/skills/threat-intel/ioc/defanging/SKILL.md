@@ -1,5 +1,5 @@
 ---
-name: building-ioc-defanging-and-sharing-pipeline
+name: defanging
 description: Build an automated pipeline to defang indicators of compromise (URLs, IPs, domains, emails) for safe sharing
   and distribute them in STIX format through TAXII feeds and threat intelligence platforms.
 domain: cybersecurity
@@ -383,7 +383,7 @@ distributor.push_to_misp(
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-ioc-defanging-and-sharing-pipeline" --type investigation
+mcp__cybersec__case_open --title "defanging" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-privilege-escalation-in-kubernetes-pods
+name: kubernetes
 description: Detect and prevent privilege escalation in Kubernetes pods by monitoring security contexts, capabilities, and
   syscall patterns with Falco and OPA policies.
 domain: cybersecurity
@@ -268,7 +268,7 @@ kubectl get pods --all-namespaces -o json | \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-privilege-escalation-in-kubernetes-pods" --type investigation
+mcp__cybersec__case_open --title "kubernetes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

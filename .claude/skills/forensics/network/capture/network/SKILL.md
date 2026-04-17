@@ -1,5 +1,5 @@
 ---
-name: performing-network-packet-capture-analysis
+name: network
 description: Perform forensic analysis of network packet captures (PCAP/PCAPNG) using Wireshark, tshark, and tcpdump to reconstruct
   network communications, extract transferred files, identify malicious traffic, and establish evidence of data exfiltration
   or command-and-control activity.
@@ -272,7 +272,7 @@ if __name__ == "__main__":
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-network-packet-capture-analysis" --type investigation
+mcp__cybersec__case_open --title "network" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

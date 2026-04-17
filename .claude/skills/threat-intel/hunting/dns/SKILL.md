@@ -1,5 +1,5 @@
 ---
-name: hunting-for-dns-based-persistence
+name: dns
 description: Hunt for DNS-based persistence mechanisms including DNS hijacking, dangling CNAME records, wildcard DNS abuse,
   and unauthorized zone modifications using passive DNS databases, SecurityTrails API, and DNS audit log analysis.
 domain: cybersecurity
@@ -78,7 +78,7 @@ JSON report listing DNS anomalies with record type, historical changes, risk sev
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-dns-based-persistence" --type investigation
+mcp__cybersec__case_open --title "dns" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

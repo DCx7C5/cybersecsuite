@@ -1,5 +1,5 @@
 ---
-name: performing-soc2-type2-audit-preparation
+name: auditprep
 description: 'Automates SOC 2 Type II audit preparation including gap assessment against AICPA Trust Services Criteria (CC1-CC9),
   evidence collection from cloud providers and identity systems, control testing validation, remediation tracking, and continuous
   compliance monitoring. Covers all five TSC categories (Security, Availability, Processing Integrity, Confidentiality, Privacy)
@@ -312,7 +312,7 @@ ir_evidence = {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-soc2-type2-audit-preparation" --type investigation
+mcp__cybersec__case_open --title "auditprep" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

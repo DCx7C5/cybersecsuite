@@ -1,5 +1,5 @@
 ---
-name: detecting-arp-poisoning-in-network-traffic
+name: arppoisoning
 description: Detect and prevent ARP spoofing attacks using ARPWatch, Dynamic ARP Inspection, Wireshark analysis, and custom
   monitoring scripts to protect against man-in-the-middle interception.
 domain: cybersecurity
@@ -423,7 +423,7 @@ if __name__ == '__main__':
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-arp-poisoning-in-network-traffic" --type investigation
+mcp__cybersec__case_open --title "arppoisoning" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

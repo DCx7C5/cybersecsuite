@@ -1,5 +1,5 @@
 ---
-name: detecting-container-drift-at-runtime
+name: container
 description: Detect unauthorized modifications to running containers by monitoring for binary execution drift, file system
   changes, and configuration deviations from the original container image.
 domain: cybersecurity
@@ -250,7 +250,7 @@ For Azure Kubernetes environments, Microsoft Defender provides built-in binary d
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-container-drift-at-runtime" --type investigation
+mcp__cybersec__case_open --title "container" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

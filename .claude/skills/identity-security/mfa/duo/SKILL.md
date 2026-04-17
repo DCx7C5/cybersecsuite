@@ -1,5 +1,5 @@
 ---
-name: configuring-multi-factor-authentication-with-duo
+name: duo
 description: Deploy Cisco Duo multi-factor authentication across enterprise applications, VPN, RDP, and SSH access points.
   This skill covers Duo integration methods, adaptive authentication policies, device trust
 domain: cybersecurity
@@ -159,7 +159,7 @@ Deploy Cisco Duo multi-factor authentication across enterprise applications, VPN
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-multi-factor-authentication-with-duo" --type investigation
+mcp__cybersec__case_open --title "duo" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-network-scanning-with-ids-signatures
+name: idsscanning
 description: Detect network reconnaissance and port scanning using Suricata and Snort IDS signatures, threshold-based detection
   rules, and traffic anomaly analysis to identify Nmap, Masscan, and custom scanning activity.
 domain: cybersecurity
@@ -314,7 +314,7 @@ if __name__ == '__main__':
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-network-scanning-with-ids-signatures" --type investigation
+mcp__cybersec__case_open --title "idsscanning" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-gcp-organization-policy-constraints
+name: gcppolicy
 description: Implement GCP Organization Policy constraints to enforce security guardrails across the entire resource hierarchy,
   restricting risky configurations and ensuring compliance at organization, folder, and project levels.
 domain: cybersecurity
@@ -283,7 +283,7 @@ gcloud asset search-all-resources \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-gcp-organization-policy-constraints" --type investigation
+mcp__cybersec__case_open --title "gcppolicy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

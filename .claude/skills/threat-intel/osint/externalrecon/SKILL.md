@@ -1,5 +1,5 @@
 ---
-name: conducting-external-reconnaissance-with-osint
+name: externalrecon
 description: 'Conducts external reconnaissance using Open Source Intelligence (OSINT) techniques to map an organization''s
   external attack surface without directly interacting with target systems. The tester gathers information from public sources
   including DNS records, certificate transparency logs, search engines, social media, code repositories, and data breach databases
@@ -195,7 +195,7 @@ Identify the technologies, frameworks, and services used by the target:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-external-reconnaissance-with-osint" --type investigation
+mcp__cybersec__case_open --title "externalrecon" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

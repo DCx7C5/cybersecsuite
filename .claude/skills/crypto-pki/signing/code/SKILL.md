@@ -1,5 +1,5 @@
 ---
-name: implementing-code-signing-for-artifacts
+name: code
 description: 'This skill covers implementing code signing for build artifacts to ensure integrity and authenticity throughout
   the software supply chain. It addresses signing binaries, packages, and containers using GPG, Sigstore, and platform-specific
   signing tools, establishing trust chains, and verifying signatures in deployment pipelines.
@@ -237,7 +237,7 @@ TRANSPARENCY LOG:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-code-signing-for-artifacts" --type investigation
+mcp__cybersec__case_open --title "code" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

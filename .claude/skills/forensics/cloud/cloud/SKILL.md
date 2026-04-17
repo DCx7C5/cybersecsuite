@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-forensics-investigation
+name: cloud
 description: Conduct forensic investigations in cloud environments by collecting and analyzing logs, snapshots, and metadata
   from AWS, Azure, and GCP services.
 domain: cybersecurity
@@ -352,7 +352,7 @@ Cloud Forensics Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-forensics-investigation" --type investigation
+mcp__cybersec__case_open --title "cloud" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

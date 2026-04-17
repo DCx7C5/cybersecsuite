@@ -1,5 +1,5 @@
 ---
-name: detecting-living-off-the-land-with-lolbas
+name: lolbas
 description: Detect Living Off the Land Binaries (LOLBins/LOLBAS) abuse including certutil, regsvr32, mshta, and rundll32
   via process telemetry, Sigma rules, and parent-child process analysis
 domain: cybersecurity
@@ -78,7 +78,7 @@ Living Off the Land Binaries, Scripts, and Libraries (LOLBAS) are legitimate sys
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-living-off-the-land-with-lolbas" --type investigation
+mcp__cybersec__case_open --title "lolbas" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

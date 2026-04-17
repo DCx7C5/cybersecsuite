@@ -1,5 +1,5 @@
 ---
-name: detecting-business-email-compromise-with-ai
+name: bec
 description: Deploy AI and NLP-powered detection systems to identify business email compromise attacks by analyzing writing
   style, behavioral patterns, and contextual anomalies that evade traditional rule-based filters.
 domain: cybersecurity
@@ -122,7 +122,7 @@ AI-powered BEC detection uses machine learning, NLP, and behavioral analytics to
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-business-email-compromise-with-ai" --type investigation
+mcp__cybersec__case_open --title "bec" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

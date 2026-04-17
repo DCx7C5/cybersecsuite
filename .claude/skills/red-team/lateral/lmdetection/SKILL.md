@@ -1,5 +1,5 @@
 ---
-name: performing-lateral-movement-detection
+name: lmdetection
 description: 'Detects lateral movement techniques including Pass-the-Hash, PsExec, WMI execution, RDP pivoting, and SMB-based
   spreading using SIEM correlation of Windows event logs, network flow data, and endpoint telemetry mapped to MITRE ATT&CK
   Lateral Movement (TA0008) techniques.
@@ -320,7 +320,7 @@ Containment:      All 5 hosts isolated at 14:45 UTC
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-lateral-movement-detection" --type investigation
+mcp__cybersec__case_open --title "lmdetection" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

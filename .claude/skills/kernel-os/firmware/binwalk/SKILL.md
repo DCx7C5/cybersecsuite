@@ -1,5 +1,5 @@
 ---
-name: performing-firmware-extraction-with-binwalk
+name: binwalk
 description: 'Performs firmware image extraction and analysis using binwalk to identify embedded filesystems, compressed archives,
   bootloaders, kernel images, and cryptographic material. Covers entropy analysis for detecting encrypted or compressed regions,
   recursive extraction of nested archives, SquashFS/CramFS/JFFS2 filesystem mounting, and string analysis for credential and
@@ -271,7 +271,7 @@ SECURITY FINDINGS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-firmware-extraction-with-binwalk" --type investigation
+mcp__cybersec__case_open --title "binwalk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

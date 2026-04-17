@@ -1,5 +1,5 @@
 ---
-name: implementing-siem-correlation-rules-for-apt
+name: siem
 description: Write multi-event correlation rules that detect APT lateral movement by chaining Windows authentication events,
   process execution telemetry, and network connection logs across hosts. Uses Splunk SPL and Sigma rule format to correlate
   Event IDs 4624, 4648, 4688, and Sysmon Events 1/3 within sliding time windows to surface attack sequences invisible to single-event
@@ -95,7 +95,7 @@ level: high
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-siem-correlation-rules-for-apt" --type investigation
+mcp__cybersec__case_open --title "siem" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

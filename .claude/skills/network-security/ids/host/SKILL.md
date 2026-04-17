@@ -1,5 +1,5 @@
 ---
-name: configuring-host-based-intrusion-detection
+name: host
 description: 'Configures host-based intrusion detection systems (HIDS) to monitor endpoint file integrity, system calls, and
   configuration changes for security violations. Use when deploying OSSEC, Wazuh, or AIDE for endpoint monitoring, building
   file integrity monitoring (FIM) policies, or meeting compliance requirements for change detection. Activates for requests
@@ -233,7 +233,7 @@ output.elasticsearch:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-host-based-intrusion-detection" --type investigation
+mcp__cybersec__case_open --title "host" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

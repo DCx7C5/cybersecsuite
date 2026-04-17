@@ -1,5 +1,5 @@
 ---
-name: configuring-windows-event-logging-for-detection
+name: windows
 description: 'Configures Windows Event Logging with advanced audit policies to generate high-fidelity security events for
   threat detection and forensic investigation. Use when enabling audit policies for logon events, process creation, privilege
   use, and object access to feed SIEM detection rules. Activates for requests involving Windows audit policy, event log configuration,
@@ -197,7 +197,7 @@ Lateral Movement Indicators:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-windows-event-logging-for-detection" --type investigation
+mcp__cybersec__case_open --title "windows" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

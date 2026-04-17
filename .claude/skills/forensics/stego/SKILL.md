@@ -1,5 +1,5 @@
 ---
-name: performing-steganography-detection
+name: stego
 description: Detect and extract hidden data embedded in images, audio, and other media files using steganalysis tools to uncover
   covert communication channels.
 domain: cybersecurity
@@ -356,7 +356,7 @@ Steganalysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-steganography-detection" --type investigation
+mcp__cybersec__case_open --title "stego" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

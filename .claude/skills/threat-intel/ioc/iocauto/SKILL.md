@@ -1,5 +1,5 @@
 ---
-name: performing-ioc-enrichment-automation
+name: iocauto
 description: 'Automates Indicator of Compromise (IOC) enrichment by orchestrating lookups across VirusTotal, AbuseIPDB, Shodan,
   MISP, and other intelligence sources to provide contextual scoring and disposition recommendations. Use when SOC analysts
   need rapid multi-source enrichment of IPs, domains, URLs, and file hashes during alert triage or incident investigation.
@@ -437,7 +437,7 @@ IP: 45.33.32[.]156
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ioc-enrichment-automation" --type investigation
+mcp__cybersec__case_open --title "iocauto" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

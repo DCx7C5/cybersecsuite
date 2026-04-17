@@ -1,5 +1,5 @@
 ---
-name: implementing-browser-isolation-for-zero-trust
+name: browserisolation
 description: 'Deploys remote browser isolation (RBI) as a core component of a Zero Trust architecture. Implements isolation
   policies with URL categorization and risk-based routing, content disarming and reconstruction (CDR) for file sanitization,
   data loss prevention controls within isolated sessions, and integration with Secure Web Gateway and ZTNA platforms. Based
@@ -394,7 +394,7 @@ print(f"Zero-day attacks prevented: {report['zero_day_blocked']}")
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-browser-isolation-for-zero-trust" --type investigation
+mcp__cybersec__case_open --title "browserisolation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

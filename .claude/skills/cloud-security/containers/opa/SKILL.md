@@ -1,5 +1,5 @@
 ---
-name: implementing-opa-gatekeeper-for-policy-enforcement
+name: opa
 description: Enforce Kubernetes admission policies using OPA Gatekeeper with ConstraintTemplates, Rego rules, and the Gatekeeper
   policy library.
 domain: cybersecurity
@@ -398,7 +398,7 @@ kubectl get --raw /metrics | grep gatekeeper
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-opa-gatekeeper-for-policy-enforcement" --type investigation
+mcp__cybersec__case_open --title "opa" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: hunting-for-process-injection-techniques
+name: procinjection
 description: Detect process injection techniques (T1055) including CreateRemoteThread, process hollowing, and DLL injection
   via Sysmon Event IDs 8 and 10 and EDR process telemetry
 domain: cybersecurity
@@ -78,7 +78,7 @@ Process injection (MITRE ATT&CK T1055) allows adversaries to execute code in the
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-process-injection-techniques" --type investigation
+mcp__cybersec__case_open --title "procinjection" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

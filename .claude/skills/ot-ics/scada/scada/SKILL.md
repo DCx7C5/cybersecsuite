@@ -1,5 +1,5 @@
 ---
-name: detecting-attacks-on-scada-systems
+name: scada
 description: 'This skill covers detecting cyber attacks targeting Supervisory Control and Data Acquisition (SCADA) systems
   including man-in-the-middle attacks on industrial protocols, unauthorized command injection into PLCs, HMI compromise, historian
   data manipulation, and denial-of-service against control system communications. It leverages OT-specific intrusion detection
@@ -725,7 +725,7 @@ RECOMMENDED RESPONSE:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-attacks-on-scada-systems" --type investigation
+mcp__cybersec__case_open --title "scada" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-container-escape-with-falco-rules
+name: falco
 description: Detect container escape attempts in real-time using Falco runtime security rules that monitor syscalls, file
   access, and privilege escalation.
 domain: cybersecurity
@@ -347,7 +347,7 @@ kubectl logs -n falco -l app.kubernetes.io/name=falco --tail=50 | grep -i escape
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-container-escape-with-falco-rules" --type investigation
+mcp__cybersec__case_open --title "falco" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

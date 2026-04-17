@@ -1,5 +1,5 @@
 ---
-name: implementing-security-information-sharing-with-stix2
+name: security
 description: 'Create, validate, and share STIX 2.1 threat intelligence objects using the stix2 Python library. Covers indicators,
   malware, campaigns, relationships, bundles, and TAXII 2.1 publishing.
 
@@ -419,7 +419,7 @@ validate_stix_bundle("emotet_campaign_bundle.json")
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-security-information-sharing-with-stix2" --type investigation
+mcp__cybersec__case_open --title "security" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

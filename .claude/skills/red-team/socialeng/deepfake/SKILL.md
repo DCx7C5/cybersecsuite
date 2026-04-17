@@ -1,5 +1,5 @@
 ---
-name: detecting-deepfake-audio-in-vishing-attacks
+name: deepfake
 description: 'Detects AI-generated deepfake audio used in voice phishing (vishing) attacks by extracting spectral features
   (MFCC, spectral centroid, spectral contrast, zero-crossing rate) and classifying samples with machine learning models. Supports
   batch analysis of audio files, generates confidence scores, and produces forensic reports. Activates for requests involving
@@ -259,7 +259,7 @@ file with chain of custody documentation for potential legal action.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-deepfake-audio-in-vishing-attacks" --type investigation
+mcp__cybersec__case_open --title "deepfake" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

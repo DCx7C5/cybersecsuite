@@ -1,5 +1,5 @@
 ---
-name: performing-power-grid-cybersecurity-assessment
+name: power
 description: 'This skill covers conducting cybersecurity assessments of electric power grid infrastructure including generation
   facilities, transmission substations, distribution systems, and energy management system (EMS) control centers. It addresses
   NERC CIP compliance verification, substation automation security, IEC 61850 protocol analysis, synchrophasor (PMU) network
@@ -320,7 +320,7 @@ NERC CIP COMPLIANCE:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-power-grid-cybersecurity-assessment" --type investigation
+mcp__cybersec__case_open --title "power" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

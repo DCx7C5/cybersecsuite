@@ -1,5 +1,5 @@
 ---
-name: generating-threat-intelligence-reports
+name: threat
 description: 'Generates structured cyber threat intelligence reports at strategic, operational, and tactical levels tailored
   to specific audiences including executives, security operations teams, and technical analysts. Use when producing finished
   intelligence products from raw collection data, creating sector threat briefings, or delivering post-incident intelligence
@@ -159,7 +159,7 @@ Before dissemination, apply these checks:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "generating-threat-intelligence-reports" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-dns-exfiltration-with-dns-query-analysis
+name: dnsexfil
 description: Detect data exfiltration through DNS tunneling by analyzing query entropy, subdomain length, query volume, TXT
   record abuse, and response payload sizes using passive DNS monitoring.
 domain: cybersecurity
@@ -455,7 +455,7 @@ index=dns sourcetype=zeek:dns
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-dns-exfiltration-with-dns-query-analysis" --type investigation
+mcp__cybersec__case_open --title "dnsexfil" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: building-incident-timeline-with-timesketch
+name: timesketch
 description: Build collaborative forensic incident timelines using Timesketch to ingest, normalize, and analyze multi-source
   event data for attack chain reconstruction and investigation documentation.
 domain: cybersecurity
@@ -278,7 +278,7 @@ target-query -f timesketch://timesketch.local/case-001 \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-incident-timeline-with-timesketch" --type investigation
+mcp__cybersec__case_open --title "timesketch" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

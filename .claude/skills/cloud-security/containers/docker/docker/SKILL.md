@@ -1,5 +1,5 @@
 ---
-name: performing-docker-bench-security-assessment
+name: docker
 description: Docker Bench for Security is an open-source script that checks dozens of common best practices around deploying
   Docker containers in production. Based on the CIS Docker Benchmark, it audits host confi
 domain: cybersecurity
@@ -155,7 +155,7 @@ docker run --rm docker/docker-bench-security 2>&1 | grep -c "WARN"
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-docker-bench-security-assessment" --type investigation
+mcp__cybersec__case_open --title "docker" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

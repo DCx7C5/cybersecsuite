@@ -1,5 +1,5 @@
 ---
-name: evaluating-threat-intelligence-platforms
+name: tipeval
 description: 'Evaluates and selects Threat Intelligence Platform (TIP) products based on organizational requirements including
   feed integration capability, STIX/TAXII support, workflow automation, analyst interface, and total cost of ownership. Use
   when conducting a TIP procurement, migrating between TIP solutions, or assessing whether the current TIP meets program maturity
@@ -172,7 +172,7 @@ Plan 90-day implementation:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "evaluating-threat-intelligence-platforms" --type investigation
+mcp__cybersec__case_open --title "tipeval" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

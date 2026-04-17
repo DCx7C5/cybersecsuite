@@ -1,5 +1,5 @@
 ---
-name: testing-android-intents-for-vulnerabilities
+name: intents
 description: 'Tests Android inter-process communication (IPC) through intents for vulnerabilities including intent injection,
   unauthorized component access, broadcast sniffing, pending intent hijacking, and content provider data leakage. Use when
   assessing Android app attack surface through exported components, testing intent-based data flows, or evaluating IPC security.
@@ -197,7 +197,7 @@ run app.service.send com.target.app com.target.app.MessengerService \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "testing-android-intents-for-vulnerabilities" --type investigation
+mcp__cybersec__case_open --title "intents" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

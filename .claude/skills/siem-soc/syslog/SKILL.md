@@ -1,5 +1,5 @@
 ---
-name: implementing-syslog-centralization-with-rsyslog
+name: syslog
 description: Configure rsyslog for centralized log collection with TLS encryption, custom templates, and log rotation. Generates
   server and client configuration files with GnuTLS stream drivers, x509 certificate authentication, per-host log segregation,
   and reliable queue settings for high-availability syslog infrastructure.
@@ -85,7 +85,7 @@ action(type="omfwd" target="10.0.0.1" port="6514" protocol="tcp"
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-syslog-centralization-with-rsyslog" --type investigation
+mcp__cybersec__case_open --title "syslog" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

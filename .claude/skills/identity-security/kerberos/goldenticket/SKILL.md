@@ -1,5 +1,5 @@
 ---
-name: detecting-golden-ticket-attacks-in-kerberos-logs
+name: goldenticket
 description: Detect Golden Ticket attacks in Active Directory by analyzing Kerberos TGT anomalies including mismatched encryption
   types, impossible ticket lifetimes, non-existent accounts, and forged PAC signatures in domain controller event logs.
 domain: cybersecurity
@@ -111,7 +111,7 @@ Risk Level: [Critical]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-golden-ticket-attacks-in-kerberos-logs" --type investigation
+mcp__cybersec__case_open --title "goldenticket" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

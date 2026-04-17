@@ -1,5 +1,5 @@
 ---
-name: analyzing-docker-container-forensics
+name: docker
 description: Investigate compromised Docker containers by analyzing images, layers, volumes, logs, and runtime artifacts to
   identify malicious activity and evidence.
 domain: cybersecurity
@@ -352,7 +352,7 @@ Docker Container Forensics Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-docker-container-forensics" --type investigation
+mcp__cybersec__case_open --title "docker" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

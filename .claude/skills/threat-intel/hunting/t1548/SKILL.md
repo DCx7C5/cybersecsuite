@@ -1,5 +1,5 @@
 ---
-name: detecting-t1548-abuse-elevation-control-mechanism
+name: t1548
 description: Detect abuse of elevation control mechanisms including UAC bypass, sudo exploitation, and setuid/setgid manipulation
   by monitoring registry modifications, process elevation flags, and unusual parent-child process relationships.
 domain: cybersecurity
@@ -147,7 +147,7 @@ ATT&CK Technique: [T1548.00x]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-t1548-abuse-elevation-control-mechanism" --type investigation
+mcp__cybersec__case_open --title "t1548" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

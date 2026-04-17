@@ -1,5 +1,5 @@
 ---
-name: securing-helm-chart-deployments
+name: helm
 description: Secure Helm chart deployments by validating chart integrity, scanning templates for misconfigurations, and enforcing
   security contexts in Kubernetes releases.
 domain: cybersecurity
@@ -299,7 +299,7 @@ jobs:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-helm-chart-deployments" --type investigation
+mcp__cybersec__case_open --title "helm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

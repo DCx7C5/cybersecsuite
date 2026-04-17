@@ -1,5 +1,5 @@
 ---
-name: detecting-azure-storage-account-misconfigurations
+name: storagemisconfig
 description: Audit Azure Blob and ADLS storage accounts for public access exposure, weak or long-lived SAS tokens, missing
   encryption at rest, disabled HTTPS-only traffic, and outdated TLS versions using the azure-mgmt-storage Python SDK.
 domain: cybersecurity
@@ -77,7 +77,7 @@ JSON report with per-account findings, severity ratings (Critical/High/Medium/Lo
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-azure-storage-account-misconfigurations" --type investigation
+mcp__cybersec__case_open --title "storagemisconfig" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

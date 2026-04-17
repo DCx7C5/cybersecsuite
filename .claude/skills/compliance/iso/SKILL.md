@@ -1,5 +1,5 @@
 ---
-name: implementing-iso-27001-information-security-management
+name: iso
 description: ISO/IEC 27001:2022 is the international standard for establishing, implementing, maintaining, and continually improving an Information Security Management System (ISMS). This skill covers the complete
 domain: cybersecurity
 subdomain: compliance-governance
@@ -173,7 +173,7 @@ The 2022 revision restructured 93 controls into four categories:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-iso-27001-information-security-management" --type investigation
+mcp__cybersec__case_open --title "iso" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

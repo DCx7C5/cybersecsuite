@@ -1,5 +1,5 @@
 ---
-name: implementing-cloud-workload-protection
+name: cwpp
 description: 'Implements cloud workload protection using boto3 and google-cloud APIs for runtime security monitoring, process
   anomaly detection, and file integrity checking on EC2/GCE instances. Scans for cryptomining, reverse shells, and unauthorized
   binaries. Use when building runtime security controls for cloud compute workloads.
@@ -86,7 +86,7 @@ ssm.send_command(
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-cloud-workload-protection" --type investigation
+mcp__cybersec__case_open --title "cwpp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

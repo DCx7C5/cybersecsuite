@@ -1,5 +1,5 @@
 ---
-name: detecting-golden-ticket-forgery
+name: goldenticketd
 description: Detect Kerberos Golden Ticket forgery by analyzing Windows Event ID 4769 for RC4 encryption downgrades (0x17),
   abnormal ticket lifetimes, and krbtgt account anomalies in Splunk and Elastic SIEM
 domain: cybersecurity
@@ -75,7 +75,7 @@ JSON report with Golden Ticket indicators including RC4 downgrades, orphaned TGS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-golden-ticket-forgery" --type investigation
+mcp__cybersec__case_open --title "goldenticketd" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

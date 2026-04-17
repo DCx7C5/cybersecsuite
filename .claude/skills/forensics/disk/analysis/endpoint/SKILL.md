@@ -1,5 +1,5 @@
 ---
-name: performing-endpoint-forensics-investigation
+name: endpoint
 description: 'Performs digital forensics investigation on compromised endpoints including memory acquisition, disk imaging,
   artifact analysis, and timeline reconstruction. Use when investigating security incidents, collecting evidence for legal
   proceedings, or analyzing endpoint compromise scope. Activates for requests involving endpoint forensics, memory analysis,
@@ -254,7 +254,7 @@ Structure forensic report:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-endpoint-forensics-investigation" --type investigation
+mcp__cybersec__case_open --title "endpoint" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

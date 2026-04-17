@@ -1,5 +1,5 @@
 ---
-name: implementing-soar-automation-with-phantom
+name: soar
 description: 'Implements Security Orchestration, Automation, and Response (SOAR) workflows using Splunk SOAR (formerly Phantom)
   to automate alert triage, IOC enrichment, containment actions, and incident response playbooks. Use when SOC teams need
   to reduce manual analyst work, standardize response procedures, or integrate multiple security tools into automated workflows.
@@ -428,7 +428,7 @@ Disposition:       True Positive — Escalated to IR
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-soar-automation-with-phantom" --type investigation
+mcp__cybersec__case_open --title "soar" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

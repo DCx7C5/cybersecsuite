@@ -1,5 +1,5 @@
 ---
-name: performing-threat-emulation-with-atomic-red-team
+name: threat
 description: 'Executes Atomic Red Team tests for MITRE ATT&CK technique validation using the atomic-operator Python framework.
   Loads test definitions from YAML atomics, runs attack simulations, and validates detection coverage. Use when testing SIEM
   detection rules, validating EDR coverage, or conducting purple team exercises.
@@ -100,7 +100,7 @@ for test in tests.get("atomic_tests", []):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-threat-emulation-with-atomic-red-team" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

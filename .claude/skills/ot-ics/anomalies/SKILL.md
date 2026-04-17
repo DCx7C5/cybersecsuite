@@ -1,5 +1,5 @@
 ---
-name: detecting-anomalies-in-industrial-control-systems
+name: anomalies
 description: 'This skill covers deploying anomaly detection systems for industrial control environments using machine learning
   models trained on OT network baselines, physics-based process models, and behavioral analysis of industrial protocol communications.
   It addresses building normal behavior profiles for SCADA polling patterns, detecting deviations in Modbus/DNP3/OPC UA traffic,
@@ -342,7 +342,7 @@ ANOMALIES DETECTED: [N]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-anomalies-in-industrial-control-systems" --type investigation
+mcp__cybersec__case_open --title "anomalies" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

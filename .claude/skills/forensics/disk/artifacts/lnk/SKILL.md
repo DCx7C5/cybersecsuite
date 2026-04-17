@@ -1,5 +1,5 @@
 ---
-name: analyzing-lnk-file-and-jump-list-artifacts
+name: lnk
 description: Analyze Windows LNK shortcut files and Jump List artifacts to establish evidence of file access, program execution,
   and user activity using LECmd, JLECmd, and manual binary parsing of the Shell Link Binary format.
 domain: cybersecurity
@@ -297,7 +297,7 @@ Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-lnk-file-and-jump-list-artifacts" --type investigation
+mcp__cybersec__case_open --title "lnk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

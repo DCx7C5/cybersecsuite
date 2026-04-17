@@ -1,5 +1,5 @@
 ---
-name: detecting-misconfigured-azure-storage
+name: misconfigured
 description: 'Detecting misconfigured Azure Storage accounts including publicly accessible blob containers, missing encryption
   settings, overly permissive SAS tokens, disabled logging, and network access violations using Azure CLI, PowerShell, and
   Microsoft Defender for Storage.
@@ -286,7 +286,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-misconfigured-azure-storage" --type investigation
+mcp__cybersec__case_open --title "misconfigured" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

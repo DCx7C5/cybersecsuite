@@ -1,5 +1,5 @@
 ---
-name: performing-wifi-password-cracking-with-aircrack
+name: aircrack
 description: 'Captures WPA/WPA2 handshakes and performs offline password cracking using aircrack-ng, hashcat, and dictionary
   attacks during authorized wireless security assessments to evaluate passphrase strength and wireless network security posture.
 
@@ -287,7 +287,7 @@ sha256sum handshake_capture-01.cap > evidence_hashes.txt
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-wifi-password-cracking-with-aircrack" --type investigation
+mcp__cybersec__case_open --title "aircrack" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

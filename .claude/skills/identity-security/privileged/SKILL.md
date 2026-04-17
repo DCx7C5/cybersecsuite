@@ -1,5 +1,5 @@
 ---
-name: implementing-privileged-access-management-with-cyberark
+name: privileged
 description: Deploy CyberArk Privileged Access Management to discover, vault, rotate, and monitor privileged credentials across
   enterprise infrastructure. This skill covers vault architecture, session isolation, c
 domain: cybersecurity
@@ -155,7 +155,7 @@ Deploy CyberArk Privileged Access Management to discover, vault, rotate, and mon
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-privileged-access-management-with-cyberark" --type investigation
+mcp__cybersec__case_open --title "privileged" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

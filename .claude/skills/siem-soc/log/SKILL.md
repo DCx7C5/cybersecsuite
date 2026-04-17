@@ -1,5 +1,5 @@
 ---
-name: implementing-log-forwarding-with-fluentd
+name: log
 description: Configure Fluentd and Fluent Bit for centralized log aggregation, routing, filtering, and enrichment across distributed
   infrastructure
 domain: cybersecurity
@@ -72,7 +72,7 @@ This skill covers configuring Fluentd and Fluent Bit for centralized log collect
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-log-forwarding-with-fluentd" --type investigation
+mcp__cybersec__case_open --title "log" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

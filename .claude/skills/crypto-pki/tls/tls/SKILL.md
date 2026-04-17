@@ -1,5 +1,5 @@
 ---
-name: configuring-tls-1-3-for-secure-communications
+name: tls
 description: TLS 1.3 (RFC 8446) is the latest version of the Transport Layer Security protocol, providing significant improvements
   over TLS 1.2 in both security and performance. It reduces handshake latency to 1-R
 domain: cybersecurity
@@ -115,7 +115,7 @@ TLS 1.3 (RFC 8446) is the latest version of the Transport Layer Security protoco
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-tls-1-3-for-secure-communications" --type investigation
+mcp__cybersec__case_open --title "tls" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

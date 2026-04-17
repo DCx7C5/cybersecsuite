@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-knowledge-proof-for-authentication
+name: zero
 description: Zero-Knowledge Proofs (ZKPs) allow a prover to demonstrate knowledge of a secret (such as a password or private
   key) without revealing the secret itself. This skill implements the Schnorr identificati
 domain: cybersecurity
@@ -94,7 +94,7 @@ Zero-Knowledge Proofs (ZKPs) allow a prover to demonstrate knowledge of a secret
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-knowledge-proof-for-authentication" --type investigation
+mcp__cybersec__case_open --title "zero" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

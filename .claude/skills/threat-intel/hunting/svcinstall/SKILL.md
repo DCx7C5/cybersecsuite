@@ -1,5 +1,5 @@
 ---
-name: hunting-for-unusual-service-installations
+name: svcinstall
 description: Detect suspicious Windows service installations (MITRE ATT&CK T1543.003) by parsing System event logs for Event
   ID 7045, analyzing service binary paths, and identifying indicators of persistence mechanisms.
 domain: cybersecurity
@@ -76,7 +76,7 @@ Attackers frequently install malicious Windows services for persistence and priv
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-unusual-service-installations" --type investigation
+mcp__cybersec__case_open --title "svcinstall" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: extracting-memory-artifacts-with-rekall
+name: memory
 description: 'Uses Rekall memory forensics framework to analyze memory dumps for process hollowing, injected code via VAD
   anomalies, hidden processes, and rootkit detection. Applies plugins like pslist, psscan, vadinfo, malfind, and dlllist to
   extract forensic artifacts from Windows memory images. Use during incident response memory analysis.
@@ -95,7 +95,7 @@ print(f"Hidden PIDs: {hidden}")
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "extracting-memory-artifacts-with-rekall" --type investigation
+mcp__cybersec__case_open --title "memory" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

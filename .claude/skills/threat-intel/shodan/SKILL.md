@@ -1,5 +1,5 @@
 ---
-name: performing-ip-reputation-analysis-with-shodan
+name: shodan
 description: Analyze IP address reputation using the Shodan API to identify open ports, running services, known vulnerabilities,
   and hosting context for threat intelligence enrichment and incident triage.
 domain: cybersecurity
@@ -309,7 +309,7 @@ def correlate_infrastructure(enricher, ip_address):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ip-reputation-analysis-with-shodan" --type investigation
+mcp__cybersec__case_open --title "shodan" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: deploying-palo-alto-prisma-access-zero-trust
+name: prisma
 description: 'Deploying Palo Alto Networks Prisma Access for SASE-based zero trust network access using GlobalProtect agents,
   ZTNA Connectors, security policy enforcement, and integration with Strata Cloud Manager for unified security management.
 
@@ -314,7 +314,7 @@ SECURITY (last 30 days):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-palo-alto-prisma-access-zero-trust" --type investigation
+mcp__cybersec__case_open --title "prisma" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

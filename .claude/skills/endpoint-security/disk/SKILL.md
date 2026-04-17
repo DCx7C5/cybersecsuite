@@ -1,5 +1,5 @@
 ---
-name: implementing-disk-encryption-with-bitlocker
+name: disk
 description: 'Implements full disk encryption using Microsoft BitLocker on Windows endpoints to protect data at rest from
   unauthorized access in case of device loss or theft. Use when deploying encryption for compliance requirements, securing
   mobile workstations, or implementing data protection controls across the enterprise. Activates for requests involving BitLocker
@@ -231,7 +231,7 @@ if ($vol.ProtectionStatus -eq "On" -and $vol.VolumeStatus -eq "FullyEncrypted") 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-disk-encryption-with-bitlocker" --type investigation
+mcp__cybersec__case_open --title "disk" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

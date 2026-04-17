@@ -1,5 +1,5 @@
 ---
-name: performing-kubernetes-cis-benchmark-with-kube-bench
+name: kubernetes
 description: Audit Kubernetes cluster security posture against CIS benchmarks using kube-bench with automated checks for control
   plane, worker nodes, and RBAC.
 domain: cybersecurity
@@ -242,7 +242,7 @@ kubectl get clusterroles -o json | jq '.items[] | select(.rules[].resources[] ==
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-kubernetes-cis-benchmark-with-kube-bench" --type investigation
+mcp__cybersec__case_open --title "kubernetes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

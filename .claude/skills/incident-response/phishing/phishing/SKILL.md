@@ -1,5 +1,5 @@
 ---
-name: building-phishing-reporting-button-workflow
+name: phishing
 description: Implement a phishing report button in email clients with automated triage workflow that analyzes user-reported
   suspicious emails and provides feedback to reporters.
 domain: cybersecurity
@@ -110,7 +110,7 @@ A phishing reporting button empowers users to flag suspicious emails directly fr
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-phishing-reporting-button-workflow" --type investigation
+mcp__cybersec__case_open --title "phishing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

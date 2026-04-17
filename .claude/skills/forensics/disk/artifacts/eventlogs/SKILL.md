@@ -1,5 +1,5 @@
 ---
-name: extracting-windows-event-logs-artifacts
+name: eventlogs
 description: Extract, parse, and analyze Windows Event Logs (EVTX) using Chainsaw, Hayabusa, and EvtxECmd to detect lateral
   movement, persistence, and privilege escalation.
 domain: cybersecurity
@@ -349,7 +349,7 @@ Windows Event Log Analysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "extracting-windows-event-logs-artifacts" --type investigation
+mcp__cybersec__case_open --title "eventlogs" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

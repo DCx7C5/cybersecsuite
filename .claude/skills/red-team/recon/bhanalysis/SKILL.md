@@ -1,5 +1,5 @@
 ---
-name: performing-active-directory-bloodhound-analysis
+name: bhanalysis
 description: Use BloodHound and SharpHound to enumerate Active Directory relationships and identify attack paths from compromised
   users to Domain Admin.
 domain: cybersecurity
@@ -252,7 +252,7 @@ Code Execution as SYSTEM
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-active-directory-bloodhound-analysis" --type investigation
+mcp__cybersec__case_open --title "bhanalysis" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

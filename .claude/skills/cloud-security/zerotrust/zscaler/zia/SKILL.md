@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-network-access-with-zscaler
+name: zia
 description: Implement Zero Trust Network Access using Zscaler Private Access (ZPA) to replace traditional VPN with identity-based,
   context-aware access to private applications through the Zscaler Zero Trust Exchange.
 domain: cybersecurity
@@ -185,7 +185,7 @@ ZPA supports clientless browser-based access for web applications, enabling ZTNA
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-network-access-with-zscaler" --type investigation
+mcp__cybersec__case_open --title "zia" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

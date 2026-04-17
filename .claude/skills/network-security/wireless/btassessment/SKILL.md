@@ -1,5 +1,5 @@
 ---
-name: performing-bluetooth-security-assessment
+name: btassessment
 description: Assess Bluetooth Low Energy device security by scanning, enumerating GATT services, and detecting vulnerabilities
 domain: cybersecurity
 subdomain: wireless-security
@@ -96,7 +96,7 @@ The agent uses bleak's asyncio API to discover nearby BLE devices, connect to ta
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-bluetooth-security-assessment" --type investigation
+mcp__cybersec__case_open --title "btassessment" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

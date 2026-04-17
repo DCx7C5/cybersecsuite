@@ -1,5 +1,5 @@
 ---
-name: implementing-gdpr-data-subject-access-request
+name: dsar
 description: 'Automates GDPR Data Subject Access Request (DSAR) workflows including identity verification, PII discovery across
   databases and files using regex and NER, data mapping, response templating per Article 15 requirements, deadline tracking,
   and audit logging. Covers ICO/EDPB guidance compliance, exemption handling, and scalable batch processing. Use when building
@@ -308,7 +308,7 @@ for m in matches:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-gdpr-data-subject-access-request" --type investigation
+mcp__cybersec__case_open --title "dsar" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

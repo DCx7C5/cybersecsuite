@@ -1,5 +1,5 @@
 ---
-name: implementing-nerc-cip-compliance-controls
+name: nerc
 description: 'This skill covers implementing North American Electric Reliability Corporation Critical Infrastructure Protection
   (NERC CIP) compliance controls for Bulk Electric System (BES) cyber systems. It addresses asset categorization (CIP-002),
   electronic security perimeters (CIP-005), system security management (CIP-007), configuration management (CIP-010), supply
@@ -438,7 +438,7 @@ COMPLIANCE STATUS BY STANDARD:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-nerc-cip-compliance-controls" --type investigation
+mcp__cybersec__case_open --title "nerc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

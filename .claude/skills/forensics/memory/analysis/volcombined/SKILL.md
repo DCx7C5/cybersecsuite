@@ -1,5 +1,5 @@
 ---
-name: conducting-memory-forensics-with-volatility
+name: volcombined
 description: 'Performs memory forensics analysis using Volatility 3 to extract evidence of malware execution, process injection,
   network connections, and credential theft from RAM dumps captured during incident response. Covers memory acquisition, process
   analysis, DLL inspection, and malware detection. Activates for requests involving memory forensics, RAM analysis, Volatility
@@ -295,7 +295,7 @@ Mutexes:    Global\MSCTF.Shared.MUTEX.ZRQ
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-memory-forensics-with-volatility" --type investigation
+mcp__cybersec__case_open --title "volcombined" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

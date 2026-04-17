@@ -1,5 +1,5 @@
 ---
-name: implementing-honeytokens-for-breach-detection
+name: honeytoken
 description: 'Deploys canary tokens and honeytokens (fake AWS credentials, DNS canaries, document beacons, database records)
   that trigger alerts when accessed by attackers. Uses the Canarytokens API and custom webhook integrations for breach detection.
   Use when building deception-based early warning systems for intrusion detection.
@@ -85,7 +85,7 @@ with open("/opt/backup/.aws/credentials", "w") as f:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-honeytokens-for-breach-detection" --type investigation
+mcp__cybersec__case_open --title "honeytoken" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

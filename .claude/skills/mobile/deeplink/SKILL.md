@@ -1,5 +1,5 @@
 ---
-name: exploiting-deeplink-vulnerabilities
+name: deeplink
 description: 'Tests and exploits deep link (URL scheme and App Link) vulnerabilities in Android and iOS mobile applications
   to identify unauthorized access, data injection, intent hijacking, and redirect manipulation. Use when assessing mobile
   app attack surface through custom URI schemes, Android App Links, iOS Universal Links, or intent-based navigation. Activates
@@ -193,7 +193,7 @@ Test each deep link parameter for:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-deeplink-vulnerabilities" --type investigation
+mcp__cybersec__case_open --title "deeplink" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

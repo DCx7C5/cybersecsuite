@@ -1,5 +1,5 @@
 ---
-name: implementing-soar-playbook-for-phishing
+name: phishing
 description: Automate phishing incident response using Splunk SOAR REST API to create containers, add artifacts, and trigger
   playbooks
 domain: cybersecurity
@@ -100,7 +100,7 @@ Splunk SOAR orchestrates and automates security operations through playbooks tha
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-soar-playbook-for-phishing" --type investigation
+mcp__cybersec__case_open --title "phishing" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-apt-group-with-mitre-navigator
+name: apt
 description: Analyze advanced persistent threat (APT) group techniques using MITRE ATT&CK Navigator to create layered heatmaps
   of adversary TTPs for detection gap analysis and threat-informed defense.
 domain: cybersecurity
@@ -296,7 +296,7 @@ for tactic in tactic_order:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-apt-group-with-mitre-navigator" --type investigation
+mcp__cybersec__case_open --title "apt" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

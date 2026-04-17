@@ -1,5 +1,5 @@
 ---
-name: detecting-attacks-on-historian-servers
+name: historian
 description: 'Detect cyber attacks targeting OT historian servers (OSIsoft PI, Ignition, Wonderware) that sit at the IT/OT
   boundary and serve as pivot points for lateral movement between enterprise and control networks, including data manipulation,
   unauthorized queries, and exploitation of historian-specific vulnerabilities.
@@ -299,7 +299,7 @@ LATERAL MOVEMENT INDICATORS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-attacks-on-historian-servers" --type investigation
+mcp__cybersec__case_open --title "historian" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

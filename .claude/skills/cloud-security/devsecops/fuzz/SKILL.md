@@ -1,5 +1,5 @@
 ---
-name: implementing-fuzz-testing-in-cicd-with-aflplusplus
+name: fuzz
 description: Integrate AFL++ coverage-guided fuzz testing into CI/CD pipelines to discover memory corruption, input handling,
   and logic vulnerabilities in C/C++ and compiled applications.
 domain: cybersecurity
@@ -304,7 +304,7 @@ afl-whatsup findings/
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-fuzz-testing-in-cicd-with-aflplusplus" --type investigation
+mcp__cybersec__case_open --title "fuzz" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

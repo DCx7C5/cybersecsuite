@@ -1,5 +1,5 @@
 ---
-name: performing-osint-with-spiderfoot
+name: spiderfoot
 description: Automate OSINT collection using SpiderFoot REST API and CLI for target profiling, module-based reconnaissance,
   and structured result analysis across 200+ data sources
 domain: cybersecurity
@@ -68,7 +68,7 @@ JSON report containing OSINT findings organized by data type (domains, IPs, emai
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-osint-with-spiderfoot" --type investigation
+mcp__cybersec__case_open --title "spiderfoot" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

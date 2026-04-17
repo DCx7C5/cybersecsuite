@@ -1,5 +1,5 @@
 ---
-name: investigating-insider-threat-indicators
+name: insiderindicators
 description: 'Investigates insider threat indicators including data exfiltration attempts, unauthorized access patterns, policy
   violations, and pre-departure behaviors using SIEM analytics, DLP alerts, and HR data correlation. Use when SOC teams receive
   insider threat referrals from HR, detect anomalous data movement by employees, or need to build investigation timelines
@@ -316,7 +316,7 @@ Recommendation:       Immediate access revocation recommended
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "investigating-insider-threat-indicators" --type investigation
+mcp__cybersec__case_open --title "insiderindicators" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

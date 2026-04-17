@@ -1,5 +1,5 @@
 ---
-name: performing-brand-monitoring-for-impersonation
+name: brand
 description: Monitor for brand impersonation attacks across domains, social media, mobile apps, and dark web channels to detect
   phishing campaigns, fake sites, and unauthorized brand usage targeting your organization.
 domain: cybersecurity
@@ -262,7 +262,7 @@ Regards,
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-brand-monitoring-for-impersonation" --type investigation
+mcp__cybersec__case_open --title "brand" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

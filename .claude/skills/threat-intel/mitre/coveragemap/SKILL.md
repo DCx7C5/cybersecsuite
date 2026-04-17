@@ -1,5 +1,5 @@
 ---
-name: implementing-mitre-attack-coverage-mapping
+name: coveragemap
 description: Implement MITRE ATT&CK coverage mapping to identify detection gaps, prioritize rule development, and measure
   SOC detection maturity against adversary techniques.
 domain: cybersecurity
@@ -301,7 +301,7 @@ DATA_SOURCE_TECHNIQUE_MAP = {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-mitre-attack-coverage-mapping" --type investigation
+mcp__cybersec__case_open --title "coveragemap" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

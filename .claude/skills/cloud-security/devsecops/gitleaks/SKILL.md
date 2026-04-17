@@ -1,5 +1,5 @@
 ---
-name: implementing-secret-scanning-with-gitleaks
+name: gitleaks
 description: 'This skill covers implementing Gitleaks for detecting and preventing hardcoded secrets in git repositories.
   It addresses configuring pre-commit hooks, CI/CD pipeline integration, custom rule authoring for organization-specific secrets,
   baseline management for existing repositories, and remediation workflows for exposed credentials.
@@ -348,7 +348,7 @@ Action: Rotate exposed credentials immediately.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-secret-scanning-with-gitleaks" --type investigation
+mcp__cybersec__case_open --title "gitleaks" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

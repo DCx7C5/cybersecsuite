@@ -1,5 +1,5 @@
 ---
-name: building-soc-metrics-and-kpi-tracking
+name: kpimetrics
 description: 'Builds SOC performance metrics and KPI tracking dashboards measuring Mean Time to Detect (MTTD), Mean Time to
   Respond (MTTR), alert quality ratios, analyst productivity, and detection coverage using SIEM data. Use when SOC leadership
   needs operational visibility, continuous improvement tracking, or executive-level reporting on security operations effectiveness.
@@ -319,7 +319,7 @@ AREAS FOR IMPROVEMENT:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-soc-metrics-and-kpi-tracking" --type investigation
+mcp__cybersec__case_open --title "kpimetrics" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

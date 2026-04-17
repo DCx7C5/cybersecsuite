@@ -1,5 +1,5 @@
 ---
-name: securing-remote-access-to-ot-environment
+name: remote
 description: 'This skill covers implementing secure remote access to OT/ICS environments for operators, engineers, and vendors
   while preventing unauthorized access that could compromise industrial operations. It addresses jump server architecture,
   multi-factor authentication, session recording, privileged access management, vendor remote access controls, and compliance
@@ -395,7 +395,7 @@ VENDOR ACCESS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-remote-access-to-ot-environment" --type investigation
+mcp__cybersec__case_open --title "remote" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

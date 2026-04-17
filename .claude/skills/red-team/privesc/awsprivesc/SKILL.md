@@ -1,5 +1,5 @@
 ---
-name: performing-aws-privilege-escalation-assessment
+name: awsprivesc
 description: 'Performing authorized privilege escalation assessments in AWS environments to identify IAM misconfigurations
   that allow users or roles to elevate their permissions using Pacu, CloudFox, Principal Mapper, and manual IAM policy analysis
   techniques.
@@ -296,7 +296,7 @@ SCP GUARDRAILS BLOCKING ESCALATION: 0 / 3 tested vectors
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-aws-privilege-escalation-assessment" --type investigation
+mcp__cybersec__case_open --title "awsprivesc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

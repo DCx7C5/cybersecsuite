@@ -1,5 +1,5 @@
 ---
-name: auditing-azure-active-directory-configuration
+name: azure
 description: 'Auditing Microsoft Entra ID (Azure Active Directory) configuration to identify risky authentication policies,
   overly permissive role assignments, stale accounts, conditional access gaps, and guest user risks using AzureAD PowerShell,
   Microsoft Graph API, and ScoutSuite.
@@ -279,7 +279,7 @@ CRITICAL FINDINGS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "auditing-azure-active-directory-configuration" --type investigation
+mcp__cybersec__case_open --title "azure" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

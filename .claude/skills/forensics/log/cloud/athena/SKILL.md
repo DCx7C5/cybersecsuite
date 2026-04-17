@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-log-forensics-with-athena
+name: athena
 description: 'Uses AWS Athena to query CloudTrail, VPC Flow Logs, S3 access logs, and ALB logs for forensic investigation.
   Covers CREATE TABLE DDL with partition projection, forensic SQL queries for detecting unauthorized access, data exfiltration,
   lateral movement, and privilege escalation. Use when investigating AWS security incidents or building cloud-native forensic
@@ -509,7 +509,7 @@ python agent.py \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-log-forensics-with-athena" --type investigation
+mcp__cybersec__case_open --title "athena" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-dns-logs-for-exfiltration
+name: dns
 description: 'Analyzes DNS query logs to detect data exfiltration via DNS tunneling, DGA domain communication, and covert
   C2 channels using entropy analysis, query volume anomalies, and subdomain length detection in SIEM platforms. Use when SOC
   teams need to identify DNS-based threats that bypass traditional network security controls.
@@ -315,7 +315,7 @@ Containment:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-dns-logs-for-exfiltration" --type investigation
+mcp__cybersec__case_open --title "dns" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

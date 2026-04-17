@@ -1,5 +1,5 @@
 ---
-name: building-threat-intelligence-platform
+name: threat
 description: Building a Threat Intelligence Platform (TIP) involves deploying and integrating multiple CTI tools into a unified
   system for collecting, analyzing, enriching, and disseminating threat intelligence. T
 domain: cybersecurity
@@ -329,7 +329,7 @@ class TIPMetrics:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-threat-intelligence-platform" --type investigation
+mcp__cybersec__case_open --title "threat" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

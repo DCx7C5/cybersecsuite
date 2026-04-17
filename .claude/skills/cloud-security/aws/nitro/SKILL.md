@@ -1,5 +1,5 @@
 ---
-name: implementing-aws-nitro-enclave-security
+name: nitro
 description: 'Implements AWS Nitro Enclave-based confidential computing environments with cryptographic attestation, KMS policy
   integration using PCR-based condition keys, and secure vsock communication channels. The practitioner builds enclave images,
   configures attestation-aware KMS policies, validates attestation documents against the AWS Nitro PKI root of trust, and
@@ -467,7 +467,7 @@ Run the enclave and implement operational monitoring:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aws-nitro-enclave-security" --type investigation
+mcp__cybersec__case_open --title "nitro" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

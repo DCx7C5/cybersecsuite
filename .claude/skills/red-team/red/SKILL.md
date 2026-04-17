@@ -1,5 +1,5 @@
 ---
-name: executing-red-team-exercise
+name: red
 description: 'Executes comprehensive red team exercises that simulate real-world adversary operations against an organization''s
   people, processes, and technology. The red team operates with stealth as a primary objective, employing the full attack
   lifecycle from initial reconnaissance through objective completion while testing the organization''s detection and response
@@ -205,7 +205,7 @@ Convert red team findings into defensive improvements:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "executing-red-team-exercise" --type investigation
+mcp__cybersec__case_open --title "red" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

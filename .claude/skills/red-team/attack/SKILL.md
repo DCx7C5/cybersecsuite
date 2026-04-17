@@ -1,5 +1,5 @@
 ---
-name: implementing-attack-surface-management
+name: attack
 description: 'Implements external attack surface management (EASM) using Shodan, Censys, and ProjectDiscovery tools (subfinder,
   httpx, nuclei) for asset discovery, subdomain enumeration, service fingerprinting, and exposure scoring. Includes a weighted
   risk scoring algorithm based on OWASP attack surface analysis methodology and the Relative Attack Surface Quotient (RSQ).
@@ -232,7 +232,7 @@ python agent.py \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-attack-surface-management" --type investigation
+mcp__cybersec__case_open --title "attack" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

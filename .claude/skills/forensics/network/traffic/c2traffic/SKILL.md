@@ -1,5 +1,5 @@
 ---
-name: analyzing-command-and-control-communication
+name: c2traffic
 description: 'Analyzes malware command-and-control (C2) communication protocols to understand beacon patterns, command structures,
   data encoding, and infrastructure. Covers HTTP, HTTPS, DNS, and custom protocol C2 analysis for detection development and
   threat intelligence. Activates for requests involving C2 analysis, beacon detection, C2 protocol reverse engineering, or
@@ -408,7 +408,7 @@ SID 9000013:      C2 certificate match
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-command-and-control-communication" --type investigation
+mcp__cybersec__case_open --title "c2traffic" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

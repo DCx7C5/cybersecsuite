@@ -1,5 +1,5 @@
 ---
-name: exploiting-zerologon-vulnerability-cve-2020-1472
+name: zerologon
 description: Exploit the Zerologon vulnerability (CVE-2020-1472) in the Netlogon Remote Protocol to achieve domain controller
   compromise by resetting the machine account password to empty.
 domain: cybersecurity
@@ -230,7 +230,7 @@ tags:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-zerologon-vulnerability-cve-2020-1472" --type investigation
+mcp__cybersec__case_open --title "zerologon" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-native-forensics-with-falco
+name: falco
 description: 'Uses Falco YAML rules for runtime threat detection in containers and Kubernetes, monitoring syscalls for shell
   spawns, file tampering, network anomalies, and privilege escalation. Manages Falco rules via the Falco gRPC API and parses
   Falco alert output. Use when building container runtime security or investigating k8s cluster compromises.
@@ -88,7 +88,7 @@ cat /var/log/falco/alerts.json | python3 -c "import json,sys; [print(json.loads(
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-native-forensics-with-falco" --type investigation
+mcp__cybersec__case_open --title "falco" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

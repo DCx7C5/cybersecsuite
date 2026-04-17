@@ -1,5 +1,5 @@
 ---
-name: implementing-mimecast-targeted-attack-protection
+name: mimecast
 description: Deploy Mimecast Targeted Threat Protection including URL Protect, Attachment Protect, Impersonation Protect,
   and Internal Email Protect to defend against advanced phishing and spearphishing attacks.
 domain: cybersecurity
@@ -135,7 +135,7 @@ Mimecast Targeted Threat Protection (TTP) is a suite of advanced email security 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-mimecast-targeted-attack-protection" --type investigation
+mcp__cybersec__case_open --title "mimecast" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

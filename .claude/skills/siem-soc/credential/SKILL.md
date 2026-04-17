@@ -1,5 +1,5 @@
 ---
-name: hunting-credential-stuffing-attacks
+name: credential
 description: 'Detects credential stuffing attacks by analyzing authentication logs for login velocity anomalies, ASN diversity,
   password spray patterns, and geographic distribution of failed logins. Uses statistical analysis on Splunk or raw log data.
   Use when investigating account takeover campaigns or building detection rules for auth abuse.
@@ -84,7 +84,7 @@ sprays = spray[spray["accounts"] > 10]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-credential-stuffing-attacks" --type investigation
+mcp__cybersec__case_open --title "credential" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

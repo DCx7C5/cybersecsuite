@@ -1,5 +1,5 @@
 ---
-name: implementing-ics-firewall-with-tofino
+name: firewall
 description: 'Deploy and configure Tofino industrial firewalls from Belden/Hirschmann to protect SCADA systems and PLCs using
   deep packet inspection for OT protocols including Modbus, EtherNet/IP, OPC, and S7comm, enforcing granular access control
   between ICS security zones.
@@ -362,7 +362,7 @@ MONITORING:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-ics-firewall-with-tofino" --type investigation
+mcp__cybersec__case_open --title "firewall" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

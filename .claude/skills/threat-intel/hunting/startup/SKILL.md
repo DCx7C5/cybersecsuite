@@ -1,5 +1,5 @@
 ---
-name: hunting-for-startup-folder-persistence
+name: startup
 description: Detect T1547.001 startup folder persistence by monitoring Windows startup directories for suspicious file creation,
   analyzing autoruns entries, and using Python watchdog for real-time filesystem monitoring.
 domain: cybersecurity
@@ -75,7 +75,7 @@ Attackers use Windows startup folders for persistence (MITRE ATT&CK T1547.001 â€
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-startup-folder-persistence" --type investigation
+mcp__cybersec__case_open --title "startup" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

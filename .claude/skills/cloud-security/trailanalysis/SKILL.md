@@ -1,5 +1,5 @@
 ---
-name: implementing-cloud-trail-log-analysis
+name: trailanalysis
 description: 'Implementing AWS CloudTrail log analysis for security monitoring, threat detection, and forensic investigation
   using Athena, CloudWatch Logs Insights, and SIEM integration to identify unauthorized access, privilege escalation, and
   suspicious API activity.
@@ -356,7 +356,7 @@ ALERTING STATUS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-cloud-trail-log-analysis" --type investigation
+mcp__cybersec__case_open --title "trailanalysis" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

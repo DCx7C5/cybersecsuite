@@ -1,5 +1,5 @@
 ---
-name: scanning-containers-with-trivy-in-cicd
+name: trivycicd
 description: 'This skill covers integrating Aqua Security''s Trivy scanner into CI/CD pipelines for comprehensive container
   image vulnerability detection. It addresses scanning Docker images for OS package and application dependency CVEs, detecting
   misconfigurations in Dockerfiles, scanning filesystem and git repositories, and establishing severity-based quality gates
@@ -334,7 +334,7 @@ QUALITY GATE: FAILED (2 Critical, 5 High findings)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "scanning-containers-with-trivy-in-cicd" --type investigation
+mcp__cybersec__case_open --title "trivycicd" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

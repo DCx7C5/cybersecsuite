@@ -1,5 +1,5 @@
 ---
-name: detecting-compromised-cloud-credentials
+name: compromised
 description: 'Detecting compromised cloud credentials across AWS, Azure, and GCP by analyzing anomalous API activity, impossible
   travel patterns, unauthorized resource provisioning, and credential abuse indicators using GuardDuty, Defender for Identity,
   and SCC Event Threat Detection.
@@ -350,7 +350,7 @@ CONTAINMENT ACTIONS TAKEN:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-compromised-cloud-credentials" --type investigation
+mcp__cybersec__case_open --title "compromised" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

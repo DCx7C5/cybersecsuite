@@ -1,5 +1,5 @@
 ---
-name: building-detection-rules-with-sigma
+name: sigma
 description: 'Builds vendor-agnostic detection rules using the Sigma rule format for threat detection across SIEM platforms
   including Splunk, Elastic, and Microsoft Sentinel. Use when creating portable detection logic from threat intelligence,
   mapping rules to MITRE ATT&CK techniques, or converting community Sigma rules into platform-specific queries using sigmac
@@ -342,7 +342,7 @@ Testing:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-detection-rules-with-sigma" --type investigation
+mcp__cybersec__case_open --title "sigma" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-windows-prefetch-with-python
+name: prefetchpy
 description: Parse Windows Prefetch files using the windowsprefetch Python library to reconstruct application execution history,
   detect renamed or masquerading binaries, and identify suspicious program execution patterns.
 domain: cybersecurity
@@ -125,7 +125,7 @@ Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-windows-prefetch-with-python" --type investigation
+mcp__cybersec__case_open --title "prefetchpy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

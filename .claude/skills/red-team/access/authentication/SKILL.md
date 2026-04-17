@@ -1,5 +1,5 @@
 ---
-name: bypassing-authentication-with-forced-browsing
+name: authentication
 description: Discovering and accessing unprotected pages, APIs, and administrative interfaces by enumerating URLs and bypassing
   authentication controls during authorized security assessments.
 domain: cybersecurity
@@ -290,7 +290,7 @@ The `/actuator/env` endpoint is exposed without authentication, revealing enviro
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "bypassing-authentication-with-forced-browsing" --type investigation
+mcp__cybersec__case_open --title "authentication" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

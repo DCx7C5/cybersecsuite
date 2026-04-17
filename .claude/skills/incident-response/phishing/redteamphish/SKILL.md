@@ -1,5 +1,5 @@
 ---
-name: performing-red-team-phishing-with-gophish
+name: redteamphish
 description: Automate GoPhish phishing simulation campaigns using the Python gophish library. Creates email templates with
   tracking pixels, configures SMTP sending profiles, builds target groups from CSV, launches campaigns, and analyzes results
   including open rates, click rates, and credential submission statistics for security awareness assessment.
@@ -77,7 +77,7 @@ api.campaigns.post(campaign)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-red-team-phishing-with-gophish" --type investigation
+mcp__cybersec__case_open --title "redteamphish" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

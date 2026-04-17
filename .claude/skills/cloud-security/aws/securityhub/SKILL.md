@@ -1,5 +1,5 @@
 ---
-name: implementing-aws-security-hub
+name: securityhub
 description: 'This skill covers deploying AWS Security Hub as a centralized cloud security posture management platform that
   aggregates findings from GuardDuty, Inspector, Macie, and third-party tools. It details enabling security standards like
   CIS AWS Foundations Benchmark, configuring automated remediation, and building executive dashboards for compliance tracking
@@ -239,7 +239,7 @@ FINDING SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aws-security-hub" --type investigation
+mcp__cybersec__case_open --title "securityhub" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

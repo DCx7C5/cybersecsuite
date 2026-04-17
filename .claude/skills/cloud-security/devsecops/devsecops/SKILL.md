@@ -1,5 +1,5 @@
 ---
-name: building-devsecops-pipeline-with-gitlab-ci
+name: devsecops
 description: Design and implement a comprehensive DevSecOps pipeline in GitLab CI/CD integrating SAST, DAST, container scanning,
   dependency scanning, and secret detection.
 domain: cybersecurity
@@ -269,7 +269,7 @@ Every merge request displays a security scanning widget showing:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-devsecops-pipeline-with-gitlab-ci" --type investigation
+mcp__cybersec__case_open --title "devsecops" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

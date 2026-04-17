@@ -1,5 +1,5 @@
 ---
-name: scanning-docker-images-with-trivy
+name: dockertrivy
 description: Trivy is a comprehensive open-source vulnerability scanner by Aqua Security that detects vulnerabilities in OS
   packages, language-specific dependencies, misconfigurations, secrets, and license violati
 domain: cybersecurity
@@ -272,7 +272,7 @@ echo "Exit code: $?"  # 0 = no vulns, 1 = vulns found
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "scanning-docker-images-with-trivy" --type investigation
+mcp__cybersec__case_open --title "dockertrivy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-gcp-security-assessment-with-forseti
+name: forseti
 description: 'Performing comprehensive security assessments of Google Cloud Platform environments using Forseti Security,
   Security Command Center, and gcloud CLI to audit IAM policies, firewall rules, storage permissions, and compliance against
   CIS GCP Foundations Benchmark.
@@ -305,7 +305,7 @@ TOP REMEDIATION PRIORITIES:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-gcp-security-assessment-with-forseti" --type investigation
+mcp__cybersec__case_open --title "forseti" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

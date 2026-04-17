@@ -1,5 +1,5 @@
 ---
-name: implementing-end-to-end-encryption-for-messaging
+name: e2eencryption
 description: End-to-end encryption (E2EE) ensures that only the communicating parties can read messages, with no intermediary
   (including the server) able to decrypt them. This skill implements a simplified version
 domain: cybersecurity
@@ -93,7 +93,7 @@ Each message uses a unique encryption key derived from a ratcheting chain. After
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-end-to-end-encryption-for-messaging" --type investigation
+mcp__cybersec__case_open --title "e2eencryption" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

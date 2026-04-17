@@ -1,5 +1,5 @@
 ---
-name: detecting-dll-sideloading-attacks
+name: dll
 description: Detect DLL side-loading attacks where adversaries place malicious DLLs alongside legitimate applications to hijack
   execution flow for defense evasion.
 domain: cybersecurity
@@ -114,7 +114,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-dll-sideloading-attacks" --type investigation
+mcp__cybersec__case_open --title "dll" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-kerberoasting-attacks
+name: kerberoasting
 description: Detect Kerberoasting attacks by monitoring for anomalous Kerberos TGS requests targeting service accounts with
   SPNs for offline password cracking.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-kerberoasting-attacks" --type investigation
+mcp__cybersec__case_open --title "kerberoasting" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-mft-for-deleted-file-recovery
+name: mft
 description: Analyze the NTFS Master File Table ($MFT) to recover metadata and content of deleted files by examining MFT record
   entries, $LogFile, $UsnJrnl, and MFT slack space using MFTECmd, analyzeMFT, and X-Ways Forensics.
 domain: cybersecurity
@@ -266,7 +266,7 @@ Timeline CSV: /analysis/mft_output/mft_timeline.csv
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-mft-for-deleted-file-recovery" --type investigation
+mcp__cybersec__case_open --title "mft" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

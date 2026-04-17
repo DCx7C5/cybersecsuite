@@ -1,5 +1,5 @@
 ---
-name: recovering-deleted-files-with-photorec
+name: photorec
 description: Recover deleted files from disk images and storage media using PhotoRec's file signature-based carving engine
   regardless of file system damage.
 domain: cybersecurity
@@ -256,7 +256,7 @@ PhotoRec Recovery Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "recovering-deleted-files-with-photorec" --type investigation
+mcp__cybersec__case_open --title "photorec" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

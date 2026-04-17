@@ -1,5 +1,5 @@
 ---
-name: detecting-anomalous-authentication-patterns
+name: anomalous
 description: 'Detects anomalous authentication patterns using UEBA analytics, statistical baselines, and machine learning
   models to identify impossible travel, credential stuffing, brute force, password spraying, and compromised account behaviors
   across authentication logs. Activates for requests involving authentication anomaly detection, login behavior analysis,
@@ -735,7 +735,7 @@ Password Spray Campaign #1:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-anomalous-authentication-patterns" --type investigation
+mcp__cybersec__case_open --title "anomalous" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

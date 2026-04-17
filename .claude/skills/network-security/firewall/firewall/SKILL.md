@@ -1,5 +1,5 @@
 ---
-name: implementing-gcp-vpc-firewall-rules
+name: firewall
 description: 'Implementing and auditing GCP VPC firewall rules to enforce network segmentation, restrict ingress and egress
   traffic, apply hierarchical firewall policies across the organization, and monitor firewall rule effectiveness using VPC
   Flow Logs.
@@ -324,7 +324,7 @@ REMEDIATION ACTIONS COMPLETED:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-gcp-vpc-firewall-rules" --type investigation
+mcp__cybersec__case_open --title "firewall" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: securing-kubernetes-on-cloud
+name: cloudkube
 description: 'This skill covers hardening managed Kubernetes clusters on EKS, AKS, and GKE by implementing Pod Security Standards,
   network policies, workload identity, RBAC scoping, image admission controls, and runtime security monitoring. It addresses
   cloud-specific security features including IRSA for EKS, Workload Identity for GKE, and Managed Identities for AKS.
@@ -389,7 +389,7 @@ HIGH FINDINGS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-kubernetes-on-cloud" --type investigation
+mcp__cybersec__case_open --title "cloudkube" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

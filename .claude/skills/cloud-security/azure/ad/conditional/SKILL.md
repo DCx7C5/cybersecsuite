@@ -1,5 +1,5 @@
 ---
-name: implementing-conditional-access-policies-azure-ad
+name: conditional
 description: Configure Microsoft Entra ID (Azure AD) Conditional Access policies for zero trust access control. Covers signal-based
   policy design, device compliance requirements, risk-based authentication, named l
 domain: cybersecurity
@@ -76,7 +76,7 @@ Configure Microsoft Entra ID (Azure AD) Conditional Access policies for zero tru
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-conditional-access-policies-azure-ad" --type investigation
+mcp__cybersec__case_open --title "conditional" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

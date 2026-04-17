@@ -1,5 +1,5 @@
 ---
-name: building-role-mining-for-rbac-optimization
+name: rbac
 description: Apply bottom-up and top-down role mining techniques to discover optimal RBAC roles from existing user-permission
   assignments, reducing role explosion and enforcing least privilege.
 domain: cybersecurity
@@ -266,7 +266,7 @@ After mining candidate roles:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-role-mining-for-rbac-optimization" --type investigation
+mcp__cybersec__case_open --title "rbac" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

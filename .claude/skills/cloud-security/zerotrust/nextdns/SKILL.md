@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-trust-dns-with-nextdns
+name: nextdns
 description: Implement NextDNS as a zero trust DNS filtering layer with encrypted resolution, threat intelligence blocking,
   privacy protection, and organizational policy enforcement across all endpoints.
 domain: cybersecurity
@@ -371,7 +371,7 @@ Tier 3 - Compliance (Organization-specific):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-trust-dns-with-nextdns" --type investigation
+mcp__cybersec__case_open --title "nextdns" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

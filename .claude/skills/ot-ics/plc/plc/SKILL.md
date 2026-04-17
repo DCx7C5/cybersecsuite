@@ -1,5 +1,5 @@
 ---
-name: performing-plc-firmware-security-analysis
+name: plc
 description: 'This skill covers analyzing Programmable Logic Controller (PLC) firmware for security vulnerabilities including
   hardcoded credentials, insecure update mechanisms, backdoor functions, memory corruption flaws, and undocumented debug interfaces.
   It addresses firmware extraction from common PLC platforms (Siemens S7, Allen-Bradley, Schneider Modicon), static analysis
@@ -508,7 +508,7 @@ VULNERABILITIES FOUND:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-plc-firmware-security-analysis" --type investigation
+mcp__cybersec__case_open --title "plc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

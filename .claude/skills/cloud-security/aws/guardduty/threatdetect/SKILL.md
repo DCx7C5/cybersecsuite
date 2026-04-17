@@ -1,5 +1,5 @@
 ---
-name: detecting-cloud-threats-with-guardduty
+name: threatdetect
 description: 'This skill teaches security teams how to deploy and operationalize Amazon GuardDuty for continuous threat detection
   across AWS accounts and workloads. It covers enabling protection plans for S3, EKS, EC2 runtime monitoring, and Lambda,
   interpreting finding severity levels, and building automated response workflows using EventBridge and Lambda.
@@ -300,7 +300,7 @@ STATISTICS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-cloud-threats-with-guardduty" --type investigation
+mcp__cybersec__case_open --title "threatdetect" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-deception-based-detection-with-canarytoken
+name: canarytoken
 description: Deploy and monitor Canary Tokens via the Thinkst Canary API for deception-based breach detection using web bug
   tokens, DNS tokens, document tokens, and AWS key tokens.
 domain: cybersecurity
@@ -69,7 +69,7 @@ Canary Tokens are lightweight tripwire mechanisms that alert when an attacker ac
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-deception-based-detection-with-canarytoken" --type investigation
+mcp__cybersec__case_open --title "canarytoken" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: detecting-pass-the-hash-attacks
+name: passthehash
 description: Detect Pass-the-Hash attacks by analyzing NTLM authentication patterns, identifying Type 3 logons with NTLM where
   Kerberos is expected, and correlating with credential dumping.
 domain: cybersecurity
@@ -107,7 +107,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-pass-the-hash-attacks" --type investigation
+mcp__cybersec__case_open --title "passthehash" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

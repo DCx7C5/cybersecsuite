@@ -1,5 +1,5 @@
 ---
-name: performing-cryptographic-audit-of-application
+name: cryptographic
 description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and
   key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
 domain: cybersecurity
@@ -94,7 +94,7 @@ A cryptographic audit systematically reviews an application's use of cryptograph
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cryptographic-audit-of-application" --type investigation
+mcp__cybersec__case_open --title "cryptographic" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

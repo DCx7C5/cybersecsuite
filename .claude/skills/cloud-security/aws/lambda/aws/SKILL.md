@@ -1,5 +1,5 @@
 ---
-name: securing-aws-lambda-execution-roles
+name: aws
 description: 'Securing AWS Lambda execution roles by implementing least-privilege IAM policies, applying permission boundaries,
   restricting resource-based policies, using IAM Access Analyzer to validate permissions, and enforcing role scoping through
   SCPs.
@@ -384,7 +384,7 @@ POLICY VALIDATION RESULTS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-aws-lambda-execution-roles" --type investigation
+mcp__cybersec__case_open --title "aws" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

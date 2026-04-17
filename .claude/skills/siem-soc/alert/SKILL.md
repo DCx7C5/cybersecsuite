@@ -1,5 +1,5 @@
 ---
-name: implementing-alert-fatigue-reduction
+name: alert
 description: 'Implements strategies to reduce SOC alert fatigue by tuning detection rules, consolidating duplicate alerts,
   implementing risk-based alerting, and measuring alert quality metrics to maintain analyst effectiveness and prevent critical
   alert dismissal. Use when SOC teams face overwhelming alert volumes, high false positive rates, or declining analyst performance.
@@ -340,7 +340,7 @@ True Positive Detection Rate: IMPROVED — 12 additional true positives caught p
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-alert-fatigue-reduction" --type investigation
+mcp__cybersec__case_open --title "alert" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

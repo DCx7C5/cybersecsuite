@@ -1,5 +1,5 @@
 ---
-name: implementing-device-posture-assessment-in-zero-trust
+name: deviceposture
 description: 'Implementing device posture assessment as a zero trust access control by integrating endpoint health signals
   from CrowdStrike ZTA, Microsoft Intune, and Jamf into conditional access policies that enforce compliance before granting
   resource access.
@@ -463,7 +463,7 @@ POSTURE DRIFT ALERTS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-device-posture-assessment-in-zero-trust" --type investigation
+mcp__cybersec__case_open --title "deviceposture" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

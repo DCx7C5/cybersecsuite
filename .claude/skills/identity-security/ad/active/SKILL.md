@@ -1,5 +1,5 @@
 ---
-name: analyzing-active-directory-acl-abuse
+name: active
 description: Detect dangerous ACL misconfigurations in Active Directory using ldap3 to identify GenericAll, WriteDACL, and
   WriteOwner abuse paths
 domain: cybersecurity
@@ -95,7 +95,7 @@ This skill uses the ldap3 Python library to connect to a Domain Controller, quer
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-active-directory-acl-abuse" --type investigation
+mcp__cybersec__case_open --title "active" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

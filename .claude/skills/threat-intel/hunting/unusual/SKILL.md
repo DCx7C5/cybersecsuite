@@ -1,5 +1,5 @@
 ---
-name: hunting-for-unusual-network-connections
+name: unusual
 description: Hunt for unusual network connections by analyzing outbound traffic patterns, rare destinations, non-standard
   ports, and anomalous connection frequencies from endpoints.
 domain: cybersecurity
@@ -107,7 +107,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-unusual-network-connections" --type investigation
+mcp__cybersec__case_open --title "unusual" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

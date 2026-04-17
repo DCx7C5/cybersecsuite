@@ -1,5 +1,5 @@
 ---
-name: analyzing-prefetch-files-for-execution-history
+name: prefetch
 description: Parse Windows Prefetch files to determine program execution history including run counts, timestamps, and referenced
   files for forensic investigation.
 domain: cybersecurity
@@ -334,7 +334,7 @@ Prefetch Analysis Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-prefetch-files-for-execution-history" --type investigation
+mcp__cybersec__case_open --title "prefetch" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

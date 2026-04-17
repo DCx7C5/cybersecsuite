@@ -1,5 +1,5 @@
 ---
-name: performing-firmware-malware-analysis
+name: firmware
 description: 'Analyzes firmware images for embedded malware, backdoors, and unauthorized modifications targeting routers,
   IoT devices, UEFI/BIOS, and embedded systems. Covers firmware extraction, filesystem analysis, binary reverse engineering,
   and bootkit detection. Activates for requests involving firmware security analysis, IoT malware investigation, UEFI rootkit
@@ -321,7 +321,7 @@ REMEDIATION
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-firmware-malware-analysis" --type investigation
+mcp__cybersec__case_open --title "firmware" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

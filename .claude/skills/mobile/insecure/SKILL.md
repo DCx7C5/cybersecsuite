@@ -1,5 +1,5 @@
 ---
-name: exploiting-insecure-data-storage-in-mobile
+name: insecure
 description: 'Identifies and exploits insecure local data storage vulnerabilities in Android and iOS mobile applications including
   unencrypted databases, world-readable files, insecure SharedPreferences, plaintext credential storage, and improper keychain/keystore
   usage. Use when performing mobile penetration testing focused on OWASP M9 (Insecure Data Storage) or assessing compliance
@@ -231,7 +231,7 @@ adb logcat -d | grep -i "password\|token\|key\|secret"
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "exploiting-insecure-data-storage-in-mobile" --type investigation
+mcp__cybersec__case_open --title "insecure" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

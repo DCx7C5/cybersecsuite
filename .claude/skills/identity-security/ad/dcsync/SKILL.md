@@ -1,5 +1,5 @@
 ---
-name: conducting-domain-persistence-with-dcsync
+name: dcsync
 description: Perform DCSync attacks to replicate Active Directory credentials and establish domain persistence by extracting
   KRBTGT, Domain Admin, and service account hashes for Golden Ticket creation.
 domain: cybersecurity
@@ -217,7 +217,7 @@ DCSync is an attack technique that abuses the Microsoft Directory Replication Se
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-domain-persistence-with-dcsync" --type investigation
+mcp__cybersec__case_open --title "dcsync" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-cyber-kill-chain
+name: cyber
 description: 'Analyzes intrusion activity against the Lockheed Martin Cyber Kill Chain framework to identify which phases
   an adversary has completed, where defenses succeeded or failed, and what controls would have interrupted the attack at earlier
   phases. Use when conducting post-incident analysis, building prevention-focused security controls, or mapping detection
@@ -151,7 +151,7 @@ Structure findings as:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-cyber-kill-chain" --type investigation
+mcp__cybersec__case_open --title "cyber" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

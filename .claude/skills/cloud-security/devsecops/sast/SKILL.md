@@ -1,5 +1,5 @@
 ---
-name: integrating-sast-into-github-actions-pipeline
+name: sast
 description: 'This skill covers integrating Static Application Security Testing (SAST) tools—CodeQL and Semgrep—into GitHub
   Actions CI/CD pipelines. It addresses configuring automated code scanning on pull requests and pushes, tuning rules to reduce
   false positives, uploading SARIF results to GitHub Advanced Security, and establishing quality gates that block merges when
@@ -340,7 +340,7 @@ Action Required: Fix blocking findings before merge is permitted.
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "integrating-sast-into-github-actions-pipeline" --type investigation
+mcp__cybersec__case_open --title "sast" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

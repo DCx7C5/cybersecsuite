@@ -1,5 +1,5 @@
 ---
-name: validating-backup-integrity-for-recovery
+name: backup
 description: Validate backup integrity through cryptographic hash verification, automated restore testing, corruption detection,
   and recoverability checks to ensure backups are reliable for disaster recovery and ransomware response scenarios.
 domain: cybersecurity
@@ -191,7 +191,7 @@ python agent.py --entropy-scan /restore-test
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "validating-backup-integrity-for-recovery" --type investigation
+mcp__cybersec__case_open --title "backup" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

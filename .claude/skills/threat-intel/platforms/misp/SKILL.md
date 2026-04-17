@@ -1,5 +1,5 @@
 ---
-name: analyzing-threat-landscape-with-misp
+name: misp
 description: Analyze the threat landscape using MISP (Malware Information Sharing Platform) by querying event statistics,
   attribute distributions, threat actor galaxy clusters, and tag trends over time. Uses PyMISP to pull event data, compute
   IOC type breakdowns, identify top threat actors and malware families, and generate threat landscape reports with temporal
@@ -84,7 +84,7 @@ Top threat actor: APT28 (34 events)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-threat-landscape-with-misp" --type investigation
+mcp__cybersec__case_open --title "misp" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-wireless-security-assessment-with-kismet
+name: kismet
 description: Conduct wireless network security assessments using Kismet to detect rogue access points, hidden SSIDs, weak
   encryption, and unauthorized clients through passive RF monitoring.
 domain: cybersecurity
@@ -401,7 +401,7 @@ if __name__ == '__main__':
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-wireless-security-assessment-with-kismet" --type investigation
+mcp__cybersec__case_open --title "kismet" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

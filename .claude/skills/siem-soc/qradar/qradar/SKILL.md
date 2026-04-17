@@ -1,5 +1,5 @@
 ---
-name: correlating-security-events-in-qradar
+name: qradar
 description: 'Correlates security events in IBM QRadar SIEM using AQL (Ariel Query Language), custom rules, building blocks,
   and offense management to detect multi-stage attacks across network, endpoint, and application log sources. Use when SOC
   analysts need to investigate QRadar offenses, build correlation rules, or tune detection logic for reducing false positives.
@@ -298,7 +298,7 @@ Ticket:         IR-2024-0432
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "correlating-security-events-in-qradar" --type investigation
+mcp__cybersec__case_open --title "qradar" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

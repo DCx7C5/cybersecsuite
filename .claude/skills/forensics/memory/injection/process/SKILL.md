@@ -1,5 +1,5 @@
 ---
-name: detecting-process-hollowing-technique
+name: process
 description: Detect process hollowing (T1055.012) by analyzing memory-mapped sections, hollowed process indicators, and parent-child
   process anomalies in EDR telemetry.
 domain: cybersecurity
@@ -120,7 +120,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-process-hollowing-technique" --type investigation
+mcp__cybersec__case_open --title "process" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

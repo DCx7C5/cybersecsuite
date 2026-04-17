@@ -1,5 +1,5 @@
 ---
-name: implementing-zero-standing-privilege-with-cyberark
+name: zero
 description: Deploy CyberArk Secure Cloud Access to eliminate standing privileges in hybrid and multi-cloud environments using
   just-in-time access with time, entitlement, and approval controls.
 domain: cybersecurity
@@ -254,7 +254,7 @@ Phase 4: GOVERNANCE (Ongoing)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-zero-standing-privilege-with-cyberark" --type investigation
+mcp__cybersec__case_open --title "zero" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

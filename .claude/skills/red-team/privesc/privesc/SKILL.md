@@ -1,5 +1,5 @@
 ---
-name: detecting-aws-iam-privilege-escalation
+name: privesc
 description: Detect AWS IAM privilege escalation paths using boto3 and Cloudsplaining policy analysis to identify overly permissive
   policies, dangerous permission combinations, and least-privilege violations
 domain: cybersecurity
@@ -70,7 +70,7 @@ This skill uses boto3 and Cloudsplaining-style analysis to identify IAM privileg
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-aws-iam-privilege-escalation" --type investigation
+mcp__cybersec__case_open --title "privesc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

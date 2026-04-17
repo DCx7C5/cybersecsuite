@@ -1,5 +1,5 @@
 ---
-name: performing-ai-driven-osint-correlation
+name: aicorrelation
 description: Use AI and LLM-based reasoning to correlate findings across multiple OSINT sources—username enumeration, email
   lookups, social media profiles, domain records, breach databases, and dark-web mentions—into unified intelligence profiles
   with confidence scoring and link analysis.
@@ -406,7 +406,7 @@ The final output is a structured JSON correlation report and a Markdown intellig
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ai-driven-osint-correlation" --type investigation
+mcp__cybersec__case_open --title "aicorrelation" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

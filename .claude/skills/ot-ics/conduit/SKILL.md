@@ -1,5 +1,5 @@
 ---
-name: implementing-conduit-security-for-ot-remote-access
+name: conduit
 description: 'Implement secure conduit architecture for OT remote access following IEC 62443 zones and conduits model, deploying
   jump servers, MFA-enabled gateways, session recording, and approval-based workflows to control vendor and engineer access
   to industrial control systems without exposing OT networks directly.
@@ -381,7 +381,7 @@ POLICY COMPLIANCE:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-conduit-security-for-ot-remote-access" --type investigation
+mcp__cybersec__case_open --title "conduit" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

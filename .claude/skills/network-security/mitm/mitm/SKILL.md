@@ -1,5 +1,5 @@
 ---
-name: conducting-man-in-the-middle-attack-simulation
+name: mitm
 description: 'Simulates man-in-the-middle attacks using Ettercap, mitmproxy, and Bettercap in authorized environments to intercept,
   analyze, and modify network traffic for testing encryption enforcement, certificate validation, and detection capabilities.
 
@@ -301,7 +301,7 @@ sha256sum mitm_capture.flow mitm_evidence.pcapng >> mitm_report.txt
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "conducting-man-in-the-middle-attack-simulation" --type investigation
+mcp__cybersec__case_open --title "mitm" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

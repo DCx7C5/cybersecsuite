@@ -1,5 +1,5 @@
 ---
-name: building-red-team-c2-infrastructure-with-havoc
+name: havoc
 description: Deploy and configure the Havoc C2 framework with teamserver, HTTPS listeners, redirectors, and Demon agents for
   authorized red team operations.
 domain: cybersecurity
@@ -324,7 +324,7 @@ demon> rportfwd start 8080 TARGET_INTERNAL 80
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "building-red-team-c2-infrastructure-with-havoc" --type investigation
+mcp__cybersec__case_open --title "havoc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

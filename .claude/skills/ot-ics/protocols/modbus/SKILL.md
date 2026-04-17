@@ -1,5 +1,5 @@
 ---
-name: detecting-modbus-command-injection-attacks
+name: modbus
 description: 'Detect command injection attacks against Modbus TCP/RTU protocol in ICS environments by monitoring for unauthorized
   write operations, anomalous function codes, malformed frames, and deviations from established communication baselines using
   ICS-aware IDS and protocol deep packet inspection.
@@ -522,7 +522,7 @@ RECOMMENDED ACTIONS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-modbus-command-injection-attacks" --type investigation
+mcp__cybersec__case_open --title "modbus" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

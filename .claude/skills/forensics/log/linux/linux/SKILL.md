@@ -1,5 +1,5 @@
 ---
-name: analyzing-linux-audit-logs-for-intrusion
+name: linux
 description: 'Uses the Linux Audit framework (auditd) with ausearch and aureport utilities to detect intrusion attempts, unauthorized
   access, privilege escalation, and suspicious system activity. Covers audit rule configuration, log querying, timeline reconstruction,
   and integration with SIEM platforms. Activates for requests involving auditd analysis, Linux audit log investigation, ausearch
@@ -279,7 +279,7 @@ transport = tcp
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-linux-audit-logs-for-intrusion" --type investigation
+mcp__cybersec__case_open --title "linux" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

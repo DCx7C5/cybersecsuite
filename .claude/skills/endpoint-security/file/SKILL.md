@@ -1,5 +1,5 @@
 ---
-name: implementing-file-integrity-monitoring-with-aide
+name: file
 description: Configure AIDE (Advanced Intrusion Detection Environment) for file integrity monitoring including baseline creation,
   scheduled integrity checks, change detection, and alerting
 domain: cybersecurity
@@ -70,7 +70,7 @@ AIDE (Advanced Intrusion Detection Environment) is a host-based intrusion detect
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-file-integrity-monitoring-with-aide" --type investigation
+mcp__cybersec__case_open --title "file" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

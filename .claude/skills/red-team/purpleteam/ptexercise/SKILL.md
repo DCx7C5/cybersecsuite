@@ -1,5 +1,5 @@
 ---
-name: performing-purple-team-exercise
+name: ptexercise
 description: 'Performs purple team exercises by coordinating red team adversary emulation with blue team detection validation
   using MITRE ATT&CK-mapped attack scenarios, real-time detection testing, and collaborative gap remediation. Use when SOC
   teams need to validate detection capabilities, improve analyst skills, and close detection gaps through structured offensive-defensive
@@ -321,7 +321,7 @@ REMAINING GAP: T1486 requires EDR file monitoring enhancement
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-purple-team-exercise" --type investigation
+mcp__cybersec__case_open --title "ptexercise" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

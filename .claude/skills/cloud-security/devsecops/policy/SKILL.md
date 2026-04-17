@@ -1,5 +1,5 @@
 ---
-name: implementing-policy-as-code-with-open-policy-agent
+name: policy
 description: 'This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes
   and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller,
   testing policies in development, and integrating policy evaluation into deployment pipelines.
@@ -334,7 +334,7 @@ AUDIT VIOLATIONS (warn):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-policy-as-code-with-open-policy-agent" --type investigation
+mcp__cybersec__case_open --title "policy" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

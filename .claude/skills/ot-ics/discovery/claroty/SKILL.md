@@ -1,5 +1,5 @@
 ---
-name: performing-ics-asset-discovery-with-claroty
+name: claroty
 description: 'Perform comprehensive ICS/OT asset discovery using Claroty xDome platform, leveraging passive monitoring, Claroty
   Edge active queries, and integration ecosystem to gain full visibility into industrial control system assets including PLCs,
   RTUs, HMIs, and network infrastructure across Purdue Model levels.
@@ -527,7 +527,7 @@ CRITICAL FINDINGS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-ics-asset-discovery-with-claroty" --type investigation
+mcp__cybersec__case_open --title "claroty" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

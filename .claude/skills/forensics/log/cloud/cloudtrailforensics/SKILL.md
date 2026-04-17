@@ -1,5 +1,5 @@
 ---
-name: performing-cloud-forensics-with-aws-cloudtrail
+name: cloudtrailforensics
 description: Perform forensic investigation of AWS environments using CloudTrail logs to reconstruct attacker activity, identify
   compromised credentials, and analyze API call patterns.
 domain: cybersecurity
@@ -98,7 +98,7 @@ Persistence Mechanisms: [New users, keys, roles]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-cloud-forensics-with-aws-cloudtrail" --type investigation
+mcp__cybersec__case_open --title "cloudtrailforensics" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

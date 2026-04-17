@@ -1,5 +1,5 @@
 ---
-name: implementing-proofpoint-email-security-gateway
+name: proofpoint
 description: Deploy and configure Proofpoint Email Protection as a secure email gateway to detect and block phishing, malware,
   BEC, and spam before messages reach user inboxes.
 domain: cybersecurity
@@ -137,7 +137,7 @@ Proofpoint Email Protection is a cloud-native secure email gateway (SEG) that ac
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-proofpoint-email-security-gateway" --type investigation
+mcp__cybersec__case_open --title "proofpoint" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

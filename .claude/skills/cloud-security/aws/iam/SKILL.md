@@ -1,5 +1,5 @@
 ---
-name: implementing-aws-iam-permission-boundaries
+name: iam
 description: Configure IAM permission boundaries in AWS to delegate role creation to developers while enforcing maximum privilege
   limits set by the security team.
 domain: cybersecurity
@@ -272,7 +272,7 @@ resource "aws_iam_role" "app_role" {
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aws-iam-permission-boundaries" --type investigation
+mcp__cybersec__case_open --title "iam" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

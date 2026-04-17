@@ -1,5 +1,5 @@
 ---
-name: processing-stix-taxii-feeds
+name: stixfeed
 description: 'Processes STIX 2.1 threat intelligence bundles delivered via TAXII 2.1 servers, normalizing objects into platform-native
   schemas and routing them to appropriate consuming systems. Use when onboarding new TAXII collection endpoints, automating
   bi-directional intelligence sharing with ISACs, or building pipeline validation for malformed STIX bundles. Activates for
@@ -172,7 +172,7 @@ collection.add_objects(stix2.Bundle(new_indicator))
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "processing-stix-taxii-feeds" --type investigation
+mcp__cybersec__case_open --title "stixfeed" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

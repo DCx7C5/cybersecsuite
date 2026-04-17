@@ -1,5 +1,5 @@
 ---
-name: detecting-serverless-function-injection
+name: serverless
 description: 'Detects and prevents code injection attacks targeting serverless functions (AWS Lambda, Azure Functions, Google
   Cloud Functions) through event source poisoning, malicious layer injection, runtime command execution, and IAM privilege
   escalation via function modification. The analyst combines static analysis of function code, CloudTrail event correlation,
@@ -508,7 +508,7 @@ Deploy runtime protection controls to prevent injection at execution time:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-serverless-function-injection" --type investigation
+mcp__cybersec__case_open --title "serverless" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

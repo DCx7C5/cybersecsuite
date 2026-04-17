@@ -1,5 +1,5 @@
 ---
-name: scanning-kubernetes-manifests-with-kubesec
+name: kubesecmanifest
 description: Perform security risk analysis on Kubernetes resource manifests using Kubesec to identify misconfigurations,
   privilege escalation risks, and deviations from security best practices.
 domain: cybersecurity
@@ -311,7 +311,7 @@ webhooks:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "scanning-kubernetes-manifests-with-kubesec" --type investigation
+mcp__cybersec__case_open --title "kubesecmanifest" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

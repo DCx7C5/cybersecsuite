@@ -1,5 +1,5 @@
 ---
-name: performing-dmarc-policy-enforcement-rollout
+name: dmarcrollout
 description: Execute a phased DMARC rollout from p=none monitoring through p=quarantine to p=reject enforcement, ensuring
   all legitimate email sources are authenticated before blocking unauthorized senders.
 domain: cybersecurity
@@ -141,7 +141,7 @@ v=DMARC1; p=quarantine; pct=25; rua=mailto:dmarc-agg@company.com; ruf=mailto:dma
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-dmarc-policy-enforcement-rollout" --type investigation
+mcp__cybersec__case_open --title "dmarcrollout" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

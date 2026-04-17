@@ -1,5 +1,5 @@
 ---
-name: deploying-active-directory-honeytokens
+name: honeytoken
 description: 'Deploys deception-based honeytokens in Active Directory including fake privileged accounts with AdminCount=1,
   fake SPNs for Kerberoasting detection (honeyroasting), decoy GPOs with cpassword traps, and fake BloodHound paths. Monitors
   Windows Security Event IDs 4769, 4625, 4662, 5136 for honeytoken interaction. Use when implementing AD deception defenses
@@ -264,7 +264,7 @@ SecurityEvent
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-active-directory-honeytokens" --type investigation
+mcp__cybersec__case_open --title "honeytoken" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

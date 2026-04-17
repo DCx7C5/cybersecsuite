@@ -1,5 +1,5 @@
 ---
-name: implementing-azure-ad-privileged-identity-management
+name: pim
 description: Configure Microsoft Entra Privileged Identity Management to enforce just-in-time role activation, approval workflows,
   and access reviews for Azure AD privileged roles.
 domain: cybersecurity
@@ -253,7 +253,7 @@ Enable PIM security alerts:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-azure-ad-privileged-identity-management" --type investigation
+mcp__cybersec__case_open --title "pim" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

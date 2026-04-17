@@ -1,5 +1,5 @@
 ---
-name: implementing-canary-tokens-for-network-intrusion
+name: canary
 description: 'Deploys DNS, HTTP, and AWS API key canary tokens across network infrastructure to detect unauthorized access
   and lateral movement. Integrates with webhook alerting (Slack, Teams, email, generic HTTP) for real-time intrusion notifications.
   Provides automated token generation, placement strategies, and monitoring for enterprise network environments. Use when
@@ -338,7 +338,7 @@ python scripts/agent.py --action inventory \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-canary-tokens-for-network-intrusion" --type investigation
+mcp__cybersec__case_open --title "canary" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: auditing-kubernetes-cluster-rbac
+name: kubernetes
 description: 'Auditing Kubernetes cluster RBAC configurations to identify overly permissive roles, wildcard permissions, dangerous
   ClusterRoleBindings, service account abuse, and privilege escalation paths using kubectl, rbac-tool, KubiScan, and Kubeaudit.
 
@@ -335,7 +335,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "auditing-kubernetes-cluster-rbac" --type investigation
+mcp__cybersec__case_open --title "kubernetes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

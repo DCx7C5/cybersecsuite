@@ -1,5 +1,5 @@
 ---
-name: hunting-for-data-staging-before-exfiltration
+name: datastaging
 description: Detect data staging activity before exfiltration by monitoring for archive creation with 7-Zip/RAR, unusual temp
   folder access, large file consolidation, and staging directory patterns via EDR and process telemetry
 domain: cybersecurity
@@ -78,7 +78,7 @@ Before exfiltrating data, adversaries typically stage collected files in a centr
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-data-staging-before-exfiltration" --type investigation
+mcp__cybersec__case_open --title "datastaging" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

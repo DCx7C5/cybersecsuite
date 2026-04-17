@@ -1,5 +1,5 @@
 ---
-name: performing-post-quantum-cryptography-migration
+name: post
 description: 'Assesses organizational readiness for post-quantum cryptography migration per NIST FIPS 203/204/205 standards.
   Performs cryptographic inventory scanning to identify quantum-vulnerable algorithms (RSA, ECDH, ECDSA), evaluates hybrid
   TLS configurations with X25519MLKEM768, and validates CRYSTALS-Kyber (ML-KEM) and CRYSTALS-Dilithium (ML-DSA) readiness.
@@ -349,7 +349,7 @@ python scripts/agent.py --action scan_tls --target server.example.com:443
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-post-quantum-cryptography-migration" --type investigation
+mcp__cybersec__case_open --title "post" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-paste-site-monitoring-for-credentials
+name: paste
 description: Monitor paste sites like Pastebin and GitHub Gists for leaked credentials, API keys, and sensitive data dumps
   using automated scraping and keyword matching to detect breaches early.
 domain: cybersecurity
@@ -352,7 +352,7 @@ def generate_credential_leak_alert(alert_data):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-paste-site-monitoring-for-credentials" --type investigation
+mcp__cybersec__case_open --title "paste" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

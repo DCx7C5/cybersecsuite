@@ -1,5 +1,5 @@
 ---
-name: detecting-aws-credential-exposure-with-trufflehog
+name: aws
 description: 'Detecting exposed AWS credentials in source code repositories, CI/CD pipelines, and configuration files using
   TruffleHog, git-secrets, and AWS-native detection mechanisms to prevent credential theft and unauthorized account access.
 
@@ -287,7 +287,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-aws-credential-exposure-with-trufflehog" --type investigation
+mcp__cybersec__case_open --title "aws" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

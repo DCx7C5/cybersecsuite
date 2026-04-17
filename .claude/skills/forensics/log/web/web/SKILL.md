@@ -1,5 +1,5 @@
 ---
-name: analyzing-web-server-logs-for-intrusion
+name: web
 description: Parse Apache and Nginx access logs to detect SQL injection attempts, local file inclusion, directory traversal,
   web scanner fingerprints, and brute-force patterns. Uses regex-based pattern matching against OWASP attack signatures, GeoIP
   enrichment for source attribution, and statistical anomaly detection for request frequency and response size outliers.
@@ -79,7 +79,7 @@ Nikto/2.1.6, sqlmap/1.7, DirBuster-1.0-RC1, gobuster/3.1.0
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-web-server-logs-for-intrusion" --type investigation
+mcp__cybersec__case_open --title "web" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

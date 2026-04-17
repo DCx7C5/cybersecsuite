@@ -1,5 +1,5 @@
 ---
-name: performing-subdomain-enumeration-with-subfinder
+name: subfinder
 description: Enumerate subdomains of target domains using ProjectDiscovery's Subfinder passive reconnaissance tool to map
   the attack surface during security assessments.
 domain: cybersecurity
@@ -204,7 +204,7 @@ subfinder -d example.com -silent | httpx -silent | gowitness file -f - -P screen
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-subdomain-enumeration-with-subfinder" --type investigation
+mcp__cybersec__case_open --title "subfinder" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

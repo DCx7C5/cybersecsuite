@@ -1,5 +1,5 @@
 ---
-name: configuring-aws-verified-access-for-ztna
+name: aws
 description: Configure AWS Verified Access to provide VPN-less zero trust network access to internal applications using identity
   and device posture verification with Cedar policy language.
 domain: cybersecurity
@@ -467,7 +467,7 @@ aws cloudwatch put-metric-alarm \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "configuring-aws-verified-access-for-ztna" --type investigation
+mcp__cybersec__case_open --title "aws" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

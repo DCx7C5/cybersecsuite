@@ -1,5 +1,5 @@
 ---
-name: auditing-aws-s3-bucket-permissions
+name: aws
 description: 'Systematically audit AWS S3 bucket permissions to identify publicly accessible buckets, overly permissive ACLs,
   misconfigured bucket policies, and missing encryption settings using AWS CLI, S3audit, and Prowler to enforce least-privilege
   data access controls.
@@ -278,7 +278,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "auditing-aws-s3-bucket-permissions" --type investigation
+mcp__cybersec__case_open --title "aws" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

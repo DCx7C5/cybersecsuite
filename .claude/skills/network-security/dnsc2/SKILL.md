@@ -1,5 +1,5 @@
 ---
-name: detecting-command-and-control-over-dns
+name: dnsc2
 description: 'Detects command-and-control (C2) communications tunneled through DNS protocol including DNS tunneling tools
   (Iodine, dnscat2, dns2tcp, Cobalt Strike DNS beacon), domain generation algorithms (DGA), encoded payload delivery via TXT/CNAME
   records, and DNS beaconing patterns. Covers Shannon entropy analysis of query subdomains, statistical anomaly detection,
@@ -1384,7 +1384,7 @@ RECOMMENDED ACTIONS
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-command-and-control-over-dns" --type investigation
+mcp__cybersec__case_open --title "dnsc2" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

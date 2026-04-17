@@ -1,5 +1,5 @@
 ---
-name: hardening-docker-daemon-configuration
+name: dockerdaemon
 description: Harden the Docker daemon by configuring daemon.json with user namespace remapping, TLS authentication, rootless
   mode, and CIS benchmark controls.
 domain: cybersecurity
@@ -336,7 +336,7 @@ docker run --rm --net host --pid host \
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hardening-docker-daemon-configuration" --type investigation
+mcp__cybersec__case_open --title "dockerdaemon" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

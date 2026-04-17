@@ -1,5 +1,5 @@
 ---
-name: implementing-ddos-mitigation-with-cloudflare
+name: cloudflare
 description: Configure Cloudflare DDoS protection with managed rulesets, rate limiting, WAF rules, Bot Management, and origin
   protection to mitigate volumetric, protocol, and application-layer attacks.
 domain: cybersecurity
@@ -456,7 +456,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/alerting
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-ddos-mitigation-with-cloudflare" --type investigation
+mcp__cybersec__case_open --title "cloudflare" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

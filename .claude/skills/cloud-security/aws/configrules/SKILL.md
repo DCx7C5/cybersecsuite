@@ -1,5 +1,5 @@
 ---
-name: implementing-aws-config-rules-for-compliance
+name: configrules
 description: 'Implementing AWS Config rules for continuous compliance monitoring of AWS resources, deploying managed and custom
   rules aligned to CIS and PCI DSS frameworks, configuring automatic remediation with SSM Automation, and aggregating compliance
   data across accounts.
@@ -356,7 +356,7 @@ ACCOUNT COMPLIANCE RANKING:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-aws-config-rules-for-compliance" --type investigation
+mcp__cybersec__case_open --title "configrules" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

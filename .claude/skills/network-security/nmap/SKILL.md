@@ -1,5 +1,5 @@
 ---
-name: scanning-network-with-nmap-advanced
+name: nmap
 description: 'Performs advanced network reconnaissance using Nmap''s scripting engine, timing controls, evasion techniques,
   and output parsing to discover hosts, enumerate services, detect vulnerabilities, and fingerprint operating systems across
   authorized target networks.
@@ -217,7 +217,7 @@ nmap-parse-output full_tcp_scan.xml csv > scan_results.csv
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "scanning-network-with-nmap-advanced" --type investigation
+mcp__cybersec__case_open --title "nmap" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: analyzing-linux-kernel-rootkits
+name: rootkit
 description: Detect kernel-level rootkits in Linux memory dumps using Volatility3 linux plugins (check_syscall, lsmod, hidden_modules),
   rkhunter system scanning, and /proc vs /sys discrepancy analysis to identify hooked syscalls, hidden kernel modules, and
   tampered system structures.
@@ -146,7 +146,7 @@ Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-linux-kernel-rootkits" --type investigation
+mcp__cybersec__case_open --title "rootkit" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

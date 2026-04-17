@@ -1,5 +1,5 @@
 ---
-name: scanning-container-images-with-grype
+name: grype
 description: Scan container images for known vulnerabilities using Anchore Grype with SBOM-based matching and configurable
   severity thresholds.
 domain: cybersecurity
@@ -240,7 +240,7 @@ grype db list
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "scanning-container-images-with-grype" --type investigation
+mcp__cybersec__case_open --title "grype" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

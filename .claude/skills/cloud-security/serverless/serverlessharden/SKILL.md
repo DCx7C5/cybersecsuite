@@ -1,5 +1,5 @@
 ---
-name: securing-serverless-functions
+name: serverlessharden
 description: 'This skill covers security hardening for serverless compute platforms including AWS Lambda, Azure Functions,
   and Google Cloud Functions. It addresses least privilege IAM roles, dependency vulnerability scanning, secrets management
   integration, input validation, function URL authentication, and runtime monitoring to protect against injection attacks,
@@ -333,7 +333,7 @@ SUMMARY:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "securing-serverless-functions" --type investigation
+mcp__cybersec__case_open --title "serverlessharden" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

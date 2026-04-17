@@ -1,5 +1,5 @@
 ---
-name: analyzing-bootkit-and-rootkit-samples
+name: bootkit
 description: 'Analyzes bootkit and advanced rootkit malware that infects the Master Boot Record (MBR), Volume Boot Record
   (VBR), or UEFI firmware to gain persistence below the operating system. Covers boot sector analysis, UEFI module inspection,
   and anti-rootkit detection techniques. Activates for requests involving bootkit analysis, MBR malware investigation, UEFI
@@ -365,7 +365,7 @@ REMEDIATION
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "analyzing-bootkit-and-rootkit-samples" --type investigation
+mcp__cybersec__case_open --title "bootkit" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

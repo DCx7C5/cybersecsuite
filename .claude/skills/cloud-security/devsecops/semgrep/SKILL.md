@@ -1,5 +1,5 @@
 ---
-name: implementing-semgrep-for-custom-sast-rules
+name: semgrep
 description: Write custom Semgrep SAST rules in YAML to detect application-specific vulnerabilities, enforce coding standards,
   and integrate into CI/CD pipelines.
 domain: cybersecurity
@@ -338,7 +338,7 @@ vendor/
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-semgrep-for-custom-sast-rules" --type investigation
+mcp__cybersec__case_open --title "semgrep" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

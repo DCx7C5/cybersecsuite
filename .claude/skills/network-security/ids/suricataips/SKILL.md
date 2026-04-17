@@ -1,5 +1,5 @@
 ---
-name: implementing-network-intrusion-prevention-with-suricata
+name: suricataips
 description: Deploy and configure Suricata as a network intrusion prevention system with custom rules, Emerging Threats rulesets,
   and inline traffic inspection for real-time threat blocking.
 domain: cybersecurity
@@ -381,7 +381,7 @@ echo "rate_filter gen_id 1, sig_id 2100366, track by_src, count 10, seconds 60, 
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-intrusion-prevention-with-suricata" --type investigation
+mcp__cybersec__case_open --title "suricataips" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

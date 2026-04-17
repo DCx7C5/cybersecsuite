@@ -1,5 +1,5 @@
 ---
-name: detecting-shadow-it-cloud-usage
+name: shadow
 description: Detect unauthorized SaaS and cloud service usage (shadow IT) by analyzing proxy logs, DNS query logs, and netflow
   data using Python pandas for traffic pattern analysis and domain classification.
 domain: cybersecurity
@@ -70,7 +70,7 @@ Shadow IT refers to unauthorized SaaS applications and cloud services used witho
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-shadow-it-cloud-usage" --type investigation
+mcp__cybersec__case_open --title "shadow" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-windows-artifact-analysis-with-eric-zimmerman-tools
+name: windows
 description: Perform comprehensive Windows forensic artifact analysis using Eric Zimmerman's open-source EZ Tools suite including
   KAPE, MFTECmd, PECmd, LECmd, JLECmd, and Timeline Explorer for parsing registry hives, prefetch files, event logs, and file
   system metadata.
@@ -299,7 +299,7 @@ All EZ Tools produce CSV output that can be:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-windows-artifact-analysis-with-eric-zimmerman-tools" --type investigation
+mcp__cybersec__case_open --title "windows" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

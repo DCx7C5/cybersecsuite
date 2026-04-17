@@ -1,5 +1,5 @@
 ---
-name: implementing-delinea-secret-server-for-pam
+name: delinea
 description: 'Implements Delinea Secret Server for privileged access management (PAM) including secret vault configuration,
   role-based access policies, automated password rotation, session recording, and integration with Active Directory and cloud
   platforms. Activates for requests involving PAM deployment, privileged credential vaulting, secret server administration,
@@ -427,7 +427,7 @@ Password Age Violations: 3 (remediation in progress)
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-delinea-secret-server-for-pam" --type investigation
+mcp__cybersec__case_open --title "delinea" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

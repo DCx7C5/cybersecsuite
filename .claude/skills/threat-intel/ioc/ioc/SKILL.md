@@ -1,5 +1,5 @@
 ---
-name: automating-ioc-enrichment
+name: ioc
 description: 'Automates the enrichment of raw indicators of compromise with multi-source threat intelligence context using
   SOAR platforms, Python pipelines, or TIP playbooks to reduce analyst triage time and standardize enrichment outputs. Use
   when building automated enrichment workflows integrated with SIEM alerts, email submission pipelines, or bulk IOC processing
@@ -221,7 +221,7 @@ Track pipeline performance weekly:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "automating-ioc-enrichment" --type investigation
+mcp__cybersec__case_open --title "ioc" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

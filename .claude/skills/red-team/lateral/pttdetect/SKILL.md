@@ -1,5 +1,5 @@
 ---
-name: detecting-pass-the-ticket-attacks
+name: pttdetect
 description: Detect Kerberos Pass-the-Ticket (PtT) attacks by analyzing Windows Event IDs 4768, 4769, and 4771 for anomalous
   ticket usage patterns in Splunk and Elastic SIEM
 domain: cybersecurity
@@ -75,7 +75,7 @@ JSON report containing detected PtT indicators including anomalous ticket reques
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-pass-the-ticket-attacks" --type investigation
+mcp__cybersec__case_open --title "pttdetect" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

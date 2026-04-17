@@ -1,5 +1,5 @@
 ---
-name: detecting-lateral-movement-with-zeek
+name: zeeklateral
 description: 'Detect lateral movement in network traffic using Zeek (formerly Bro) log analysis. Parses conn.log, smb_mapping.log,
   smb_files.log, dce_rpc.log, kerberos.log, and ntlm.log to identify SMB file transfers, NTLM account spray activity, remote
   service execution, and anomalous internal connections.
@@ -218,7 +218,7 @@ python3 agent.py /opt/zeek/logs/2026-03-18/  # Analyze a specific date
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-lateral-movement-with-zeek" --type investigation
+mcp__cybersec__case_open --title "zeeklateral" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-kubernetes-network-policy-with-calico
+name: kubernetes
 description: Implement Kubernetes network segmentation using Calico NetworkPolicy and GlobalNetworkPolicy for zero-trust pod-to-pod
   communication.
 domain: cybersecurity
@@ -338,7 +338,7 @@ kubectl exec -n production frontend-pod -- wget -qO- --timeout=2 http://backend-
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-kubernetes-network-policy-with-calico" --type investigation
+mcp__cybersec__case_open --title "kubernetes" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

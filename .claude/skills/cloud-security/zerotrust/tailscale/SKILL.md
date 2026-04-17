@@ -1,5 +1,5 @@
 ---
-name: deploying-tailscale-for-zero-trust-vpn
+name: tailscale
 description: Deploy and configure Tailscale as a WireGuard-based zero trust mesh VPN with identity-aware access controls,
   ACLs, and exit nodes for secure peer-to-peer connectivity.
 domain: cybersecurity
@@ -443,7 +443,7 @@ tailscale up --authkey=$TS_AUTHKEY --hostname=ci-runner-$CI_JOB_ID
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-tailscale-for-zero-trust-vpn" --type investigation
+mcp__cybersec__case_open --title "tailscale" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: implementing-kubernetes-pod-security-standards
+name: podsecurity
 description: Pod Security Standards (PSS) define three levels of security policies -- Privileged, Baseline, and Restricted
   -- enforced by the Pod Security Admission (PSA) controller built into Kubernetes 1.25+. PS
 domain: cybersecurity
@@ -273,7 +273,7 @@ kubescape scan framework nsa --namespace production
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-kubernetes-pod-security-standards" --type investigation
+mcp__cybersec__case_open --title "podsecurity" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

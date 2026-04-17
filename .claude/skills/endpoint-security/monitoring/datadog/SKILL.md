@@ -1,5 +1,5 @@
 ---
-name: implementing-security-monitoring-with-datadog
+name: datadog
 description: 'Implements security monitoring using Datadog Cloud SIEM, Cloud Security Management (CSM), and Workload Protection
   to detect threats, enforce compliance, and respond to security events across cloud and hybrid infrastructure. Covers Agent
   deployment, log source ingestion, detection rule creation, security dashboards, and automated notification workflows. Activates
@@ -427,7 +427,7 @@ with ApiClient(configuration) as api_client:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-security-monitoring-with-datadog" --type investigation
+mcp__cybersec__case_open --title "datadog" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

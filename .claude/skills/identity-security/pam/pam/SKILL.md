@@ -1,5 +1,5 @@
 ---
-name: implementing-pam-for-database-access
+name: pam
 description: Deploy privileged access management for database systems including Oracle, SQL Server, PostgreSQL, and MySQL.
   Covers session proxy configuration, credential vaulting, query auditing, dynamic credentia
 domain: cybersecurity
@@ -76,7 +76,7 @@ Deploy privileged access management for database systems including Oracle, SQL S
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-pam-for-database-access" --type investigation
+mcp__cybersec__case_open --title "pam" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

@@ -1,5 +1,5 @@
 ---
-name: performing-dns-tunneling-detection
+name: dnstunnel
 description: 'Detects DNS tunneling by computing Shannon entropy of DNS query names, analyzing query length distributions,
   inspecting TXT record payloads, and identifying high subdomain cardinality. Uses scapy for packet capture analysis and statistical
   methods to distinguish legitimate DNS from covert channels. Use when hunting for data exfiltration.
@@ -93,7 +93,7 @@ for pkt in packets:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-dns-tunneling-detection" --type investigation
+mcp__cybersec__case_open --title "dnstunnel" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

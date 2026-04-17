@@ -1,5 +1,5 @@
 ---
-name: implementing-ot-network-traffic-analysis-with-nozomi
+name: nozomi
 description: 'Deploy Nozomi Networks Guardian sensors for passive OT network traffic analysis to achieve comprehensive asset
   visibility, real-time threat detection, and vulnerability assessment across industrial control systems without disrupting
   operations, leveraging behavioral anomaly detection and protocol-aware monitoring.
@@ -283,7 +283,7 @@ NETWORK ANALYSIS:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-ot-network-traffic-analysis-with-nozomi" --type investigation
+mcp__cybersec__case_open --title "nozomi" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

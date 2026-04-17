@@ -1,5 +1,5 @@
 ---
-name: performing-timeline-reconstruction-with-plaso
+name: plaso
 description: Build comprehensive forensic super-timelines using Plaso (log2timeline) to correlate events across file systems,
   logs, and artifacts into a unified chronological view.
 domain: cybersecurity
@@ -336,7 +336,7 @@ Timeline Reconstruction Summary:
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "performing-timeline-reconstruction-with-plaso" --type investigation
+mcp__cybersec__case_open --title "plaso" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

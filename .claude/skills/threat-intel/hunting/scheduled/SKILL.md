@@ -1,5 +1,5 @@
 ---
-name: hunting-for-scheduled-task-persistence
+name: scheduled
 description: Hunt for adversary persistence via Windows Scheduled Tasks by analyzing task creation events, suspicious task
   actions, and unusual scheduling patterns.
 domain: cybersecurity
@@ -107,7 +107,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-scheduled-task-persistence" --type investigation
+mcp__cybersec__case_open --title "scheduled" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

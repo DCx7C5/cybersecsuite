@@ -1,5 +1,5 @@
 ---
-name: implementing-anti-phishing-training-program
+name: training
 description: Security awareness training is the human layer of phishing defense. An effective anti-phishing training program
   combines regular simulations, interactive learning modules, metric tracking, and positiv
 domain: cybersecurity
@@ -110,7 +110,7 @@ Use `scripts/process.py` to analyze training completion, simulation results, and
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-anti-phishing-training-program" --type investigation
+mcp__cybersec__case_open --title "training" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

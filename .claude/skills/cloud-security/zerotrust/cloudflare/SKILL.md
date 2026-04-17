@@ -1,5 +1,5 @@
 ---
-name: deploying-cloudflare-access-for-zero-trust
+name: cloudflare
 description: 'Deploying Cloudflare Access with Cloudflare Tunnel to provide zero trust access to self-hosted and private applications,
   configuring identity-aware access policies, device posture checks, and WARP client enrollment for VPN replacement.
 
@@ -408,7 +408,7 @@ ACCESS METRICS (last 30 days):
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "deploying-cloudflare-access-for-zero-trust" --type investigation
+mcp__cybersec__case_open --title "cloudflare" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

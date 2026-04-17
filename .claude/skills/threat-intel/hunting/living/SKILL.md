@@ -1,5 +1,5 @@
 ---
-name: hunting-for-living-off-the-cloud-techniques
+name: living
 description: Hunt for adversary abuse of legitimate cloud services for C2, data staging, and exfiltration including abuse
   of Azure, AWS, GCP services, and SaaS platforms.
 domain: cybersecurity
@@ -108,7 +108,7 @@ Recommended Action: [Containment, investigation, monitoring]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "hunting-for-living-off-the-cloud-techniques" --type investigation
+mcp__cybersec__case_open --title "living" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

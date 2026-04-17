@@ -1,5 +1,5 @@
 ---
-name: detecting-t1055-process-injection-with-sysmon
+name: sysmon
 description: Detect process injection techniques (T1055) including classic DLL injection, process hollowing, and APC injection
   by analyzing Sysmon events for cross-process memory operations, remote thread creation, and anomalous DLL loading patterns.
 domain: cybersecurity
@@ -182,7 +182,7 @@ ATT&CK Sub-Technique: [T1055.xxx]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "detecting-t1055-process-injection-with-sysmon" --type investigation
+mcp__cybersec__case_open --title "sysmon" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."

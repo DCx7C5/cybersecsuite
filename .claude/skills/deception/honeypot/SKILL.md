@@ -1,5 +1,5 @@
 ---
-name: implementing-network-deception-with-honeypots
+name: honeypot
 description: Deploy and manage network honeypots using OpenCanary, T-Pot, or Cowrie to detect unauthorized access, lateral
   movement, and attacker reconnaissance.
 domain: cybersecurity
@@ -97,7 +97,7 @@ Risk Level: [Critical/High/Medium/Low]
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "implementing-network-deception-with-honeypots" --type investigation
+mcp__cybersec__case_open --title "honeypot" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."
