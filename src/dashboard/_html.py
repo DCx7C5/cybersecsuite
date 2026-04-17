@@ -82,6 +82,7 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
     <div class="tab" onclick="showTab('cases')">&#x1f4c2; Cases</div>
     <div class="tab" onclick="showTab('tasks')">&#x23f1; Tasks</div>
     <div class="tab" onclick="showTab('pocs')">&#x1f4a3; PoCs</div>
+    <div class="tab" onclick="showTab('explorer')">&#x1f50e; Explorer</div>
   </div>
 
   <!-- Providers tab -->
@@ -183,6 +184,19 @@ _DASHBOARD_HTML = """<!DOCTYPE html>
        <tbody id="tasks-body"><tr><td colspan="6" class="text-center text-gray-500 loading">Loading tasks...</td></tr></tbody>
      </table>
    </div>
+
+   <!-- Explorer tab -->
+   <div id="tab-explorer" class="card" style="display:none">
+     <h3 class="text-lg font-semibold mb-3">&#x1f50e; Database Explorer</h3>
+     <div class="flex items-center gap-3 mb-4">
+       <select id="explorer-model" onchange="loadExplorerTable()"
+         class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">
+         <option value="">Select a model...</option>
+       </select>
+       <span id="explorer-count" class="text-xs text-gray-500"></span>
+     </div>
+     <div id="explorer-table"></div>
+   </div>
 </div>
 
 <script>
@@ -218,6 +232,95 @@ function costRange(models) {
   const min = Math.min(...costs), max = Math.max(...costs);
   if (min === max) return '$' + min.toFixed(2);
   return '$' + min.toFixed(2) + '-' + max.toFixed(2);
+}
+
+// ── renderTable: generic sortable, searchable, paginated table ──────────────
+function renderTable(containerId, schema, rows, opts = {}) {
+  const el = $(containerId);
+  if (!el) return;
+  const pageSize = opts.pageSize || 25;
+  let page = 0;
+  let sortCol = opts.sortCol || null;
+  let sortDir = opts.sortDir || 'asc';
+  let filter = '';
+
+  function formatCell(val, col) {
+    if (val === null || val === undefined) return '<span class="text-gray-600">—</span>';
+    const t = col.type || 'string';
+    if (t === 'datetime' && val) {
+      try { return new Date(val).toLocaleString(); } catch { return String(val); }
+    }
+    if (t === 'bool') return val ? '&#x2705;' : '&#x274c;';
+    if (t === 'json') {
+      const s = typeof val === 'string' ? val : JSON.stringify(val);
+      return s.length > 80 ? '<span title="' + s.replace(/"/g,'&quot;') + '">' + s.slice(0,77) + '&hellip;</span>' : s;
+    }
+    if (t === 'number') return typeof val === 'number' ? val.toLocaleString() : String(val);
+    const s = String(val);
+    return s.length > 120 ? '<span title="' + s.replace(/"/g,'&quot;') + '">' + s.slice(0,117) + '&hellip;</span>' : s;
+  }
+
+  function render() {
+    let data = rows;
+    if (filter) {
+      const q = filter.toLowerCase();
+      data = data.filter(r => schema.some(c => String(r[c.key] || '').toLowerCase().includes(q)));
+    }
+    if (sortCol !== null) {
+      const col = schema[sortCol];
+      data = [...data].sort((a, b) => {
+        let va = a[col.key], vb = b[col.key];
+        if (va == null) va = '';
+        if (vb == null) vb = '';
+        if (col.type === 'number') { va = Number(va) || 0; vb = Number(vb) || 0; }
+        else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+        return sortDir === 'asc' ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
+      });
+    }
+    const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
+    if (page >= totalPages) page = totalPages - 1;
+    const sliced = data.slice(page * pageSize, (page + 1) * pageSize);
+
+    let h = '<div class="flex items-center gap-3 mb-3">';
+    h += '<input type="text" placeholder="Search..." value="' + filter.replace(/"/g,'&quot;') + '" '
+       + 'oninput="window._rt_' + containerId + '_filter(this.value)" '
+       + 'class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:220px">';
+    h += '<span class="text-xs text-gray-500">' + data.length + ' rows</span>';
+    h += '</div>';
+    h += '<table><thead><tr>';
+    schema.forEach((c, i) => {
+      const arrow = sortCol === i ? (sortDir === 'asc' ? ' &#x25b2;' : ' &#x25bc;') : '';
+      h += '<th style="cursor:pointer" onclick="window._rt_' + containerId + '_sort(' + i + ')">' + (c.label || c.key) + arrow + '</th>';
+    });
+    h += '</tr></thead><tbody>';
+    if (!sliced.length) {
+      h += '<tr><td colspan="' + schema.length + '" class="text-center text-gray-500">No data</td></tr>';
+    } else {
+      sliced.forEach(r => {
+        h += '<tr>';
+        schema.forEach(c => { h += '<td>' + formatCell(r[c.key], c) + '</td>'; });
+        h += '</tr>';
+      });
+    }
+    h += '</tbody></table>';
+    if (totalPages > 1) {
+      h += '<div class="flex items-center justify-between mt-3">';
+      h += '<button onclick="window._rt_' + containerId + '_page(-1)" class="px-2 py-1 text-xs bg-gray-800 rounded' + (page === 0 ? ' opacity-30' : '') + '" ' + (page === 0 ? 'disabled' : '') + '>&laquo; Prev</button>';
+      h += '<span class="text-xs text-gray-500">Page ' + (page+1) + ' / ' + totalPages + '</span>';
+      h += '<button onclick="window._rt_' + containerId + '_page(1)" class="px-2 py-1 text-xs bg-gray-800 rounded' + (page >= totalPages-1 ? ' opacity-30' : '') + '" ' + (page >= totalPages-1 ? 'disabled' : '') + '>Next &raquo;</button>';
+      h += '</div>';
+    }
+    el.innerHTML = h;
+  }
+
+  window['_rt_' + containerId + '_sort'] = function(i) {
+    if (sortCol === i) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    else { sortCol = i; sortDir = 'asc'; }
+    render();
+  };
+  window['_rt_' + containerId + '_filter'] = function(v) { filter = v; page = 0; render(); };
+  window['_rt_' + containerId + '_page'] = function(d) { page += d; render(); };
+  render();
 }
 
 async function refresh() {
@@ -550,6 +653,41 @@ async function fetchApi(endpoint) {
     return { error: 'Failed to fetch: ' + e.message };
   }
 }
+
+// ── Explorer: generic table viewer ──────────────────────────────────────────
+async function loadExplorerModels() {
+  try {
+    const res = await fetch('/dashboard/api/models');
+    const data = await res.json();
+    const sel = $('explorer-model');
+    (data.models || []).forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      sel.appendChild(opt);
+    });
+  } catch (e) { console.error('Failed to load models', e); }
+}
+
+async function loadExplorerTable() {
+  const model = $('explorer-model').value;
+  if (!model) { $('explorer-table').innerHTML = ''; $('explorer-count').textContent = ''; return; }
+  $('explorer-table').innerHTML = '<div class="loading text-gray-500">Loading...</div>';
+  try {
+    const res = await fetch('/dashboard/api/tables/' + encodeURIComponent(model) + '?limit=500');
+    const data = await res.json();
+    if (data.error) { $('explorer-table').innerHTML = '<div class="text-red-400">' + data.error + '</div>'; return; }
+    $('explorer-count').textContent = (data.total || data.rows.length) + ' rows';
+    const schema = (data.columns || []).map(c => ({
+      key: c.name || c, label: c.label || c.name || c, type: c.type || 'string'
+    }));
+    renderTable('explorer-table', schema, data.rows || []);
+  } catch (e) {
+    $('explorer-table').innerHTML = '<div class="text-red-400">Error: ' + e.message + '</div>';
+  }
+}
+
+loadExplorerModels();
 
 refresh();
 setInterval(refresh, 15000);
