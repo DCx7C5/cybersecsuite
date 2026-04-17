@@ -66,3 +66,17 @@ def hook_context(text: str) -> dict:
     """Wrap text as a Claude hook additionalContext output."""
     return {"hookSpecificOutput": {"additionalContext": text}}
 
+
+def count_lines(path: Path, pattern: str) -> int:
+    """Count lines matching a regex pattern in a file."""
+    import re
+    if not path.exists():
+        return 0
+    try:
+        return sum(1 for ln in path.read_text("utf-8").splitlines() if re.match(pattern, ln))
+    except Exception:
+        return 0
+
+
+SEVERITY_EMOJI = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
+

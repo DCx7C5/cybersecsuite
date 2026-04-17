@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from utils import ensure_structure, get_session_dir
+from _utils import ensure_structure, get_session_dir
 from uvloop_integration import run_with_uvloop
 
 

@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin, SEVERITY_EMOJI
 
 MITRE_BY_IOC_TYPE = {
     "ip":          ["T1071 - Application Layer Protocol", "T1095 - Non-Application Layer Protocol"],
@@ -25,9 +25,6 @@ MITRE_BY_IOC_TYPE = {
     "cve":         ["T1190 - Exploit Public-Facing App", "T1203 - Exploitation for Client Execution"],
     "certificate": ["T1588.004 - Digital Certificates", "T1553 - Subvert Trust Controls"],
 }
-
-SEVERITY_EMOJI = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
-
 
 async def main():
     ensure_structure()

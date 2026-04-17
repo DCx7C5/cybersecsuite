@@ -8,7 +8,6 @@ Responsibilities:
 - Rate-limit expensive operations
 """
 import json
-import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -30,14 +29,10 @@ DANGEROUS_PATTERNS = [
     r"base64\s+-d.*\|\s*bash",
 ]
 
-PROJECT_ROOT = Path(os.environ.get("PROJECT_ROOT", Path(__file__).parent.parent.parent))
-AUDIT_LOG = PROJECT_ROOT / ".claude" / "hooks" / "audit.jsonl"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _utils import audit, get_project_dir  # noqa: E402
 
-
-def audit(event: dict) -> None:
-    AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
-    with open(AUDIT_LOG, "a") as f:
-        f.write(json.dumps(event) + "\n")
+PROJECT_ROOT = get_project_dir()
 
 
 def block(reason: str) -> None:

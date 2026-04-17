@@ -6,22 +6,12 @@ Collects artifacts, counts IOCs/findings, updates timeline.
 import asyncio
 import json
 import os
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
-
-
-def _count(path: Path, pattern: str) -> int:
-    if not path.exists():
-        return 0
-    try:
-        return sum(1 for ln in path.read_text("utf-8").splitlines() if re.match(pattern, ln))
-    except Exception:
-        return 0
+from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin, count_lines
 
 
 async def main():
@@ -41,9 +31,9 @@ async def main():
         phase_dir = session_dir / "phases" / phase_name.lower().replace(" ", "_")
 
         # Count items
-        stats["findings"]      = _count(session_dir / "findings.md", r"^## F-")
-        stats["iocs"]          = _count(session_dir / "iocs.md", r"^\|")
-        stats["artifacts"]     = _count(session_dir / "artifacts.md", r"^- ")
+        stats["findings"]      = count_lines(session_dir / "findings.md", r"^## F-")
+        stats["iocs"]          = count_lines(session_dir / "iocs.md", r"^\|")
+        stats["artifacts"]     = count_lines(session_dir / "artifacts.md", r"^- ")
         stats["evidence_files"] = len(list((phase_dir / "evidence").glob("*"))) if (phase_dir / "evidence").exists() else 0
 
         # Finalize metadata

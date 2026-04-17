@@ -4,33 +4,23 @@ AgentEnd Hook — fires when an A2A agent finishes. Logs stats, cleans state.
 """
 import asyncio
 import os
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, read_stdin
-
-
-def _count_entries(path: Path, pattern: str) -> int:
-    if not path.exists():
-        return 0
-    try:
-        return sum(1 for ln in path.read_text("utf-8").splitlines() if re.match(pattern, ln))
-    except Exception:
-        return 0
+from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, read_stdin, count_lines
 
 
 async def collect_stats(session_dir: Path) -> dict:
     loop = asyncio.get_running_loop()
-    def _count():
+    def _gather():
         return {
-            "findings": _count_entries(session_dir / "findings.md", r"^## F-"),
-            "iocs":     _count_entries(session_dir / "iocs.md", r"^\|"),
-            "artifacts": _count_entries(session_dir / "artifacts.md", r"^- "),
+            "findings": count_lines(session_dir / "findings.md", r"^## F-"),
+            "iocs":     count_lines(session_dir / "iocs.md", r"^\|"),
+            "artifacts": count_lines(session_dir / "artifacts.md", r"^- "),
         }
-    return await loop.run_in_executor(None, _count)
+    return await loop.run_in_executor(None, _gather)
 
 
 async def main():
