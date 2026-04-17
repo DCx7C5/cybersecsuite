@@ -72,7 +72,6 @@ opts = ClaudeAgentOptions(
 ### Root
 | File                 | Lines | Purpose                                                                |
 |----------------------|-------|------------------------------------------------------------------------|
-| `mcp_server.py`      | 1288  | FastMCP stdio — 29 tools (→ being replaced by src/mcp/cybersec/)       |
 | `mcp.json`           | 83    | 5 MCP servers for Claude Code CLI                                      |
 | `pyproject.toml`     | —     | Python 3.14, uv, all deps                                              |
 | `Makefile`           | —     | `make serve`, `make test`, etc.                                        |
@@ -81,17 +80,50 @@ opts = ClaudeAgentOptions(
 | `PROPOSAL_MEM.md`    | ~250  | Global uncompressed claude memory cache proposal                       |
 
 ### src/
-| File                  | Lines | Purpose                                                                        |
-|-----------------------|-------|--------------------------------------------------------------------------------|
-| `src/proxy/asgi.py`   | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware           |
-| `src/manage.py`       | ~600  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
-| `src/logger.py`       | 30    | Structured logger                                                              |
-| `src/mcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 34 tools        |
+| File                    | Lines | Purpose                                                                        |
+|-------------------------|-------|--------------------------------------------------------------------------------|
+| `src/proxy/asgi.py`     | 123   | ASGI app, env-driven ports, mounts all sub-apps, TelemetryMiddleware           |
+| `src/manage.py`         | ~600  | CLI management (`manage.py serve`, `case-open`, `ssl`, `vault`, `check`, etc.) |
+| `src/logger.py`         | 30    | Structured logger                                                              |
+| `src/csmcp/__init__.py` | ~30   | `all_servers()` → `{cybersec, dystopian}`, `allowed_tools()` → 36 tools        |
+
+### src/csmcp/ (renamed from src/mcp/ — Phase H)
+**Critical**: `src/mcp/` was renamed to `src/csmcp/` to resolve naming conflict with pip's `mcp` v1.26.0 package (needed by `claude_agent_sdk`). The original `src/mcp/` shadowed pip's `mcp` when `PYTHONPATH=src` was set.
+| File                          | Lines | Purpose                                                        |
+|-------------------------------|-------|----------------------------------------------------------------|
+| `cybersec/__init__.py`        | ~80   | Assembles 29 cybersec tools → `cybersec_server` (McpSdkServerConfig) |
+| `cybersec/server.py`          | 30    | Slim stdio entry point — replaces deleted `mcp_server.py`      |
+| `cybersec/{findings,db,...}.py`| —    | 29 tools split into 8 submodules                               |
+| `dystopian.py`                | ~200  | 5 crypto tools (Ed25519/Argon2id/AES-256-GCM)                 |
+| `dystopian_server.py`         | 30    | Slim stdio entry point for dystopian tools                     |
+| `_sdk_compat.py`              | ~80   | `@tool` shim — resilience if `claude_agent_sdk` unavailable    |
+
+`mcp_server.py` (1288L FastMCP duplicate) → **DELETED** in Phase H.
+
+### src/agent/ (new — Phase H)
+High-level Claude Agent SDK integration package.
+| File           | Lines | Purpose                                                         |
+|----------------|-------|-----------------------------------------------------------------|
+| `__init__.py`  | 14    | Public API: `AgentRunner`, `SessionManager`                     |
+| `runner.py`    | ~110  | `AgentRunner` — multi-turn query(), stream(), mode prefix injection |
+| `sessions.py`  | ~140  | `SessionManager` + `SessionRecord` — wraps SDK session lifecycle |
+| `hooks.py`     | ~130  | 4 hooks: `security_hook`, `audit_hook`, `ioc_hook`, `cost_hook` |
+| `streaming.py` | ~90   | `stream_query()` — SSE-ready async generator                    |
+
+Usage:
+```python
+from agent import AgentRunner
+runner = AgentRunner(agent_name="cybersec-analyst", mode="blue")
+result = await runner.query("Analyse CVE-2024-1234")
+# Streaming:
+async for chunk in runner.stream("What are the top threats?"):
+    print(chunk)  # {"type":"text","text":"..."} etc.
+```
 
 ### src/a2a/
 | File                | Lines | Purpose                                                              |
 |---------------------|-------|----------------------------------------------------------------------|
-| `agent_sdk.py`      | 358   | SDK bridge — model mapping, PreToolUse audit hook, run_agent_query() |
+| `agent_sdk.py`      | ~250  | SDK bridge — `build_agent_options()` → 36 MCP tools (29+7) via `csmcp.all_servers()` |
 | `agent_loader.py`   | 272   | Loads `.claude/agents/*.md` → AgentCards                             |
 | `orchestrator.py`   | 365   | A2A task orchestration                                               |
 | `dev_agents.py`     | 322   | Dev agent stubs (SDK-wired ✅)                                        |
@@ -167,13 +199,13 @@ SSE: /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
 Current tabs: Cases, Sessions, Agents, Providers, Strategies, Tools, Tasks, Findings, IOCs, Network, Intel, Compliance, Audit.
 
 ### .claude/ system
-| Component    | Files                                                                                   | Status                       |
-|--------------|-----------------------------------------------------------------------------------------|------------------------------|
+| Component    | Files                                                                                                        | Status                       |
+|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------|
 | `agents/`    | **33 specialists** + AGENT_FACTORY + DEV_SUB_AGENTS + `teams/` (3 modes) + `sub_agents/` (1: cybersec-agent) | ✅ all consistent frontmatter |
-| `hooks/`     | 27 .py files (18 event handlers + 9 modules) + hooks.json                               | ⚠️ NEVER AUDITED             |
-| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                            | ⚠️ NEVER AUDITED             |
-| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                        | ✅ RESTRUCTURED               |
-| `templates/` | 14 template files across 6 subdirs                                                      | Not reviewed                 |
+| `hooks/`     | 27 .py files (18 event handlers + 9 modules) + hooks.json                                                    | ⚠️ NEVER AUDITED             |
+| `commands/`  | **8 slash commands** + config.py + `__init__.py` + README.md                                                 | ⚠️ NEVER AUDITED             |
+| `skills/`    | **933 SKILL.md** across 26 active domains (hardening index-only)                                             | ✅ RESTRUCTURED               |
+| `templates/` | 14 template files across 6 subdirs                                                                           | Not reviewed                 |
 
 #### templates/ structure
 ```
@@ -254,11 +286,13 @@ Model tiers:
 ### mcp.json — 5 MCP servers for Claude Code CLI
 | Key                      | Server                                                                                           |
 |--------------------------|--------------------------------------------------------------------------------------------------|
-| `cybersec`               | Main forensics (29 tools, stdio, `mcp_server.py`, uv)                                            |
-| `dystopian-crypto`       | Crypto — Ed25519/Argon2id/AES-256-GCM (`src/mcp/dystopian.py`, uv)                               |
+| `cybersec`               | 29 forensics tools (`python -m csmcp.cybersec.server`, PYTHONPATH=src, uv)                       |
+| `dystopian-crypto`       | 5 crypto tools (`python -m csmcp.dystopian_server`, PYTHONPATH=src, uv)                          |
 | `token-optimization-mcp` | Token counting, prompt compression, semantic caching (`mcps/token-optimization-mcp/main.py`, uv) |
 | `playwright-stealth-mcp` | Headless Brave browser automation (`mcps/playwright-stealth-mcp/server.py`, uv)                  |
 | `kerneldev`              | Kernel module dev / eBPF / symbol lookup (`kerneldev_mcp.server`, python)                        |
+
+Both `cybersec` and `dystopian-crypto` use real `mcp.server.Server` stdio transport (not FastMCP).
 
 ---
 
@@ -587,13 +621,13 @@ Decentralize SIEM-SOC skills from monolithic domain into first-layer homes (iden
 ### Phase F — File-Splitting (Token Efficiency) — ✅ COMPLETE
 Large files split into submodules. Public API preserved — all existing imports still work.
 
-| File                                 | Before | After (new structure)                                                                           | Commit     |
-|--------------------------------------|--------|-------------------------------------------------------------------------------------------------|------------|
+| File                                 | Before | After (new structure)                                                                         | Commit     |
+|--------------------------------------|--------|-----------------------------------------------------------------------------------------------|------------|
 | `src/db/intel_loader.py`             | 2062L  | `src/db/intel/`: `_utils`(332L) `_snapshot`(60L) `_loaders`(276L) `bootstrap`(1475L) shim(8L) | `2687c778` |
 | `src/dashboard/routes.py`            | 1614L  | `_html.py`(561L) + `_handlers.py`(1008L) + thin `routes.py`(55L)                              | `9c136218` |
-| `src/ai_proxy/providers/registry.py` | 1163L  | core `registry.py`(319L) + `_providers.py` registrations(854L)                                 | `449addfd` |
-| `src/manage.py`                      | 611L   | `manage/_commands.py`(487L) + thin `manage.py` dispatcher(162L)                                | `ffebc600` |
-| `src/checks/integrity.py`            | 699L   | `_model_check`(282L) + `_fixture_check`(120L) + `_config_check`(255L) + thin(71L)              | `4e7244f4` |
+| `src/ai_proxy/providers/registry.py` | 1163L  | core `registry.py`(319L) + `_providers.py` registrations(854L)                                | `449addfd` |
+| `src/manage.py`                      | 611L   | `manage/_commands.py`(487L) + thin `manage.py` dispatcher(162L)                               | `ffebc600` |
+| `src/checks/integrity.py`            | 699L   | `_model_check`(282L) + `_fixture_check`(120L) + `_config_check`(255L) + thin(71L)             | `4e7244f4` |
 
 ### Phase G — SSE Frontend (optional)
 `sse-eventsource-wire` → `sse-autoreconnect` → `sse-replace-polling`
