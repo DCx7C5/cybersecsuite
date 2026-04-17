@@ -457,11 +457,12 @@ async function refresh() {
         + '<div class="card text-center"><div class="text-2xl font-bold">' + iv.mitre_techniques + '</div><div class="text-xs text-gray-500">MITRE</div></div>'
         + '</div>'
         + '<h4 class="font-semibold mb-2">Findings by Severity</h4>'
-        + '<div class="grid grid-cols-5 gap-2">'
-        + Object.entries(iv.findings_by_severity || {}).map(([k,v]) =>
-          '<div class="card text-center"><div class="font-bold">' + v + '</div><div class="text-xs text-gray-500">' + k.toUpperCase() + '</div></div>'
-        ).join('')
-        + '</div>';
+        + '<div id="inv-table"></div>';
+      const sevRows = Object.entries(iv.findings_by_severity || {}).map(([k, v]) => ({severity: k.toUpperCase(), count: v}));
+      renderTable('inv-table', [
+        {key: 'severity', label: 'Severity', type: 'string'},
+        {key: 'count', label: 'Count', type: 'number'},
+      ], sevRows, {sortCol: 1, sortDir: 'desc'});
     }
 
     // DB Counts tab
@@ -469,10 +470,12 @@ async function refresh() {
     if (dv.error) {
       dc.innerHTML = '<p class="text-red-400">Error: ' + dv.error + '</p>';
     } else {
-      dc.innerHTML = '<table><thead><tr><th>Table</th><th>Rows</th></tr></thead><tbody>'
-        + Object.entries(dv.counts || {}).sort((a,b) => b[1] - a[1]).map(([t,c]) =>
-          '<tr><td>' + t + '</td><td class="font-bold">' + fmt(c) + '</td></tr>'
-        ).join('') + '</tbody></table>';
+      dc.innerHTML = '<div id="db-table"></div>';
+      const dbRows = Object.entries(dv.counts || {}).map(([t, c]) => ({table_name: t, rows: c}));
+      renderTable('db-table', [
+        {key: 'table_name', label: 'Table', type: 'string'},
+        {key: 'rows', label: 'Rows', type: 'number'},
+      ], dbRows, {sortCol: 1, sortDir: 'desc'});
     }
 
     // Agents tab
@@ -485,20 +488,23 @@ async function refresh() {
         + '<div class="card text-center"><div class="text-2xl font-bold text-purple-400">' + agv.orchestrators + '</div><div class="text-xs text-gray-500">Orchestrators</div></div>'
         + '<div class="card text-center"><div class="text-2xl font-bold text-blue-400">' + agv.specialists + '</div><div class="text-xs text-gray-500">Specialists</div></div>'
         + '</div>'
-        + '<table><thead><tr><th>Agent</th><th>Role</th><th>Model</th><th>Skills</th><th>URL</th></tr></thead><tbody>'
-        + (agv.agents || []).map(a => {
-          const role = (a.claude_metadata||{}).role || 'specialist';
-          const model = (a.claude_metadata||{}).model || '-';
-          const roleBadge = role === 'orchestrator'
-            ? '<span class="badge badge-premium">ORCH</span>'
-            : '<span class="badge badge-budget">SPEC</span>';
-          const skills = (a.skills||[]).map(s => s.name).join(', ');
-          return '<tr><td><strong>' + a.name + '</strong><br><span class="text-xs text-gray-500">' + (a.description||'').substring(0,80) + '</span></td>'
-            + '<td>' + roleBadge + '</td>'
-            + '<td class="text-xs">' + model + '</td>'
-            + '<td class="text-xs">' + skills + '</td>'
-            + '<td class="text-xs">' + (a.url||'-') + '</td></tr>';
-        }).join('') + '</tbody></table>';
+        + '<div id="agents-table"></div>';
+      const agentRows = (agv.agents || []).map(a => ({
+        name: a.name,
+        description: (a.description || '').substring(0, 80),
+        role: (a.claude_metadata || {}).role || 'specialist',
+        model: (a.claude_metadata || {}).model || '-',
+        skills: (a.skills || []).map(s => s.name).join(', '),
+        url: a.url || '-',
+      }));
+      renderTable('agents-table', [
+        {key: 'name', label: 'Agent', type: 'string'},
+        {key: 'description', label: 'Description', type: 'string'},
+        {key: 'role', label: 'Role', type: 'string'},
+        {key: 'model', label: 'Model', type: 'string'},
+        {key: 'skills', label: 'Skills', type: 'string'},
+        {key: 'url', label: 'URL', type: 'string'},
+      ], agentRows);
     }
 
     // Routing tab
@@ -512,18 +518,29 @@ async function refresh() {
         + '<div class="card text-center"><div class="text-2xl font-bold text-red-400">' + (rtv.open_circuits||0) + '</div><div class="text-xs text-gray-500">Open Circuits</div></div>'
         + '</div>'
         + '<h4 class="font-semibold mb-2">Strategies</h4>'
-        + '<div class="flex flex-wrap gap-2 mb-4">' + (rtv.strategies||[]).map(s =>
-          '<span class="badge badge-standard">' + s + '</span>'
-        ).join('') + '</div>'
+        + '<div id="routing-strategies-table"></div>'
         + '<h4 class="font-semibold mb-2">Circuit Breakers</h4>'
-        + '<table><thead><tr><th>Target</th><th>State</th><th>Failures</th></tr></thead><tbody>'
-        + (rtv.circuit_breakers||[]).map(cb =>
-          '<tr><td class="text-xs">' + cb.target + '</td>'
-          + '<td><span class="badge ' + (cb.state === 'closed' ? 'badge-ok' : 'badge-err') + '">' + cb.state.toUpperCase() + '</span></td>'
-          + '<td>' + cb.failures + '</td></tr>'
-        ).join('') + '</tbody></table>'
+        + '<div id="routing-cb-table"></div>'
         + '<h4 class="font-semibold mt-4 mb-2">Budget Guards</h4>'
-        + '<pre class="text-xs bg-gray-900 p-3 rounded overflow-auto">' + JSON.stringify(rtv.budgets||{}, null, 2) + '</pre>';
+        + '<div id="routing-budgets-table"></div>';
+      renderTable('routing-strategies-table', [
+        {key: 'name', label: 'Strategy', type: 'string'},
+      ], (rtv.strategies || []).map(s => ({name: s})));
+      const cbRows = (rtv.circuit_breakers || []).map(cb => ({
+        target: cb.target, state: cb.state, failures: cb.failures,
+      }));
+      renderTable('routing-cb-table', [
+        {key: 'target', label: 'Target', type: 'string'},
+        {key: 'state', label: 'State', type: 'string'},
+        {key: 'failures', label: 'Failures', type: 'number'},
+      ], cbRows);
+      const budgetRows = Object.entries(rtv.budgets || {}).map(([k, v]) => ({
+        guard: k, value: v,
+      }));
+      renderTable('routing-budgets-table', [
+        {key: 'guard', label: 'Guard', type: 'string'},
+        {key: 'value', label: 'Value', type: 'json'},
+      ], budgetRows);
     }
 
     // Factory tab
@@ -542,14 +559,22 @@ async function refresh() {
           '<span class="badge badge-standard">' + a + '</span>'
         ).join('') + '</div>'
         + '<h4 class="font-semibold mb-2">Agent Files</h4>'
-        + '<table><thead><tr><th>Name</th><th>Size</th><th>Lines</th></tr></thead><tbody>'
-        + (fv.agents||[]).map(a =>
-          '<tr><td>' + a.name + '</td><td class="text-xs">' + (a.size/1024).toFixed(1) + ' KB</td><td class="text-xs">' + a.lines + '</td></tr>'
-        ).join('') + '</tbody></table>'
+        + '<div id="factory-agents-table"></div>'
         + '<h4 class="font-semibold mt-4 mb-2">Teams</h4>'
-        + '<div class="flex flex-wrap gap-2">' + (fv.teams||[]).map(t =>
-          '<span class="badge badge-budget">' + t.name + '</span>'
-        ).join('') + '</div>';
+        + '<div id="factory-teams-table"></div>';
+      const agentFileRows = (fv.agents || []).map(a => ({
+        name: a.name,
+        size_kb: Math.round(a.size / 1024 * 10) / 10,
+        lines: a.lines,
+      }));
+      renderTable('factory-agents-table', [
+        {key: 'name', label: 'Name', type: 'string'},
+        {key: 'size_kb', label: 'Size (KB)', type: 'number'},
+        {key: 'lines', label: 'Lines', type: 'number'},
+      ], agentFileRows);
+      renderTable('factory-teams-table', [
+        {key: 'name', label: 'Team', type: 'string'},
+      ], (fv.teams || []).map(t => ({name: t.name})));
     }
 
     // Prompts tab
@@ -557,16 +582,19 @@ async function refresh() {
     if (pmv.error) {
       pmc.innerHTML = '<p class="text-red-400">Error: ' + pmv.error + '</p>';
     } else {
+      const promptRows = [];
+      Object.entries(pmv.plugins || {}).forEach(([cat, files]) => {
+        (files || []).forEach(f => promptRows.push({category: cat, file: f}));
+      });
       pmc.innerHTML = '<div class="grid grid-cols-2 gap-4 mb-4">'
         + '<div class="card text-center"><div class="text-2xl font-bold">' + pmv.total_templates + '</div><div class="text-xs text-gray-500">Template Files</div></div>'
         + '<div class="card text-center"><div class="text-2xl font-bold">' + pmv.sessions + '</div><div class="text-xs text-gray-500">Sessions</div></div>'
         + '</div>'
-        + Object.entries(pmv.plugins||{}).map(([cat, files]) =>
-          '<h4 class="font-semibold mt-3 mb-2">' + cat + '</h4>'
-          + '<div class="flex flex-wrap gap-2">' + files.map(f =>
-            '<span class="badge badge-standard">' + f + '</span>'
-          ).join('') + '</div>'
-        ).join('');
+        + '<div id="prompts-table"></div>';
+      renderTable('prompts-table', [
+        {key: 'category', label: 'Category', type: 'string'},
+        {key: 'file', label: 'File', type: 'string'},
+      ], promptRows);
     }
 
     // Cases tab (Phase 0)
