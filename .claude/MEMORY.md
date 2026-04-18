@@ -41,31 +41,34 @@ Claude Code / agent_sdk.py
 
 **src/csmcp/ rename**: `src/mcp/` → `src/csmcp/` (Phase H) — avoided naming conflict with pip `mcp` v1.26.0. `mcp_server.py` (1288L FastMCP) DELETED.
 
-### src/dashboard/ (38 routes)
+### src/dashboard/ (41 routes)
 | File                       | Lines | Purpose                                                                                           |
 |----------------------------|-------|---------------------------------------------------------------------------------------------------|
-| `routes.py`                | 65    | Route wiring                                                                                      |
+| `routes.py`                | 68    | Route wiring                                                                                      |
 | `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                         |
 | `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                |
 | `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot` |
 | `templates/_base.py`       | 86    | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()`                    |
-| `templates/_tabs.py`       | 42    | `tab_bar()` — 24 tab items as a list                                                              |
-| `templates/_panels.py`     | 330   | `all_panels()` — 24 panel fns using components                                                    |
-| `templates/_js.py`         | 970   | `_JS` — settings CRUD + explorer + agent query JS                                                 |
+| `templates/_tabs.py`       | 44    | `tab_bar()` — 25 tab items as a list                                                              |
+| `templates/_panels.py`     | 390   | `all_panels()` — 25 panel fns using components                                                    |
+| `templates/_js.py`         | 1100  | `_JS` — team builder + settings CRUD + explorer + agent query JS                                  |
 | `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                        |
 | `api/agents.py`            | 215   | a2a, agents, routing, factory, agent-query                                                        |
 | `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                     |
 | `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                |
 | `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                              |
 | `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir              |
+| `api/team_builder.py`      | 130   | `GET /api/team-agents` (33 agents) · `GET /api/skills?domain=&q=` (941 skills) · `GET /api/teams` |
 | `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                            |
 | `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                           |
 
-**24 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · **Settings** · Explorer
+**25 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · **Team Builder** · Explorer
+
+**Team Builder tab**: Agent Browser (filterable table of 33 agents), Skill Browser (27 domains × 941 skills, domain select + search), Team Composer (add phases → assign agents → generate/copy JSON).
 
 **Settings tab**: Agent & Proxy (editable), Env Variables (add/remove/save rows), Hooks (read-only renderTable). PATCH validates against editable/readonly key sets — forbidden keys → 400.
 
-**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings`
+**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET /api/teams`
 
 **renderTable() pattern**: `renderTable(containerId, schema, rows)` — schema: `{key, label, type}` where type = string|number|bool|datetime|json. Pre-format badge HTML as strings before passing.
 
@@ -146,16 +149,17 @@ async def _fn(args: dict) -> dict:
 - Phase K.5 — Agent Query panel: agent selector, context enrichment, conversation history
 - Phase K.6 — Split `_html.py` (1194L) → `templates/` package: `_components.py`, `_base.py`, `_tabs.py`, `_panels.py`, `_js.py`; `.stat-card` CSS added
 - Phase K.7 — Settings tab: `GET/PATCH /api/settings`, editable env/agent/proxy fields, hooks read-only view
+- Phase K.8 — Team Builder tab: Agent Browser (33 agents), Skill Browser (941 skills/27 domains), Team Composer (phase→agent JSON)
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
 - `BrowserForensicFinding` model — created `db/models/browser_forensic.py` (table `browser_forensic_findings`), registered in MODEL_MODULES, fixed `datetime.utcnow()` → `datetime.now(timezone.utc)`, fixed `.annotate()` dict access via `.values()`
 
-### 🚧 Active — Phase K (Dashboard)
-8. Team builder + Task chain builder + Skill browser
+### ✅ Phase K — Complete (25-tab dashboard)
 
 ### Pending
+- Phase E — Anthropic skills asset sync (copy LICENSE/scripts/refs/assets into .claude/skills/)
+- Phase G — SSE frontend wiring (replace polling with EventSource)
 - Phase M.3 — consolidate `a2a/` and `checks/`
 - Phase N — update all 10 docs + README
-- Phase G — SSE frontend wiring (replace polling)
 - OmniRoute integration (mcp.json + allowed_tools)
