@@ -68,8 +68,8 @@ services:
     environment:
       <<: *db-env
       <<: *ai-keys
-      # Unix socket path – no TCP, no port needed
-      CYBERSEC_DB_HOST: /tmp/.s.PGSQL.
+      # Unix socket: just the directory — asyncpg appends /.s.PGSQL.<port>
+      CYBERSEC_DB_HOST: /tmp
       CYBERSEC_DB_PORT: 5432
       CYBERSEC_AUTO_CREATE_DB: "true"
       OPENSEARCH_HOST: ${OPENSEARCH_HOST:-http://cybersec-opensearch:9200}

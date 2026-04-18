@@ -3,6 +3,7 @@
 SessionStart Hook — fires when Claude opens a new session in cybersecsuite.
 Loads 3-tier memory (System → Project → Session) and injects A2A registry status.
 """
+
 import asyncio
 import sys
 from datetime import datetime, timezone
@@ -13,11 +14,11 @@ from _utils import ensure_structure, get_project_dir, get_session_dir, audit, em
 
 
 AGENT_PROFILES = {
-    "cybersec-agent":      "General-purpose cybersec agent — CVE, IOC, MITRE, artifacts.",
-    "OrchestratorAgent":   "Multi-agent orchestrator — routes tasks to specialist agents.",
-    "PythonDeveloper":     "Python developer — write, review, debug, test Python code.",
-    "CppDeveloper":        "C++ developer — write, review, debug, optimize C++ code.",
-    "CybersecAgent":       "Threat intelligence agent — CVE, IOC, MITRE ATT&CK.",
+    "cybersec-agent": "General-purpose cybersec agent — CVE, IOC, MITRE, artifacts.",
+    "OrchestratorAgent": "Multi-agent orchestrator — routes tasks to specialist agents.",
+    "PythonDeveloper": "Python developer — write, review, debug, test Python code.",
+    "CppDeveloper": "C++ developer — write, review, debug, optimize C++ code.",
+    "CybersecAgent": "Threat intelligence agent — CVE, IOC, MITRE ATT&CK.",
 }
 
 MEMORY_FILES = ["scope.md", "threat_model.md", "risk_register.md", "mitre-attack.md", "iocs.md"]
@@ -51,9 +52,9 @@ async def main():
     ]
 
     parts: list[str] = []
-    results = await asyncio.gather(*[
-        load_layer(name, d) for name, d in layers if d and d.exists()
-    ], return_exceptions=True)
+    results = await asyncio.gather(
+        *[load_layer(name, d) for name, d in layers if d and d.exists()], return_exceptions=True
+    )
     for r in results:
         if isinstance(r, list):
             parts.extend(r)
@@ -65,8 +66,9 @@ async def main():
 
     audit({"event": "SessionStart", "session_dir": str(session_dir)})
 
-    emit(hook_context(f"""🔐 **CYBERSECSUITE SESSION STARTED**
-⏱  {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}
+    emit(
+        hook_context(f"""🔐 **CYBERSECSUITE SESSION STARTED**
+⏱  {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}
 
 {memory_ctx}
 
@@ -74,22 +76,25 @@ async def main():
 
 **Active Layers**: System → Project → Session
 **Agent**: {_agent_name()}
-Ready for investigation."""))
+Ready for investigation.""")
+    )
 
 
 def _agent_name() -> str:
     import os
+
     name = os.environ.get("CYBERSEC_AGENT_NAME", "cybersec-agent")
     profile = AGENT_PROFILES.get(name, f"Custom agent: {name}")
     return f"{name} — {profile}"
 
 
 def _a2a_summary(project_dir: Path) -> str:
-    settings = project_dir / "settings.json"
+    settings = project_dir / ".claude" / "settings.json"
     if not settings.exists():
         return ""
     try:
         import json as _json
+
         data = _json.loads(settings.read_text())
         agent = data.get("agent", "unknown")
         return f"**Configured agent**: `{agent}`\n**A2A Orchestrator**: `OrchestratorAgent` with PythonDeveloper, CppDeveloper, CybersecAgent skills."
@@ -99,4 +104,3 @@ def _a2a_summary(project_dir: Path) -> str:
 
 if __name__ == "__main__":
     asyncio.run(main())
-

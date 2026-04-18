@@ -1,4 +1,5 @@
 """Bootstrap Tortoise ORM — initializes schema and intelligence data."""
+
 import os
 import asyncpg
 from tortoise.context import TortoiseContext
@@ -16,13 +17,15 @@ def get_database_config() -> dict:
         "password": os.environ.get("CYBERSEC_DB_PASSWORD", ""),
         "database": os.environ.get("CYBERSEC_DB_NAME", "cybersec_forensics"),
     }
-    if not host.startswith("/"):
-        cfg["port"] = int(os.environ.get("CYBERSEC_DB_PORT", "5432"))
+    # Always include port — asyncpg needs it to construct the Unix socket
+    # filename (e.g. /tmp/.s.PGSQL.5432) even when host is a directory path.
+    cfg["port"] = int(os.environ.get("CYBERSEC_DB_PORT", "5432"))
     return cfg
 
 
 def get_tortoise_config() -> dict:
     from db.models import MODEL_MODULES
+
     return {
         "connections": {
             "default": {
@@ -95,6 +98,7 @@ async def bootstrap_intelligence_async(
 ) -> dict:
     """Bootstrap NVD/CVE, CWE, CAPEC, MITRE, MISP, OpenCTI intelligence into PostgreSQL."""
     from db.intel_loader import bootstrap_intelligence_async as _load
+
     return await _load(force=force, include_feeds=include_feeds)
 
 
@@ -103,8 +107,6 @@ def get_status() -> dict:
         "initialized": _initialized,
         "config": get_database_config(),
     }
-
-
 
 
 async def get_database_health_async(
@@ -138,10 +140,12 @@ async def get_database_health_async(
             if hasattr(model, "Meta") and hasattr(model.Meta, "table")
         )
 
-        health.update({
-            "table_count": len(tables),
-            "tables": tables,
-        })
+        health.update(
+            {
+                "table_count": len(tables),
+                "tables": tables,
+            }
+        )
     except Exception as exc:
         health["status"] = "error"
         health["error"] = str(exc)
@@ -151,6 +155,7 @@ async def get_database_health_async(
     if include_counts and health["status"] == "ok":
         try:
             from tortoise import Tortoise
+
             registered_models = Tortoise.apps.get("models", {})
             counts = {}
             for model in registered_models.values():
@@ -163,4 +168,3 @@ async def get_database_health_async(
 
     health["intel_bootstrapped"] = False
     return health
-

@@ -23,11 +23,11 @@ from manage._commands import (
     seed_nist_all_command,
     seed_intel_command,
     seed_mitre_command,
+    seed_mitre_fixtures_command,
     seed_mitre_actors_command,
     seed_mitre_software_command,
     seed_cwe_command,
     seed_capec_command,
-    seed_mitre_command,
     seed_nvd_cves_command,
     seed_poc_command,
     dashboard_command,
@@ -53,15 +53,16 @@ def show_usage():
     print("  seed-nist-csf       - Seed NIST CSF 2.0 controls (185 subcategories)")
     print("  seed-nist-ai-rmf    - Seed NIST AI RMF 1.0 controls (72 subcategories)")
     print("  seed-nist-all       - Seed both NIST CSF 2.0 and AI RMF 1.0")
-    print("  seed-mitre          - Seed MITRE ATT&CK techniques (30 entries)")
+    print("  seed-mitre          - Seed MITRE ATT&CK (live data: techniques + actors + software)")
+    print("  seed-mitre-fixtures - Seed MITRE ATT&CK techniques (30 canonical fixture entries)")
     print("  seed-mitre-actors   - Seed MITRE ATT&CK threat actors (12 entries)")
     print("  seed-mitre-software - Seed MITRE ATT&CK software families (14 entries)")
     print("  seed-cwe            - Seed CWE weaknesses (full database)")
     print("  seed-capec          - Seed CAPEC attack patterns (full database)")
-    print("  seed-mitre          - Seed MITRE ATT&CK (techniques + actors + software)")
-    print("  seed-nvd-cves       - Seed ALL CVEs from NVD API (National Vulnerability Database)")
-    print("                        WARNING: This syncs hundreds of thousands of CVEs; can take 30+ minutes")
-    print("                        Flags: --api-key KEY  --max N  --start-year YYYY  --incremental")
+    print("  seed-nvd-cves       - Seed CVEs from NVD API v2 (uses httpx, 2000/page)")
+    print("                        WARNING: All CVEs takes 30+ min without API key")
+    print("                        Flags: --api-key KEY  --max N  --start-year YYYY")
+    print("                               --severity CRITICAL|HIGH|MEDIUM|LOW  --incremental")
     print("  seed-poc            - Seed PoC exploit records (5 entries)")
     print("  machine    - Seed / display local machine hardware inventory")
     print("  dashboard  - Generate static HTML dashboard (skills/dashboard/index.html)")
@@ -121,11 +122,11 @@ async def main():
         "seed-nist-ai-rmf": seed_nist_ai_rmf_command,
         "seed-nist-all": seed_nist_all_command,
         "seed-mitre": seed_mitre_command,
+        "seed-mitre-fixtures": seed_mitre_fixtures_command,
         "seed-mitre-actors": seed_mitre_actors_command,
         "seed-mitre-software": seed_mitre_software_command,
         "seed-cwe": seed_cwe_command,
         "seed-capec": seed_capec_command,
-        "seed-mitre": seed_mitre_command,
         "seed-nvd-cves": seed_nvd_cves_command,
         "seed-poc": seed_poc_command,
         "machine": machine_command,

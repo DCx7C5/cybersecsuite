@@ -175,8 +175,8 @@ async def seed_intel_command():
         print(f"  ✅ {label}: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
 
 
-async def seed_mitre_command():
-    """Seed MITRE ATT&CK techniques (30 canonical entries)."""
+async def seed_mitre_fixtures_command():
+    """Seed MITRE ATT&CK techniques (30 canonical fixture entries)."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import seed_mitre_techniques
 
@@ -259,16 +259,17 @@ async def seed_mitre_command():
 
 
 async def seed_nvd_cves_command():
-    """Seed all CVEs from NVD API (National Vulnerability Database).
+    """Seed CVEs from NVD API v2 (National Vulnerability Database).
 
-    Fetches CVEs incrementally from the NVD API and stores in the database.
-    This can take a long time (30+ minutes for all CVEs).
+    Uses NVD API v2. Without --api-key, rate limit is 5 req/30s (slow).
+    With --api-key, 50 req/30s — get a free key at https://nvd.nist.gov/developers/request-an-api-key
 
     Flags:
-      --api-key KEY      NVD API key for higher rate limits (optional)
-      --max N            Limit to N CVEs (default: all)
-      --start-year YYYY  Only sync CVEs from year YYYY onwards (default: 2010)
-      --incremental      Sync only recent CVEs (last 7 days)
+      --api-key KEY         NVD API key for higher rate limits (optional)
+      --max N               Limit to N CVEs total (default: all)
+      --start-year YYYY     Only sync CVEs published >= YYYY (default: 2010)
+      --severity LEVEL      Filter: CRITICAL, HIGH, MEDIUM, LOW (default: all)
+      --incremental         Sync only CVEs from the last 7 days
     """
     import argparse
     from db.bootstrap import init_tortoise_async
@@ -278,12 +279,18 @@ async def seed_nvd_cves_command():
     parser.add_argument("--api-key", default=None, help="NVD API key")
     parser.add_argument("--max", type=int, default=None, help="Max CVEs to fetch")
     parser.add_argument("--start-year", type=int, default=2010, help="Start year for CVEs")
-    parser.add_argument("--incremental", action="store_true", help="Sync recent CVEs only")
+    parser.add_argument(
+        "--severity",
+        default=None,
+        choices=["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+        help="Filter by CVSS v3 severity (default: all severities)",
+    )
+    parser.add_argument("--incremental", action="store_true", help="Sync last 7 days only")
     args = parser.parse_args(sys.argv[2:])
 
     await init_tortoise_async(create_db=True)
 
-    print("⏳ Syncing CVEs from NVD...")
+    print("⏳ Syncing CVEs from NVD API v2...")
     if args.incremental:
         fetched, inserted = await seed_nvd_cves_incremental(api_key=args.api_key)
     else:
@@ -291,6 +298,7 @@ async def seed_nvd_cves_command():
             api_key=args.api_key,
             max_results=args.max,
             start_year=args.start_year,
+            severity=args.severity,
         )
     print(f"✅ NVD CVE Seed complete: fetched={fetched}, inserted={inserted}")
 
@@ -731,6 +739,7 @@ async def migrate_api_usage_command() -> None:
         return
 
     conn = connections.get("default")
-    await conn.execute_script("DROP TABLE IF EXISTS api_usage_log CASCADE;")
+    #await conn.execute_script("DROP TABLE IF EXISTS api_usage_log CASCADE;")
+    # no raw sql use orm
     print("✅ PG table `api_usage_log` dropped")
 

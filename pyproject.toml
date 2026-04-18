@@ -31,6 +31,7 @@ dependencies = [
     "pytest>=9.0.2",
     "claude>=0.4.11",
     "tortoise>=0.1.1",
+    "opensearch-py[async]>=2.7",
 ]
 
 [project.scripts]
