@@ -1,6 +1,6 @@
 # Skills INDEX
 
-> **933 skills** across **25 domains**
+> **942 skills** across **26 domains**
 
 ## Domains
 
@@ -224,6 +224,10 @@
 - [`deception/honeypot`](deception/honeypot/SKILL.md) — `honeypot`
 - [`deception/honeytoken`](deception/honeytoken/SKILL.md) — `honeytoken`
 
+### `devices/` — 1 skill
+
+- [`devices/usb/detect`](devices/usb/detect/SKILL.md) — `usb-detect`
+
 ### `endpoint-security/` — 25 skills
 
 - [`endpoint-security/application`](endpoint-security/application/SKILL.md) — `application`
@@ -283,7 +287,7 @@
 - [`filesystem/vfs/hook/detect`](filesystem/vfs/hook/detect/SKILL.md) — `vfs-hook-detect`
 - [`filesystem/xfs/metadata/analyze`](filesystem/xfs/metadata/analyze/SKILL.md) — `xfs-metadata-analyze`
 
-### `forensics/` — 151 skills
+### `forensics/` — 155 skills
 
 - [`forensics/analysis/actorinfra`](forensics/analysis/actorinfra/SKILL.md) — `analysis-actorinfra`
 - [`forensics/analysis/actorprofile`](forensics/analysis/actorprofile/SKILL.md) — `analysis-actorprofile`
@@ -294,6 +298,7 @@
 - [`forensics/analysis/mitre-attack`](forensics/analysis/mitre-attack/SKILL.md) — `analysis-mitre-attack`
 - [`forensics/analysis/threat`](forensics/analysis/threat/SKILL.md) — `analysis-threat`
 - [`forensics/browser`](forensics/browser/SKILL.md) — `browser`
+- [`forensics/browser/hunt`](forensics/browser/hunt/SKILL.md) — `browser-hunt`
 - [`forensics/cloud`](forensics/cloud/SKILL.md) — `cloud`
 - [`forensics/cloud/docker`](forensics/cloud/docker/SKILL.md) — `cloud-docker`
 - [`forensics/cloud/env`](forensics/cloud/env/SKILL.md) — `cloud-env`
@@ -323,6 +328,7 @@
 - [`forensics/email/phishing`](forensics/email/phishing/SKILL.md) — `email-phishing`
 - [`forensics/hunting/advanced`](forensics/hunting/advanced/SKILL.md) — `hunting-advanced`
 - [`forensics/hunting/anomalous`](forensics/hunting/anomalous/SKILL.md) — `hunting-anomalous`
+- [`forensics/hunting/apt-hunt`](forensics/hunting/apt-hunt/SKILL.md) — `hunting-apt-hunt`
 - [`forensics/hunting/cloud`](forensics/hunting/cloud/SKILL.md) — `hunting-cloud`
 - [`forensics/hunting/data`](forensics/hunting/data/SKILL.md) — `hunting-data`
 - [`forensics/hunting/datastaging`](forensics/hunting/datastaging/SKILL.md) — `hunting-datastaging`
@@ -388,6 +394,7 @@
 - [`forensics/memory-analysis/siem-integration`](forensics/memory-analysis/siem-integration/SKILL.md) — `forensics-memory-analysis-siem-integration`
 - [`forensics/memory/acquisition/volatility`](forensics/memory/acquisition/volatility/SKILL.md) — `memory-acquisition-volatility`
 - [`forensics/memory/analysis/credentials`](forensics/memory/analysis/credentials/SKILL.md) — `memory-analysis-credentials`
+- [`forensics/memory/dump`](forensics/memory/dump/SKILL.md) — `memory-dump`
 - [`forensics/memory/analysis/heap`](forensics/memory/analysis/heap/SKILL.md) — `memory-analysis-heap`
 - [`forensics/memory/analysis/vol3core`](forensics/memory/analysis/vol3core/SKILL.md) — `memory-analysis-vol3core`
 - [`forensics/memory/analysis/vol3plugins`](forensics/memory/analysis/vol3plugins/SKILL.md) — `memory-analysis-vol3plugins`
@@ -409,6 +416,7 @@
 - [`forensics/mobile/cellebrite`](forensics/mobile/cellebrite/SKILL.md) — `mobile-cellebrite`
 - [`forensics/network/capture/network`](forensics/network/capture/network/SKILL.md) — `network-capture-network`
 - [`forensics/network/capture/pcapforensics`](forensics/network/capture/pcapforensics/SKILL.md) — `network-capture-pcapforensics`
+- [`forensics/network/apt-hunt`](forensics/network/apt-hunt/SKILL.md) — `network-apt-hunt`
 - [`forensics/network/capture/scapy`](forensics/network/capture/scapy/SKILL.md) — `network-capture-scapy`
 - [`forensics/network/capture/tshark`](forensics/network/capture/tshark/SKILL.md) — `network-capture-tshark`
 - [`forensics/network/capture/wireshark`](forensics/network/capture/wireshark/SKILL.md) — `network-capture-wireshark`
@@ -776,7 +784,7 @@
 - [`network-filesystem/tftp/exposure/detect`](network-filesystem/tftp/exposure/detect/SKILL.md) — `tftp-exposure-detect`
 - [`network-filesystem/webdav/upload/exploit`](network-filesystem/webdav/upload/exploit/SKILL.md) — `webdav-upload-exploit`
 
-### `ops/` — 23 skills
+### `ops/` — 27 skills
 
 - [`ops/brand`](ops/brand/SKILL.md) — `brand`
 - [`ops/browser`](ops/browser/SKILL.md) — `browser`
@@ -789,6 +797,7 @@
 - [`ops/mode/blue-team`](ops/mode/blue-team/SKILL.md) — `mode-blue-team`
 - [`ops/mode/purple-team`](ops/mode/purple-team/SKILL.md) — `mode-purple-team`
 - [`ops/mode/red-team`](ops/mode/red-team/SKILL.md) — `mode-red-team`
+- [`ops/mode-switch`](ops/mode-switch/SKILL.md) — `mode-switch`
 - [`ops/physical/pentest`](ops/physical/pentest/SKILL.md) — `physical-pentest`
 - [`ops/scope/project`](ops/scope/project/SKILL.md) — `scope-project`
 - [`ops/scope/session`](ops/scope/session/SKILL.md) — `scope-session`
@@ -801,6 +810,9 @@
 - [`ops/socialeng/deepfake`](ops/socialeng/deepfake/SKILL.md) — `socialeng-deepfake`
 - [`ops/socialeng/pentest`](ops/socialeng/pentest/SKILL.md) — `socialeng-pentest`
 - [`ops/socialeng/vishing`](ops/socialeng/vishing/SKILL.md) — `socialeng-vishing`
+- [`ops/setup`](ops/setup/SKILL.md) — `setup`
+- [`ops/team-task`](ops/team-task/SKILL.md) — `team-task`
+- [`ops/test-config`](ops/test-config/SKILL.md) — `test-config`
 
 ### `osint/` — 9 skills
 
