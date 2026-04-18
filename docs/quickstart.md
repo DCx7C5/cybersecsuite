@@ -145,7 +145,7 @@ make mcp
 # Dystopian MCP server provides 5 additional crypto tools (mcp__dystopian__*)
 ```
 
-Configure in `mcp.json` (already present in repo root). Claude will automatically detect and use all 34 tools across the `cybersec` and `dystopian` MCP servers.
+Configure in `mcp.json` (already present in repo root). Claude will automatically detect and use all 65 tools across the `cybersec`, `dystopian`, and `omniroute` MCP servers.
 
 ---
 
@@ -224,5 +224,5 @@ claude
 - [configuration.md](configuration.md) — full env var reference
 - [api.md](api.md) — REST and A2A API reference
 - [agents.md](agents.md) — all 33 available agents
-- [mcp-tools.md](mcp-tools.md) — all 34 MCP tools (29 cybersec + 5 dystopian)
+- [mcp-tools.md](mcp-tools.md) — all 65 MCP tools (31 cybersec + 5 dystopian + 29 omniroute)
 - [teams.md](teams.md) — blue/red/purple team mode

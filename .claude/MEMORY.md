@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-18_
+_Last updated: 2026-04-18 (docs sweep, OmniRoute MCP, skills sync)_
 
 ## Architecture
 
@@ -88,13 +88,13 @@ Claude Code / agent_sdk.py
 | `agents/`   | 34 agents: 33 specialists + AGENT_FACTORY · teams/: blue/red/purple · model tiers: Haiku (3), Sonnet (28), Opus (3)                                                                                                             |
 | `hooks/`    | 32 .py files: 10 settings.json-wired + 12 custom event handlers (via `emit()`) + 10 utility modules                                                                                                                             |
 | `commands/` | **DISSOLVED** — all 8 converted to SKILL.md entries (see skills/)                                                                                                                                                               |
-| `skills/`   | 941 SKILL.md across 26 domains — includes 8 former commands (forensics/hunting/apt-hunt, forensics/browser/hunt, forensics/memory/dump, forensics/network/apt-hunt, ops/mode-switch, ops/setup, ops/test-config, ops/team-task) |
+| `skills/`   | 942 SKILL.md across 26 domains — includes 8 former commands (forensics/hunting/apt-hunt, forensics/browser/hunt, forensics/memory/dump, forensics/network/apt-hunt, ops/mode-switch, ops/setup, ops/test-config, ops/team-task) |
 
 **Two execution paths** — NEVER conflate:
-- **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 36 MCP tools
+- **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 65 MCP tools (36 local + 29 omniroute)
 - **A2A Protocol** (external): `POST /a2a` JSON-RPC → OrchestratorAgent → `execute()`
 
-**mcp.json servers**: `cybersec` (31 tools, `python -m csmcp.cybersec.server`) · `dystopian-crypto` (5 tools) · `kerneldev` (external)
+**mcp.json servers**: `cybersec` (31 tools, `python -m csmcp.cybersec.server`) · `dystopian-crypto` (5 tools) · `kerneldev` (external) · `omniroute` (29 tools, bun, port 20128)
 
 ---
 
@@ -146,9 +146,13 @@ async def _fn(args: dict) -> dict:
 
 ---
 
-## OmniRoute Integration
+## OmniRoute Integration ✅
 
-**PENDING** (`omniroute-integrate`). External MCP at `/home/daen/Projects/OmniRoute/open-sse/mcp-server/` — 19 tools (`omniroute_*`). Register in `mcp.json`. Env: `OMNIROUTE_API_KEY`, `OMNIROUTE_BASE_URL=http://localhost:8888`.
+**Status**: Complete (commit `2b633887`). 29 tools via `bun run server.ts`.
+
+- `mcp.json`: registered `omniroute` server (bun, cwd=`../OmniRoute`, env `OMNIROUTE_BASE_URL=http://localhost:20128`)
+- Tools: health, combos, routing, quota, cost, models, cache, memory (3), skills (4), explain route, db health
+- `docs/configuration.md`: OmniRoute env vars + OpenSearch env vars added, port reference updated
 
 ---
 
@@ -184,6 +188,9 @@ async def _fn(args: dict) -> dict:
 - **OpenSearch integration** ✅ — `src/opensearch/` package (client, indices, buffered writer); docker-compose services (9200/5601); telemetry dual-write; `migrate-audit`/`migrate-api-usage` CLI commands; 27th dashboard tab with cluster health + index stats
 - **Infrastructure fixes** ✅ (commit `21f6cd96`) — Docker PG socket `/tmp`; `bootstrap.py` always passes port; `session_start.py` reads `.claude/settings.json`; all seed files migrated `aiohttp`→`httpx`; NVD API v1 (retired)→v2 with `--severity` filter + 2000/page; removed `aiohttp` from pyproject.toml; fixed duplicate `seed_mitre_command` → `seed_mitre_fixtures_command`
 - **Hook fixes** ✅ (commit `68b40f5d`) — `user_prompt_submit.py`: fixed `audit()` called with 2 args (accepts 1 dict), added proper stdin JSON guard, emit context when mode/phase available; `termmate_idle.py`: catch `(json.JSONDecodeError, ValueError, EOFError)` not just `TypeError`; `hooks.json`: fixed stale paths missing `src/` prefix
+- **OmniRoute MCP** ✅ (commit `2b633887`) — `mcp.json` `omniroute` server (29 tools, bun, port 20128); `docs/configuration.md` env vars + port table
+- **Skills asset sync** ✅ (commit `cff9518d`) — INDEX.md: 933→942 skills, 25→26 domains; devices/ domain added; forensics/+4, ops/+4; MAPPER.md counts updated
+- **Docs sweep** ✅ — README: 15-tab→27-tab, 933→942 skills, 11 hooks; architecture.md: OpenSearch in diagram + ports table; deployment.md: 5 services + ports; mcp-tools.md: 34→65 tools + OmniRoute section; quickstart.md: tool counts; MEMORY.md synced
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
@@ -192,10 +199,7 @@ async def _fn(args: dict) -> dict:
 ### ✅ Phase K — Complete (25-tab dashboard)
 
 ### Pending
-- Phase E — Anthropic skills asset sync (copy LICENSE/scripts/refs/assets into .claude/skills/)
-- Phase M.3 — consolidate `a2a/` and `checks/`
-- Phase N — update all 10 docs + README
-- OmniRoute integration (mcp.json + allowed_tools)
+- Phase M.3 — consolidate `a2a/` and `checks/` (optional/low priority)
 
 ---
 

@@ -43,6 +43,12 @@ External clients
   │  MITRE ATT&CK · CVE · CWE · CAPEC      │
   │  Findings · IOCs · Cases · Artifacts    │
   └─────────────────────────────────────────┘
+  ┌─────────────────────────────────────────┐
+  │      OpenSearch  (port 9200/5601)       │
+  │  cybersecsuite-telemetry-YYYY.MM.DD     │
+  │  cybersecsuite-audit-YYYY.MM.DD         │
+  │  cybersecsuite-api-usage-YYYY.MM.DD     │
+  └─────────────────────────────────────────┘
 ```
 
 ---
@@ -181,6 +187,10 @@ cybersecsuite/
 | `8080` | HTTP | Alt HTTP (exposed in Docker) | — |
 | `8433` | HTTPS | TLS proxy (Phase C) | `ASGI_TLS_PORT` |
 | `5432` | TCP | PostgreSQL | `DB_PORT` |
+| `6379` | TCP | Redis cache | `REDIS_URL` |
+| `9200` | HTTP | OpenSearch REST API | `OPENSEARCH_HOST`/`OPENSEARCH_PORT` |
+| `5601` | HTTP | OpenSearch Dashboards UI | — |
+| `20128` | HTTP | OmniRoute AI gateway | `OMNIROUTE_BASE_URL` |
 
 TLS is activated automatically when `ASGI_TLS_CERT` + `ASGI_TLS_KEY` exist. See [configuration.md](configuration.md).
 

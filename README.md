@@ -11,10 +11,10 @@ Full-stack cybersecurity forensics platform with multi-agent AI orchestration, m
 - **36 MCP Tools** — 31 cybersec tools + 5 crypto tools (findings, IOCs, cases, intel, routing, cache, signing)
 - **PostgreSQL Threat Intel** — 82 ORM models: MITRE ATT&CK, CVE, CWE, CAPEC, NIST CSF/AI RMF, findings, IOCs, cases
 - **Crypto Suite** — Ed25519 artifact signing, BLAKE2b-256 checksums, Argon2id KDF, AES-256-GCM encryption
-- **Live Dashboard** — 15-tab SPA with renderTable, 36 REST/SSE routes, database explorer, agent query bridge
+- **Live Dashboard** — 27-tab SPA with renderTable, 36 REST/SSE routes, database explorer, agent query bridge
 - **34 Claude Agents** — 33 specialists + AGENT_FACTORY, organized in blue/red/purple team modes
-- **933 Skills** — SKILL.md taxonomy across 26 domains with Anthropic integration
-- **10 Lifecycle Hooks** — SessionStart, PreToolUse, PostToolUse, SubagentStart/Stop, PreCompact/PostCompact, and more
+- **942 Skills** — SKILL.md taxonomy across 26 domains with Anthropic integration
+- **11 Lifecycle Hooks** — SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, SubagentStart/Stop, PreCompact/PostCompact, and more
 
 ---
 
@@ -55,6 +55,7 @@ Claude Code / claude-agent-sdk query()
   ┌─────┴──────┐
   │ MCP (stdio)│  csmcp.cybersec.server (31 tools)
   │            │  csmcp.dystopian_server (5 tools)
+  │            │  omniroute (29 tools via bun)
   │ A2A (/a2a) │  OrchestratorAgent → 33 sub-agents
   │ Dashboard  │  /dashboard/* → 36 REST + SSE endpoints
   └────────────┘

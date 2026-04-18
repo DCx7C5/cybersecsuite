@@ -6,10 +6,12 @@ Running CyberSecSuite in production with Docker Compose, TLS, and hardened confi
 
 ## Docker Compose (recommended)
 
-The `docker-compose.yml` defines three services:
+The `docker-compose.yml` defines five services:
 - `cybersec-postgres` — PostgreSQL 15 database
 - `cybersec-dashboard` — Dashboard and ASGI application (all ports)
 - `cybersec-redis` — Redis cache (port 6379)
+- `opensearch` — OpenSearch single-node (port 9200)
+- `opensearch-dashboards` — OpenSearch Dashboards UI (port 5601)
 
 ```bash
 # Start everything
@@ -140,6 +142,9 @@ yourdomain.com {
 | `8000` | HTTP (primary, behind reverse proxy) |
 | `8080` | Alt HTTP (Docker only)               |
 | `8433` | HTTPS (Phase C — direct TLS)         |
+| `9200` | OpenSearch REST API                  |
+| `5601` | OpenSearch Dashboards UI             |
+| `20128` | OmniRoute AI gateway               |
 
 ---
 
