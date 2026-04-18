@@ -41,32 +41,32 @@ Claude Code / agent_sdk.py
 | `db/`                     | 45 model files, 83 Tortoise ORM model classes, `cybersec_forensics` DB                                         |
 | `db/browser_forensics.py` | `BrowserForensicFinding` CRUD — `log_finding_async()`, `count_findings_by_severity()`, `get_recent_findings()` |
 | `checks/`                 | Integrity checks — FK, fixtures, config paths                                                                  |
-| `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — dual-write to OpenSearch ✅    |
-| `opensearch/`             | Async client singleton, index templates (telemetry/audit/api-usage), buffered bulk writer (100 docs/5s) |
+| `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — dual-write to OpenSearch ✅                  |
+| `opensearch/`             | Async client singleton, index templates (telemetry/audit/api-usage), buffered bulk writer (100 docs/5s)        |
 
 **src/csmcp/ rename**: `src/mcp/` → `src/csmcp/` (Phase H) — avoided naming conflict with pip `mcp` v1.26.0. `mcp_server.py` (1288L FastMCP) DELETED.
 
 ### src/dashboard/ (41 routes)
-| File                       | Lines | Purpose                                                                                                |
-|----------------------------|-------|--------------------------------------------------------------------------------------------------------|
-| `routes.py`                | 68    | Route wiring                                                                                           |
-| `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                              |
-| `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                     |
-| `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`      |
-| `templates/_base.py`       | 86    | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()`                         |
-| `templates/_tabs.py`       | 46    | `tab_bar()` — 27 tab items as a list                                                                   |
-| `templates/_panels.py`     | 415   | `all_panels()` — 27 panel fns using components                                                         |
+| File                       | Lines | Purpose                                                                                                             |
+|----------------------------|-------|---------------------------------------------------------------------------------------------------------------------|
+| `routes.py`                | 68    | Route wiring                                                                                                        |
+| `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                                           |
+| `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                                  |
+| `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`                   |
+| `templates/_base.py`       | 86    | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()`                                      |
+| `templates/_tabs.py`       | 46    | `tab_bar()` — 27 tab items as a list                                                                                |
+| `templates/_panels.py`     | 415   | `all_panels()` — 27 panel fns using components                                                                      |
 | `templates/_js.py`         | 1215  | `_JS` — SSE wiring (initSSE, 4 EventSource) + team builder + settings CRUD + explorer + agent query JS + OpenSearch |
-| `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                             |
-| `api/agents.py`            | 215   | a2a, agents, routing, factory, agent-query                                                             |
-| `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                          |
-| `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                     |
-| `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                   |
-| `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                    |
-| `api/team_builder.py`      | 130   | `GET /api/team-agents` (33 agents) · `GET /api/skills?domain=&q=` (941 skills) · `GET /api/teams`      |
-| `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                      |
-| `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                 |
-| `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                |
+| `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                                          |
+| `api/agents.py`            | 215   | a2a, agents, routing, factory, agent-query                                                                          |
+| `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                                       |
+| `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                                  |
+| `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                |
+| `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
+| `api/team_builder.py`      | 130   | `GET /api/team-agents` (33 agents) · `GET /api/skills?domain=&q=` (941 skills) · `GET /api/teams`                   |
+| `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
+| `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
+| `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                             |
 
 **27 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · Team Builder · Telemetry · **OpenSearch** · Explorer
 
@@ -156,10 +156,10 @@ async def _fn(args: dict) -> dict:
 
 **Status**: Complete. Committed `b216c970`.
 
-| Index                                | Interval       | Source                                       |
-|--------------------------------------|----------------|----------------------------------------------|
-| `cybersecsuite-telemetry-YYYY.MM.DD` | daily rollover | `MetricsStore.record()` dual-write           |
-| `cybersecsuite-audit-YYYY.MM.DD`     | daily rollover | `migrate-audit` CLI: PG → OS → DROP TABLE    |
+| Index                                | Interval       | Source                                        |
+|--------------------------------------|----------------|-----------------------------------------------|
+| `cybersecsuite-telemetry-YYYY.MM.DD` | daily rollover | `MetricsStore.record()` dual-write            |
+| `cybersecsuite-audit-YYYY.MM.DD`     | daily rollover | `migrate-audit` CLI: PG → OS → DROP TABLE     |
 | `cybersecsuite-api-usage-YYYY.MM.DD` | daily rollover | `migrate-api-usage` CLI: PG → OS → DROP TABLE |
 
 **Stack**: `opensearch-py[async]>=2.7` · single-node · security disabled · bulk writer 100 docs/5s flush · non-fatal try/except throughout
@@ -183,6 +183,7 @@ async def _fn(args: dict) -> dict:
 - Phase G — SSE frontend wiring: `initSSE()` wires 4 EventSource streams; `refresh()` 22→19 endpoints; Telemetry tab (26th) with p50/p95/p99/rps table
 - **OpenSearch integration** ✅ — `src/opensearch/` package (client, indices, buffered writer); docker-compose services (9200/5601); telemetry dual-write; `migrate-audit`/`migrate-api-usage` CLI commands; 27th dashboard tab with cluster health + index stats
 - **Infrastructure fixes** ✅ (commit `21f6cd96`) — Docker PG socket `/tmp`; `bootstrap.py` always passes port; `session_start.py` reads `.claude/settings.json`; all seed files migrated `aiohttp`→`httpx`; NVD API v1 (retired)→v2 with `--severity` filter + 2000/page; removed `aiohttp` from pyproject.toml; fixed duplicate `seed_mitre_command` → `seed_mitre_fixtures_command`
+- **Hook fixes** ✅ (commit `68b40f5d`) — `user_prompt_submit.py`: fixed `audit()` called with 2 args (accepts 1 dict), added proper stdin JSON guard, emit context when mode/phase available; `termmate_idle.py`: catch `(json.JSONDecodeError, ValueError, EOFError)` not just `TypeError`; `hooks.json`: fixed stale paths missing `src/` prefix
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
