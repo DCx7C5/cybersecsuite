@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-18 (docs sweep, OmniRoute MCP, skills sync)_
+_Last updated: 2026-04-18 (Phase M.4 done — `10f6420d`)_
 
 ## Architecture
 
@@ -40,7 +40,7 @@ Claude Code / agent_sdk.py
 | `crypto/`                 | Ed25519, BLAKE2b-256, Argon2id (mem=262144, iters=4), AES-256-GCM                                              |
 | `db/`                     | 45 model files, 83 Tortoise ORM model classes, `cybersec_forensics` DB                                         |
 | `db/browser_forensics.py` | `BrowserForensicFinding` CRUD — `log_finding_async()`, `count_findings_by_severity()`, `get_recent_findings()` |
-| `checks/`                 | Integrity checks — FK, fixtures, config paths                                                                  |
+| `a2a/checks/`             | Integrity checks — FK, fixtures, config paths (moved from `src/checks/` in Phase M.3, commit `4a52b219`)       |
 | `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — dual-write to OpenSearch ✅                  |
 | `opensearch/`             | Async client singleton, index templates (telemetry/audit/api-usage), buffered bulk writer (100 docs/5s)        |
 
@@ -198,11 +198,11 @@ async def _fn(args: dict) -> dict:
 
 ### ✅ Phase K — Complete (25-tab dashboard)
 
-### Pending
-- Phase M.3 — ✅ done (`4a52b219`): moved `src/checks/` → `src/a2a/checks/`, updated all imports + tests
-  - `src/checks/` has 4 files: `integrity.py`, `_model_check.py`, `_fixture_check.py`, `_config_check.py`
-  - Move → `src/a2a/checks/` subpackage; update imports in `manage.py` + callers
-  - Risk: import chain changes could break tests — only if explicitly requested
+### ✅ Phase M.4 — `_commands.py` fixes (commit `10f6420d`)
+- Added `seed_all_command()` — chains all fixture-based seeds (NIST CSF, AI RMF, MITRE, CWE, CAPEC, PoC); wired as `"seed-all"` in `manage.py`
+- Fixed `migrate_api_usage_command`: uncommented `execute_script(DROP TABLE IF EXISTS api_usage_log CASCADE)` — was dead code with false ✅ message
+- Removed `_print_intel_components()` dead code (never called)
+- `session_start.py` was already wired in `settings.json` SessionStart
 
 ---
 
