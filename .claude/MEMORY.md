@@ -200,6 +200,9 @@ async def _fn(args: dict) -> dict:
 
 ### Pending
 - Phase M.3 — consolidate `a2a/` and `checks/` (optional/low priority)
+  - `src/checks/` has 4 files: `integrity.py`, `_model_check.py`, `_fixture_check.py`, `_config_check.py`
+  - Move → `src/a2a/checks/` subpackage; update imports in `manage.py` + callers
+  - Risk: import chain changes could break tests — only if explicitly requested
 
 ---
 
