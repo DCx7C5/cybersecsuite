@@ -6,21 +6,19 @@ import pathlib
 from datetime import datetime, timezone
 from typing import Dict, Any, Tuple
 
-_PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[3]
-_FIXTURES_DIR = _PROJECT_ROOT / "data" / "fixtures"
 _INTEL_FIXTURES_DIR = pathlib.Path(__file__).resolve().parents[1] / "fixtures"
 
 
 async def seed_nist_csf() -> Dict[str, Any]:
     """
-    Idempotent seed of NIST CSF 2.0 controls from data/fixtures/nist_csf_2.json.
+    Idempotent seed of NIST CSF 2.0 controls from src/db/fixtures/nist_csf_2.json.
 
     Returns:
         {"created": int, "skipped": int, "total": int}
     """
     from db.models.nist_csf import NistCsfControl
 
-    fixture = _FIXTURES_DIR / "nist_csf_2.json"
+    fixture = _INTEL_FIXTURES_DIR / "nist_csf_2.json"
     data: list = json.loads(fixture.read_text())
 
     created = skipped = 0
@@ -48,14 +46,14 @@ async def seed_nist_csf() -> Dict[str, Any]:
 
 async def seed_nist_ai_rmf() -> Dict[str, Any]:
     """
-    Idempotent seed of NIST AI RMF 1.0 controls from data/fixtures/nist_ai_rmf.json.
+    Idempotent seed of NIST AI RMF 1.0 controls from src/db/fixtures/nist_ai_rmf.json.
 
     Returns:
         {"created": int, "skipped": int, "total": int}
     """
     from db.models.nist_ai_rmf import NistAiRmfControl
 
-    fixture = _FIXTURES_DIR / "nist_ai_rmf.json"
+    fixture = _INTEL_FIXTURES_DIR / "nist_ai_rmf.json"
     data: list = json.loads(fixture.read_text())
 
     created = skipped = 0
@@ -272,110 +270,32 @@ async def bootstrap_intelligence_async(
 
 async def seed_poc() -> Dict[str, Any]:
     """
-    Seed sample PoC records for well-known CVEs.
+    Seed PoC records from src/db/fixtures/poc_entries.json.
 
     Returns:
         {"created": int, "skipped": int, "total": int}
     """
     from db.models.poc import ProofOfConcept
     from db.models.cve import CVEIntel
-    from db.models.enums import PocStatus, Severity
 
-    samples = [
-        {
-            "title": "Log4Shell RCE PoC (CVE-2021-44228)",
-            "cve_id": "CVE-2021-44228",
-            "poc_url": "https://github.com/tangxiaofeng7/CVE-2021-44228-Apache-Log4j-Rce",
-            "source": "GitHub",
-            "language": "java",
-            "status": PocStatus.WEAPONIZED,
-            "severity": Severity.CRITICAL,
-            "reliability_score": 0.98,
-            "is_weaponized": True,
-            "requires_auth": False,
-            "requires_interaction": False,
-            "description": "Public PoC for Log4Shell JNDI injection remote code execution in Apache Log4j 2.",
-            "affected_versions": ["2.0-beta9", "2.14.1"],
-            "tags": ["rce", "log4j", "jndi", "java"],
-        },
-        {
-            "title": "ProxyLogon PoC (CVE-2021-26855)",
-            "cve_id": "CVE-2021-26855",
-            "poc_url": "https://github.com/hausec/ProxyLogon",
-            "source": "GitHub",
-            "language": "python",
-            "status": PocStatus.VERIFIED,
-            "severity": Severity.CRITICAL,
-            "reliability_score": 0.93,
-            "is_weaponized": True,
-            "requires_auth": False,
-            "requires_interaction": False,
-            "description": "ProxyLogon SSRF exploit chain for Microsoft Exchange Server.",
-            "affected_versions": ["Exchange 2013", "Exchange 2016", "Exchange 2019"],
-            "tags": ["exchange", "ssrf", "rce", "microsoft"],
-        },
-        {
-            "title": "EternalBlue SMB RCE (MS17-010)",
-            "cve_id": "CVE-2017-0144",
-            "poc_url": "https://github.com/worawit/MS17-010",
-            "source": "GitHub",
-            "language": "python",
-            "status": PocStatus.WEAPONIZED,
-            "severity": Severity.CRITICAL,
-            "reliability_score": 0.99,
-            "is_weaponized": True,
-            "requires_auth": False,
-            "requires_interaction": False,
-            "description": "EternalBlue SMBv1 exploit — basis for WannaCry and NotPetya.",
-            "affected_versions": ["Windows XP", "Windows 7", "Windows Server 2008 R2"],
-            "tags": ["smb", "rce", "eternalblue", "wanacry", "windows"],
-        },
-        {
-            "title": "Shellshock Bash RCE PoC (CVE-2014-6271)",
-            "cve_id": "CVE-2014-6271",
-            "poc_url": "https://www.exploit-db.com/exploits/34765",
-            "source": "ExploitDB",
-            "language": "bash",
-            "status": PocStatus.VERIFIED,
-            "severity": Severity.CRITICAL,
-            "reliability_score": 0.91,
-            "is_weaponized": False,
-            "requires_auth": False,
-            "requires_interaction": False,
-            "description": "Shellshock — arbitrary code execution via malformed environment variables in GNU Bash.",
-            "affected_versions": ["bash < 4.3 patch 25"],
-            "tags": ["bash", "rce", "cgi", "shellshock"],
-        },
-        {
-            "title": "Heartbleed OpenSSL PoC (CVE-2014-0160)",
-            "cve_id": "CVE-2014-0160",
-            "poc_url": "https://github.com/FiloSottile/Heartbleed",
-            "source": "GitHub",
-            "language": "go",
-            "status": PocStatus.VERIFIED,
-            "severity": Severity.HIGH,
-            "reliability_score": 0.97,
-            "is_weaponized": False,
-            "requires_auth": False,
-            "requires_interaction": False,
-            "description": "Heartbleed TLS heartbeat extension buffer over-read — leaks server memory.",
-            "affected_versions": ["OpenSSL 1.0.1 - 1.0.1f", "OpenSSL 1.0.2-beta"],
-            "tags": ["openssl", "tls", "memory-disclosure", "heartbleed"],
-        },
-    ]
+    data: list = json.loads((_INTEL_FIXTURES_DIR / "poc_entries.json").read_text())
 
     created = skipped = 0
-    for sample in samples:
-        cve_id = sample.pop("cve_id")
-        cve = await CVEIntel.filter(cve_id=cve_id).first()
-        existing = await ProofOfConcept.filter(poc_url=sample["poc_url"]).first()
-        if existing:
+    for entry in data:
+        cve_id = entry.get("cve_id")
+        poc_url = entry.get("poc_url", "")
+        if not poc_url:
             skipped += 1
             continue
-        await ProofOfConcept.create(cve=cve, **sample)
+        if await ProofOfConcept.filter(poc_url=poc_url).exists():
+            skipped += 1
+            continue
+        cve = await CVEIntel.filter(cve_id=cve_id).first() if cve_id else None
+        fields = {k: v for k, v in entry.items() if k != "cve_id"}
+        await ProofOfConcept.create(cve=cve, **fields)
         created += 1
 
-    return {"created": created, "skipped": skipped, "total": len(samples)}
+    return {"created": created, "skipped": skipped, "total": len(data)}
 
 
 async def seed_local_machine() -> Tuple[Any, bool]:

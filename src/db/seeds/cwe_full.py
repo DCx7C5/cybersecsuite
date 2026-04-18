@@ -2,98 +2,100 @@
 CWE (Common Weakness Enumeration) full seeding — fetches from MITRE API.
 
 CWE API: https://cwe.mitre.org/data/json/
-Downloads full CWE list as JSON.
+Downloads full CWE list as JSON.  Results are cached to data/fixtures/cwe_full.json
+so subsequent runs skip the network request.
 """
 from __future__ import annotations
 
 import json
 import logging
 from pathlib import Path
-from typing import Any
 
 import httpx
 
-from db.models.cwe import CWE
+from db.models.cwe import CWEIntel
 
 logger = logging.getLogger("db.seeds.cwe_full")
 
-CWE_API_URL = "https://cwe.mitre.org/data/json/cwe.json.zip"
 CWE_JSON_URL = "https://raw.githubusercontent.com/mitre/cwe-csv2/master/cwe.json"
 
+_CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "fixtures"
+_CACHE_FILE = _CACHE_DIR / "cwe_full.json"
 
-async def seed_cwe_full(
-    max_results: int | None = None,
-) -> tuple[int, int]:
+
+def _parse_cwe_item(item: dict) -> dict:
+    """Map raw CWE API item to CWEIntel field dict."""
+    cwe_id = item.get("id", "")
+    if not cwe_id.startswith("CWE-"):
+        cwe_id = f"CWE-{cwe_id}"
+    related = []
+    for r in item.get("related_weaknesses", []):
+        rid = r.get("cwe_id", "")
+        if rid and not rid.startswith("CWE-"):
+            rid = f"CWE-{rid}"
+        if rid:
+            related.append(rid)
+    consequences = item.get("common_consequences", [])
+    if isinstance(consequences, list) and consequences and isinstance(consequences[0], dict):
+        consequences = [c.get("scope", "") for c in consequences if c.get("scope")]
+    return {
+        "cwe_id": cwe_id,
+        "name": item.get("name", ""),
+        "abstraction": item.get("abstraction", item.get("type", "")),
+        "status": item.get("status", ""),
+        "description": item.get("description", ""),
+        "likelihood_of_exploit": item.get("likelihood_of_exploit", ""),
+        "common_consequences": consequences,
+        "tags": related,
+    }
+
+
+async def seed_cwe_full(max_results: int | None = None) -> tuple[int, int]:
     """
-    Seed all CWEs from MITRE JSON source.
-
-    Args:
-        max_results: Limit total CWEs (default: all)
+    Seed all CWEs from MITRE JSON source.  Loads from local cache if available,
+    otherwise fetches from API and saves to cache.
 
     Returns:
         (total_created, total_synced) tuple
     """
-    total_created = 0
-    total_synced = 0
+    records: list[dict] = []
 
-    logger.info("Starting full CWE seed")
+    if _CACHE_FILE.exists():
+        logger.info(f"Loading CWE from cache: {_CACHE_FILE}")
+        records = json.loads(_CACHE_FILE.read_text())
+    else:
+        logger.info("Fetching full CWE list from MITRE")
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                resp = await client.get(CWE_JSON_URL)
+                if resp.status_code != 200:
+                    logger.error(f"CWE fetch failed: {resp.status_code}")
+                    return 0, 0
+                raw_list = resp.json().get("weakness_list", [])
+        except Exception as exc:
+            logger.error(f"CWE fetch error: {exc}")
+            return 0, 0
 
-    try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            resp = await client.get(CWE_JSON_URL)
-            if resp.status_code != 200:
-                logger.error(f"Failed to fetch CWE JSON: {resp.status_code}")
-                return (0, 0)
+        records = [_parse_cwe_item(item) for item in raw_list]
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _CACHE_FILE.write_text(json.dumps(records, ensure_ascii=False, indent=2))
+        logger.info(f"Cached {len(records)} CWEs → {_CACHE_FILE}")
 
-            data = resp.json()
-            cwe_list = data.get("weakness_list", [])
+    if max_results:
+        records = records[:max_results]
 
-            logger.info(f"Fetched {len(cwe_list)} CWEs from MITRE")
-
-            for cwe_item in cwe_list:
-                cwe_id = cwe_item.get("id", "")
-                if not cwe_id.startswith("CWE-"):
-                    cwe_id = f"CWE-{cwe_id}"
-
-                name = cwe_item.get("name", "")
-                description = cwe_item.get("description", "")
-                category = cwe_item.get("type", "Weakness")
-
-                # Extract related
-                related_weaknesses = []
-                for related in cwe_item.get("related_weaknesses", []):
-                    cwe_ref_id = related.get("cwe_id", "")
-                    if cwe_ref_id and not cwe_ref_id.startswith("CWE-"):
-                        cwe_ref_id = f"CWE-{cwe_ref_id}"
-                    if cwe_ref_id:
-                        related_weaknesses.append(cwe_ref_id)
-
-                try:
-                    cwe_record, created = await CWE.get_or_create(
-                        cwe_id=cwe_id,
-                        defaults={
-                            "name": name,
-                            "description": description,
-                            "category": category,
-                            "related_weaknesses": related_weaknesses,
-                            "mitre_data": cwe_item,
-                        },
-                    )
-                    if created:
-                        total_created += 1
-                    total_synced += 1
-
-                    if max_results and total_synced >= max_results:
-                        logger.info(f"Reached max_results limit ({max_results})")
-                        break
-
-                except Exception as e:
-                    logger.error(f"Failed to insert CWE {cwe_id}: {e}")
-
-    except Exception as e:
-        logger.error(f"CWE seeding failed: {e}")
-        return (0, 0)
+    total_created = total_synced = 0
+    for rec in records:
+        try:
+            cwe_id = rec.pop("cwe_id")
+            _, created = await CWEIntel.get_or_create(cwe_id=cwe_id, defaults=rec)
+            rec["cwe_id"] = cwe_id  # restore for next iteration safety
+            if created:
+                total_created += 1
+            total_synced += 1
+        except Exception as exc:
+            logger.error(f"Failed to insert CWE {rec.get('cwe_id')}: {exc}")
 
     logger.info(f"CWE seed complete: created={total_created}, total={total_synced}")
-    return (total_created, total_synced)
+    return total_created, total_synced
 

@@ -9,12 +9,17 @@ Supports:
   - --severity CRITICAL|HIGH|MEDIUM|LOW  (filter by CVSS v3 severity)
   - --latest N                           (newest N CVEs by published date)
   - --max N                              (cap total results)
+
+Full-fetch results are cached to data/fixtures/nvd_full.json (as ISO datetime strings)
+so subsequent runs skip the network request.
 """
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -25,6 +30,17 @@ logger = logging.getLogger("db.seeds.nvd")
 
 NVD_API_BASE = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 NVD_MAX_PER_PAGE = 2000
+
+_CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "fixtures"
+_CACHE_FILE = _CACHE_DIR / "nvd_full.json"
+
+
+def _dt_to_str(val: datetime | None) -> str | None:
+    return val.isoformat() if val else None
+
+
+def _str_to_dt(val: str | None) -> datetime | None:
+    return datetime.fromisoformat(val) if val else None
 
 
 def _parse_cve(vuln: dict[str, Any]) -> dict[str, Any] | None:
@@ -152,7 +168,8 @@ async def seed_nvd_cves(
     delay_between_batches: float = 6.5,
 ) -> tuple[int, int]:
     """
-    Seed CVEs from NVD API v2.
+    Seed CVEs from NVD API v2.  Loads from local cache if available (and no
+    filters are active), otherwise fetches from API and saves to cache.
 
     Args:
         api_key: Optional NVD API key (increases rate limit 5×)
@@ -164,10 +181,41 @@ async def seed_nvd_cves(
     Returns:
         (total_fetched, total_inserted)
     """
+    # Use cache when no server-side filters are active (unfiltered full fetch)
+    use_cache = not severity and _CACHE_FILE.exists()
+
+    if use_cache:
+        logger.info(f"Loading NVD CVEs from cache: {_CACHE_FILE}")
+        cached = json.loads(_CACHE_FILE.read_text())
+        total_fetched = total_inserted = 0
+        for rec in cached:
+            if max_results and total_fetched >= max_results:
+                break
+            pub = _str_to_dt(rec.get("published_at"))
+            if pub and pub.year < start_year:
+                continue
+            rec["published_at"] = pub
+            rec["last_modified_at"] = _str_to_dt(rec.get("last_modified_at"))
+            # raw_record is large — skip re-inserting it from cache
+            rec.pop("raw_record", None)
+            try:
+                _, created = await CVEIntel.get_or_create(
+                    cve_id=rec["cve_id"],
+                    defaults={k: v for k, v in rec.items() if k != "cve_id"},
+                )
+                if created:
+                    total_inserted += 1
+            except Exception as exc:
+                logger.error(f"Failed to insert {rec.get('cve_id')}: {exc}")
+            total_fetched += 1
+        logger.info(f"NVD cache load complete: fetched={total_fetched}, inserted={total_inserted}")
+        return total_fetched, total_inserted
+
     total_fetched = 0
     total_inserted = 0
     start_index = 0
     failures = 0
+    all_parsed: list[dict] = []
     # With API key: 50 req/30s → 0.6s gap; without: 5 req/30s → 6.5s gap
     if api_key:
         delay_between_batches = 0.6
@@ -208,9 +256,10 @@ async def seed_nvd_cves(
                 if not parsed:
                     continue
 
-                # Year filter
                 if parsed["published_at"] and parsed["published_at"].year < start_year:
                     continue
+
+                all_parsed.append(parsed)
 
                 try:
                     _, created = await CVEIntel.get_or_create(
@@ -225,6 +274,7 @@ async def seed_nvd_cves(
                 total_fetched += 1
                 if max_results and total_fetched >= max_results:
                     logger.info(f"Reached max_results={max_results}")
+                    _save_nvd_cache(all_parsed, severity)
                     return total_fetched, total_inserted
 
             start_index += NVD_MAX_PER_PAGE
@@ -233,8 +283,25 @@ async def seed_nvd_cves(
 
             await asyncio.sleep(delay_between_batches)
 
+    _save_nvd_cache(all_parsed, severity)
     logger.info(f"NVD seed complete: fetched={total_fetched}, inserted={total_inserted}")
     return total_fetched, total_inserted
+
+
+def _save_nvd_cache(records: list[dict], severity: str | None) -> None:
+    """Persist parsed CVE records to cache (only for unfiltered full fetches)."""
+    if severity or not records:
+        return
+    serialisable = []
+    for rec in records:
+        r = dict(rec)
+        r["published_at"] = _dt_to_str(r.get("published_at"))
+        r["last_modified_at"] = _dt_to_str(r.get("last_modified_at"))
+        r.pop("raw_record", None)  # omit large raw blobs to keep cache lean
+        serialisable.append(r)
+    _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    _CACHE_FILE.write_text(json.dumps(serialisable, ensure_ascii=False, indent=2))
+    logger.info(f"Cached {len(serialisable)} NVD CVEs → {_CACHE_FILE}")
 
 
 async def seed_nvd_cves_incremental(

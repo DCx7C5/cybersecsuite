@@ -1,103 +1,97 @@
 """
 CAPEC (Common Attack Pattern Expression Language) full seeding — fetches from MITRE.
 
-CAPEC API: https://capec.mitre.org/
-Downloads full CAPEC patterns as XML/JSON.
+Results are cached to data/fixtures/capec_full.json so subsequent runs skip the
+network request.
 """
 from __future__ import annotations
 
 import json
 import logging
-from typing import Any
+from pathlib import Path
 
 import httpx
 
-from db.models.capec import CAPEC
+from db.models.capec import CapecAttackPatternIntel
 
 logger = logging.getLogger("db.seeds.capec_full")
 
-# MITRE CAPEC GitHub raw JSON
 CAPEC_JSON_URL = "https://raw.githubusercontent.com/mitre/capec/master/capec.json"
 
+_CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "fixtures"
+_CACHE_FILE = _CACHE_DIR / "capec_full.json"
 
-async def seed_capec_full(
-    max_results: int | None = None,
-) -> tuple[int, int]:
+
+def _parse_capec_item(item: dict) -> dict:
+    """Map raw CAPEC API item to CapecAttackPatternIntel field dict."""
+    capec_id = item.get("id", "")
+    if not capec_id.startswith("CAPEC-"):
+        capec_id = f"CAPEC-{capec_id}"
+    related_weaknesses = []
+    for rel in item.get("related_weaknesses", []):
+        cwe_id = rel.get("cwe_id", "")
+        if cwe_id and not cwe_id.startswith("CWE-"):
+            cwe_id = f"CWE-{cwe_id}"
+        if cwe_id:
+            related_weaknesses.append(cwe_id)
+    return {
+        "capec_id": capec_id,
+        "name": item.get("name", ""),
+        "description": item.get("description", ""),
+        "abstraction": item.get("abstraction", ""),
+        "domains": item.get("domains", item.get("execution_flow", [])),
+        "likelihood_of_attack": item.get("likelihood_of_attack", ""),
+        "severity": item.get("severity", item.get("typical_severity", "")),
+        "url": item.get("url", ""),
+        "tags": related_weaknesses,
+    }
+
+
+async def seed_capec_full(max_results: int | None = None) -> tuple[int, int]:
     """
-    Seed all CAPEC attack patterns from MITRE.
-
-    Args:
-        max_results: Limit total CAPECs (default: all)
+    Seed all CAPEC attack patterns from MITRE.  Loads from local cache if available,
+    otherwise fetches from API and saves to cache.
 
     Returns:
         (total_created, total_synced) tuple
     """
-    total_created = 0
-    total_synced = 0
+    records: list[dict] = []
 
-    logger.info("Starting full CAPEC seed")
+    if _CACHE_FILE.exists():
+        logger.info(f"Loading CAPEC from cache: {_CACHE_FILE}")
+        records = json.loads(_CACHE_FILE.read_text())
+    else:
+        logger.info("Fetching full CAPEC list from MITRE")
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                resp = await client.get(CAPEC_JSON_URL)
+                if resp.status_code != 200:
+                    logger.error(f"CAPEC fetch failed: {resp.status_code}")
+                    return 0, 0
+                raw_list = resp.json().get("attack_patterns", [])
+        except Exception as exc:
+            logger.error(f"CAPEC fetch error: {exc}")
+            return 0, 0
 
-    try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            resp = await client.get(CAPEC_JSON_URL)
-            if resp.status_code != 200:
-                logger.error(f"Failed to fetch CAPEC JSON: {resp.status_code}")
-                return (0, 0)
+        records = [_parse_capec_item(item) for item in raw_list]
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _CACHE_FILE.write_text(json.dumps(records, ensure_ascii=False, indent=2))
+        logger.info(f"Cached {len(records)} CAPEC patterns → {_CACHE_FILE}")
 
-            data = resp.json()
-            capec_list = data.get("attack_patterns", [])
+    if max_results:
+        records = records[:max_results]
 
-            logger.info(f"Fetched {len(capec_list)} CAPEC patterns from MITRE")
-
-            for capec_item in capec_list:
-                capec_id = capec_item.get("id", "")
-                if not capec_id.startswith("CAPEC-"):
-                    capec_id = f"CAPEC-{capec_id}"
-
-                name = capec_item.get("name", "")
-                description = capec_item.get("description", "")
-                severity = capec_item.get("severity", "Medium")
-
-                # Extract prerequisites and consequences
-                prerequisites = capec_item.get("prerequisites", [])
-                consequences = capec_item.get("consequences", [])
-
-                # Extract related weaknesses (CWEs)
-                related_weaknesses = []
-                for rel in capec_item.get("related_weaknesses", []):
-                    cwe_id = rel.get("cwe_id", "")
-                    if cwe_id and not cwe_id.startswith("CWE-"):
-                        cwe_id = f"CWE-{cwe_id}"
-                    if cwe_id:
-                        related_weaknesses.append(cwe_id)
-
-                try:
-                    capec_record, created = await CAPEC.get_or_create(
-                        capec_id=capec_id,
-                        defaults={
-                            "name": name,
-                            "description": description,
-                            "severity": severity,
-                            "prerequisites": prerequisites,
-                            "consequences": consequences,
-                            "related_weaknesses": related_weaknesses,
-                            "mitre_data": capec_item,
-                        },
-                    )
-                    if created:
-                        total_created += 1
-                    total_synced += 1
-
-                    if max_results and total_synced >= max_results:
-                        logger.info(f"Reached max_results limit ({max_results})")
-                        break
-
-                except Exception as e:
-                    logger.error(f"Failed to insert CAPEC {capec_id}: {e}")
-
-    except Exception as e:
-        logger.error(f"CAPEC seeding failed: {e}")
-        return 0, 0
+    total_created = total_synced = 0
+    for rec in records:
+        try:
+            capec_id = rec.pop("capec_id")
+            _, created = await CapecAttackPatternIntel.get_or_create(capec_id=capec_id, defaults=rec)
+            rec["capec_id"] = capec_id
+            if created:
+                total_created += 1
+            total_synced += 1
+        except Exception as exc:
+            logger.error(f"Failed to insert CAPEC {rec.get('capec_id')}: {exc}")
 
     logger.info(f"CAPEC seed complete: created={total_created}, total={total_synced}")
     return total_created, total_synced
