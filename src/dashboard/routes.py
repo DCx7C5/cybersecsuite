@@ -93,6 +93,7 @@ def create_dashboard_router() -> Router:
             Route("/api/team-agents", api_team_agents, methods=["GET"]),
             Route("/api/skills", api_skills, methods=["GET"]),
             Route("/api/teams", api_teams, methods=["GET"]),
+            Route("/api/opensearch", api_opensearch, methods=["GET"]),
             # SSE streaming endpoints
             Route("/sse/cases", sse_cases, methods=["GET"]),
             Route("/sse/tasks", sse_tasks, methods=["GET"]),

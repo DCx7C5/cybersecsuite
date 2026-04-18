@@ -1138,6 +1138,37 @@ function initSSE() {
   _sseUpdateBadge();
 }
 
+// ── OpenSearch: cluster health + index stats ─────────────────────────────────
+async function loadOpenSearch() {
+  $('os-cluster').innerHTML = '<div class="loading text-gray-500">Fetching...</div>';
+  $('os-indices').innerHTML = '';
+  try {
+    const res = await fetch('/dashboard/api/opensearch');
+    const data = await res.json();
+    if (data.error && !data.cluster) {
+      $('os-cluster').innerHTML = '<div class="text-red-400">OpenSearch unavailable: ' + data.error + '</div>';
+      return;
+    }
+    const c = data.cluster || {};
+    const statusColor = {'green': 'text-green-400', 'yellow': 'text-yellow-400', 'red': 'text-red-400'}[c.status] || 'text-gray-400';
+    $('os-cluster').innerHTML = '<div class="flex gap-6 text-sm mb-3">'
+      + '<span class="' + statusColor + ' font-semibold">&#x25cf; ' + (c.status || '?').toUpperCase() + '</span>'
+      + '<span class="text-gray-400">Nodes: <strong class="text-white">' + (c.number_of_nodes || 0) + '</strong></span>'
+      + '<span class="text-gray-400">Active shards: <strong class="text-white">' + (c.active_shards || 0) + '</strong></span>'
+      + '<span class="text-gray-400">Unassigned: <strong class="text-white">' + (c.unassigned_shards || 0) + '</strong></span>'
+      + '<span class="text-gray-400">Total docs: <strong class="text-white">' + (data.total_docs || 0).toLocaleString() + '</strong></span>'
+      + '</div>';
+    const schema = [
+      {key: 'index', label: 'Index', type: 'string'},
+      {key: 'docs', label: 'Docs', type: 'number'},
+      {key: 'size_mb', label: 'Size (MB)', type: 'number'},
+    ];
+    renderTable('os-indices', schema, data.indices || []);
+  } catch (e) {
+    $('os-cluster').innerHTML = '<div class="text-red-400">Error: ' + e.message + '</div>';
+  }
+}
+
 // ── Explorer: generic table viewer ──────────────────────────────────────────
 async function loadExplorerModels() {
   try {
@@ -1174,6 +1205,7 @@ async function loadExplorerTable() {
 loadExplorerModels();
 loadSettings();
 loadTeamBuilder();
+loadOpenSearch();
 initSSE();
 
 refresh();

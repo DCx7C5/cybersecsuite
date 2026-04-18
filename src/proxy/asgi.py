@@ -18,6 +18,7 @@ Ports (env-configurable):
     ASGI_TLS_CERT  — PEM cert path    (default: ~/.omniroute/certs/cert.pem)
     ASGI_TLS_KEY   — PEM key path     (default: ~/.omniroute/certs/key.pem)
 """
+
 from __future__ import annotations
 
 import os
@@ -68,31 +69,58 @@ def get_ssl_context() -> ssl.SSLContext | None:
 
 # ── Startup / shutdown ────────────────────────────────────────────────────────
 
+
 async def _on_startup() -> None:
     """Initialize DB + AI proxy rate limiters on startup."""
     auto_create = os.environ.get("CYBERSEC_AUTO_CREATE_DB", "false").lower() == "true"
-    auto_intel  = os.environ.get("CYBERSEC_BOOTSTRAP_INTEL_ON_START", "false").lower() == "true"
+    auto_intel = os.environ.get("CYBERSEC_BOOTSTRAP_INTEL_ON_START", "false").lower() == "true"
     await init_tortoise_async(create_db=auto_create, bootstrap_intel=auto_intel)
 
     for provider in get_enabled_providers():
-        rate_limiter.configure(provider.id, ProviderLimits(
-            rpm=provider.rate_limit_rpm,
-            tpm=provider.rate_limit_tpm,
-        ))
+        rate_limiter.configure(
+            provider.id,
+            ProviderLimits(
+                rpm=provider.rate_limit_rpm,
+                tpm=provider.rate_limit_tpm,
+            ),
+        )
 
     _telemetry_collector.start()
+
+    # OpenSearch — non-fatal if unavailable
+    try:
+        from opensearch.indices import ensure_indices
+        from opensearch.writer import start_flush_loop
+
+        await ensure_indices()
+        start_flush_loop()
+    except Exception:
+        pass
 
 
 async def _on_shutdown() -> None:
     _telemetry_collector.stop()
+
+    try:
+        from opensearch.writer import flush_all, stop_flush_loop
+        from opensearch.client import close_client
+
+        stop_flush_loop()
+        await flush_all()
+        await close_client()
+    except Exception:
+        pass
+
     await cleanup_executors()
     await close_tortoise()
 
 
 # ── Health endpoint ───────────────────────────────────────────────────────────
 
+
 async def health(request: Request) -> JSONResponse:
     from db.bootstrap import get_database_health_async
+
     data = await get_database_health_async(check_connection=True, include_counts=False)
     status_code = 200 if data.get("status") == "ok" else 503
     return JSONResponse(data, status_code=status_code)
@@ -101,9 +129,9 @@ async def health(request: Request) -> JSONResponse:
 # ── A2A orchestrator ──────────────────────────────────────────────────────────
 
 _base_url = os.environ.get("CYBERSEC_A2A_BASE_URL", "http://localhost:8000")
-_registry  = create_default_registry(base_url=_base_url)
-_agent     = OrchestratorAgent(registry=_registry, base_url=_base_url)
-_a2a       = A2AServer(_agent)
+_registry = create_default_registry(base_url=_base_url)
+_agent = OrchestratorAgent(registry=_registry, base_url=_base_url)
+_a2a = A2AServer(_agent)
 
 
 # ── Application ───────────────────────────────────────────────────────────────

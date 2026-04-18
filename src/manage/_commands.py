@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Command implementations for manage.py."""
+
 from __future__ import annotations
 
 import sys
@@ -7,6 +8,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
 
 async def schema_command():
     """Create or update all tables using generate_schemas."""
@@ -20,7 +22,6 @@ async def schema_command():
     print(f"✅ Done — {count} tables in public schema")
 
 
-
 async def shell_command():
     """Launch an interactive shell."""
     from db.bootstrap import init_tortoise_async
@@ -32,14 +33,19 @@ async def shell_command():
 
     shell_context = {
         "models": models,
-        **{name: getattr(models, name) for name in ("Workspace", "Project", "Session", "Finding", "IOC")},
+        **{
+            name: getattr(models, name)
+            for name in ("Workspace", "Project", "Session", "Finding", "IOC")
+        },
     }
 
     try:
         import IPython
+
         IPython.embed(user_ns=shell_context)
     except ImportError:
         import code
+
         code.interact(local=shell_context)
 
 
@@ -58,7 +64,9 @@ async def status_command():
     if health.get("status") == "error":
         print(f"Health      : ERROR - {health.get('error')}")
         return
-    print(f"Tables ({health.get('table_count', 0)}): {', '.join(health.get('tables', [])) or '(none)'}")
+    print(
+        f"Tables ({health.get('table_count', 0)}): {', '.join(health.get('tables', [])) or '(none)'}"
+    )
     counts = health.get("counts", {})
     if counts:
         print("Intel counts:")
@@ -74,7 +82,9 @@ def _print_intel_components(components: dict) -> None:
         elif isinstance(component_summary, dict):
             # Nested sub-components (capec, mitre, misp, opencti)
             for sub_name, sub_summary in component_summary.items():
-                sub_status = sub_summary.get("status", "?") if isinstance(sub_summary, dict) else "?"
+                sub_status = (
+                    sub_summary.get("status", "?") if isinstance(sub_summary, dict) else "?"
+                )
                 print(f"   - {component}/{sub_name}: {sub_status}")
         else:
             print(f"   - {component}: {component_summary}")
@@ -105,7 +115,9 @@ async def seed_nist_csf_command():
     await init_tortoise_async(create_db=True)
     print("→ Seeding NIST CSF 2.0 controls...")
     result = await seed_nist_csf()
-    print(f"✅ NIST CSF 2.0: {result['created']} created, {result['skipped']} skipped ({result['total']} total)")
+    print(
+        f"✅ NIST CSF 2.0: {result['created']} created, {result['skipped']} skipped ({result['total']} total)"
+    )
 
 
 async def seed_nist_ai_rmf_command():
@@ -116,7 +128,9 @@ async def seed_nist_ai_rmf_command():
     await init_tortoise_async(create_db=True)
     print("→ Seeding NIST AI RMF 1.0 controls...")
     result = await seed_nist_ai_rmf()
-    print(f"✅ NIST AI RMF 1.0: {result['created']} created, {result['skipped']} skipped ({result['total']} total)")
+    print(
+        f"✅ NIST AI RMF 1.0: {result['created']} created, {result['skipped']} skipped ({result['total']} total)"
+    )
 
 
 async def seed_nist_all_command():
@@ -127,27 +141,34 @@ async def seed_nist_all_command():
     await init_tortoise_async(create_db=True)
     print("→ Seeding NIST CSF 2.0 controls...")
     csf = await seed_nist_csf()
-    print(f"✅ NIST CSF 2.0: {csf['created']} created, {csf['skipped']} skipped ({csf['total']} total)")
+    print(
+        f"✅ NIST CSF 2.0: {csf['created']} created, {csf['skipped']} skipped ({csf['total']} total)"
+    )
     print("→ Seeding NIST AI RMF 1.0 controls...")
     rmf = await seed_nist_ai_rmf()
-    print(f"✅ NIST AI RMF 1.0: {rmf['created']} created, {rmf['skipped']} skipped ({rmf['total']} total)")
+    print(
+        f"✅ NIST AI RMF 1.0: {rmf['created']} created, {rmf['skipped']} skipped ({rmf['total']} total)"
+    )
 
 
 async def seed_intel_command():
     """Bootstrap all MITRE/CWE/CAPEC intel tables from curated fixture files."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import (
-        seed_mitre_techniques, seed_mitre_actors, seed_mitre_software,
-        seed_cwe, seed_capec,
+        seed_mitre_techniques,
+        seed_mitre_actors,
+        seed_mitre_software,
+        seed_cwe,
+        seed_capec,
     )
 
     await init_tortoise_async(create_db=True)
     for label, fn in [
         ("MITRE Techniques", seed_mitre_techniques),
-        ("MITRE Actors",     seed_mitre_actors),
-        ("MITRE Software",   seed_mitre_software),
-        ("CWE",              seed_cwe),
-        ("CAPEC",            seed_capec),
+        ("MITRE Actors", seed_mitre_actors),
+        ("MITRE Software", seed_mitre_software),
+        ("CWE", seed_cwe),
+        ("CAPEC", seed_capec),
     ]:
         print(f"→ Seeding {label}...")
         r = await fn()
@@ -158,15 +179,19 @@ async def seed_mitre_command():
     """Seed MITRE ATT&CK techniques (30 canonical entries)."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import seed_mitre_techniques
+
     await init_tortoise_async(create_db=True)
     r = await seed_mitre_techniques()
-    print(f"✅ MITRE Techniques: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+    print(
+        f"✅ MITRE Techniques: {r['created']} created, {r['skipped']} skipped ({r['total']} total)"
+    )
 
 
 async def seed_mitre_actors_command():
     """Seed MITRE ATT&CK threat actors (12 canonical entries)."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import seed_mitre_actors
+
     await init_tortoise_async(create_db=True)
     r = await seed_mitre_actors()
     print(f"✅ MITRE Actors: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
@@ -176,42 +201,105 @@ async def seed_mitre_software_command():
     """Seed MITRE ATT&CK software families (14 canonical entries)."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import seed_mitre_software
+
     await init_tortoise_async(create_db=True)
     r = await seed_mitre_software()
     print(f"✅ MITRE Software: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
 
 
 async def seed_cwe_command():
-    """Seed CWE weakness entries (18 canonical entries)."""
+    """Seed CWE weakness entries (full database from MITRE)."""
+    import argparse
     from db.bootstrap import init_tortoise_async
-    from db.models.seeds import seed_cwe
+    from db.seeds.cwe_full import seed_cwe_full
+
+    parser = argparse.ArgumentParser(prog="seed-cwe")
+    parser.add_argument("--limit", type=int, default=None, help="Max CWEs to fetch")
+    args = parser.parse_args(sys.argv[2:])
+
     await init_tortoise_async(create_db=True)
-    r = await seed_cwe()
-    print(f"✅ CWE: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+    print("⏳ Syncing CWEs from MITRE...")
+    created, total = await seed_cwe_full(max_results=args.limit)
+    print(f"✅ CWE: {created} created, {total} total synced")
 
 
 async def seed_capec_command():
-    """Seed CAPEC attack pattern entries (20 canonical entries)."""
+    """Seed CAPEC attack pattern entries (full database from MITRE)."""
+    import argparse
     from db.bootstrap import init_tortoise_async
-    from db.models.seeds import seed_capec
+    from db.seeds.capec_full import seed_capec_full
+
+    parser = argparse.ArgumentParser(prog="seed-capec")
+    parser.add_argument("--limit", type=int, default=None, help="Max CAPECs to fetch")
+    args = parser.parse_args(sys.argv[2:])
+
     await init_tortoise_async(create_db=True)
-    r = await seed_capec()
-    print(f"✅ CAPEC: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+    print("⏳ Syncing CAPECs from MITRE...")
+    created, total = await seed_capec_full(max_results=args.limit)
+    print(f"✅ CAPEC: {created} created, {total} total synced")
 
 
-async def seed_cve_command():
-    """Seed CVE vulnerability entries (30 canonical entries)."""
+async def seed_mitre_command():
+    """Seed MITRE ATT&CK (techniques + actors + software)."""
+    import argparse
     from db.bootstrap import init_tortoise_async
-    from db.models.seeds import seed_cve
+    from db.seeds.mitre_full import seed_mitre_full
+
+    parser = argparse.ArgumentParser(prog="seed-mitre")
+    parser.add_argument("--limit", type=int, default=None, help="Max entries per category")
+    args = parser.parse_args(sys.argv[2:])
+
     await init_tortoise_async(create_db=True)
-    r = await seed_cve()
-    print(f"✅ CVE: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+    print("⏳ Syncing MITRE ATT&CK...")
+    results = await seed_mitre_full(max_results=args.limit)
+    print(f"✅ MITRE ATT&CK synced:")
+    print(f"   Techniques: {results['techniques_created']} created, {results['techniques_total']} total")
+    print(f"   Actors: {results['actors_created']} created, {results['actors_total']} total")
+    print(f"   Software: {results['software_created']} created, {results['software_total']} total")
+
+
+async def seed_nvd_cves_command():
+    """Seed all CVEs from NVD API (National Vulnerability Database).
+
+    Fetches CVEs incrementally from the NVD API and stores in the database.
+    This can take a long time (30+ minutes for all CVEs).
+
+    Flags:
+      --api-key KEY      NVD API key for higher rate limits (optional)
+      --max N            Limit to N CVEs (default: all)
+      --start-year YYYY  Only sync CVEs from year YYYY onwards (default: 2010)
+      --incremental      Sync only recent CVEs (last 7 days)
+    """
+    import argparse
+    from db.bootstrap import init_tortoise_async
+    from db.seeds.nvd import seed_nvd_cves, seed_nvd_cves_incremental
+
+    parser = argparse.ArgumentParser(prog="seed-nvd-cves")
+    parser.add_argument("--api-key", default=None, help="NVD API key")
+    parser.add_argument("--max", type=int, default=None, help="Max CVEs to fetch")
+    parser.add_argument("--start-year", type=int, default=2010, help="Start year for CVEs")
+    parser.add_argument("--incremental", action="store_true", help="Sync recent CVEs only")
+    args = parser.parse_args(sys.argv[2:])
+
+    await init_tortoise_async(create_db=True)
+
+    print("⏳ Syncing CVEs from NVD...")
+    if args.incremental:
+        fetched, inserted = await seed_nvd_cves_incremental(api_key=args.api_key)
+    else:
+        fetched, inserted = await seed_nvd_cves(
+            api_key=args.api_key,
+            max_results=args.max,
+            start_year=args.start_year,
+        )
+    print(f"✅ NVD CVE Seed complete: fetched={fetched}, inserted={inserted}")
 
 
 async def seed_poc_command():
     """Seed PoC sample records."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import seed_poc
+
     await init_tortoise_async(create_db=True)
     result = await seed_poc()
     print(f"✅ PoC seeded: {result['created']} created, {result['skipped']} skipped")
@@ -258,8 +346,10 @@ async def machine_command():
     if cpu_rows:
         print("   CPU(s):")
         for cpu in cpu_rows:
-            print(f"     [{cpu.socket_id}] {cpu.model_name}  "
-                  f"{cpu.cores}C/{cpu.threads}T  {cpu.base_freq_mhz or '?'} MHz")
+            print(
+                f"     [{cpu.socket_id}] {cpu.model_name}  "
+                f"{cpu.cores}C/{cpu.threads}T  {cpu.base_freq_mhz or '?'} MHz"
+            )
 
     mem_rows = await machine.memory.all()
     if mem_rows:
@@ -273,14 +363,16 @@ async def machine_command():
         print(f"   NICs   : {len(nic_rows)}")
         for nic in nic_rows:
             addrs = [a.address for a in nic.addresses]
-            print(f"     {nic.name:<12} {nic.mac_address or '—':18} "
-                  f"{'UP' if nic.is_up else 'DOWN':4}  {', '.join(addrs) or '—'}")
+            print(
+                f"     {nic.name:<12} {nic.mac_address or '—':18} "
+                f"{'UP' if nic.is_up else 'DOWN':4}  {', '.join(addrs) or '—'}"
+            )
 
     drive_rows = await machine.drives.all()
     if drive_rows:
         print(f"   Drives : {len(drive_rows)}")
         for d in drive_rows:
-            gb = d.capacity_bytes // (1024 ** 3) if d.capacity_bytes else 0
+            gb = d.capacity_bytes // (1024**3) if d.capacity_bytes else 0
             print(f"     {d.device_path:<16} {d.drive_type:5}  {gb:>6} GB  {d.model_name or '—'}")
 
     pci_rows = await machine.pci_devices.all()
@@ -334,7 +426,9 @@ async def case_open_command():
             break
         assets.append(line)
 
-    priority_input = input("Priority (low/medium/high/critical) [medium]: ").strip().lower() or "medium"
+    priority_input = (
+        input("Priority (low/medium/high/critical) [medium]: ").strip().lower() or "medium"
+    )
     mode_input = input("Mode (blue/red/purple) [blue]: ").strip().lower() or "blue"
 
     print("MITRE ATT&CK technique IDs (one per line, empty to finish):")
@@ -377,7 +471,12 @@ async def team_task_command():
         prog="manage.py team-task",
         description="Dispatch a task to a CyberSec agent team.",
     )
-    parser.add_argument("--team", choices=["blue", "red", "purple"], default="blue", help="Target team (default: blue)")
+    parser.add_argument(
+        "--team",
+        choices=["blue", "red", "purple"],
+        default="blue",
+        help="Target team (default: blue)",
+    )
     parser.add_argument("--task", required=True, help="Task description")
     parser.add_argument("--agents", default="", help="Comma-separated additional agent names")
     parser.add_argument("--mode", default="", help="Override mode (blue/red/purple)")
@@ -390,18 +489,34 @@ async def team_task_command():
 
     team_map = {
         "blue": {
-            "agents": ["filesystem-analyst", "logfile-analyst", "memory-analyst",
-                       "network-analyst", "process-analyst", "persistence-analyst"],
+            "agents": [
+                "filesystem-analyst",
+                "logfile-analyst",
+                "memory-analyst",
+                "network-analyst",
+                "process-analyst",
+                "persistence-analyst",
+            ],
             "goal": "Defensive forensics: threat hunting, IR, log analysis, hardening",
         },
         "red": {
-            "agents": ["reverse-engineer", "vulnerability-scanner", "layer7-specialist",
-                       "layer4-specialist", "layer3-specialist"],
+            "agents": [
+                "reverse-engineer",
+                "vulnerability-scanner",
+                "layer7-specialist",
+                "layer4-specialist",
+                "layer3-specialist",
+            ],
             "goal": "Offensive operations: recon, exploitation, persistence, C2",
         },
         "purple": {
-            "agents": ["cybersec-analyst", "threat-modeler", "kernel-analyst",
-                       "filesystem-analyst", "network-analyst"],
+            "agents": [
+                "cybersec-analyst",
+                "threat-modeler",
+                "kernel-analyst",
+                "filesystem-analyst",
+                "network-analyst",
+            ],
             "goal": "Purple team: validate detections, map ATT&CK coverage",
         },
     }
@@ -481,4 +596,141 @@ def check_command() -> None:
         print(f"  {status} Summary: {', '.join(parts)}")
     print()
 
+
+# ── OpenSearch fast-forward migrations ───────────────────────────────────────
+
+async def migrate_audit_command() -> None:
+    """Fast-forward AuditLog rows from PostgreSQL → OpenSearch, then drop PG table."""
+    from db.bootstrap import init_tortoise_async
+    from opensearch.client import get_client
+    from opensearch.indices import ensure_indices, daily_index
+
+    print("→ Initialising DB...")
+    await init_tortoise_async()
+
+    print("→ Ensuring OpenSearch index templates...")
+    await ensure_indices()
+
+    from db.models.core import AuditLog
+    from tortoise import connections
+
+    total = await AuditLog.all().count()
+    print(f"→ Migrating {total} AuditLog rows to OpenSearch...")
+
+    client = get_client()
+    batch_size = 500
+    migrated = 0
+    offset = 0
+
+    while True:
+        rows = await AuditLog.all().order_by("id").offset(offset).limit(batch_size)
+        if not rows:
+            break
+        index = daily_index("audit")
+        actions: list = []
+        for r in rows:
+            actions.append({"index": {"_index": index}})
+            actions.append({
+                "@timestamp": r.created_at.isoformat() if r.created_at else None,
+                "action": str(r.action.value) if hasattr(r.action, "value") else str(r.action),
+                "entity_type": r.entity_type or "",
+                "entity_id": str(r.entity_id) if r.entity_id else None,
+                "agent": r.agent or "",
+                "resource": r.resource or "",
+                "ip_address": r.ip_address or None,
+                "detail": r.entity_repr or "",
+            })
+        await client.bulk(body=actions, refresh=False)
+        migrated += len(rows)
+        offset += batch_size
+        print(f"  {migrated}/{total}...", end="\r")
+
+    print(f"\n✅ Migrated {migrated} rows")
+
+    # Verify count in OpenSearch
+    await client.indices.refresh(index=f"cybersecsuite-audit-*")
+    resp = await client.count(index=f"cybersecsuite-audit-*")
+    os_count = resp.get("count", 0)
+    print(f"→ OpenSearch count: {os_count}")
+
+    if os_count < migrated:
+        print(f"⚠  Count mismatch ({os_count} < {migrated}) — NOT dropping PG table")
+        return
+
+    confirm = input("Drop PG table `audit_logs`? [yes/NO] ").strip().lower()
+    if confirm != "yes":
+        print("Aborted. PG table NOT dropped.")
+        return
+
+    conn = connections.get("default")
+    await conn.execute_script("DROP TABLE IF EXISTS audit_logs CASCADE;")
+    print("✅ PG table `audit_logs` dropped")
+
+
+async def migrate_api_usage_command() -> None:
+    """Fast-forward ApiUsageLog rows from PostgreSQL → OpenSearch, then drop PG table."""
+    from db.bootstrap import init_tortoise_async
+    from opensearch.client import get_client
+    from opensearch.indices import ensure_indices, daily_index
+
+    print("→ Initialising DB...")
+    await init_tortoise_async()
+
+    print("→ Ensuring OpenSearch index templates...")
+    await ensure_indices()
+
+    from db.models.api_usage_log import ApiUsageLog
+    from tortoise import connections
+
+    total = await ApiUsageLog.all().count()
+    print(f"→ Migrating {total} ApiUsageLog rows to OpenSearch...")
+
+    client = get_client()
+    batch_size = 500
+    migrated = 0
+    offset = 0
+
+    while True:
+        rows = await ApiUsageLog.all().order_by("timestamp").offset(offset).limit(batch_size)
+        if not rows:
+            break
+        index = daily_index("api-usage")
+        actions: list = []
+        for r in rows:
+            prov = r.provider.value if hasattr(r.provider, "value") else str(r.provider)
+            actions.append({"index": {"_index": index}})
+            actions.append({
+                "@timestamp": r.timestamp.isoformat() if r.timestamp else None,
+                "provider": prov,
+                "model": r.model or "",
+                "tokens_in": r.input_tokens or 0,
+                "tokens_out": r.output_tokens or 0,
+                "cost_usd": float(r.cost_estimate or 0),
+                "duration_ms": None,
+                "strategy": None,
+            })
+        await client.bulk(body=actions, refresh=False)
+        migrated += len(rows)
+        offset += batch_size
+        print(f"  {migrated}/{total}...", end="\r")
+
+    print(f"\n✅ Migrated {migrated} rows")
+
+    await client.indices.refresh(index=f"cybersecsuite-api-usage-*")
+    resp = await client.count(index=f"cybersecsuite-api-usage-*")
+    os_count = resp.get("count", 0)
+    print(f"→ OpenSearch count: {os_count}")
+
+    if os_count < migrated:
+        print(f"⚠  Count mismatch ({os_count} < {migrated}) — NOT dropping PG table")
+        return
+
+    confirm = input("Drop PG table `api_usage_log`? [yes/NO] ").strip().lower()
+    if confirm != "yes":
+        print("Aborted. PG table NOT dropped.")
+        return
+
+    conn = connections.get("default")
+    await conn.execute_script("DROP TABLE IF EXISTS api_usage_log CASCADE;")
+    print("✅ PG table `api_usage_log` dropped")
 

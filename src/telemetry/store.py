@@ -1,4 +1,5 @@
 """In-process metrics store with ring-buffer per key and percentile summaries."""
+
 from __future__ import annotations
 
 import asyncio
@@ -42,6 +43,23 @@ class MetricsStore:
         async with self._lock:
             ring = self._rings.setdefault(event.name, deque(maxlen=self._ring_max))
             ring.append(event)
+
+        # Dual-write to OpenSearch (non-fatal)
+        try:
+            from opensearch.writer import bulk_index  # lazy import avoids hard dep
+
+            await bulk_index(
+                "telemetry",
+                [
+                    {
+                        "metric_name": event.name,
+                        "value_ms": event.value,
+                        **event.labels,
+                    }
+                ],
+            )
+        except Exception:
+            pass
 
     async def get_summary(self, name: str) -> MetricSummary | None:
         async with self._lock:

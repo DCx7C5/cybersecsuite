@@ -28,6 +28,7 @@ def tab_bar() -> str:
         ("settings", "&#x2699;&#xfe0f; Settings", False),
         ("team-builder", "&#x1f3d7; Team Builder", False),
         ("telemetry", "&#x1f4ca; Telemetry", False),
+        ("opensearch", "&#x1f50d; OpenSearch", False),
         ("explorer", "&#x1f50e; Explorer", False),
     ]
     items = []

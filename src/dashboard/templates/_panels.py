@@ -345,9 +345,20 @@ def _telemetry() -> str:
     )
 
 
-
+def _opensearch() -> str:
     return (
-        '<div id="tab-explorer" class="card" style="display:none">\n'
+        '<div id="tab-opensearch" class="card" style="display:none">\n'
+        '  <div class="flex items-center justify-between mb-3">\n'
+        '    <h3 class="text-lg font-semibold">&#x1f50d; OpenSearch</h3>\n'
+        '    <button onclick="loadOpenSearch()" class="btn btn-sm">&#x21bb; Refresh</button>\n'
+        "  </div>\n"
+        '  <div id="os-cluster" class="mb-4"></div>\n'
+        '  <div id="os-indices"></div>\n'
+        "</div>\n"
+    )
+
+
+def _explorer() -> str:
         '  <h3 class="text-lg font-semibold mb-3">&#x1f50e; Database Explorer</h3>\n'
         '  <div class="flex items-center gap-3 mb-4">\n'
         '    <select id="explorer-model" onchange="loadExplorerTable()"\n'
@@ -388,5 +399,6 @@ def all_panels() -> str:
         _settings(),
         _team_builder(),
         _telemetry(),
+        _opensearch(),
         _explorer(),
     ])
