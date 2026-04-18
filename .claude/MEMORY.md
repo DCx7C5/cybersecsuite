@@ -1,5 +1,7 @@
 # CyberSecSuite — MEMORY.md
 
+_Last updated: 2026-04-18_
+
 ## Architecture
 
 ```
@@ -18,7 +20,9 @@ Claude Code / agent_sdk.py
 
 **Ports**: 8000 ASGI ✅ · 5432 PostgreSQL ✅ · 6379 Redis ✅ · 9200 OpenSearch ✅ · 5601 OS Dashboards ✅ · 8080 alt ⚠️ · 8433 TLS ⚠️
 
-**settings.json key values**: `agent: cybersec-agent` · `default_strategy: cost-optimized` · `hooks_dir: src/hooks/` · 10 workspace hooks (PreToolUse→PostCompact)
+**settings.json**: `.claude/settings.json` (NOT `settings.json`) · `agent: cybersec-agent` · `default_strategy: cost-optimized` · `hooks_dir: src/hooks/` · 10 workspace hooks (PreToolUse→PostCompact)
+
+**Docker socket** (fixed `21f6cd96`): `CYBERSEC_DB_HOST: /tmp` — asyncpg reads host as directory, appends `/.s.PGSQL.5432`. `bootstrap.py` always passes `port` in config dict.
 
 ---
 
@@ -133,6 +137,12 @@ async def _fn(args: dict) -> dict:
 - **nist_csf_2.json** — 185 subcategories, 6 functions (GV/ID/PR/DE/RS/RC). Model: `NistCsfControl`. CLI: `seed-nist-csf`.
 - **nist_ai_rmf.json** — 72 subcategories, 4 functions (Govern/Map/Measure/Manage). Model: `NistAiRmfControl`. CLI: `seed-nist-ai-rmf`.
 - **DB fixtures** (7): mitre_techniques, mitre_actors, mitre_software, cwe_entries, capec_entries, cve_entries (68 CVEs, 2014-2025), poc_entries
+- **Live seed commands** (httpx, NVD v2 — commit `21f6cd96`):
+  - `seed-nvd-cves` — NVD API v2 (2000/page), `--severity CRITICAL|HIGH|MEDIUM|LOW`, `--max N`, `--start-year`, `--incremental`, `--api-key`
+  - `seed-cwe` — all CWEs from MITRE JSON (httpx)
+  - `seed-capec` — all CAPECs from MITRE (httpx)
+  - `seed-mitre` — live ATT&CK (techniques+actors+software from MITRE GitHub, httpx)
+  - `seed-mitre-fixtures` — 30 canonical fixture entries only (replaces old duplicate)
 
 ---
 
@@ -172,6 +182,7 @@ async def _fn(args: dict) -> dict:
 - Phase K.8 — Team Builder tab: Agent Browser (33 agents), Skill Browser (941 skills/27 domains), Team Composer (phase→agent JSON)
 - Phase G — SSE frontend wiring: `initSSE()` wires 4 EventSource streams; `refresh()` 22→19 endpoints; Telemetry tab (26th) with p50/p95/p99/rps table
 - **OpenSearch integration** ✅ — `src/opensearch/` package (client, indices, buffered writer); docker-compose services (9200/5601); telemetry dual-write; `migrate-audit`/`migrate-api-usage` CLI commands; 27th dashboard tab with cluster health + index stats
+- **Infrastructure fixes** ✅ (commit `21f6cd96`) — Docker PG socket `/tmp`; `bootstrap.py` always passes port; `session_start.py` reads `.claude/settings.json`; all seed files migrated `aiohttp`→`httpx`; NVD API v1 (retired)→v2 with `--severity` filter + 2000/page; removed `aiohttp` from pyproject.toml; fixed duplicate `seed_mitre_command` → `seed_mitre_fixtures_command`
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
@@ -184,3 +195,12 @@ async def _fn(args: dict) -> dict:
 - Phase M.3 — consolidate `a2a/` and `checks/`
 - Phase N — update all 10 docs + README
 - OmniRoute integration (mcp.json + allowed_tools)
+
+---
+
+## HTTP Client Convention
+
+**httpx throughout** — `aiohttp` removed from pyproject.toml (commit `21f6cd96`).
+- Seeds: `httpx.AsyncClient(timeout=60.0)` · `resp.status_code` · `resp.json()`
+- Proxy executor + A2A client: persistent `httpx.AsyncClient`
+- Rate delay for NVD: 6.5s without API key · 0.6s with key (50 req/30s)
