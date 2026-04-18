@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-18 (Phase M.4 done — `10f6420d`)_
+_Last updated: 2026-04-18 (Phase M.4 + src-layout import fix — `c4faae08`)_
 
 ## Architecture
 
@@ -203,6 +203,14 @@ async def _fn(args: dict) -> dict:
 - Fixed `migrate_api_usage_command`: uncommented `execute_script(DROP TABLE IF EXISTS api_usage_log CASCADE)` — was dead code with false ✅ message
 - Removed `_print_intel_components()` dead code (never called)
 - `session_start.py` was already wired in `settings.json` SessionStart
+
+### ✅ src-layout import fix (commit `c4faae08`)
+- `pyproject.toml`: `packages = ["src"]` → explicit list `["src/a2a", "src/agent", ...]`
+  so hatchling editable install writes `src/` (not project root) to `.pth`
+- `manage/__init__.py`: moved all CLI logic here (imports, show_usage, main, _run_main, main_sync) using relative `._commands` imports
+- `manage/__main__.py`: new 5-line entry point — `python -m manage` now works
+- `manage.py`: slimmed to 17-line shim; `python src/manage.py` still works
+- `cybersecsuite` installed script (`manage:main_sync`) now resolves correctly
 
 ---
 
