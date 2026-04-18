@@ -5,6 +5,7 @@ TeammateIdle Hook — fires when a subagent is about to go idle.
 Exit code 2 + message on stderr sends feedback and keeps the teammate working.
 Exit code 0 allows the agent to go idle normally.
 """
+
 import asyncio
 import json
 import os
@@ -19,30 +20,30 @@ from _utils import get_project_dir, get_session_dir
 
 # Map agent roles to the artifact patterns they are responsible for
 SPECIALIST_DOMAINS: dict[str, list[str]] = {
-    "Layer2-Specialist":     ["arp", "mac", "vlan", "switch"],
-    "Layer3-Specialist":     ["ip", "routing", "icmp", "bgp"],
-    "Layer4-Specialist":     ["tcp", "udp", "port", "syn"],
-    "Layer5-Specialist":     ["tls", "session", "auth"],
-    "Layer6-Specialist":     ["encoding", "serialization", "crypto"],
-    "Layer7-Specialist":     ["http", "dns", "api", "web"],
-    "Memory-Analyst":        ["memory", "heap", "injection", "ram"],
-    "Firmware-Analyst":      ["firmware", "uefi", "bios", "flash"],
-    "Reverse-Engineer":      ["binary", "disassembly", "malware", "yara"],
-    "Kernel-Analyst":        ["kernel", "module", "rootkit", "ebpf"],
-    "Process-Analyst":       ["process", "pid", "thread", "service"],
-    "Filesystem-Analyst":    ["file", "path", "inode", "directory"],
-    "Persistence-Analyst":   ["persistence", "cron", "registry", "startup"],
+    "Layer2-Specialist": ["arp", "mac", "vlan", "switch"],
+    "Layer3-Specialist": ["ip", "routing", "icmp", "bgp"],
+    "Layer4-Specialist": ["tcp", "udp", "port", "syn"],
+    "Layer5-Specialist": ["tls", "session", "auth"],
+    "Layer6-Specialist": ["encoding", "serialization", "crypto"],
+    "Layer7-Specialist": ["http", "dns", "api", "web"],
+    "Memory-Analyst": ["memory", "heap", "injection", "ram"],
+    "Firmware-Analyst": ["firmware", "uefi", "bios", "flash"],
+    "Reverse-Engineer": ["binary", "disassembly", "malware", "yara"],
+    "Kernel-Analyst": ["kernel", "module", "rootkit", "ebpf"],
+    "Process-Analyst": ["process", "pid", "thread", "service"],
+    "Filesystem-Analyst": ["file", "path", "inode", "directory"],
+    "Persistence-Analyst": ["persistence", "cron", "registry", "startup"],
     "Steganography-Analyst": ["steganography", "hidden", "lsb", "covert"],
-    "Logfile-Analyst":       ["log", "syslog", "event", "audit"],
-    "Settings-Analyst":      ["config", "settings", "env", "registry"],
-    "AudioVideo-Analyst":    ["audio", "video", "media", "codec"],
+    "Logfile-Analyst": ["log", "syslog", "event", "audit"],
+    "Settings-Analyst": ["config", "settings", "env", "registry"],
+    "AudioVideo-Analyst": ["audio", "video", "media", "codec"],
 }
 
 
 async def main_async() -> None:
     try:
         input_data = json.load(sys.stdin)
-    except TypeError:
+    except (json.JSONDecodeError, TypeError, ValueError, EOFError):
         input_data = {}
 
     agent_name: str = (
@@ -96,18 +97,23 @@ async def main_async() -> None:
         sys.exit(2)
 
     # Exit 0 → agent may go idle
-    print(json.dumps({
-        "status": "idle_allowed",
-        "agent_name": agent_name,
-        "reason": idle_reason,
-        "timestamp": datetime.now().isoformat(),
-        "message": f"Agent {agent_name} cleared to go idle — no outstanding items found.",
-    }))
+    print(
+        json.dumps(
+            {
+                "status": "idle_allowed",
+                "agent_name": agent_name,
+                "reason": idle_reason,
+                "timestamp": datetime.now().isoformat(),
+                "message": f"Agent {agent_name} cleared to go idle — no outstanding items found.",
+            }
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 async def _collect_pending_items(session_dir: Path | None, agent_name: str) -> dict:
     result = {

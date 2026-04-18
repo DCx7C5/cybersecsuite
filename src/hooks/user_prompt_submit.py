@@ -3,18 +3,22 @@
 UserPromptSubmit Hook — fires before Claude processes a user prompt.
 Injects current investigation phase, active mode (blue/red/purple), and session context.
 """
+
 import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import get_session_dir, audit
+from _utils import get_session_dir, audit, emit, hook_context
 
 
 def main():
-    data = json.loads(sys.stdin.read()) if not sys.stdin.isatty() else {}
-    session_dir = get_session_dir()
+    try:
+        data = json.loads(sys.stdin.read()) if not sys.stdin.isatty() else {}
+    except (json.JSONDecodeError, ValueError):
+        data = {}
 
+    session_dir = get_session_dir()
     context_parts = []
 
     if session_dir:
@@ -36,10 +40,14 @@ def main():
             except (json.JSONDecodeError, OSError):
                 pass
 
-    audit("user_prompt_submit", {
+    audit({
+        "event": "UserPromptSubmit",
         "prompt_length": len(data.get("prompt", "")),
         "context_injected": context_parts,
     })
+
+    if context_parts:
+        emit(hook_context(" | ".join(context_parts)))
 
 
 if __name__ == "__main__":

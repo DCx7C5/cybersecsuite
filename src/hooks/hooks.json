@@ -4,7 +4,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/first_init.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/first_init.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent"]
@@ -15,7 +15,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/pre_tool_call.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/pre_tool_call.py\""
         }
       ],
       "agents": [
@@ -29,7 +29,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/post_tool_use.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/post_tool_use.py\""
         }
       ],
       "agents": [
@@ -43,7 +43,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/session_start.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/session_start.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent"]
@@ -54,7 +54,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/session_end.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/session_end.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent"]
@@ -65,7 +65,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/agent_start.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/agent_start.py\""
         }
       ],
       "agents": [
@@ -79,7 +79,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/agent_end.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/agent_end.py\""
         }
       ],
       "agents": [
@@ -93,7 +93,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/phase_start.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/phase_start.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -104,7 +104,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/phase_end.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/phase_end.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -115,7 +115,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/investigation_start.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/investigation_start.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -126,7 +126,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/investigation_end.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/investigation_end.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -137,7 +137,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/ioc_discovered.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/ioc_discovered.py\""
         }
       ],
       "agents": [
@@ -151,7 +151,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/evidence_collected.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/evidence_collected.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -162,7 +162,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/finding_confirmed.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/finding_confirmed.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -173,7 +173,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/mode_switch.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/mode_switch.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent"]
@@ -184,7 +184,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/permission_violation.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/permission_violation.py\""
         }
       ],
       "agents": [
@@ -198,7 +198,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/root_command_executed.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/root_command_executed.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
@@ -209,7 +209,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "python3 \"${workspaceFolder}/hooks/baseline_updated.py\""
+          "command": "python3 \"${workspaceFolder}/src/hooks/baseline_updated.py\""
         }
       ],
       "agents": ["cybersec-agent", "OrchestratorAgent", "CybersecAgent"]
