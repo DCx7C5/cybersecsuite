@@ -44,7 +44,13 @@ Claude Code / agent_sdk.py
 | File | Lines | Purpose |
 |---|---|---|
 | `routes.py` | 63 | Route wiring |
-| `_html.py` | 1194 | 23-tab SPA — all tabs use `renderTable()` JS component |
+| `_html.py` | 4 | Shim — imports `build_dashboard_html()` from `templates/` |
+| `templates/__init__.py` | 25 | `build_dashboard_html()` assembler |
+| `templates/_components.py` | 71 | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot` |
+| `templates/_base.py` | 86 | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()` |
+| `templates/_tabs.py` | 40 | `tab_bar()` — 23 tab items as a list |
+| `templates/_panels.py` | 294 | `all_panels()` — 23 panel fns using components |
+| `templates/_js.py` | 860 | `_JS` constant — raw JS extracted verbatim |
 | `api/core.py` | 153 | overview, providers, usage, health, crypto |
 | `api/agents.py` | 215 | a2a, agents, routing, factory, agent-query |
 | `api/forensic.py` | 396 | findings, iocs, yara, network, intel, audit, compliance, NIST |
@@ -115,7 +121,7 @@ async def _fn(args: dict) -> dict:
 
 - **nist_csf_2.json** — 185 subcategories, 6 functions (GV/ID/PR/DE/RS/RC). Model: `NistCsfControl`. CLI: `seed-nist-csf`.
 - **nist_ai_rmf.json** — 72 subcategories, 4 functions (Govern/Map/Measure/Manage). Model: `NistAiRmfControl`. CLI: `seed-nist-ai-rmf`.
-- **DB fixtures** (7): mitre_techniques, mitre_actors, mitre_software, cwe_entries, capec_entries, cve_entries, poc_entries
+- **DB fixtures** (7): mitre_techniques, mitre_actors, mitre_software, cwe_entries, capec_entries, cve_entries (68 CVEs, 2014-2025), poc_entries
 
 ---
 
@@ -134,11 +140,12 @@ async def _fn(args: dict) -> dict:
 - Phase K.3 — Providers/Usage/Crypto/A2A converted to renderTable
 - Phase K.4 — 7 new forensic tabs: Findings/IOCs/YARA/Network/Intel/Audit/Compliance
 - Phase K.5 — Agent Query panel: agent selector, context enrichment, conversation history
+- Phase K.6 — Split `_html.py` (1194L) → `templates/` package: `_components.py`, `_base.py`, `_tabs.py`, `_panels.py`, `_js.py`; `.stat-card` CSS added
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
+- CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
 
 ### 🚧 Active — Phase K (Dashboard)
-6. Split `_html.py` (1194L) → `templates/` package with component helpers (`stat_card`, `tab_panel`, `stat_grid`, `table_slot`)
 7. Settings dashboard (read/edit settings.json)
 8. Team builder + Task chain builder + Skill browser
 
