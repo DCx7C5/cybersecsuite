@@ -90,6 +90,25 @@ TLS activates automatically when both `ASGI_TLS_CERT` and `ASGI_TLS_KEY` exist. 
 |----------|---------|-------------|
 | `DEBUG` | `false` | Enable Starlette debug mode (never use in production) |
 
+### OpenSearch
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OPENSEARCH_HOST` | `localhost` | OpenSearch node host |
+| `OPENSEARCH_PORT` | `9200` | OpenSearch REST API port |
+
+OpenSearch is used for telemetry, audit logs, and API usage time-series indexing. Start with `docker-compose up -d opensearch opensearch-dashboards`.
+
+### OmniRoute MCP
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OMNIROUTE_BASE_URL` | `http://localhost:20128` | OmniRoute gateway URL |
+| `OMNIROUTE_API_KEY` | *(unset)* | Optional API key for authenticated access |
+| `OMNIROUTE_MCP_ENFORCE_SCOPES` | `false` | Enable scope enforcement for MCP tool access |
+
+OmniRoute exposes 29 tools via the `omniroute` MCP server (runs via `bun`). The gateway must be running at `OMNIROUTE_BASE_URL` for tools to work.
+
 ---
 
 ## Port Reference
@@ -101,6 +120,9 @@ TLS activates automatically when both `ASGI_TLS_CERT` and `ASGI_TLS_KEY` exist. 
 | `8433` | HTTPS | TLS proxy | `ASGI_TLS_PORT` |
 | `5432` | TCP | PostgreSQL | `CYBERSEC_DB_PORT` |
 | `6379` | TCP | Redis | `REDIS_URL` |
+| `9200` | HTTP | OpenSearch REST API | `OPENSEARCH_HOST`/`OPENSEARCH_PORT` |
+| `5601` | HTTP | OpenSearch Dashboards UI | — |
+| `20128` | HTTP | OmniRoute AI gateway | `OMNIROUTE_BASE_URL` |
 | `9000` | HTTP | Dashboard static server (make dashboard-serve) | — |
 
 ---
