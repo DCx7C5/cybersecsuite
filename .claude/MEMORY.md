@@ -16,7 +16,7 @@ Claude Code / agent_sdk.py
   MCP (stdio): cybersec (31 tools) + dystopian-crypto (5 tools) = 36 total
 ```
 
-**Ports**: 8000 ASGI ✅ · 5432 PostgreSQL ✅ · 6379 Redis ✅ · 9200 OpenSearch ⏳ · 5601 OS Dashboards ⏳ · 8080 alt ⚠️ · 8433 TLS ⚠️
+**Ports**: 8000 ASGI ✅ · 5432 PostgreSQL ✅ · 6379 Redis ✅ · 9200 OpenSearch ✅ · 5601 OS Dashboards ✅ · 8080 alt ⚠️ · 8433 TLS ⚠️
 
 **settings.json key values**: `agent: cybersec-agent` · `default_strategy: cost-optimized` · `hooks_dir: src/hooks/` · 10 workspace hooks (PreToolUse→PostCompact)
 
@@ -37,40 +37,42 @@ Claude Code / agent_sdk.py
 | `db/`                     | 45 model files, 83 Tortoise ORM model classes, `cybersec_forensics` DB                                         |
 | `db/browser_forensics.py` | `BrowserForensicFinding` CRUD — `log_finding_async()`, `count_findings_by_severity()`, `get_recent_findings()` |
 | `checks/`                 | Integrity checks — FK, fixtures, config paths                                                                  |
-| `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — **migrating events → OpenSearch** |
+| `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — dual-write to OpenSearch ✅    |
+| `opensearch/`             | Async client singleton, index templates (telemetry/audit/api-usage), buffered bulk writer (100 docs/5s) |
 
 **src/csmcp/ rename**: `src/mcp/` → `src/csmcp/` (Phase H) — avoided naming conflict with pip `mcp` v1.26.0. `mcp_server.py` (1288L FastMCP) DELETED.
 
 ### src/dashboard/ (41 routes)
-| File                       | Lines | Purpose                                                                                           |
-|----------------------------|-------|---------------------------------------------------------------------------------------------------|
-| `routes.py`                | 68    | Route wiring                                                                                      |
-| `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                         |
-| `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                |
-| `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot` |
-| `templates/_base.py`       | 86    | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()`                    |
-| `templates/_tabs.py`       | 44    | `tab_bar()` — 26 tab items as a list                                                              |
-| `templates/_panels.py`     | 390   | `all_panels()` — 26 panel fns using components                                                    |
-| `templates/_js.py`         | 1200  | `_JS` — SSE wiring (initSSE, 4 EventSource) + team builder + settings CRUD + explorer + agent query JS |
-| `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                        |
-| `api/agents.py`            | 215   | a2a, agents, routing, factory, agent-query                                                        |
-| `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                     |
-| `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                |
-| `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                              |
-| `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir               |
-| `api/team_builder.py`      | 130   | `GET /api/team-agents` (33 agents) · `GET /api/skills?domain=&q=` (941 skills) · `GET /api/teams` |
-| `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                            |
-| `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                           |
+| File                       | Lines | Purpose                                                                                                |
+|----------------------------|-------|--------------------------------------------------------------------------------------------------------|
+| `routes.py`                | 68    | Route wiring                                                                                           |
+| `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                              |
+| `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                     |
+| `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`      |
+| `templates/_base.py`       | 86    | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()`                         |
+| `templates/_tabs.py`       | 46    | `tab_bar()` — 27 tab items as a list                                                                   |
+| `templates/_panels.py`     | 415   | `all_panels()` — 27 panel fns using components                                                         |
+| `templates/_js.py`         | 1215  | `_JS` — SSE wiring (initSSE, 4 EventSource) + team builder + settings CRUD + explorer + agent query JS + OpenSearch |
+| `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                             |
+| `api/agents.py`            | 215   | a2a, agents, routing, factory, agent-query                                                             |
+| `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                          |
+| `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                     |
+| `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                   |
+| `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                    |
+| `api/team_builder.py`      | 130   | `GET /api/team-agents` (33 agents) · `GET /api/skills?domain=&q=` (941 skills) · `GET /api/teams`      |
+| `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                      |
+| `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                 |
+| `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                |
 
-**26 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · Team Builder · **Telemetry** · Explorer
+**27 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · Team Builder · Telemetry · **OpenSearch** · Explorer
 
-**SSE wiring (Phase G ✅)**: `initSSE()` opens 4 `EventSource` connections (`/sse/cases`, `/sse/tasks`, `/sse/health`, `/sse/telemetry`). Auto-reconnect 3s backoff. `refresh()` reduced from 22→19 `Promise.all` fetches. SSE badge shows `⬤ SSE Live` when all 4 streams connected.
+**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET /api/teams` · `GET /api/opensearch`
 
 **Team Builder tab**: Agent Browser (filterable table of 33 agents), Skill Browser (27 domains × 941 skills, domain select + search), Team Composer (add phases → assign agents → generate/copy JSON).
 
 **Settings tab**: Agent & Proxy (editable), Env Variables (add/remove/save rows), Hooks (read-only renderTable). PATCH validates against editable/readonly key sets — forbidden keys → 400.
 
-**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET /api/teams`
+**OpenSearch tab**: Cluster health badge (green/yellow/red), node/shard counts, total docs. Index table showing all `cybersecsuite-*` indices with doc count + size in MB. `loadOpenSearch()` fetches `GET /api/opensearch`. Refresh button.
 
 **renderTable() pattern**: `renderTable(containerId, schema, rows)` — schema: `{key, label, type}` where type = string|number|bool|datetime|json. Pre-format badge HTML as strings before passing.
 
@@ -140,23 +142,19 @@ async def _fn(args: dict) -> dict:
 
 ---
 
-## OpenSearch Integration (Planned)
+## OpenSearch Integration ✅
 
-**Status**: todos created, not yet implemented.
+**Status**: Complete. Committed `b216c970`.
 
-**Goal**: Offload time-series / append-only data from PostgreSQL to OpenSearch. PG keeps all forensic relational data.
+| Index                                | Interval       | Source                                       |
+|--------------------------------------|----------------|----------------------------------------------|
+| `cybersecsuite-telemetry-YYYY.MM.DD` | daily rollover | `MetricsStore.record()` dual-write           |
+| `cybersecsuite-audit-YYYY.MM.DD`     | daily rollover | `migrate-audit` CLI: PG → OS → DROP TABLE    |
+| `cybersecsuite-api-usage-YYYY.MM.DD` | daily rollover | `migrate-api-usage` CLI: PG → OS → DROP TABLE |
 
-| Index | Interval | Source | Migration |
-|-------|----------|--------|-----------|
-| `cybersecsuite-telemetry-YYYY.MM.DD` | daily rollover | `telemetry/store.py` → bulk write | ring buffer only → add OS sink |
-| `cybersecsuite-audit-YYYY.MM.DD` | daily rollover | `AuditLog` PG table | fast-forward: copy → DROP TABLE |
-| `cybersecsuite-api-usage-YYYY.MM.DD` | daily rollover | `ApiUsageLog` PG table | fast-forward: copy → DROP TABLE |
+**Stack**: `opensearch-py[async]>=2.7` · single-node · security disabled · bulk writer 100 docs/5s flush · non-fatal try/except throughout
 
-**Stack**: `opensearch-py[async]` · single-node · security disabled (local dev) · bulk writer: 100 events or 5s flush
-
-**Ports**: 9200 (HTTP API) · 5601 (OpenSearch Dashboards)
-
-**Fast-forward pattern**: `uv run python -m manage migrate-to-opensearch --table audit` → bulk indexes all rows → verifies count → drops PG table → removes from MODEL_MODULES.
+**Fast-forward**: `uv run python -m manage migrate-audit` (or `migrate-api-usage`) → batch fetch → bulk index → count verify → confirm prompt → DROP TABLE CASCADE
 
 ---
 
@@ -173,6 +171,7 @@ async def _fn(args: dict) -> dict:
 - Phase K.7 — Settings tab: `GET/PATCH /api/settings`, editable env/agent/proxy fields, hooks read-only view
 - Phase K.8 — Team Builder tab: Agent Browser (33 agents), Skill Browser (941 skills/27 domains), Team Composer (phase→agent JSON)
 - Phase G — SSE frontend wiring: `initSSE()` wires 4 EventSource streams; `refresh()` 22→19 endpoints; Telemetry tab (26th) with p50/p95/p99/rps table
+- **OpenSearch integration** ✅ — `src/opensearch/` package (client, indices, buffered writer); docker-compose services (9200/5601); telemetry dual-write; `migrate-audit`/`migrate-api-usage` CLI commands; 27th dashboard tab with cluster health + index stats
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
@@ -181,9 +180,6 @@ async def _fn(args: dict) -> dict:
 ### ✅ Phase K — Complete (25-tab dashboard)
 
 ### Pending
-- **OpenSearch integration** (7 todos: os-docker → os-client → os-telemetry-index → os-audit-migrate → os-api-usage-migrate → os-dashboard-tab → os-docs)
-  - Indices: `cybersecsuite-telemetry/audit/api-usage-YYYY.MM.DD`
-  - Fast-forward: migrate PG AuditLog + ApiUsageLog → OpenSearch, then DROP TABLE
 - Phase E — Anthropic skills asset sync (copy LICENSE/scripts/refs/assets into .claude/skills/)
 - Phase M.3 — consolidate `a2a/` and `checks/`
 - Phase N — update all 10 docs + README
