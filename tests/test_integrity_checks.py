@@ -2,7 +2,7 @@
 
 import pytest
 
-from checks.integrity import run_all_checks, check_models, check_fixtures, check_config
+from a2a.checks.integrity import run_all_checks, check_models, check_fixtures, check_config
 
 
 class TestIntegrityChecks:
