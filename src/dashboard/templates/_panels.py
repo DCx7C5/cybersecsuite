@@ -331,7 +331,21 @@ def _settings() -> str:
     )
 
 
-def _explorer() -> str:
+def _telemetry() -> str:
+    return (
+        '<div id="tab-telemetry" class="card" style="display:none">\n'
+        '  <div class="flex items-center justify-between mb-3">\n'
+        '    <h3 class="text-lg font-semibold">&#x1f4ca; Live Telemetry</h3>\n'
+        '    <span id="sse-status" class="badge badge-standard">&#x25cf; SSE 0/4</span>\n'
+        "  </div>\n"
+        '  <p class="text-xs text-gray-500 mb-4">Metrics update every 5 s via SSE. '
+        "p50/p95/p99 in milliseconds, rps = requests/second.</p>\n"
+        '  <div id="telemetry-content" class="loading">Waiting for telemetry stream...</div>\n'
+        "</div>\n"
+    )
+
+
+
     return (
         '<div id="tab-explorer" class="card" style="display:none">\n'
         '  <h3 class="text-lg font-semibold mb-3">&#x1f50e; Database Explorer</h3>\n'
@@ -373,5 +387,6 @@ def all_panels() -> str:
         _agent_query(),
         _settings(),
         _team_builder(),
+        _telemetry(),
         _explorer(),
     ])

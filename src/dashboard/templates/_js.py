@@ -126,12 +126,11 @@ function renderTable(containerId, schema, rows, opts = {}) {
 
 async function refresh() {
   try {
-    const [ov, pv, uv, hv, cv, av, iv, dv, agv, rtv, fv, pmv, casesv, tasksv, pocv,
+    const [ov, pv, uv, cv, av, iv, dv, agv, rtv, fv, pmv, pocv,
            findingsv, iocsv, yarav, netv, intv, auditv, compv] = await Promise.all([
       fetch('/dashboard/api/overview').then(r => r.json()),
       fetch('/dashboard/api/providers').then(r => r.json()),
       fetch('/dashboard/api/usage').then(r => r.json()),
-      fetch('/dashboard/api/health').then(r => r.json()),
       fetch('/dashboard/api/crypto').then(r => r.json()),
       fetch('/dashboard/api/a2a').then(r => r.json()),
       fetch('/dashboard/api/investigations').then(r => r.json()),
@@ -140,8 +139,6 @@ async function refresh() {
       fetch('/dashboard/api/routing').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/agent-factory').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/prompts').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/cases').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/tasks').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/pocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/findings').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/iocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
@@ -216,18 +213,7 @@ async function refresh() {
         : '<span class="badge badge-err">FAIL</span>',
     })));
 
-    // Health
-    const hc = $('health-content');
-    const dbStatus = hv.database.status === 'ok' ? '&#x2705;' : '&#x274c;';
-    hc.innerHTML = '<div class="grid grid-cols-2 gap-4">'
-      + '<div><h4 class="font-semibold mb-2">Database</h4>'
-      + '<p>' + dbStatus + ' ' + (hv.database.status || 'unknown') + '</p>'
-      + '<p class="text-xs text-gray-500">Tables: ' + (hv.database.table_count || '?') + '</p></div>'
-      + '<div><h4 class="font-semibold mb-2">Proxy</h4>'
-      + '<p>&#x2705; ' + hv.proxy.providers_enabled + ' providers enabled</p>'
-      + '<p class="text-xs text-gray-500">' + hv.proxy.providers_free + ' free providers</p></div>'
-      + '</div>';
-    hc.classList.remove('loading');
+    // Health → rendered by SSE (_renderHealth)
 
     // Crypto tab
     const cc = $('crypto-content');
@@ -438,75 +424,9 @@ async function refresh() {
       ], promptRows);
     }
 
-    // Cases tab (Phase 0)
-    $('cases-total').textContent = casesv.total || 0;
-    $('cases-open').textContent = casesv.open || 0;
-    $('cases-closed').textContent = casesv.closed || 0;
-    if (casesv.error) {
-      $('cases-table').innerHTML = '<p class="text-red-400">Error: ' + casesv.error + '</p>';
-    } else {
-      const caseRows = (casesv.cases || []).map(c => ({
-        title: (c.title || '').substring(0, 50),
-        priority: c.priority === 'critical'
-          ? '<span class="text-red-400 font-bold">' + (c.priority || '?').toUpperCase() + '</span>'
-          : c.priority === 'high'
-          ? '<span class="text-yellow-400">' + (c.priority || '?').toUpperCase() + '</span>'
-          : (c.priority || '?').toUpperCase(),
-        mode: '<span class="badge badge-standard">' + (c.mode || '?').toUpperCase() + '</span>',
-        facts_count: c.facts_count || 0,
-        iocs_count: c.iocs_count || 0,
-        assets_count: c.assets_count || 0,
-        mitre_count: c.mitre_count || 0,
-        created_at: c.created_at,
-        status: c.closed_at
-          ? '<span class="badge badge-err">CLOSED</span>'
-          : '<span class="badge badge-ok">OPEN</span>',
-      }));
-      renderTable('cases-table', [
-        {key: 'title', label: 'Title', type: 'string'},
-        {key: 'priority', label: 'Priority', type: 'string'},
-        {key: 'mode', label: 'Mode', type: 'string'},
-        {key: 'facts_count', label: 'Facts', type: 'number'},
-        {key: 'iocs_count', label: 'IOCs', type: 'number'},
-        {key: 'assets_count', label: 'Assets', type: 'number'},
-        {key: 'mitre_count', label: 'MITRE', type: 'number'},
-        {key: 'created_at', label: 'Created', type: 'datetime'},
-        {key: 'status', label: 'Status', type: 'string'},
-      ], caseRows);
-    }
+    // Cases → rendered by SSE (_renderCases)
 
-    // Tasks tab
-    $('tasks-total').textContent = tasksv.total || 0;
-    $('tasks-submitted').textContent = tasksv.by_state?.submitted || 0;
-    $('tasks-working').textContent = tasksv.by_state?.working || 0;
-    $('tasks-completed').textContent = tasksv.by_state?.completed || 0;
-    $('tasks-failed').textContent = tasksv.by_state?.failed || 0;
-    if (tasksv.error) {
-      $('tasks-table').innerHTML = '<p class="text-red-400">Error: ' + tasksv.error + '</p>';
-    } else {
-      const taskRows = (tasksv.tasks || []).map(t => ({
-        id: '<span class="font-mono text-xs">' + t.id + '</span>',
-        state: t.state === 'completed' ? '<span class="badge badge-ok">✓ DONE</span>'
-          : t.state === 'failed' ? '<span class="badge badge-err">✗ FAIL</span>'
-          : t.state === 'working' ? '<span class="badge badge-standard">⟳ WORK</span>'
-          : t.state === 'submitted' ? '<span class="badge badge-budget">⊕ SBMT</span>'
-          : '<span class="badge">' + (t.state || '?').toUpperCase() + '</span>',
-        agent: t.agent || '?',
-        created_at: t.created_at,
-        updated_at: t.updated_at,
-        action: (t.state === 'completed' || t.state === 'failed' || t.state === 'canceled')
-          ? '—'
-          : '<button onclick="cancelTask(\'' + t.id + '\')" class="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 rounded">Cancel</button>',
-      }));
-      renderTable('tasks-table', [
-        {key: 'id', label: 'Task ID', type: 'string'},
-        {key: 'state', label: 'State', type: 'string'},
-        {key: 'agent', label: 'Agent', type: 'string'},
-        {key: 'created_at', label: 'Created', type: 'datetime'},
-        {key: 'updated_at', label: 'Updated', type: 'datetime'},
-        {key: 'action', label: 'Action', type: 'string'},
-      ], taskRows);
-    }
+    // Tasks → rendered by SSE (_renderTasks)
 
     // PoCs tab
     const pocContent = $('pocs-content');
@@ -1073,6 +993,151 @@ function tbCopyTeam() {
   navigator.clipboard.writeText(pre.textContent).catch(() => {});
 }
 
+// ── SSE: EventSource wiring for cases, tasks, health, telemetry ─────────────
+const _sseConns = {};
+const _sseConnected = new Set();
+
+function _sseUpdateBadge() {
+  const badge = $('sse-status');
+  if (!badge) return;
+  const n = _sseConnected.size;
+  badge.textContent = n === 4 ? '\u25cf SSE Live' : '\u25cf SSE ' + n + '/4';
+  badge.className = n === 4 ? 'badge badge-ok' : 'badge badge-standard';
+}
+
+function _sseConnect(key, path, onData, eventName) {
+  if (_sseConns[key]) { try { _sseConns[key].close(); } catch {} }
+  const es = new EventSource(path);
+  _sseConns[key] = es;
+  const handler = e => { try { onData(JSON.parse(e.data)); } catch {} };
+  if (eventName) es.addEventListener(eventName, handler);
+  else es.onmessage = handler;
+  es.onopen = () => { _sseConnected.add(key); _sseUpdateBadge(); };
+  es.onerror = () => {
+    _sseConnected.delete(key);
+    _sseUpdateBadge();
+    es.close();
+    setTimeout(() => _sseConnect(key, path, onData, eventName), 3000);
+  };
+}
+
+function _renderHealth(d) {
+  const hc = $('health-content');
+  if (!hc) return;
+  if (d.error) { hc.innerHTML = '<p class="text-red-400">SSE error: ' + d.error + '</p>'; return; }
+  const dbStatus = (d.database || {}).status === 'ok' ? '&#x2705;' : '&#x274c;';
+  hc.innerHTML = '<div class="grid grid-cols-2 gap-4">'
+    + '<div><h4 class="font-semibold mb-2">Database</h4>'
+    + '<p>' + dbStatus + ' ' + ((d.database || {}).status || 'unknown') + '</p>'
+    + '<p class="text-xs text-gray-500">Tables: ' + ((d.database || {}).table_count || '?') + '</p></div>'
+    + '<div><h4 class="font-semibold mb-2">Proxy</h4>'
+    + '<p>&#x2705; ' + ((d.proxy || {}).providers_enabled || 0) + ' providers enabled</p>'
+    + '<p class="text-xs text-gray-500">' + ((d.proxy || {}).providers_free || 0) + ' free providers</p></div>'
+    + '</div>';
+  hc.classList.remove('loading');
+}
+
+function _renderCases(d) {
+  if (d.error) { const t = $('cases-table'); if (t) t.innerHTML = '<p class="text-red-400">SSE error: ' + d.error + '</p>'; return; }
+  const tot = $('cases-total'); if (tot) tot.textContent = d.total || 0;
+  const op = $('cases-open'); if (op) op.textContent = d.open || 0;
+  const cl = $('cases-closed'); if (cl) cl.textContent = d.closed || 0;
+  const caseRows = (d.cases || []).map(c => ({
+    title: (c.title || '').substring(0, 50),
+    priority: c.priority === 'critical'
+      ? '<span class="text-red-400 font-bold">' + (c.priority || '?').toUpperCase() + '</span>'
+      : c.priority === 'high'
+      ? '<span class="text-yellow-400">' + (c.priority || '?').toUpperCase() + '</span>'
+      : (c.priority || '?').toUpperCase(),
+    mode: '<span class="badge badge-standard">' + (c.mode || '?').toUpperCase() + '</span>',
+    facts_count: c.facts_count || 0,
+    iocs_count: c.iocs_count || 0,
+    assets_count: c.assets_count || 0,
+    mitre_count: c.mitre_count || 0,
+    created_at: c.created_at,
+    status: c.closed_at
+      ? '<span class="badge badge-err">CLOSED</span>'
+      : '<span class="badge badge-ok">OPEN</span>',
+  }));
+  renderTable('cases-table', [
+    {key: 'title', label: 'Title', type: 'string'},
+    {key: 'priority', label: 'Priority', type: 'string'},
+    {key: 'mode', label: 'Mode', type: 'string'},
+    {key: 'facts_count', label: 'Facts', type: 'number'},
+    {key: 'iocs_count', label: 'IOCs', type: 'number'},
+    {key: 'assets_count', label: 'Assets', type: 'number'},
+    {key: 'mitre_count', label: 'MITRE', type: 'number'},
+    {key: 'created_at', label: 'Created', type: 'datetime'},
+    {key: 'status', label: 'Status', type: 'string'},
+  ], caseRows);
+}
+
+function _renderTasks(d) {
+  if (d.error) { const t = $('tasks-table'); if (t) t.innerHTML = '<p class="text-red-400">SSE error: ' + d.error + '</p>'; return; }
+  const tot = $('tasks-total'); if (tot) tot.textContent = d.total || 0;
+  const sub = $('tasks-submitted'); if (sub) sub.textContent = (d.by_state || {}).submitted || 0;
+  const wrk = $('tasks-working'); if (wrk) wrk.textContent = (d.by_state || {}).working || 0;
+  const cmp = $('tasks-completed'); if (cmp) cmp.textContent = (d.by_state || {}).completed || 0;
+  const fld = $('tasks-failed'); if (fld) fld.textContent = (d.by_state || {}).failed || 0;
+  const taskRows = (d.tasks || []).map(t => ({
+    id: '<span class="font-mono text-xs">' + t.id + '</span>',
+    state: t.state === 'completed' ? '<span class="badge badge-ok">\u2713 DONE</span>'
+      : t.state === 'failed' ? '<span class="badge badge-err">\u2717 FAIL</span>'
+      : t.state === 'working' ? '<span class="badge badge-standard">\u27f3 WORK</span>'
+      : t.state === 'submitted' ? '<span class="badge badge-budget">\u2295 SBMT</span>'
+      : '<span class="badge">' + (t.state || '?').toUpperCase() + '</span>',
+    agent: t.agent || '?',
+    created_at: t.created_at,
+    updated_at: t.updated_at,
+    action: (t.state === 'completed' || t.state === 'failed' || t.state === 'canceled')
+      ? '\u2014'
+      : '<button onclick="cancelTask(\'' + t.id + '\')" class="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 rounded">Cancel</button>',
+  }));
+  renderTable('tasks-table', [
+    {key: 'id', label: 'Task ID', type: 'string'},
+    {key: 'state', label: 'State', type: 'string'},
+    {key: 'agent', label: 'Agent', type: 'string'},
+    {key: 'created_at', label: 'Created', type: 'datetime'},
+    {key: 'updated_at', label: 'Updated', type: 'datetime'},
+    {key: 'action', label: 'Action', type: 'string'},
+  ], taskRows);
+}
+
+function _renderTelemetry(d) {
+  const tc = $('telemetry-content');
+  if (!tc) return;
+  if (d.error) { tc.innerHTML = '<p class="text-red-400">SSE error: ' + d.error + '</p>'; return; }
+  const keys = Object.keys(d);
+  if (!keys.length) { tc.innerHTML = '<p class="text-gray-500">No metrics recorded yet.</p>'; return; }
+  tc.classList.remove('loading');
+  const rows = keys.map(k => ({
+    metric: k,
+    count: d[k].count,
+    mean_ms: d[k].mean,
+    p50_ms: d[k].p50,
+    p95_ms: d[k].p95,
+    p99_ms: d[k].p99,
+    rps: d[k].rps,
+  }));
+  renderTable('telemetry-content', [
+    {key: 'metric', label: 'Metric', type: 'string'},
+    {key: 'count', label: 'Count', type: 'number'},
+    {key: 'mean_ms', label: 'Mean (ms)', type: 'number'},
+    {key: 'p50_ms', label: 'p50', type: 'number'},
+    {key: 'p95_ms', label: 'p95', type: 'number'},
+    {key: 'p99_ms', label: 'p99', type: 'number'},
+    {key: 'rps', label: 'RPS', type: 'number'},
+  ], rows);
+}
+
+function initSSE() {
+  _sseConnect('health',    '/dashboard/sse/health',    _renderHealth);
+  _sseConnect('cases',     '/dashboard/sse/cases',     _renderCases);
+  _sseConnect('tasks',     '/dashboard/sse/tasks',     _renderTasks);
+  _sseConnect('telemetry', '/dashboard/sse/telemetry', _renderTelemetry, 'telemetry_update');
+  _sseUpdateBadge();
+}
+
 // ── Explorer: generic table viewer ──────────────────────────────────────────
 async function loadExplorerModels() {
   try {
@@ -1109,6 +1174,7 @@ async function loadExplorerTable() {
 loadExplorerModels();
 loadSettings();
 loadTeamBuilder();
+initSSE();
 
 refresh();
 setInterval(refresh, 15000);
