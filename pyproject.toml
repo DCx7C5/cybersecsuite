@@ -51,7 +51,20 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = [
+  "src/a2a",
+  "src/agent",
+  "src/ai_proxy",
+  "src/crypto",
+  "src/csmcp",
+  "src/dashboard",
+  "src/db",
+  "src/hooks",
+  "src/manage",
+  "src/opensearch",
+  "src/proxy",
+  "src/telemetry",
+]
 
 [dependency-groups]
 dev = [
