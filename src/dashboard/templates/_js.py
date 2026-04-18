@@ -938,6 +938,141 @@ async function saveSettingsEnv() {
   } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
 }
 
+// ── Team Builder ─────────────────────────────────────────────────────────────
+let _tbAgents = [];
+let _tbAgentNames = [];
+
+async function loadTeamBuilder() {
+  try {
+    const [agRes, skDomRes, teRes] = await Promise.all([
+      fetch('/dashboard/api/team-agents').then(r => r.json()),
+      fetch('/dashboard/api/skills?domain=').then(r => r.json()),
+      fetch('/dashboard/api/teams').then(r => r.json()),
+    ]);
+
+    // Agent browser
+    _tbAgents = agRes.agents || [];
+    _tbAgentNames = _tbAgents.map(a => a.name);
+    tbFilterAgents('');
+
+    // Populate skill domain select
+    const sel = $('tb-skill-domain');
+    (skDomRes.domains || []).forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      sel.appendChild(opt);
+    });
+    tbRenderSkills(skDomRes.skills || []);
+
+    // Populate team composer agent selects (after phases are present)
+    document.querySelectorAll('.tb-agent-select').forEach(s => _tbPopulateAgentSelect(s));
+
+  } catch(e) { console.error('Team builder load error', e); }
+}
+
+function tbFilterAgents(q) {
+  const ql = q.toLowerCase();
+  const filtered = ql
+    ? _tbAgents.filter(a =>
+        (a.name||'').toLowerCase().includes(ql) ||
+        (a.description||'').toLowerCase().includes(ql) ||
+        (a.model||'').toLowerCase().includes(ql))
+    : _tbAgents;
+  $('tb-agent-count').textContent = filtered.length + ' agents';
+  renderTable('tb-agents-table', [
+    {key: 'name', label: 'Agent', type: 'string'},
+    {key: 'model', label: 'Model', type: 'string'},
+    {key: 'maxTurns', label: 'MaxTurns', type: 'number'},
+    {key: 'tools_str', label: 'Tools', type: 'string'},
+    {key: 'description', label: 'Description', type: 'string'},
+  ], filtered.map(a => ({
+    name: '<strong>' + (a.name||'') + '</strong>',
+    model: a.model || '—',
+    maxTurns: a.maxTurns || '—',
+    tools_str: Array.isArray(a.tools) ? a.tools.join(', ') : (a.tools || '—'),
+    description: a.description || '—',
+  })), {pageSize: 15});
+}
+
+async function tbLoadSkills() {
+  const domain = $('tb-skill-domain').value;
+  const q = $('tb-skill-q').value;
+  try {
+    const params = new URLSearchParams();
+    if (domain) params.set('domain', domain);
+    if (q) params.set('q', q);
+    $('tb-skills-table').innerHTML = '<div class="text-xs text-gray-500">Loading...</div>';
+    const res = await fetch('/dashboard/api/skills?' + params.toString());
+    const data = await res.json();
+    tbRenderSkills(data.skills || []);
+  } catch(e) {
+    $('tb-skills-table').innerHTML = '<div class="text-red-400">Error: ' + e.message + '</div>';
+  }
+}
+
+function tbRenderSkills(skills) {
+  $('tb-skill-count').textContent = skills.length + ' skills';
+  renderTable('tb-skills-table', [
+    {key: 'name', label: 'Skill', type: 'string'},
+    {key: 'domain', label: 'Domain', type: 'string'},
+    {key: 'subdomain', label: 'Subdomain', type: 'string'},
+    {key: 'description', label: 'Description', type: 'string'},
+    {key: 'tags_str', label: 'Tags', type: 'string'},
+    {key: 'mitre_str', label: 'MITRE', type: 'string'},
+  ], skills.map(s => ({
+    name: '<strong>' + s.name + '</strong>',
+    domain: s.domain || '—',
+    subdomain: s.subdomain || '—',
+    description: s.description || '—',
+    tags_str: Array.isArray(s.tags) ? s.tags.join(', ') : '—',
+    mitre_str: Array.isArray(s.mitre_attack) ? s.mitre_attack.join(', ') : '—',
+  })), {pageSize: 20});
+}
+
+let _tbPhaseIdx = 0;
+function tbAddPhase() {
+  const i = _tbPhaseIdx++;
+  const div = document.createElement('div');
+  div.id = 'tb-phase-' + i;
+  div.className = 'flex items-center gap-3 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2';
+  div.innerHTML =
+    '<span class="text-xs text-gray-400 w-16 shrink-0">Phase ' + (i+1) + '</span>'
+    + '<input class="tb-phase-name flex-1 px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded font-mono" placeholder="Phase name (e.g. Recon)">'
+    + '<select class="tb-agent-select px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded">'
+    + '<option value="">— select agent —</option>'
+    + _tbAgentNames.map(n => '<option value="' + n + '">' + n + '</option>').join('')
+    + '</select>'
+    + '<button onclick="document.getElementById(\'tb-phase-' + i + '\').remove()" class="px-2 py-1 text-xs bg-gray-800 hover:bg-red-900 rounded">✕</button>';
+  $('tb-phases').appendChild(div);
+}
+
+function _tbPopulateAgentSelect(sel) {
+  _tbAgentNames.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n; opt.textContent = n;
+    sel.appendChild(opt);
+  });
+}
+
+function tbGenerateTeam() {
+  const phases = [];
+  document.querySelectorAll('[id^="tb-phase-"]').forEach(row => {
+    const name = row.querySelector('.tb-phase-name').value.trim() || 'Phase';
+    const agent = row.querySelector('.tb-agent-select').value;
+    phases.push({phase: name, agent: agent || null});
+  });
+  const team = {team: phases, generated_at: new Date().toISOString()};
+  const pre = $('tb-team-json');
+  pre.textContent = JSON.stringify(team, null, 2);
+  pre.style.display = '';
+}
+
+function tbCopyTeam() {
+  const pre = $('tb-team-json');
+  if (!pre.textContent) { tbGenerateTeam(); }
+  navigator.clipboard.writeText(pre.textContent).catch(() => {});
+}
+
 // ── Explorer: generic table viewer ──────────────────────────────────────────
 async function loadExplorerModels() {
   try {
@@ -973,6 +1108,7 @@ async function loadExplorerTable() {
 
 loadExplorerModels();
 loadSettings();
+loadTeamBuilder();
 
 refresh();
 setInterval(refresh, 15000);

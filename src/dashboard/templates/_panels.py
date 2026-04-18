@@ -250,6 +250,49 @@ def _agent_query() -> str:
     )
 
 
+def _team_builder() -> str:
+    return (
+        '<div id="tab-team-builder" class="card" style="display:none">\n'
+        '  <h3 class="text-lg font-semibold mb-4">&#x1f3d7; Team Builder</h3>\n'
+
+        # ── Agent Browser ────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Agent Browser</h4>\n'
+        '  <div class="flex items-center gap-3 mb-3">\n'
+        '    <input id="tb-agent-q" type="text" placeholder="Search agents..." oninput="tbFilterAgents(this.value)"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:240px">\n'
+        '    <span id="tb-agent-count" class="text-xs text-gray-500"></span>\n'
+        '  </div>\n'
+        '  <div id="tb-agents-table" class="mb-6"></div>\n'
+
+        # ── Skill Browser ────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Skill Browser</h4>\n'
+        '  <div class="flex items-center gap-3 mb-3">\n'
+        '    <select id="tb-skill-domain" onchange="tbLoadSkills()"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
+        '      <option value="">All domains</option>\n'
+        '    </select>\n'
+        '    <input id="tb-skill-q" type="text" placeholder="Search skills..." oninput="tbLoadSkills()"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:200px">\n'
+        '    <span id="tb-skill-count" class="text-xs text-gray-500"></span>\n'
+        '  </div>\n'
+        '  <div id="tb-skills-table" class="mb-6"></div>\n'
+
+        # ── Team Composer ────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Team Composer</h4>\n'
+        '  <div id="tb-phases" class="space-y-2 mb-3"></div>\n'
+        '  <div class="flex items-center gap-3 mb-4">\n'
+        '    <button onclick="tbAddPhase()"\n'
+        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">+ Add Phase</button>\n'
+        '    <button onclick="tbGenerateTeam()"\n'
+        '      class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Generate JSON</button>\n'
+        '    <button onclick="tbCopyTeam()"\n'
+        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">Copy</button>\n'
+        '  </div>\n'
+        '  <pre id="tb-team-json" class="bg-gray-900 border border-gray-700 rounded-lg p-4 text-xs font-mono text-gray-300 whitespace-pre-wrap" style="display:none;max-height:300px;overflow-y:auto"></pre>\n'
+        "</div>\n"
+    )
+
+
 def _settings() -> str:
     return (
         '<div id="tab-settings" class="card" style="display:none">\n'
@@ -329,5 +372,6 @@ def all_panels() -> str:
         _compliance(),
         _agent_query(),
         _settings(),
+        _team_builder(),
         _explorer(),
     ])

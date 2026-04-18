@@ -48,6 +48,7 @@ from dashboard.api.sse import (
     sse_telemetry,
 )
 from dashboard.api.settings import api_settings_get, api_settings_patch
+from dashboard.api.team_builder import api_team_agents, api_skills, api_teams
 from dashboard.api.page import dashboard_page
 
 __all__ = [
@@ -95,6 +96,10 @@ __all__ = [
     # settings
     "api_settings_get",
     "api_settings_patch",
+    # team builder
+    "api_team_agents",
+    "api_skills",
+    "api_teams",
     # page
     "dashboard_page",
 ]
