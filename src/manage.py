@@ -17,6 +17,7 @@ from manage._commands import (
     schema_command,
     shell_command,
     status_command,
+    seed_all_command,
     seed_command,
     seed_nist_csf_command,
     seed_nist_ai_rmf_command,
@@ -49,6 +50,7 @@ def show_usage():
     print("  shell      - Launch async Python shell with models")
     print("  status     - Show database status")
     print("  seed       - Seed ALL intel tables (NIST + MITRE + CWE + CAPEC)")
+    print("  seed-all   - Seed all fixture-based tables (NIST CSF + AI RMF + MITRE + CWE + CAPEC + PoC)")
     print("  seed-intel          - Seed MITRE techniques, actors, software, CWE, CAPEC")
     print("  seed-nist-csf       - Seed NIST CSF 2.0 controls (185 subcategories)")
     print("  seed-nist-ai-rmf    - Seed NIST AI RMF 1.0 controls (72 subcategories)")
@@ -117,6 +119,7 @@ async def main():
         "shell": shell_command,
         "status": status_command,
         "seed": seed_command,
+        "seed-all": seed_all_command,
         "seed-intel": seed_intel_command,
         "seed-nist-csf": seed_nist_csf_command,
         "seed-nist-ai-rmf": seed_nist_ai_rmf_command,

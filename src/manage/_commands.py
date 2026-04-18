@@ -74,20 +74,36 @@ async def status_command():
             print(f"  - {key}: {value}")
 
 
-def _print_intel_components(components: dict) -> None:
-    """Print component statuses, handling both flat and nested component dicts."""
-    for component, component_summary in components.items():
-        if isinstance(component_summary, dict) and "status" in component_summary:
-            print(f"   - {component}: {component_summary['status']}")
-        elif isinstance(component_summary, dict):
-            # Nested sub-components (capec, mitre, misp, opencti)
-            for sub_name, sub_summary in component_summary.items():
-                sub_status = (
-                    sub_summary.get("status", "?") if isinstance(sub_summary, dict) else "?"
-                )
-                print(f"   - {component}/{sub_name}: {sub_status}")
-        else:
-            print(f"   - {component}: {component_summary}")
+async def seed_all_command():
+    """Seed all fixture-based intel tables (NIST CSF, NIST AI RMF, MITRE, CWE, CAPEC, PoC)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import (
+        seed_nist_csf,
+        seed_nist_ai_rmf,
+        seed_mitre_techniques,
+        seed_mitre_actors,
+        seed_mitre_software,
+        seed_cwe,
+        seed_capec,
+        seed_poc,
+    )
+
+    await init_tortoise_async(create_db=True)
+    seeds = [
+        ("NIST CSF 2.0", seed_nist_csf),
+        ("NIST AI RMF 1.0", seed_nist_ai_rmf),
+        ("MITRE Techniques", seed_mitre_techniques),
+        ("MITRE Actors", seed_mitre_actors),
+        ("MITRE Software", seed_mitre_software),
+        ("CWE", seed_cwe),
+        ("CAPEC", seed_capec),
+        ("PoC", seed_poc),
+    ]
+    for label, fn in seeds:
+        print(f"→ Seeding {label}...")
+        r = await fn()
+        print(f"  ✅ {label}: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+    print("✅ All fixture seeds complete.")
 
 
 async def seed_command():
@@ -739,7 +755,6 @@ async def migrate_api_usage_command() -> None:
         return
 
     conn = connections.get("default")
-    #await conn.execute_script("DROP TABLE IF EXISTS api_usage_log CASCADE;")
-    # no raw sql use orm
+    await conn.execute_script("DROP TABLE IF EXISTS api_usage_log CASCADE;")
     print("✅ PG table `api_usage_log` dropped")
 
