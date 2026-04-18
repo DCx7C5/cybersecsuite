@@ -250,6 +250,44 @@ def _agent_query() -> str:
     )
 
 
+def _settings() -> str:
+    return (
+        '<div id="tab-settings" class="card" style="display:none">\n'
+        '  <h3 class="text-lg font-semibold mb-4">&#x2699;&#xfe0f; Settings</h3>\n'
+
+        # Agent & Proxy section
+        '  <div class="mb-6">\n'
+        '    <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Agent &amp; Proxy</h4>\n'
+        '    <div id="settings-agent-form" class="space-y-3"></div>\n'
+        '    <div class="flex items-center gap-3 mt-3">\n'
+        '      <button onclick="saveSettingsAgent()"\n'
+        '        class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Save</button>\n'
+        '      <span id="settings-agent-status" class="text-xs"></span>\n'
+        '    </div>\n'
+        '  </div>\n'
+
+        # Env Variables section
+        '  <div class="mb-6">\n'
+        '    <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Environment Variables</h4>\n'
+        '    <div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
+        '    <div class="flex items-center gap-3">\n'
+        '      <button onclick="settingsAddEnvRow()"\n'
+        '        class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">+ Add Variable</button>\n'
+        '      <button onclick="saveSettingsEnv()"\n'
+        '        class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Save</button>\n'
+        '      <span id="settings-env-status" class="text-xs"></span>\n'
+        '    </div>\n'
+        '  </div>\n'
+
+        # Hooks section (read-only)
+        '  <div class="mb-4">\n'
+        '    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Hooks <span class="text-gray-600 normal-case font-normal">(read-only)</span></h4>\n'
+        '    <div id="settings-hooks-table"></div>\n'
+        '  </div>\n'
+        "</div>\n"
+    )
+
+
 def _explorer() -> str:
     return (
         '<div id="tab-explorer" class="card" style="display:none">\n'
@@ -290,5 +328,6 @@ def all_panels() -> str:
         _audit(),
         _compliance(),
         _agent_query(),
+        _settings(),
         _explorer(),
     ])

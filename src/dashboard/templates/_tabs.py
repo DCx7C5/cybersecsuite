@@ -25,6 +25,7 @@ def tab_bar() -> str:
         ("audit", "&#x1f4cb; Audit", False),
         ("compliance", "&#x2705; Compliance", False),
         ("agent-query", "&#x1f916; Agent Query", False),
+        ("settings", "&#x2699;&#xfe0f; Settings", False),
         ("explorer", "&#x1f50e; Explorer", False),
     ]
     items = []

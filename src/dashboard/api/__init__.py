@@ -1,4 +1,5 @@
 """Dashboard API package — re-exports all handler functions."""
+
 from dashboard.api.core import (
     api_overview,
     api_providers,
@@ -46,6 +47,7 @@ from dashboard.api.sse import (
     sse_health,
     sse_telemetry,
 )
+from dashboard.api.settings import api_settings_get, api_settings_patch
 from dashboard.api.page import dashboard_page
 
 __all__ = [
@@ -90,6 +92,9 @@ __all__ = [
     "sse_tasks",
     "sse_health",
     "sse_telemetry",
+    # settings
+    "api_settings_get",
+    "api_settings_patch",
     # page
     "dashboard_page",
 ]

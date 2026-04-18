@@ -820,6 +820,124 @@ function clearAgentHistory() {
   $('aq-status').textContent = '';
 }
 
+// ── Settings: viewer/editor for .claude/settings.json ───────────────────────
+let _settingsData = null;
+
+async function loadSettings() {
+  try {
+    const res = await fetch('/dashboard/api/settings');
+    _settingsData = await res.json();
+    _renderSettingsAgent();
+    _renderSettingsEnv();
+    _renderSettingsHooks();
+  } catch (e) { console.error('Failed to load settings', e); }
+}
+
+function _inp(id, val, placeholder) {
+  return '<input id="' + id + '" type="text" value="' + String(val).replace(/"/g,'&quot;') + '"'
+    + ' placeholder="' + (placeholder||'').replace(/"/g,'&quot;') + '"'
+    + ' class="flex-1 px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none font-mono">';
+}
+
+function _renderSettingsAgent() {
+  const s = _settingsData && _settingsData.settings || {};
+  const p = s.proxy || {};
+  let h = '';
+  h += '<div class="flex items-center gap-3">'
+    + '<span class="text-xs text-gray-400 w-40 shrink-0">agent</span>'
+    + _inp('st-agent', s.agent || '', 'e.g. cybersec-agent')
+    + '</div>';
+  h += '<div class="flex items-center gap-3">'
+    + '<span class="text-xs text-gray-400 w-40 shrink-0">proxy.default_strategy</span>'
+    + _inp('st-proxy-strategy', p.default_strategy || '', 'e.g. cost-optimized')
+    + '</div>';
+  h += '<div class="flex items-center gap-3">'
+    + '<span class="text-xs text-gray-400 w-40 shrink-0">proxy.enabled</span>'
+    + '<select id="st-proxy-enabled" class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg">'
+    + '<option value="true"' + (p.enabled !== false ? ' selected' : '') + '>true</option>'
+    + '<option value="false"' + (p.enabled === false ? ' selected' : '') + '>false</option>'
+    + '</select></div>';
+  $('settings-agent-form').innerHTML = h;
+}
+
+function _renderSettingsEnv() {
+  const env = (_settingsData && _settingsData.settings && _settingsData.settings.env) || {};
+  const rows = Object.entries(env);
+  let h = '';
+  rows.forEach(([k, v], i) => {
+    h += '<div class="flex items-center gap-2" id="env-row-' + i + '">'
+      + '<input class="env-key flex-1 px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono" value="' + k.replace(/"/g,'&quot;') + '">'
+      + '<input class="env-val flex-1 px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono" value="' + String(v).replace(/"/g,'&quot;') + '">'
+      + '<button onclick="this.closest(\'[id^=env-row]\').remove()" class="px-2 py-1 text-xs bg-gray-800 hover:bg-red-900 rounded">✕</button>'
+      + '</div>';
+  });
+  $('settings-env-rows').innerHTML = h;
+}
+
+function settingsAddEnvRow() {
+  const wrap = $('settings-env-rows');
+  const idx = wrap.children.length;
+  const div = document.createElement('div');
+  div.id = 'env-row-' + idx;
+  div.className = 'flex items-center gap-2';
+  div.innerHTML = '<input class="env-key flex-1 px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono" placeholder="KEY">'
+    + '<input class="env-val flex-1 px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono" placeholder="VALUE">'
+    + '<button onclick="this.closest(\'[id^=env-row]\').remove()" class="px-2 py-1 text-xs bg-gray-800 hover:bg-red-900 rounded">✕</button>';
+  wrap.appendChild(div);
+}
+
+function _renderSettingsHooks() {
+  const hooks = (_settingsData && _settingsData.settings && _settingsData.settings.hooks) || {};
+  const rows = Object.entries(hooks).map(([event, entries]) => {
+    const cmds = (entries || []).flatMap(e => (e.hooks || []).map(h => h.command || '')).join('\n');
+    return {event, commands: cmds};
+  });
+  renderTable('settings-hooks-table', [
+    {key: 'event', label: 'Event', type: 'string'},
+    {key: 'commands', label: 'Commands', type: 'string'},
+  ], rows);
+}
+
+async function saveSettingsAgent() {
+  const status = $('settings-agent-status');
+  try {
+    const agent = $('st-agent').value.trim();
+    const strategy = $('st-proxy-strategy').value.trim();
+    const enabled = $('st-proxy-enabled').value === 'true';
+    const current = (_settingsData && _settingsData.settings && _settingsData.settings.proxy) || {};
+    const res = await fetch('/dashboard/api/settings', {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({agent, proxy: {...current, default_strategy: strategy, enabled}}),
+    });
+    const data = await res.json();
+    if (data.error) { status.textContent = '✗ ' + data.error; status.style.color = '#f87171'; }
+    else { status.textContent = '✓ Saved'; status.style.color = '#34d399'; setTimeout(() => { status.textContent = ''; }, 3000); }
+    await loadSettings();
+  } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
+}
+
+async function saveSettingsEnv() {
+  const status = $('settings-env-status');
+  try {
+    const env = {};
+    document.querySelectorAll('[id^="env-row-"]').forEach(row => {
+      const k = row.querySelector('.env-key').value.trim();
+      const v = row.querySelector('.env-val').value;
+      if (k) env[k] = v;
+    });
+    const res = await fetch('/dashboard/api/settings', {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({env}),
+    });
+    const data = await res.json();
+    if (data.error) { status.textContent = '✗ ' + data.error; status.style.color = '#f87171'; }
+    else { status.textContent = '✓ Saved'; status.style.color = '#34d399'; setTimeout(() => { status.textContent = ''; }, 3000); }
+    await loadSettings();
+  } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
+}
+
 // ── Explorer: generic table viewer ──────────────────────────────────────────
 async function loadExplorerModels() {
   try {
@@ -854,6 +972,7 @@ async function loadExplorerTable() {
 }
 
 loadExplorerModels();
+loadSettings();
 
 refresh();
 setInterval(refresh, 15000);
