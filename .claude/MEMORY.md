@@ -34,7 +34,8 @@ Claude Code / agent_sdk.py
 | `a2a/` | A2A JSON-RPC server, orchestrator, agent_sdk bridge, registry |
 | `ai_proxy/` | 60 providers (`registry.py` 1163L), routing (`combo.py` 574L), translators |
 | `crypto/` | Ed25519, BLAKE2b-256, Argon2id (mem=262144, iters=4), AES-256-GCM |
-| `db/` | 44 model files, 82 Tortoise ORM model classes, `cybersec_forensics` DB |
+| `db/` | 45 model files, 83 Tortoise ORM model classes, `cybersec_forensics` DB |
+| `db/browser_forensics.py` | `BrowserForensicFinding` CRUD — `log_finding_async()`, `count_findings_by_severity()`, `get_recent_findings()` |
 | `checks/` | Integrity checks — FK, fixtures, config paths |
 | `telemetry/` | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector |
 
@@ -144,6 +145,7 @@ async def _fn(args: dict) -> dict:
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
+- `BrowserForensicFinding` model — created `db/models/browser_forensic.py` (table `browser_forensic_findings`), registered in MODEL_MODULES, fixed `datetime.utcnow()` → `datetime.now(timezone.utc)`, fixed `.annotate()` dict access via `.values()`
 
 ### 🚧 Active — Phase K (Dashboard)
 7. Settings dashboard (read/edit settings.json)
