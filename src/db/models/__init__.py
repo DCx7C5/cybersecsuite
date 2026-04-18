@@ -44,6 +44,8 @@ MODEL_MODULES: list[str] = [
     "db.models.artifacts",
     # A2A
     "db.models.a2a_task",
+    # Browser forensics
+    "db.models.browser_forensic",
     # Phase 0 — Case Intake
     "db.models.case_intake",
     # API / system
@@ -51,3 +53,7 @@ MODEL_MODULES: list[str] = [
     "db.models.update_log_entry",
     "db.models.user_guidance",
 ]
+
+from db.models.browser_forensic import BrowserForensicFinding
+
+__all__ = ["MODEL_MODULES", "BrowserForensicFinding"]
