@@ -1,5 +1,5 @@
 ---
-name: data
+name: security-data-protect
 description: Detecting data exfiltration attempts from AWS S3 buckets by analyzing CloudTrail S3 data events, VPC Flow Logs, GuardDuty findings, Amazon Macie alerts, and S3 access patterns to identify unauthorized bulk downloads and cross-account data transfers.
 domain: cybersecurity
 subdomain: cloud-security

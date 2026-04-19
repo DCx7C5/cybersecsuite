@@ -1,5 +1,5 @@
 ---
-name: cloudflare
+name: cdn-cloudflare-configure
 description: Configure Cloudflare DDoS protection with managed rulesets, rate limiting, WAF rules, Bot Management, and origin protection to mitigate volumetric, protocol, and application-layer attacks.
 domain: cybersecurity
 subdomain: network-security

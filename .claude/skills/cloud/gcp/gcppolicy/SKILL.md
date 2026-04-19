@@ -216,7 +216,7 @@ gcloud org-policies list-custom-constraints \
 
 ```yaml
 # custom-constraint.yaml
-name: organizations/ORGANIZATION_ID/customConstraints/custom.disableGKEAutoUpgrade
+name: gcp-gcppolicy
 resourceTypes:
   - container.googleapis.com/NodePool
 methodTypes:

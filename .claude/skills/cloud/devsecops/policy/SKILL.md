@@ -237,7 +237,7 @@ deny[msg] {
 
 ```yaml
 # .github/workflows/policy-test.yml
-name: Policy Validation
+name: devsecops-policy
 
 on:
   pull_request:

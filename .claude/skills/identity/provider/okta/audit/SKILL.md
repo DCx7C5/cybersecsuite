@@ -1,5 +1,5 @@
 ---
-name: okta
+name: provider-okta-audit
 description: Implement automated user provisioning and deprovisioning using SCIM 2.0 protocol with Okta as the identity provider.
 domain: cybersecurity
 subdomain: identity-access-management

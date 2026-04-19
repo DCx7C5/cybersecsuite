@@ -1,5 +1,5 @@
 ---
-name: forensics
+name: incident-forensics-analyze
 description: Perform forensic acquisition and analysis of cloud storage services including Google Drive, OneDrive, Dropbox, and Box by collecting both API-based remote data and local sync client artifacts from endpoint devices.
 domain: cybersecurity
 subdomain: digital-forensics

@@ -1,5 +1,5 @@
 ---
-name: idor
+name: access-idor-detect
 description: Identifying and exploiting Insecure Direct Object Reference vulnerabilities to access unauthorized resources by manipulating object identifiers in API requests and URLs.
 domain: cybersecurity
 subdomain: web-application-security

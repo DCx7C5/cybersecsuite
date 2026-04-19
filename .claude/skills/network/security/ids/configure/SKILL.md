@@ -1,5 +1,5 @@
 ---
-name: idsscanning
+name: security-ids-configure
 description: Detect network reconnaissance and port scanning using Suricata and Snort IDS signatures, threshold-based detection rules, and traffic anomaly analysis to identify Nmap, Masscan, and custom scanning activity.
 domain: cybersecurity
 subdomain: network-security

@@ -1,5 +1,5 @@
 ---
-name: zerotrust
+name: identity-zerotrust-implement
 description: Configure microsegmentation policies to enforce least-privilege workload-to-workload access using tools like VMware NSX, Illumio, and Calico, preventing lateral movement in zero trust architectures.
 domain: cybersecurity
 subdomain: zero-trust-architecture

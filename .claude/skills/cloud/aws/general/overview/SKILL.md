@@ -1,5 +1,5 @@
 ---
-name: aws
+name: aws-general-overview
 description: Detecting exposed AWS credentials in source code repositories, CI/CD pipelines, and configuration files using TruffleHog, git-secrets, and AWS-native detection mechanisms to prevent credential theft and unauthorized account access.
 domain: cybersecurity
 subdomain: cloud-security
@@ -142,7 +142,7 @@ Add TruffleHog scanning as a CI/CD gate to block deployments containing exposed 
 
 ```yaml
 # GitHub Actions workflow (.github/workflows/secrets-scan.yml)
-name: Secrets Scan
+name: aws-general-overview
 on: [push, pull_request]
 
 jobs:

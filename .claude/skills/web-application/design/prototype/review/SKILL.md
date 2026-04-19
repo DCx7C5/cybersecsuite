@@ -1,5 +1,5 @@
 ---
-name: prototype
+name: design-prototype-review
 description: Detect and exploit JavaScript prototype pollution vulnerabilities on both client-side and server-side applications to achieve XSS, RCE, and authentication bypass through property injection.
 domain: cybersecurity
 subdomain: web-application-security

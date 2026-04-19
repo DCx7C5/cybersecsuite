@@ -479,35 +479,63 @@ def _workflows() -> str:
 def _settings() -> str:
     return (
         '<div id="tab-settings" class="card" style="display:none">\n'
-        '  <h3 class="text-lg font-semibold mb-4">&#x2699;&#xfe0f; Settings</h3>\n'
+        # Panel header
+        '  <div class="panel-header">'
+        '<div class="panel-accent-bar"></div>'
+        '<span class="panel-title">&#x2699;&#xfe0f; Settings &amp; Controls</span>'
+        '</div>\n'
 
-        # Agent & Proxy section
+        # ── Agent & Proxy ──
         '  <div class="mb-6">\n'
-        '    <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Agent &amp; Proxy</h4>\n'
+        '    <div class="section-h3">Agent &amp; Proxy</div>\n'
         '    <div id="settings-agent-form" class="space-y-3"></div>\n'
         '    <div class="flex items-center gap-3 mt-3">\n'
-        '      <button onclick="saveSettingsAgent()"\n'
-        '        class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Save</button>\n'
-        '      <span id="settings-agent-status" class="text-xs"></span>\n'
+        '      <button onclick="saveSettingsAgent()" class="btn btn-accent">Save</button>\n'
+        '      <span id="settings-agent-status" class="text-xs font-mono"></span>\n'
         '    </div>\n'
         '  </div>\n'
 
-        # Env Variables section
+        # ── Env Variables ──
         '  <div class="mb-6">\n'
-        '    <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Environment Variables</h4>\n'
+        '    <div class="section-h3">Environment Variables</div>\n'
         '    <div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
         '    <div class="flex items-center gap-3">\n'
-        '      <button onclick="settingsAddEnvRow()"\n'
-        '        class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">+ Add Variable</button>\n'
-        '      <button onclick="saveSettingsEnv()"\n'
-        '        class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Save</button>\n'
-        '      <span id="settings-env-status" class="text-xs"></span>\n'
+        '      <button onclick="settingsAddEnvRow()" class="btn btn-ghost">+ Add Variable</button>\n'
+        '      <button onclick="saveSettingsEnv()" class="btn btn-accent">Save Env</button>\n'
+        '      <span id="settings-env-status" class="text-xs font-mono"></span>\n'
         '    </div>\n'
         '  </div>\n'
 
-        # Hooks section (read-only)
+        # ── MCP Servers ──
+        '  <div class="mb-6">\n'
+        '    <div class="section-h3">MCP Servers</div>\n'
+        '    <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Toggle which MCP servers are active in this project. Restart required for changes to take effect.</p>\n'
+        '    <div id="settings-mcps" class="toggles-loading">Loading…</div>\n'
+        '  </div>\n'
+
+        # ── Skill Domains ──
+        '  <div class="mb-6">\n'
+        '    <div class="section-h3">Skill Domains</div>\n'
+        '    <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Enable or disable entire skill domain libraries. Disabled domains are excluded from agent context.</p>\n'
+        '    <div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>\n'
+        '  </div>\n'
+
+        # ── Plugins ──
+        '  <div class="mb-6">\n'
+        '    <div class="section-h3">Plugins</div>\n'
+        '    <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Global ~/.claude installed plugins. Changes write to ~/.claude/settings.json.</p>\n'
+        '    <div id="settings-plugins" class="toggles-loading">Loading…</div>\n'
+        '  </div>\n'
+
+        # ── Global ~/.claude ──
+        '  <div class="mb-6">\n'
+        '    <div class="section-h3">Global ~/.claude Summary</div>\n'
+        '    <div id="settings-global" class="toggles-loading">Loading…</div>\n'
+        '  </div>\n'
+
+        # ── Hooks (read-only) ──
         '  <div class="mb-4">\n'
-        '    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">Hooks <span class="text-gray-600 normal-case font-normal">(read-only)</span></h4>\n'
+        '    <div class="section-h4">Hooks <span style="font-weight:400;text-transform:none">(read-only)</span></div>\n'
         '    <div id="settings-hooks-table"></div>\n'
         '  </div>\n'
         "</div>\n"

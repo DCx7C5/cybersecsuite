@@ -1,5 +1,5 @@
 ---
-name: port
+name: layer4-port-enumerate
 description: Configures Fail2ban with custom filters and actions to detect port scanning activity, SSH brute force attempts, and network reconnaissance, automatically banning offending IP addresses and alerting security teams to suspicious network probing.
 domain: cybersecurity
 subdomain: network-security

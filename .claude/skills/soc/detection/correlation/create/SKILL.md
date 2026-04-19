@@ -1,5 +1,5 @@
 ---
-name: correlation-rules
+name: detection-correlation-create
 description: Write multi-event correlation rules that detect APT lateral movement by chaining Windows authentication events, process execution telemetry, and network connection logs across hosts. Uses Splunk SPL and Sigma rule format to correlate Event IDs 4624, 4648, 4688, and Sysmon Events 1/3 within sliding time windows to surface attack sequences invisible to single-event detections.
 domain: cybersecurity
 subdomain: security-operations

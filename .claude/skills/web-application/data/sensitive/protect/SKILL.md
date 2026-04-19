@@ -1,5 +1,5 @@
 ---
-name: sensitive
+name: data-sensitive-protect
 description: Identifying sensitive data exposure vulnerabilities including API key leakage, PII in responses, insecure storage, and unprotected data transmission during security assessments.
 domain: cybersecurity
 subdomain: web-application-security

@@ -1,5 +1,5 @@
 ---
-name: zero
+name: strategy-zero-trust-audit
 description: Deploy CyberArk Secure Cloud Access to eliminate standing privileges in hybrid and multi-cloud environments using just-in-time access with time, entitlement, and approval controls.
 domain: cybersecurity
 subdomain: identity-access-management

@@ -194,7 +194,7 @@ curl -sSX POST --data-binary @deployment.yaml \
 ### GitHub Actions
 
 ```yaml
-name: Kubesec Scan
+name: kubernetes-hardening-kubesecmanifest
 on: [pull_request]
 jobs:
   kubesec:

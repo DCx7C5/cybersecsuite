@@ -1,5 +1,5 @@
 ---
-name: hsm
+name: hardware-hsm-configure
 description: Hardware Security Modules (HSMs) are tamper-resistant physical devices that safeguard cryptographic keys and perform cryptographic operations in a hardened environment. Keys stored in an HSM never lea
 domain: cybersecurity
 subdomain: cryptography

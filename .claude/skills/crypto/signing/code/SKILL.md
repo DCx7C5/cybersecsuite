@@ -71,7 +71,7 @@ gpg --armor --export-secret-keys ci-signing@company.com > signing-key.priv
 
 ```yaml
 # .github/workflows/build-sign.yml
-name: Build and Sign
+name: signing-code
 
 on:
   push:

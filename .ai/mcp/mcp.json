@@ -81,6 +81,32 @@
         "ANTHROPIC_BASE_URL": "https://localhost:8443/v1",
         "USER_DATA_DIR": "/home/daen/Projects/AI/mcps/playwright-stealth-mcp/brave_profile"
       }
+    },
+    "tempmail": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/AI/mcps/create-tempemail-mcp",   // ← CHANGE THIS to your actual folder path
+        "run",
+        "python",
+        "main.py"
+      ],
+      "env": {
+        "PLAYWRIGHT_ENABLED": "false"
+      }
+    },
+    "tempmail-playwright": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/AI/mcps/create-tempemail-mcp",
+        "run",
+        "python",
+        "main.py"
+      ],
+      "env": {
+        "PLAYWRIGHT_ENABLED": "false"
+      }
     }
   }
 }

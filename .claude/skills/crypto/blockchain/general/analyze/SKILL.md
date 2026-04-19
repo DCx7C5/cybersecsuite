@@ -1,5 +1,5 @@
 ---
-name: blockchain
+name: blockchain-general-analyze
 description: Build an append-only log integrity chain using SHA-256 hash chaining for tamper detection. Each log entry is hashed with the previous entry's hash to create a blockchain-like structure where modifying any entry invalidates all subsequent hashes. Implements log ingestion, chain verification, tamper detection with pinpoint identification, and periodic checkpoint anchoring to external timestamping services.
 domain: cybersecurity
 subdomain: security-operations

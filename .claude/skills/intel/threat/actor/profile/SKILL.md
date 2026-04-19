@@ -1,5 +1,5 @@
 ---
-name: threat
+name: threat-actor-profile
 description: Generates structured cyber threat intelligence reports at strategic, operational, and tactical levels tailored to specific audiences including executives, security operations teams, and technical analysts. Use when producing finished intelligence products from raw collection data, creating sector threat briefings, or delivering post-incident intelligence assessments. Activates for requests involving CTI report writing, threat briefings, intelligence products, finished intelligence, or executive security reporting.
 domain: cybersecurity
 subdomain: threat-intelligence

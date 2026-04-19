@@ -110,7 +110,7 @@ sla: 60 minutes
 
 ```yaml
 id: phishing-investigation-full
-name: Phishing Investigation - Full
+name: playbooks-playbook
 description: Automated phishing email investigation with enrichment, analysis, and response
 starttaskid: "0"
 tasks:

@@ -69,7 +69,7 @@ updates:
 
 ```yaml
 # Set restrictive default permissions at workflow level
-name: CI Pipeline
+name: devsecops-ghaworkflows
 permissions: {}  # Start with no permissions
 
 on: [push, pull_request]

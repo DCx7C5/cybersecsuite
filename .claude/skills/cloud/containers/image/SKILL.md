@@ -199,7 +199,7 @@ cosign verify-attestation --key cosign.pub \
 ### GitHub Actions
 
 ```yaml
-name: Sign and Publish
+name: containers-image
 on:
   push:
     tags: ['v*']

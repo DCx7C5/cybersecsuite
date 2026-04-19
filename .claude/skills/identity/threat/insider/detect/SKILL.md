@@ -1,5 +1,5 @@
 ---
-name: insider
+name: threat-insider-detect
 description: Detect insider threat behavioral indicators including unusual data access, off-hours activity, mass file downloads, privilege abuse, and resignation-correlated data theft.
 domain: cybersecurity
 subdomain: threat-hunting

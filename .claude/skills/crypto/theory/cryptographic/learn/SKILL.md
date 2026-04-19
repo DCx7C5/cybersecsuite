@@ -1,5 +1,5 @@
 ---
-name: cryptographic
+name: theory-cryptographic-learn
 description: A cryptographic audit systematically reviews an application's use of cryptographic primitives, protocols, and key management to identify vulnerabilities such as weak algorithms, insecure modes, hardco
 domain: cybersecurity
 subdomain: cryptography

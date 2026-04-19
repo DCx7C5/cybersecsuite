@@ -71,7 +71,7 @@ checkov -d ./terraform/ --skip-check CKV_AWS_145,CKV2_AWS_6
 
 ```yaml
 # .github/workflows/iac-security.yml
-name: IaC Security Scan
+name: devsecops-iacscan
 
 on:
   pull_request:

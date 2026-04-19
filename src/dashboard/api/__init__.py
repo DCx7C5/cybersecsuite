@@ -48,6 +48,15 @@ from dashboard.api.sse import (
     sse_telemetry,
 )
 from dashboard.api.settings import api_settings_get, api_settings_patch
+from dashboard.api.settings_toggles import (
+    api_settings_mcps_get,
+    api_settings_mcps_patch,
+    api_settings_skills_get,
+    api_settings_skills_patch,
+    api_settings_plugins_get,
+    api_settings_plugins_patch,
+    api_settings_global_get,
+)
 from dashboard.api.team_builder import api_team_agents, api_skills, api_teams, api_team_create, api_team_update, api_team_delete, api_team_get
 from dashboard.api.opensearch_stats import api_opensearch
 from dashboard.api.page import dashboard_page
@@ -99,6 +108,14 @@ __all__ = [
     # settings
     "api_settings_get",
     "api_settings_patch",
+    # settings toggles
+    "api_settings_mcps_get",
+    "api_settings_mcps_patch",
+    "api_settings_skills_get",
+    "api_settings_skills_patch",
+    "api_settings_plugins_get",
+    "api_settings_plugins_patch",
+    "api_settings_global_get",
     # team builder
     "api_team_agents",
     "api_skills",

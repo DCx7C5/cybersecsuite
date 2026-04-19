@@ -1,5 +1,5 @@
 ---
-name: hardware
+name: hardware-token-verify
 description: Implements FIDO2/WebAuthn hardware security key authentication including registration ceremonies, authentication flows, YubiKey enrollment, and passkey migration strategies. Builds a complete relying party server using the python-fido2 library that supports cross-platform authenticators, resident key (discoverable credential) workflows, and user verification policies. Activates for requests involving FIDO2 implementation, WebAuthn registration, hardware security key enrollment, YubiKey integration, or passkey migration from password-based authentication.
 domain: cybersecurity
 subdomain: identity-and-access-management

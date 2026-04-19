@@ -1,5 +1,5 @@
 ---
-name: metasploit
+name: tools-metasploit-run
 description: Identifies and exploits SMB protocol vulnerabilities using Metasploit Framework during authorized penetration tests to demonstrate risks from unpatched Windows systems, misconfigured shares, and weak authentication in enterprise networks.
 domain: cybersecurity
 subdomain: network-security

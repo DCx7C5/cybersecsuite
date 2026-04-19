@@ -1,5 +1,5 @@
 ---
-name: clickjacking
+name: ui-clickjacking-detect
 description: Testing web applications for clickjacking vulnerabilities by assessing frame embedding controls and crafting proof-of-concept overlay attacks during authorized security assessments.
 domain: cybersecurity
 subdomain: web-application-security

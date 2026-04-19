@@ -1,5 +1,5 @@
 ---
-name: digital
+name: asymmetric-digital-sign
 description: Ed25519 is a high-performance digital signature algorithm using the Edwards curve Curve25519. It provides 128-bit security with 64-byte signatures and 32-byte keys, offering significant advantages ove
 domain: cybersecurity
 subdomain: cryptography

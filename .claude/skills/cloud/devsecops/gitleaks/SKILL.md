@@ -105,7 +105,7 @@ git commit -m "test"  # Should be blocked by gitleaks
 
 ```yaml
 # .github/workflows/secret-scanning.yml
-name: Secret Scanning
+name: devsecops-gitleaks
 
 on:
   push:

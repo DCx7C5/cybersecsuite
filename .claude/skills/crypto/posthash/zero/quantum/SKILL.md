@@ -1,5 +1,5 @@
 ---
-name: zero
+name: posthash-zero-quantum
 description: Zero-Knowledge Proofs (ZKPs) allow a prover to demonstrate knowledge of a secret (such as a password or private key) without revealing the secret itself. This skill implements the Schnorr identificati
 domain: cybersecurity
 subdomain: cryptography

@@ -158,7 +158,7 @@ trivy config ./terraform/
 
 ```yaml
 # GitHub Actions
-name: Trivy Container Scan
+name: containers-docker-dockertrivy
 on: push
 
 jobs:

@@ -161,7 +161,7 @@ kube-bench run --group 1.2
 ### GitHub Actions
 
 ```yaml
-name: CIS Benchmark
+name: kubernetes-hardening-kubernetes
 on:
   schedule:
     - cron: '0 6 * * 1'

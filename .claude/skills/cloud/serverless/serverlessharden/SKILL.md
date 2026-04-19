@@ -155,7 +155,7 @@ trivy fs --severity HIGH,CRITICAL ./lambda-package/
 
 ```yaml
 # GitHub Actions CI/CD security scanning
-name: Lambda Security Scan
+name: serverless-serverlessharden
 on: [push, pull_request]
 jobs:
   security:

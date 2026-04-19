@@ -961,6 +961,121 @@ async function saveSettingsEnv() {
   } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
 }
 
+// ── Settings Toggles (MCPs, Skills, Plugins, Global) ────────────────────────
+async function loadSettingsToggles() {
+  try {
+    const [mcpRes, skillRes, pluginRes, globalRes] = await Promise.all([
+      fetch('/dashboard/api/settings/mcps').then(r => r.json()).catch(() => ({servers:[]})),
+      fetch('/dashboard/api/settings/skills').then(r => r.json()).catch(() => ({domains:[]})),
+      fetch('/dashboard/api/settings/plugins').then(r => r.json()).catch(() => ({plugins:[]})),
+      fetch('/dashboard/api/settings/global').then(r => r.json()).catch(() => ({global:{}})),
+    ]);
+    _renderMcpToggles(mcpRes.servers || []);
+    _renderSkillToggles(skillRes.domains || []);
+    _renderPluginToggles(pluginRes.plugins || []);
+    _renderGlobalSummary(globalRes.global || {});
+  } catch(e) { console.error('loadSettingsToggles:', e); }
+}
+
+function _toggleSwitch(id, checked, onchange) {
+  return '<label class="toggle-switch" title="' + id + '">'
+    + '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="' + onchange + '">'
+    + '<span class="toggle-slider"></span>'
+    + '</label>';
+}
+
+function _renderMcpToggles(servers) {
+  const el = $('settings-mcps');
+  if (!el) return;
+  if (!servers.length) { el.innerHTML = '<span class="text-xs font-mono" style="color:var(--text-muted)">No MCP servers found in mcp.json</span>'; return; }
+  el.innerHTML = servers.map(s =>
+    '<div class="toggle-row">'
+    + '<div><div class="toggle-label">' + s.name + '</div>'
+    + '<div class="toggle-sub">' + (s.command || '') + '</div></div>'
+    + _toggleSwitch('mcp-' + s.name, s.enabled, 'toggleMcp("' + s.name + '",this.checked)')
+    + '</div>'
+  ).join('');
+}
+
+async function toggleMcp(name, enabled) {
+  try {
+    const res = await fetch('/dashboard/api/settings/mcps', {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, enabled}),
+    });
+    const d = await res.json();
+    if (d.error) console.error('toggleMcp:', d.error);
+  } catch(e) { console.error('toggleMcp:', e); }
+}
+
+function _renderSkillToggles(domains) {
+  const el = $('settings-skills');
+  if (!el) return;
+  if (!domains.length) { el.innerHTML = '<span class="text-xs font-mono" style="color:var(--text-muted)">No skill domains found</span>'; return; }
+  el.classList.remove('toggles-loading');
+  el.innerHTML = domains.map(d =>
+    '<div class="toggle-row">'
+    + '<div><div class="toggle-label">' + d.name + '</div>'
+    + '<div class="toggle-sub">' + d.skills + ' skills</div></div>'
+    + _toggleSwitch('skill-' + d.name, d.enabled, 'toggleSkillDomain("' + d.name + '",this.checked)')
+    + '</div>'
+  ).join('');
+}
+
+async function toggleSkillDomain(name, enabled) {
+  try {
+    await fetch('/dashboard/api/settings/skills', {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, enabled}),
+    });
+  } catch(e) { console.error('toggleSkillDomain:', e); }
+}
+
+function _renderPluginToggles(plugins) {
+  const el = $('settings-plugins');
+  if (!el) return;
+  if (!plugins.length) { el.innerHTML = '<span class="text-xs font-mono" style="color:var(--text-muted)">No plugins installed</span>'; return; }
+  el.innerHTML = plugins.map(p =>
+    '<div class="toggle-row">'
+    + '<div><div class="toggle-label">' + p.id.split('@')[0] + '</div>'
+    + '<div class="toggle-sub">v' + p.version + ' · ' + p.scope + '</div></div>'
+    + _toggleSwitch('plugin-' + p.id, p.enabled, 'togglePlugin("' + JSON.stringify(p.id).replace(/"/g,"\'") + '",this.checked)')
+    + '</div>'
+  ).join('');
+}
+
+async function togglePlugin(id, enabled) {
+  try {
+    await fetch('/dashboard/api/settings/plugins', {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({id, enabled}),
+    });
+  } catch(e) { console.error('togglePlugin:', e); }
+}
+
+function _renderGlobalSummary(g) {
+  const el = $('settings-global');
+  if (!el) return;
+  const rows = [
+    {k: 'Effort Level',      v: g.effortLevel || '—'},
+    {k: 'Codemoss Provider', v: g.codemossProviderId || '—'},
+    {k: 'Global MCP Servers', v: (g.mcpServers || []).join(', ') || '—'},
+    {k: 'Marketplaces',      v: (g.extraKnownMarketplaces || []).join(', ') || '—'},
+  ];
+  el.innerHTML = '<div class="space-y-1">'
+    + rows.map(r =>
+      '<div class="flex items-center gap-3 py-1">'
+      + '<span class="text-xs font-mono w-40 shrink-0" style="color:var(--text-muted)">' + r.k + '</span>'
+      + '<span class="text-xs font-mono" style="color:var(--text-primary)">' + r.v + '</span>'
+      + '</div>'
+    ).join('')
+    + '</div>';
+  el.classList.remove('toggles-loading');
+}
+
 // ── Team Builder ─────────────────────────────────────────────────────────────
 let _tbAgents = [];
 let _tbAgentNames = [];
@@ -1605,6 +1720,7 @@ async function loadExplorerTable() {
 }
 
 loadExplorerModels();
+loadSettingsToggles();
 loadSettings();
 loadTeamBuilder();
 tbLoadSavedTeams();

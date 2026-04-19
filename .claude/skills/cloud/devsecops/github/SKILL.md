@@ -83,7 +83,7 @@ For enterprises managing hundreds of repositories, GHAS supports configuring cod
 Create `.github/workflows/codeql-analysis.yml`:
 
 ```yaml
-name: "CodeQL Analysis"
+name: devsecops-github
 
 on:
   push:

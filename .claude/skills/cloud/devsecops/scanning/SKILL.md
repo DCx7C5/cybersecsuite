@@ -58,7 +58,7 @@ capec: []
 Secrets detection runs first because leaked credentials are the highest-priority finding. Add to `.github/workflows/security.yml`:
 
 ```yaml
-name: DevSecOps Security Pipeline
+name: devsecops-scanning
 on:
   push:
     branches: [main, develop]

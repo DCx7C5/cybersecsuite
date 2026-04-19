@@ -1,5 +1,5 @@
 ---
-name: tls
+name: protocol-tls-verify
 description: Configure SSL/TLS inspection on network security devices to decrypt, inspect, and re-encrypt HTTPS traffic for threat detection while managing certificates, exemptions, and privacy compliance.
 domain: cybersecurity
 subdomain: network-security

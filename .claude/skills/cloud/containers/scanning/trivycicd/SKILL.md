@@ -54,7 +54,7 @@ Set up a GitHub Actions workflow that builds a Docker image and scans it with Tr
 
 ```yaml
 # .github/workflows/container-security.yml
-name: Container Security Scan
+name: containers-scanning-trivycicd
 
 on:
   push:

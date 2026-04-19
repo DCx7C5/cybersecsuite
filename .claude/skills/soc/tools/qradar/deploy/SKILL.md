@@ -1,5 +1,5 @@
 ---
-name: qradar
+name: tools-qradar-deploy
 description: Correlates security events in IBM QRadar SIEM using AQL (Ariel Query Language), custom rules, building blocks, and offense management to detect multi-stage attacks across network, endpoint, and application log sources. Use when SOC analysts need to investigate QRadar offenses, build correlation rules, or tune detection logic for reducing false positives.
 domain: cybersecurity
 subdomain: soc-operations

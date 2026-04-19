@@ -287,7 +287,7 @@ done
 **GitHub Actions Integration:**
 ```yaml
 # .github/workflows/api-security-test.yml
-name: API Security Tests
+name: api-postman
 on:
   pull_request:
     paths: ['src/api/**', 'openapi.yaml']

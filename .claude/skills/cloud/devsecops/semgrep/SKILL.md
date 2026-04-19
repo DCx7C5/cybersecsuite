@@ -262,7 +262,7 @@ semgrep --config rules/sql-injection.yaml --test
 ### GitHub Actions
 
 ```yaml
-name: Semgrep SAST
+name: devsecops-semgrep
 on: [pull_request]
 
 jobs:

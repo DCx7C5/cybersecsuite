@@ -1,5 +1,5 @@
 ---
-name: credential-detection
+name: attack-credential-detect
 description: Detects credential stuffing attacks by analyzing authentication logs for login velocity anomalies, ASN diversity, password spray patterns, and geographic distribution of failed logins. Uses statistical analysis on Splunk or raw log data. Use when investigating account takeover campaigns or building detection rules for auth abuse.
 domain: cybersecurity
 subdomain: security-operations

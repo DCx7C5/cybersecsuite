@@ -164,7 +164,7 @@ done
 **GitHub Actions:**
 
 ```yaml
-name: Fuzz Testing
+name: devsecops-fuzz
 on:
   push:
     branches: [main]

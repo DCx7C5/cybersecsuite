@@ -1,5 +1,5 @@
 ---
-name: vlan
+name: layer2-vlan-configure
 description: Designs and implements VLAN-based network segmentation on managed switches to isolate network zones, enforce access control between segments, and reduce the attack surface by limiting lateral movement paths in enterprise network environments.
 domain: cybersecurity
 subdomain: network-security

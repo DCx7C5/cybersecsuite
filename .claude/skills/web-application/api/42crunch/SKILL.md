@@ -204,7 +204,7 @@ npm install -g @42crunch/cicd-cli
 **GitHub Actions Integration:**
 
 ```yaml
-name: API Security Testing
+name: api-42crunch
 on:
   push:
     paths:

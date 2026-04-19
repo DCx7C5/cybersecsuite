@@ -1,5 +1,5 @@
 ---
-name: aes
+name: symmetric-aes-analyze
 description: AES (Advanced Encryption Standard) is a symmetric block cipher standardized by NIST (FIPS 197) used to protect classified and sensitive data. This skill covers implementing AES-256 encryption in GCM m
 domain: cybersecurity
 subdomain: cryptography

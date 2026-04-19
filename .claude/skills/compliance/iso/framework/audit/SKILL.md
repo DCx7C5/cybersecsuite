@@ -1,5 +1,5 @@
 ---
-name: iso
+name: iso-framework-audit
 description: ISO/IEC 27001:2022 is the international standard for establishing, implementing, maintaining, and continually improving an Information Security Management System (ISMS). This skill covers the complete
 domain: cybersecurity
 subdomain: compliance-governance

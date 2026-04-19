@@ -116,7 +116,7 @@ trivy config ./k8s-manifests/
 ### GitHub Actions
 
 ```yaml
-name: Container Security Scan
+name: devsecops-aqua
 on:
   push:
     branches: [main]

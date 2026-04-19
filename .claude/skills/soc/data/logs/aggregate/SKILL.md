@@ -1,5 +1,5 @@
 ---
-name: logs
+name: data-logs-aggregate
 description: Collect, parse, and correlate system, application, and security logs to reconstruct events and establish timelines during forensic investigations.
 domain: cybersecurity
 subdomain: digital-forensics

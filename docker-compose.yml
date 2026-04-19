@@ -34,7 +34,7 @@ services:
       <<: *db-env
       POSTGRES_DB_PORT: 5432
       POSTGRES_USER: ${CYBERSEC_DB_USER:-cybersec}
-      POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
+      POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-change_me}
       POSTGRES_DB: ${CYBERSEC_DB_NAME:-cybersec_forensics}
       PGDATA: /var/lib/postgresql/data
     volumes:
@@ -43,15 +43,12 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
-        ]
-      interval: 20s
-      timeout: 10s
-      retries: 5
-      start_period: 5s
+      test: [ "CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+      start_interval: 5s
 
   cybersec-dashboard:
     build:
@@ -66,25 +63,29 @@ services:
       cybersec-postgres:
         condition: service_healthy
     environment:
-      <<: *db-env
-      <<: *ai-keys
+      <<: [ *db-env, *ai-keys ]
       # Unix socket: just the directory — asyncpg appends /.s.PGSQL.<port>
       CYBERSEC_DB_HOST: /tmp
       CYBERSEC_DB_PORT: 5432
       CYBERSEC_AUTO_CREATE_DB: "true"
       OPENSEARCH_HOST: ${OPENSEARCH_HOST:-http://cybersec-opensearch:9200}
+      # Settings toggle paths — mount project .claude/ + host ~/.claude as read-write
+      GLOBAL_CLAUDE_DIR: /app/.claude-global
     ports:
       - "127.0.0.1:8000:8000"
       - "127.0.0.1:8080:8080"
       - "127.0.0.1:8433:8433"
     volumes:
-      - pg_socket:/tmp    # shared socket directory with postgres
+      - pg_socket:/tmp                          # shared socket directory with postgres
+      - ./.claude:/app/.claude:rw               # project .claude/ (skills, settings)
+      - ${HOME}/.claude:/app/.claude-global:rw  # host ~/.claude (global settings, plugins)
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fs http://localhost:8000/health || exit 1" ]
+      test: [ "CMD", "curl", "-fs", "http://localhost:8000/health" ]   # liveness only
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
       start_period: 15s
+      start_interval: 5s
 
 
   cybersec-redis:
@@ -99,12 +100,12 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
       timeout: 3s
-      retries: 5
+      retries: 3
       start_period: 5s
-
+      start_interval: 3s
 
   cybersec-opensearch:
     image: opensearchproject/opensearch:2.17.1
@@ -115,9 +116,10 @@ services:
       - node.name=cybersec-node-1
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g          # ← increased (was 512m)
       - plugins.security.disabled=true
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-change_me}
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-cYb3rS3c!}
+      - cluster.routing.allocation.disk.threshold_enabled=false   # ← disables create-index block in dev
     ulimits:
       memlock:
         soft: -1
@@ -130,12 +132,12 @@ services:
     volumes:
       - os_data:/usr/share/opensearch/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
-      interval: 20s
+      test: [ "CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1" ]
+      interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 30s
-
+      retries: 3
+      start_period: 45s
+      start_interval: 5s
 
   cybersec-opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:2.17.1

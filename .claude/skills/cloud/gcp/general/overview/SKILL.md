@@ -1,5 +1,5 @@
 ---
-name: gcp
+name: gcp-general-overview
 description: Implement GCP Binary Authorization to enforce deploy-time security controls that ensure only trusted, attested container images are deployed to Google Kubernetes Engine and Cloud Run.
 domain: cybersecurity
 subdomain: cloud-security

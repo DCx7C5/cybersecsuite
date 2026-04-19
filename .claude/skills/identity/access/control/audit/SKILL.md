@@ -1,5 +1,5 @@
 ---
-name: access
+name: access-control-audit
 description: Configure and execute access recertification campaigns in Saviynt Enterprise Identity Cloud to validate user entitlements, revoke excessive access, and maintain compliance with SOX, SOC2, and HIPAA.
 domain: cybersecurity
 subdomain: identity-access-management

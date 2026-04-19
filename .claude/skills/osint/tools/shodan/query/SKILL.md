@@ -1,5 +1,5 @@
 ---
-name: shodan
+name: tools-shodan-query
 description: Analyze IP address reputation using the Shodan API to identify open ports, running services, known vulnerabilities, and hosting context for threat intelligence enrichment and incident triage.
 domain: cybersecurity
 subdomain: threat-intelligence

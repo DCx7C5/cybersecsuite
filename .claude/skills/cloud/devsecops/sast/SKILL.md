@@ -50,7 +50,7 @@ Create a CodeQL workflow that runs on pull requests and on a weekly schedule to 
 
 ```yaml
 # .github/workflows/codeql-analysis.yml
-name: "CodeQL Analysis"
+name: devsecops-sast
 
 on:
   push:
@@ -99,7 +99,7 @@ Semgrep complements CodeQL with faster scans and support for custom pattern-base
 
 ```yaml
 # .github/workflows/semgrep.yml
-name: "Semgrep SAST Scan"
+name: devsecops-sast
 
 on:
   pull_request:
@@ -209,7 +209,7 @@ Manage false positives through CodeQL query filters and Semgrep nosemgrep annota
 
 ```yaml
 # codeql-config.yml - Custom CodeQL configuration
-name: "Custom CodeQL Config"
+name: devsecops-sast
 queries:
   - uses: security-extended
   - uses: security-and-quality

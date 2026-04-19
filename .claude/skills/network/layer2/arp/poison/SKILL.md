@@ -1,5 +1,5 @@
 ---
-name: arp
+name: layer2-arp-poison
 description: Simulates ARP spoofing attacks in authorized lab or pentest environments using arpspoof, Ettercap, and Scapy to demonstrate man-in-the-middle risks, test network detection capabilities, and validate ARP inspection countermeasures.
 domain: cybersecurity
 subdomain: network-security

@@ -693,16 +693,16 @@ FROM CYBERSEC-AGENT:
 ⚠️ **Never ignore security** — Audit for injection, race conditions, and exposure.
 ⚠️ **Never deploy without signing** — All artifacts must be Ed25519-signed and BLAKE2b-hashed.
 ### MITRE ATT&CK References
-| Technique ID | Name | Relevance |
-|--------------|------|-----------|
-| T1190 | Exploit Public-Facing Application | Input validation via Pydantic prevents injection |
-| T1110 | Brute Force | Argon2id password hashing resists brute force |
-| T1005 | Data from Local System | ORM prevents SQL injection attacks |
-| T1041 | Exfiltration Over C2 | AES-256-GCM encryption protects data in transit |
-| T1027 | Obfuscated Files or Information | BLAKE2b hashing provides integrity verification |
-| T1552 | Unsecured Credentials | Environment variables prevent credential exposure |
-| T1486 | Data Encrypted for Impact | AES-256-GCM protects against ransomware |
-| T1078 | Valid Accounts | API key validation prevents unauthorized access |
+| Technique ID | Name                              | Relevance                                         |
+|--------------|-----------------------------------|---------------------------------------------------|
+| T1190        | Exploit Public-Facing Application | Input validation via Pydantic prevents injection  |
+| T1110        | Brute Force                       | Argon2id password hashing resists brute force     |
+| T1005        | Data from Local System            | ORM prevents SQL injection attacks                |
+| T1041        | Exfiltration Over C2              | AES-256-GCM encryption protects data in transit   |
+| T1027        | Obfuscated Files or Information   | BLAKE2b hashing provides integrity verification   |
+| T1552        | Unsecured Credentials             | Environment variables prevent credential exposure |
+| T1486        | Data Encrypted for Impact         | AES-256-GCM protects against ransomware           |
+| T1078        | Valid Accounts                    | API key validation prevents unauthorized access   |
 ### Compliance Checklist (Pre-Development)
 - [ ] Requirements fully understood (API contracts, data models, security requirements)
 - [ ] Async architecture designed (no blocking operations in async contexts)

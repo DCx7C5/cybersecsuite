@@ -391,7 +391,7 @@ curl -X PATCH "https://api.cloudflare.com/client/v4/zones/{zone_id}/api_gateway/
 
 ```yaml
 # GitHub Actions workflow for schema validation in CI
-name: API Schema Security Check
+name: api-schema
 on:
   pull_request:
     paths: ['api/**', 'openapi/**']

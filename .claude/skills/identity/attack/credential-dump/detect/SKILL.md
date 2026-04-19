@@ -1,5 +1,5 @@
 ---
-name: credential-dumping-detection
+name: attack-credential-dump-detect
 description: Detect LSASS credential dumping, SAM database extraction, and NTDS.dit theft using Sysmon Event ID 10, Windows Security logs, and SIEM correlation rules
 domain: cybersecurity
 subdomain: threat-detection

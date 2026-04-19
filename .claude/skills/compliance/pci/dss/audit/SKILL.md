@@ -1,5 +1,5 @@
 ---
-name: pci
+name: pci-dss-audit
 description: PCI DSS 4.0.1 establishes 12 requirements across 6 control objectives for organizations that store, process, or transmit cardholder data. With PCI DSS 3.2.1 retiring April 2024 and 51 new requirements
 domain: cybersecurity
 subdomain: compliance-governance

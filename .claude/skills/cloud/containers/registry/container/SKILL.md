@@ -193,7 +193,7 @@ Integrate scanning and signing into the CI/CD pipeline as mandatory gates.
 
 ```yaml
 # GitHub Actions: Scan, sign, and push image
-name: Container Security Pipeline
+name: containers-registry-container
 on: push
 
 jobs:

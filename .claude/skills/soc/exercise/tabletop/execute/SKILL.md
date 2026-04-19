@@ -1,5 +1,5 @@
 ---
-name: tabletop
+name: exercise-tabletop-execute
 description: Performs tabletop exercises for SOC teams simulating security incidents through discussion-based scenarios to test incident response procedures, communication workflows, and decision-making under pressure without impacting production systems. Use when organizations need to validate IR playbooks, train analysts, or meet compliance requirements for incident response testing.
 domain: cybersecurity
 subdomain: soc-operations

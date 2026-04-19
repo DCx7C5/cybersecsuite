@@ -1,5 +1,5 @@
 ---
-name: rbac
+name: access-rbac-audit
 description: Apply bottom-up and top-down role mining techniques to discover optimal RBAC roles from existing user-permission assignments, reducing role explosion and enforcing least privilege.
 domain: cybersecurity
 subdomain: identity-access-management

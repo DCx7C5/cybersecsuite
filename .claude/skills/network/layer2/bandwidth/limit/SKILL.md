@@ -1,5 +1,5 @@
 ---
-name: bandwidth
+name: layer2-bandwidth-limit
 description: Simulates bandwidth throttling and network degradation attacks using tc, iperf3, and Scapy in authorized environments to test quality-of-service controls, application resilience, and network monitoring detection of traffic manipulation attacks.
 domain: cybersecurity
 subdomain: network-security

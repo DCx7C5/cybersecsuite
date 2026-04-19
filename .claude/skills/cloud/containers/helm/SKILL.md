@@ -243,7 +243,7 @@ roleRef:
 
 ```yaml
 # .github/workflows/helm-security.yaml
-name: Helm Chart Security
+name: containers-helm
 on:
   pull_request:
     paths: ['charts/**']

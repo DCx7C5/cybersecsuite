@@ -1,5 +1,5 @@
 ---
-name: bgp
+name: layer3-bgp-hijack
 description: Analyzes and simulates BGP hijacking scenarios in authorized lab environments to assess route origin validation, RPKI deployment, and BGP monitoring defenses against prefix hijacking and route leak attacks on internet routing infrastructure.
 domain: cybersecurity
 subdomain: network-security
@@ -52,7 +52,7 @@ sudo bash -c "$(curl -sL https://get.containerlab.dev)"
 
 # Create a BGP lab topology file
 cat > bgp-lab.clab.yml << 'EOF'
-name: bgp-hijack-lab
+name: layer3-bgp-hijack
 topology:
   nodes:
     # Legitimate AS (AS65001) announcing 10.0.0.0/24

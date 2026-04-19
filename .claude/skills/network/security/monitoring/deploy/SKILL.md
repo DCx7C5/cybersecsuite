@@ -1,5 +1,5 @@
 ---
-name: monitoring2
+name: security-monitoring-deploy
 description: Network forensic reconnaissance. Active connection inventory, suspicious listeners, routing anomalies, DNS/mDNS analysis, ARP cache poisoning detection, firewall rule audit, and IOC infrastructure correlation.
 model: sonnet
 maxTurns: 30
