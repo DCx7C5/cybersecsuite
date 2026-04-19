@@ -63,16 +63,22 @@ Claude Code / agent_sdk.py
 | `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                                  |
 | `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                |
 | `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
-| `api/team_builder.py`      | 130   | `GET /api/team-agents` (48 agents) · `GET /api/skills?domain=&q=` (942 skills) · `GET /api/teams`                   |
+| `api/team_builder.py`      | 310   | `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `PUT/DELETE /api/teams/{name}` · `GET /api/teams/{name}` |
+| `api/agent_crud.py`        | 279   | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` — create/edit/delete .md files                    |
+| `api/workflows.py`         | 247   | `GET/POST /api/workflows` · `GET/DELETE /api/workflows/{id}` — multi-step pipeline with dep order                   |
 | `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
 | `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
 | `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                             |
 
-**27 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · Team Builder · Telemetry · **OpenSearch** · Explorer
+**29 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · Team Builder · **Agent Craft** · **Workflows** · Telemetry · OpenSearch · Explorer
 
-**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET /api/teams` · `GET /api/opensearch`
+**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `POST /api/agents/crud` · `POST /api/workflows` · `GET /api/opensearch`
 
-**Team Builder tab**: Agent Browser (filterable table of 48 agents), Skill Browser (26 domains × 942 skills, domain select + search), Team Composer (add phases → assign agents → generate/copy JSON).
+**Team Builder tab**: Agent Browser (filterable table of 48 agents), Skill Browser (26 domains × 942 skills, domain select + search), Team Composer (add phases → assign agents → **save to .claude/agents/teams/** → load saved teams).
+
+**Agent Craft tab**: Create form (name/model/maxTurns/description/tools/mcpServers/instructions) → POST /api/agents/crud. Agent list with Edit (modal) and Delete buttons. Protected agents (cybersec-agent) cannot be modified.
+
+**Workflows tab**: Step builder (id/agent/prompt/depends_on) → POST /api/workflows. Topological execution with {{step_id}} result interpolation. History panel with status badges and result preview.
 
 **Settings tab**: Agent & Proxy (editable), Env Variables (add/remove/save rows), Hooks (read-only renderTable). PATCH validates against editable/readonly key sets — forbidden keys → 400.
 
