@@ -1,50 +1,47 @@
-"""Sidebar navigation — grouped vertical tabs replacing the 29-item horizontal bar."""
+"""Sidebar navigation — grouped vertical tabs."""
 
 # (name, label, icon, group)
 _NAV = [
-    # OVERVIEW
-    ("providers",   "Providers",      "⬡", "overview"),
-    ("usage",       "Usage & Cost",   "◈", "overview"),
-    ("health",      "Health",         "♡", "overview"),
+    # PLATFORM
+    ("health",        "Health",           "♡", "platform"),
+    ("usage",         "Usage & Cost",     "◈", "platform"),
+    ("telemetry",     "Telemetry",        "◉", "platform"),
     # AI PROXY
-    ("routing",     "Routing",        "⇄", "proxy"),
-    ("crypto",      "Crypto",         "⊗", "proxy"),
+    ("routing",       "Routing",          "⇄", "proxy"),
+    ("crypto",        "Crypto",           "⊗", "proxy"),
     # AGENTS
-    ("agents",      "Agents",         "◎", "agents"),
-    ("agent-craft", "Agent Craft",    "⊞", "agents"),
-    ("team-builder","Team Builder",   "⊟", "agents"),
-    ("agent-query", "Agent Query",    "⇒", "agents"),
-    ("factory",     "Factory",        "⊕", "agents"),
-    ("prompts",     "Prompts",        "⊘", "agents"),
-    # OPS CENTER
-    ("cases",       "Cases",          "⊡", "ops"),
-    ("tasks",       "Tasks",          "⊛", "ops"),
-    ("pocs",        "PoCs",           "⊕", "ops"),
-    ("workflows",   "Workflows",      "⇌", "ops"),
-    ("a2a",         "A2A Proto",      "⇋", "ops"),
+    ("agent-craft",   "Agent Craft",      "⊞", "agents"),
+    ("team-builder",  "Team Builder",     "⊟", "agents"),
+    ("agent-query",   "Agent Query",      "⇒", "agents"),
+    ("workflows",     "Workflows",        "⇌", "agents"),
+    ("prompts",       "Prompts",          "⊘", "agents"),
+    # OPERATIONS
+    ("cases",         "Cases",            "⊡", "ops"),
+    ("tasks",         "Tasks",            "⊛", "ops"),
+    ("pocs",          "PoCs",             "⊕", "ops"),
+    ("a2a",           "A2A Proto",        "⇋", "ops"),
     # FORENSICS
-    ("investigations","Investigations","◉","forensics"),
-    ("findings",    "Findings",       "⊘", "forensics"),
-    ("iocs",        "IOCs",           "◈", "forensics"),
-    ("yara",        "YARA Rules",     "⊛", "forensics"),
-    ("network",     "Network",        "⊡", "forensics"),
-    ("intel",       "Intel Feed",     "◎", "forensics"),
-    ("audit",       "Audit Log",      "⊕", "forensics"),
-    ("compliance",  "Compliance",     "⊗", "forensics"),
+    ("investigations","Investigations",   "◉", "forensics"),
+    ("findings",      "Findings",         "⊘", "forensics"),
+    ("iocs",          "IOCs",             "◈", "forensics"),
+    ("yara",          "YARA Rules",       "⊛", "forensics"),
+    ("network",       "Network",          "⊡", "forensics"),
+    ("intel",         "Intel Feed",       "◎", "forensics"),
+    ("audit",         "Audit Log",        "⊕", "forensics"),
+    ("compliance",    "Compliance",       "⊗", "forensics"),
     # DATA
-    ("dbcounts",    "DB Counts",      "◉", "data"),
-    ("telemetry",   "Telemetry",      "◎", "data"),
-    ("opensearch",  "OpenSearch",     "⊘", "data"),
-    ("explorer",    "Explorer",       "⊡", "data"),
+    ("dbcounts",      "DB Counts",        "◉", "data"),
+    ("opensearch",    "OpenSearch",       "⊘", "data"),
+    ("explorer",      "Explorer",         "⊡", "data"),
     # SETTINGS
-    ("settings",    "Settings",       "⊛", "settings"),
+    ("settings",      "Settings",         "⊛", "settings"),
 ]
 
 _GROUPS = {
-    "overview":   "OVERVIEW",
+    "platform":   "PLATFORM",
     "proxy":      "AI PROXY",
     "agents":     "AGENTS",
-    "ops":        "OPS CENTER",
+    "ops":        "OPERATIONS",
     "forensics":  "FORENSICS",
     "data":       "DATA",
     "settings":   "SETTINGS",

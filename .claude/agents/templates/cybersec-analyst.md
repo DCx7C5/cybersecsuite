@@ -5,10 +5,12 @@ model: sonnet
 maxTurns: 30
 tools:
   - Read
+  - Write
   - Bash
   - Glob
   - Grep
   - WebFetch
+  - WebSearch
   - TodoRead
   - TodoWrite
 ---

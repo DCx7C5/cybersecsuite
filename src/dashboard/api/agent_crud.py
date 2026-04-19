@@ -277,3 +277,155 @@ async def api_agent_get(request: Request) -> JSONResponse:
         "body": body,
         "raw": text,
     })
+
+
+# ── Agent Generate (Factory) ──────────────────────────────────────────────────
+_TEMPLATES_DIR = _AGENTS_DIR / "templates"
+
+_TYPE_ROLE_MAP = {
+    "orchestrator": "Central orchestrator. Delegates tasks to sub-agents via Task tool. Never calls sub-agents directly.",
+    "specialist":   "Specialist sub-agent. Executes focused tasks and returns structured results.",
+    "team":         "Team composition agent. Manages a cohesive multi-agent team pipeline.",
+}
+
+_RESEARCH_SECTIONS = {
+    "mitre":  "## MITRE ATT&CK Context\nReference relevant MITRE ATT&CK techniques, tactics, and mitigations when applicable.",
+    "cve":    "## CVE / Vulnerability Context\nCross-reference known CVEs and CVSS scores when analyzing vulnerabilities.",
+    "tools":  "## Tool Usage Notes\nDocument tool selection rationale and output expectations for each tool used.",
+    "api":    "## API Integration Notes\nDescribe external API calls, authentication, and error handling expectations.",
+}
+
+_CHAPTER_TEMPLATE = """\
+## Chapter {n}: {title}
+
+{content}
+"""
+
+
+def _build_generated_body(data: dict) -> str:
+    """Build a full agent markdown body from factory variables."""
+    agent_type  = data.get("type", "specialist")
+    name        = data.get("name", "custom-agent")
+    description = data.get("description", "")
+    model       = data.get("model", "sonnet")
+    max_turns   = data.get("maxTurns", 30)
+    extra       = data.get("extra_instructions", "").strip()
+    research    = data.get("research", [])
+    templates   = data.get("templates", [])
+    project_ctx = data.get("project_context", False)
+
+    title = name.replace("-", " ").title()
+    role_guidance = _TYPE_ROLE_MAP.get(agent_type, _TYPE_ROLE_MAP["specialist"])
+
+    parts = [f"# {title}\n"]
+    parts.append(f"**Role**: `{agent_type}` · **Model**: `{model}` · **MaxTurns**: `{max_turns}`\n")
+
+    # Chapter 1: Role & Mission
+    mission = description or f"Specialist agent for {title} tasks."
+    parts.append(_CHAPTER_TEMPLATE.format(n=1, title="Role & Mission", content=(
+        f"**Purpose Statement**: {mission}\n\n"
+        f"**Role Guidance**: {role_guidance}"
+    )))
+
+    # Chapter 2: Core Principles
+    parts.append(_CHAPTER_TEMPLATE.format(n=2, title="Core Principles", content=(
+        "- Always validate inputs before acting\n"
+        "- Return structured, machine-readable results\n"
+        "- Prefer reversible actions\n"
+        "- Log all significant actions with timestamps"
+    )))
+
+    # Inject template content (selected templates)
+    if templates:
+        tpl_content_parts = []
+        for tpl in templates:
+            tpl_path = _TEMPLATES_DIR / f"{tpl}.md"
+            if not tpl_path.exists():
+                tpl_path = _TEMPLATES_DIR / tpl  # with .md suffix already
+            if tpl_path.exists():
+                text = tpl_path.read_text(encoding="utf-8", errors="replace").strip()
+                tpl_content_parts.append(f"### Template: {tpl}\n\n{text}")
+        if tpl_content_parts:
+            parts.append("## Chapter 3: Domain Templates\n\n" + "\n\n---\n\n".join(tpl_content_parts) + "\n")
+
+    # Research sections
+    for key in research:
+        if key in _RESEARCH_SECTIONS:
+            parts.append(_RESEARCH_SECTIONS[key] + "\n")
+
+    # Project context
+    if project_ctx:
+        parts.append("## Project Context\n\nThis agent operates within the CyberSecSuite project. "
+                     "Use `mcp__cybersec__get_project_memory` to load session context before executing tasks.\n")
+
+    # Extra instructions
+    if extra:
+        parts.append(f"## Additional Instructions\n\n{extra}\n")
+
+    # Orchestrator-specific: delegation table stub
+    if agent_type == "orchestrator":
+        parts.append("## Delegation Matrix\n\n"
+                     "| Task | Sub-Agent | Tool |\n"
+                     "|------|-----------|------|\n"
+                     "| _TBD_ | _TBD_ | Task |\n")
+
+    return "\n".join(parts)
+
+
+async def api_agents_generate(request: Request) -> JSONResponse:
+    """POST /api/agents/generate — generate agent markdown via factory variables.
+
+    Body: {
+        type, name, description, model, maxTurns, tools,
+        templates, research, project_context, extra_instructions, save
+    }
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    name = body.get("name", "").strip()
+    if not name:
+        return JSONResponse({"error": "name is required"}, status_code=400)
+
+    slug = _slugify(name)
+    if not slug:
+        return JSONResponse({"error": "name produces empty slug"}, status_code=400)
+
+    model = body.get("model", "sonnet")
+    if model not in ALLOWED_MODELS:
+        return JSONResponse({"error": f"invalid model: {model}"}, status_code=400)
+
+    tools = body.get("tools", list(ALLOWED_TOOLS[:6]))
+
+    data = {
+        "name": slug,
+        "description": body.get("description", ""),
+        "model": model,
+        "maxTurns": body.get("maxTurns", 30),
+        "tools": tools,
+        "type": body.get("type", "specialist"),
+        "templates": body.get("templates", []),
+        "research": body.get("research", []),
+        "project_context": body.get("project_context", False),
+        "extra_instructions": body.get("extra_instructions", ""),
+    }
+
+    frontmatter = _build_frontmatter(data)
+    body_md = _build_generated_body(data)
+    content = frontmatter + "\n" + body_md
+
+    result: dict = {"content": content, "agent": slug}
+
+    if body.get("save", True):
+        dest_dir = _AGENTS_DIR
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        filepath = dest_dir / f"{slug}.md"
+        if filepath.exists():
+            return JSONResponse({"error": f"agent '{slug}' already exists — delete it first or use a different name"}, status_code=409)
+        filepath.write_text(content, encoding="utf-8")
+        result["file"] = filepath.name
+        result["saved"] = True
+
+    return JSONResponse(result, status_code=201 if body.get("save", True) else 200)

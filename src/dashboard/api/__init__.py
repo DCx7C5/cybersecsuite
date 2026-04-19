@@ -65,11 +65,12 @@ from dashboard.api.settings_toggles import (
     api_settings_hooks_get,
     api_settings_hooks_post,
     api_settings_hooks_delete,
+    api_settings_agent_templates,
 )
 from dashboard.api.team_builder import api_team_agents, api_skills, api_teams, api_team_create, api_team_update, api_team_delete, api_team_get
 from dashboard.api.opensearch_stats import api_opensearch
 from dashboard.api.page import dashboard_page
-from dashboard.api.agent_crud import api_agent_create, api_agent_update, api_agent_delete, api_agent_get
+from dashboard.api.agent_crud import api_agent_create, api_agent_update, api_agent_delete, api_agent_get, api_agents_generate
 from dashboard.api.workflows import api_workflow_create, api_workflow_list, api_workflow_get, api_workflow_cancel
 
 __all__ = [
@@ -134,6 +135,7 @@ __all__ = [
     "api_settings_hooks_get",
     "api_settings_hooks_post",
     "api_settings_hooks_delete",
+    "api_settings_agent_templates",
     # team builder
     "api_team_agents",
     "api_skills",
@@ -147,6 +149,7 @@ __all__ = [
     "api_agent_update",
     "api_agent_delete",
     "api_agent_get",
+    "api_agents_generate",
     # workflows
     "api_workflow_create",
     "api_workflow_list",

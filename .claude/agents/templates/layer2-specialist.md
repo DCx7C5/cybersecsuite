@@ -1,6 +1,6 @@
 ---
 name: layer2-specialist
-description: >
+description: >-
   Pure OSI Layer 2 cybersecurity specialist. Invoke exclusively for Data Link
   Layer analysis: MAC flooding and spoofing, ARP spoofingpoisoning/cache
   injection, VLAN hopping (double-tagging, switch spoofing), STP attacks

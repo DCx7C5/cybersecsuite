@@ -746,25 +746,40 @@ def header() -> str:
     )
 
 
-def stats_row() -> str:
+def context_bar() -> str:
+    """Dynamic context bar between topbar and content — updated by JS per tab."""
     return (
-        '<div class="stats-grid">\n'
-        '  <div class="stat-pill"><div class="val" id="s-providers">-</div><div class="lbl">Providers</div></div>\n'
-        '  <div class="stat-pill"><div class="val" id="s-enabled">-</div><div class="lbl">Enabled</div></div>\n'
-        '  <div class="stat-pill"><div class="val" id="s-models">-</div><div class="lbl">Models</div></div>\n'
-        '  <div class="stat-pill"><div class="val" id="s-requests">-</div><div class="lbl">Requests</div></div>\n'
-        '  <div class="stat-pill"><div class="val" id="s-tokens">-</div><div class="lbl">Tokens</div></div>\n'
-        '  <div class="stat-pill"><div class="val" id="s-cost">-</div><div class="lbl">Cost USD</div></div>\n'
+        '<div id="context-bar" style="'
+        'display:none;'
+        'background:var(--bg-deep);'
+        'border-bottom:1px solid var(--border);'
+        'padding:8px 24px;'
+        'align-items:center;gap:20px;'
+        'font-family:var(--font-mono);font-size:11px;'
+        '">\n'
+        '  <span id="ctx-label" style="color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;font-size:9px;margin-right:4px"></span>\n'
+        '  <span id="ctx-s1" class="ctx-stat" style="display:none"></span>\n'
+        '  <span id="ctx-s2" class="ctx-stat" style="display:none"></span>\n'
+        '  <span id="ctx-s3" class="ctx-stat" style="display:none"></span>\n'
+        '  <span id="ctx-s4" class="ctx-stat" style="display:none"></span>\n'
+        '  <span id="ctx-s5" class="ctx-stat" style="display:none"></span>\n'
         '</div>\n'
+        '<style>\n'
+        '.ctx-stat { color:var(--text-muted); }\n'
+        '.ctx-stat strong { color:var(--accent); font-weight:600; margin-right:3px; }\n'
+        '.ctx-stat + .ctx-stat::before { content:"·"; color:var(--text-faint); margin-right:16px; }\n'
+        '.af-check { display:inline-flex;align-items:center;gap:5px;padding:4px 8px;'
+        'background:var(--surface);border:1px solid var(--border);border-radius:4px;'
+        'cursor:pointer;font-size:11px;font-family:var(--font-mono);color:var(--text-muted); }\n'
+        '.af-check:hover { border-color:var(--accent); }\n'
+        '.af-check input { accent-color:var(--accent); }\n'
+        '</style>\n'
     )
+
+
+def stats_row() -> str:
+    return ""
 
 
 def tiers_row() -> str:
-    return (
-        '<div class="tiers-grid">\n'
-        '  <div class="tier-pill"><span class="badge badge-free">FREE</span><div class="tier-val glow-green" id="t-free">-</div></div>\n'
-        '  <div class="tier-pill"><span class="badge badge-budget">BUDGET</span><div class="tier-val glow-cyan" id="t-budget">-</div></div>\n'
-        '  <div class="tier-pill"><span class="badge badge-standard">STD</span><div class="tier-val" style="color:var(--violet)" id="t-standard">-</div></div>\n'
-        '  <div class="tier-pill"><span class="badge badge-premium">PREMIUM</span><div class="tier-val" style="color:var(--red)" id="t-premium">-</div></div>\n'
-        '</div>\n'
-    )
+    return ""

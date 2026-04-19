@@ -2,7 +2,7 @@
 
 Entry point: build_dashboard_html() → full SPA HTML string.
 """
-from ._base import head, header, stats_row, tiers_row
+from ._base import head, header, context_bar
 from ._js import _JS
 from ._panels import all_panels
 from ._tabs import tab_bar, first_tab
@@ -29,9 +29,8 @@ def build_dashboard_html() -> str:
     main = (
         '<div id="main">\n'
         + header()
+        + context_bar()
         + '<div id="content">\n'
-        + stats_row()
-        + tiers_row()
         + all_panels()
         + '</div>\n'
         + '</div>\n'

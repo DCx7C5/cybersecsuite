@@ -440,6 +440,76 @@ def _agent_craft() -> str:
         '    </div>\n'
         '  </div>\n'
 
+        # ── Factory Mode ─────────────────────────────────────────────────────
+        '  <details id="ac-factory-details" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">\n'
+        '    <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.02em;user-select:none;list-style:none;display:flex;align-items:center;gap:8px">'
+        '<span>&#x2604; Generate with Agent Factory</span>'
+        '<span style="font-size:10px;font-weight:400;color:var(--text-muted)">(AI-powered from template)</span>'
+        '</summary>\n'
+        '    <div style="margin-top:16px">\n'
+
+        '      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">\n'
+        '        <div>\n'
+        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Agent Type</label>\n'
+        '          <select id="af-type" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '            <option value="specialist">Specialist</option>\n'
+        '            <option value="orchestrator">Orchestrator</option>\n'
+        '            <option value="team-mode">Team Mode</option>\n'
+        '          </select>\n'
+        '        </div>\n'
+        '        <div>\n'
+        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Model</label>\n'
+        '          <select id="af-model" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '            <option value="sonnet">Claude Sonnet</option>\n'
+        '            <option value="haiku">Claude Haiku</option>\n'
+        '            <option value="opus">Claude Opus</option>\n'
+        '          </select>\n'
+        '        </div>\n'
+        '        <div>\n'
+        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Max Turns</label>\n'
+        '          <input type="number" id="af-maxturns" value="30" min="1" max="200" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '        </div>\n'
+        '      </div>\n'
+
+        '      <div style="margin-bottom:16px">\n'
+        '        <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Base Templates <span style="color:var(--text-faint)">(from .claude/agents/templates/)</span></label>\n'
+        '        <div id="af-templates" style="display:flex;flex-wrap:wrap;gap:8px;min-height:32px;padding:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius)">'
+        '<span style="color:var(--text-faint);font-size:11px;font-family:var(--font-mono)">Loading templates…</span>'
+        '</div>\n'
+        '      </div>\n'
+
+        '      <div style="margin-bottom:16px">\n'
+        '        <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Research Sections <span style="color:var(--text-faint)">(WebFetch on generate)</span></label>\n'
+        '        <div style="display:flex;flex-wrap:wrap;gap:8px">\n'
+        '          <label class="af-check"><input type="checkbox" id="af-r-mitre" value="mitre"> MITRE ATT&amp;CK</label>\n'
+        '          <label class="af-check"><input type="checkbox" id="af-r-cve" value="cve"> CVE Database</label>\n'
+        '          <label class="af-check"><input type="checkbox" id="af-r-tools" value="tools"> Tool Docs</label>\n'
+        '          <label class="af-check"><input type="checkbox" id="af-r-api" value="api"> API Reference</label>\n'
+        '        </div>\n'
+        '      </div>\n'
+
+        '      <div style="margin-bottom:16px;display:flex;align-items:center;gap:24px">\n'
+        '        <label class="af-check" style="font-size:13px">\n'
+        '          <input type="checkbox" id="af-project-ctx"> Include project context (.claude/)</label>\n'
+        '        <label class="af-check" style="font-size:13px">\n'
+        '          <input type="checkbox" id="af-save-file" checked> Save to .claude/agents/</label>\n'
+        '      </div>\n'
+
+        '      <div style="margin-bottom:8px">\n'
+        '        <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Extra Instructions <span style="color:var(--text-faint)">(appended to factory prompt)</span></label>\n'
+        '        <textarea id="af-extra" rows="3" placeholder="Focus on XYZ domain. Must include T1055 detection. Report format: ..." '
+        'style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
+        '      </div>\n'
+
+        '      <div style="display:flex;align-items:center;gap:12px;margin-top:4px">\n'
+        '        <button onclick="afGenerate()" class="btn btn-accent">&#x2604; Generate Agent</button>\n'
+        '        <span id="af-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></span>\n'
+        '      </div>\n'
+
+        '      <pre id="af-preview" style="display:none;margin-top:16px;padding:14px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;font-family:var(--font-mono);color:var(--text-primary);white-space:pre-wrap;max-height:400px;overflow-y:auto"></pre>\n'
+        '    </div>\n'
+        '  </details>\n'
+
         "</div>\n"
     )
 
@@ -710,20 +780,21 @@ def _explorer() -> str:
 
 def all_panels() -> str:
     return "".join([
-        _providers(),
-        _usage(),
         _health(),
-        _agents(),
+        _usage(),
+        _telemetry(),
         _routing(),
-        _factory(),
-        _prompts(),
         _crypto(),
-        _a2a(),
-        _investigations(),
-        _dbcounts(),
+        _agent_craft(),
+        _team_builder(),
+        _agent_query(),
+        _workflows(),
+        _prompts(),
         _cases(),
         _tasks(),
         _pocs(),
+        _a2a(),
+        _investigations(),
         _findings(),
         _iocs(),
         _yara(),
@@ -731,12 +802,8 @@ def all_panels() -> str:
         _intel(),
         _audit(),
         _compliance(),
-        _agent_query(),
-        _settings(),
-        _team_builder(),
-        _agent_craft(),
-        _workflows(),
-        _telemetry(),
+        _dbcounts(),
         _opensearch(),
         _explorer(),
+        _settings(),
     ])

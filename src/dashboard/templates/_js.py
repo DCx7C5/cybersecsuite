@@ -2,7 +2,94 @@
 
 _JS = r"""
 const $ = id => document.getElementById(id);
-let currentTab = 'providers';
+let currentTab = 'health';
+// per-tab context stats cache: { tabName: [{label, value}, ...] }
+const _ctxCache = {};
+
+function _setCtxStat(el, label, value) {
+  if (!el) return;
+  el.innerHTML = '<strong>' + value + '</strong>' + label;
+  el.style.display = '';
+}
+
+function _clearCtx() {
+  for (let i = 1; i <= 5; i++) {
+    const el = $('ctx-s' + i);
+    if (el) { el.innerHTML = ''; el.style.display = 'none'; }
+  }
+}
+
+function _showCtxStats(stats) {
+  // stats: [{label, value}, ...]
+  const bar = $('context-bar');
+  if (!bar) return;
+  _clearCtx();
+  if (!stats || !stats.length) { bar.style.display = 'none'; return; }
+  stats.slice(0, 5).forEach((s, i) => _setCtxStat($('ctx-s' + (i+1)), s.label, s.value));
+  bar.style.display = 'flex';
+}
+
+async function _updateContextBar(name) {
+  if (_ctxCache[name]) { _showCtxStats(_ctxCache[name]); return; }
+  const tab_stats = {
+    'health':    () => fetch('/dashboard/api/overview').then(r=>r.json()).then(d=>[
+      {value: d.uptime_seconds ? Math.round(d.uptime_seconds)+'s' : '—', label: ' uptime'},
+      {value: d.providers?.enabled ?? '—', label: ' providers on'},
+      {value: d.models?.total ?? '—', label: ' models'},
+    ]),
+    'usage':     () => fetch('/dashboard/api/overview').then(r=>r.json()).then(d=>[
+      {value: fmt(d.usage?.total_requests ?? 0), label: ' requests'},
+      {value: fmt(d.usage?.total_tokens ?? 0), label: ' tokens'},
+      {value: '$'+(d.usage?.total_cost_usd??0).toFixed(4), label: ' cost'},
+    ]),
+    'routing':   () => fetch('/dashboard/api/routing').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.strategy ?? '—', label: ' strategy'},
+      {value: d.providers_available ?? '—', label: ' providers'},
+    ]),
+    'findings':  () => fetch('/dashboard/api/findings').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.total ?? 0, label: ' total'},
+      {value: d.critical ?? 0, label: ' critical'},
+      {value: d.high ?? 0, label: ' high'},
+      {value: d.last_24h ?? 0, label: ' last 24h'},
+    ]),
+    'iocs':      () => fetch('/dashboard/api/iocs').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.total ?? 0, label: ' total'},
+      {value: d.active ?? 0, label: ' active'},
+      {value: d.high_confidence ?? 0, label: ' high conf'},
+    ]),
+    'cases':     () => fetch('/dashboard/api/cases').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.total ?? 0, label: ' cases'},
+      {value: d.open ?? 0, label: ' open'},
+      {value: d.closed ?? 0, label: ' closed'},
+    ]),
+    'tasks':     () => fetch('/dashboard/api/tasks').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.total ?? 0, label: ' tasks'},
+      {value: d.working ?? 0, label: ' running'},
+      {value: d.completed ?? 0, label: ' done'},
+    ]),
+    'agent-craft': () => fetch('/dashboard/api/agents').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.agents?.length ?? 0, label: ' agents'},
+      {value: d.agents?.filter(a=>a.role==='orchestrator').length ?? 0, label: ' orchestrators'},
+    ]),
+    'intel': () => fetch('/dashboard/api/intelligence').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.mitre_techniques ?? 0, label: ' MITRE'},
+      {value: d.cves ?? 0, label: ' CVEs'},
+      {value: d.cwes ?? 0, label: ' CWEs'},
+    ]),
+    'compliance': () => fetch('/dashboard/api/compliance').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.total ?? 0, label: ' rules'},
+      {value: d.critical ?? 0, label: ' critical'},
+      {value: d.frameworks ?? 0, label: ' frameworks'},
+    ]),
+  };
+  const fn = tab_stats[name];
+  if (!fn) { _showCtxStats([]); return; }
+  try {
+    const stats = await fn();
+    _ctxCache[name] = stats;
+    _showCtxStats(stats);
+  } catch { _showCtxStats([]); }
+}
 
 function showTab(name) {
   document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
@@ -11,11 +98,11 @@ function showTab(name) {
   if (panel) { panel.style.display = ''; panel.classList.add('panel-enter'); }
   const navItem = $('nav-' + name);
   if (navItem) navItem.classList.add('active');
-  // update topbar breadcrumb
   const crumb = document.querySelector('#topbar-title');
   if (crumb && navItem) crumb.textContent = '▶ ' + navItem.textContent.trim().toUpperCase();
   currentTab = name;
   _updateStatusBar(name);
+  _updateContextBar(name);
 }
 
 function fmt(n) {
@@ -131,10 +218,9 @@ function renderTable(containerId, schema, rows, opts = {}) {
 
 async function refresh() {
   try {
-    const [ov, pv, uv, cv, av, iv, dv, agv, rtv, fv, pmv, pocv,
+    const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv,
            findingsv, iocsv, yarav, netv, intv, auditv, compv] = await Promise.all([
       fetch('/dashboard/api/overview').then(r => r.json()),
-      fetch('/dashboard/api/providers').then(r => r.json()),
       fetch('/dashboard/api/usage').then(r => r.json()),
       fetch('/dashboard/api/crypto').then(r => r.json()),
       fetch('/dashboard/api/a2a').then(r => r.json()),
@@ -142,7 +228,6 @@ async function refresh() {
       fetch('/dashboard/api/db-counts').then(r => r.json()),
       fetch('/dashboard/api/agents').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/routing').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/agent-factory').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/prompts').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/pocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
       fetch('/dashboard/api/findings').then(r => r.json()).catch(() => ({error:'unavailable'})),
@@ -154,50 +239,15 @@ async function refresh() {
       fetch('/dashboard/api/compliance').then(r => r.json()).catch(() => ({error:'unavailable'})),
     ]);
 
-    // Stats
-    $('s-providers').textContent = ov.providers.total;
-    $('s-enabled').textContent = ov.providers.enabled;
-    $('s-models').textContent = ov.models.total;
-    $('s-requests').textContent = fmt(ov.usage.total_requests);
-    $('s-tokens').textContent = fmt(ov.usage.total_tokens);
-    $('s-cost').textContent = '$' + ov.usage.total_cost_usd.toFixed(4);
-    $('uptime').textContent = Math.round(ov.uptime_seconds) + 's uptime';
+    if ($('uptime') && ov.uptime_seconds !== undefined)
+      $('uptime').textContent = Math.round(ov.uptime_seconds) + 's uptime';
 
-    // Tiers
-    $('t-free').textContent = ov.tiers.free;
-    $('t-budget').textContent = ov.tiers.budget;
-    $('t-standard').textContent = ov.tiers.standard;
-    $('t-premium').textContent = ov.tiers.premium;
+    // Invalidate context cache so next showTab fetches fresh data
+    Object.keys(_ctxCache).forEach(k => delete _ctxCache[k]);
+    _updateContextBar(currentTab);
 
     // Remove loading
     document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
-
-    // Providers table
-    renderTable('providers-table', [
-      {key: 'provider', label: 'Provider', type: 'string'},
-      {key: 'status', label: 'Status', type: 'string'},
-      {key: 'type', label: 'Type', type: 'string'},
-      {key: 'format', label: 'Format', type: 'string'},
-      {key: 'models', label: 'Models', type: 'number'},
-      {key: 'rpm', label: 'RPM', type: 'string'},
-      {key: 'cost', label: 'Cost /M', type: 'string'},
-    ], pv.map(p => ({
-      provider: '<strong>' + p.name + '</strong><br><span class="text-xs text-gray-500">' + p.id + '</span>',
-      status: p.status === 'available'
-        ? '<span class="badge badge-ok">ON</span>'
-        : '<span class="badge badge-err">' + (p.status || '?').toUpperCase() + '</span>',
-      type: p.auth_type === 'browser'
-        ? '<span class="badge badge-browser">BROWSER</span>'
-        : tierBadge(p),
-      format: p.api_format,
-      models: p.models.length,
-      rpm: p.rate_limit && p.rate_limit.rpm_remaining !== undefined
-        ? Math.round(p.rate_limit.rpm_remaining) + '/' + p.rate_limit.rpm_capacity
-        : '—',
-      cost: costRange(p.models) + '/M',
-    })));
-
-    // Usage table
     renderTable('usage-table', [
       {key: 'provider', label: 'Provider', type: 'string'},
       {key: 'model', label: 'Model', type: 'string'},
@@ -1920,15 +1970,92 @@ async function removeHook(event, command) {
   } catch(e) { alert('Error: '+e.message); }
 }
 
-// Activate first sidebar tab on load (no click event, use direct call)
+// ── Agent Factory ─────────────────────────────────────────────────────────────
+async function afLoadTemplates() {
+  const el = $('af-templates');
+  if (!el) return;
+  try {
+    const d = await fetch('/dashboard/api/settings/agent-templates').then(r => r.json());
+    const templates = d.templates || [];
+    if (!templates.length) {
+      el.innerHTML = '<span style="color:var(--text-faint);font-size:11px;font-family:var(--font-mono)">No templates found</span>';
+      return;
+    }
+    el.innerHTML = templates.map(t =>
+      '<label style="display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:var(--surface);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:11px;font-family:var(--font-mono);color:var(--text-muted)">'
+      + '<input type="checkbox" name="af-tpl" value="' + t + '" style="accent-color:var(--accent)"> '
+      + t.replace('.md','')
+      + '</label>'
+    ).join('');
+  } catch(e) {
+    el.innerHTML = '<span style="color:var(--red);font-size:11px">Error loading templates: ' + e.message + '</span>';
+  }
+}
+
+async function afGenerate() {
+  const st = $('af-status');
+  const preview = $('af-preview');
+  // Collect form values
+  const type        = ($('af-type') || {}).value || 'specialist';
+  const model       = ($('af-model') || {}).value || 'sonnet';
+  const maxTurns    = parseInt(($('af-maxturns') || {}).value || '30');
+  const name        = ($('ac-name') || {}).value.trim();
+  const description = ($('ac-desc') || {}).value.trim();
+  const extra       = ($('af-extra') || {}).value.trim();
+  const saveFile    = ($('af-save-file') || {}).checked !== false;
+  const projectCtx  = ($('af-project-ctx') || {}).checked || false;
+
+  // Collect tools
+  const tools = [...document.querySelectorAll('#ac-tools input[type=checkbox]:checked')].map(c => c.value);
+
+  // Collect templates
+  const templates = [...document.querySelectorAll('input[name="af-tpl"]:checked')].map(c => c.value);
+
+  // Collect research sections
+  const research = [...document.querySelectorAll('[id^="af-r-"]:checked')].map(c => c.value);
+
+  if (!name) { if(st){st.textContent='✗ Name required'; st.style.color='var(--red)';} return; }
+
+  if(st){st.textContent='⟳ Generating…'; st.style.color='var(--text-muted)';}
+  if(preview){preview.style.display='none';}
+
+  try {
+    const resp = await fetch('/dashboard/api/agents/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        type, name, description, model, maxTurns, tools,
+        templates, research, project_context: projectCtx,
+        extra_instructions: extra, save: saveFile,
+      }),
+    });
+    const d = await resp.json();
+    if (d.error) { if(st){st.textContent='✗ '+d.error; st.style.color='var(--red)';} return; }
+    if(st){st.textContent='✓ Generated' + (saveFile ? ' & saved to .claude/agents/' : ''); st.style.color='var(--success)';}
+    if(preview){preview.textContent = d.content || ''; preview.style.display='';}
+    // Refresh agent list
+    setTimeout(() => acLoadAgents(), 500);
+  } catch(e) {
+    if(st){st.textContent='✗ '+e.message; st.style.color='var(--red)';}
+  }
+}
+
+// Load templates when Agent Craft opens
+document.addEventListener('click', function(e) {
+  const tab = e.target.closest('.tab');
+  if (tab && tab.id === 'nav-agent-craft') afLoadTemplates();
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+// Activate first sidebar tab on load
 (function() {
   document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
-  const first = document.getElementById('tab-providers');
+  const first = document.getElementById('tab-health');
   if (first) first.style.display = '';
-  const nav = document.getElementById('nav-providers');
+  const nav = document.getElementById('nav-health');
   if (nav) nav.classList.add('active');
   const crumb = document.querySelector('#topbar-title');
-  if (crumb) crumb.textContent = '▶ PROVIDERS';
+  if (crumb) crumb.textContent = '▶ HEALTH';
 })();
 
 refresh();
