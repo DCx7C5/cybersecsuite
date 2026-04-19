@@ -68,7 +68,7 @@ Claude Code / claude-agent-sdk query()
         │
   ┌─────┴──────┐
   │ MCP (stdio)│  mcp_server.py → src/mcp/cybersec/ + src/mcp/dystopian.py
-  │ A2A (/a2a) │  src/a2a/ → OrchestratorAgent → 33 sub-agents
+  │ A2A (/a2a) │  src/a2a/ → CybersecA2AAgent → SDK → .claude/agents/ → Proxy
   │ Dashboard  │  /dashboard/* → 30 REST + 4 SSE endpoints
   └────────────┘
 ```

@@ -92,7 +92,7 @@ Claude Code / agent_sdk.py
 
 **Two execution paths** — NEVER conflate:
 - **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 65 MCP tools (36 local + 29 omniroute)
-- **A2A Protocol** (external): `POST /a2a` JSON-RPC → OrchestratorAgent → `execute()`
+- **A2A Protocol** (external): `POST /a2a` JSON-RPC → `CybersecA2AAgent` → `run_agent_query()` → SDK → Proxy
 
 **mcp.json servers**: `cybersec` (31 tools, `python -m csmcp.cybersec.server`) · `dystopian-crypto` (5 tools) · `kerneldev` (external) · `omniroute` (29 tools, bun, port 20128)
 
@@ -228,84 +228,27 @@ async def _fn(args: dict) -> dict:
 
 ---
 
-### 🔴 Phase O — A2A Simplification + SDK Direct Routing (Next)
+### ✅ Phase O — A2A Simplification + SDK Direct Routing (2026-04-19)
 
-> **Goal**: Eliminate redundant Python agent wrappers. The SDK reads `.claude/agents/*.md` directly — no hand-rolled orchestrator or dev-agent classes needed. Additionally, wire per-agent provider selection through the AI proxy so each agent can run on the optimal provider (DeepSeek for code, Claude for reasoning, etc.).
+> Redundante Python-Agent-Wrappers entfernt. SDK liest `.claude/agents/*.md` direkt, per-agent Model-Routing durch AI Proxy.
 
-#### Context
+| Sub | What | Status |
+|-----|------|--------|
+| O.1 | Delete `orchestrator.py` + `dev_agents.py`, clean `__init__.py` + `asgi.py` | ✅ |
+| O.2 | `_handle_generic()` fallback in `cybersec_agent.py` | ✅ |
+| O.3 | Per-agent model routing (`AgentDefinition.model` → `options.model` → Proxy) | ✅ |
+| O.4 | `_copy_options_with()` — shallow-copy before mutation (race fix) | ✅ |
+| O.5 | OmniRoute 29 tools included via `all_servers()` — confirmed | ✅ |
+| O.6 | Docs: `docs/agent-sdk-integration.md`, `README.md`, `architecture.md` | ✅ |
+| O.7 | Stale references cleaned: hooks, `hooks.json`, `CLAUDE.md`, `scope.md` | ✅ |
 
-Two execution paths currently exist (from MEMORY.md line 93):
-- **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 36 csmcp tools + 29 OmniRoute tools
-- **A2A Protocol** (external): `POST /a2a` JSON-RPC → `OrchestratorAgent` → `execute()`
+**Commit**: `ae723c1d` — 25 files, +1521/−972
 
-The `OrchestratorAgent` and dev-agent classes (`PythonDeveloperAgent`, `CppDeveloperAgent`) are thin wrappers that ultimately call `run_agent_query()` / `run_orchestrator_query()` anyway. The SDK already loads all 36 `.claude/agents/*.md` definitions via `agent_loader.py`. These wrapper classes add complexity with no benefit.
-
-Furthermore, each `.claude/agents/*.md` frontmatter has a `model:` field (e.g. `model: haiku`, `model: deepseek-v3`). The proxy at `localhost:8000/v1` can route to any of its 60 providers. The SDK should pass the agent's declared model through to the proxy so each specialist uses the optimal (and cheapest) provider automatically.
-
-#### O.1 — Delete redundant A2A wrappers
-
-- **Delete** `src/a2a/orchestrator.py` — `OrchestratorAgent`, routing table, fan-out, pipeline, `_auto_route`, `_extract_text` duplicate
-- **Delete** `src/a2a/dev_agents.py` — `PythonDeveloperAgent`, `CppDeveloperAgent`, `_stub_*`, `create_default_registry`
-- **Update** `src/a2a/__init__.py` — remove all imports of `orchestrator` and `dev_agents`
-- **Update** `src/a2a/server.py` — remove any references to `OrchestratorAgent`
-- **Update** `src/dashboard/api/agents.py` — any references to removed classes
-
-#### O.2 — `cybersec_agent.py` generic fallback
-
-Add a `_handle_generic()` skill handler that fires for unrecognised prompts:
-
-```python
-async def _handle_generic(self, task: Task, text: str) -> None:
-    """Fallback — route unrecognised tasks to the cybersec-agent via SDK."""
-    session_out: dict[str, Any] = {}
-    result = await run_agent_query(
-        "cybersec-analyst", text,
-        session_id=task.session_id, _session_out=session_out,
-    )
-    if session_out.get("session_id"):
-        task.session_id = session_out["session_id"]
-    self._reply(task.id, result or "No result from agent.")
+**Architecture (simplified)**:
 ```
-
-The routing order in `execute()` becomes: CVE → IOC → MITRE → artifact → threat-model → **generic**.
-
-#### O.3 — Per-agent model routing through proxy
-
-In `run_agent_query()` and `run_orchestrator_query()`, read the declared model from the cached `AgentDefinition` and pass it as `options.model`:
-
-```python
-agent_defs = build_agent_definitions()
-if agent_name in agent_defs:
-    declared_model = agent_defs[agent_name].model  # e.g. "deepseek-v3" or "claude-haiku-4-5"
-    if declared_model:
-        options = build_agent_options()  # get cached base
-        options = _copy_options_with(options, model=declared_model, resume=session_id)
+.claude/agents/*.md → agent_loader → agent_sdk → AI Proxy → 60 providers
+                        ↑ model: from frontmatter
 ```
-
-This means `python-developer.md: model: deepseek-v3` automatically routes that agent's queries to DeepSeek via the proxy — no code changes needed per agent.
-
-**Important**: Never mutate the cached `_OPTIONS_CACHE` object directly. Always copy before setting `resume` or `model`. Implement `_copy_options_with(options, **overrides) -> ClaudeAgentOptions`.
-
-#### O.4 — Fix `_OPTIONS_CACHE` mutation race
-
-Current bug: `run_agent_query()` does `options.resume = session_id` directly on the cached singleton → concurrent calls with different sessions corrupt each other. Fix: shallow-copy the options object before any per-call mutation.
-
-#### O.5 — Update `mcp.json` / `ANTHROPIC_BASE_URL` awareness
-
-The SDK `ClaudeAgentOptions.base_url` already reads `ANTHROPIC_BASE_URL`. Confirm OmniRoute's 29 tools are included in `mcp_servers` via `all_servers()`. Document that per-agent routing works transparently because the proxy handles model dispatch.
-
-#### O.6 — Documentation
-
-- Create `docs/agent-sdk-integration.md` — SDK ↔ A2A two-path diagram, session continuity, `.claude/agents/` as source of truth, per-agent provider routing
-- Update `src/a2a/README.md` — mark Phase A2 complete, document simplified architecture
-- Update `docs/architecture.md` — remove OrchestratorAgent from diagram, add `.claude/agents/` → SDK → Proxy → Provider flow
-- Update `MEMORY.md` — update architecture block (line 15: remove `OrchestratorAgent`)
-
-#### O.7 — Tests & cleanup
-
-- Run `uv run pytest` — fix any broken imports from deleted files
-- Verify `src/a2a/__init__.py` exports are clean
-- Commit with message: `feat(a2a): remove orchestrator+dev wrappers, SDK owns .claude/agents routing`
 
 ---
 

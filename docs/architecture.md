@@ -110,7 +110,6 @@ cybersecsuite/
 │   │   ├── agent.py        BaseA2AAgent
 │   │   ├── server.py       A2AServer (Starlette router)
 │   │   ├── client.py       A2AClient (async HTTP)
-│   │   ├── orchestrator.py OrchestratorAgent (routing + fanout)
 │   │   ├── registry.py     AgentRegistry (local + remote)
 │   │   ├── agent_loader.py .claude/agents/*.md frontmatter parser
 │   │   ├── agent_sdk.py    Agent SDK bridge (caching, model routing, query)
@@ -197,17 +196,17 @@ TLS is activated automatically when `ASGI_TLS_CERT` + `ASGI_TLS_KEY` exist. See 
 
 60 providers supported by the AI proxy (9 core + 51 extended):
 
-| Provider | Models | Notes |
-|----------|--------|-------|
-| Anthropic | Claude 3.5/3 Haiku/Sonnet/Opus | Primary for agent execution |
-| OpenAI | GPT-4o, o1, o3 | OpenAI-native + compat endpoint |
-| Google Gemini | 1.5 Pro/Flash, 2.0 Flash | Multimodal |
-| DeepSeek | V3, R1 | Cost-optimized |
-| Groq | Llama-3.3, Mixtral | Ultra-low latency |
-| Mistral | mistral-large, codestral | EU/code-focused |
-| xAI | Grok-2, Grok-beta | High context |
-| Together AI | 60+ open models | BYOM |
-| OpenRouter | 200+ models | Aggregator |
+| Provider      | Models                         | Notes                           |
+|---------------|--------------------------------|---------------------------------|
+| Anthropic     | Claude 3.5/3 Haiku/Sonnet/Opus | Primary for agent execution     |
+| OpenAI        | GPT-4o, o1, o3                 | OpenAI-native + compat endpoint |
+| Google Gemini | 1.5 Pro/Flash, 2.0 Flash       | Multimodal                      |
+| DeepSeek      | V3, R1                         | Cost-optimized                  |
+| Groq          | Llama-3.3, Mixtral             | Ultra-low latency               |
+| Mistral       | mistral-large, codestral       | EU/code-focused                 |
+| xAI           | Grok-2, Grok-beta              | High context                    |
+| Together AI   | 60+ open models                | BYOM                            |
+| OpenRouter    | 200+ models                    | Aggregator                      |
 
 Plus 51 extended providers: AI21, AIML API, Alibaba, Baseten, Cerebras, Chutes, Cloudflare, Cohere, Databricks, DeepInfra, Featherless, Fireworks, FriendliAI, Galadriel, Heroku, HuggingFace, Hyperbolic, Kimi, Lambda, LM Studio, Lepton AI, Meta Llama, MiniMax, Moonshot, NanoGPT, Nebius, Novita, Nscale, NVIDIA, OVHcloud, Ollama, Perplexity, Perplexity Search, Pollinations, Qwen, Reka AI, Replicate, RunPod, SambaNova, Scaleway, SiliconFlow, StepFun, Upstage, Venice, Volcengine, W&B, Writer, Yi (01.AI), Zhipu AI, and browser-based Grok (x.com + grok.com).
 
@@ -217,25 +216,25 @@ Plus 51 extended providers: AI21, AIML API, Alibaba, Baseten, Cerebras, Chutes, 
 
 Models are grouped by domain:
 
-| Domain | Models |
-|--------|--------|
-| **Core** | Workspace, Project, Session |
-| **Investigations** | Finding, IOC, Case, Investigation |
-| **Intelligence** | MitreAttackTechnique, CVEEntry, CWEEntry, CAPECEntry |
-| **Forensics** | ForensicArtifact, NetworkConnection, ProcessEntry, FileEntry |
-| **Compliance** | ComplianceControl, ComplianceResult |
-| **Audit** | AuditLog, ApiUsageLog, A2ATask |
-| **Artifacts** | Artifact, ArtifactSignature |
+| Domain             | Models                                                       |
+|--------------------|--------------------------------------------------------------|
+| **Core**           | Workspace, Project, Session                                  |
+| **Investigations** | Finding, IOC, Case, Investigation                            |
+| **Intelligence**   | MitreAttackTechnique, CVEEntry, CWEEntry, CAPECEntry         |
+| **Forensics**      | ForensicArtifact, NetworkConnection, ProcessEntry, FileEntry |
+| **Compliance**     | ComplianceControl, ComplianceResult                          |
+| **Audit**          | AuditLog, ApiUsageLog, A2ATask                               |
+| **Artifacts**      | Artifact, ArtifactSignature                                  |
 
 ---
 
 ## Agent Tiers
 
-| Tier | Model | Examples |
-|------|-------|---------|
-| Haiku (fast) | claude-haiku-4.5 | watchdog, command-verifier, layer2-6 specialists |
-| Sonnet (standard) | claude-sonnet-4 | most analysts, developers |
-| Opus (heavy) | claude-opus-4.5 | firmware-analyst, reverse-engineer |
+| Tier              | Model            | Examples                                         |
+|-------------------|------------------|--------------------------------------------------|
+| Haiku (fast)      | claude-haiku-4.5 | watchdog, command-verifier, layer2-6 specialists |
+| Sonnet (standard) | claude-sonnet-4  | most analysts, developers                        |
+| Opus (heavy)      | claude-opus-4.5  | firmware-analyst, reverse-engineer               |
 
 33 agents total. 1 orchestrator (`cybersec-agent`). See [agents.md](agents.md).
 

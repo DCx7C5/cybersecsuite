@@ -47,7 +47,7 @@ async def main():
         f"# CyberSecSuite Scope\n\n"
         f"Host: `{sys_info['hostname']}`  \nOS: `{sys_info['os']} {sys_info['os_version']}`  \n"
         f"Project: `{project_dir}`\n\n"
-        "## Active Agents\n- cybersec-agent\n- OrchestratorAgent\n- PythonDeveloper\n- CppDeveloper\n"
+        "## Active Agents\n- cybersec-agent (SDK → .claude/agents/ → AI Proxy)\n"
     )
 
     # Write init marker

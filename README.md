@@ -56,7 +56,7 @@ Claude Code / claude-agent-sdk query()
   │ MCP (stdio)│  csmcp.cybersec.server (31 tools)
   │            │  csmcp.dystopian_server (5 tools)
   │            │  omniroute (29 tools via bun)
-  │ A2A (/a2a) │  OrchestratorAgent → 33 sub-agents
+  │ A2A (/a2a) │  CybersecA2AAgent → SDK → .claude/agents/
   │ Dashboard  │  /dashboard/* → 36 REST + SSE endpoints
   └────────────┘
 ```
