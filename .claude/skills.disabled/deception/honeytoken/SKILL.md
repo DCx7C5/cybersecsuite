@@ -1,26 +1,36 @@
 ---
-name: honeytoken
-description: Deploys canary tokens and honeytokens (fake AWS credentials, DNS canaries, document beacons, database records) that trigger alerts when accessed by attackers. Uses the Canarytokens API and custom webhook integrations for breach detection. Use when building deception-based early warning systems for intrusion detection.
+capec: []
+description: ">\n  Deploys canary tokens and honeytokens (fake AWS credentials, DNS\
+  \ canaries, document beacons, database records) that trigger alerts when accessed\
+  \ by attackers. Uses the Canarytokens API and custom webhook integrations for breach\
+  \ detection. Use when building deception-based early warning systems for intrusion\
+  \ detection."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1036
+- T1059
+model: sonnet
+name: honeytoken-SKILL.md
+nist_csf:
+- DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 subdomain: security-operations
 tags:
 - implementing
 - honeytokens
 - for
 - breach
-nist_csf:
-- DE.CM-01
-- RS.MA-01
-- GV.OV-01
-- DE.AE-02
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1036
-- T1059
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Implementing Honeytokens for Breach Detection
 

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../Anthropic-Cybersecurity-Skills/.idea/Anthropic-Cybersecurity-Skills.iml" filepath="$PROJECT_DIR$/../Anthropic-Cybersecurity-Skills/.idea/Anthropic-Cybersecurity-Skills.iml" />
       <module fileurl="file://$PROJECT_DIR$/../OmniRoute/.idea/OmniRoute.iml" filepath="$PROJECT_DIR$/../OmniRoute/.idea/OmniRoute.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ai-marketplace/.idea/ai-marketplace.iml" filepath="$PROJECT_DIR$/../ai-marketplace/.idea/ai-marketplace.iml" />
       <module fileurl="file://$PROJECT_DIR$/../AI/blueprints/.idea/blueprints.iml" filepath="$PROJECT_DIR$/../AI/blueprints/.idea/blueprints.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite@1.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite@1.iml" />

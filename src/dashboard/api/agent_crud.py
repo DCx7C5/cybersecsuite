@@ -280,7 +280,7 @@ async def api_agent_get(request: Request) -> JSONResponse:
 
 
 # ── Agent Generate (Factory) ──────────────────────────────────────────────────
-_TEMPLATES_DIR = _AGENTS_DIR / "templates"
+_TEMPLATES_DIR = _AGENTS_DIR / "agents"
 
 _TYPE_ROLE_MAP = {
     "orchestrator": "Inter-API orchestrator. Routes tasks across multiple API providers and teams via the AI proxy. Delegates to sub-agents using Task tool.",
@@ -311,7 +311,7 @@ def _build_generated_body(data: dict) -> str:
     max_turns   = data.get("maxTurns", 30)
     extra       = data.get("extra_instructions", "").strip()
     research    = data.get("research", [])
-    templates   = data.get("templates", [])
+    templates   = data.get("agents", [])
     skills      = data.get("skills", [])
     project_ctx = data.get("project_context", False)
 
@@ -336,7 +336,7 @@ def _build_generated_body(data: dict) -> str:
         "- Log all significant actions with timestamps"
     )))
 
-    # Inject template content (selected templates)
+    # Inject template content (selected agents)
     if templates:
         tpl_content_parts = []
         for tpl in templates:
@@ -382,7 +382,7 @@ async def api_agents_generate(request: Request) -> JSONResponse:
 
     Body: {
         type, name, description, model, maxTurns, tools,
-        templates, research, project_context, extra_instructions, save
+        agents, research, project_context, extra_instructions, save
     }
     """
     try:
@@ -411,7 +411,7 @@ async def api_agents_generate(request: Request) -> JSONResponse:
         "maxTurns": body.get("maxTurns", 30),
         "tools": tools,
         "type": body.get("type", "specialist"),
-        "templates": body.get("templates", []),
+        "agents": body.get("agents", []),
         "research": body.get("research", []),
         "project_context": body.get("project_context", False),
         "extra_instructions": body.get("extra_instructions", ""),

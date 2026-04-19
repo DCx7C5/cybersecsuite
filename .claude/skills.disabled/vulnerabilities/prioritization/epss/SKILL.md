@@ -1,7 +1,21 @@
 ---
-name: prioritization-epss
-description: Integrate FIRST's Exploit Prediction Scoring System (EPSS) API to prioritize vulnerability remediation based on real-world exploitation probability within 30 days.
+capec: []
+cve:
+- CVE-2024-3400
+- CVE-2024-21887
+- CVE-2023-44228
+description: ">\n  Integrate FIRST's Exploit Prediction Scoring System (EPSS) API\
+  \ to prioritize vulnerability remediation based on real-world exploitation probability\
+  \ within 30 days."
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: epss-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - epss
@@ -11,20 +25,14 @@ tags:
 - cvss
 - risk-based
 - machine-learning
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-cve:
-- CVE-2024-3400
-- CVE-2024-21887
-- CVE-2023-44228
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Implementing EPSS Score for Vulnerability Prioritization
 

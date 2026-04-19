@@ -322,6 +322,125 @@ def _team_builder() -> str:
     )
 
 
+
+
+def _agent_crafter() -> str:
+    return (
+        '<div id="tab-agent-crafter" class="card" style="display:none">\n'
+        '  <h3 class="text-lg font-semibold mb-1">&#x270e; Agent Crafter</h3>\n'
+        '  <p class="text-xs mb-4" style="color:var(--text-muted)">Create, edit and delete agent <code>.md</code> files in <code>.claude/agents/</code>.</p>\n'
+
+        # ── Agent List ───────────────────────────────────────────────────────
+        '  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">\n'
+        '    <input id="ac-filter" type="text" placeholder="Filter agents…" oninput="acFilterAgents()"\n'
+        '      style="flex:1;max-width:260px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '    <span id="ac-count" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)"></span>\n'
+        '    <button onclick="acLoadAgents()" class="btn" style="font-size:11px;padding:4px 12px">&#x21ba; Refresh</button>\n'
+        '  </div>\n'
+        '  <div id="ac-agents-table" class="mb-6"></div>\n'
+
+        # ── Create Form ──────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold mb-3" style="color:var(--accent);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">New Agent</h4>\n'
+        '  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 100px;gap:12px;margin-bottom:12px">\n'
+        '    <div>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Name *</label>\n'
+        '      <input id="ac-name" type="text" placeholder="my-analyst"\n'
+        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:var(--font-mono)">\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Description</label>\n'
+        '      <input id="ac-desc" type="text" placeholder="What this agent does…"\n'
+        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Model</label>\n'
+        '      <select id="ac-model" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '        <option value="sonnet">Claude Sonnet</option>\n'
+        '        <option value="haiku">Claude Haiku</option>\n'
+        '        <option value="opus">Claude Opus</option>\n'
+        '      </select>\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Max Turns</label>\n'
+        '      <input type="number" id="ac-maxturns" value="25" min="1" max="200"\n'
+        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">\n'
+        '    <div>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Tools</label>\n'
+        '      <div id="ac-tools" style="display:flex;flex-wrap:wrap;gap:6px">\n'
+        '        <label class="af-check"><input type="checkbox" value="Read" checked> Read</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="Write" checked> Write</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="Edit" checked> Edit</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="Bash" checked> Bash</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="Glob" checked> Glob</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="Grep" checked> Grep</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="WebSearch"> WebSearch</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="WebFetch"> WebFetch</label>\n'
+        '        <label class="af-check"><input type="checkbox" value="Task"> Task</label>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">MCP Servers <span style="color:var(--text-faint)">(comma-sep)</span></label>\n'
+        '      <input id="ac-mcp" type="text" value="cybersec" placeholder="cybersec, dystopian"\n'
+        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)">\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <div style="margin-bottom:12px">\n'
+        '    <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Instructions <span style="color:var(--text-faint)">(markdown body)</span></label>\n'
+        '    <textarea id="ac-instructions" rows="5" placeholder="## Role\nYou are a specialist that…"\n'
+        '      style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
+        '  </div>\n'
+        '  <div style="display:flex;align-items:center;gap:12px">\n'
+        '    <button onclick="acCreateAgent()" class="btn btn-accent">+ Create Agent</button>\n'
+        '    <span id="ac-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></span>\n'
+        '  </div>\n'
+
+        # ── Edit Modal ───────────────────────────────────────────────────────
+        '  <div id="ac-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center">\n'
+        '    <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:24px;width:600px;max-width:95vw;max-height:90vh;overflow-y:auto">\n'
+        '      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">\n'
+        '        <h4 class="text-sm font-semibold" style="color:var(--text-primary)">Edit Agent: <span id="ac-edit-name" style="color:var(--accent);font-family:var(--font-mono)"></span></h4>\n'
+        '        <button onclick="acCloseEdit()" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer">✕</button>\n'
+        '      </div>\n'
+        '      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">\n'
+        '        <div>\n'
+        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Model</label>\n'
+        '          <select id="ac-edit-model" style="width:100%;padding:6px 8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
+        '            <option value="sonnet">Sonnet</option>\n'
+        '            <option value="haiku">Haiku</option>\n'
+        '            <option value="opus">Opus</option>\n'
+        '          </select>\n'
+        '        </div>\n'
+        '        <div>\n'
+        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Max Turns</label>\n'
+        '          <input type="number" id="ac-edit-maxturns" value="25" min="1" max="200"\n'
+        '            style="width:100%;padding:6px 8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
+        '        </div>\n'
+        '        <div>\n'
+        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Description</label>\n'
+        '          <input id="ac-edit-desc" type="text"\n'
+        '            style="width:100%;padding:6px 8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
+        '        </div>\n'
+        '      </div>\n'
+        '      <div style="margin-bottom:12px">\n'
+        '        <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Instructions</label>\n'
+        '        <textarea id="ac-edit-instructions" rows="10"\n'
+        '          style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
+        '      </div>\n'
+        '      <div style="display:flex;align-items:center;gap:12px">\n'
+        '        <button onclick="acSaveEdit()" class="btn btn-accent" style="font-size:13px">&#x1f4be; Save</button>\n'
+        '        <button onclick="acCloseEdit()" class="btn" style="font-size:13px">Cancel</button>\n'
+        '        <span id="ac-edit-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></span>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '  </div>\n'
+
+        "</div>\n"
+    )
+
+
 def _agent_factory() -> str:
     return (
         '<div id="tab-agent-factory" class="card" style="display:none">\n'
@@ -369,7 +488,7 @@ def _agent_factory() -> str:
         # ── Base Templates ────────────────────────────────────────────────────
         '  <div style="margin-bottom:14px">\n'
         '    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">\n'
-        '      <label class="text-xs" style="color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Base Templates <span style="color:var(--text-faint)">(agents/templates/)</span></label>\n'
+        '      <label class="text-xs" style="color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Base Templates <span style="color:var(--text-faint)">(agents/agents/)</span></label>\n'
         '      <button onclick="afAddTemplate()" class="btn" style="font-size:11px;padding:3px 10px">+ Add Template</button>\n'
         '    </div>\n'
         '    <div id="af-tpl-rows" style="display:flex;flex-direction:column;gap:6px">\n'
@@ -729,6 +848,7 @@ def all_panels() -> str:
         _routing(),
         _crypto(),
         _agent_factory(),
+        _agent_crafter(),
         _team_builder(),
         _agent_query(),
         _workflows(),

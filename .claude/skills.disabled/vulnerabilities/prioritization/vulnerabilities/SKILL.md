@@ -1,7 +1,19 @@
 ---
-name: prioritization-vulnerabilities
-description: The Common Vulnerability Scoring System (CVSS) is the industry standard framework maintained by FIRST (Forum of Incident Response and Security Teams) for assessing vulnerability severity. CVSS v4.0 (r
+capec: []
+cve:
+- CVE-2024-3094
+description: ">\n  The Common Vulnerability Scoring System (CVSS) is the industry\
+  \ standard framework maintained by FIRST (Forum of Incident Response and Security\
+  \ Teams) for assessing vulnerability severity. CVSS v4.0 (r"
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: vulnerabilities-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - vulnerability-management
@@ -10,18 +22,14 @@ tags:
 - risk
 - prioritization
 - nist
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-cve:
-- CVE-2024-3094
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Prioritizing Vulnerabilities with CVSS Scoring
 

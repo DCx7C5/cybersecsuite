@@ -1,21 +1,24 @@
 ---
-name: image-png-lsb-detect
-description: Detects LSB steganography in PNG images via chi-square analysis and bit-plane inspection.
+capec:
+- CAPEC-186
+cve: []
+cwe:
+- CWE-311
+description: ">\n  Detects LSB steganography in PNG images via chi-square analysis\
+  \ and bit-plane inspection."
 domain: cybersecurity
+mitre_attack:
+- T1027.003
+name: png-lsb-detect
+nist_csf: []
 subdomain: steganography
 tags:
 - steganography
 - hidden-data
 - detect
-mitre_attack:
-- T1027.003
-cve: []
-cwe:
-- CWE-311
-nist_csf: []
-capec:
-- CAPEC-186
 ---
+
+
 ## Overview
 
 Detects steganographically hidden data in carrier files using statistical analysis and tool-assisted extraction.

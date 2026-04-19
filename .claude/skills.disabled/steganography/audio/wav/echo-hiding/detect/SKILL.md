@@ -1,21 +1,23 @@
 ---
-name: audio-wav-echo-hiding-detect
-description: Detects echo-hiding steganography in WAV audio via cepstrum analysis.
+capec:
+- CAPEC-186
+cve: []
+cwe:
+- CWE-311
+description: ">\n  Detects echo-hiding steganography in WAV audio via cepstrum analysis."
 domain: cybersecurity
+mitre_attack:
+- T1027.003
+name: wav-echo-hiding-detect
+nist_csf: []
 subdomain: steganography
 tags:
 - steganography
 - hidden-data
 - detect
-mitre_attack:
-- T1027.003
-cve: []
-cwe:
-- CWE-311
-nist_csf: []
-capec:
-- CAPEC-186
 ---
+
+
 ## Overview
 
 Detects steganographically hidden data in carrier files using statistical analysis and tool-assisted extraction.

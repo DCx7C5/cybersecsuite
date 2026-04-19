@@ -126,6 +126,24 @@ dashboard:  ## Generate static dashboard HTML
 dashboard-serve:  ## Generate and serve dashboard on port 9000
 	$(UV) run --no-project python src/manage.py dashboard --serve --port 9000
 
+# ── TypeScript ────────────────────────────────────────────────────────────────
+
+.PHONY: install-ts
+install-ts:  ## Install TypeScript dev dependencies (npm)
+	npm install --save-dev typescript
+
+.PHONY: build-ts
+build-ts:  ## Compile dashboard TypeScript → static/js/
+	cd src/dashboard && npx tsc -p tsconfig.json
+
+.PHONY: watch-ts
+watch-ts:  ## Watch and recompile TypeScript on change
+	cd src/dashboard && npx tsc -p tsconfig.json --watch
+
+.PHONY: lint-ts
+lint-ts:  ## Type-check TypeScript without emitting
+	cd src/dashboard && npx tsc -p tsconfig.json --noEmit
+
 # ── Code quality ──────────────────────────────────────────────────────────────
 
 .PHONY: lint

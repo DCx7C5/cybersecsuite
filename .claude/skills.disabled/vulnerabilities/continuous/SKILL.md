@@ -1,7 +1,26 @@
 ---
-name: continuous
-description: Deploy Breach and Attack Simulation tools to continuously validate security control effectiveness by safely emulating real-world attack techniques across the kill chain.
+capec: []
+d3fend_techniques:
+- File Metadata Consistency Validation
+- Application Protocol Command Analysis
+- Identifier Analysis
+- Content Format Conversion
+- Message Analysis
+description: ">\n  Deploy Breach and Attack Simulation tools to continuously validate\
+  \ security control effectiveness by safely emulating real-world attack techniques\
+  \ across the kill chain."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1059
+- T1070
+model: sonnet
+name: continuous-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - breach-attack-simulation
@@ -12,25 +31,14 @@ tags:
 - picus
 - cymulate
 - mitre-attack
-d3fend_techniques:
-- File Metadata Consistency Validation
-- Application Protocol Command Analysis
-- Identifier Analysis
-- Content Format Conversion
-- Message Analysis
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1059
-- T1070
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Implementing Continuous Security Validation with BAS
 

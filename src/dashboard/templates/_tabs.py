@@ -11,6 +11,7 @@ _NAV = [
     ("crypto",        "Crypto",           "⊗", "proxy"),
     # AGENTS
     ("agent-factory", "Agent Factory",    "⊞", "agents"),
+    ("agent-crafter", "Agent Crafter",   "✎", "agents"),
     ("team-builder",  "Team Builder",     "⊟", "agents"),
     ("agent-query",   "Agent Query",      "⇒", "agents"),
     ("workflows",     "Workflows",        "⇌", "agents"),

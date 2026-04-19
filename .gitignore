@@ -120,3 +120,8 @@ dump.rdb
 
 # Playwright stealth profile
 mcps/brave_stealth_profile/
+/plan0.md
+
+# TypeScript compiled output
+src/dashboard/static/js/
+*.js.map

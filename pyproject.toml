@@ -25,10 +25,13 @@ dependencies = [
     "argon2-cffi>=23.1",
     # Event loop
     "uvloop>=0.21; sys_platform == 'linux'",
+    # Template engine
+    "jinja2>=3.1",
     # Agent SDK
     "claude-agent-sdk @ git+https://github.com/anthropics/claude-agent-sdk-python.git@v0.1.61",
     "openpyxl>=3.1.5",
     "opensearch-py[async]>=2.7",
+    "dbus-next>=0.2.3",
 ]
 
 [project.scripts]
@@ -54,6 +57,7 @@ packages = [
   "src/ai_proxy",
   "src/crypto",
   "src/csmcp",
+  "src/cybersecsuite",
   "src/dashboard",
   "src/db",
   "src/hooks",
@@ -61,12 +65,14 @@ packages = [
   "src/opensearch",
   "src/proxy",
   "src/telemetry",
+  "src/template_engine",
 ]
 
 [dependency-groups]
 dev = [
     "ipython>=9.11.0",
     "ruff>=0.9",
+    "typescript>=0.0.12",
 ]
 test = [
     "pytest>=9.0",

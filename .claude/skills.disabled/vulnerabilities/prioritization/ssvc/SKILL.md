@@ -1,7 +1,20 @@
 ---
-name: prioritization-ssvc
-description: Triage and prioritize vulnerabilities using CISA's Stakeholder-Specific Vulnerability Categorization (SSVC) decision tree framework to produce actionable remediation priorities.
+capec: []
+cve:
+- CVE-2024-3400
+- CVE-2024-21887
+description: ">\n  Triage and prioritize vulnerabilities using CISA's Stakeholder-Specific\
+  \ Vulnerability Categorization (SSVC) decision tree framework to produce actionable\
+  \ remediation priorities."
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: ssvc-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - ssvc
@@ -12,19 +25,14 @@ tags:
 - cvss
 - remediation
 - risk-management
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-cve:
-- CVE-2024-3400
-- CVE-2024-21887
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Triaging Vulnerabilities with SSVC Framework
 

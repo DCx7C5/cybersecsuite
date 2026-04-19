@@ -1,7 +1,17 @@
 ---
-name: management-defectdojo
-description: Deploy DefectDojo as a centralized vulnerability management dashboard with scanner integrations, deduplication, metrics tracking, and Jira ticketing workflows.
+capec: []
+description: ">\n  Deploy DefectDojo as a centralized vulnerability management dashboard\
+  \ with scanner integrations, deduplication, metrics tracking, and Jira ticketing\
+  \ workflows."
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: defectdojo-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - defectdojo
@@ -11,16 +21,14 @@ tags:
 - scanner-integration
 - devsecops
 - jira
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Building Vulnerability Dashboard with DefectDojo
 

@@ -1,7 +1,20 @@
 ---
-name: rapid7
-description: Deploy and configure Rapid7 InsightVM Security Console and Scan Engines for authenticated and unauthenticated vulnerability scanning across enterprise environments.
+capec: []
+description: ">\n  Deploy and configure Rapid7 InsightVM Security Console and Scan\
+  \ Engines for authenticated and unauthenticated vulnerability scanning across enterprise\
+  \ environments."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1046
+- T1082
+model: sonnet
+name: rapid7-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - rapid7
@@ -11,19 +24,14 @@ tags:
 - scan-engine
 - asset-discovery
 - authenticated-scanning
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1046
-- T1082
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Implementing Rapid7 InsightVM for Scanning
 

@@ -1,7 +1,24 @@
 ---
-name: android-apk-static-analysis
-description: Performs automated static analysis of Android applications using Mobile Security Framework (MobSF) to identify hardcoded secrets, insecure permissions, vulnerable components, weak cryptography, and code-level security flaws without executing the application. Use when assessing Android APK/AAB files for security vulnerabilities before deployment, during penetration testing, or as part of CI/CD security gates. Activates for requests involving Android static analysis, MobSF scanning, APK security assessment, or mobile application code review.
+capec: []
+description: ">\n  Performs automated static analysis of Android applications using\
+  \ Mobile Security Framework (MobSF) to identify hardcoded secrets, insecure permissions,\
+  \ vulnerable components, weak cryptography, and code-level security flaws without\
+  \ executing the application. Use when assessing Android APK/AAB files for security\
+  \ vulnerabilities before deployment, during penetration testing, or as part of CI/CD\
+  \ security gates. Activates for requests involving Android static analysis, MobSF\
+  \ scanning, APK security assessment, or mobile application code review."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1046
+- T1404
+model: sonnet
+name: apk-static-analysis-SKILL.md
+nist_csf:
+- PR.PS-01
+- PR.AA-05
+- ID.RA-01
+- DE.CM-09
 subdomain: mobile-security
 tags:
 - mobile-security
@@ -10,19 +27,14 @@ tags:
 - static-analysis
 - owasp-mobile
 - penetration-testing
-nist_csf:
-- PR.PS-01
-- PR.AA-05
-- ID.RA-01
-- DE.CM-09
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1046
-- T1404
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing Android App Static Analysis with MobSF
 

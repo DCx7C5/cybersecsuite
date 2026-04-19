@@ -1,7 +1,22 @@
 ---
-name: pinning-certificates
-description: Bypasses SSL/TLS certificate pinning implementations in Android and iOS applications to enable traffic interception during authorized security assessments. Covers OkHttp, TrustManager, NSURLSession, and third-party pinning library bypass techniques using Frida, Objection, and custom scripts. Activates for requests involving certificate pinning bypass, SSL pinning defeat, mobile TLS interception, or proxy-resistant app testing.
+capec: []
+description: ">\n  Bypasses SSL/TLS certificate pinning implementations in Android\
+  \ and iOS applications to enable traffic interception during authorized security\
+  \ assessments. Covers OkHttp, TrustManager, NSURLSession, and third-party pinning\
+  \ library bypass techniques using Frida, Objection, and custom scripts. Activates\
+  \ for requests involving certificate pinning bypass, SSL pinning defeat, mobile\
+  \ TLS interception, or proxy-resistant app testing."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1404
+model: sonnet
+name: certificates-SKILL.md
+nist_csf:
+- PR.PS-01
+- PR.AA-05
+- ID.RA-01
+- DE.CM-09
 subdomain: mobile-security
 tags:
 - mobile-security
@@ -10,18 +25,14 @@ tags:
 - certificate-pinning
 - frida
 - penetration-testing
-nist_csf:
-- PR.PS-01
-- PR.AA-05
-- ID.RA-01
-- DE.CM-09
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1404
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing Mobile App Certificate Pinning Bypass
 

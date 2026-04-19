@@ -1,7 +1,20 @@
 ---
-name: metasploit
-description: The Metasploit Framework is the world's most widely used penetration testing platform, maintained by Rapid7. It contains over 2,300 exploits, 1,200 auxiliary modules, and 400 post-exploitation modules
+capec: []
+cve:
+- CVE-2017-5638
+- CVE-2021-44228
+description: ">\n  The Metasploit Framework is the world's most widely used penetration\
+  \ testing platform, maintained by Rapid7. It contains over 2,300 exploits, 1,200\
+  \ auxiliary modules, and 400 post-exploitation modules"
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: metasploit-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - vulnerability-management
@@ -10,19 +23,14 @@ tags:
 - exploitation
 - penetration-testing
 - risk
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-cve:
-- CVE-2017-5638
-- CVE-2021-44228
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Exploiting Vulnerabilities with Metasploit Framework
 

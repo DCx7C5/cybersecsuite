@@ -1,7 +1,24 @@
 ---
-name: ios-app-dynamic-analysis
-description: Performs comprehensive iOS application security assessments using Frida for dynamic instrumentation, Objection for runtime exploration, SSL pinning bypass for traffic interception, keychain extraction for credential analysis, and IPA static analysis for binary-level review. Use when conducting authorized iOS penetration tests, evaluating mobile app security posture against OWASP MASTG, or assessing iOS app data protection and transport security controls. Activates for requests involving iOS app pentesting, Frida-based iOS instrumentation, mobile app SSL pinning bypass, or IPA reverse engineering.
+capec: []
+description: ">\n  Performs comprehensive iOS application security assessments using\
+  \ Frida for dynamic instrumentation, Objection for runtime exploration, SSL pinning\
+  \ bypass for traffic interception, keychain extraction for credential analysis,\
+  \ and IPA static analysis for binary-level review. Use when conducting authorized\
+  \ iOS penetration tests, evaluating mobile app security posture against OWASP MASTG,\
+  \ or assessing iOS app data protection and transport security controls. Activates\
+  \ for requests involving iOS app pentesting, Frida-based iOS instrumentation, mobile\
+  \ app SSL pinning bypass, or IPA reverse engineering."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1404
+model: sonnet
+name: app-dynamic-analysis-SKILL.md
+nist_csf:
+- PR.PS-01
+- PR.AA-05
+- ID.RA-01
+- DE.CM-09
 subdomain: mobile-security
 tags:
 - mobile-security
@@ -12,18 +29,14 @@ tags:
 - keychain
 - ipa-analysis
 - owasp-mastg
-nist_csf:
-- PR.PS-01
-- PR.AA-05
-- ID.RA-01
-- DE.CM-09
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1404
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing iOS App Security Assessment
 

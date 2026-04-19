@@ -64,7 +64,7 @@ _TEMPLATES = [
 
 
 async def ensure_indices() -> None:
-    """Create index templates (idempotent). Call once during app lifespan startup."""
+    """Create index agents (idempotent). Call once during app lifespan startup."""
     client = get_client()
     for tpl in _TEMPLATES:
         body = {
@@ -77,7 +77,7 @@ async def ensure_indices() -> None:
         try:
             await client.indices.put_index_template(name=tpl["name"], body=body)
         except Exception:
-            # Non-fatal — templates are best-effort on startup
+            # Non-fatal — agents are best-effort on startup
             pass
 
 

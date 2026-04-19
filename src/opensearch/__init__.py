@@ -2,7 +2,7 @@
 
 Exports:
   get_client()       — async OpenSearch singleton
-  ensure_indices()   — create index templates on startup
+  ensure_indices()   — create index agents on startup
   bulk_index()       — fire-and-forget bulk writer helper
   close_client()     — graceful shutdown
 """

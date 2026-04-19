@@ -32,51 +32,54 @@ function _showCtxStats(stats) {
 async function _updateContextBar(name) {
   if (_ctxCache[name]) { _showCtxStats(_ctxCache[name]); return; }
   const tab_stats = {
-    'health':    () => fetch('/dashboard/api/overview').then(r=>r.json()).then(d=>[
+    'health':    () => fetch('/api/overview').then(r=>r.json()).then(d=>[
       {value: d.uptime_seconds ? Math.round(d.uptime_seconds)+'s' : '—', label: ' uptime'},
       {value: d.providers?.enabled ?? '—', label: ' providers on'},
       {value: d.models?.total ?? '—', label: ' models'},
     ]),
-    'usage':     () => fetch('/dashboard/api/overview').then(r=>r.json()).then(d=>[
+    'usage':     () => fetch('/api/overview').then(r=>r.json()).then(d=>[
       {value: fmt(d.usage?.total_requests ?? 0), label: ' requests'},
       {value: fmt(d.usage?.total_tokens ?? 0), label: ' tokens'},
       {value: '$'+(d.usage?.total_cost_usd??0).toFixed(4), label: ' cost'},
     ]),
-    'routing':   () => fetch('/dashboard/api/routing').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'routing':   () => fetch('/api/routing').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.strategy ?? '—', label: ' strategy'},
       {value: d.providers_available ?? '—', label: ' providers'},
     ]),
-    'findings':  () => fetch('/dashboard/api/findings').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'findings':  () => fetch('/api/findings').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.total ?? 0, label: ' total'},
       {value: d.critical ?? 0, label: ' critical'},
       {value: d.high ?? 0, label: ' high'},
       {value: d.last_24h ?? 0, label: ' last 24h'},
     ]),
-    'iocs':      () => fetch('/dashboard/api/iocs').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'iocs':      () => fetch('/api/iocs').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.total ?? 0, label: ' total'},
       {value: d.active ?? 0, label: ' active'},
       {value: d.high_confidence ?? 0, label: ' high conf'},
     ]),
-    'cases':     () => fetch('/dashboard/api/cases').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'cases':     () => fetch('/api/cases').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.total ?? 0, label: ' cases'},
       {value: d.open ?? 0, label: ' open'},
       {value: d.closed ?? 0, label: ' closed'},
     ]),
-    'tasks':     () => fetch('/dashboard/api/tasks').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'tasks':     () => fetch('/api/tasks').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.total ?? 0, label: ' tasks'},
       {value: d.working ?? 0, label: ' running'},
       {value: d.completed ?? 0, label: ' done'},
     ]),
-    'agent-factory': () => fetch('/dashboard/api/agents').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'agent-factory': () => fetch('/api/agents').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.agents?.length ?? 0, label: ' agents'},
       {value: d.agents?.filter(a=>a.role==='orchestrator').length ?? 0, label: ' orchestrators'},
     ]),
-    'intel': () => fetch('/dashboard/api/intelligence').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'agent-crafter': () => fetch('/api/team-agents').then(r=>r.json()).catch(()=>({})).then(d=>[
+      {value: d.total ?? 0, label: ' agents'},
+    ]),
+    'intel': () => fetch('/api/intelligence').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.mitre_techniques ?? 0, label: ' MITRE'},
       {value: d.cves ?? 0, label: ' CVEs'},
       {value: d.cwes ?? 0, label: ' CWEs'},
     ]),
-    'compliance': () => fetch('/dashboard/api/compliance').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'compliance': () => fetch('/api/compliance').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.total ?? 0, label: ' rules'},
       {value: d.critical ?? 0, label: ' critical'},
       {value: d.frameworks ?? 0, label: ' frameworks'},
@@ -220,23 +223,23 @@ async function refresh() {
   try {
     const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv,
            findingsv, iocsv, yarav, netv, intv, auditv, compv] = await Promise.all([
-      fetch('/dashboard/api/overview').then(r => r.json()),
-      fetch('/dashboard/api/usage').then(r => r.json()),
-      fetch('/dashboard/api/crypto').then(r => r.json()),
-      fetch('/dashboard/api/a2a').then(r => r.json()),
-      fetch('/dashboard/api/investigations').then(r => r.json()),
-      fetch('/dashboard/api/db-counts').then(r => r.json()),
-      fetch('/dashboard/api/agents').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/routing').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/prompts').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/pocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/findings').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/iocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/yara').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/network').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/intelligence').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/audit').then(r => r.json()).catch(() => ({error:'unavailable'})),
-      fetch('/dashboard/api/compliance').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/overview').then(r => r.json()),
+      fetch('/api/usage').then(r => r.json()),
+      fetch('/api/crypto').then(r => r.json()),
+      fetch('/api/a2a').then(r => r.json()),
+      fetch('/api/investigations').then(r => r.json()),
+      fetch('/api/db-counts').then(r => r.json()),
+      fetch('/api/agents').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/routing').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/prompts').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/pocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/findings').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/iocs').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/yara').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/network').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/intelligence').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/audit').then(r => r.json()).catch(() => ({error:'unavailable'})),
+      fetch('/api/compliance').then(r => r.json()).catch(() => ({error:'unavailable'})),
     ]);
 
     if ($('uptime') && ov.uptime_seconds !== undefined)
@@ -678,7 +681,7 @@ async function refresh() {
 
 async function cancelTask(taskId) {
   try {
-    const response = await fetch('/dashboard/api/tasks/' + taskId + '/cancel', { method: 'POST' });
+    const response = await fetch('/api/tasks/' + taskId + '/cancel', { method: 'POST' });
     const data = await response.json();
     if (data.status === 'success') {
       alert('Task ' + taskId + ' canceled');
@@ -693,7 +696,7 @@ async function cancelTask(taskId) {
 
 async function fetchApi(endpoint) {
   try {
-    const response = await fetch('/dashboard' + endpoint);
+    const response = await fetch(endpoint);
     return await response.json();
   } catch (e) {
     console.error('API fetch failed for ' + endpoint, e);
@@ -848,7 +851,7 @@ async function runAgentQuery() {
     if (contextTable) body.context_table = contextTable;
     if (rowIds.length) body.row_ids = rowIds;
 
-    const res = await fetch('/dashboard/api/agent-query', {
+    const res = await fetch('/api/agent-query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -899,7 +902,7 @@ let _settingsData = null;
 
 async function loadSettings() {
   try {
-    const res = await fetch('/dashboard/api/settings');
+    const res = await fetch('/api/settings');
     _settingsData = await res.json();
     _renderSettingsAgent();
     _renderSettingsEnv();
@@ -979,7 +982,7 @@ async function saveSettingsAgent() {
     const strategy = $('st-proxy-strategy').value.trim();
     const enabled = $('st-proxy-enabled').value === 'true';
     const current = (_settingsData && _settingsData.settings && _settingsData.settings.proxy) || {};
-    const res = await fetch('/dashboard/api/settings', {
+    const res = await fetch('/api/settings', {
       method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({agent, proxy: {...current, default_strategy: strategy, enabled}}),
@@ -1000,7 +1003,7 @@ async function saveSettingsEnv() {
       const v = row.querySelector('.env-val').value;
       if (k) env[k] = v;
     });
-    const res = await fetch('/dashboard/api/settings', {
+    const res = await fetch('/api/settings', {
       method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({env}),
@@ -1027,13 +1030,13 @@ function switchSettingsScope(scope) {
 async function loadSettingsToggles() {
   try {
     const [mcpRes, skillRes, pluginRes, globalRes, globalMcpRes, globalEnvRes, projectEnvRes] = await Promise.all([
-      fetch('/dashboard/api/settings/mcps').then(r => r.json()).catch(() => ({servers:[]})),
-      fetch('/dashboard/api/settings/skills').then(r => r.json()).catch(() => ({domains:[]})),
-      fetch('/dashboard/api/settings/plugins').then(r => r.json()).catch(() => ({plugins:[]})),
-      fetch('/dashboard/api/settings/global').then(r => r.json()).catch(() => ({global:{}})),
-      fetch('/dashboard/api/settings/global-mcps').then(r => r.json()).catch(() => ({servers:[]})),
-      fetch('/dashboard/api/settings/global-env').then(r => r.json()).catch(() => ({env:{}})),
-      fetch('/dashboard/api/settings/project-env').then(r => r.json()).catch(() => ({env:{}})),
+      fetch('/api/settings/mcps').then(r => r.json()).catch(() => ({servers:[]})),
+      fetch('/api/settings/skills').then(r => r.json()).catch(() => ({domains:[]})),
+      fetch('/api/settings/plugins').then(r => r.json()).catch(() => ({plugins:[]})),
+      fetch('/api/settings/global').then(r => r.json()).catch(() => ({global:{}})),
+      fetch('/api/settings/global-mcps').then(r => r.json()).catch(() => ({servers:[]})),
+      fetch('/api/settings/global-env').then(r => r.json()).catch(() => ({env:{}})),
+      fetch('/api/settings/project-env').then(r => r.json()).catch(() => ({env:{}})),
     ]);
     _renderMcpToggles(mcpRes.servers || []);
     _renderSkillToggles(skillRes.domains || []);
@@ -1068,7 +1071,7 @@ function _renderMcpToggles(servers) {
 
 async function toggleMcp(name, enabled) {
   try {
-    const res = await fetch('/dashboard/api/settings/mcps', {
+    const res = await fetch('/api/settings/mcps', {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({name, enabled}),
@@ -1100,7 +1103,7 @@ function _renderGlobalMcpToggles(servers) {
 
 async function toggleGlobalMcp(name, enabled) {
   try {
-    const d = await fetch('/dashboard/api/settings/global-mcps', {
+    const d = await fetch('/api/settings/global-mcps', {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({name, enabled}),
@@ -1145,7 +1148,7 @@ function _renderSkillToggles(domains) {
 
 async function toggleSkillDomain(name, enabled) {
   try {
-    await fetch('/dashboard/api/settings/skills', {
+    await fetch('/api/settings/skills', {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({name, enabled}),
@@ -1168,7 +1171,7 @@ function _renderPluginToggles(plugins) {
 
 async function togglePlugin(id, enabled) {
   try {
-    await fetch('/dashboard/api/settings/plugins', {
+    await fetch('/api/settings/plugins', {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({id, enabled}),
@@ -1205,8 +1208,8 @@ let _tbSubAgentNames = [];
 async function loadTeamBuilder() {
   try {
     const [agRes, teRes] = await Promise.all([
-      fetch('/dashboard/api/team-agents').then(r => r.json()),
-      fetch('/dashboard/api/teams').then(r => r.json()),
+      fetch('/api/team-agents').then(r => r.json()),
+      fetch('/api/teams').then(r => r.json()),
     ]);
 
     // Agent browser — all agents
@@ -1258,7 +1261,7 @@ async function tbLoadSkills() {
     if (domain) params.set('domain', domain);
     if (q) params.set('q', q);
     $('tb-skills-table').innerHTML = '<div class="text-xs text-gray-500">Loading...</div>';
-    const res = await fetch('/dashboard/api/skills?' + params.toString());
+    const res = await fetch('/api/skills?' + params.toString());
     const data = await res.json();
     tbRenderSkills(data.skills || []);
   } catch(e) {
@@ -1347,7 +1350,7 @@ async function tbSaveTeam() {
 
   status.textContent = 'Saving...'; status.style.color = '#9ca3af';
   try {
-    const res = await fetch('/dashboard/api/teams', {
+    const res = await fetch('/api/teams', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({name: name.trim(), phases: members}),
@@ -1362,7 +1365,7 @@ async function tbSaveTeam() {
 
 async function tbLoadSavedTeams() {
   try {
-    const res = await fetch('/dashboard/api/teams');
+    const res = await fetch('/api/teams');
     const data = await res.json();
     const teams = data.teams || [];
     const el = $('tb-saved-teams');
@@ -1388,7 +1391,7 @@ async function tbLoadSavedTeams() {
 async function tbDeleteTeam(name) {
   if (!confirm('Delete team "' + name + '"?')) return;
   try {
-    await fetch('/dashboard/api/teams/' + encodeURIComponent(name), {method: 'DELETE'});
+    await fetch('/api/teams/' + encodeURIComponent(name), {method: 'DELETE'});
     tbLoadSavedTeams();
   } catch(e) { console.error(e); }
 }
@@ -1398,7 +1401,7 @@ let _acAgents = [];
 
 async function acLoadAgents() {
   try {
-    const res = await fetch('/dashboard/api/team-agents');
+    const res = await fetch('/api/team-agents');
     const data = await res.json();
     _acAgents = data.agents || [];
     acRenderAgents(_acAgents);
@@ -1459,7 +1462,7 @@ async function acCreateAgent() {
 
   status.textContent = 'Creating...'; status.style.color = '#9ca3af';
   try {
-    const res = await fetch('/dashboard/api/agents/crud', {
+    const res = await fetch('/api/agents/crud', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
@@ -1475,7 +1478,7 @@ async function acCreateAgent() {
 
 async function acEditAgent(name) {
   try {
-    const res = await fetch('/dashboard/api/agents/crud/' + encodeURIComponent(name));
+    const res = await fetch('/api/agents/crud/' + encodeURIComponent(name));
     const data = await res.json();
     if (data.error) { alert(data.error); return; }
     $('ac-edit-name').textContent = name;
@@ -1501,7 +1504,7 @@ async function acSaveEdit() {
   };
   status.textContent = 'Saving...'; status.style.color = '#9ca3af';
   try {
-    const res = await fetch('/dashboard/api/agents/crud/' + encodeURIComponent(name), {
+    const res = await fetch('/api/agents/crud/' + encodeURIComponent(name), {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
@@ -1517,7 +1520,7 @@ async function acSaveEdit() {
 async function acDeleteAgent(name) {
   if (!confirm('Delete agent "' + name + '"?')) return;
   try {
-    const res = await fetch('/dashboard/api/agents/crud/' + encodeURIComponent(name), {method: 'DELETE'});
+    const res = await fetch('/api/agents/crud/' + encodeURIComponent(name), {method: 'DELETE'});
     const data = await res.json();
     if (!res.ok) { alert(data.error || 'Failed'); return; }
     acLoadAgents();
@@ -1577,7 +1580,7 @@ async function wfExecute() {
 
   status.textContent = '⏳ Executing...'; status.style.color = '#fbbf24';
   try {
-    const res = await fetch('/dashboard/api/workflows', {
+    const res = await fetch('/api/workflows', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({name: name.trim(), steps, execute: true}),
@@ -1614,7 +1617,7 @@ function wfRenderResult(wf) {
 
 async function wfLoadAgentList() {
   try {
-    const res = await fetch('/dashboard/api/team-agents');
+    const res = await fetch('/api/team-agents');
     const data = await res.json();
     let dl = document.getElementById('wf-agent-list');
     if (!dl) {
@@ -1763,10 +1766,10 @@ function _renderTelemetry(d) {
 }
 
 function initSSE() {
-  _sseConnect('health',    '/dashboard/sse/health',    _renderHealth);
-  _sseConnect('cases',     '/dashboard/sse/cases',     _renderCases);
-  _sseConnect('tasks',     '/dashboard/sse/tasks',     _renderTasks);
-  _sseConnect('telemetry', '/dashboard/sse/telemetry', _renderTelemetry, 'telemetry_update');
+  _sseConnect('health',    '/sse/health',    _renderHealth);
+  _sseConnect('cases',     '/sse/cases',     _renderCases);
+  _sseConnect('tasks',     '/sse/tasks',     _renderTasks);
+  _sseConnect('telemetry', '/sse/telemetry', _renderTelemetry, 'telemetry_update');
   _sseUpdateBadge();
 }
 
@@ -1775,7 +1778,7 @@ async function loadOpenSearch() {
   $('os-cluster').innerHTML = '<div class="loading text-gray-500">Fetching...</div>';
   $('os-indices').innerHTML = '';
   try {
-    const res = await fetch('/dashboard/api/opensearch');
+    const res = await fetch('/api/opensearch');
     const data = await res.json();
     if (data.error && !data.cluster) {
       $('os-cluster').innerHTML = '<div class="text-red-400">OpenSearch unavailable: ' + data.error + '</div>';
@@ -1804,7 +1807,7 @@ async function loadOpenSearch() {
 // ── Explorer: generic table viewer ──────────────────────────────────────────
 async function loadExplorerModels() {
   try {
-    const res = await fetch('/dashboard/api/models');
+    const res = await fetch('/api/models');
     const data = await res.json();
     const sel = $('explorer-model');
     (data.models || []).forEach(m => {
@@ -1821,7 +1824,7 @@ async function loadExplorerTable() {
   if (!model) { $('explorer-table').innerHTML = ''; $('explorer-count').textContent = ''; return; }
   $('explorer-table').innerHTML = '<div class="loading text-gray-500">Loading...</div>';
   try {
-    const res = await fetch('/dashboard/api/tables/' + encodeURIComponent(model) + '?limit=500');
+    const res = await fetch('/api/tables/' + encodeURIComponent(model) + '?limit=500');
     const data = await res.json();
     if (data.error) { $('explorer-table').innerHTML = '<div class="text-red-400">' + data.error + '</div>'; return; }
     $('explorer-count').textContent = (data.total || data.rows.length) + ' rows';
@@ -1840,6 +1843,7 @@ loadSettings();
 loadTeamBuilder();
 tbLoadSavedTeams();
 wfLoadAgentList();
+acLoadAgents();
 loadOpenSearch();
 initSSE();
 
@@ -1872,33 +1876,33 @@ async function installMcp() {
 
   if(st) { st.textContent = 'Installing\u2026'; st.style.color='var(--text-muted)'; }
   try {
-    const d = await fetch('/dashboard/api/settings/install-mcp', {
+    const d = await fetch('/api/settings/install-mcp', {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({name, command: cmd, args, env}),
     }).then(r => r.json());
     if (d.error) { if(st) { st.textContent = '\u2717 ' + d.error; st.style.color='var(--red)'; } return; }
     if(st) { st.textContent = '\u2713 Installed: ' + name; st.style.color='var(--success)'; }
     ['mcp-install-name','mcp-install-cmd','mcp-install-args','mcp-install-env'].forEach(id => { const el = $(id); if(el) el.value = ''; });
-    fetch('/dashboard/api/settings/global-mcps').then(r => r.json()).then(d => _renderGlobalMcpToggles(d.servers || []));
+    fetch('/api/settings/global-mcps').then(r => r.json()).then(d => _renderGlobalMcpToggles(d.servers || []));
   } catch(e) { if(st) { st.textContent = '\u2717 ' + e.message; st.style.color='var(--red)'; } }
 }
 
 async function removeMcp(name) {
   if (!confirm('Remove MCP server "' + name + '" from ~/.claude/settings.json?')) return;
   try {
-    const d = await fetch('/dashboard/api/settings/remove-mcp', {
+    const d = await fetch('/api/settings/remove-mcp', {
       method: 'DELETE', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({name}),
     }).then(r => r.json());
     if (d.error) { alert('Error: ' + d.error); return; }
-    fetch('/dashboard/api/settings/global-mcps').then(r => r.json()).then(d => _renderGlobalMcpToggles(d.servers || []));
+    fetch('/api/settings/global-mcps').then(r => r.json()).then(d => _renderGlobalMcpToggles(d.servers || []));
   } catch(e) { alert('Error: ' + e.message); }
 }
 
 // ── Hooks Manager ─────────────────────────────────────────────────────────────
 async function loadGlobalHooks() {
   try {
-    const d = await fetch('/dashboard/api/settings/hooks').then(r => r.json());
+    const d = await fetch('/api/settings/hooks').then(r => r.json());
     _renderHooksList(d.hooks || {});
   } catch(e) { console.error('loadGlobalHooks:', e); }
 }
@@ -1939,7 +1943,7 @@ async function addHook() {
   if (!command) { if(st) { st.textContent='\u2717 Command required'; st.style.color='var(--red)'; } return; }
   if(st) { st.textContent='Adding\u2026'; st.style.color='var(--text-muted)'; }
   try {
-    const d = await fetch('/dashboard/api/settings/hooks', {
+    const d = await fetch('/api/settings/hooks', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({event, command, matcher}),
     }).then(r => r.json());
@@ -1954,7 +1958,7 @@ async function addHook() {
 async function removeHook(event, command) {
   if (!confirm('Remove hook from ' + event + '?')) return;
   try {
-    const d = await fetch('/dashboard/api/settings/hooks', {
+    const d = await fetch('/api/settings/hooks', {
       method:'DELETE', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({event, command}),
     }).then(r => r.json());
@@ -1971,8 +1975,8 @@ let _afSkillIdx = 1;
 
 async function afLoadTemplates() {
   try {
-    const d = await fetch('/dashboard/api/settings/agent-templates').then(r => r.json());
-    _afTemplates = d.templates || [];
+    const d = await fetch('/api/settings/agent-agents').then(r => r.json());
+    _afTemplates = d.agents || [];
     // Populate initial template select
     const sel = $('af-tpl-0');
     if (sel) {
@@ -2006,7 +2010,7 @@ function afAddTemplate() {
 async function afLoadSkillOptions() {
   if (_afSkills.length) return;
   try {
-    const d = await fetch('/dashboard/api/skills').then(r => r.json());
+    const d = await fetch('/api/skills').then(r => r.json());
     _afSkills = (d.skills || []).map(s => s.name).filter(Boolean).sort();
   } catch(e) { console.error('afLoadSkillOptions', e); }
 }
@@ -2063,7 +2067,7 @@ async function afGenerate() {
   const projectCtx  = ($('af-project-ctx') || {}).checked || false;
 
   const tools = [...document.querySelectorAll('#af-tools input[type=checkbox]:checked')].map(c => c.value);
-  const templates = [...document.querySelectorAll('[id^="af-tpl-"]')]
+  const agents = [...document.querySelectorAll('[id^="af-tpl-"]')]
     .map(s => s.value).filter(Boolean);
   const skills = [...document.querySelectorAll('[id^="af-skill-"]')]
     .map(s => s.value).filter(Boolean);
@@ -2075,12 +2079,12 @@ async function afGenerate() {
   if(preview){preview.style.display='none';}
 
   try {
-    const resp = await fetch('/dashboard/api/agents/generate', {
+    const resp = await fetch('/api/agents/generate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         type, name, description, model, maxTurns, tools,
-        templates, skills, research, project_context: projectCtx,
+        agents, skills, research, project_context: projectCtx,
         extra_instructions: extra, save: saveFile,
       }),
     });
@@ -2093,7 +2097,7 @@ async function afGenerate() {
   }
 }
 
-// Load templates when Agent Factory opens
+// Load agents when Agent Factory opens
 document.addEventListener('click', function(e) {
   const tab = e.target.closest('.tab');
   if (tab && tab.id === 'nav-agent-factory') afLoadTemplates();

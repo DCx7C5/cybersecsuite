@@ -1,7 +1,16 @@
 ---
-name: management-exceptions
-description: Build a vulnerability exception and risk acceptance tracking system with approval workflows, compensating controls documentation, and expiration management.
+capec: []
+description: ">\n  Build a vulnerability exception and risk acceptance tracking system\
+  \ with approval workflows, compensating controls documentation, and expiration management."
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: exceptions-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - vulnerability-exception
@@ -10,16 +19,14 @@ tags:
 - exception-tracking
 - vulnerability-management
 - governance
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Building Vulnerability Exception Tracking System
 

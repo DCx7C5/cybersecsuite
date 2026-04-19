@@ -1,7 +1,23 @@
 ---
-name: remediation-bucket
-description: This skill provides step-by-step procedures for identifying and remediating Amazon S3 bucket misconfigurations that expose sensitive data to unauthorized access. It covers enabling S3 Block Public Access at account and bucket levels, auditing bucket policies and ACLs, enforcing encryption, configuring access logging, and deploying automated remediation using AWS Config and Lambda.
+capec: []
+cwe:
+- CWE-16
+description: ">\n  This skill provides step-by-step procedures for identifying and\
+  \ remediating Amazon S3 bucket misconfigurations that expose sensitive data to unauthorized\
+  \ access. It covers enabling S3 Block Public Access at account and bucket levels,\
+  \ auditing bucket policies and ACLs, enforcing encryption, configuring access logging,\
+  \ and deploying automated remediation using AWS Config and Lambda."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1530
+model: sonnet
+name: bucket-SKILL.md
+nist_csf:
+- PR.IR-01
+- ID.AM-08
+- GV.SC-06
+- DE.CM-01
 subdomain: cloud-security
 tags:
 - s3-security
@@ -9,20 +25,14 @@ tags:
 - data-exposure
 - public-access-block
 - aws-config
-nist_csf:
-- PR.IR-01
-- ID.AM-08
-- GV.SC-06
-- DE.CM-01
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1530
-cwe:
-- CWE-16
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Remediating S3 Bucket Misconfiguration
 

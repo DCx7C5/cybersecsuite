@@ -456,15 +456,15 @@ async def api_settings_hooks_delete(request: Request) -> JSONResponse:
 
 # ── Agent Templates ───────────────────────────────────────────────────────────
 _CLAUDE_DIR = _PROJECT_ROOT / ".claude"
-_AGENTS_TEMPLATES_DIR = _CLAUDE_DIR / "agents" / "templates"
+_AGENTS_TEMPLATES_DIR = _CLAUDE_DIR / "agents" / "agents"
 
 
 async def api_settings_agent_templates(request: Request) -> JSONResponse:
-    """GET /api/settings/agent-templates — list template .md files in .claude/agents/templates/."""
+    """GET /api/settings/agent-agents — list template .md files in .claude/agents/agents/."""
     try:
         if not _AGENTS_TEMPLATES_DIR.exists():
-            return JSONResponse({"templates": []})
+            return JSONResponse({"agents": []})
         files = sorted(p.stem for p in _AGENTS_TEMPLATES_DIR.glob("*.md"))
-        return JSONResponse({"templates": files})
+        return JSONResponse({"agents": files})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)

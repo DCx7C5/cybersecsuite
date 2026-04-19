@@ -1,6 +1,6 @@
 ---
 name: certificate-analyst
-description: >
+description: >-
   Elite X.509  PKI forensics specialist. Invoke for certificate chain
   validation, rogue CA and sub-CA detection, TLSmTLS certificate inspection,
   Certificate Transparency (CT) log analysis, certificate pinning bypass
@@ -11,28 +11,7 @@ description: >
   unexpected issuer changes, self-signed or expired certificates on monitored
   hosts, pinning violations, CT log gaps, unusual SAN sprawl, or any
   investigation requiring deep PKI trust-chain analysis.
-model: sonnet
-color: gray
-permissionMode: default
-maxTurns: 30
-tools:
-  - Read
-  - Bash
-  - Glob
-  - Grep
-  - WebSearch
-  - WebFetch
-disallowedTools:
-  - Write
-  - Edit
-skills:
-  - shared-memory
-  - tlssslkeylog
-  - networkrecon
-  - threatsmitre-attack-mapper
-  - scopesession-scope
-mcpServers:
-  - cybersec
+
 ---
 
 # Certificate Analyst

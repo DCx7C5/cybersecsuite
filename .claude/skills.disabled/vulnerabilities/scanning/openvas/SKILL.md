@@ -1,7 +1,21 @@
 ---
-name: scanning-openvas
-description: Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone Vulnerability Management with SSH and SMB credentials for comprehensive host-level assessment.
+capec: []
+description: ">\n  Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone\
+  \ Vulnerability Management with SSH and SMB credentials for comprehensive host-level\
+  \ assessment."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1021.002
+- T1046
+- T1059
+model: sonnet
+name: openvas-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - openvas
@@ -11,20 +25,14 @@ tags:
 - greenbone
 - network-security
 - credentialed-scan
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1021.002
-- T1046
-- T1059
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing Authenticated Scan with OpenVAS
 

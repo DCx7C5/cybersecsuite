@@ -629,7 +629,7 @@ async def migrate_audit_command() -> None:
     print("→ Initialising DB...")
     await init_tortoise_async()
 
-    print("→ Ensuring OpenSearch index templates...")
+    print("→ Ensuring OpenSearch index agents...")
     await ensure_indices()
 
     from db.models.core import AuditLog
@@ -697,7 +697,7 @@ async def migrate_api_usage_command() -> None:
     print("→ Initialising DB...")
     await init_tortoise_async()
 
-    print("→ Ensuring OpenSearch index templates...")
+    print("→ Ensuring OpenSearch index agents...")
     await ensure_indices()
 
     from db.models.api_usage_log import ApiUsageLog

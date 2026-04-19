@@ -1,7 +1,22 @@
 ---
-name: scanning-nikto
-description: Nikto is an open-source web server and web application scanner that tests against over 7,000 potentially dangerous files/programs, checks for outdated versions of over 1,250 servers, and identifies ve
+capec: []
+cwe:
+- CWE-79
+description: ">\n  Nikto is an open-source web server and web application scanner\
+  \ that tests against over 7,000 potentially dangerous files/programs, checks for\
+  \ outdated versions of over 1,250 servers, and identifies ve"
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1046
+- T1189
+model: sonnet
+name: nikto-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - vulnerability-management
@@ -10,21 +25,14 @@ tags:
 - web-scanning
 - owasp
 - risk
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1046
-- T1189
-cwe:
-- CWE-79
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing Web Application Scanning with Nikto
 

@@ -1,7 +1,9 @@
 """
 ASGI application — combines:
   - AI proxy routes (OpenAI-compatible)    at /v1/*
-  - Dashboard                             at /dashboard/*
+  - Dashboard                             at / (root, SPA)
+  - Dashboard API                         at /api/*
+  - Dashboard SSE                         at /sse/*
   - A2A agent server  (JSON-RPC + SSE)    at /a2a/*
   - Agent card discovery                  at /.well-known/agent.json
   - Health endpoint                       at /health
@@ -149,9 +151,14 @@ app = Starlette(
     debug=os.environ.get("DEBUG", "false").lower() == "true",
     routes=[
         Route("/health", health),
-        Mount("/dashboard", create_dashboard_router()),
+        # A2A routes — explicit, before dashboard catch-all mount
+        Route("/.well-known/agent.json", _a2a._agent_card, methods=["GET"]),
+        Route("/a2a", _a2a._jsonrpc, methods=["POST"]),
+        Route("/a2a/stream/{task_id}", _a2a._sse_stream, methods=["GET"]),
+        # AI Proxy
         Mount("/v1", create_proxy_router()),
-        Mount("/", _a2a.router),
+        # Dashboard SPA — mounted at / (must be last; handles /, /api/*, /sse/*)
+        Mount("/", create_dashboard_router()),
     ],
     on_startup=[_on_startup],
     on_shutdown=[_on_shutdown],

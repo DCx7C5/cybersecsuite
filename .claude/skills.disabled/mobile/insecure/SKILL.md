@@ -1,17 +1,21 @@
 ---
-name: insecure
-description: Identifies and exploits insecure local data storage vulnerabilities in Android and iOS mobile applications including unencrypted databases, world-readable files, insecure SharedPreferences, plaintext credential storage, and improper keychain/keystore usage. Use when performing mobile penetration testing focused on OWASP M9 (Insecure Data Storage) or assessing compliance with MASVS-STORAGE requirements. Activates for requests involving mobile data storage security, local storage exploitation, SharedPreferences analysis, or mobile data leakage assessment.
-domain: cybersecurity
-subdomain: mobile-security
-tags:
-- mobile-security
-- android
-- ios
-- data-storage
-- owasp-mobile
-- penetration-testing
 atlas_techniques:
 - AML.T0057
+capec: []
+description: ">\n  Identifies and exploits insecure local data storage vulnerabilities\
+  \ in Android and iOS mobile applications including unencrypted databases, world-readable\
+  \ files, insecure SharedPreferences, plaintext credential storage, and improper\
+  \ keychain/keystore usage. Use when performing mobile penetration testing focused\
+  \ on OWASP M9 (Insecure Data Storage) or assessing compliance with MASVS-STORAGE\
+  \ requirements. Activates for requests involving mobile data storage security, local\
+  \ storage exploitation, SharedPreferences analysis, or mobile data leakage assessment."
+domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1003
+- T1404
+model: sonnet
+name: insecure-SKILL.md
 nist_ai_rmf:
 - MEASURE-2.7
 - MAP-5.1
@@ -23,14 +27,22 @@ nist_csf:
 - PR.AA-05
 - ID.RA-01
 - DE.CM-09
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1003
-- T1404
-capec: []
+subdomain: mobile-security
+tags:
+- mobile-security
+- android
+- ios
+- data-storage
+- owasp-mobile
+- penetration-testing
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Exploiting Insecure Data Storage in Mobile
 

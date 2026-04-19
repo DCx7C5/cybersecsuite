@@ -1,6 +1,6 @@
 """cybersec in-process MCP server package.
 
-Assembles all 29 tools into a single SdkMcpServer instance.
+Assembles all 58 tools into a single SdkMcpServer instance.
 Usage (SDK query):
     from csmcp.cybersec import cybersec_server
     options = ClaudeAgentOptions(
@@ -20,6 +20,12 @@ from csmcp.cybersec.proxy import ALL_TOOLS as _proxy_tools
 from csmcp.cybersec.session import ALL_TOOLS as _session_tools
 from csmcp.cybersec.cases import ALL_TOOLS as _cases_tools
 from csmcp.cybersec.poc import ALL_TOOLS as _poc_tools
+from csmcp.cybersec.routing import ALL_TOOLS as _routing_tools
+from csmcp.cybersec.quo_pricing import ALL_TOOLS as _quo_pricing_tools
+from csmcp.cybersec.ai_memory import ALL_TOOLS as _ai_memory_tools
+from csmcp.cybersec.web_search import ALL_TOOLS as _web_search_tools
+from csmcp.cybersec.sync import ALL_TOOLS as _sync_tools
+from csmcp.cybersec.health import ALL_TOOLS as _health_tools
 
 _ALL_CYBERSEC_TOOLS = (
     _findings_tools
@@ -31,6 +37,12 @@ _ALL_CYBERSEC_TOOLS = (
     + _session_tools
     + _cases_tools
     + _poc_tools
+    + _routing_tools
+    + _quo_pricing_tools
+    + _ai_memory_tools
+    + _web_search_tools
+    + _sync_tools
+    + _health_tools
 )
 
 cybersec_server = create_sdk_mcp_server(

@@ -1,26 +1,31 @@
 ---
-name: steganography
-description: Steganography reconnaissance and steganalysis. Detects hidden payloads in image, audio, video, and document carriers via entropy analysis, LSB detection, metadata anomalies, and statistical steganalysis. Maps to MITRE T1027.003 and T1001.003.
-model: sonnet
+capec: []
+description: ">\n  Steganography reconnaissance and steganalysis. Detects hidden payloads\
+  \ in image, audio, video, and document carriers via entropy analysis, LSB detection,\
+  \ metadata anomalies, and statistical steganalysis. Maps to MITRE T1027.003 and\
+  \ T1001.003."
 maxTurns: 30
-tools:
-  - Read
-  - Bash
-  - Glob
-  - Grep
-  - WebSearch
-skills:
-  - shared-memory
-  - threats/mitre-attack-mapper
-tags:
-- steganography
 mitre_attack:
 - T1027.003
 - T1059
 - T1595
+model: sonnet
+name: SKILL.md-
 nist_csf: []
-capec: []
+skills:
+- shared-memory
+- threats/mitre-attack-mapper
+tags:
+- steganography
+tools:
+- Read
+- Bash
+- Glob
+- Grep
+- WebSearch
 ---
+
+
 
 # Steganography Recon
 

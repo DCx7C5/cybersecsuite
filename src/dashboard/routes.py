@@ -78,10 +78,17 @@ from dashboard._handlers import (
     sse_health,
     sse_telemetry,
 )
+from dashboard._handlers import (
+    api_projects_list,
+    api_project_create,
+    api_project_get,
+    api_project_update,
+    api_project_delete,
+)
 
 
 def create_dashboard_router() -> Router:
-    """Create the /dashboard router."""
+    """Create the root router (dashboard at /, API at /api/*, SSE at /sse/*)."""
     return Router(
         routes=[
             Route("/", dashboard_page, methods=["GET"]),
@@ -137,7 +144,7 @@ def create_dashboard_router() -> Router:
             Route("/api/settings/hooks", api_settings_hooks_get, methods=["GET"]),
             Route("/api/settings/hooks", api_settings_hooks_post, methods=["POST"]),
             Route("/api/settings/hooks", api_settings_hooks_delete, methods=["DELETE"]),
-            Route("/api/settings/agent-templates", api_settings_agent_templates, methods=["GET"]),
+            Route("/api/settings/agent-agents", api_settings_agent_templates, methods=["GET"]),
             Route("/api/team-agents", api_team_agents, methods=["GET"]),
             Route("/api/skills", api_skills, methods=["GET"]),
             Route("/api/teams", api_teams, methods=["GET"]),
@@ -157,6 +164,12 @@ def create_dashboard_router() -> Router:
             Route("/api/workflows/{id}", api_workflow_get, methods=["GET"]),
             Route("/api/workflows/{id}", api_workflow_cancel, methods=["DELETE"]),
             Route("/api/opensearch", api_opensearch, methods=["GET"]),
+            # Projects CRUD
+            Route("/api/projects", api_projects_list, methods=["GET"]),
+            Route("/api/projects", api_project_create, methods=["POST"]),
+            Route("/api/projects/{id}", api_project_get, methods=["GET"]),
+            Route("/api/projects/{id}", api_project_update, methods=["PATCH"]),
+            Route("/api/projects/{id}", api_project_delete, methods=["DELETE"]),
             # SSE streaming endpoints
             Route("/sse/cases", sse_cases, methods=["GET"]),
             Route("/sse/tasks", sse_tasks, methods=["GET"]),

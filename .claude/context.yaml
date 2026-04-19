@@ -1,0 +1,19 @@
+# CyberSecSuite project-level context defaults
+# Merged at priority 3 (project); session context.yaml always wins.
+# Variables available in all Jinja2 templates as {{ variable_name }}
+
+workspace: default
+project: cybersecsuite
+hostname: ""
+investigator: ""
+
+# Point of view — override per session
+pov: ""
+
+# Investigation parameters — override per session or per render call
+case_id: ""
+session_id: ""
+linux_component_name: ""
+mitre_tactic: ""
+mitre_technique: ""
+severity: ""

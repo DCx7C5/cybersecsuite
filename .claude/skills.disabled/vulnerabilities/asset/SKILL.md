@@ -1,7 +1,17 @@
 ---
-name: asset
-description: Develop and apply a multi-factor asset criticality scoring model to weight vulnerability prioritization based on business impact, data sensitivity, and operational importance.
+capec: []
+description: ">\n  Develop and apply a multi-factor asset criticality scoring model\
+  \ to weight vulnerability prioritization based on business impact, data sensitivity,\
+  \ and operational importance."
 domain: cybersecurity
+maxTurns: 20
+model: sonnet
+name: asset-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - asset-criticality
@@ -11,16 +21,14 @@ tags:
 - business-impact
 - crown-jewels
 - asset-classification
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing Asset Criticality Scoring for Vulns
 

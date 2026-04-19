@@ -1,7 +1,27 @@
 ---
-name: scanning-nessus
-description: Performs authenticated and unauthenticated vulnerability scanning using Tenable Nessus to identify known vulnerabilities, misconfigurations, default credentials, and missing patches across network infrastructure, servers, and applications. The scanner correlates findings with CVE databases and CVSS scores to produce prioritized remediation guidance. Activates for requests involving vulnerability scanning, Nessus assessment, patch compliance checking, or automated vulnerability detection.
+capec: []
+cve:
+- CVE-2024-21762
+- CVE-2024-6387
+description: ">\n  Performs authenticated and unauthenticated vulnerability scanning\
+  \ using Tenable Nessus to identify known vulnerabilities, misconfigurations, default\
+  \ credentials, and missing patches across network infrastructure, servers, and applications.\
+  \ The scanner correlates findings with CVE databases and CVSS scores to produce\
+  \ prioritized remediation guidance. Activates for requests involving vulnerability\
+  \ scanning, Nessus assessment, patch compliance checking, or automated vulnerability\
+  \ detection."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1046
+- T1595
+model: sonnet
+name: nessus-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-06
+- GV.OV-02
+- DE.AE-07
 subdomain: penetration-testing
 tags:
 - vulnerability-scanning
@@ -9,22 +29,14 @@ tags:
 - CVE
 - patch-management
 - Tenable
-nist_csf:
-- ID.RA-01
-- ID.RA-06
-- GV.OV-02
-- DE.AE-07
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1046
-- T1595
-cve:
-- CVE-2024-21762
-- CVE-2024-6387
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Performing Vulnerability Scanning with Nessus
 

@@ -1,7 +1,20 @@
 ---
-name: attack
-description: Deploy XM Cyber's continuous exposure management platform to map attack paths, identify choke points, and prioritize the 2% of exposures that threaten critical assets.
+capec: []
+description: ">\n  Deploy XM Cyber's continuous exposure management platform to map\
+  \ attack paths, identify choke points, and prioritize the 2% of exposures that threaten\
+  \ critical assets."
 domain: cybersecurity
+maxTurns: 20
+mitre_attack:
+- T1003
+- T1595
+model: sonnet
+name: attack-SKILL.md
+nist_csf:
+- ID.RA-01
+- ID.RA-02
+- ID.IM-02
+- ID.RA-06
 subdomain: vulnerability-management
 tags:
 - xm-cyber
@@ -11,19 +24,14 @@ tags:
 - choke-points
 - breach-simulation
 - attack-surface
-nist_csf:
-- ID.RA-01
-- ID.RA-02
-- ID.IM-02
-- ID.RA-06
-model: sonnet
-maxTurns: 20
-tools: [Read, Bash, Glob, Grep]
-mitre_attack:
-- T1003
-- T1595
-capec: []
+tools:
+- Read
+- Bash
+- Glob
+- Grep
 ---
+
+
 
 # Implementing Attack Path Analysis with XM Cyber
 
