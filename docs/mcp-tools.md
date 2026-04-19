@@ -398,34 +398,34 @@ OmniRoute provides 29 tools for multi-provider AI routing, cost management, and 
 
 Tool name prefix: `mcp__omniroute__`
 
-| Tool | Category | Description |
-|------|----------|-------------|
-| `health` | System | Gateway health check |
-| `list_combos` | Routing | List available routing combos |
-| `get_combo` | Routing | Get details of a routing combo |
-| `create_combo` | Routing | Create a custom routing combo |
-| `delete_combo` | Routing | Delete a routing combo |
-| `test_combo` | Routing | Test a combo with a sample request |
-| `best_combo_for_task` | Routing | Find the best combo for a given task |
-| `get_quota` | Quota | Get usage quota for a provider |
-| `set_quota` | Quota | Set usage quota for a provider |
-| `get_cost` | Cost | Get cost summary for a period |
-| `list_models` | Models | List all available models across providers |
-| `web_search` | Search | Perform a web search via gateway |
-| `simulate_route` | Routing | Simulate routing for a request (dry-run) |
-| `set_budget_guard` | Budget | Configure budget guard (max spend) |
-| `get_circuit_breakers` | Resilience | Get circuit breaker statuses |
-| `get_provider_metrics` | Metrics | Get per-provider latency/error metrics |
-| `get_session_snapshot` | Session | Get current session routing snapshot |
-| `sync_pricing` | Cost | Sync provider pricing data |
-| `get_cache_stats` | Cache | Get cache hit/miss statistics |
-| `flush_cache` | Cache | Flush the routing cache |
-| `explain_route` | Routing | Explain why a route was chosen |
-| `memory_add` | Memory | Add an entry to the routing memory |
-| `memory_search` | Memory | Search routing memory entries |
-| `memory_clear` | Memory | Clear routing memory |
-| `skills_list` | Skills | List available OmniRoute skills |
-| `skills_enable` | Skills | Enable a skill |
-| `skills_execute` | Skills | Execute a skill by name |
-| `skills_executions` | Skills | List recent skill executions |
-| `db_health` | System | Check gateway database health |
+| Tool                   | Category   | Description                                |
+|------------------------|------------|--------------------------------------------|
+| `health`               | System     | Gateway health check                       |
+| `list_combos`          | Routing    | List available routing combos              |
+| `get_combo`            | Routing    | Get details of a routing combo             |
+| `create_combo`         | Routing    | Create a custom routing combo              |
+| `delete_combo`         | Routing    | Delete a routing combo                     |
+| `test_combo`           | Routing    | Test a combo with a sample request         |
+| `best_combo_for_task`  | Routing    | Find the best combo for a given task       |
+| `get_quota`            | Quota      | Get usage quota for a provider             |
+| `set_quota`            | Quota      | Set usage quota for a provider             |
+| `get_cost`             | Cost       | Get cost summary for a period              |
+| `list_models`          | Models     | List all available models across providers |
+| `web_search`           | Search     | Perform a web search via gateway           |
+| `simulate_route`       | Routing    | Simulate routing for a request (dry-run)   |
+| `set_budget_guard`     | Budget     | Configure budget guard (max spend)         |
+| `get_circuit_breakers` | Resilience | Get circuit breaker statuses               |
+| `get_provider_metrics` | Metrics    | Get per-provider latency/error metrics     |
+| `get_session_snapshot` | Session    | Get current session routing snapshot       |
+| `sync_pricing`         | Cost       | Sync provider pricing data                 |
+| `get_cache_stats`      | Cache      | Get cache hit/miss statistics              |
+| `flush_cache`          | Cache      | Flush the routing cache                    |
+| `explain_route`        | Routing    | Explain why a route was chosen             |
+| `memory_add`           | Memory     | Add an entry to the routing memory         |
+| `memory_search`        | Memory     | Search routing memory entries              |
+| `memory_clear`         | Memory     | Clear routing memory                       |
+| `skills_list`          | Skills     | List available OmniRoute skills            |
+| `skills_enable`        | Skills     | Enable a skill                             |
+| `skills_execute`       | Skills     | Execute a skill by name                    |
+| `skills_executions`    | Skills     | List recent skill executions               |
+| `db_health`            | System     | Check gateway database health              |

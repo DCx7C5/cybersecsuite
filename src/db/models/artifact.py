@@ -32,12 +32,6 @@ class Artifact(Model):
     version = fields.IntField(default=1, db_index=True)
 
     # Relations
-    workspace = fields.ForeignKeyField(
-        "models.Workspace",
-        related_name="artifacts",
-        null=True,
-        on_delete=fields.CASCADE
-    )
     parent_version = fields.ForeignKeyField(
         "models.Artifact",
         related_name="versions",

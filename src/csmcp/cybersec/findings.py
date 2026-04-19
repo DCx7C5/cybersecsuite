@@ -6,7 +6,7 @@ from typing import Any
 
 from csmcp._sdk_compat import tool
 from csmcp.cybersec.helpers import (
-    JsonDict, _get_current_scope, _coerce_limit, get_workspace_dir, get_project_dir, get_session_dir,
+    JsonDict, _get_current_scope, _coerce_limit, get_project_dir, get_session_dir,
     sdk_result, sdk_error,
 )
 
@@ -48,11 +48,9 @@ async def add_finding(args: dict[str, Any]) -> JsonDict:
         f"{description}\n\n---\n\n"
     )
 
-    workspace_dir = get_workspace_dir(scope)
     project_dir = get_project_dir(scope)
     session_dir = get_session_dir(scope)
 
-    workspace_dir.mkdir(parents=True, exist_ok=True)
     project_dir.mkdir(parents=True, exist_ok=True)
     if session_dir:
         session_dir.mkdir(parents=True, exist_ok=True)
@@ -61,9 +59,6 @@ async def add_finding(args: dict[str, Any]) -> JsonDict:
 
     with (project_dir / "findings.md").open("a", encoding="utf-8") as f:
         f.write(entry)
-    if workspace_dir != project_dir:
-        with (workspace_dir / "findings.md").open("a", encoding="utf-8") as f:
-            f.write(entry)
 
     data: JsonDict = {
         "title": title, "description": description, "severity": severity,
@@ -72,7 +67,7 @@ async def add_finding(args: dict[str, Any]) -> JsonDict:
     }
     if write_scoped_entry_async:
         await write_scoped_entry_async(
-            workspace_name=scope["workspace"], project_name=scope["project"],
+            project_name=scope["project"],
             session_id=scope["session"], value_type="finding", data=data,
         )
 
@@ -119,7 +114,7 @@ async def add_ioc(args: dict[str, Any]) -> JsonDict:
     }
     if write_scoped_entry_async:
         await write_scoped_entry_async(
-            workspace_name=scope["workspace"], project_name=scope["project"],
+            project_name=scope["project"],
             session_id=scope["session"], value_type="ioc", data=ioc_data,
         )
 
@@ -143,7 +138,6 @@ async def query_findings(args: dict[str, Any]) -> JsonDict:
 
     scope = _get_current_scope()
     sc = ScopeContext(
-        workspace_name=scope["workspace"],
         project_name=scope["project"],
         session_id=scope["session"],
     )
@@ -180,7 +174,7 @@ async def update_risk_register(args: dict[str, Any]) -> JsonDict:
 
     if write_scoped_entry_async:
         await write_scoped_entry_async(
-            workspace_name=scope["workspace"], project_name=scope["project"],
+            project_name=scope["project"],
             session_id=scope["session"], value_type="risk", data=risk_data,
         )
 

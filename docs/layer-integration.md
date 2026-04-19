@@ -43,15 +43,15 @@ variables govern each connection.
 
 ## Layer Summary
 
-| # | Layer | Root Path | Key Responsibility |
-|---|-------|-----------|--------------------|
-| 1 | **ASGI Application** | `src/proxy/asgi.py` | HTTP entry point — mounts all subsystems |
-| 2 | **AI Proxy** | `src/ai_proxy/` | Multi-provider LLM routing (13 strategies, 60 providers) |
-| 3 | **MCP Tools** | `src/csmcp/` + `src/omniroute_mcp/` | 63 tools: 31 cybersec + 5 crypto + 27 OmniRoute |
-| 4 | **A2A Protocol** | `src/a2a/` | JSON-RPC 2.0 agent communication, agent SDK bridge |
-| 5 | **Agent System** | `.claude/agents/` | 48 agents (37 main + 3 teams + 8 sub-agents), 942 skills |
-| 6 | **Database** | `src/db/` | PostgreSQL via Tortoise ORM — 40+ models, 65 tables |
-| 7 | **Observability** | `src/telemetry/` + `src/opensearch/` + `src/dashboard/` | Metrics, OpenSearch, 41 dashboard endpoints |
+| # | Layer                | Root Path                                               | Key Responsibility                                       |
+|---|----------------------|---------------------------------------------------------|----------------------------------------------------------|
+| 1 | **ASGI Application** | `src/proxy/asgi.py`                                     | HTTP entry point — mounts all subsystems                 |
+| 2 | **AI Proxy**         | `src/ai_proxy/`                                         | Multi-provider LLM routing (13 strategies, 60 providers) |
+| 3 | **MCP Tools**        | `src/csmcp/` + `src/omniroute_mcp/`                     | 63 tools: 31 cybersec + 5 crypto + 27 OmniRoute          |
+| 4 | **A2A Protocol**     | `src/a2a/`                                              | JSON-RPC 2.0 agent communication, agent SDK bridge       |
+| 5 | **Agent System**     | `.claude/agents/`                                       | 48 agents (37 main + 3 teams + 8 sub-agents), 942 skills |
+| 6 | **Database**         | `src/db/`                                               | PostgreSQL via Tortoise ORM — 40+ models, 65 tables      |
+| 7 | **Observability**    | `src/telemetry/` + `src/opensearch/` + `src/dashboard/` | Metrics, OpenSearch, 41 dashboard endpoints              |
 
 ---
 
@@ -139,11 +139,11 @@ variables govern each connection.
 
 ### Layer 1 — ASGI Application
 
-| Property | Value |
-|----------|-------|
-| **Entry point** | `src/proxy/asgi.py` |
-| **Framework** | Starlette |
-| **Server** | Uvicorn |
+| Property         | Value                   |
+|------------------|-------------------------|
+| **Entry point**  | `src/proxy/asgi.py`     |
+| **Framework**    | Starlette               |
+| **Server**       | Uvicorn                 |
 | **Default port** | 8000 (HTTP), 8433 (TLS) |
 
 **What it does:**
@@ -154,12 +154,12 @@ management — live here.
 
 **Mount table:**
 
-| Path | Target | Layer |
-|------|--------|-------|
-| `/v1/*` | `create_proxy_router()` | AI Proxy (2) |
-| `/dashboard/*` | `create_dashboard_router()` | Observability (7) |
-| `/a2a` | `A2AServer` | A2A Protocol (4) |
-| `/.well-known/agent.json` | Agent card | A2A Protocol (4) |
+| Path                      | Target                      | Layer             |
+|---------------------------|-----------------------------|-------------------|
+| `/v1/*`                   | `create_proxy_router()`     | AI Proxy (2)      |
+| `/dashboard/*`            | `create_dashboard_router()` | Observability (7) |
+| `/a2a`                    | `A2AServer`                 | A2A Protocol (4)  |
+| `/.well-known/agent.json` | Agent card                  | A2A Protocol (4)  |
 
 **Connects to:**
 - Layer 2 (AI Proxy) — forwards `/v1/chat/completions` and model endpoints
@@ -171,12 +171,12 @@ management — live here.
 
 ### Layer 2 — AI Proxy
 
-| Property | Value |
-|----------|-------|
-| **Root** | `src/ai_proxy/` |
-| **Key files** | `routes.py`, `combo.py`, `providers/` |
-| **Providers** | 60 |
-| **Routing strategies** | 13 |
+| Property               | Value                                 |
+|------------------------|---------------------------------------|
+| **Root**               | `src/ai_proxy/`                       |
+| **Key files**          | `routes.py`, `combo.py`, `providers/` |
+| **Providers**          | 60                                    |
+| **Routing strategies** | 13                                    |
 
 **What it does:**
 Routes LLM requests across 60 providers using 13 intelligent strategies.
@@ -184,28 +184,28 @@ Includes circuit breaker, budget guard, cost tracking, and usage analytics.
 
 **Routing strategies (13):**
 
-| Strategy | Description |
-|----------|-------------|
-| `PRIORITY` | Ordered provider preference list |
-| `ROUND_ROBIN` | Cycle through providers evenly |
-| `COST_OPTIMIZED` | Cheapest provider first |
-| `WEIGHTED` | Weighted random selection |
-| `RANDOM` | Uniform random |
-| `LEAST_USED` | Provider with fewest recent calls |
-| `FILL_FIRST` | Fill one provider before moving to next |
-| `P2C` | Power-of-two-choices (load-aware) |
-| `STRICT_RANDOM` | True random, no fallback |
-| `AUTO` | Automatic strategy selection |
-| `LKGP` | Last-known-good provider |
-| `CONTEXT_OPTIMIZED` | Best provider for context window size |
-| `CONTEXT_RELAY` | Relay context across providers |
+| Strategy            | Description                             |
+|---------------------|-----------------------------------------|
+| `PRIORITY`          | Ordered provider preference list        |
+| `ROUND_ROBIN`       | Cycle through providers evenly          |
+| `COST_OPTIMIZED`    | Cheapest provider first                 |
+| `WEIGHTED`          | Weighted random selection               |
+| `RANDOM`            | Uniform random                          |
+| `LEAST_USED`        | Provider with fewest recent calls       |
+| `FILL_FIRST`        | Fill one provider before moving to next |
+| `P2C`               | Power-of-two-choices (load-aware)       |
+| `STRICT_RANDOM`     | True random, no fallback                |
+| `AUTO`              | Automatic strategy selection            |
+| `LKGP`              | Last-known-good provider                |
+| `CONTEXT_OPTIMIZED` | Best provider for context window size   |
+| `CONTEXT_RELAY`     | Relay context across providers          |
 
 **Custom headers:**
 
-| Header | Purpose |
-|--------|---------|
-| `x-provider` | Force a specific provider |
-| `x-prefer-free` | Prefer free-tier providers |
+| Header              | Purpose                                |
+|---------------------|----------------------------------------|
+| `x-provider`        | Force a specific provider              |
+| `x-prefer-free`     | Prefer free-tier providers             |
 | `x-max-cost-per-1k` | Budget filter (max cost per 1K tokens) |
 
 **Connects to:**
@@ -217,13 +217,13 @@ Includes circuit breaker, budget guard, cost tracking, and usage analytics.
 
 ### Layer 3 — MCP Tools
 
-| Property | Value |
-|----------|-------|
-| **Cybersec root** | `src/csmcp/cybersec/` |
-| **Crypto root** | `src/csmcp/dystopian.py` |
-| **OmniRoute root** | `src/omniroute_mcp/` |
-| **Total tools** | 63 (31 + 5 + 27) |
-| **SDK pattern** | `@tool` decorator + `sdk_result()` |
+| Property           | Value                              |
+|--------------------|------------------------------------|
+| **Cybersec root**  | `src/csmcp/cybersec/`              |
+| **Crypto root**    | `src/csmcp/dystopian.py`           |
+| **OmniRoute root** | `src/omniroute_mcp/`               |
+| **Total tools**    | 63 (31 + 5 + 27)                   |
+| **SDK pattern**    | `@tool` decorator + `sdk_result()` |
 
 **What it does:**
 Provides 63 MCP tools that Claude Code and agents can invoke.  The cybersec
@@ -233,26 +233,26 @@ the OmniRoute server (TypeScript/Bun) bridges to an external AI gateway.
 
 **Tool categories (cybersec — 31 tools):**
 
-| Category | Tools |
-|----------|-------|
-| Findings | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register` |
-| Database | `db_healthcheck`, `bootstrap_intelligence` |
-| Intelligence | `suggest_mitre`, `get_project_memory` |
-| Layers | `share_to_layers`, `get_layer_value` |
-| Cache | `cache_lookup`, `cache_store`, `cache_analytics`, `cache_invalidate` |
-| Proxy | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies` |
-| Session | `session_snapshot`, `agent_registry`, `best_provider` |
-| Cases | `case_open`, `case_status` |
+| Category     | Tools                                                                                                                                                                             |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Findings     | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`                                                                                                                |
+| Database     | `db_healthcheck`, `bootstrap_intelligence`                                                                                                                                        |
+| Intelligence | `suggest_mitre`, `get_project_memory`                                                                                                                                             |
+| Layers       | `share_to_layers`, `get_layer_value`                                                                                                                                              |
+| Cache        | `cache_lookup`, `cache_store`, `cache_analytics`, `cache_invalidate`                                                                                                              |
+| Proxy        | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies` |
+| Session      | `session_snapshot`, `agent_registry`, `best_provider`                                                                                                                             |
+| Cases        | `case_open`, `case_status`                                                                                                                                                        |
 
 **Tool categories (crypto — 5 tools):**
 
-| Tool | Purpose |
-|------|---------|
-| `crypto_generate_keypair` | Generate Ed25519 key pair |
-| `crypto_sign_artifact` | Sign artifact with Ed25519 |
-| `crypto_verify_artifact` | Verify Ed25519 signature |
-| `crypto_list_keys` | List available key pairs |
-| `crypto_rotate_key` | Rotate signing key |
+| Tool                      | Purpose                    |
+|---------------------------|----------------------------|
+| `crypto_generate_keypair` | Generate Ed25519 key pair  |
+| `crypto_sign_artifact`    | Sign artifact with Ed25519 |
+| `crypto_verify_artifact`  | Verify Ed25519 signature   |
+| `crypto_list_keys`        | List available key pairs   |
+| `crypto_rotate_key`       | Rotate signing key         |
 
 **Tool categories (OmniRoute — 27 tools):**
 Health, combos, routing, quota, cost, models, web search, memory, and skills
@@ -277,12 +277,12 @@ async def _tool_fn(args: dict[str, Any]) -> dict:
 
 ### Layer 4 — A2A Protocol
 
-| Property | Value |
-|----------|-------|
-| **Root** | `src/a2a/` |
-| **Protocol** | JSON-RPC 2.0 |
+| Property      | Value                                   |
+|---------------|-----------------------------------------|
+| **Root**      | `src/a2a/`                              |
+| **Protocol**  | JSON-RPC 2.0                            |
 | **Key files** | `server.py`, `agent.py`, `agent_sdk.py` |
-| **Transport** | HTTP POST + SSE streaming |
+| **Transport** | HTTP POST + SSE streaming               |
 
 **What it does:**
 Implements the Agent-to-Agent (A2A) protocol for inter-agent communication.
@@ -292,11 +292,11 @@ through the Agent SDK.
 
 **Endpoints:**
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| POST | `/a2a` | JSON-RPC dispatch |
-| GET | `/a2a/stream/{task_id}` | SSE streaming for task updates |
-| GET | `/.well-known/agent.json` | Agent card (capability advertisement) |
+| Method | Path                      | Purpose                               |
+|--------|---------------------------|---------------------------------------|
+| POST   | `/a2a`                    | JSON-RPC dispatch                     |
+| GET    | `/a2a/stream/{task_id}`   | SSE streaming for task updates        |
+| GET    | `/.well-known/agent.json` | Agent card (capability advertisement) |
 
 **JSON-RPC methods:**
 - `tasks/send` — submit a new investigation task
@@ -313,13 +313,13 @@ through the Agent SDK.
 
 ### Layer 5 — Agent System
 
-| Property | Value |
-|----------|-------|
-| **Root** | `.claude/agents/` |
-| **Skills root** | `.claude/skills/` |
-| **Agents** | 48 (37 main + 3 teams + 8 sub-agents) |
-| **Skills** | 942 |
-| **Hooks** | `.claude/hooks/` + `src/agent/hooks.py` |
+| Property        | Value                                   |
+|-----------------|-----------------------------------------|
+| **Root**        | `.claude/agents/`                       |
+| **Skills root** | `.claude/skills/`                       |
+| **Agents**      | 48 (37 main + 3 teams + 8 sub-agents)   |
+| **Skills**      | 942                                     |
+| **Hooks**       | `.claude/hooks/` + `src/agent/hooks.py` |
 
 **What it does:**
 Defines the specialist agent roster — each agent is a Markdown file with YAML
@@ -341,17 +341,17 @@ agent_sdk.py
 
 **Hooks pipeline (two systems):**
 
-| System | Location | Execution |
-|--------|----------|-----------|
-| Filesystem hooks | `.claude/hooks/` | Subprocess (`python3`) |
-| SDK hooks | `src/agent/hooks.py` | In-process |
+| System           | Location             | Execution              |
+|------------------|----------------------|------------------------|
+| Filesystem hooks | `.claude/hooks/`     | Subprocess (`python3`) |
+| SDK hooks        | `src/agent/hooks.py` | In-process             |
 
-| Hook Phase | Hook | Purpose |
-|------------|------|---------|
-| PreToolUse | `security_hook` | Blocks dangerous commands |
-| PreToolUse | `audit_hook` | Logs all tool calls |
-| PostToolUse | `ioc_hook` | Extracts IOCs from output |
-| Stop | `cost_hook` | Logs session cost |
+| Hook Phase  | Hook            | Purpose                   |
+|-------------|-----------------|---------------------------|
+| PreToolUse  | `security_hook` | Blocks dangerous commands |
+| PreToolUse  | `audit_hook`    | Logs all tool calls       |
+| PostToolUse | `ioc_hook`      | Extracts IOCs from output |
+| Stop        | `cost_hook`     | Logs session cost         |
 
 **Memory tiers (3-tier hierarchy):**
 ```
@@ -369,13 +369,13 @@ agent_sdk.py
 
 ### Layer 6 — Database
 
-| Property | Value |
-|----------|-------|
-| **Root** | `src/db/` |
-| **ORM** | Tortoise ORM (asyncpg driver) |
-| **Models** | 40+ |
-| **Tables** | 65 |
-| **Port** | 5432 |
+| Property   | Value                         |
+|------------|-------------------------------|
+| **Root**   | `src/db/`                     |
+| **ORM**    | Tortoise ORM (asyncpg driver) |
+| **Models** | 40+                           |
+| **Tables** | 65                            |
+| **Port**   | 5432                          |
 
 **What it does:**
 PostgreSQL stores all persistent state — findings, IOCs, MITRE mappings,
@@ -385,14 +385,14 @@ via Tortoise ORM.
 
 **Key model groups:**
 
-| Group | Models | Purpose |
-|-------|--------|---------|
-| Findings | `Finding`, `IOC`, `Risk` | Investigation results |
-| Intelligence | `MitreTechniqueIntel`, `ForensicMITRETechnique` | MITRE ATT&CK |
-| Cases | `CaseIntake` | Case management |
-| Frameworks | NIST CSF 2.0, NIST AI RMF 1.0 | Compliance |
-| CVE/CWE/CAPEC | Vulnerability databases | Threat intel |
-| POC | `POCIntel` | Proof-of-concept intel |
+| Group         | Models                                          | Purpose                |
+|---------------|-------------------------------------------------|------------------------|
+| Findings      | `Finding`, `IOC`, `Risk`                        | Investigation results  |
+| Intelligence  | `MitreTechniqueIntel`, `ForensicMITRETechnique` | MITRE ATT&CK           |
+| Cases         | `CaseIntake`                                    | Case management        |
+| Frameworks    | NIST CSF 2.0, NIST AI RMF 1.0                   | Compliance             |
+| CVE/CWE/CAPEC | Vulnerability databases                         | Threat intel           |
+| POC           | `POCIntel`                                      | Proof-of-concept intel |
 
 **Initialization:**
 ```python
@@ -411,14 +411,14 @@ await get_database_health_async()  # Health check for /dashboard/health
 
 ### Layer 7 — Observability
 
-| Property | Value |
-|----------|-------|
-| **Dashboard root** | `src/dashboard/` |
-| **Telemetry root** | `src/telemetry/` |
-| **OpenSearch root** | `src/opensearch/` |
+| Property                | Value                              |
+|-------------------------|------------------------------------|
+| **Dashboard root**      | `src/dashboard/`                   |
+| **Telemetry root**      | `src/telemetry/`                   |
+| **OpenSearch root**     | `src/opensearch/`                  |
 | **Dashboard endpoints** | 41 (8 API modules + 4 SSE streams) |
-| **OpenSearch port** | 9200 |
-| **OS Dashboards port** | 5601 |
+| **OpenSearch port**     | 9200                               |
+| **OS Dashboards port**  | 5601                               |
 
 **What it does:**
 Provides real-time and historical observability across the entire platform.
@@ -428,16 +428,16 @@ The dashboard exposes 41 endpoints for the web UI.
 
 **Dashboard API modules (8):**
 
-| Module | Purpose |
-|--------|---------|
-| `core` | Health, status, overview |
-| `agents` | Agent listing, query execution |
-| `forensic` | Findings, IOCs, MITRE data |
-| `ops` | Operations, cost, usage |
-| `tables` | Generic table CRUD |
-| `settings` | Configuration management |
-| `team_builder` | Team composition |
-| `opensearch_stats` | OpenSearch cluster metrics |
+| Module             | Purpose                        |
+|--------------------|--------------------------------|
+| `core`             | Health, status, overview       |
+| `agents`           | Agent listing, query execution |
+| `forensic`         | Findings, IOCs, MITRE data     |
+| `ops`              | Operations, cost, usage        |
+| `tables`           | Generic table CRUD             |
+| `settings`         | Configuration management       |
+| `team_builder`     | Team composition               |
+| `opensearch_stats` | OpenSearch cluster metrics     |
 
 **SSE streams (4):**
 Real-time event streams for telemetry, findings, agent activity, and system
@@ -453,11 +453,11 @@ Event occurs (tool call, proxy request, error)
 
 **OpenSearch indices (3, daily rollover):**
 
-| Index Pattern | Content |
-|---------------|---------|
-| `telemetry-YYYY.MM.DD` | Performance metrics |
-| `audit-YYYY.MM.DD` | Security audit trail |
-| `api-usage-YYYY.MM.DD` | API usage analytics |
+| Index Pattern          | Content              |
+|------------------------|----------------------|
+| `telemetry-YYYY.MM.DD` | Performance metrics  |
+| `audit-YYYY.MM.DD`     | Security audit trail |
+| `api-usage-YYYY.MM.DD` | API usage analytics  |
 
 **OpenSearch client (`src/opensearch/client.py`):**
 - Async singleton connection
@@ -566,13 +566,13 @@ Tools access:
 
 ### 6. MCP Tools → Database
 
-| Tool Module | DB Models Used |
-|-------------|----------------|
-| `findings.py` | `Finding`, `IOC`, `Risk` |
-| `intelligence.py` | `MitreTechniqueIntel`, `ForensicMITRETechnique` |
-| `cases.py` | `CaseIntake` |
-| `db.py` | `init_tortoise_async()`, `get_database_health_async()` |
-| `poc.py` | `POCIntel` |
+| Tool Module       | DB Models Used                                         |
+|-------------------|--------------------------------------------------------|
+| `findings.py`     | `Finding`, `IOC`, `Risk`                               |
+| `intelligence.py` | `MitreTechniqueIntel`, `ForensicMITRETechnique`        |
+| `cases.py`        | `CaseIntake`                                           |
+| `db.py`           | `init_tortoise_async()`, `get_database_health_async()` |
+| `poc.py`          | `POCIntel`                                             |
 
 All database access is **async** — no synchronous DB calls anywhere in the
 codebase.  Tortoise ORM manages connection pooling via asyncpg.
@@ -583,18 +583,18 @@ codebase.  Tortoise ORM manages connection pooling via asyncpg.
 
 The `proxy.py` module exposes **10 tools** that call AI Proxy endpoints:
 
-| Tool | Proxy Endpoint |
-|------|----------------|
-| `proxy_chat` | `POST /v1/chat/completions` |
-| `proxy_providers` | `GET /v1/providers` |
-| `proxy_models` | `GET /v1/models` |
-| `proxy_usage` | `GET /v1/usage` |
-| `proxy_cost` | `GET /v1/cost` |
-| `simulate_route` | `POST /v1/simulate` |
-| `set_budget_guard` | `POST /v1/budget` |
-| `get_circuit_breakers` | `GET /v1/circuit-breakers` |
-| `explain_route` | `GET /v1/explain` |
-| `routing_strategies` | `GET /v1/strategies` |
+| Tool                   | Proxy Endpoint              |
+|------------------------|-----------------------------|
+| `proxy_chat`           | `POST /v1/chat/completions` |
+| `proxy_providers`      | `GET /v1/providers`         |
+| `proxy_models`         | `GET /v1/models`            |
+| `proxy_usage`          | `GET /v1/usage`             |
+| `proxy_cost`           | `GET /v1/cost`              |
+| `simulate_route`       | `POST /v1/simulate`         |
+| `set_budget_guard`     | `POST /v1/budget`           |
+| `get_circuit_breakers` | `GET /v1/circuit-breakers`  |
+| `explain_route`        | `GET /v1/explain`           |
+| `routing_strategies`   | `GET /v1/strategies`        |
 
 ---
 
@@ -693,11 +693,11 @@ src/crypto/
 
 **Consumers:**
 
-| Consumer | Usage |
-|----------|-------|
+| Consumer            | Usage                                         |
+|---------------------|-----------------------------------------------|
 | Dystopian MCP tools | Key generation, artifact signing/verification |
-| Hooks | Evidence integrity checksums |
-| A2A agent | Artifact signing skill |
+| Hooks               | Evidence integrity checksums                  |
+| A2A agent           | Artifact signing skill                        |
 
 **Key storage:** `DYSTOPIAN_KEYS_DIR` (default: `/etc/dystopian-crypto/keys`)
 
@@ -858,13 +858,13 @@ Claude Code receives result and continues investigation
 
 ## Docker Compose Services
 
-| Service | Image | Depends On | Healthcheck |
-|---------|-------|------------|-------------|
-| `cybersec-postgres` | Custom (with extensions) | — | `pg_isready` |
-| `cybersec-dashboard` | Custom (Python 3.14) | postgres (healthy) | `curl /health` |
-| `cybersec-redis` | Custom | — | `redis-cli ping` |
-| `cybersec-opensearch` | `opensearchproject/opensearch:2.17.1` | — | `curl /_cluster/health` |
-| `cybersec-opensearch-dashboards` | `opensearchproject/opensearch-dashboards:2.17.1` | opensearch (healthy) | — |
+| Service                          | Image                                            | Depends On           | Healthcheck             |
+|----------------------------------|--------------------------------------------------|----------------------|-------------------------|
+| `cybersec-postgres`              | Custom (with extensions)                         | —                    | `pg_isready`            |
+| `cybersec-dashboard`             | Custom (Python 3.14)                             | postgres (healthy)   | `curl /health`          |
+| `cybersec-redis`                 | Custom                                           | —                    | `redis-cli ping`        |
+| `cybersec-opensearch`            | `opensearchproject/opensearch:2.17.1`            | —                    | `curl /_cluster/health` |
+| `cybersec-opensearch-dashboards` | `opensearchproject/opensearch-dashboards:2.17.1` | opensearch (healthy) | —                       |
 
 **Startup order:**
 ```
@@ -884,47 +884,47 @@ cybersec-opensearch  ───────────────────�
 
 ### Database
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `CYBERSEC_DB_HOST` | `localhost` | PostgreSQL hostname |
-| `CYBERSEC_DB_PORT` | `5432` | PostgreSQL port |
-| `CYBERSEC_DB_USER` | `cybersec` | Database user |
-| `CYBERSEC_DB_PASSWORD` | — | Database password |
-| `CYBERSEC_DB_NAME` | `cybersec_forensics` | Database name |
+| Variable               | Default              | Purpose             |
+|------------------------|----------------------|---------------------|
+| `CYBERSEC_DB_HOST`     | `localhost`          | PostgreSQL hostname |
+| `CYBERSEC_DB_PORT`     | `5432`               | PostgreSQL port     |
+| `CYBERSEC_DB_USER`     | `cybersec`           | Database user       |
+| `CYBERSEC_DB_PASSWORD` | —                    | Database password   |
+| `CYBERSEC_DB_NAME`     | `cybersec_forensics` | Database name       |
 
 ### AI Proxy
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | — | Anthropic API key |
-| `OPENAI_API_KEY` | — | OpenAI API key |
+| Variable             | Default                    | Purpose                   |
+|----------------------|----------------------------|---------------------------|
+| `ANTHROPIC_API_KEY`  | —                          | Anthropic API key         |
+| `OPENAI_API_KEY`     | —                          | OpenAI API key            |
 | `ANTHROPIC_BASE_URL` | `http://localhost:8000/v1` | Route through local proxy |
 
 ### Scope
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `CYBERSEC_WORKSPACE` | `default` | Workspace isolation |
-| `CYBERSEC_PROJECT` | `my-project` | Project identifier |
-| `CYBERSEC_SESSION_ID` | — | Session identifier (optional) |
+| Variable              | Default      | Purpose                       |
+|-----------------------|--------------|-------------------------------|
+| `CYBERSEC_WORKSPACE`  | `default`    | Workspace isolation           |
+| `CYBERSEC_PROJECT`    | `my-project` | Project identifier            |
+| `CYBERSEC_SESSION_ID` | —            | Session identifier (optional) |
 
 ### Intelligence
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `CYBERSEC_INTEL_DIR` | `./data/cybersec-shared/intelligence` | Intel data directory |
-| `CYBERSEC_BOOTSTRAP_INTEL_ON_START` | `false` | Auto-seed intel on startup |
+| Variable                            | Default                               | Purpose                    |
+|-------------------------------------|---------------------------------------|----------------------------|
+| `CYBERSEC_INTEL_DIR`                | `./data/cybersec-shared/intelligence` | Intel data directory       |
+| `CYBERSEC_BOOTSTRAP_INTEL_ON_START` | `false`                               | Auto-seed intel on startup |
 
 ### Crypto
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
+| Variable             | Default                      | Purpose             |
+|----------------------|------------------------------|---------------------|
 | `DYSTOPIAN_KEYS_DIR` | `/etc/dystopian-crypto/keys` | Ed25519 key storage |
 
 ### OmniRoute
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
+| Variable             | Default                  | Purpose               |
+|----------------------|--------------------------|-----------------------|
 | `OMNIROUTE_BASE_URL` | `http://localhost:20128` | OmniRoute gateway URL |
 
 ---

@@ -38,7 +38,7 @@ Claude Code / agent_sdk.py
 | `a2a/`                    | A2A JSON-RPC server, orchestrator, agent_sdk bridge, registry                                                  |
 | `ai_proxy/`               | 60 providers (`registry.py` 1163L), routing (`combo.py` 574L), translators                                     |
 | `crypto/`                 | Ed25519, BLAKE2b-256, Argon2id (mem=262144, iters=4), AES-256-GCM                                              |
-| `db/`                     | 30+ model files, 40+ ORM models, 65 tables, `cybersec_forensics` DB                                           |
+| `db/`                     | 30+ model files, 40+ ORM models, 65 tables, `cybersec_forensics` DB                                            |
 | `db/browser_forensics.py` | `BrowserForensicFinding` CRUD — `log_finding_async()`, `count_findings_by_severity()`, `get_recent_findings()` |
 | `a2a/checks/`             | Integrity checks — FK, fixtures, config paths (moved from `src/checks/` in Phase M.3, commit `4a52b219`)       |
 | `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — dual-write to OpenSearch ✅                  |
@@ -47,29 +47,29 @@ Claude Code / agent_sdk.py
 **src/csmcp/ rename**: `src/mcp/` → `src/csmcp/` (Phase H) — avoided naming conflict with pip `mcp` v1.26.0. `mcp_server.py` (1288L FastMCP) DELETED.
 
 ### src/dashboard/ (66+ routes)
-| File                          | Lines | Purpose                                                                                                             |
-|-------------------------------|-------|---------------------------------------------------------------------------------------------------------------------|
-| `routes.py`                   | ~150  | Route wiring (66 routes)                                                                                            |
-| `_html.py`                    | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                                           |
-| `templates/__init__.py`       | 25    | `build_dashboard_html()` assembler                                                                                  |
-| `templates/_components.py`    | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`                   |
-| `templates/_base.py`          | ~760  | CSS (JetBrains Darcula palette, IDE statusbar, pagination fix, .af-check), `head()`, `header()`, `context_bar()` — replaces deprecated `stats_row()`/`tiers_row()` |
-| `templates/_tabs.py`          | ~70   | `tab_bar()` — 26 items in 7 groups (PLATFORM/AI PROXY/AGENTS/OPERATIONS/FORENSICS/DATA/SETTINGS); removed providers/factory/agents-registry tabs |
-| `templates/_panels.py`        | ~820  | `all_panels()` — 26 panel fns; `_agent_craft()` has full factory section; `_workflows()` separate |
-| `templates/_js.py`            | ~2050 | All JS: SSE, team builder, settings CRUD, explorer, agent query, MCP installer, hooks CRUD, context bar, `afLoadTemplates()`, `afGenerate()` |
-| `api/core.py`                 | 153   | overview, providers, usage, health, crypto                                                                          |
-| `api/agents.py`               | ~150  | a2a, agents (from .claude/agents/**/*.md), routing, factory, agent-query                                            |
-| `api/forensic.py`             | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                                       |
-| `api/ops.py`                  | 183   | cases, tasks, task lifecycle, PoCs                                                                                  |
-| `api/tables.py`               | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                |
-| `api/settings.py`             | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
-| `api/settings_toggles.py`     | ~350  | All toggle/installer APIs: MCPs (project+global), skills, plugins, global summary, MCP install/remove, hooks CRUD   |
-| `api/team_builder.py`         | 310   | `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `PUT/DELETE /api/teams/{name}`                 |
-| `api/agent_crud.py`           | ~420  | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` · `POST /api/agents/generate` — factory generate endpoint |
-| `api/workflows.py`            | 247   | `GET/POST /api/workflows` · `GET/DELETE /api/workflows/{id}` — multi-step pipeline                                  |
-| `api/opensearch_stats.py`     | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
-| `api/sse.py`                  | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
-| `_schema.py`                  | 149   | Tortoise model introspector — 83 models                                                                             |
+| File                       | Lines | Purpose                                                                                                                                                            |
+|----------------------------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `routes.py`                | ~150  | Route wiring (66 routes)                                                                                                                                           |
+| `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                                                                                          |
+| `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                                                                                 |
+| `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`                                                                  |
+| `templates/_base.py`       | ~760  | CSS (JetBrains Darcula palette, IDE statusbar, pagination fix, .af-check), `head()`, `header()`, `context_bar()` — replaces deprecated `stats_row()`/`tiers_row()` |
+| `templates/_tabs.py`       | ~70   | `tab_bar()` — 26 items in 7 groups (PLATFORM/AI PROXY/AGENTS/OPERATIONS/FORENSICS/DATA/SETTINGS); removed providers/factory/agents-registry tabs                   |
+| `templates/_panels.py`     | ~820  | `all_panels()` — 26 panel fns; `_agent_craft()` has full factory section; `_workflows()` separate                                                                  |
+| `templates/_js.py`         | ~2050 | All JS: SSE, team builder, settings CRUD, explorer, agent query, MCP installer, hooks CRUD, context bar, `afLoadTemplates()`, `afGenerate()`                       |
+| `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                                                                                         |
+| `api/agents.py`            | ~150  | a2a, agents (from .claude/agents/**/*.md), routing, factory, agent-query                                                                                           |
+| `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                                                                                      |
+| `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                                                                                 |
+| `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                                                               |
+| `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                                                                |
+| `api/settings_toggles.py`  | ~350  | All toggle/installer APIs: MCPs (project+global), skills, plugins, global summary, MCP install/remove, hooks CRUD                                                  |
+| `api/team_builder.py`      | 310   | `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `PUT/DELETE /api/teams/{name}`                                                                |
+| `api/agent_crud.py`        | ~420  | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` · `POST /api/agents/generate` — factory generate endpoint                                       |
+| `api/workflows.py`         | 247   | `GET/POST /api/workflows` · `GET/DELETE /api/workflows/{id}` — multi-step pipeline                                                                                 |
+| `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                                                                  |
+| `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                                                                             |
+| `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                                                                            |
 
 **26 tabs in 7 groups** (commit `1f22e496`):
 - **PLATFORM**: Health · Telemetry
@@ -273,19 +273,19 @@ New documentation created:
 
 ### ✅ Phase P — Dashboard Context Header + Sidebar Recat + Agent Factory (2026-04-19)
 
-| Sub | What | Status |
-|-----|------|--------|
-| P.1 | Sidebar recategorized: 7 groups (PLATFORM/AI PROXY/AGENTS/OPERATIONS/FORENSICS/DATA/SETTINGS) | ✅ |
-| P.2 | Removed static stats header (providers/models/requests/tokens/cost/FREE/STD/PREMIUM) | ✅ |
-| P.3 | Context-aware header: `#context-bar` with per-tab stats fetched lazily, cached in `_ctxCache` | ✅ |
-| P.4 | Removed irrelevant tabs: Providers, Agent Registry, Factory (standalone) | ✅ |
-| P.5 | Agent Craft factory UI: type selector, template checkboxes, research checkboxes, project ctx toggle | ✅ |
-| P.6 | `GET /api/settings/agent-templates` — lists 31 templates from `.claude/agents/templates/` | ✅ |
-| P.7 | `POST /api/agents/generate` — deterministic factory: frontmatter + chapter body from FACTORY_VARS | ✅ |
-| P.8 | `afLoadTemplates()` + `afGenerate()` JS functions wired to factory UI | ✅ |
-| P.9 | Fixed `context_bar()` CSS conflict (display:none wins, JS sets flex on demand) | ✅ |
-| P.10 | Fixed `_panels.py` syntax error: missing closing `)` on `_agent_craft()`, `_workflows()` was merged | ✅ |
-| P.11 | Fixed JS init: activates `tab-health` not removed `tab-providers` | ✅ |
+| Sub  | What                                                                                                | Status |
+|------|-----------------------------------------------------------------------------------------------------|--------|
+| P.1  | Sidebar recategorized: 7 groups (PLATFORM/AI PROXY/AGENTS/OPERATIONS/FORENSICS/DATA/SETTINGS)       | ✅      |
+| P.2  | Removed static stats header (providers/models/requests/tokens/cost/FREE/STD/PREMIUM)                | ✅      |
+| P.3  | Context-aware header: `#context-bar` with per-tab stats fetched lazily, cached in `_ctxCache`       | ✅      |
+| P.4  | Removed irrelevant tabs: Providers, Agent Registry, Factory (standalone)                            | ✅      |
+| P.5  | Agent Craft factory UI: type selector, template checkboxes, research checkboxes, project ctx toggle | ✅      |
+| P.6  | `GET /api/settings/agent-templates` — lists 31 templates from `.claude/agents/templates/`           | ✅      |
+| P.7  | `POST /api/agents/generate` — deterministic factory: frontmatter + chapter body from FACTORY_VARS   | ✅      |
+| P.8  | `afLoadTemplates()` + `afGenerate()` JS functions wired to factory UI                               | ✅      |
+| P.9  | Fixed `context_bar()` CSS conflict (display:none wins, JS sets flex on demand)                      | ✅      |
+| P.10 | Fixed `_panels.py` syntax error: missing closing `)` on `_agent_craft()`, `_workflows()` was merged | ✅      |
+| P.11 | Fixed JS init: activates `tab-health` not removed `tab-providers`                                   | ✅      |
 
 **Commits**: `28e9666e` (palette/sidebar) → `1f22e496` (factory UI/API/context bar fix)
 **Tests**: 87 passed, 23 skipped — no regressions
@@ -328,15 +328,15 @@ New documentation created:
 
 > Redundante Python-Agent-Wrappers entfernt. SDK liest `.claude/agents/*.md` direkt, per-agent Model-Routing durch AI Proxy.
 
-| Sub | What | Status |
-|-----|------|--------|
-| O.1 | Delete `orchestrator.py` + `dev_agents.py`, clean `__init__.py` + `asgi.py` | ✅ |
-| O.2 | `_handle_generic()` fallback in `cybersec_agent.py` | ✅ |
-| O.3 | Per-agent model routing (`AgentDefinition.model` → `options.model` → Proxy) | ✅ |
-| O.4 | `_copy_options_with()` — shallow-copy before mutation (race fix) | ✅ |
-| O.5 | OmniRoute 27 tools embedded as self-contained src/omniroute_mcp/ | ✅ |
-| O.6 | Docs: `docs/agent-sdk-integration.md`, `README.md`, `architecture.md` | ✅ |
-| O.7 | Stale references cleaned: hooks, `hooks.json`, `CLAUDE.md`, `scope.md` | ✅ |
+| Sub | What                                                                        | Status |
+|-----|-----------------------------------------------------------------------------|--------|
+| O.1 | Delete `orchestrator.py` + `dev_agents.py`, clean `__init__.py` + `asgi.py` | ✅      |
+| O.2 | `_handle_generic()` fallback in `cybersec_agent.py`                         | ✅      |
+| O.3 | Per-agent model routing (`AgentDefinition.model` → `options.model` → Proxy) | ✅      |
+| O.4 | `_copy_options_with()` — shallow-copy before mutation (race fix)            | ✅      |
+| O.5 | OmniRoute 27 tools embedded as self-contained src/omniroute_mcp/            | ✅      |
+| O.6 | Docs: `docs/agent-sdk-integration.md`, `README.md`, `architecture.md`       | ✅      |
+| O.7 | Stale references cleaned: hooks, `hooks.json`, `CLAUDE.md`, `scope.md`      | ✅      |
 
 **Commit**: `ae723c1d` — 25 files, +1521/−972
 
@@ -352,15 +352,15 @@ New documentation created:
 
 > 7 konkrete Defekte behoben. Alle Änderungen in `src/a2a/`.
 
-| # | Defekt | Fix | Datei |
-|---|--------|-----|-------|
-| 1 | `build_agent_options()` liest alle `.md` + MCP-Init bei jedem Aufruf neu | Module-level `_OPTIONS_CACHE` + `_AGENT_DEFS_CACHE`; `clear_caches()` für Tests | `agent_sdk.py` |
-| 2 | `run_agent_query()`: fragile `"Use the X agent to: Y"` Dispatch | `AgentDefinition.prompt` als `[AGENT CONTEXT]...[/AGENT CONTEXT]` Block im Prompt — deterministisch | `agent_sdk.py` |
-| 3 | SDK `session_id` nie zurück zu `Task.session_id` propagiert | `_session_out: dict` Parameter; alle Skill-Handler schreiben `task.session_id` nach Aufruf | `agent_sdk.py`, `cybersec_agent.py` |
-| 4 | `BaseA2AAgent.stream()` blockiert, gibt nur einen Chunk | Zuerst `TaskState.WORKING` yielden, dann finalen Zustand | `agent.py` |
-| 5 | `_extract_text()` in 3 Klassen dupliziert | `@staticmethod` auf `BaseA2AAgent`; Subklassen-Duplikate entfernt | `agent.py`, `cybersec_agent.py` |
-| 6 | Beliebiges `[:500]`-Truncation in allen Handlern | Truncation vollständig entfernt | `cybersec_agent.py` |
-| 7 | `PythonDeveloperAgent`/`CppDeveloperAgent` kein `try/except` | Beide `execute()` in `try/except → _fail()` gewrappt | `dev_agents.py` |
+| # | Defekt                                                                   | Fix                                                                                                 | Datei                               |
+|---|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|-------------------------------------|
+| 1 | `build_agent_options()` liest alle `.md` + MCP-Init bei jedem Aufruf neu | Module-level `_OPTIONS_CACHE` + `_AGENT_DEFS_CACHE`; `clear_caches()` für Tests                     | `agent_sdk.py`                      |
+| 2 | `run_agent_query()`: fragile `"Use the X agent to: Y"` Dispatch          | `AgentDefinition.prompt` als `[AGENT CONTEXT]...[/AGENT CONTEXT]` Block im Prompt — deterministisch | `agent_sdk.py`                      |
+| 3 | SDK `session_id` nie zurück zu `Task.session_id` propagiert              | `_session_out: dict` Parameter; alle Skill-Handler schreiben `task.session_id` nach Aufruf          | `agent_sdk.py`, `cybersec_agent.py` |
+| 4 | `BaseA2AAgent.stream()` blockiert, gibt nur einen Chunk                  | Zuerst `TaskState.WORKING` yielden, dann finalen Zustand                                            | `agent.py`                          |
+| 5 | `_extract_text()` in 3 Klassen dupliziert                                | `@staticmethod` auf `BaseA2AAgent`; Subklassen-Duplikate entfernt                                   | `agent.py`, `cybersec_agent.py`     |
+| 6 | Beliebiges `[:500]`-Truncation in allen Handlern                         | Truncation vollständig entfernt                                                                     | `cybersec_agent.py`                 |
+| 7 | `PythonDeveloperAgent`/`CppDeveloperAgent` kein `try/except`             | Beide `execute()` in `try/except → _fail()` gewrappt                                                | `dev_agents.py`                     |
 
 **Geänderte Dateien**:
 - `src/a2a/agent_sdk.py` — Caching, `_session_out`, `[AGENT CONTEXT]`-Dispatch, `clear_caches()`

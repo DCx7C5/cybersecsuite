@@ -28,7 +28,6 @@ class AuditLog(Model):
     entity_type = fields.CharField(max_length=128, db_index=True, default="")
     entity_id = fields.IntField(db_index=True, null=True)
     entity_repr = fields.CharField(max_length=512, default="")
-    workspace = fields.ForeignKeyField("models.Workspace", related_name="audit_logs", null=True, on_delete=fields.SET_NULL)
     session = fields.ForeignKeyField("models.Session", related_name="audit_logs", null=True, on_delete=fields.SET_NULL)
     agent = fields.CharField(max_length=256, db_index=True, default="csdb-mcp")
     resource = fields.CharField(max_length=1024, default="", db_index=True)
@@ -43,7 +42,6 @@ class AuditLog(Model):
         ordering = ["-created_at"]
         indexes = [
             ("entity_type", "entity_id"),
-            ("workspace", "created_at"),
             ("agent", "created_at"),
             ("action", "entity_type"),
         ]

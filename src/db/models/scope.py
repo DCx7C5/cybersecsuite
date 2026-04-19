@@ -5,24 +5,9 @@ from tortoise import fields
 from db.models.enums import RedBlueMode
 
 
-class Workspace(Model):
-    id = fields.IntField(primary_key=True)
-    name = fields.CharField(max_length=256, unique=True, db_index=True)
-    description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
-    class Meta:
-        table = "workspaces"
-
-
 class Project(Model):
     id = fields.IntField(primary_key=True)
-    workspace = fields.ForeignKeyField("models.Workspace", related_name="projects", on_delete=fields.CASCADE)
-    name = fields.CharField(max_length=256, db_index=True)
+    name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     path = fields.CharField(max_length=1024, default="")
     is_active = fields.BooleanField(default=True, db_index=True)
@@ -32,7 +17,6 @@ class Project(Model):
 
     class Meta:
         table = "projects"
-        unique_together = [("workspace", "name")]
 
 
 class Session(Model):
@@ -58,7 +42,6 @@ class Session(Model):
 
 class ScopedEntry(Model):
     """Abstract base for all scoped data."""
-    workspace = fields.ForeignKeyField("models.Workspace", related_name=False, on_delete=fields.CASCADE)
     project = fields.ForeignKeyField("models.Project", related_name=False, null=True, on_delete=fields.CASCADE, db_index=True)
     session = fields.ForeignKeyField("models.Session", related_name=False, null=True, on_delete=fields.CASCADE)
     created_at = fields.DatetimeField(auto_now_add=True)

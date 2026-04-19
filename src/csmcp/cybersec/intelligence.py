@@ -5,7 +5,7 @@ from typing import Any
 
 from csmcp._sdk_compat import tool
 from csmcp.cybersec.helpers import (
-    JsonDict, _get_current_scope, get_workspace_dir, get_project_dir,
+    JsonDict, _get_current_scope, get_project_dir,
     get_session_dir, sdk_result, sdk_error,
 )
 
@@ -80,19 +80,17 @@ async def get_project_memory(args: dict[str, Any]) -> JsonDict:
     memory_data: JsonDict = {
         "findings": findings_file.read_text(encoding="utf-8") if findings_file.exists() else "",
         "scope": scope,
-        "workspace_dir": str(get_workspace_dir(scope)),
         "project_dir": str(get_project_dir(scope)),
         "session_dir": str(session_dir) if session_dir else None,
     }
 
     sc = ScopeContext(
-        workspace_name=scope["workspace"],
         project_name=scope["project"],
         session_id=scope["session"],
     )
     memory_data["recent_entries"] = await get_recent_entries_async(sc, limit=20)
     memory_data["recent_iocs"] = await get_scoped_entries_async(
-        workspace_name=scope["workspace"], project_name=scope["project"],
+        project_name=scope["project"],
         session_id=scope["session"], value_type="ioc", limit=10,
     )
 

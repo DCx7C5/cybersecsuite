@@ -19,7 +19,6 @@ JsonDict = dict[str, Any]
 
 
 class ScopeState(TypedDict):
-    workspace: str
     project: str | None
     session: str | None
 
@@ -30,7 +29,7 @@ FINDING_STATUSES: Final[tuple[str, ...]] = (
 )
 IOC_STATUSES: Final[tuple[str, ...]] = ("active", "cleared", "watchlist", "expired")
 CONFIDENCE_LEVELS: Final[tuple[str, ...]] = ("low", "medium", "high", "confirmed")
-SCOPE_LEVELS: Final[tuple[str, ...]] = ("workspace", "project", "session")
+SCOPE_LEVELS: Final[tuple[str, ...]] = ("project", "session")
 
 
 def _get_base_dir() -> Path:
@@ -51,33 +50,24 @@ def _normalize_scope_value(value: str | None, fallback: str | None = None) -> st
 
 
 def _get_current_scope() -> ScopeState:
-    workspace = _normalize_scope_value(os.environ.get("CYBERSEC_WORKSPACE"), "default") or "default"
     project = _normalize_scope_value(os.environ.get("CYBERSEC_PROJECT"), "default")
     session = _normalize_scope_value(os.environ.get("CYBERSEC_SESSION_ID"))
-    return {"workspace": workspace, "project": project, "session": session}
+    return {"project": project, "session": session}
 
 
 _BASE_DIR = _get_base_dir()
-_WORKSPACE_DIR = _BASE_DIR / "workspaces"
 _PROJECT_DIR = Path(os.environ.get("CYBERSEC_PROJECT_DIR", str(Path.cwd()))).expanduser().resolve()
 _SESSION_BASE = _BASE_DIR / "sessions"
 
 
 def _initialize_scope() -> None:
-    _WORKSPACE_DIR.mkdir(parents=True, exist_ok=True)
     _PROJECT_DIR.mkdir(parents=True, exist_ok=True)
     _SESSION_BASE.mkdir(parents=True, exist_ok=True)
 
 
-def get_workspace_dir(scope: ScopeState | None = None) -> Path:
-    scope = scope or _get_current_scope()
-    return _WORKSPACE_DIR / scope["workspace"]
-
-
 def get_project_dir(scope: ScopeState | None = None) -> Path:
     scope = scope or _get_current_scope()
-    workspace_dir = get_workspace_dir(scope)
-    return workspace_dir / "projects" / scope["project"] if scope["project"] else _PROJECT_DIR
+    return (_BASE_DIR / "projects" / scope["project"]) if scope["project"] else _PROJECT_DIR
 
 
 def get_session_dir(scope: ScopeState | None = None) -> Path | None:
@@ -144,7 +134,6 @@ def _build_scope_context(scope: ScopeState) -> Any:
     try:
         from hooks.database import ScopeContext
         return ScopeContext(
-            workspace_name=scope["workspace"],
             project_name=scope["project"],
             session_id=scope["session"],
         )

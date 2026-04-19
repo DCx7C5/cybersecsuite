@@ -12,7 +12,7 @@ from csmcp.cybersec.helpers import (
 
 @tool(
     "share_to_layers",
-    "Share a value to one or more scopes (workspace / project / session).",
+    "Share a value to one or more scopes (project / session).",
     {
         "value_type": "string",
         "data": "object",
@@ -31,20 +31,11 @@ async def share_to_layers(args: dict[str, Any]) -> JsonDict:
     scopes = _normalize_target_scopes(args.get("target_scopes"))
     results: dict[str, JsonDict] = {}
 
-    if "workspace" in scopes:
-        try:
-            results["workspace"] = await write_scoped_entry_async(
-                workspace_name=scope["workspace"], project_name=None, session_id=None,
-                value_type=value_type, data=data,
-            )
-        except Exception as e:
-            results["workspace"] = {"status": "error", "message": str(e)}
-
     if "project" in scopes:
         if scope["project"]:
             try:
                 results["project"] = await write_scoped_entry_async(
-                    workspace_name=scope["workspace"], project_name=scope["project"],
+                    project_name=scope["project"],
                     session_id=None, value_type=value_type, data=data,
                 )
             except Exception as e:
@@ -56,7 +47,7 @@ async def share_to_layers(args: dict[str, Any]) -> JsonDict:
         if scope["session"]:
             try:
                 results["session"] = await write_scoped_entry_async(
-                    workspace_name=scope["workspace"], project_name=scope["project"],
+                    project_name=scope["project"],
                     session_id=scope["session"], value_type=value_type, data=data,
                 )
             except Exception as e:
@@ -75,11 +66,10 @@ async def share_to_layers(args: dict[str, Any]) -> JsonDict:
 
 @tool(
     "get_layer_value",
-    "Read values from a scope layer (workspace / project / session).",
+    "Read values from a scope layer (project / session).",
     {
         "value_type": "string",
-        "scope": {"type": "string", "enum": ["workspace", "project", "session"], "default": "project"},
-        "layer": {"type": "string", "nullable": True},
+        "scope": {"type": "string", "enum": ["project", "session"], "default": "project"},
         "limit": {"type": "integer", "default": 100},
     },
 )
@@ -92,17 +82,12 @@ async def get_layer_value(args: dict[str, Any]) -> JsonDict:
     current_scope = _get_current_scope()
     scope_level = _normalize_scope_level(args.get("scope", "project"), "project")
 
-    if args.get("layer") is not None:
-        layer_map = {"system": "workspace", "project": "project", "session": "session"}
-        scope_level = layer_map.get(args["layer"].strip().lower(), "project")
-
     sc = ScopeContext(
-        workspace_name=current_scope["workspace"],
         project_name=current_scope["project"] if scope_level in ("project", "session") else None,
         session_id=current_scope["session"] if scope_level == "session" else None,
     )
     data = await get_scoped_entries_async(
-        workspace_name=sc.workspace_name, project_name=sc.project_name,
+        project_name=sc.project_name,
         session_id=sc.session_id, value_type=args["value_type"],
         limit=_coerce_limit(args.get("limit", 100), 100),
     )

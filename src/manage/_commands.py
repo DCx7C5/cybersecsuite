@@ -35,7 +35,7 @@ async def shell_command():
         "models": models,
         **{
             name: getattr(models, name)
-            for name in ("Workspace", "Project", "Session", "Finding", "IOC")
+            for name in ("Project", "Session", "Finding", "IOC")
         },
     }
 
@@ -408,7 +408,7 @@ async def case_open_command():
     """Open a new investigation case interactively (Phase 0)."""
     from db.bootstrap import init_tortoise_async
     from db.models.case_intake import CaseIntake
-    from db.models.scope import Workspace
+    from db.models.scope import Project
 
     await init_tortoise_async(create_db=True)
 
@@ -465,10 +465,7 @@ async def case_open_command():
 
     notes = input("Analyst notes (optional): ").strip()
 
-    ws, _ = await Workspace.get_or_create(name="default")
-
     intake = await CaseIntake.create(
-        workspace=ws,
         title=title,
         problem_statement=problem,
         attack_hypothesis=hypothesis,

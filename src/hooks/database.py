@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-CyberSec Database Layer — PostgreSQL via Tortoise ORM with three-tier scope system.
+CyberSec Database Layer — PostgreSQL via Tortoise ORM with two-tier scope system.
 
-New scope hierarchy: workspace → project → session with proper relationships.
+Scope hierarchy: project → session with proper relationships.
 Database is automatically created on first start. Fully async-native with
 Tortoise ORM and uvloop optimization.
 """
@@ -25,7 +25,7 @@ except ImportError:  # pragma: no cover - direct script execution fallback
 # Bootstrap Tortoise ORM lazily to avoid import-time DB failures
 from db.bootstrap import init_tortoise_async
 
-from db.models.scope import Workspace, Project, Session
+from db.models.scope import Project, Session
 from db.models.investigation import (
     Finding,
     IOC,
@@ -65,31 +65,16 @@ async def ensure_database_initialized(create_db: bool | None = None) -> None:
     async with _get_db_init_lock():
         await init_tortoise_async(create_db=_should_auto_create_db() if create_db is None else create_db)
 
-async def get_or_create_workspace_async(name: str, description: str = "", path: str = "") -> Workspace:
-    """Get or create a workspace by name."""
-    await ensure_database_initialized()
-    workspace = await Workspace.filter(name=name).first()
-    if not workspace:
-        workspace = await Workspace.create(
-            name=name,
-            description=description,
-            path=path
-        )
-    return workspace
-
-
 async def get_or_create_project_async(
-    workspace_name: str,
     project_name: str,
     description: str = "",
     path: str = ""
 ) -> Project:
-    """Get or create a project within a workspace."""
-    workspace = await get_or_create_workspace_async(workspace_name)
-    project = await Project.filter(workspace=workspace, name=project_name).first()
+    """Get or create a project by name."""
+    await ensure_database_initialized()
+    project = await Project.filter(name=project_name).first()
     if not project:
         project = await Project.create(
-            workspace=workspace,
             name=project_name,
             description=description,
             path=path
@@ -98,7 +83,6 @@ async def get_or_create_project_async(
 
 
 async def get_or_create_session_async(
-    workspace_name: str,
     project_name: str,
     session_id: str,
     name: str = "",
@@ -107,7 +91,7 @@ async def get_or_create_session_async(
     agent: str = ""
 ) -> Session:
     """Get or create a session within a project."""
-    project = await get_or_create_project_async(workspace_name, project_name)
+    project = await get_or_create_project_async(project_name)
     session = await Session.filter(session_id=session_id).first()
     if not session:
         session = await Session.create(
@@ -142,41 +126,28 @@ def _get_model_for_type(value_type: str) -> Any:
 # ========================= SCOPE CONTEXT =========================
 
 class ScopeContext:
-    """Context object to track current workspace/project/session scope."""
+    """Context object to track current project/session scope."""
 
     def __init__(
         self,
-        workspace_name: str = "default",
         project_name: str | None = None,
         session_id: str | None = None
     ):
-        self.workspace_name = workspace_name
         self.project_name = project_name
         self.session_id = session_id
-        self._workspace: Optional[Workspace] = None
         self._project: Optional[Project] = None
         self._session: Optional[Session] = None
 
     async def resolve_scope_async(self):
-        """Resolve workspace/project/session objects."""
-        self._workspace = await get_or_create_workspace_async(self.workspace_name)
-
+        """Resolve project/session objects."""
         if self.project_name:
-            self._project = await get_or_create_project_async(
-                self.workspace_name,
-                self.project_name
-            )
+            self._project = await get_or_create_project_async(self.project_name)
 
         if self.session_id and self.project_name:
             self._session = await get_or_create_session_async(
-                self.workspace_name,
                 self.project_name,
                 self.session_id
             )
-
-    @property
-    def workspace(self) -> Optional[Workspace]:
-        return self._workspace
 
     @property
     def project(self) -> Optional[Project]:
@@ -236,7 +207,6 @@ async def _write_shared_entry_async(scope: ScopeContext, value_type: str, data: 
 
     # Try to find existing entry in the same scope
     existing = await SharedEntry.filter(
-        workspace=scope.workspace,
         project=scope.project,
         session=scope.session,
         value_type=value_type,
@@ -246,23 +216,21 @@ async def _write_shared_entry_async(scope: ScopeContext, value_type: str, data: 
     if existing:
         existing.data = data
         await existing.save()
-        return {"status": "success", "scope": scope.workspace_name, "key": key, "created": False}
+        return {"status": "success", "scope": scope.project_name, "key": key, "created": False}
     else:
         await SharedEntry.create(
-            workspace=scope.workspace,
             project=scope.project,
             session=scope.session,
             value_type=value_type,
             key=key,
             data=data
         )
-        return {"status": "success", "scope": scope.workspace_name, "key": key, "created": True}
+        return {"status": "success", "scope": scope.project_name, "key": key, "created": True}
 
 
 async def _write_finding_async(scope: ScopeContext, data: dict) -> dict:
     """Write Finding to database with scope context."""
     obj = await Finding.create(
-        workspace=scope.workspace,
         project=scope.project,
         session=scope.session,
         title=data.get("title", "Untitled"),
@@ -273,7 +241,7 @@ async def _write_finding_async(scope: ScopeContext, data: dict) -> dict:
         location=data.get("location", ""),
         tags=data.get("tags", []),
     )
-    return {"status": "success", "scope": scope.workspace_name, "id": obj.id, "key": obj.title}
+    return {"status": "success", "scope": scope.project_name, "id": obj.id, "key": obj.title}
 
 
 async def _write_ioc_async(scope: ScopeContext, data: dict) -> dict:
@@ -282,9 +250,9 @@ async def _write_ioc_async(scope: ScopeContext, data: dict) -> dict:
     value = data.get("value", "")
     ioc_id = data.get("ioc_id") or _build_ioc_id(ioc_type, value)
 
-    # Try to find existing IOC in the same workspace
+    # Try to find existing IOC in the same project
     existing = await IOC.filter(
-        workspace=scope.workspace,
+        project=scope.project,
         ioc_type=ioc_type,
         value=value
     ).first()
@@ -298,11 +266,10 @@ async def _write_ioc_async(scope: ScopeContext, data: dict) -> dict:
         existing.last_session_id = data.get("last_session_id", existing.last_session_id)
         existing.sightings += 1
         await existing.save()
-        return {"status": "success", "scope": scope.workspace_name, "id": existing.id, "key": value, "created": False}
+        return {"status": "success", "scope": scope.project_name, "id": existing.id, "key": value, "created": False}
     else:
         # Create new IOC
         obj = await IOC.create(
-            workspace=scope.workspace,
             project=scope.project,
             session=scope.session,
             ioc_id=ioc_id,
@@ -317,7 +284,7 @@ async def _write_ioc_async(scope: ScopeContext, data: dict) -> dict:
             last_session_id=data.get("last_session_id", scope.session_id or ""),
             sightings=1,
         )
-        return {"status": "success", "scope": scope.workspace_name, "id": obj.id, "key": value, "created": True}
+        return {"status": "success", "scope": scope.project_name, "id": obj.id, "key": value, "created": True}
 
 
 def _build_ioc_id(ioc_type: str, value: str) -> str:
@@ -333,7 +300,6 @@ async def _write_risk_async(scope: ScopeContext, data: dict) -> dict:
 
     # Try to find existing risk
     existing = await Risk.filter(
-        workspace=scope.workspace,
         project=scope.project,
         risk_id=risk_id
     ).first()
@@ -343,10 +309,9 @@ async def _write_risk_async(scope: ScopeContext, data: dict) -> dict:
         existing.likelihood = data.get("likelihood", existing.likelihood)
         existing.mitigation = data.get("mitigation", existing.mitigation)
         await existing.save()
-        return {"status": "success", "scope": scope.workspace_name, "id": existing.id, "key": risk_id, "created": False}
+        return {"status": "success", "scope": scope.project_name, "id": existing.id, "key": risk_id, "created": False}
     else:
         obj = await Risk.create(
-            workspace=scope.workspace,
             project=scope.project,
             session=scope.session,
             risk_id=risk_id,
@@ -354,7 +319,7 @@ async def _write_risk_async(scope: ScopeContext, data: dict) -> dict:
             likelihood=data.get("likelihood", ""),
             mitigation=data.get("mitigation", ""),
         )
-        return {"status": "success", "scope": scope.workspace_name, "id": obj.id, "key": risk_id, "created": True}
+        return {"status": "success", "scope": scope.project_name, "id": obj.id, "key": risk_id, "created": True}
 
 
 async def _write_mitre_async(scope: ScopeContext, data: dict) -> dict:
@@ -362,7 +327,6 @@ async def _write_mitre_async(scope: ScopeContext, data: dict) -> dict:
     technique_id = data.get("technique_id", "")
 
     obj = await MITRETechnique.create(
-        workspace=scope.workspace,
         project=scope.project,
         session=scope.session,
         technique_id=technique_id,
@@ -370,7 +334,7 @@ async def _write_mitre_async(scope: ScopeContext, data: dict) -> dict:
         description=data.get("description", ""),
         tactic=data.get("tactic", data.get("category", "")),
     )
-    return {"status": "success", "scope": scope.workspace_name, "id": obj.id, "key": technique_id}
+    return {"status": "success", "scope": scope.project_name, "id": obj.id, "key": technique_id}
 
 
 async def _write_baseline_async(scope: ScopeContext, data: dict) -> dict:
@@ -379,7 +343,6 @@ async def _write_baseline_async(scope: ScopeContext, data: dict) -> dict:
 
     # Try to find existing baseline
     existing = await Baseline.filter(
-        workspace=scope.workspace,
         project=scope.project,
         domain=domain
     ).first()
@@ -388,10 +351,9 @@ async def _write_baseline_async(scope: ScopeContext, data: dict) -> dict:
         existing.snapshot_data = data.get("snapshot_data", existing.snapshot_data)
         existing.confirmed_clean = data.get("confirmed_clean", existing.confirmed_clean)
         await existing.save()
-        return {"status": "success", "scope": scope.workspace_name, "id": existing.id, "key": domain, "created": False}
+        return {"status": "success", "scope": scope.project_name, "id": existing.id, "key": domain, "created": False}
     else:
         obj = await Baseline.create(
-            workspace=scope.workspace,
             project=scope.project,
             session=scope.session,
             domain=domain,
@@ -399,13 +361,12 @@ async def _write_baseline_async(scope: ScopeContext, data: dict) -> dict:
             session_ref=data.get("session_ref", scope.session_id or ""),
             confirmed_clean=data.get("confirmed_clean", False),
         )
-        return {"status": "success", "scope": scope.workspace_name, "id": obj.id, "key": domain, "created": True}
+        return {"status": "success", "scope": scope.project_name, "id": obj.id, "key": domain, "created": True}
 
 
 async def _write_watchlist_async(scope: ScopeContext, data: dict) -> dict:
     """Write WatchlistItem to database with scope context."""
     obj = await WatchlistItem.create(
-        workspace=scope.workspace,
         project=scope.project,
         session=scope.session,
         item_type=data.get("item_type", "unknown"),
@@ -414,7 +375,7 @@ async def _write_watchlist_async(scope: ScopeContext, data: dict) -> dict:
         priority=data.get("priority", WatchlistPriority.MEDIUM),
         added_by_session_id=data.get("added_by_session_id", scope.session_id or ""),
     )
-    return {"status": "success", "scope": scope.workspace_name, "id": obj.id, "key": obj.value_pattern}
+    return {"status": "success", "scope": scope.project_name, "id": obj.id, "key": obj.value_pattern}
 
 
 # ========================= ASYNC READ =========================
@@ -481,10 +442,11 @@ def _model_to_dict(obj) -> dict:
 
 
 def _scope_filtered_query(model: Any, scope: ScopeContext) -> Any:
-    """Apply workspace/project/session filters to a Tortoise model query."""
-    query = model.filter(workspace=scope.workspace)
+    """Apply project/session filters to a Tortoise model query."""
     if scope.project:
-        query = query.filter(project=scope.project)
+        query = model.filter(project=scope.project)
+    else:
+        query = model.all()
     if scope.session:
         query = query.filter(session=scope.session)
     return query
@@ -497,12 +459,11 @@ def _write_entry_scoped_sync(scope_dict: dict, value_type: str, data: dict[str, 
     Sync wrapper for write_entry_async using scope dictionary.
 
     Args:
-        scope_dict: Dict with 'workspace', 'project', 'session' keys
+        scope_dict: Dict with 'project', 'session' keys
         value_type: Type of data
         data: Data to write
     """
     scope = ScopeContext(
-        workspace_name=scope_dict.get("workspace", "default"),
         project_name=scope_dict.get("project"),
         session_id=scope_dict.get("session")
     )
@@ -512,7 +473,6 @@ def _write_entry_scoped_sync(scope_dict: dict, value_type: str, data: dict[str, 
 def _get_entries_scoped_sync(scope_dict: dict, value_type: str, limit: int = 100) -> List[dict]:
     """Sync wrapper for get_entries_async."""
     scope = ScopeContext(
-        workspace_name=scope_dict.get("workspace", "default"),
         project_name=scope_dict.get("project"),
         session_id=scope_dict.get("session")
     )
@@ -522,7 +482,6 @@ def _get_entries_scoped_sync(scope_dict: dict, value_type: str, limit: int = 100
 def query_findings_db_sync(scope_dict: dict, **kwargs) -> List[dict]:
     """Sync wrapper for query_findings_db_async."""
     scope = ScopeContext(
-        workspace_name=scope_dict.get("workspace", "default"),
         project_name=scope_dict.get("project"),
         session_id=scope_dict.get("session")
     )
@@ -534,28 +493,20 @@ def query_findings_db_sync(scope_dict: dict, **kwargs) -> List[dict]:
 
 def write_entry_legacy_sync(layer: str, value_type: str, data: dict[str, Any]) -> dict[str, Any]:
     """Legacy layer-based API - maps layers to default scope structure."""
-    if layer == "system":
-        scope_dict = {"workspace": "system"}
-    elif layer == "project":
-        scope_dict = {"workspace": "default", "project": "default"}
-    elif layer == "session":
-        scope_dict = {"workspace": "default", "project": "default", "session": "current"}
+    if layer == "session":
+        scope_dict = {"project": "default", "session": "current"}
     else:
-        scope_dict = {"workspace": "default"}
+        scope_dict = {"project": "default"}
 
     return _write_entry_scoped_sync(scope_dict, value_type, data)
 
 
 def get_entries_legacy_sync(layer: str, value_type: str, limit: int = 100) -> List[dict]:
     """Legacy layer-based API - maps layers to default scope structure."""
-    if layer == "system":
-        scope_dict = {"workspace": "system"}
-    elif layer == "project":
-        scope_dict = {"workspace": "default", "project": "default"}
-    elif layer == "session":
-        scope_dict = {"workspace": "default", "project": "default", "session": "current"}
+    if layer == "session":
+        scope_dict = {"project": "default", "session": "current"}
     else:
-        scope_dict = {"workspace": "default"}
+        scope_dict = {"project": "default"}
 
     return _get_entries_scoped_sync(scope_dict, value_type, limit)
 
@@ -574,7 +525,6 @@ def get_entries_sync(layer: str, value_type: str, limit: int = 100) -> List[dict
 # New API functions that use the three-tier scope system directly
 
 async def write_scoped_entry_async(
-    workspace_name: str,
     project_name: str = None,
     session_id: str = None,
     value_type: str = "",
@@ -584,18 +534,16 @@ async def write_scoped_entry_async(
     Primary API for writing scoped entries.
 
     Args:
-        workspace_name: Name of workspace
         project_name: Optional project name
         session_id: Optional session ID
         value_type: Type of data (finding, ioc, etc.)
         data: Data to write
     """
-    scope = ScopeContext(workspace_name, project_name, session_id)
+    scope = ScopeContext(project_name, session_id)
     return await write_entry_async(scope, value_type, data or {})
 
 
 async def get_scoped_entries_async(
-    workspace_name: str,
     project_name: str = None,
     session_id: str = None,
     value_type: str = "",
@@ -605,11 +553,10 @@ async def get_scoped_entries_async(
     Primary API for reading scoped entries.
 
     Args:
-        workspace_name: Name of workspace
         project_name: Optional project name
         session_id: Optional session ID
         value_type: Type of data to query
         limit: Maximum number of results
     """
-    scope = ScopeContext(workspace_name, project_name, session_id)
+    scope = ScopeContext(project_name, session_id)
     return await get_entries_async(scope, value_type, limit)

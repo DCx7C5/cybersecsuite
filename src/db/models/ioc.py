@@ -11,7 +11,6 @@ from db.models.enums import (
 class IOCEntry(Model):
     """Indicators of Compromise with full forensic context."""
     id = fields.IntField(primary_key=True)
-    workspace = fields.ForeignKeyField("models.Workspace", related_name="ioc_entries", null=True, on_delete=fields.SET_NULL)
     ioc_id = fields.CharField(max_length=50, unique=True, db_index=True, null=True)
     project = fields.ForeignKeyField("models.ForensicProject", related_name="iocs", db_index=True, null=True, on_delete=fields.SET_NULL)
     ioc_type = fields.CharEnumField(IOCType, db_index=True)
