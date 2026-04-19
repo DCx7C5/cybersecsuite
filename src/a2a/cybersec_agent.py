@@ -5,7 +5,7 @@ Fully integrated with db ORM models and crypto signing.
 """
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 from datetime import datetime, timezone
 
 from a2a.agent import BaseA2AAgent
@@ -118,7 +118,7 @@ class CybersecA2AAgent(BaseA2AAgent):
             elif any(kw in text for kw in ("threat model", "attack surface", "risk")):
                 await self._handle_threat_model(task, text)
             else:
-                self._reply(task.id, f"Received: {text}\n\nAvailable skills: cve-lookup, ioc-analysis, mitre-attack, artifact-sign, threat-model.")
+                await self._handle_generic(task, text)
         except Exception as e:
             self._fail(task.id, f"Agent error: {e}")
 
@@ -156,17 +156,22 @@ class CybersecA2AAgent(BaseA2AAgent):
                 db_context.append({"cve_id": entry.cve_id, "description": getattr(entry, "description", "")})
 
         context_str = f"DB context: {db_context}\n\n" if db_context else ""
+        session_out: dict[str, Any] = {}
         ai_result = await run_agent_query(
             "cybersec-analyst",
             f"{context_str}Analyze and provide threat intelligence for: {text}",
+            session_id=task.session_id,
+            _session_out=session_out,
         )
+        if session_out.get("session_id"):
+            task.session_id = session_out["session_id"]
         result_text = ai_result or f"CVE lookup complete. Found {len(db_context)} local result(s)."
 
         self.store.add_artifact(task.id, TaskArtifact(
             name="cve-result",
             parts=[DataPart(type=PartType.DATA, data={"cves": db_context, "analysis": result_text, "query": text})],
         ))
-        self._reply(task.id, result_text[:500] if ai_result else result_text)
+        self._reply(task.id, result_text)
 
     async def _handle_ioc(self, task: Task, text: str) -> None:
         """IOC analysis skill — queries DB for IOC context, then uses AI for enrichment."""
@@ -197,17 +202,22 @@ class CybersecA2AAgent(BaseA2AAgent):
                 })
 
         context_str = f"Known IOCs from DB: {matches}\n\n" if matches else ""
+        session_out: dict[str, Any] = {}
         ai_result = await run_agent_query(
             "cybersec-analyst",
             f"{context_str}Analyze these indicators and provide threat intelligence: {text}",
+            session_id=task.session_id,
+            _session_out=session_out,
         )
+        if session_out.get("session_id"):
+            task.session_id = session_out["session_id"]
         result_text = ai_result or f"IOC analysis complete. Found {len(matches)} indicator(s)."
 
         self.store.add_artifact(task.id, TaskArtifact(
             name="ioc-result",
             parts=[DataPart(type=PartType.DATA, data={"iocs": matches, "analysis": result_text, "query": text})],
         ))
-        self._reply(task.id, result_text[:500] if ai_result else result_text)
+        self._reply(task.id, result_text)
 
     async def _handle_mitre(self, task: Task, text: str) -> None:
         """MITRE ATT&CK skill — queries DB then uses AI for technique analysis."""
@@ -241,17 +251,22 @@ class CybersecA2AAgent(BaseA2AAgent):
                     })
 
         context_str = f"DB MITRE techniques: {results}\n\n" if results else ""
+        session_out: dict[str, Any] = {}
         ai_result = await run_agent_query(
             "cybersec-analyst",
             f"{context_str}Provide MITRE ATT&CK analysis and detection guidance for: {text}",
+            session_id=task.session_id,
+            _session_out=session_out,
         )
+        if session_out.get("session_id"):
+            task.session_id = session_out["session_id"]
         result_text = ai_result or f"MITRE ATT&CK lookup complete. Found {len(results)} technique(s)."
 
         self.store.add_artifact(task.id, TaskArtifact(
             name="mitre-result",
             parts=[DataPart(type=PartType.DATA, data={"techniques": results, "analysis": result_text, "query": text})],
         ))
-        self._reply(task.id, result_text[:500] if ai_result else result_text)
+        self._reply(task.id, result_text)
 
     async def _handle_artifact(self, task: Task, text: str) -> None:
         """Artifact signing/verification skill — uses crypto.ArtifactManager + DB model."""
@@ -315,10 +330,15 @@ class CybersecA2AAgent(BaseA2AAgent):
         ]
 
         context_str = f"Active findings: {findings_data}\nActive risks: {risks_data}\n\n"
+        session_out: dict[str, Any] = {}
         ai_result = await run_agent_query(
             "threat-modeler",
             f"{context_str}Generate a threat model and attack surface analysis for: {text}",
+            session_id=task.session_id,
+            _session_out=session_out,
         )
+        if session_out.get("session_id"):
+            task.session_id = session_out["session_id"]
         result_text = ai_result or f"Threat model complete. {len(findings_data)} findings, {len(risks_data)} risks in context."
 
         self.store.add_artifact(task.id, TaskArtifact(
@@ -332,13 +352,31 @@ class CybersecA2AAgent(BaseA2AAgent):
                 "risk_count": len(risks_data),
             })],
         ))
-        self._reply(task.id, result_text[:500] if ai_result else result_text)
+        self._reply(task.id, result_text)
+
+    async def _handle_generic(self, task: Task, text: str) -> None:
+        """Generic fallback — routes unrecognised tasks to the cybersec-analyst via SDK.
+
+        The SDK loads .claude/agents/cybersec-analyst.md and uses its declared model
+        (routed through the AI proxy) to respond. Session continuity is preserved.
+        """
+        from a2a.agent_sdk import run_agent_query
+        session_out: dict[str, Any] = {}
+        result = await run_agent_query(
+            "cybersec-analyst",
+            text,
+            session_id=task.session_id,
+            _session_out=session_out,
+        )
+        if session_out.get("session_id"):
+            task.session_id = session_out["session_id"]
+        self._reply(task.id, result or "No response from agent.")
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
     @staticmethod
     def _extract_text(message: Message) -> str:
-        """Extract plain text from message parts."""
+        """Extract plain text from message parts (including DataPart JSON)."""
         parts = []
         for part in message.parts:
             if isinstance(part, TextPart):

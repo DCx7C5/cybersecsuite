@@ -93,7 +93,7 @@ async def api_task_create(request: Request) -> JSONResponse:
     try:
         import uuid
         body = await request.json()
-        agent: str = body.get("agent", "orchestrator")
+        agent: str = body.get("agent", "cybersec-agent")
         message: str = body.get("message", "")
         session_id: str = body.get("session_id") or str(uuid.uuid4())
         metadata: dict = body.get("metadata") or {}

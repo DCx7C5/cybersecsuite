@@ -15,6 +15,44 @@ from ai_proxy.routing.combo import (
 )
 
 
+def _agent_priority(entry: dict) -> tuple[int, int, int, str]:
+    meta = entry.get("claude_metadata") or {}
+    source_kind = meta.get("source_kind", "")
+    source_rank = {
+        "project-agent": 3,
+        "project-sub-agent": 2,
+        "project-team": 1,
+        "external-agent": 0,
+    }.get(source_kind, 0)
+    return (
+        source_rank,
+        1 if meta.get("default") else 0,
+        1 if meta.get("role") == "orchestrator" else 0,
+        entry.get("name", "").lower(),
+    )
+
+
+def _dedupe_agent_summaries(agents: list[dict]) -> list[dict]:
+    deduped: dict[str, dict] = {}
+    for entry in agents:
+        name = str(entry.get("name", "")).strip()
+        if not name:
+            continue
+        key = name.casefold()
+        current = deduped.get(key)
+        if current is None or _agent_priority(entry) > _agent_priority(current):
+            deduped[key] = entry
+    return sorted(
+        deduped.values(),
+        key=lambda entry: (
+            -int(bool((entry.get("claude_metadata") or {}).get("default"))),
+            -int((entry.get("claude_metadata") or {}).get("role") == "orchestrator"),
+            -_agent_priority(entry)[0],
+            entry.get("name", "").lower(),
+        ),
+    )
+
+
 async def api_a2a(request: Request) -> JSONResponse:
     """A2A task stats via Tortoise ORM."""
     try:
@@ -61,6 +99,8 @@ async def api_agents(request: Request) -> JSONResponse:
             from a2a.agent_loader import load_agents_from_dir
             load_agents_from_dir(ai_agents_dir, registry, recurse=True)
             agents = registry.summary()
+
+        agents = _dedupe_agent_summaries(agents)
 
         orchestrators = [a for a in agents if a.get("claude_metadata", {}).get("role") == "orchestrator"]
         specialists = [a for a in agents if a.get("claude_metadata", {}).get("role") != "orchestrator"]
@@ -166,7 +206,7 @@ async def api_agent_query(request: Request) -> JSONResponse:
     except Exception:
         return JSONResponse({"status": "error", "error": "invalid JSON body"}, status_code=400)
 
-    agent_name: str = body.get("agent", "cybersec")
+    agent_name: str = body.get("agent", "cybersec-agent")
     prompt: str = body.get("prompt", "")
     context_table: str | None = body.get("context_table")
     row_ids: list[int] = body.get("row_ids") or []

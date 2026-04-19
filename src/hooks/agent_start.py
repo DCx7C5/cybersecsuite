@@ -15,9 +15,6 @@ from _utils import ensure_structure, get_project_dir, get_session_dir, audit, ap
 
 AGENT_PROFILES = {
     "cybersec-agent":     "General-purpose cybersec agent.",
-    "OrchestratorAgent":  "Multi-agent orchestrator — delegates to PythonDeveloper, CppDeveloper, CybersecAgent.",
-    "PythonDeveloper":    "Python developer — write, review, debug, test.",
-    "CppDeveloper":       "C++ developer — write, review, debug, optimize.",
     "CybersecAgent":      "Threat intelligence — CVE, IOC, MITRE ATT&CK, artifact signing.",
 }
 

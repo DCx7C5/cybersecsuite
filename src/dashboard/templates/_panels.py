@@ -210,12 +210,40 @@ def _agent_query() -> str:
     return (
         '<div id="tab-agent-query" class="card" style="display:none">\n'
         '  <h3 class="text-lg font-semibold mb-3">&#x1f916; Interactive Agent Query</h3>\n'
-        '  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">\n'
+        '  <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">\n'
+        "    <div>\n"
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Search</label>\n'
+        '      <input id="aq-agent-search" type="text" placeholder="Filter agents..." oninput="_aqApplyAgentFilters()"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" />\n'
+        "    </div>\n"
+        "    <div>\n"
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Source</label>\n'
+        '      <select id="aq-source" onchange="_aqApplyAgentFilters()"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
+        '        <option value="">All sources</option>\n'
+        "      </select>\n"
+        "    </div>\n"
+        "    <div>\n"
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Role</label>\n'
+        '      <select id="aq-role" onchange="_aqApplyAgentFilters()"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
+        '        <option value="">All roles</option>\n'
+        "      </select>\n"
+        "    </div>\n"
+        "    <div>\n"
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Model</label>\n'
+        '      <select id="aq-model" onchange="_aqApplyAgentFilters()"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
+        '        <option value="">All models</option>\n'
+        "      </select>\n"
+        "    </div>\n"
+        "  </div>\n"
+        '  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2">\n'
         "    <div>\n"
         '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Agent</label>\n'
         '      <select id="aq-agent"\n'
         '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
-        '        <option value="cybersec">cybersec (orchestrator)</option>\n'
+        '        <option value="cybersec-agent">cybersec-agent</option>\n'
         "      </select>\n"
         "    </div>\n"
         "    <div>\n"
@@ -231,6 +259,7 @@ def _agent_query() -> str:
         '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" />\n'
         "    </div>\n"
         "  </div>\n"
+        '  <p id="aq-agent-help" class="text-xs text-gray-500 mb-3">Loading agent options...</p>\n'
         '  <div class="mb-3">\n'
         '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Prompt <span class="text-gray-600">(Ctrl+Enter to send)</span></label>\n'
         '    <textarea id="aq-prompt" rows="4" placeholder="Ask the agent anything&hellip;"\n'
@@ -359,6 +388,8 @@ def _opensearch() -> str:
 
 
 def _explorer() -> str:
+    return (
+        '<div id="tab-explorer" class="card" style="display:none">\n'
         '  <h3 class="text-lg font-semibold mb-3">&#x1f50e; Database Explorer</h3>\n'
         '  <div class="flex items-center gap-3 mb-4">\n'
         '    <select id="explorer-model" onchange="loadExplorerTable()"\n'

@@ -8,26 +8,25 @@ Implementation of the [Google Agent-to-Agent (A2A)](https://google.github.io/A2A
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                      Multi-Agent System                              │
+│                      Agent System (Phase O)                          │
 │                                                                      │
-│   Client ──► OrchestratorAgent ──► AgentRegistry                    │
-│                     │                    │                            │
-│              skill routing          ┌────┴─────────────┐             │
-│                     │               │                   │             │
-│                     ▼               ▼                   ▼             │
-│            PythonDeveloper    CppDeveloper      CybersecAgent        │
-│            :8001              :8002             :8000                 │
-│                                                                      │
-│   .claude/agents/*.md ──► agent_loader ──► AgentRegistry             │
-│   ├── cybersec-agent (orchestrator, default)                         │
-│   ├── cybersec-analyst                                               │
-│   ├── filesystem-analyst                                             │
-│   ├── kernel-analyst                                                 │
-│   ├── memory-analyst                                                 │
-│   ├── network-analyst                                                │
-│   ├── persistence-analyst                                            │
-│   ├── threat-modeler                                                 │
-│   └── teams/ (blue-team, red-team, purple-team)                      │
+│   Client ──POST /a2a──► CybersecA2AAgent                            │
+│                             │                                        │
+│                   skill routing (keyword)                             │
+│                             │                                        │
+│                             ▼                                        │
+│                     run_agent_query()  (agent_sdk.py)                │
+│                             │                                        │
+│              ┌──────────────┴──────────────┐                         │
+│              │ agent_loader.py             │                         │
+│              │ .claude/agents/*.md (36 defs)│                        │
+│              └──────────────┬──────────────┘                         │
+│                             │                                        │
+│                  model: from agent def                                │
+│                             │                                        │
+│                             ▼                                        │
+│                    AI Proxy /v1/*                                     │
+│                    (60 providers, 13 strategies)                      │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -35,7 +34,7 @@ Implementation of the [Google Agent-to-Agent (A2A)](https://google.github.io/A2A
 
 ## Quick Start
 
-### Single Agent
+### Usage
 
 ```python
 from starlette.applications import Starlette
@@ -46,25 +45,16 @@ app = Starlette()
 app.mount("/", A2AServer(agent).router)
 ```
 
-### Multi-Agent Orchestrator
+### Agent SDK — Direct Query
 
 ```python
-from a2a import OrchestratorAgent, A2AServer
-from a2a.dev_agents import create_default_registry
+from a2a.agent_sdk import run_agent_query
 
-# Pre-wire all agents (local cards + .claude/agents/*.md definitions)
-registry = create_default_registry(
-    python_url="http://localhost:8001",
-    cpp_url="http://localhost:8002",
-    cybersec_url="http://localhost:8000",
-    load_claude_agents=True,  # loads .claude/agents/*.md (default: True)
-)
-
-# Or discover remote agents via their AgentCards
-await registry.discover("http://remote-agent:8003")
-
-orchestrator = OrchestratorAgent(registry=registry, base_url="http://localhost:9000")
-app.mount("/", A2AServer(orchestrator).router)
+# Route to any .claude/agents/*.md agent by name
+# Model is read from the agent's frontmatter and routed via AI Proxy
+result = await run_agent_query("cybersec-analyst", "Analyze CVE-2024-1234")
+result = await run_agent_query("python-developer", "Write a BLAKE2b hasher")
+result = await run_agent_query("threat-modeler", "Model attack surface for SSH")
 ```
 
 ### Load from .claude/agents/ directly
@@ -89,70 +79,38 @@ orchestrator = registry.find_orchestrator()
 agent = registry.find_by_name("hunter")
 ```
 
-### Client — Delegation Commands
+### Client — Query via A2A
 
 ```python
 from a2a import A2AClient
 
-async with A2AClient("http://localhost:9000") as client:
+async with A2AClient("http://localhost:8000") as client:
 
-    # Auto-route by keywords
-    task = await client.send_task("write a Python CVE parser")
-    task = await client.send_task("implement a ring buffer in C++")
+    # Tasks are routed by CybersecA2AAgent's keyword matching
+    task = await client.send_task("Analyze CVE-2024-1234")
+    task = await client.send_task("IOC analysis for 1.2.3.4")
+    task = await client.send_task("Map to MITRE ATT&CK technique T1059")
 
-    # Explicit agent by name
-    task = await client.send_task("@agent PythonDeveloper: write a BLAKE2b hasher")
-    task = await client.send_task("@agent CppDeveloper: optimize this hot loop")
+    # Generic queries route to cybersec-analyst via SDK
+    task = await client.send_task("What is a supply chain attack?")
 
-    # Explicit skill ID
-    task = await client.send_task("@skill cpp-review: check this buffer handling")
-
-    # Fan-out: all agents in parallel
-    task = await client.send_task("@fanout implement a Bloom filter")
-
-    # Pipeline: chain agents sequentially
-    task = await client.send_task("@pipeline CybersecAgent -> PythonDeveloper -> CppDeveloper")
-
-    # List all agents
-    task = await client.send_task("list agents")
+    # Stream results
+    async for update in client.stream_task("Threat model SSH exposure"):
+        print(update.status.state, update.artifacts)
 ```
 
 ---
 
-## Orchestration Commands
+## Routing
 
-| Command | Format | Description |
-|---------|--------|-------------|
-| Auto-route | `<text>` | Best-matching agent selected automatically |
-| By name | `@agent <Name>: <prompt>` | Delegate to a specific named agent |
-| By skill | `@skill <skill-id>: <prompt>` | Delegate to agents with that skill |
-| Fan-out | `@fanout <prompt>` | All agents in parallel, results merged |
-| Pipeline | `@pipeline A -> B -> C` | Sequential chain, output of A feeds B |
-| List | `list agents` | Show all registered agents and skills |
+CybersecA2AAgent uses keyword-based skill routing. All non-matching queries
+fall through to `_handle_generic()` which routes via `run_agent_query("cybersec-analyst")`.
+
+For per-agent model routing, see [docs/agent-sdk-integration.md](../../docs/agent-sdk-integration.md).
 
 ---
 
-## Specialized Agents
-
-### `PythonDeveloper` (:8001)
-
-| Skill ID        | Tags                     | Triggered by             |
-|-----------------|--------------------------|--------------------------|
-| `python-write`  | python, code, script     | write, create, implement |
-| `python-review` | python, audit, security  | review, audit, check     |
-| `python-debug`  | python, debug, error     | debug, fix, traceback    |
-| `python-test`   | python, pytest, coverage | test, pytest, spec       |
-
-### `CppDeveloper` (:8002)
-
-| Skill ID       | Tags                  | Triggered by                |
-|----------------|-----------------------|-----------------------------|
-| `cpp-write`    | cpp, c++, develop     | write, implement, build     |
-| `cpp-review`   | cpp, memory, security | review, audit, memory, leak |
-| `cpp-debug`    | cpp, segfault, asan   | debug, crash, segfault      |
-| `cpp-optimize` | cpp, perf, simd       | optimize, performance, fast |
-
-### `CybersecAgent` (:8000)
+### `CybersecA2AAgent`
 
 | Skill ID        | Tags               | Triggered by           |
 |-----------------|--------------------|------------------------|
@@ -443,12 +401,11 @@ src/a2a/
 ├── task_store.py        # In-memory task registry
 ├── agent.py             # BaseA2AAgent abstract class
 ├── agent_loader.py      # .claude/agents/*.md → AgentCard + ClaudeAgentCard
+├── agent_sdk.py         # Agent SDK bridge (query, caching, model routing)
 ├── server.py            # ASGI JSON-RPC server + SSE
 ├── client.py            # Async HTTP client
 ├── registry.py          # AgentRegistry with .claude metadata support
-├── orchestrator.py      # OrchestratorAgent — multi-agent routing
 ├── cybersec_agent.py    # Concrete cybersecurity agent
-├── dev_agents.py        # Python/C++ developer agents + create_default_registry
 └── README.md
 ```
 
@@ -456,21 +413,13 @@ src/a2a/
 
 ---
 
-## Agent SDK Integration (Phase A2)
+## Agent SDK Integration (Phase O — Complete ✅)
 
-> ⚠️ **Not yet complete.** `agent_sdk.py` is present but `execute()` methods in `dev_agents.py` and `cybersec_agent.py` return stub strings. Phase A2 wires them to `run_agent_query()`.
+The SDK owns all agent routing. `.claude/agents/*.md` frontmatter is the single source of truth.
 
-When complete, the execution path will be:
-
-```python
-# a2a/agent_sdk.py
-from a2a.agent_sdk import run_agent_query, build_agent_options
-
-# Inside BaseA2AAgent.execute():
-options = build_agent_options(mcp_servers=..., allowed_tools=...)
-result = await run_agent_query(task.message, options=options)
+```
+.claude/agents/*.md  →  agent_loader  →  agent_sdk  →  AI Proxy  →  60 providers
+     model: deepseek-v3                    ↑ reads model from def
 ```
 
-This connects the A2A external protocol path (JSON-RPC) with the Agent SDK internal execution path (Claude API + in-process MCP tools).
-
-See [docs/architecture.md](../../docs/architecture.md) for the full two-path explanation.
+No Python wrapper classes needed per agent. See [docs/agent-sdk-integration.md](../../docs/agent-sdk-integration.md) for full details.

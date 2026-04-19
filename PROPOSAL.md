@@ -52,7 +52,7 @@ graph TD
 | **cybersecsuite-core**      | `db/` (base models, connection), `telemetry/`, `manage.py` | DB connection pool, config loading, structured logging, base `Model`/`TimestampMixin` classes, CLI framework                   |
 | **cybersecsuite-forensics** | `mcp/`                                                     | ForensicProject, Session, Finding models; MCP tool servers (findings, IOCs, cache, layers, sessions); forensic slash commands  |
 | **cybersecsuite-crypto**    | `crypto/`                                                  | Ed25519 key management, SSL CLI, vault operations, artifact signing/verification                                               |
-| **cybersecsuite-proxy**     | `ai_proxy/`, `proxy/`                                      | Provider registry (60 providers), routing strategies, format translation, ASGI server (Starlette mounting, health checks, TLS) |
+| **cybersecsuite-proxy**     | `ai_proxy/`, `proxy/`, ~~`claude-proxy/`~~                 | Provider registry (60 providers), routing strategies, format translation, ASGI server (Starlette mounting, health checks, TLS); **absorbs** GitHub Copilot Device Flow, Grok auth, token persistence, OpenAI-compat `/v1/*` passthrough from `claude-proxy` |
 | **cybersecsuite-dashboard** | `dashboard/`, `templates/`                                 | 36 REST + SSE endpoints, SPA HTML template, static assets                                                                       |
 | **cybersecsuite-intel**     | `db/` (intel models, fixtures, seeds)                      | CVE, MITRE ATT&CK, CWE, CAPEC models; threat actors, software families; 6 fixture files; seed data loaders                     |
 | **cybersecsuite-a2a**       | `a2a/`                                                     | JSON-RPC 2.0 A2A server, agent cards, `agent_sdk.py`, team dispatch                                                            |
@@ -145,7 +145,8 @@ gantt
 
     section Phase C - Services
     Extract crypto package              :c1, after a3, 14d
-    Extract proxy + ai_proxy            :c2, after a3, 21d
+    Absorb claude-proxy into proxy pkg  :c2a, after a3, 7d
+    Extract proxy + ai_proxy + claude-proxy :c2, after c2a, 14d
     Extract dashboard                   :c3, after b2, 14d
     Extract a2a                         :c4, after a3, 14d
 
@@ -174,7 +175,7 @@ gantt
 ### Phase C: Extract Services
 
 - **Crypto**: self-contained — no model dependencies beyond core. Cleanest extraction. → `~/Projects/AI/plugins/cybersecsuite-crypto/`
-- **Proxy**: merge `src/ai_proxy/` and `src/proxy/` into one package. The 1000+ line `registry.py` stays intact. → `~/Projects/AI/plugins/cybersecsuite-proxy/`
+- **Proxy**: merge `src/ai_proxy/`, `src/proxy/`, and **all of `claude-proxy/`** into one package. The 1000+ line `registry.py` stays intact. `claude-proxy`'s GitHub Copilot Device Flow (`auth/copilot.py`), Grok auth (`auth/grok.py`), token persistence (AES-256-GCM), rate limiting, and OpenAI-compat passthrough all move here. `claude-proxy/` repo is then **archived**. → `~/Projects/AI/plugins/cybersecsuite-proxy/`
 - **Dashboard**: depends on forensic models for rendering. Declare `cybersecsuite-forensics` as a dependency. → `~/Projects/AI/plugins/cybersecsuite-dashboard/`
 - **A2A**: depends only on core. Extract `src/a2a/` wholesale. → `~/Projects/AI/plugins/cybersecsuite-a2a/`
 
@@ -194,9 +195,8 @@ Plugins live in the shared AI plugins directory (`~/Projects/AI/plugins/`), not 
 
 ```
 ~/Projects/AI/plugins/                  ← shared plugin directory
-├── claude-proxy/                       ← existing (independent proxy)
-├── grok-browser-tunnel/                ← existing
-├── cybersecsuite-core/                 ← NEW — extracted from src/
+├── grok-browser-tunnel/                ← existing (Grok auth tunnel)
+├── cybersecsuite-core/                 ← NEW — extracted from src/ + absorbs claude-proxy
 │   ├── pyproject.toml
 │   ├── src/cybersecsuite/core/
 │   └── tests/
@@ -321,4 +321,4 @@ dependencies = [
 
 ---
 
-*This proposal targets the current codebase as of April 2026. Plugins will be created under `~/Projects/AI/plugins/` as independent repos, consistent with existing plugins (claude-proxy, grok-browser-tunnel). Implementation should begin with Phase A (core extraction) as a proof-of-concept before committing to the full timeline.*
+*This proposal targets the current codebase as of April 2026. Plugins will be created under `~/Projects/AI/plugins/` as independent repos, consistent with existing plugins (grok-browser-tunnel). `claude-proxy/` is **not** kept as a separate plugin — all its functionality is absorbed into `cybersecsuite-proxy`. Implementation should begin with Phase A (core extraction) as a proof-of-concept before committing to the full timeline.*

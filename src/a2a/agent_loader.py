@@ -89,6 +89,46 @@ def _extract_skills_from_body(body: str, agent_name: str) -> List[AgentSkill]:
     return skills[:8]  # cap at 8 skills per agent
 
 
+def _source_metadata_for_path(path: Path) -> Dict[str, str]:
+    """Classify where an agent definition came from for UI grouping/filtering."""
+    parts = set(path.parts)
+    if ".claude" in parts and "agents" in parts:
+        if path.parent.name == "sub_agents":
+            return {"source_kind": "project-sub-agent", "source_label": "Project sub-agent"}
+        if path.parent.name == "teams":
+            return {"source_kind": "project-team", "source_label": "Project team"}
+        if path.parent.name == "agents":
+            return {"source_kind": "project-agent", "source_label": "Project agent"}
+    return {"source_kind": "external-agent", "source_label": "External agent"}
+
+
+def iter_agent_markdown_files(
+    agents_dir: Path,
+    recurse: bool = False,
+    include_sub_agents: bool = True,
+) -> List[Path]:
+    """Return agent markdown files in deterministic priority order."""
+    if not agents_dir.exists():
+        return []
+
+    groups = [sorted(agents_dir.glob("*.md"))]
+    if include_sub_agents:
+        groups.append(sorted((agents_dir / "sub_agents").glob("*.md")))
+    if recurse:
+        groups.append(sorted((agents_dir / "teams").glob("*.md")))
+
+    files: List[Path] = []
+    seen_paths: set[Path] = set()
+    for group in groups:
+        for path in group:
+            resolved = path.resolve()
+            if resolved in seen_paths:
+                continue
+            seen_paths.add(resolved)
+            files.append(path)
+    return files
+
+
 # ── ClaudeAgentCard ───────────────────────────────────────────────────────────
 
 class ClaudeAgentCard:
@@ -197,10 +237,12 @@ def frontmatter_to_claude_agent(
 
     metadata: Dict[str, Any] = {
         "source": str(path),
+        "source_file": path.name,
         "model": model,
         "max_turns": max_turns,
         "effort": effort,
     }
+    metadata.update(_source_metadata_for_path(path))
     if role:
         metadata["role"] = role
     if is_default:
@@ -222,6 +264,7 @@ def load_agents_from_dir(
     registry: AgentRegistry,
     base_url: str = "http://localhost:8000",
     recurse: bool = False,
+    include_sub_agents: bool = True,
 ) -> List[RemoteAgent]:
     """Scan agents_dir for *.md files and register each in the registry.
 
@@ -234,15 +277,22 @@ def load_agents_from_dir(
     if not agents_dir.exists():
         return []
 
-    md_files = sorted(agents_dir.glob("*.md"))
-    if recurse:
-        md_files = sorted(md_files) + sorted(agents_dir.glob("teams/*.md"))
+    md_files = iter_agent_markdown_files(
+        agents_dir,
+        recurse=recurse,
+        include_sub_agents=include_sub_agents,
+    )
 
     registered: List[RemoteAgent] = []
+    seen_names: set[str] = set()
     for md_path in md_files:
         claude_agent = frontmatter_to_claude_agent(md_path, base_url)
         if claude_agent is None:
             continue
+        agent_name = claude_agent.card.name.casefold()
+        if agent_name in seen_names:
+            continue
+        seen_names.add(agent_name)
         agent_url = f"{base_url.rstrip('/')}/agents/{claude_agent.card.name}"
         agent = registry.register(agent_url, claude_agent.card)
         agent.claude_metadata = claude_agent.metadata  # type: ignore[attr-defined]

@@ -9,6 +9,8 @@ from typing import Any
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from a2a.agent_loader import iter_agent_markdown_files
+
 _CLAUDE_DIR = Path(__file__).resolve().parent.parent.parent.parent / ".claude"
 _AGENTS_DIR = _CLAUDE_DIR / "agents"
 _SKILLS_DIR = _CLAUDE_DIR / "skills"
@@ -51,21 +53,23 @@ def _parse_frontmatter(text: str) -> dict[str, Any]:
 def _scan_agents() -> list[dict]:
     """Parse frontmatter from all .claude/agents/**/*.md files."""
     agents = []
-    dirs = [_AGENTS_DIR, _AGENTS_DIR / "sub_agents"]
-    for d in dirs:
-        if not d.exists():
+    seen_names: set[str] = set()
+    for md in iter_agent_markdown_files(_AGENTS_DIR, recurse=False, include_sub_agents=True):
+        if md.name.upper().startswith(("AGENT_FACTORY", "DEV_", "CLAUDE_", "COPILOT_")):
             continue
-        for md in sorted(d.glob("*.md")):
-            if md.name.upper().startswith(("AGENT_FACTORY", "DEV_", "CLAUDE_", "COPILOT_")):
+        try:
+            fm = _parse_frontmatter(md.read_text(encoding="utf-8", errors="replace"))
+            if not fm.get("name"):
+                fm["name"] = md.stem
+            key = str(fm["name"]).casefold()
+            if key in seen_names:
                 continue
-            try:
-                fm = _parse_frontmatter(md.read_text(encoding="utf-8", errors="replace"))
-                if not fm.get("name"):
-                    fm["name"] = md.stem
-                fm["file"] = md.name
-                agents.append(fm)
-            except Exception:
-                continue
+            seen_names.add(key)
+            fm["file"] = md.name
+            fm["source_dir"] = md.parent.name
+            agents.append(fm)
+        except Exception:
+            continue
     return agents
 
 

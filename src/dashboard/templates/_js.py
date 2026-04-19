@@ -648,19 +648,117 @@ async function fetchApi(endpoint) {
 
 // ── Agent Query panel ────────────────────────────────────────────────────────
 let _aqHistory = [];
+let _aqAgents = [];
 
 function _aqPopulateAgents(agents) {
-  const sel = $('aq-agent');
+  const seen = new Set();
+  _aqAgents = (agents || []).filter(a => {
+    const name = String(a.name || '').trim();
+    if (!name) return false;
+    const key = name.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).sort((a, b) => {
+    const aMeta = a.claude_metadata || {};
+    const bMeta = b.claude_metadata || {};
+    const aScore = (aMeta.default ? 100 : 0) + (aMeta.role === 'orchestrator' ? 10 : 0);
+    const bScore = (bMeta.default ? 100 : 0) + (bMeta.role === 'orchestrator' ? 10 : 0);
+    if (aScore !== bScore) return bScore - aScore;
+    return String(a.name || '').localeCompare(String(b.name || ''));
+  });
+  _aqPopulateAgentFilters(_aqAgents);
+  _aqApplyAgentFilters();
+}
+
+function _aqMeta(agent) {
+  const meta = agent.claude_metadata || {};
+  return {
+    role: meta.role || 'specialist',
+    source: meta.source_label || 'Unknown',
+    model: meta.model || 'unknown',
+    isDefault: !!meta.default,
+  };
+}
+
+function _aqFillFilterSelect(id, values, placeholder) {
+  const sel = $(id);
   const current = sel.value;
-  // preserve existing default option, rebuild the rest
-  while (sel.options.length > 1) sel.remove(1);
-  (agents || []).forEach(a => {
+  sel.innerHTML = '';
+  const base = document.createElement('option');
+  base.value = '';
+  base.textContent = placeholder;
+  sel.appendChild(base);
+  values.forEach(v => {
     const opt = document.createElement('option');
-    opt.value = a.name;
-    opt.textContent = a.name + (a.claude_metadata?.role === 'orchestrator' ? ' (orch)' : '');
+    opt.value = v;
+    opt.textContent = v;
     sel.appendChild(opt);
   });
-  if (current) sel.value = current;
+  if (current && values.includes(current)) sel.value = current;
+}
+
+function _aqPopulateAgentFilters(agents) {
+  const roles = [...new Set(agents.map(a => _aqMeta(a).role).filter(Boolean))].sort();
+  const sources = [...new Set(agents.map(a => _aqMeta(a).source).filter(Boolean))].sort();
+  const models = [...new Set(agents.map(a => _aqMeta(a).model).filter(Boolean))].sort();
+  _aqFillFilterSelect('aq-role', roles, 'All roles');
+  _aqFillFilterSelect('aq-source', sources, 'All sources');
+  _aqFillFilterSelect('aq-model', models, 'All models');
+}
+
+function _aqApplyAgentFilters() {
+  const sel = $('aq-agent');
+  const current = sel.value;
+  const q = ($('aq-agent-search').value || '').trim().toLowerCase();
+  const source = $('aq-source').value || '';
+  const role = $('aq-role').value || '';
+  const model = $('aq-model').value || '';
+  const filtered = _aqAgents.filter(a => {
+    const meta = _aqMeta(a);
+    const haystack = [
+      a.name || '',
+      a.description || '',
+      meta.role,
+      meta.source,
+      meta.model,
+      (a.skills || []).map(s => s.name || '').join(' '),
+    ].join(' ').toLowerCase();
+    return (!q || haystack.includes(q))
+      && (!source || meta.source === source)
+      && (!role || meta.role === role)
+      && (!model || meta.model === model);
+  });
+
+  sel.innerHTML = '';
+  if (!filtered.length) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'No agents match current filters';
+    sel.appendChild(opt);
+    $('aq-agent-help').textContent = '0 of ' + _aqAgents.length + ' agents match the current filters.';
+    return;
+  }
+
+  filtered.forEach(a => {
+    const meta = _aqMeta(a);
+    const opt = document.createElement('option');
+    opt.value = a.name;
+    opt.textContent = a.name
+      + (meta.role === 'orchestrator' ? ' (orch)' : '')
+      + ' · ' + meta.source
+      + ' · ' + meta.model;
+    sel.appendChild(opt);
+  });
+
+  if (current && filtered.some(a => a.name === current)) {
+    sel.value = current;
+  } else {
+    const preferred = filtered.find(a => _aqMeta(a).isDefault) || filtered[0];
+    sel.value = preferred.name;
+  }
+  $('aq-agent-help').textContent = filtered.length + ' of ' + _aqAgents.length
+    + ' agents shown. Filter by source, role, or model before running a query.';
 }
 
 function _aqPopulateContextTables(models) {
@@ -675,9 +773,10 @@ function _aqPopulateContextTables(models) {
 }
 
 async function runAgentQuery() {
-  const agent = $('aq-agent').value || 'cybersec';
+  const agent = $('aq-agent').value || 'cybersec-agent';
   const prompt = ($('aq-prompt').value || '').trim();
   if (!prompt) { $('aq-status').textContent = '⚠ Prompt is empty'; return; }
+  if (!agent) { $('aq-status').textContent = '⚠ No agent matches the current filters'; return; }
 
   const contextTable = $('aq-context-table').value || null;
   const rowIds = ($('aq-row-ids').value || '').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
@@ -872,16 +971,19 @@ async function loadTeamBuilder() {
 
     // Agent browser
     _tbAgents = agRes.agents || [];
-    _tbAgentNames = _tbAgents.map(a => a.name);
+    _tbAgentNames = [...new Set(_tbAgents.map(a => a.name).filter(Boolean))].sort();
     tbFilterAgents('');
 
     // Populate skill domain select
     const sel = $('tb-skill-domain');
+    const currentDomain = sel.value;
+    while (sel.options.length > 1) sel.remove(1);
     (skDomRes.domains || []).forEach(d => {
       const opt = document.createElement('option');
       opt.value = d; opt.textContent = d;
       sel.appendChild(opt);
     });
+    if (currentDomain && (skDomRes.domains || []).includes(currentDomain)) sel.value = currentDomain;
     tbRenderSkills(skDomRes.skills || []);
 
     // Populate team composer agent selects (after phases are present)
@@ -967,11 +1069,14 @@ function tbAddPhase() {
 }
 
 function _tbPopulateAgentSelect(sel) {
+  const current = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
   _tbAgentNames.forEach(n => {
     const opt = document.createElement('option');
     opt.value = n; opt.textContent = n;
     sel.appendChild(opt);
   });
+  if (current && _tbAgentNames.includes(current)) sel.value = current;
 }
 
 function tbGenerateTeam() {

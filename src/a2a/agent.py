@@ -39,13 +39,33 @@ class BaseA2AAgent(abc.ABC):
         self, task: Task, message: Message
     ) -> AsyncIterator[Task]:
         """
-        Stream task updates.  Override for streaming support.
-        Default: wraps execute() as a single-chunk stream.
+        Stream task updates.  Override for full streaming support.
+
+        Default behaviour: yields a WORKING status immediately (so SSE clients
+        know work has started), then awaits ``execute()``, then yields the
+        final task state.  Skill handlers that call ``run_agent_query()``
+        produce their full output before returning, so there is only one
+        substantive data chunk; the WORKING yield provides early feedback.
+
+        Note: incremental SDK text chunks (partial TextBlocks) require each
+        skill handler to become an async generator that calls ``stream_query()``
+        from ``agent.streaming``.  That refactor is tracked as Phase 3.
         """
+        working = self.store.update_status(task.id, TaskState.WORKING) or task
+        yield working
         await self.execute(task, message)
         yield self.store.get(task.id) or task
 
     # ── Helpers ──────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _extract_text(message: Message) -> str:
+        """Extract all text parts from a message and join them."""
+        parts = []
+        for part in message.parts:
+            if isinstance(part, TextPart):
+                parts.append(part.text)
+        return " ".join(parts)
 
     def _reply(self, task_id: str, text: str, state: TaskState = TaskState.COMPLETED) -> Task | None:
         """Convenience: update task with a text reply."""

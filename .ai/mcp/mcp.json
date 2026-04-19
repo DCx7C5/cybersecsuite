@@ -1,0 +1,87 @@
+{
+  "servers": {
+    "cybersec": {
+      "name": "CyberSecSuite",
+      "description": "Main forensics SDK — 31 tools via agent-sdk in-process MCP: findings, IOCs, cases, MITRE, intel, cache, AI proxy, PoC management (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${workspaceFolder}",
+        "run",
+        "python",
+        "-m",
+        "csmcp.cybersec.server"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "CYBERSEC_DB_HOST": "localhost",
+        "CYBERSEC_DB_PORT": "5432",
+        "CYBERSEC_DB_USER": "cybersec",
+        "CYBERSEC_DB_NAME": "cybersec_forensics"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    "dystopian-crypto": {
+      "name": "Dystopian Crypto",
+      "description": "5 crypto tools — Ed25519 key management, artifact signing/verification, key rotation (Argon2id + AES-256-GCM, stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${workspaceFolder}",
+        "run",
+        "python",
+        "-m",
+        "csmcp.dystopian_server"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "DYSTOPIAN_KEYS_DIR": "/etc/dystopian-crypto/keys"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    "kerneldev": {
+      "name": "KernelDev MCP",
+      "description": "Kernel module development — compile, load, inspect LKM; eBPF program analysis; kernel symbol lookup",
+      "command": "python",
+      "args": ["-m", "kerneldev_mcp.server"],
+      "env": {
+        "KERNEL_SRC": "/usr/src/linux",
+        "KERNELDEV_WORKSPACE": "./kernel-modules"
+      }
+    },
+    "omniroute": {
+      "name": "OmniRoute",
+      "description": "29 tools for AI gateway intelligence — health, combo switching, routing, quota, cost, models, web search, simulate route, budget guard, resilience, provider metrics, session snapshot, pricing sync, cache, memory, skills (stdio via bun)",
+      "command": "bun",
+      "args": [
+        "run",
+        "${workspaceFolder}/../OmniRoute/open-sse/mcp-server/server.ts"
+      ],
+      "env": {
+        "OMNIROUTE_BASE_URL": "http://localhost:20128",
+        "OMNIROUTE_API_KEY": "",
+        "OMNIROUTE_MCP_ENFORCE_SCOPES": "false"
+      },
+      "cwd": "${workspaceFolder}/../OmniRoute"
+    },
+    "playwright-stealth": {
+      "name": "Playwright Stealth",
+      "description": "Stealth browser automation via Playwright — web scraping, form interaction, screenshot capture (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/AI/mcps/playwright-stealth-mcp",
+        "run",
+        "python",
+        "main.py"
+      ],
+      "env": {
+        "ANTHROPIC_AUTH_TOKEN": "cp-1775816175-zlObTy1KFxfOyuqfxi67yQ",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4.6",
+        "ANTHROPIC_BASE_URL": "https://localhost:8443/v1",
+        "USER_DATA_DIR": "/home/daen/Projects/AI/mcps/playwright-stealth-mcp/brave_profile"
+      }
+    }
+  }
+}
+

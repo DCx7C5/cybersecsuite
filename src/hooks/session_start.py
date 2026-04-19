@@ -15,9 +15,6 @@ from _utils import ensure_structure, get_project_dir, get_session_dir, audit, em
 
 AGENT_PROFILES = {
     "cybersec-agent": "General-purpose cybersec agent — CVE, IOC, MITRE, artifacts.",
-    "OrchestratorAgent": "Multi-agent orchestrator — routes tasks to specialist agents.",
-    "PythonDeveloper": "Python developer — write, review, debug, test Python code.",
-    "CppDeveloper": "C++ developer — write, review, debug, optimize C++ code.",
     "CybersecAgent": "Threat intelligence agent — CVE, IOC, MITRE ATT&CK.",
 }
 
@@ -97,7 +94,7 @@ def _a2a_summary(project_dir: Path) -> str:
 
         data = _json.loads(settings.read_text())
         agent = data.get("agent", "unknown")
-        return f"**Configured agent**: `{agent}`\n**A2A Orchestrator**: `OrchestratorAgent` with PythonDeveloper, CppDeveloper, CybersecAgent skills."
+        return f"**Configured agent**: `{agent}`\n**A2A**: `CybersecA2AAgent` — SDK routes to .claude/agents/ directly."
     except Exception:
         return ""
 

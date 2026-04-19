@@ -64,7 +64,7 @@ async def main():
         f"Host: `{sys_info['hostname']}` | OS: `{sys_info['os']} {sys_info['os_version']}`\n"
         f"Project root: `{project_dir}`\n\n"
         "**Memory layers created:** System → Project → Session\n"
-        "**A2A agents registered:** OrchestratorAgent, PythonDeveloper, CppDeveloper, CybersecAgent\n\n"
+        "**A2A agent registered:** CybersecA2AAgent (SDK routes to .claude/agents/)\n\n"
         "Ready for investigation."
     ))
 

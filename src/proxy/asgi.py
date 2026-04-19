@@ -30,8 +30,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 
-from a2a import OrchestratorAgent, A2AServer
-from a2a.dev_agents import create_default_registry
+from a2a import CybersecA2AAgent, A2AServer
 from db.bootstrap import init_tortoise_async, close_tortoise
 from ai_proxy.routes import create_proxy_router
 from ai_proxy.routing.combo import cleanup_executors
@@ -137,11 +136,10 @@ async def health(request: Request) -> JSONResponse:
     return JSONResponse(data, status_code=status_code)
 
 
-# ── A2A orchestrator ──────────────────────────────────────────────────────────
+# ── A2A server (CybersecA2AAgent — SDK routes to .claude/agents/ directly) ────
 
 _base_url = os.environ.get("CYBERSEC_A2A_BASE_URL", "http://localhost:8000")
-_registry = create_default_registry(base_url=_base_url)
-_agent = OrchestratorAgent(registry=_registry, base_url=_base_url)
+_agent = CybersecA2AAgent(base_url=_base_url)
 _a2a = A2AServer(_agent)
 
 

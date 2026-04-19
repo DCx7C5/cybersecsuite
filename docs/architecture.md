@@ -81,25 +81,23 @@ request → run_agent_query() → Claude API
 POST /a2a (tasks/send JSON-RPC)
         │
         ▼
-  OrchestratorAgent
+  CybersecA2AAgent
         │
-        ├── @mention routing → specific agent
-        ├── @fanout          → all agents in parallel
-        └── auto-route       → keyword + skill matching
-              │
-              ▼
-       AgentRegistry
-       ┌────────────────────────────────┐
-       │  .claude/agents/*.md           │
-       │  (33 agents, loaded at start)  │
-       └────────────────────────────────┘
-              │
-              ▼
-       BaseA2AAgent.execute()
-       (returns Task with streaming SSE)
+        ├── keyword routing → skill handler
+        │         │
+        │         ▼
+        │   run_agent_query()  → SDK → Proxy
+        │
+        └── no match → _handle_generic()
+                              │
+                              ▼
+                     run_agent_query("cybersec-analyst")
+                              │
+                              ▼
+                        AI Proxy → Provider
 ```
 
-External clients (other AI agents, services) call `/a2a` via JSON-RPC 2.0. Results stream via SSE. Defined by the Google A2A specification.
+External clients call `/a2a` via JSON-RPC 2.0. `CybersecA2AAgent` is the sole A2A agent; it routes to any `.claude/agents/*.md` agent via the SDK. Results stream via SSE.
 
 ---
 
@@ -115,9 +113,8 @@ cybersecsuite/
 │   │   ├── orchestrator.py OrchestratorAgent (routing + fanout)
 │   │   ├── registry.py     AgentRegistry (local + remote)
 │   │   ├── agent_loader.py .claude/agents/*.md frontmatter parser
-│   │   ├── agent_sdk.py    Agent SDK integration (query, MCP server)
-│   │   ├── cybersec_agent.py CybersecA2AAgent (ORM-backed specialist)
-│   │   ├── dev_agents.py   PythonDeveloperAgent, CppDeveloperAgent
+│   │   ├── agent_sdk.py    Agent SDK bridge (caching, model routing, query)
+│   │   ├── cybersec_agent.py CybersecA2AAgent (sole A2A agent)
 │   │   ├── task_store.py   In-memory task state machine
 │   │   ├── models.py       Pydantic A2A protocol models
 │   │   └── enums.py        TaskState, MessageRole, etc.

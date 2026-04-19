@@ -2,26 +2,20 @@
 A2A package — Google Agent-to-Agent protocol implementation.
 
 Usage:
-    # Single agent server
+    # Single agent server (default — .claude/agents/ as source of truth)
     from a2a import CybersecA2AAgent, A2AServer
     agent = CybersecA2AAgent(base_url="http://localhost:8000")
     server = A2AServer(agent)
 
-    # Multi-agent orchestration — auto-loads all .claude/agents/*.md
-    from a2a import AgentRegistry, OrchestratorAgent, A2AServer
-    from a2a.dev_agents import create_default_registry
-
-    registry = create_default_registry()          # loads all .claude agents
-    orchestrator = OrchestratorAgent(registry=registry)
-    server = A2AServer(orchestrator)
-
     # Client
     from a2a import A2AClient
-    async with A2AClient("http://localhost:9000") as client:
-        task = await client.send_task("@agent hunter: investigate this IOC")
-        task = await client.send_task("@agent cybersec-analyst: CVE-2024-1234")
-        task = await client.send_task("@fanout analyze this binary")
-        task = await client.send_task("list agents")
+    async with A2AClient("http://localhost:8000") as client:
+        task = await client.send_task("CVE-2024-1234 analysis")
+        task = await client.send_task("analyze IOC: 192.168.1.100")
+
+All agent routing is handled by the Agent SDK which reads .claude/agents/*.md directly.
+Routing to 60 providers (DeepSeek, Gemini, Groq, …) is done via the AI proxy at
+ANTHROPIC_BASE_URL=http://localhost:8000/v1 using each agent's declared model.
 """
 
 from a2a.enums import TaskState, MessageRole, PartType, AuthScheme
@@ -37,18 +31,17 @@ from a2a.agent import BaseA2AAgent
 from a2a.server import A2AServer
 from a2a.client import A2AClient, A2AClientError
 from a2a.registry import AgentRegistry, RemoteAgent
-from a2a.orchestrator import OrchestratorAgent
 from a2a.cybersec_agent import CybersecA2AAgent
-from a2a.dev_agents import PythonDeveloperAgent, CppDeveloperAgent, create_default_registry
 from a2a.agent_loader import ClaudeAgentCard, frontmatter_to_claude_agent
 
 # Agent SDK integration (optional — requires claude-agent-sdk)
 try:
     from a2a.agent_sdk import (
         build_agent_options,
+        build_agent_definitions,
+        clear_caches,
         run_agent_query,
         run_orchestrator_query,
-        create_cybersec_mcp_server,
     )
     _HAS_AGENT_SDK = True
 except ImportError:
@@ -67,17 +60,13 @@ __all__ = [
     "TaskStore", "BaseA2AAgent",
     # Server / Client
     "A2AServer", "A2AClient", "A2AClientError",
-    # Registry & Orchestration
+    # Registry
     "AgentRegistry", "RemoteAgent",
-    "OrchestratorAgent",
-    # Specialized agent implementations (for running as A2A servers)
+    # Agent implementation
     "CybersecA2AAgent",
-    "PythonDeveloperAgent",
-    "CppDeveloperAgent",
-    "create_default_registry",
     # .claude agent loader
     "ClaudeAgentCard", "frontmatter_to_claude_agent",
     # Agent SDK (optional)
-    "build_agent_options", "run_agent_query",
-    "run_orchestrator_query", "create_cybersec_mcp_server",
+    "build_agent_options", "build_agent_definitions", "clear_caches",
+    "run_agent_query", "run_orchestrator_query",
 ]
