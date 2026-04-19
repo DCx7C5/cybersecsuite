@@ -31,6 +31,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 
 from a2a import CybersecA2AAgent, A2AServer
 from db.bootstrap import init_tortoise_async, close_tortoise
@@ -155,6 +156,8 @@ app = Starlette(
         Route("/.well-known/agent.json", _a2a._agent_card, methods=["GET"]),
         Route("/a2a", _a2a._jsonrpc, methods=["POST"]),
         Route("/a2a/stream/{task_id}", _a2a._sse_stream, methods=["GET"]),
+        # Static files (compiled TypeScript + CSS/images)
+        Mount("/static", StaticFiles(directory="src/dashboard/static"), name="static"),
         # AI Proxy
         Mount("/v1", create_proxy_router()),
         # Dashboard SPA — mounted at / (must be last; handles /, /api/*, /sse/*)
