@@ -275,91 +275,58 @@ async def run_agent_query(
     session_id: str | None = None,
     _session_out: dict[str, Any] | None = None,
 ) -> str | None:
-    """Run a query as a specific named agent via the ASGI proxy HTTP API.
+    """Run a query as a specific named agent and return the result text.
 
-    Uses the OpenAI-compatible ``/v1/chat/completions`` endpoint on the local
-    ASGI proxy (ANTHROPIC_BASE_URL) instead of spawning the Claude CLI subprocess.
-    This avoids SDK ↔ Open Claude version incompatibilities while still routing
-    through all 60 providers and 13 routing strategies.
-
-    The agent's frontmatter system prompt is injected as the ``system`` message so
-    Claude reliably adopts the correct specialist persona.
+    The agent's ``AgentDefinition.prompt`` (built from its ``.claude/agents/*.md``
+    frontmatter) is prepended as context so Claude knows which specialist persona
+    to adopt, without relying on fragile subagent-dispatch wording.
 
     If the agent's ``.md`` frontmatter declares a ``model:`` field, that model is
-    passed to the proxy so the request routes to the correct provider.
+    passed to the AI proxy so the request is routed to the correct provider
+    (e.g. ``deepseek-v3`` → DeepSeek, ``gemini-2.0-flash`` → Google Gemini).
 
     Args:
-        agent_name: Name of the agent (e.g. ``'cybersec-analyst'``).
+        agent_name: Name of the agent to run as (e.g. ``'cybersec-analyst'``).
         prompt: The task prompt.
-        session_id: Unused (kept for API compatibility — HTTP is stateless).
-        _session_out: Optional dict; if provided, a generated session tag is
-            written into ``_session_out["session_id"]`` for callers that thread
-            sessions across multiple queries.
+        session_id: Optional Claude SDK session ID to resume.
+        _session_out: Optional dict; if provided, the SDK-allocated
+            ``session_id`` from ``SystemMessage.init`` is written into
+            ``_session_out["session_id"]`` so callers can thread sessions.
 
     Returns:
-        The result text, or ``None`` if the request failed.
+        The result text, or ``None`` if no result was produced.
     """
-    import json
-    import uuid
-    import httpx
-
     agent_defs = build_agent_definitions()
-    agent_def = agent_defs.get(agent_name)
 
-    # Resolve base URL and API key from environment
-    base_url = os.environ.get("ANTHROPIC_BASE_URL", "http://localhost:8000/v1").rstrip("/")
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    overrides: dict[str, Any] = {}
+    if session_id:
+        overrides["resume"] = session_id
+    if agent_name in agent_defs and agent_defs[agent_name].model:
+        overrides["model"] = agent_defs[agent_name].model
 
-    # Pick model: prefer agent frontmatter only when API key is available for Claude models;
-    # otherwise fall back to CYBERSEC_DEFAULT_MODEL or pollinations (free, no key needed)
-    preferred = agent_def.model if agent_def and agent_def.model else None
-    if preferred and not api_key and preferred.startswith("claude"):
-        preferred = None
-    model = preferred or os.environ.get("CYBERSEC_DEFAULT_MODEL", "openai")
+    options = _copy_options_with(build_agent_options(), **overrides) if overrides else build_agent_options()
 
-    # Build system prompt from agent definition
-    system_prompt = agent_def.prompt if agent_def else f"You are {agent_name}, a cybersecurity specialist."
+    agent_context = ""
+    if agent_name in agent_defs:
+        agent_context = f"[AGENT CONTEXT]\n{agent_defs[agent_name].prompt}\n[/AGENT CONTEXT]\n\n"
+    else:
+        agent_context = f"[AGENT: {agent_name}]\n\n"
 
-    payload: dict[str, Any] = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ],
-        "max_tokens": 4096,
-        "stream": False,
-    }
+    full_prompt = f"{agent_context}{prompt}"
+    result_text: str | None = None
 
-    headers: dict[str, str] = {
-        "Content-Type": "application/json",
-        "x-agent-name": agent_name,
-    }
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
+    logger.debug("run_agent_query: agent=%s", agent_name)
 
-    # Generate a synthetic session ID for callers that track sessions
-    synthetic_session = str(uuid.uuid4())
-    if _session_out is not None:
-        _session_out["session_id"] = synthetic_session
+    async for message in query(prompt=full_prompt, options=options):
+        if isinstance(message, SystemMessage) and message.subtype == "init":
+            captured = message.data.get("session_id")
+            if _session_out is not None:
+                _session_out["session_id"] = captured
+            logger.debug("run_agent_query: session_id=%s agent=%s", captured, agent_name)
+        elif isinstance(message, ResultMessage) and message.subtype == "success":
+            result_text = message.result
 
-    logger.debug("run_agent_query: agent=%s model=%s url=%s", agent_name, model, base_url)
-
-    try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            resp = await client.post(
-                f"{base_url}/chat/completions",
-                json=payload,
-                headers=headers,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            choices = data.get("choices", [])
-            if choices:
-                return choices[0].get("message", {}).get("content")
-            return None
-    except Exception as exc:
-        logger.error("run_agent_query failed: %s", exc)
-        raise
+    return result_text
 
 
 async def run_orchestrator_query(
@@ -367,65 +334,32 @@ async def run_orchestrator_query(
     mode: str = "blue",
     session_id: str | None = None,
 ) -> dict[str, Any]:
-    """Run a full orchestrator query (CYBERSEC-AGENT style) via the ASGI proxy.
+    """Run a full orchestrator query (CYBERSEC-AGENT style).
 
-    Routes through the AI proxy at ANTHROPIC_BASE_URL using the HTTP API.
-    Returns session_id and result for chaining into subsequent calls.
+    Routes through the AI proxy at ANTHROPIC_BASE_URL. Returns session_id
+    and result for chaining into subsequent calls.
     """
-    import uuid
-    import httpx
+    overrides: dict[str, Any] = {"extra_tools": ["Write", "Edit"]}
+    if session_id:
+        overrides["resume"] = session_id
 
-    base_url = os.environ.get("ANTHROPIC_BASE_URL", "http://localhost:8000/v1").rstrip("/")
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    model = os.environ.get("CYBERSEC_DEFAULT_MODEL", "openai")
+    base = build_agent_options(extra_tools=["Write", "Edit"])
+    options = _copy_options_with(base, **{k: v for k, v in overrides.items() if k != "extra_tools"})
+
+    captured_session: str | None = None
+    result_text: str | None = None
 
     mode_prefix = f"[MODE: {mode.upper()}] " if mode != "blue" else ""
     full_prompt = f"{mode_prefix}{prompt}"
 
-    system = (
-        "You are CyberSecSuite orchestrator — a senior cybersecurity analyst "
-        "with full access to the forensic platform. Coordinate specialist agents, "
-        "analyze findings, and deliver actionable intelligence."
-    )
-
-    payload: dict[str, Any] = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": full_prompt},
-        ],
-        "max_tokens": 4096,
-        "stream": False,
-    }
-
-    headers: dict[str, str] = {
-        "Content-Type": "application/json",
-        "x-agent-mode": mode,
-    }
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
-
-    synthetic_session = session_id or str(uuid.uuid4())
-    result_text: str | None = None
-
-    try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            resp = await client.post(
-                f"{base_url}/chat/completions",
-                json=payload,
-                headers=headers,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            choices = data.get("choices", [])
-            if choices:
-                result_text = choices[0].get("message", {}).get("content")
-    except Exception as exc:
-        logger.error("run_orchestrator_query failed: %s", exc)
-        raise
+    async for message in query(prompt=full_prompt, options=options):
+        if isinstance(message, SystemMessage) and message.subtype == "init":
+            captured_session = message.data.get("session_id")
+        elif isinstance(message, ResultMessage) and message.subtype == "success":
+            result_text = message.result
 
     return {
-        "session_id": synthetic_session,
+        "session_id": captured_session,
         "result": result_text,
         "mode": mode,
     }
