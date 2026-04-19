@@ -1,0 +1,79 @@
+{
+  "agent_servers": {
+    "CyberSecSuite": {
+      "command": "/usr/bin/uv",
+      "args": [
+        "run",
+        "--project", "${workspaceFolder}",
+        "python",
+        "${workspaceFolder}/.ai/acp_agent/__main__.py"
+      ],
+      "env": {
+        "CYBERSEC_PROXY_URL":        "http://localhost:8000/v1",
+        "CYBERSEC_MODEL":            "claude-sonnet-4-5",
+        "CYBERSEC_AGENT":            "forensics",
+        "CYBERSEC_REASONING_EFFORT": "medium"
+      }
+    },
+    "CyberSecSuite · Opus": {
+      "command": "/usr/bin/uv",
+      "args": [
+        "run",
+        "--project", "${workspaceFolder}",
+        "python",
+        "${workspaceFolder}/.ai/acp_agent/__main__.py"
+      ],
+      "env": {
+        "CYBERSEC_PROXY_URL":        "http://localhost:8000/v1",
+        "CYBERSEC_MODEL":            "claude-opus-4-5",
+        "CYBERSEC_AGENT":            "forensics",
+        "CYBERSEC_REASONING_EFFORT": "high"
+      }
+    },
+    "CyberSecSuite · Fast": {
+      "command": "/usr/bin/uv",
+      "args": [
+        "run",
+        "--project", "${workspaceFolder}",
+        "python",
+        "${workspaceFolder}/.ai/acp_agent/__main__.py"
+      ],
+      "env": {
+        "CYBERSEC_PROXY_URL":        "http://localhost:8000/v1",
+        "CYBERSEC_MODEL":            "gpt-4.1",
+        "CYBERSEC_AGENT":            "general",
+        "CYBERSEC_REASONING_EFFORT": "low"
+      }
+    },
+    "CyberSecSuite · Code": {
+      "command": "/usr/bin/uv",
+      "args": [
+        "run",
+        "--project", "${workspaceFolder}",
+        "python",
+        "${workspaceFolder}/.ai/acp_agent/__main__.py"
+      ],
+      "env": {
+        "CYBERSEC_PROXY_URL":        "http://localhost:8000/v1",
+        "CYBERSEC_MODEL":            "claude-sonnet-4-5",
+        "CYBERSEC_AGENT":            "code",
+        "CYBERSEC_REASONING_EFFORT": "medium"
+      }
+    },
+    "CyberSecSuite · PenTest": {
+      "command": "/usr/bin/uv",
+      "args": [
+        "run",
+        "--project", "${workspaceFolder}",
+        "python",
+        "${workspaceFolder}/.ai/acp_agent/__main__.py"
+      ],
+      "env": {
+        "CYBERSEC_PROXY_URL":        "http://localhost:8000/v1",
+        "CYBERSEC_MODEL":            "claude-sonnet-4-5",
+        "CYBERSEC_AGENT":            "pentest",
+        "CYBERSEC_REASONING_EFFORT": "high"
+      }
+    }
+  }
+}
