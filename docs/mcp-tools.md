@@ -1,14 +1,16 @@
 # MCP Tools Reference
 
-All 65 MCP tools across three servers: 31 cybersec tools (FastMCP stdio), 5 dystopian crypto tools, and 29 OmniRoute tools (bun runtime, port 20128).
+All 63 MCP tools across four servers: 31 cybersec tools (Python/uv stdio), 5 dystopian crypto tools (Python/uv stdio), 27 OmniRoute tools (TypeScript/Bun stdio, self-contained at `src/omniroute_mcp/server.ts`).
 
 Start the MCP server: `make mcp`
 
-Tool name prefixes: `mcp__cybersec__` (cybersec server) · `mcp__dystopian__` (dystopian server)
+Tool name prefixes: `mcp__cybersec__` (cybersec server) · `mcp__dystopian__` (dystopian server) · `mcp__omniroute__` (OmniRoute server)
+
+See [omniroute-mcp.md](omniroute-mcp.md) for the full OmniRoute tool reference.
 
 ---
 
-## Cybersec Tools (29)
+## Cybersec Tools (31)
 
 ## Findings & IOCs
 

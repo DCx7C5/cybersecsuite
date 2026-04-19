@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-19 (Phase O complete, test suite green, pyproject cleanup)_
+_Last updated: 2026-04-19 (OmniRoute MCP self-contained, full architecture audit, docs rewrite)_
 
 ## Architecture
 
@@ -11,14 +11,14 @@ Claude Code / agent_sdk.py
   ASGI /v1/*  (AI Proxy — 60 providers, 13 strategies, cost-optimized default)
         │
   ┌─────┴──────┐
-  │ /dashboard | SPA + 36 REST + 4 SSE routes
+  │ /dashboard | SPA + 41 REST + 4 SSE routes
   │ /a2a       | A2A JSON-RPC → CybersecA2AAgent → SDK → .claude/agents/ → Proxy
   │ /health    | DB health (200/503)
   └────────────┘
-  MCP (stdio): cybersec (31 tools) + dystopian-crypto (5 tools) = 36 total
+  MCP (stdio): cybersec (31 tools) + dystopian-crypto (5 tools) + omniroute (27 tools) = 63 total
 ```
 
-**Ports**: 8000 ASGI ✅ · 5432 PostgreSQL ✅ · 6379 Redis ✅ · 9200 OpenSearch ✅ · 5601 OS Dashboards ✅ · 8080 alt ⚠️ · 8433 TLS ⚠️
+**Ports**: 8000 ASGI ✅ · 5432 PostgreSQL ✅ · 6379 Redis ✅ · 9200 OpenSearch ✅ · 5601 OS Dashboards ✅ · 20128 OmniRoute · 8080 alt ⚠️ · 8433 TLS ⚠️
 
 **settings.json**: `.claude/settings.json` (NOT `settings.json`) · `agent: cybersec-agent` · `default_strategy: cost-optimized` · `hooks_dir: src/hooks/` · 10 workspace hooks (PreToolUse→PostCompact)
 
@@ -38,7 +38,7 @@ Claude Code / agent_sdk.py
 | `a2a/`                    | A2A JSON-RPC server, orchestrator, agent_sdk bridge, registry                                                  |
 | `ai_proxy/`               | 60 providers (`registry.py` 1163L), routing (`combo.py` 574L), translators                                     |
 | `crypto/`                 | Ed25519, BLAKE2b-256, Argon2id (mem=262144, iters=4), AES-256-GCM                                              |
-| `db/`                     | 45 model files, 83 Tortoise ORM model classes, `cybersec_forensics` DB                                         |
+| `db/`                     | 30+ model files, 40+ ORM models, 65 tables, `cybersec_forensics` DB                                           |
 | `db/browser_forensics.py` | `BrowserForensicFinding` CRUD — `log_finding_async()`, `count_findings_by_severity()`, `get_recent_findings()` |
 | `a2a/checks/`             | Integrity checks — FK, fixtures, config paths (moved from `src/checks/` in Phase M.3, commit `4a52b219`)       |
 | `telemetry/`              | Ring-buffer metrics, p50/p95/p99, ASGI middleware, SSE collector — dual-write to OpenSearch ✅                  |
@@ -63,7 +63,7 @@ Claude Code / agent_sdk.py
 | `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                                  |
 | `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                |
 | `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
-| `api/team_builder.py`      | 130   | `GET /api/team-agents` (33 agents) · `GET /api/skills?domain=&q=` (941 skills) · `GET /api/teams`                   |
+| `api/team_builder.py`      | 130   | `GET /api/team-agents` (48 agents) · `GET /api/skills?domain=&q=` (942 skills) · `GET /api/teams`                   |
 | `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
 | `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
 | `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                             |
@@ -72,7 +72,7 @@ Claude Code / agent_sdk.py
 
 **Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET /api/teams` · `GET /api/opensearch`
 
-**Team Builder tab**: Agent Browser (filterable table of 33 agents), Skill Browser (27 domains × 941 skills, domain select + search), Team Composer (add phases → assign agents → generate/copy JSON).
+**Team Builder tab**: Agent Browser (filterable table of 48 agents), Skill Browser (26 domains × 942 skills, domain select + search), Team Composer (add phases → assign agents → generate/copy JSON).
 
 **Settings tab**: Agent & Proxy (editable), Env Variables (add/remove/save rows), Hooks (read-only renderTable). PATCH validates against editable/readonly key sets — forbidden keys → 400.
 
@@ -85,16 +85,16 @@ Claude Code / agent_sdk.py
 ### .claude/ system
 | Component   | Summary                                                                                                                                                                                                                         |
 |-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `agents/`   | 34 agents: 33 specialists + AGENT_FACTORY · teams/: blue/red/purple · model tiers: Haiku (3), Sonnet (28), Opus (3)                                                                                                             |
+| `agents/`   | 48 agents: 37 main specialists + 3 team modes (blue/red/purple) + 8 sub-agents · model tiers: Haiku, Sonnet, Opus                                                                                                               |
 | `hooks/`    | 32 .py files: 10 settings.json-wired + 12 custom event handlers (via `emit()`) + 10 utility modules                                                                                                                             |
 | `commands/` | **DISSOLVED** — all 8 converted to SKILL.md entries (see skills/)                                                                                                                                                               |
 | `skills/`   | 942 SKILL.md across 26 domains — includes 8 former commands (forensics/hunting/apt-hunt, forensics/browser/hunt, forensics/memory/dump, forensics/network/apt-hunt, ops/mode-switch, ops/setup, ops/test-config, ops/team-task) |
 
 **Two execution paths** — NEVER conflate:
-- **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 65 MCP tools (36 local + 29 omniroute)
+- **Agent SDK** (internal): `query()` → `http://localhost:8000/v1` → 63 MCP tools (36 in-process + 27 omniroute stdio)
 - **A2A Protocol** (external): `POST /a2a` JSON-RPC → `CybersecA2AAgent` → `run_agent_query()` → SDK → Proxy
 
-**mcp.json servers**: `cybersec` (31 tools, `python -m csmcp.cybersec.server`) · `dystopian-crypto` (5 tools) · `kerneldev` (external) · `omniroute` (29 tools, bun, port 20128)
+**mcp.json servers**: `cybersec` (31 tools, `python -m csmcp.cybersec.server`) · `dystopian-crypto` (5 tools) · `omniroute` (27 tools, bun, self-contained at `src/omniroute_mcp/server.ts`) · `kerneldev` (external)
 
 ---
 
@@ -163,6 +163,22 @@ async def _fn(args: dict) -> dict:
 - Tools: health, combos, routing, quota, cost, models, web_search, simulate_route, budget_guard, resilience, provider metrics, session snapshot, pricing sync, memory (3), skills (4), explain route, db health, and more
 - `docs/configuration.md`: OmniRoute env vars + OpenSearch env vars added, port reference updated
 
+### Architecture Audit (2026-04-19)
+
+Full 7-layer architectural audit completed with corrected numbers:
+- **Layer 1 (ASGI)**: 160-line asgi.py with mount map. AI proxy: 60 providers, 13 strategies, 855-line _providers.py
+- **Layer 2 (MCP)**: 63 tools total (31 cybersec + 5 dystopian + 27 omniroute). SDK compat shim at `_sdk_compat.py`
+- **Layer 3 (A2A + Agents)**: 48 agents. A2A JSON-RPC: 6 methods. 4 security hooks
+- **Layer 4 (Database)**: 40+ models, 65 tables. Seeds: MITRE, NVD, CWE, CAPEC, NIST CSF 2.0, NIST AI RMF 1.0
+- **Layer 5 (Dashboard)**: 41 endpoints (37 REST + 4 SSE). Ring-buffer metrics with p50/p95/p99
+- **Layer 6 (Skills)**: 942 SKILL.md across 26 domains
+- **Layer 7 (Hooks)**: 30 hook modules, 10 wired in settings.json
+
+New documentation created:
+- `docs/layer-integration.md`: 7-layer integration guide with ASCII diagrams, 12 integration points
+- `docs/omniroute-mcp.md`: Complete 27-tool OmniRoute MCP reference
+- `docs/architecture.md`: Full rewrite with accurate numbers and updated module map
+
 ---
 
 ## OpenSearch Integration ✅
@@ -224,7 +240,7 @@ async def _fn(args: dict) -> dict:
 | O.2 | `_handle_generic()` fallback in `cybersec_agent.py` | ✅ |
 | O.3 | Per-agent model routing (`AgentDefinition.model` → `options.model` → Proxy) | ✅ |
 | O.4 | `_copy_options_with()` — shallow-copy before mutation (race fix) | ✅ |
-| O.5 | OmniRoute 29 tools included via `all_servers()` — confirmed | ✅ |
+| O.5 | OmniRoute 27 tools embedded as self-contained src/omniroute_mcp/ | ✅ |
 | O.6 | Docs: `docs/agent-sdk-integration.md`, `README.md`, `architecture.md` | ✅ |
 | O.7 | Stale references cleaned: hooks, `hooks.json`, `CLAUDE.md`, `scope.md` | ✅ |
 
@@ -270,12 +286,12 @@ async def _fn(args: dict) -> dict:
 - Phase K.5 — Agent Query panel: agent selector, context enrichment, conversation history
 - Phase K.6 — Split `_html.py` (1194L) → `templates/` package: `_components.py`, `_base.py`, `_tabs.py`, `_panels.py`, `_js.py`; `.stat-card` CSS added
 - Phase K.7 — Settings tab: `GET/PATCH /api/settings`, editable env/agent/proxy fields, hooks read-only view
-- Phase K.8 — Team Builder tab: Agent Browser (33 agents), Skill Browser (941 skills/27 domains), Team Composer (phase→agent JSON)
+- Phase K.8 — Team Builder tab: Agent Browser (48 agents), Skill Browser (942 skills/26 domains), Team Composer (phase→agent JSON)
 - Phase G — SSE frontend wiring: `initSSE()` wires 4 EventSource streams; `refresh()` 22→19 endpoints; Telemetry tab (26th) with p50/p95/p99/rps table
 - **OpenSearch integration** ✅ — `src/opensearch/` package (client, indices, buffered writer); docker-compose services (9200/5601); telemetry dual-write; `migrate-audit`/`migrate-api-usage` CLI commands; 27th dashboard tab with cluster health + index stats
 - **Infrastructure fixes** ✅ (commit `21f6cd96`) — Docker PG socket `/tmp`; `bootstrap.py` always passes port; `session_start.py` reads `.claude/settings.json`; all seed files migrated `aiohttp`→`httpx`; NVD API v1 (retired)→v2 with `--severity` filter + 2000/page; removed `aiohttp` from pyproject.toml; fixed duplicate `seed_mitre_command` → `seed_mitre_fixtures_command`
 - **Hook fixes** ✅ (commit `68b40f5d`) — `user_prompt_submit.py`: fixed `audit()` called with 2 args (accepts 1 dict), added proper stdin JSON guard, emit context when mode/phase available; `termmate_idle.py`: catch `(json.JSONDecodeError, ValueError, EOFError)` not just `TypeError`; `hooks.json`: fixed stale paths missing `src/` prefix
-- **OmniRoute MCP** ✅ (commit `2b633887`) — `mcp.json` `omniroute` server (29 tools, bun, port 20128); `docs/configuration.md` env vars + port table
+- **OmniRoute MCP** ✅ (commit `7519585b`) — self-contained at `src/omniroute_mcp/server.ts` (27 tools, bun stdio); `docs/omniroute-mcp.md` reference
 - **Skills asset sync** ✅ (commit `cff9518d`) — INDEX.md: 933→942 skills, 25→26 domains; devices/ domain added; forensics/+4, ops/+4; MAPPER.md counts updated
 - **Docs sweep** ✅ — README: 15-tab→27-tab, 933→942 skills, 11 hooks; architecture.md: OpenSearch in diagram + ports table; deployment.md: 5 services + ports; mcp-tools.md: 34→65 tools + OmniRoute section; quickstart.md: tool counts; MEMORY.md synced
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
