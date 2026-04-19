@@ -196,15 +196,6 @@ wheels = [
 ]
 
 [[package]]
-name = "atlastk"
-version = "0.13.5"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/24/0a/05fb6abea27b2b8483328d5e4c8bbe16c5be1c2cb58946a478b79d744132/atlastk-0.13.5.tar.gz", hash = "sha256:1679045b090e1d411806a55a8bef26d6ca268c0ac31ad07dbd17052774316009", size = 19719, upload-time = "2025-05-27T12:51:23.519Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/e1/c8209555c5ff5e2f13c13aa18d1b46eec1618a7e5cc6ec2c548e88a18901/atlastk-0.13.5-py3-none-any.whl", hash = "sha256:70184097f424a70d83822d783d46c7579427c4a6e7227ec54099368fd1fb2750", size = 24933, upload-time = "2025-05-27T12:51:22.046Z" },
-]
-
-[[package]]
 name = "attrs"
 version = "25.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -321,15 +312,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/40/65/e7c6c77d7aaa4c0d7974f2e403e17f0ed2cb0fc135f77d686b916bf1eead/charset_normalizer-3.4.5-cp314-cp314-win_amd64.whl", hash = "sha256:4481e6da1830c8a1cc0b746b47f603b653dadb690bcd851d039ffaefe70533aa", size = 143511, upload-time = "2026-03-06T06:02:26.195Z" },
     { url = "https://files.pythonhosted.org/packages/ba/91/52b0841c71f152f563b8e072896c14e3d83b195c188b338d3cc2e582d1d4/charset_normalizer-3.4.5-cp314-cp314-win_arm64.whl", hash = "sha256:97ab7787092eb9b50fb47fa04f24c75b768a606af1bcba1957f07f128a7219e4", size = 133775, upload-time = "2026-03-06T06:02:27.473Z" },
     { url = "https://files.pythonhosted.org/packages/c5/60/3a621758945513adfd4db86827a5bafcc615f913dbd0b4c2ed64a65731be/charset_normalizer-3.4.5-py3-none-any.whl", hash = "sha256:9db5e3fcdcee89a78c04dffb3fe33c79f77bd741a624946db2591c81b2fc85b0", size = 55455, upload-time = "2026-03-06T06:03:17.827Z" },
-]
-
-[[package]]
-name = "claude"
-version = "0.4.11"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fa/0d/40d26e7074d10f946ae06f6125de511ef0318598d7c3cc27c4ce9c9eb0a8/claude-0.4.11.tar.gz", hash = "sha256:a76ecc7e28869866c4353a39d176397a3b6964b543ef176363db5ea32726868d", size = 820, upload-time = "2025-06-10T18:49:08.992Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/63/2b/aa9b6b6fbf63e094c3dfe2ec0010ddd952934647ee51e13a97186b91a44d/claude-0.4.11-py3-none-any.whl", hash = "sha256:369b5945461154bdcb9957f375944e9268ad343e15a924af2476a05b1c167478", size = 1167, upload-time = "2025-06-10T18:49:08.17Z" },
 ]
 
 [[package]]
@@ -461,7 +443,6 @@ source = { editable = "." }
 dependencies = [
     { name = "argon2-cffi" },
     { name = "asyncpg" },
-    { name = "claude" },
     { name = "claude-agent-sdk" },
     { name = "cryptography" },
     { name = "fastmcp" },
@@ -469,10 +450,8 @@ dependencies = [
     { name = "openpyxl" },
     { name = "opensearch-py", extra = ["async"] },
     { name = "pydantic" },
-    { name = "pytest" },
     { name = "pyyaml" },
     { name = "starlette" },
-    { name = "tortoise" },
     { name = "tortoise-orm", extra = ["asyncpg"] },
     { name = "uvicorn", extra = ["standard"] },
     { name = "uvloop", marker = "sys_platform == 'linux'" },
@@ -498,7 +477,6 @@ test = [
 requires-dist = [
     { name = "argon2-cffi", specifier = ">=23.1" },
     { name = "asyncpg", specifier = ">=0.30" },
-    { name = "claude", specifier = ">=0.4.11" },
     { name = "claude-agent-sdk", git = "https://github.com/anthropics/claude-agent-sdk-python.git?rev=v0.1.61" },
     { name = "cryptography", specifier = ">=44.0" },
     { name = "fastmcp", specifier = ">=2.0" },
@@ -506,10 +484,8 @@ requires-dist = [
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "opensearch-py", extras = ["async"], specifier = ">=2.7" },
     { name = "pydantic", specifier = ">=2.10" },
-    { name = "pytest", specifier = ">=9.0.2" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "starlette", specifier = ">=0.46" },
-    { name = "tortoise", specifier = ">=0.1.1" },
     { name = "tortoise-orm", extras = ["asyncpg"], specifier = ">=0.22" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34" },
     { name = "uvloop", marker = "sys_platform == 'linux'", specifier = ">=0.21" },
@@ -526,7 +502,7 @@ dev = [
 ]
 test = [
     { name = "anyio", specifier = ">=4.7" },
-    { name = "pytest", specifier = ">=8.3" },
+    { name = "pytest", specifier = ">=9.0" },
     { name = "pytest-asyncio", specifier = ">=0.25" },
     { name = "pytest-cov", specifier = ">=6.0" },
 ]
@@ -1846,18 +1822,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c4/68/79977123bb7be889ad680d79a40f339082c1978b5cfcf62c2d8d196873ac/starlette-0.52.1.tar.gz", hash = "sha256:834edd1b0a23167694292e94f597773bc3f89f362be6effee198165a35d62933", size = 2653702, upload-time = "2026-01-18T13:34:11.062Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/81/0d/13d1d239a25cbfb19e740db83143e95c772a1fe10202dda4b76792b114dd/starlette-0.52.1-py3-none-any.whl", hash = "sha256:0029d43eb3d273bc4f83a08720b4912ea4b071087a3b48db01b7c839f7954d74", size = 74272, upload-time = "2026-01-18T13:34:09.188Z" },
-]
-
-[[package]]
-name = "tortoise"
-version = "0.1.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "atlastk" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/98/970d10bcc02eda8370c425dd6306526eec8b407aa83f13bb0ebe7da41012/tortoise-0.1.1.tar.gz", hash = "sha256:a4ebd69b152d266174b3b0f2a22e3fb8995101eb749d3114813a98f405ab10bb", size = 4114, upload-time = "2019-08-03T15:54:19.508Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/ef/b314819f12e48e7a99f07825d064b596d58cc4a0c3b75939d0d10fedf90d/tortoise-0.1.1-py3-none-any.whl", hash = "sha256:bcb58a56d6796cad0db330104450df2caf2ea9e98d844bb2906274bd15c12804", size = 5263, upload-time = "2019-08-03T15:54:17.909Z" },
 ]
 
 [[package]]
