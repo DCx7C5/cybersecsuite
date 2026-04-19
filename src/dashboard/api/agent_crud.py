@@ -283,9 +283,9 @@ async def api_agent_get(request: Request) -> JSONResponse:
 _TEMPLATES_DIR = _AGENTS_DIR / "templates"
 
 _TYPE_ROLE_MAP = {
-    "orchestrator": "Central orchestrator. Delegates tasks to sub-agents via Task tool. Never calls sub-agents directly.",
-    "specialist":   "Specialist sub-agent. Executes focused tasks and returns structured results.",
-    "team":         "Team composition agent. Manages a cohesive multi-agent team pipeline.",
+    "orchestrator": "Inter-API orchestrator. Routes tasks across multiple API providers and teams via the AI proxy. Delegates to sub-agents using Task tool.",
+    "team-leader":  "Claude team orchestrator. Manages a cohesive multi-agent Claude team. Delegates internally using Task tool, stays within a single Claude session.",
+    "specialist":   "Specialist sub-agent. Executes focused tasks and returns structured results. Never delegates further.",
 }
 
 _RESEARCH_SECTIONS = {
@@ -312,6 +312,7 @@ def _build_generated_body(data: dict) -> str:
     extra       = data.get("extra_instructions", "").strip()
     research    = data.get("research", [])
     templates   = data.get("templates", [])
+    skills      = data.get("skills", [])
     project_ctx = data.get("project_context", False)
 
     title = name.replace("-", " ").title()
@@ -348,6 +349,10 @@ def _build_generated_body(data: dict) -> str:
         if tpl_content_parts:
             parts.append("## Chapter 3: Domain Templates\n\n" + "\n\n---\n\n".join(tpl_content_parts) + "\n")
 
+    # Skills reference section
+    if skills:
+        parts.append("## Skills\n\n" + "\n".join(f"- `{s}`" for s in skills) + "\n")
+
     # Research sections
     for key in research:
         if key in _RESEARCH_SECTIONS:
@@ -362,8 +367,8 @@ def _build_generated_body(data: dict) -> str:
     if extra:
         parts.append(f"## Additional Instructions\n\n{extra}\n")
 
-    # Orchestrator-specific: delegation table stub
-    if agent_type == "orchestrator":
+    # Orchestrator/team-leader: delegation table stub
+    if agent_type in ("orchestrator", "team-leader"):
         parts.append("## Delegation Matrix\n\n"
                      "| Task | Sub-Agent | Tool |\n"
                      "|------|-----------|------|\n"

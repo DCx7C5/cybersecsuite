@@ -10,7 +10,7 @@ _NAV = [
     ("routing",       "Routing",          "⇄", "proxy"),
     ("crypto",        "Crypto",           "⊗", "proxy"),
     # AGENTS
-    ("agent-craft",   "Agent Craft",      "⊞", "agents"),
+    ("agent-factory", "Agent Factory",    "⊞", "agents"),
     ("team-builder",  "Team Builder",     "⊟", "agents"),
     ("agent-query",   "Agent Query",      "⇒", "agents"),
     ("workflows",     "Workflows",        "⇌", "agents"),

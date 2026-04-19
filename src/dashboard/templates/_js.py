@@ -67,7 +67,7 @@ async function _updateContextBar(name) {
       {value: d.working ?? 0, label: ' running'},
       {value: d.completed ?? 0, label: ' done'},
     ]),
-    'agent-craft': () => fetch('/dashboard/api/agents').then(r=>r.json()).catch(()=>({})).then(d=>[
+    'agent-factory': () => fetch('/dashboard/api/agents').then(r=>r.json()).catch(()=>({})).then(d=>[
       {value: d.agents?.length ?? 0, label: ' agents'},
       {value: d.agents?.filter(a=>a.role==='orchestrator').length ?? 0, label: ' orchestrators'},
     ]),
@@ -1200,33 +1200,27 @@ function _renderGlobalSummary(g) {
 // ── Team Builder ─────────────────────────────────────────────────────────────
 let _tbAgents = [];
 let _tbAgentNames = [];
+let _tbSubAgentNames = [];
 
 async function loadTeamBuilder() {
   try {
-    const [agRes, skDomRes, teRes] = await Promise.all([
+    const [agRes, teRes] = await Promise.all([
       fetch('/dashboard/api/team-agents').then(r => r.json()),
-      fetch('/dashboard/api/skills?domain=').then(r => r.json()),
       fetch('/dashboard/api/teams').then(r => r.json()),
     ]);
 
-    // Agent browser
+    // Agent browser — all agents
     _tbAgents = agRes.agents || [];
     _tbAgentNames = [...new Set(_tbAgents.map(a => a.name).filter(Boolean))].sort();
+    // Sub-agents only for team member select
+    _tbSubAgentNames = [...new Set(
+      _tbAgents.filter(a => a.source_dir === 'sub_agents').map(a => a.name).filter(Boolean)
+    )].sort();
+    // Fallback: if no sub_agents tagged, use all
+    if (!_tbSubAgentNames.length) _tbSubAgentNames = _tbAgentNames;
     tbFilterAgents('');
 
-    // Populate skill domain select
-    const sel = $('tb-skill-domain');
-    const currentDomain = sel.value;
-    while (sel.options.length > 1) sel.remove(1);
-    (skDomRes.domains || []).forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d; opt.textContent = d;
-      sel.appendChild(opt);
-    });
-    if (currentDomain && (skDomRes.domains || []).includes(currentDomain)) sel.value = currentDomain;
-    tbRenderSkills(skDomRes.skills || []);
-
-    // Populate team composer agent selects (after phases are present)
+    // Populate team composer member selects
     document.querySelectorAll('.tb-agent-select').forEach(s => _tbPopulateAgentSelect(s));
 
   } catch(e) { console.error('Team builder load error', e); }
@@ -1291,42 +1285,42 @@ function tbRenderSkills(skills) {
   })), {pageSize: 20});
 }
 
-let _tbPhaseIdx = 0;
-function tbAddPhase() {
-  const i = _tbPhaseIdx++;
-  const div = document.createElement('div');
-  div.id = 'tb-phase-' + i;
-  div.className = 'flex items-center gap-3 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2';
-  div.innerHTML =
-    '<span class="text-xs text-gray-400 w-16 shrink-0">Phase ' + (i+1) + '</span>'
-    + '<input class="tb-phase-name flex-1 px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded font-mono" placeholder="Phase name (e.g. Recon)">'
-    + '<select class="tb-agent-select px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded">'
-    + '<option value="">— select agent —</option>'
-    + _tbAgentNames.map(n => '<option value="' + n + '">' + n + '</option>').join('')
-    + '</select>'
-    + '<button onclick="document.getElementById(\'tb-phase-' + i + '\').remove()" class="px-2 py-1 text-xs bg-gray-800 hover:bg-red-900 rounded">✕</button>';
-  $('tb-phases').appendChild(div);
-}
-
 function _tbPopulateAgentSelect(sel) {
   const current = sel.value;
   while (sel.options.length > 1) sel.remove(1);
-  _tbAgentNames.forEach(n => {
+  _tbSubAgentNames.forEach(n => {
     const opt = document.createElement('option');
     opt.value = n; opt.textContent = n;
     sel.appendChild(opt);
   });
-  if (current && _tbAgentNames.includes(current)) sel.value = current;
+  if (current && _tbSubAgentNames.includes(current)) sel.value = current;
+}
+
+let _tbMemberIdx = 0;
+function tbAddMember() {
+  const i = _tbMemberIdx++;
+  const div = document.createElement('div');
+  div.id = 'tb-member-' + i;
+  div.className = 'flex items-center gap-3 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2';
+  div.innerHTML =
+    '<span class="text-xs text-gray-400 w-20 shrink-0">Member ' + (i+1) + '</span>'
+    + '<input class="tb-member-name flex-1 px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded font-mono" placeholder="Role (e.g. Analyst)">'
+    + '<select class="tb-agent-select px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded">'
+    + '<option value="">— select agent —</option>'
+    + _tbSubAgentNames.map(n => '<option value="' + n + '">' + n + '</option>').join('')
+    + '</select>'
+    + '<button onclick="document.getElementById(\'tb-member-' + i + '\').remove()" class="px-2 py-1 text-xs bg-gray-800 hover:bg-red-900 rounded">✕</button>';
+  $('tb-members').appendChild(div);
 }
 
 function tbGenerateTeam() {
-  const phases = [];
-  document.querySelectorAll('[id^="tb-phase-"]').forEach(row => {
-    const name = row.querySelector('.tb-phase-name').value.trim() || 'Phase';
+  const members = [];
+  document.querySelectorAll('[id^="tb-member-"]').forEach(row => {
+    const name = row.querySelector('.tb-member-name').value.trim() || 'Member';
     const agent = row.querySelector('.tb-agent-select').value;
-    phases.push({phase: name, agent: agent || null});
+    members.push({role: name, agent: agent || null});
   });
-  const team = {team: phases, generated_at: new Date().toISOString()};
+  const team = {team: members, generated_at: new Date().toISOString()};
   const pre = $('tb-team-json');
   pre.textContent = JSON.stringify(team, null, 2);
   pre.style.display = '';
@@ -1343,20 +1337,20 @@ async function tbSaveTeam() {
   const name = ($('tb-team-name') || {}).value || '';
   if (!name.trim()) { status.textContent = '✗ Enter a team name'; status.style.color = '#f87171'; return; }
 
-  const phases = [];
-  document.querySelectorAll('[id^="tb-phase-"]').forEach(row => {
-    const pname = row.querySelector('.tb-phase-name').value.trim() || 'Phase';
+  const members = [];
+  document.querySelectorAll('[id^="tb-member-"]').forEach(row => {
+    const mname = row.querySelector('.tb-member-name').value.trim() || 'Member';
     const agent = row.querySelector('.tb-agent-select').value;
-    phases.push({name: pname, agents: agent ? [agent] : []});
+    members.push({name: mname, agents: agent ? [agent] : []});
   });
-  if (!phases.length) { status.textContent = '✗ Add at least one phase'; status.style.color = '#f87171'; return; }
+  if (!members.length) { status.textContent = '✗ Add at least one member'; status.style.color = '#f87171'; return; }
 
   status.textContent = 'Saving...'; status.style.color = '#9ca3af';
   try {
     const res = await fetch('/dashboard/api/teams', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name: name.trim(), phases}),
+      body: JSON.stringify({name: name.trim(), phases: members}),
     });
     const data = await res.json();
     if (!res.ok) { status.textContent = '✗ ' + (data.error || 'Failed'); status.style.color = '#f87171'; return; }
@@ -1845,7 +1839,6 @@ loadSettingsToggles();
 loadSettings();
 loadTeamBuilder();
 tbLoadSavedTeams();
-acLoadAgents();
 wfLoadAgentList();
 loadOpenSearch();
 initSSE();
@@ -1971,47 +1964,109 @@ async function removeHook(event, command) {
 }
 
 // ── Agent Factory ─────────────────────────────────────────────────────────────
+let _afTemplates = [];
+let _afSkills = [];
+let _afTplIdx = 1;
+let _afSkillIdx = 1;
+
 async function afLoadTemplates() {
-  const el = $('af-templates');
-  if (!el) return;
   try {
     const d = await fetch('/dashboard/api/settings/agent-templates').then(r => r.json());
-    const templates = d.templates || [];
-    if (!templates.length) {
-      el.innerHTML = '<span style="color:var(--text-faint);font-size:11px;font-family:var(--font-mono)">No templates found</span>';
-      return;
+    _afTemplates = d.templates || [];
+    // Populate initial template select
+    const sel = $('af-tpl-0');
+    if (sel) {
+      while (sel.options.length > 1) sel.remove(1);
+      _afTemplates.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t; opt.textContent = t.replace('.md','');
+        sel.appendChild(opt);
+      });
     }
-    el.innerHTML = templates.map(t =>
-      '<label style="display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:var(--surface);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:11px;font-family:var(--font-mono);color:var(--text-muted)">'
-      + '<input type="checkbox" name="af-tpl" value="' + t + '" style="accent-color:var(--accent)"> '
-      + t.replace('.md','')
-      + '</label>'
-    ).join('');
-  } catch(e) {
-    el.innerHTML = '<span style="color:var(--red);font-size:11px">Error loading templates: ' + e.message + '</span>';
-  }
+  } catch(e) { console.error('afLoadTemplates', e); }
 }
+
+function afAddTemplate() {
+  const i = _afTplIdx++;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:6px';
+  const sel = document.createElement('select');
+  sel.id = 'af-tpl-' + i;
+  sel.style.cssText = 'flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)';
+  sel.innerHTML = '<option value="">— none —</option>' +
+    _afTemplates.map(t => '<option value="' + t + '">' + t.replace('.md','') + '</option>').join('');
+  const rm = document.createElement('button');
+  rm.textContent = '✕'; rm.className = 'btn';
+  rm.style.cssText = 'font-size:11px;padding:3px 8px';
+  rm.onclick = () => row.remove();
+  row.appendChild(sel); row.appendChild(rm);
+  $('af-tpl-rows').appendChild(row);
+}
+
+async function afLoadSkillOptions() {
+  if (_afSkills.length) return;
+  try {
+    const d = await fetch('/dashboard/api/skills').then(r => r.json());
+    _afSkills = (d.skills || []).map(s => s.name).filter(Boolean).sort();
+  } catch(e) { console.error('afLoadSkillOptions', e); }
+}
+
+async function afAddSkill() {
+  await afLoadSkillOptions();
+  const i = _afSkillIdx++;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:6px';
+  const sel = document.createElement('select');
+  sel.id = 'af-skill-' + i;
+  sel.style.cssText = 'flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)';
+  sel.innerHTML = '<option value="">— none —</option>' +
+    _afSkills.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+  const rm = document.createElement('button');
+  rm.textContent = '✕'; rm.className = 'btn';
+  rm.style.cssText = 'font-size:11px;padding:3px 8px';
+  rm.onclick = () => row.remove();
+  // Also populate af-skill-0 if empty
+  const sk0 = $('af-skill-0');
+  if (sk0 && sk0.options.length <= 1) {
+    sk0.innerHTML = '<option value="">— none —</option>' +
+      _afSkills.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+  }
+  row.appendChild(sel); row.appendChild(rm);
+  $('af-skill-rows').appendChild(row);
+}
+
+// Update agent type hint
+(function() {
+  const hints = {
+    'specialist':   'Focused expert — executes tasks, returns results.',
+    'team-leader':  'Claude team orchestrator — manages a cohesive multi-agent claude team.',
+    'orchestrator': 'Inter-API orchestrator — routes across multiple API providers and teams.',
+  };
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'af-type') {
+      const h = $('af-type-hint');
+      if (h) h.textContent = hints[e.target.value] || '';
+    }
+  });
+})();
 
 async function afGenerate() {
   const st = $('af-status');
   const preview = $('af-preview');
-  // Collect form values
   const type        = ($('af-type') || {}).value || 'specialist';
   const model       = ($('af-model') || {}).value || 'sonnet';
   const maxTurns    = parseInt(($('af-maxturns') || {}).value || '30');
-  const name        = ($('ac-name') || {}).value.trim();
-  const description = ($('ac-desc') || {}).value.trim();
+  const name        = ($('af-name') || {}).value.trim();
+  const description = ($('af-desc') || {}).value.trim();
   const extra       = ($('af-extra') || {}).value.trim();
   const saveFile    = ($('af-save-file') || {}).checked !== false;
   const projectCtx  = ($('af-project-ctx') || {}).checked || false;
 
-  // Collect tools
-  const tools = [...document.querySelectorAll('#ac-tools input[type=checkbox]:checked')].map(c => c.value);
-
-  // Collect templates
-  const templates = [...document.querySelectorAll('input[name="af-tpl"]:checked')].map(c => c.value);
-
-  // Collect research sections
+  const tools = [...document.querySelectorAll('#af-tools input[type=checkbox]:checked')].map(c => c.value);
+  const templates = [...document.querySelectorAll('[id^="af-tpl-"]')]
+    .map(s => s.value).filter(Boolean);
+  const skills = [...document.querySelectorAll('[id^="af-skill-"]')]
+    .map(s => s.value).filter(Boolean);
   const research = [...document.querySelectorAll('[id^="af-r-"]:checked')].map(c => c.value);
 
   if (!name) { if(st){st.textContent='✗ Name required'; st.style.color='var(--red)';} return; }
@@ -2025,7 +2080,7 @@ async function afGenerate() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         type, name, description, model, maxTurns, tools,
-        templates, research, project_context: projectCtx,
+        templates, skills, research, project_context: projectCtx,
         extra_instructions: extra, save: saveFile,
       }),
     });
@@ -2033,17 +2088,15 @@ async function afGenerate() {
     if (d.error) { if(st){st.textContent='✗ '+d.error; st.style.color='var(--red)';} return; }
     if(st){st.textContent='✓ Generated' + (saveFile ? ' & saved to .claude/agents/' : ''); st.style.color='var(--success)';}
     if(preview){preview.textContent = d.content || ''; preview.style.display='';}
-    // Refresh agent list
-    setTimeout(() => acLoadAgents(), 500);
   } catch(e) {
     if(st){st.textContent='✗ '+e.message; st.style.color='var(--red)';}
   }
 }
 
-// Load templates when Agent Craft opens
+// Load templates when Agent Factory opens
 document.addEventListener('click', function(e) {
   const tab = e.target.closest('.tab');
-  if (tab && tab.id === 'nav-agent-craft') afLoadTemplates();
+  if (tab && tab.id === 'nav-agent-factory') afLoadTemplates();
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────

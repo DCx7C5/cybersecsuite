@@ -54,35 +54,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle grid texture */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(53,116,240,0.008) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(53,116,240,0.008) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Scanline overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.06) 2px,
-    rgba(0,0,0,0.06) 4px
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
 /* ── Layout shell ── */
 #shell {
   display: flex;
@@ -218,8 +189,7 @@ body::after {
 /* ── Top header bar ── */
 #topbar {
   height: var(--header-h);
-  background: rgba(13,17,23,0.85);
-  backdrop-filter: blur(12px);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
