@@ -1,46 +1,68 @@
-"""Tab bar: one entry per dashboard tab."""
+"""Sidebar navigation — grouped vertical tabs replacing the 29-item horizontal bar."""
+
+# (name, label, icon, group)
+_NAV = [
+    # INTELLIGENCE
+    ("providers",  "Providers",   "⬡", "intelligence"),
+    ("usage",      "Usage & Cost","◈", "intelligence"),
+    ("agents",     "Agents",      "◎", "intelligence"),
+    ("routing",    "Routing",     "⇄", "intelligence"),
+    # OPS CENTER
+    ("cases",      "Cases",       "⊡", "ops"),
+    ("tasks",      "Tasks",       "⊛", "ops"),
+    ("pocs",       "PoCs",        "⊕", "ops"),
+    ("a2a",        "A2A Proto",   "⇌", "ops"),
+    ("workflows",  "Workflows",   "⇒", "ops"),
+    # FORENSICS
+    ("investigations", "Investigations", "◉", "forensics"),
+    ("findings",   "Findings",    "⊘", "forensics"),
+    ("iocs",       "IOCs",        "◈", "forensics"),
+    ("yara",       "YARA Rules",  "⊛", "forensics"),
+    ("network",    "Network",     "⊡", "forensics"),
+    ("intel",      "Intel Feed",  "◎", "forensics"),
+    ("audit",      "Audit Log",   "⊕", "forensics"),
+    ("compliance", "Compliance",  "⊗", "forensics"),
+    # AGENTS
+    ("agent-craft",  "Agent Craft",   "⊞", "agents"),
+    ("team-builder", "Team Builder",  "⊟", "agents"),
+    ("agent-query",  "Agent Query",   "⊠", "agents"),
+    ("factory",      "Factory",       "⊡", "agents"),
+    ("prompts",      "Prompts",       "⊕", "agents"),
+    # PLATFORM
+    ("health",     "Health",      "◈", "platform"),
+    ("crypto",     "Crypto",      "⊗", "platform"),
+    ("dbcounts",   "DB Counts",   "◉", "platform"),
+    ("telemetry",  "Telemetry",   "◎", "platform"),
+    ("opensearch", "OpenSearch",  "⊘", "platform"),
+    ("settings",   "Settings",    "⊛", "platform"),
+    ("explorer",   "Explorer",    "⊡", "platform"),
+]
+
+_GROUPS = {
+    "intelligence": "INTELLIGENCE",
+    "ops":          "OPS CENTER",
+    "forensics":    "FORENSICS",
+    "agents":       "AGENTS",
+    "platform":     "PLATFORM",
+}
 
 
 def tab_bar() -> str:
-    tabs = [
-        ("providers", "Providers", True),
-        ("usage", "Usage &amp; Cost", False),
-        ("agents", "&#x1f916; Agents", False),
-        ("routing", "&#x1f500; Routing", False),
-        ("factory", "&#x1f3ed; Factory", False),
-        ("prompts", "&#x1f4dd; Prompts", False),
-        ("health", "Health", False),
-        ("crypto", "&#x1f512; Crypto", False),
-        ("a2a", "&#x1f310; A2A", False),
-        ("investigations", "&#x1f50d; Investigations", False),
-        ("dbcounts", "&#x1f4ca; DB Counts", False),
-        ("cases", "&#x1f4c2; Cases", False),
-        ("tasks", "&#x23f1; Tasks", False),
-        ("pocs", "&#x1f4a3; PoCs", False),
-        ("findings", "&#x1f6a8; Findings", False),
-        ("iocs", "&#x1f4cc; IOCs", False),
-        ("yara", "&#x1f9ec; YARA", False),
-        ("network", "&#x1f5a7; Network", False),
-        ("intel", "&#x1f9e0; Intel", False),
-        ("audit", "&#x1f4cb; Audit", False),
-        ("compliance", "&#x2705; Compliance", False),
-        ("agent-query", "&#x1f916; Agent Query", False),
-        ("settings", "&#x2699;&#xfe0f; Settings", False),
-        ("team-builder", "&#x1f3d7; Team Builder", False),
-        ("agent-craft", "&#x1f527; Agent Craft", False),
-        ("workflows", "&#x1f504; Workflows", False),
-        ("telemetry", "&#x1f4ca; Telemetry", False),
-        ("opensearch", "&#x1f50d; OpenSearch", False),
-        ("explorer", "&#x1f50e; Explorer", False),
-    ]
-    items = []
-    for name, label, active in tabs:
-        cls = "tab active" if active else "tab"
-        items.append(f'    <div class="{cls}" onclick="showTab(\'{name}\')">{label}</div>')
-    inner = "\n".join(items)
-    return (
-        "  <!-- Tabs -->\n"
-        '  <div class="flex gap-1 mb-4 border-b border-gray-800 flex-wrap">\n'
-        + inner
-        + "\n  </div>\n"
-    )
+    """Build grouped sidebar navigation HTML."""
+    lines = ['<nav id="sidebar-nav">']
+    current_group = None
+    for name, label, icon, group in _NAV:
+        if group != current_group:
+            current_group = group
+            lines.append(f'  <div class="nav-group-label">{_GROUPS[group]}</div>')
+        lines.append(
+            f'  <div class="tab" onclick="showTab(\'{name}\')" id="nav-{name}">'
+            f'<span class="tab-icon">{icon}</span>{label}</div>'
+        )
+    lines.append("</nav>")
+    return "\n".join(lines) + "\n"
+
+
+def first_tab() -> str:
+    """Return name of the default tab (first in nav list)."""
+    return _NAV[0][0]

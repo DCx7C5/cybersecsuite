@@ -5,7 +5,7 @@ def stat_card(elem_id: str, label: str) -> str:
     """Styled stat card (used in forensic tabs — Findings, IOCs, etc.)."""
     return (
         f'<div class="stat-card">'
-        f'<div class="stat-value" id="{elem_id}">\u2014</div>'
+        f'<div class="stat-value" id="{elem_id}">—</div>'
         f'<div class="stat-label">{label}</div>'
         f'</div>'
     )
@@ -35,11 +35,11 @@ def mini_grid(*cards: str, cols: int = 3) -> str:
 
 
 def section_h3(text: str) -> str:
-    return f'<h3 class="text-lg font-semibold mb-3">{text}</h3>'
+    return f'<h3 class="section-h3">{text}</h3>'
 
 
 def section_h4(text: str) -> str:
-    return f'<h4 class="text-sm font-semibold text-gray-400 mb-2 mt-4">{text}</h4>'
+    return f'<h4 class="section-h4">{text}</h4>'
 
 
 def table_slot(elem_id: str, *, loading: bool = False, loading_text: str = "Loading...") -> str:
@@ -50,13 +50,19 @@ def table_slot(elem_id: str, *, loading: bool = False, loading_text: str = "Load
 
 
 def tab_panel(name: str, title: str, *body: str, hidden: bool = True) -> str:
-    """Wraps content in a named tab panel div."""
+    """Wraps content in a named tab panel div with accent-bar header."""
     display = ' style="display:none"' if hidden else ""
     content = "\n  ".join(b for b in body if b)
-    h3 = section_h3(title) if title else ""
+    header = (
+        f'<div class="panel-header">'
+        f'<div class="panel-accent-bar"></div>'
+        f'<div class="panel-title">{title}</div>'
+        f'</div>\n  '
+        if title else ""
+    )
     return (
-        f'<div id="tab-{name}" class="card"{display}>\n'
-        f'  {h3}\n'
+        f'<div id="tab-{name}" class="card panel-enter"{display}>\n'
+        f'  {header}'
         f'  {content}\n'
         f'</div>\n'
     )

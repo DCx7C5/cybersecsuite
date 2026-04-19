@@ -7,8 +7,13 @@ let currentTab = 'providers';
 function showTab(name) {
   document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  $('tab-' + name).style.display = '';
-  event.target.classList.add('active');
+  const panel = $('tab-' + name);
+  if (panel) { panel.style.display = ''; panel.classList.add('panel-enter'); }
+  const navItem = $('nav-' + name);
+  if (navItem) navItem.classList.add('active');
+  // update topbar breadcrumb
+  const crumb = document.querySelector('#topbar-title');
+  if (crumb && navItem) crumb.textContent = '▶ ' + navItem.textContent.trim().toUpperCase();
   currentTab = name;
 }
 
@@ -46,12 +51,12 @@ function renderTable(containerId, schema, rows, opts = {}) {
   let filter = '';
 
   function formatCell(val, col) {
-    if (val === null || val === undefined) return '<span class="text-gray-600">—</span>';
+    if (val === null || val === undefined) return '<span style="color:var(--text-faint)">—</span>';
     const t = col.type || 'string';
     if (t === 'datetime' && val) {
       try { return new Date(val).toLocaleString(); } catch { return String(val); }
     }
-    if (t === 'bool') return val ? '&#x2705;' : '&#x274c;';
+    if (t === 'bool') return val ? '<span class="badge badge-ok">YES</span>' : '<span class="badge badge-err">NO</span>';
     if (t === 'json') {
       const s = typeof val === 'string' ? val : JSON.stringify(val);
       return s.length > 80 ? '<span title="' + s.replace(/"/g,'&quot;') + '">' + s.slice(0,77) + '&hellip;</span>' : s;
@@ -82,20 +87,19 @@ function renderTable(containerId, schema, rows, opts = {}) {
     if (page >= totalPages) page = totalPages - 1;
     const sliced = data.slice(page * pageSize, (page + 1) * pageSize);
 
-    let h = '<div class="flex items-center gap-3 mb-3">';
-    h += '<input type="text" placeholder="Search..." value="' + filter.replace(/"/g,'&quot;') + '" '
-       + 'oninput="window._rt_' + containerId + '_filter(this.value)" '
-       + 'class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:220px">';
-    h += '<span class="text-xs text-gray-500">' + data.length + ' rows</span>';
+    let h = '<div class="rt-bar">';
+    h += '<input type="text" class="rt-search" placeholder="Search…" value="' + filter.replace(/"/g,'&quot;') + '" '
+       + 'oninput="window._rt_' + containerId + '_filter(this.value)">';
+    h += '<span class="rt-count">' + data.length + ' rows</span>';
     h += '</div>';
     h += '<table><thead><tr>';
     schema.forEach((c, i) => {
-      const arrow = sortCol === i ? (sortDir === 'asc' ? ' &#x25b2;' : ' &#x25bc;') : '';
-      h += '<th style="cursor:pointer" onclick="window._rt_' + containerId + '_sort(' + i + ')">' + (c.label || c.key) + arrow + '</th>';
+      const arrow = sortCol === i ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
+      h += '<th onclick="window._rt_' + containerId + '_sort(' + i + ')">' + (c.label || c.key) + arrow + '</th>';
     });
     h += '</tr></thead><tbody>';
     if (!sliced.length) {
-      h += '<tr><td colspan="' + schema.length + '" class="text-center text-gray-500">No data</td></tr>';
+      h += '<tr><td colspan="' + schema.length + '" style="text-align:center;color:var(--text-muted);padding:24px">No data</td></tr>';
     } else {
       sliced.forEach(r => {
         h += '<tr>';
@@ -105,10 +109,10 @@ function renderTable(containerId, schema, rows, opts = {}) {
     }
     h += '</tbody></table>';
     if (totalPages > 1) {
-      h += '<div class="flex items-center justify-between mt-3">';
-      h += '<button onclick="window._rt_' + containerId + '_page(-1)" class="px-2 py-1 text-xs bg-gray-800 rounded' + (page === 0 ? ' opacity-30' : '') + '" ' + (page === 0 ? 'disabled' : '') + '>&laquo; Prev</button>';
-      h += '<span class="text-xs text-gray-500">Page ' + (page+1) + ' / ' + totalPages + '</span>';
-      h += '<button onclick="window._rt_' + containerId + '_page(1)" class="px-2 py-1 text-xs bg-gray-800 rounded' + (page >= totalPages-1 ? ' opacity-30' : '') + '" ' + (page >= totalPages-1 ? 'disabled' : '') + '>Next &raquo;</button>';
+      h += '<div class="rt-pager">';
+      h += '<button class="rt-btn" onclick="window._rt_' + containerId + '_page(-1)"' + (page === 0 ? ' disabled' : '') + '>&laquo; Prev</button>';
+      h += '<span class="rt-count">Page ' + (page+1) + ' / ' + totalPages + '</span>';
+      h += '<button class="rt-btn" onclick="window._rt_' + containerId + '_page(1)"' + (page >= totalPages-1 ? ' disabled' : '') + '>Next &raquo;</button>';
       h += '</div>';
     }
     el.innerHTML = h;
@@ -1608,6 +1612,17 @@ acLoadAgents();
 wfLoadAgentList();
 loadOpenSearch();
 initSSE();
+
+// Activate first sidebar tab on load (no click event, use direct call)
+(function() {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  const first = document.getElementById('tab-providers');
+  if (first) first.style.display = '';
+  const nav = document.getElementById('nav-providers');
+  if (nav) nav.classList.add('active');
+  const crumb = document.querySelector('#topbar-title');
+  if (crumb) crumb.textContent = '▶ PROVIDERS';
+})();
 
 refresh();
 setInterval(refresh, 15000);
