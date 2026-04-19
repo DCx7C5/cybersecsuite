@@ -593,15 +593,15 @@
 
 ### `kernel-os/` — 9 skills
 
-- [`kernel-os/ebpf/monitoring`](kernel-os/ebpf/monitoring/SKILL.md) — `kernel-os-ebpf-monitoring`
-- [`kernel-os/firmware`](kernel-os/firmware/SKILL.md) — `firmware`
-- [`kernel-os/firmware/analyze`](kernel-os/firmware/analyze/SKILL.md) — `firmware-analyze`
-- [`kernel-os/firmware/binwalk`](kernel-os/firmware/binwalk/SKILL.md) — `firmware-binwalk`
-- [`kernel-os/firmware/bootkit`](kernel-os/firmware/bootkit/SKILL.md) — `firmware-bootkit`
-- [`kernel-os/firmware/uefibootkit`](kernel-os/firmware/uefibootkit/SKILL.md) — `firmware-uefibootkit`
-- [`kernel-os/linux/lkm/kerneldev-forensic`](kernel-os/linux/lkm/kerneldev-forensic/SKILL.md) — `linux-lkm-kerneldev-forensic`
-- [`kernel-os/linux/privesc/exploit`](kernel-os/linux/privesc/exploit/SKILL.md) — `linux-privesc-exploit`
-- [`kernel-os/rootkits/rootkit`](kernel-os/rootkits/rootkit/SKILL.md) — `rootkits-rootkit`
+- [`kernel-os/ebpf/monitoring`](kernel/ebpf/monitoring/SKILL.md) — `kernel-os-ebpf-monitoring`
+- [`kernel-os/firmware`](kernel/firmware/SKILL.md) — `firmware`
+- [`kernel-os/firmware/analyze`](kernel/firmware/analyze/SKILL.md) — `firmware-analyze`
+- [`kernel-os/firmware/binwalk`](kernel/firmware/binwalk/SKILL.md) — `firmware-binwalk`
+- [`kernel-os/firmware/bootkit`](kernel/firmware/bootkit/SKILL.md) — `firmware-bootkit`
+- [`kernel-os/firmware/uefibootkit`](kernel/firmware/uefibootkit/SKILL.md) — `firmware-uefibootkit`
+- [`kernel-os/linux/lkm/kerneldev-forensic`](kernel/linux/lkm/kerneldev-forensic/SKILL.md) — `linux-lkm-kerneldev-forensic`
+- [`kernel-os/linux/privesc/exploit`](kernel/linux/privesc/exploit/SKILL.md) — `linux-privesc-exploit`
+- [`kernel-os/rootkits/rootkit`](kernel/rootkits/rootkit/SKILL.md) — `rootkits-rootkit`
 
 ### `malware/` — 74 skills
 

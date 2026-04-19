@@ -1,79 +1,70 @@
 ---
-name: logging
-description: Configure ModSecurity WAF with OWASP Core Rule Set (CRS) for web application logging, tune rules to reduce false positives, analyze audit logs for attack detection, and implement custom SecRules for application-specific threats. The analyst configures SecRuleEngine, SecAuditEngine, and CRS paranoia levels to balance security coverage with operational stability. Activates for requests involving WAF configuration, ModSecurity rule tuning, web application audit logging, or CRS deployment.
+name: log-web
+description: Parse Apache and Nginx access logs to detect SQL injection attempts, local file inclusion, directory traversal, web scanner fingerprints, and brute-force patterns. Uses regex-based pattern matching against OWASP attack signatures, GeoIP enrichment for source attribution, and statistical anomaly detection for request frequency and response size outliers.
 domain: cybersecurity
-subdomain: web-application-security
+subdomain: security-operations
 tags:
-- modsecurity
-- waf
-- crs
-- owasp
-- web-security
-- audit-logging
-- rule-tuning
-nist_ai_rmf:
-- MEASURE-2.7
-- MAP-5.1
-- MANAGE-2.4
-atlas_techniques:
-- AML.T0070
-- AML.T0066
-- AML.T0082
+- analyzing
+- web
+- server
+- logs
 nist_csf:
-- PR.PS-01
-- ID.RA-01
-- PR.DS-10
 - DE.CM-01
+- RS.MA-01
+- GV.OV-01
+- DE.AE-02
 model: sonnet
 maxTurns: 20
 tools: [Read, Bash, Glob, Grep]
 mitre_attack:
 - T1059
-- T1070
-- T1189
-- T1190
-cwe:
-- CWE-79
-- CWE-98
 capec: []
 ---
 
-# Implementing Web Application Logging with ModSecurity
-
-## Overview
-
-ModSecurity is an open-source WAF engine that works with Apache, Nginx, and IIS. The OWASP
-Core Rule Set (CRS) provides generic attack detection rules covering SQL injection, XSS,
-RCE, LFI, and other OWASP Top 10 attacks. ModSecurity logs full request/response data in
-audit logs for forensic analysis and generates alerts that feed into SIEM platforms.
+# Analyzing Web Server Logs for Intrusion
 
 
 ## When to Use
 
-- When deploying or configuring implementing web application logging with modsecurity capabilities in your environment
-- When establishing security controls aligned to compliance requirements
-- When building or improving security architecture for this domain
-- When conducting security assessments that require this implementation
+- When investigating security incidents that require analyzing web server logs for intrusion
+- When building detection rules or threat hunting queries for this domain
+- When SOC analysts need structured procedures for this analysis type
+- When validating security monitoring coverage for related attack techniques
 
 ## Prerequisites
 
-- Web server (Apache 2.4+ or Nginx) with ModSecurity v3 module
-- OWASP CRS v4.x installed
-- Log aggregation infrastructure (ELK, Splunk, or Wazuh)
+- Familiarity with security operations concepts and tools
+- Access to a test or lab environment for safe execution
+- Python 3.8+ with required dependencies installed
+- Appropriate authorization for any testing activities
 
-## Steps
+## Instructions
 
-1. Install ModSecurity and configure SecRuleEngine in DetectionOnly mode
-2. Deploy OWASP CRS v4 and set paranoia level (PL1-PL4)
-3. Configure SecAuditEngine for relevant-only logging
-4. Tune false positives with SecRuleRemoveById and rule exclusions
-5. Switch to blocking mode (SecRuleEngine On) after tuning period
-6. Forward audit logs to SIEM for correlation and alerting
+1. Install dependencies: `pip install geoip2 user-agents`
+2. Collect web server access logs in Combined Log Format (Apache) or Nginx default format.
+3. Parse each log entry extracting: IP, timestamp, method, URI, status code, response size, user-agent, referer.
+4. Apply detection rules:
+   - SQL injection: `UNION SELECT`, `OR 1=1`, `' OR '`, hex encoding patterns
+   - LFI/Path traversal: `../`, `/etc/passwd`, `/proc/self`, `php://filter`
+   - XSS: `<script>`, `javascript:`, `onerror=`, `onload=`
+   - Scanner signatures: nikto, sqlmap, dirbuster, gobuster, wfuzz user-agents
+   - Brute force: >50 POST requests to login endpoints from same IP in 5 minutes
+5. Enrich with GeoIP data and generate a prioritized findings report.
 
-## Expected Output
-
+```bash
+python scripts/agent.py --log-file /var/log/nginx/access.log --geoip-db GeoLite2-City.mmdb --output web_intrusion_report.json
 ```
-ModSecurity: Warning. Pattern match "(?:union\s+select)" [file "/etc/modsecurity/crs/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf"] [line "45"] [id "942100"] [msg "SQL Injection Attack Detected via libinjection"] [severity "CRITICAL"]
+
+## Examples
+
+### Detect SQLi in URI
+```
+192.168.1.100 - - [15/Jan/2024:10:30:45 +0000] "GET /products?id=1' UNION SELECT username,password FROM users-- HTTP/1.1" 200 4532
+```
+
+### Scanner User-Agent Detection
+```
+Nikto/2.1.6, sqlmap/1.7, DirBuster-1.0-RC1, gobuster/3.1.0
 ```
 
 
@@ -83,7 +74,7 @@ ModSecurity: Warning. Pattern match "(?:union\s+select)" [file "/etc/modsecurity
 
 ```bash
 # Open a case before starting investigation
-mcp__cybersec__case_open --title "logging" --type investigation
+mcp__cybersec__case_open --title "web" --type investigation
 
 # Persist findings to PostgreSQL
 mcp__cybersec__add_finding --title "..." --severity high --description "..."
