@@ -39,7 +39,6 @@ cybersecsuite      = "manage:main_sync"
 cybersec-mcp       = "csmcp.cybersec.server:main"
 cybersec-mcp-crypto = "csmcp.dystopian_server:main"
 cybersec-proxy     = "ai_proxy.cli:main"
-cybersec-acp       = "acp_agent.server:main"
 
 [tool.uv]
 package = true
@@ -53,7 +52,6 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  "acp_agent",
   "src/a2a",
   "src/agent",
   "src/ai_proxy",
@@ -86,7 +84,7 @@ browser = [
 
 [tool.pytest.ini_options]
 testpaths   = ["tests"]
-pythonpath  = ["src", "."]
+pythonpath  = ["src"]
 asyncio_mode = "auto"
 
 [tool.ruff]
