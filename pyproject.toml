@@ -39,6 +39,7 @@ cybersecsuite      = "manage:main_sync"
 cybersec-mcp       = "csmcp.cybersec.server:main"
 cybersec-mcp-crypto = "csmcp.dystopian_server:main"
 cybersec-proxy     = "ai_proxy.cli:main"
+cybersec-acp       = "acp_agent.server:main"
 
 [tool.uv]
 package = true
@@ -53,6 +54,7 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = [
   "src/a2a",
+  "src/acp_agent",
   "src/agent",
   "src/ai_proxy",
   "src/crypto",
