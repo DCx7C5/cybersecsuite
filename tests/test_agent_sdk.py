@@ -4,7 +4,7 @@ import pytest
 
 try:
     from agent import AgentRunner, SessionManager
-    from agent.models import SessionRecord
+    from agent.sessions import SessionRecord
 
     AGENT_SDK_AVAILABLE = True
 except ImportError as e:
@@ -17,130 +17,112 @@ class TestAgentRunner:
 
     @pytest.fixture
     def runner(self):
-        """Create an AgentRunner instance."""
         return AgentRunner(agent_name="cybersec-analyst", mode="blue")
 
     def test_runner_initialization(self, runner):
-        """Test runner initializes correctly."""
         assert runner.agent_name == "cybersec-analyst"
         assert runner.mode == "blue"
 
-    def test_mode_prefix_injection(self, runner):
-        """Test that mode prefix is injected into prompts."""
-        prompt = "Analyze CVE-2024-1234"
-        prefixed = runner._inject_mode_prefix(prompt)
-        assert "[MODE: BLUE]" in prefixed or "BLUE" in prefixed
+    def test_red_mode_prefix(self):
+        runner = AgentRunner(agent_name="test", mode="red")
+        prefix = runner._get_prefix()
+        assert "RED" in prefix
 
-    @pytest.mark.asyncio
-    async def test_streaming_generator(self, runner):
-        """Test that streaming returns an async generator."""
-        # Note: This won't actually call Claude without API key
-        # but we can test the generator structure
-        try:
-            gen = runner.stream("test prompt")
-            assert hasattr(gen, "__aiter__")
-        except Exception:
-            # API might not be configured, but structure is testable
-            pass
+    def test_purple_mode_prefix(self):
+        runner = AgentRunner(agent_name="test", mode="purple")
+        prefix = runner._get_prefix()
+        assert "PURPLE" in prefix
+
+    def test_blue_mode_no_prefix(self):
+        runner = AgentRunner(agent_name="test", mode="blue")
+        prefix = runner._get_prefix()
+        assert prefix == ""
+
+    def test_stream_returns_async_generator(self, runner):
+        gen = runner.stream("test prompt")
+        assert hasattr(gen, "__aiter__")
 
 
 class TestSessionManager:
-    """Test SessionManager — session lifecycle."""
+    """Test SessionManager — session registration and lookup."""
 
     @pytest.fixture
-    def session_manager(self):
-        """Create a SessionManager instance."""
+    def sm(self):
         return SessionManager()
 
-    def test_session_creation(self, session_manager):
-        """Test creating a new session."""
-        session = session_manager.create_session(
+    def test_register_session(self, sm):
+        record = sm.register(
+            session_id="test-sess-1",
             agent_name="cybersec-analyst",
             mode="red",
         )
-        assert isinstance(session, SessionRecord)
-        assert session.agent_name == "cybersec-analyst"
-        assert session.mode == "red"
-        assert session.session_id
-        assert len(session.messages) == 0
+        assert isinstance(record, SessionRecord)
+        assert record.agent_name == "cybersec-analyst"
+        assert record.mode == "red"
+        assert record.session_id == "test-sess-1"
 
-    def test_session_retrieval(self, session_manager):
-        """Test retrieving a session."""
-        session1 = session_manager.create_session(
-            agent_name="threat-modeler",
-            mode="purple",
-        )
-        session2 = session_manager.get_session(session1.session_id)
-        assert session2.session_id == session1.session_id
+    def test_get_session(self, sm):
+        sm.register("sess-get-1", "threat-modeler", "purple")
+        record = sm.get("sess-get-1")
+        assert record is not None
+        assert record.session_id == "sess-get-1"
 
-    def test_add_message_to_session(self, session_manager):
-        """Test adding messages to a session."""
-        session = session_manager.create_session("analyst", "blue")
-        session_manager.add_message(session.session_id, "user", "What is this hash?")
-        session_manager.add_message(session.session_id, "assistant", "It's MD5...")
+    def test_get_unknown_returns_none(self, sm):
+        assert sm.get("nonexistent-id") is None
 
-        session = session_manager.get_session(session.session_id)
-        assert len(session.messages) == 2
-        assert session.messages[0]["role"] == "user"
-        assert session.messages[1]["role"] == "assistant"
-
-    def test_list_sessions(self, session_manager):
-        """Test listing all sessions."""
-        session_manager.create_session("analyst", "blue")
-        session_manager.create_session("modeler", "red")
-
-        sessions = session_manager.list_sessions()
+    def test_list_local_sessions(self, sm):
+        sm.register("list-1", "analyst", "blue")
+        sm.register("list-2", "modeler", "red")
+        sessions = sm.list_local()
         assert len(sessions) >= 2
 
-    def test_close_session(self, session_manager):
-        """Test closing a session."""
-        session = session_manager.create_session("analyst", "blue")
-        session_id = session.session_id
+    def test_register_with_case_id(self, sm):
+        record = sm.register(
+            "case-sess", "analyst", "blue",
+            case_id="CASE-001",
+        )
+        assert record.case_id == "CASE-001"
 
-        session_manager.close_session(session_id)
-        session = session_manager.get_session(session_id)
-        assert session.closed is True
+    def test_list_local_by_case_id(self, sm):
+        sm.register("case-a", "analyst", "blue", case_id="CASE-X")
+        sm.register("case-b", "modeler", "red", case_id="CASE-Y")
+        filtered = sm.list_local(case_id="CASE-X")
+        assert all(s.case_id == "CASE-X" for s in filtered)
 
 
+@pytest.mark.anyio
 class TestSessionHooks:
     """Test session hooks — security, audit, IOC, cost."""
 
-    @pytest.mark.asyncio
     async def test_security_hook_runs(self):
-        """Test that security hook executes."""
         from agent.hooks import security_hook
 
         result = await security_hook({"prompt": "test"})
         assert isinstance(result, dict)
 
-    @pytest.mark.asyncio
     async def test_audit_hook_runs(self):
-        """Test that audit hook executes."""
         from agent.hooks import audit_hook
 
         result = await audit_hook({"agent": "analyst", "prompt": "test"})
         assert isinstance(result, dict)
 
-    @pytest.mark.asyncio
     async def test_ioc_hook_runs(self):
-        """Test that IOC hook executes."""
         from agent.hooks import ioc_hook
 
-        result = await ioc_hook({"response": "IP: 192.168.1.1"})
+        result = await ioc_hook(
+            {"response": "IP: 192.168.1.1"},
+            output_data={"text": "found IOC"},
+        )
         assert isinstance(result, dict)
 
-    @pytest.mark.asyncio
     async def test_cost_hook_runs(self):
-        """Test that cost hook executes."""
         from agent.hooks import cost_hook
 
-        result = await cost_hook(
-            {
-                "model": "claude-opus",
-                "input_tokens": 100,
-                "output_tokens": 200,
-            }
-        )
+        result = await cost_hook({
+            "model": "claude-opus",
+            "input_tokens": 100,
+            "output_tokens": 200,
+        })
         assert isinstance(result, dict)
 
 
