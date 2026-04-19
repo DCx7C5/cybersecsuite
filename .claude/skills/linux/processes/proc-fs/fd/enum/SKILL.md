@@ -1,5 +1,5 @@
 ---
-name: linux-proc-fs-fd-enum
+name: processes-proc-fs-fd-enum
 description: > Enumerate open file descriptors in /proc/<PID>/fd to identify socket connections, open files, pipes, and hidden file handles used by malicious processes.
 domain: cybersecurity
 subdomain: process-forensics

@@ -1,5 +1,5 @@
 ---
-name: linux-audit-syscall-monitor
+name: kernel-syscall-audit-monitor
 description: Linux auditd framework for real-time syscall monitoring, audit rule configuration, and forensic log analysis. Covers auditctl, ausearch, aureport, and correlation with threat actor TTPs.
 domain: cybersecurity
 subdomain: endpoint-forensics

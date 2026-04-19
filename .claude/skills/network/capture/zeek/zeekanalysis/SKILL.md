@@ -1,5 +1,5 @@
 ---
-name: network-zeek-zeekanalysis
+name: capture-zeek-zeekanalysis
 description: Deploy Zeek network security monitor to capture, parse, and analyze network traffic metadata for threat detection, anomaly identification, and forensic investigation.
 domain: cybersecurity
 subdomain: network-security

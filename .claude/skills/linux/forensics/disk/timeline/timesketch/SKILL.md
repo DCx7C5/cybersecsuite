@@ -1,5 +1,5 @@
 ---
-name: disk-timeline-timesketch
+name: forensics-disk-timeline-timesketch
 description: Build collaborative forensic incident timelines using Timesketch to ingest, normalize, and analyze multi-source event data for attack chain reconstruction and investigation documentation.
 domain: cybersecurity
 subdomain: incident-response

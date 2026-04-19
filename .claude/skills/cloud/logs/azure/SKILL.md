@@ -1,5 +1,5 @@
 ---
-name: log-cloud-azure
+name: logs-azure
 description: Queries Azure Monitor activity logs and sign-in logs via azure-monitor-query to detect suspicious administrative operations, impossible travel, privilege escalation, and resource modifications. Builds KQL queries for threat hunting in Azure environments. Use when investigating suspicious Azure tenant activity or building cloud SIEM detections.
 domain: cybersecurity
 subdomain: security-operations

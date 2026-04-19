@@ -1,5 +1,5 @@
 ---
-name: ops-soc-operations-chaos-engineering
+name: operations-chaos-engineering
 description: Implements security chaos engineering experiments that deliberately disable or degrade security controls to verify detection and response capabilities. Tests WAF bypass, firewall rule removal, log pipeline disruption, and EDR disablement scenarios using boto3 and subprocess. Use when validating SOC detection coverage and resilience.
 domain: cybersecurity
 subdomain: security-operations

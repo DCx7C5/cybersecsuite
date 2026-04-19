@@ -1,5 +1,5 @@
 ---
-name: memory-injection-detection
+name: forensics-memory-injection-detection
 description: Detects and analyzes process injection techniques used by malware including classic DLL injection, process hollowing, APC injection, thread hijacking, and reflective loading. Uses memory forensics, API monitoring, and behavioral analysis to identify injection artifacts. Activates for requests involving process injection detection, code injection analysis, hollowed process investigation, or in-memory threat detection.
 domain: cybersecurity
 subdomain: malware-analysis

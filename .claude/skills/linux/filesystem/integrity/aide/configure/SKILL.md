@@ -1,5 +1,5 @@
 ---
-name: integrity-aide-configure
+name: filesystem-integrity-aide-configure
 description: > Configure AIDE (Advanced Intrusion Detection Environment) to create baseline checksums and monitor critical filesystem paths for unauthorized modifications.
 domain: cybersecurity
 subdomain: filesystem-security

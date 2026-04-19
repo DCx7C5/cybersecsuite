@@ -1,5 +1,5 @@
 ---
-name: disk-acquisition-autopsy
+name: forensics-disk-acquisition-autopsy
 description: Perform comprehensive forensic analysis of disk images using Autopsy to recover files, examine artifacts, and build investigation timelines.
 domain: cybersecurity
 subdomain: digital-forensics

@@ -1,5 +1,5 @@
 ---
-name: windows-thread-injection-detect
+name: processes-thread-injection-detect
 description: > Detect Windows thread injection techniques including CreateRemoteThread, QueueUserAPC, NtCreateThreadEx, and thread hijacking via process memory analysis.
 domain: cybersecurity
 subdomain: process-forensics

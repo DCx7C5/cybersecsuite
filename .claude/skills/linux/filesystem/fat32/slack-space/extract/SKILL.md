@@ -1,5 +1,5 @@
 ---
-name: fat32-slack-space-extract
+name: filesystem-fat32-slack-space-extract
 description: > Extract and analyse slack space in FAT32 file systems to recover partial file fragments, hidden data, and remnants of deleted files from cluster tail regions.
 domain: cybersecurity
 subdomain: filesystem-forensics

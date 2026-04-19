@@ -1,5 +1,5 @@
 ---
-name: osint-aicorrelation
+name: recon-ai-correlate
 description: Use AI and LLM-based reasoning to correlate findings across multiple OSINT sources—username enumeration, email lookups, social media profiles, domain records, breach databases, and dark-web mentions—into unified intelligence profiles with confidence scoring and link analysis.
 domain: cybersecurity
 subdomain: threat-intelligence

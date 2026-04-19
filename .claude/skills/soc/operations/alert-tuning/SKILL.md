@@ -1,5 +1,5 @@
 ---
-name: ops-soc-operations-alert-tuning
+name: operations-alert-tuning
 description: Implements strategies to reduce SOC alert fatigue by tuning detection rules, consolidating duplicate alerts, implementing risk-based alerting, and measuring alert quality metrics to maintain analyst effectiveness and prevent critical alert dismissal. Use when SOC teams face overwhelming alert volumes, high false positive rates, or declining analyst performance.
 domain: cybersecurity
 subdomain: soc-operations

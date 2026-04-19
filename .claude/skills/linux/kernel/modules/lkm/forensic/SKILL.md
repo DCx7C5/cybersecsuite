@@ -1,5 +1,5 @@
 ---
-name: linux-lkm-kerneldev-forensic
+name: kernel-modules-lkm-forensic
 description: Advanced Linux Kernel Module development for cybersecurity forensics. Custom LKM creation for rootkit detection, real-time syscall monitoring, kernel-space threat detection, eBPF forensics, and kerneldev-mcp integration.
 model: opus
 maxTurns: 30

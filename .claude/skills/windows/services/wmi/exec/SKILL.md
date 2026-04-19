@@ -1,5 +1,5 @@
 ---
-name: windows-wmiexec
+name: services-wmi-exec
 description: Perform lateral movement across Windows networks using WMI-based remote execution techniques including Impacket wmiexec.py, CrackMapExec, and native WMI commands for stealthy post-exploitation during red team engagements.
 domain: cybersecurity
 subdomain: red-teaming

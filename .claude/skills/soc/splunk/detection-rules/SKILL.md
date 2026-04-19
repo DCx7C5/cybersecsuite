@@ -1,5 +1,5 @@
 ---
-name: siem-soc-splunk-detection-rules
+name: splunk-detection-rules
 description: Build effective detection rules using Splunk Search Processing Language (SPL) correlation searches to identify security threats in SOC environments.
 domain: cybersecurity
 subdomain: soc-operations

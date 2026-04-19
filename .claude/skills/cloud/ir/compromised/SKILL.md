@@ -1,5 +1,5 @@
 ---
-name: compromised
+name: ir-compromised
 description: Detecting compromised cloud credentials across AWS, Azure, and GCP by analyzing anomalous API activity, impossible travel patterns, unauthorized resource provisioning, and credential abuse indicators using GuardDuty, Defender for Identity, and SCC Event Threat Detection.
 domain: cybersecurity
 subdomain: cloud-security

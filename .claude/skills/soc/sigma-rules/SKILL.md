@@ -1,5 +1,5 @@
 ---
-name: siem-soc-sigma-rules
+name: sigma-rules
 description: Builds vendor-agnostic detection rules using the Sigma rule format for threat detection across SIEM platforms including Splunk, Elastic, and Microsoft Sentinel. Use when creating portable detection logic from threat intelligence, mapping rules to MITRE ATT&CK techniques, or converting community Sigma rules into platform-specific queries using sigmac or pySigma backends.
 domain: cybersecurity
 subdomain: soc-operations
@@ -266,7 +266,7 @@ Store rules in Git with automated testing:
 
 ```yaml
 # .github/workflows/sigma-ci.yml
-name: siem-soc-sigma-rules
+name: sigma-rules
 on: [push, pull_request]
 jobs:
   validate:

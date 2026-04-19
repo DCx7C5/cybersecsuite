@@ -1,5 +1,5 @@
 ---
-name: windows-lolbins-hunt
+name: lolbins-hunt
 description: Detect Living Off the Land Binaries (LOLBins/LOLBAS) abuse including certutil, regsvr32, mshta, and rundll32 via process telemetry, Sigma rules, and parent-child process analysis
 domain: cybersecurity
 subdomain: threat-detection

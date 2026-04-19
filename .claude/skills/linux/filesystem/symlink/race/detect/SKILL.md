@@ -1,5 +1,5 @@
 ---
-name: symlink-race-condition-detect
+name: filesystem-symlink-race-detect
 description: > Detect symlink-following TOCTOU race conditions in SUID programs and system services that allow privilege escalation through controlled symlink redirection.
 domain: cybersecurity
 subdomain: filesystem-security

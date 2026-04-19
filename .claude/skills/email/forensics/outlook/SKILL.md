@@ -1,5 +1,5 @@
 ---
-name: email-outlook
+name: forensics-outlook
 description: Analyze Microsoft Outlook PST and OST files for email forensic evidence including message content, headers, attachments, deleted items, and metadata using libpff, pst-utils, and forensic email analysis tools for legal investigations and incident response.
 domain: cybersecurity
 subdomain: digital-forensics

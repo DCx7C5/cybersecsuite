@@ -1,5 +1,5 @@
 ---
-name: database-logging-aggregation
+name: logging-aggregation
 description: Configure Fluentd and Fluent Bit for centralized log aggregation, routing, filtering, and enrichment across distributed infrastructure
 domain: cybersecurity
 subdomain: security-operations

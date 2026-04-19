@@ -1,5 +1,5 @@
 ---
-name: disk-artifacts-registry
+name: registry-artifact
 description: Extract and analyze Windows Registry hives to uncover user activity, installed software, autostart entries, and evidence of system compromise.
 domain: cybersecurity
 subdomain: digital-forensics

@@ -1,5 +1,5 @@
 ---
-name: memory-injection-process
+name: forensics-memory-injection-process
 description: Detect process hollowing (T1055.012) by analyzing memory-mapped sections, hollowed process indicators, and parent-child process anomalies in EDR telemetry.
 domain: cybersecurity
 subdomain: threat-hunting

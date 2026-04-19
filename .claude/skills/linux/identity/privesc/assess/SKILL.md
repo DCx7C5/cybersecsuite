@@ -1,5 +1,5 @@
 ---
-name: privesc-assess
+name: identity-privesc-assess
 description: Performs privilege escalation assessments on compromised Linux and Windows systems to identify paths from low-privilege access to root or SYSTEM-level control. The tester enumerates misconfigurations, vulnerable services, kernel exploits, SUID binaries, unquoted service paths, and credential stores to demonstrate the full impact of an initial compromise. Activates for requests involving privilege escalation testing, local exploitation, post-compromise escalation, or OS-level security assessment.
 domain: cybersecurity
 subdomain: penetration-testing

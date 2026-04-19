@@ -1,5 +1,5 @@
 ---
-name: policy-usb-create
+name: hardware-usb-policy-create
 description: Implements USB device control policies to restrict unauthorized removable media access on endpoints, preventing data exfiltration and malware introduction via USB devices. Use when deploying device control via Group Policy, Intune, or EDR platforms to enforce USB restrictions. Activates for requests involving USB control, removable media policy, device control, or data loss prevention via USB.
 domain: cybersecurity
 subdomain: endpoint-security

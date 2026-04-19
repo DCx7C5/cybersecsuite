@@ -1,5 +1,5 @@
 ---
-name: nfs-acl-audit
+name: network-services-nfs-acl-audit
 description: > Audit NFS ACLs and export access controls to verify least-privilege access, proper host restriction, and absence of wildcard export entries.
 domain: cybersecurity
 subdomain: network-filesystem-security

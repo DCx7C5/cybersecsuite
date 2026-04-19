@@ -1,5 +1,5 @@
 ---
-name: osint
+name: recon-general
 description: Build comprehensive threat actor profiles using open-source intelligence (OSINT) techniques to document adversary motivations, capabilities, infrastructure, and TTPs for proactive defense.
 domain: cybersecurity
 subdomain: threat-intelligence

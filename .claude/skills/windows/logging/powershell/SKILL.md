@@ -1,5 +1,5 @@
 ---
-name: log-windows-powershell
+name: logging-powershell
 description: Parse Windows PowerShell Script Block Logs (Event ID 4104) from EVTX files to detect obfuscated commands, encoded payloads, and living-off-the-land techniques. Uses python-evtx to extract and reconstruct multi-block scripts, applies entropy analysis and pattern matching for Base64-encoded commands, Invoke-Expression abuse, download cradles, and AMSI bypass attempts.
 domain: cybersecurity
 subdomain: security-operations

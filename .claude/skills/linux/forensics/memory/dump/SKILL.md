@@ -1,5 +1,5 @@
 ---
-name: memory-dump
+name: forensics-memory-dump
 description: Memory forensics — analyze process memory maps for injection indicators (rwx, /tmp/ libs, deleted executables, anonymous mappings). Reads /proc/<pid>/maps directly; no kernel module required.
 domain: cybersecurity
 subdomain: memory-forensics

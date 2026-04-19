@@ -1,5 +1,5 @@
 ---
-name: rootkits-rootkit
+name: kernel-rootkits-general-detect
 description: Detect kernel-level rootkits in Linux memory dumps using Volatility3 linux plugins (check_syscall, lsmod, hidden_modules), rkhunter system scanning, and /proc vs /sys discrepancy analysis to identify hooked syscalls, hidden kernel modules, and tampered system structures.
 domain: cybersecurity
 subdomain: digital-forensics

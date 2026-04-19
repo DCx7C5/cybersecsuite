@@ -1,5 +1,5 @@
 ---
-name: linux-privesc-exploit
+name: identity-privesc-kernel-escalate
 description: Linux privilege escalation involves elevating from a low-privilege user account to root access on a compromised system. Red teams exploit misconfigurations, vulnerable services, kernel exploits, and w
 domain: cybersecurity
 subdomain: red-teaming

@@ -1,5 +1,5 @@
 ---
-name: dbus-msgs
+name: services-dbus-msgs
 description: D-Bus message traffic analysis and IPC abuse forensics. Inspects message flows for anomalous call patterns, service impersonation, unauthorized method invocations, and credential relay via the session and system bus.
 model: sonnet
 maxTurns: 20

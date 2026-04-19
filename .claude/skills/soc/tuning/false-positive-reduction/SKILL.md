@@ -1,5 +1,5 @@
 ---
-name: siem-soc-tuning-false-positive-reduction
+name: tuning-false-positive-reduction
 description: Perform systematic SIEM false positive reduction through rule tuning, threshold adjustment, correlation refinement, and threat intelligence enrichment to combat alert fatigue.
 domain: cybersecurity
 subdomain: soc-operations

@@ -1,5 +1,5 @@
 ---
-name: privilege-sudo-abuse-detect
+name: identity-sudo-abuse-detect
 description: > Detect sudo rule misconfigurations enabling privilege escalation including NOPASSWD, wildcard commands, LD_PRELOAD abuse, and env_keep bypass techniques.
 domain: cybersecurity
 subdomain: process-forensics

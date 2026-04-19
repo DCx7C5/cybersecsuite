@@ -1,5 +1,5 @@
 ---
-name: hardlink-attack-detect
+name: filesystem-hardlink-attack-detect
 description: > Detect hard link attacks against SUID programs and world-writable directories that allow an attacker to create privileged copies of executables.
 domain: cybersecurity
 subdomain: filesystem-security

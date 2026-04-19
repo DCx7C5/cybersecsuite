@@ -1,5 +1,5 @@
 ---
-name: cryptomining
+name: threat-cryptomining
 description: This skill teaches security teams how to detect and respond to unauthorized cryptocurrency mining operations in cloud environments. It covers identifying cryptomining indicators through compute usage anomalies, network traffic patterns to mining pools, GuardDuty CryptoCurrency findings, and runtime process monitoring on EC2, ECS, EKS, and Azure Automation workloads.
 domain: cybersecurity
 subdomain: cloud-security

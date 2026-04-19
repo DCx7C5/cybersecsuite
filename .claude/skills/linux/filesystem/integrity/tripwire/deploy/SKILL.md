@@ -1,5 +1,5 @@
 ---
-name: integrity-tripwire-deploy
+name: filesystem-integrity-tripwire-deploy
 description: > Deploy Tripwire file integrity monitoring to cryptographically sign and verify critical system files, detecting unauthorized modifications and rootkit placement.
 domain: cybersecurity
 subdomain: filesystem-security

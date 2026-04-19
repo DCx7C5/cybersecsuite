@@ -1,5 +1,5 @@
 ---
-name: permission-suid-enum
+name: identity-suid-permission-enum
 description: > Enumerate SUID/SGID binaries across the filesystem to identify privilege escalation vectors, unexpected setuid programs, and GTFOBins-exploitable executables.
 domain: cybersecurity
 subdomain: filesystem-security

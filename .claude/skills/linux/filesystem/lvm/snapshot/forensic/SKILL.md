@@ -1,5 +1,5 @@
 ---
-name: lvm-snapshot-forensic
+name: filesystem-lvm-snapshot-forensic
 description: > Create LVM snapshots of live volumes for forensic acquisition without unmounting, preserving filesystem state and avoiding evidence contamination.
 domain: cybersecurity
 subdomain: filesystem-forensics

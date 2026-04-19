@@ -1,5 +1,5 @@
 ---
-name: usb
+name: hardware-usb-forensics
 description: Investigate USB device connection history from Windows registry, event logs, and setupapi logs to track removable media usage and potential data exfiltration.
 domain: cybersecurity
 subdomain: digital-forensics

@@ -1,5 +1,5 @@
 ---
-name: network-flow-beaconing
+name: flow-beaconing
 description: Identify command-and-control beaconing patterns in network traffic by applying statistical frequency analysis, jitter calculation, and coefficient of variation scoring to detect periodic callbacks from compromised endpoints.
 domain: cybersecurity
 subdomain: threat-hunting

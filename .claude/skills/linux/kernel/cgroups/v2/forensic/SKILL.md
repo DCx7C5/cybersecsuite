@@ -1,5 +1,5 @@
 ---
-name: linux-cgroups-v2-forensic
+name: kernel-cgroups-v2-forensic
 description: Linux cgroups v2 forensic analysis — resource isolation inspection, container escape detection via cgroup release agents, and cgroup-based persistence hunting.
 domain: cybersecurity
 subdomain: endpoint-forensics

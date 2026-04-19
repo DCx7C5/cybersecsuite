@@ -1,5 +1,5 @@
 ---
-name: log-cloud-anomalies
+name: logs-anomalies
 description: Detect unusual API call patterns in AWS CloudTrail logs using boto3, statistical baselining, and behavioral analysis to identify credential compromise, privilege escalation, and unauthorized resource access.
 domain: cybersecurity
 subdomain: cloud-security

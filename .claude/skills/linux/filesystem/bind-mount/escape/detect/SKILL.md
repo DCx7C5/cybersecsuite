@@ -1,5 +1,5 @@
 ---
-name: mount-bind-detect
+name: filesystem-bind-mount-escape-detect
 description: > Detect suspicious bind mounts and over-mounts used by rootkits and containers to obscure malicious files or gain unauthorized access to host paths.
 domain: cybersecurity
 subdomain: filesystem-forensics

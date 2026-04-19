@@ -1,5 +1,5 @@
 ---
-name: network-apt-hunt
+name: hunting-network-apt
 description: Network APT hunting — capture and analyze traffic for C2 beaconing, ARP spoofing, DNS anomalies, and unusual outbound connections on Linux. Uses ip, ss, tcpdump, and ARP table analysis.
 domain: cybersecurity
 subdomain: network-forensics

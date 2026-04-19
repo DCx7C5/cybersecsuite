@@ -1,5 +1,5 @@
 ---
-name: vfs-hook-detect
+name: filesystem-vfs-hook-detect
 description: > Detect VFS layer hooks and function pointer overwrites in the kernel's file operation tables that rootkits use to hide files and directories.
 domain: cybersecurity
 subdomain: filesystem-forensics

@@ -1,5 +1,5 @@
 ---
-name: osint-gathering
+name: recon-open-source-collect
 description: Open Source Intelligence (OSINT) gathering is the first active phase of a red team engagement, where operators collect publicly available information about the target organization to identify attack s
 domain: cybersecurity
 subdomain: red-teaming

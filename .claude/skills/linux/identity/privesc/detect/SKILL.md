@@ -1,5 +1,5 @@
 ---
-name: privesc-detect
+name: identity-privesc-detect
 description: Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel exploits, and sudo/doas abuse across Windows and Linux.
 domain: cybersecurity
 subdomain: threat-hunting

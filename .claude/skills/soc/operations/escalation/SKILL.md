@@ -1,5 +1,5 @@
 ---
-name: ops-soc-operations-escalation
+name: operations-escalation
 description: Build a structured SOC escalation matrix defining severity tiers, response SLAs, escalation paths, and notification procedures for security incidents.
 domain: cybersecurity
 subdomain: soc-operations

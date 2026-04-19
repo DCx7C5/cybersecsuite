@@ -1,5 +1,5 @@
 ---
-name: privilege-suid-binary-detect
+name: identity-suid-binary-detect
 description: > Detect non-standard SUID binaries and GTFOBins-exploitable executables introduced by attackers or misconfiguration for local privilege escalation.
 domain: cybersecurity
 subdomain: process-forensics

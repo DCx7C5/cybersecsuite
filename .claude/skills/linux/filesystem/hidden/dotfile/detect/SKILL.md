@@ -1,5 +1,5 @@
 ---
-name: hidden-dotfile-detect
+name: filesystem-hidden-dotfile-detect
 description: > Detect hidden files, dot-files, and persistence implants in home directories, /tmp, and writable paths used to conceal malware, scripts, and credentials.
 domain: cybersecurity
 subdomain: filesystem-forensics

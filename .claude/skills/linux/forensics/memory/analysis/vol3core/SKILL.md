@@ -1,5 +1,5 @@
 ---
-name: memory-analysis-vol3core
+name: forensics-memory-analysis-vol3core
 description: Analyze volatile memory dumps using Volatility 3 to extract running processes, network connections, loaded modules, and evidence of malicious activity.
 domain: cybersecurity
 subdomain: digital-forensics

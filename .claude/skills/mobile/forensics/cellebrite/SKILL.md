@@ -1,5 +1,5 @@
 ---
-name: mobile-cellebrite
+name: forensics-cellebrite
 description: Acquire and analyze mobile device data using Cellebrite UFED and open-source tools to extract communications, location data, and application artifacts.
 domain: cybersecurity
 subdomain: digital-forensics

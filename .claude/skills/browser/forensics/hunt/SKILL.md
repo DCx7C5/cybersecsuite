@@ -1,5 +1,5 @@
 ---
-name: browser-hunt
+name: forensics-hunt
 description: Browser forensics — investigate running browser processes, profiles, cookies, history, and extensions for compromise indicators. Logs findings to ORM DB and session artifacts. Supports Brave and other Chromium-based browsers.
 domain: cybersecurity
 subdomain: browser-forensics

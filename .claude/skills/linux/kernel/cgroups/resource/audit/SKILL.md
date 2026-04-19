@@ -1,5 +1,5 @@
 ---
-name: linux-cgroup-resource-audit
+name: kernel-cgroups-resource-audit
 description: > Audit cgroup resource limits, memory restrictions, CPU shares, and device access controls to identify over-privileged containers and resource abuse.
 domain: cybersecurity
 subdomain: process-forensics

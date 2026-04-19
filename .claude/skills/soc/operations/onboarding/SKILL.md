@@ -1,5 +1,5 @@
 ---
-name: ops-soc-operations-onboarding
+name: operations-onboarding
 description: Perform structured log source onboarding into SIEM platforms by configuring collectors, parsers, normalization, and validation for complete security visibility.
 domain: cybersecurity
 subdomain: soc-operations

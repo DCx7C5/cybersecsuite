@@ -1,5 +1,5 @@
 ---
-name: log-cloud-api
+name: logs-api
 description: Parses API Gateway access logs (AWS API Gateway, Kong, Nginx) to detect BOLA/IDOR attacks, rate limit bypass, credential scanning, and injection attempts. Uses pandas for statistical analysis of request patterns and anomaly detection. Use when investigating API abuse or building API-specific threat detection rules.
 domain: cybersecurity
 subdomain: security-operations

@@ -1,5 +1,5 @@
 ---
-name: ext4-deleted-file-recover
+name: filesystem-ext4-deleted-file-recover
 description: > Recover deleted ext4 files by scanning for orphaned inodes, unallocated blocks, and directory entry remnants using TestDisk, Autopsy, and Photorec.
 domain: cybersecurity
 subdomain: filesystem-forensics

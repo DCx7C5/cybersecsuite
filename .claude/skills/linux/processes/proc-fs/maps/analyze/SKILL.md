@@ -1,5 +1,5 @@
 ---
-name: linux-proc-fs-maps-analyze
+name: processes-proc-fs-maps-analyze
 description: > Analyse /proc/<PID>/maps to identify memory regions, shared libraries, anonymous executable segments, and injected shellcode in running processes.
 domain: cybersecurity
 subdomain: process-forensics

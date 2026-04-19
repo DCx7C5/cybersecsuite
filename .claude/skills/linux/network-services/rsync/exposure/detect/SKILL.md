@@ -1,5 +1,5 @@
 ---
-name: rsync-exposure-detect
+name: network-services-rsync-exposure-detect
 description: > Detect exposed rsync daemons with anonymous access, world-readable modules, and insecure configuration using rsync client enumeration and nmap scanning.
 domain: cybersecurity
 subdomain: network-filesystem-security

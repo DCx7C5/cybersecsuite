@@ -1,5 +1,5 @@
 ---
-name: network-zeek-zeeklateral
+name: capture-zeek-zeeklateral
 description: Detect lateral movement in network traffic using Zeek (formerly Bro) log analysis. Parses conn.log, smb_mapping.log, smb_files.log, dce_rpc.log, kerberos.log, and ntlm.log to identify SMB file transfers, NTLM account spray activity, remote service execution, and anomalous internal connections.
 domain: cybersecurity
 subdomain: network-security

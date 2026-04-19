@@ -1,5 +1,5 @@
 ---
-name: ftps-cert-analyze
+name: network-services-ftp-tls-cert-analyze
 description: > Analyse FTPS (FTP over TLS) certificate validity, cipher suite strength, and session resumption security to identify weak cryptographic configurations.
 domain: cybersecurity
 subdomain: network-filesystem-security

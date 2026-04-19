@@ -1,5 +1,5 @@
 ---
-name: persistence-linux
+name: services-persistence-general-detect
 description: Linux persistence mechanism specialist. Userland (cron, systemd, shell rc, autostart, at), kernel (LKMs, eBPF, kprobes), firmware/bootloader (UEFI, initramfs, GRUB), and supply-chain (package hooks, PAM modules, SSH keys, udev rules) persistence hunting.
 model: sonnet
 maxTurns: 30

@@ -1,5 +1,5 @@
 ---
-name: windows-handle-leak-detect
+name: processes-handle-leak-detect
 description: > Detect Windows handle leaks and over-privileged handle inheritance that allow lower-privileged processes to exploit inherited handles for privilege escalation.
 domain: cybersecurity
 subdomain: process-forensics

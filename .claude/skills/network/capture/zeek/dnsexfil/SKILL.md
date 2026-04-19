@@ -1,5 +1,5 @@
 ---
-name: network-zeek-dnsexfil
+name: capture-zeek-dnsexfil
 description: Detect DNS-based data exfiltration by analyzing Zeek dns.log for high-entropy subdomains and anomalous query patterns
 domain: cybersecurity
 subdomain: network-security

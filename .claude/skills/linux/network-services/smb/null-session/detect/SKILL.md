@@ -1,5 +1,5 @@
 ---
-name: smb-null-session-detect
+name: network-services-smb-null-session-detect
 description: > Detect SMB null session access that allows unauthenticated enumeration of shares, users, and domain information via anonymous IPC$ connections.
 domain: cybersecurity
 subdomain: network-filesystem-security

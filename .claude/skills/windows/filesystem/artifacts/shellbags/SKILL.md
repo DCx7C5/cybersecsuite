@@ -1,5 +1,5 @@
 ---
-name: disk-artifacts-shellbags
+name: filesystem-artifacts-shellbags
 description: Analyze Windows Shellbag registry artifacts to reconstruct folder browsing activity, detect access to removable media and network shares, and establish user interaction with directories even after deletion using SBECmd and ShellBags Explorer.
 domain: cybersecurity
 subdomain: digital-forensics

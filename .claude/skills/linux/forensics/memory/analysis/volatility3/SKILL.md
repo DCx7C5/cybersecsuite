@@ -1,5 +1,5 @@
 ---
-name: memory-analysis-volatility3
+name: forensics-memory-analysis-volatility3
 description: Linux volatile memory forensics. Process injection detection (RWX regions, hollowing, reflective loading), memory-resident malware, DKOM rootkit indicators, heap/stack anomalies, kernel memory integrity, and credential extraction patterns.
 model: sonnet
 maxTurns: 30

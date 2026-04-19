@@ -1,5 +1,5 @@
 ---
-name: nfs-mount-analyze
+name: network-services-nfs-mount-analyze
 description: > Analyse NFS mount configurations, version usage, transport security, and Kerberos authentication settings for security misconfigurations and exposure.
 domain: cybersecurity
 subdomain: network-filesystem-security

@@ -1,5 +1,5 @@
 ---
-name: linux-socket-inode-map
+name: processes-socket-inode-analyze
 description: > Map Linux network socket inodes from /proc/<PID>/net/tcp to process PIDs for attributing network connections to specific processes and detecting hidden listeners.
 domain: cybersecurity
 subdomain: process-forensics
