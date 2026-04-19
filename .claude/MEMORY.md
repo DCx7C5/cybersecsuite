@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-18 (Phase M.4 + src-layout import fix — `c4faae08`)_
+_Last updated: 2026-04-19 (ACP agent + fixture caching complete)_
 
 ## Architecture
 
@@ -174,6 +174,60 @@ async def _fn(args: dict) -> dict:
 
 ## Roadmap
 
+### 🔴 Phase N — Pending (Next Session — 2026-04-19)
+
+> **Status**: Uncommitted local changes exist. All items below need implementation + commit.
+
+#### N.1 — Commit Pending Changes
+- [ ] **`asgi.py` logging improvements** — `root_logger.getChild("asgi")`, structured log calls in `_on_startup`, `_on_shutdown`, `health` — already coded, needs `git add src/proxy/asgi.py && git commit`
+- [ ] **`docker-compose.yml` security fix** — `OPENSEARCH_INITIAL_ADMIN_PASSWORD` placeholder changed to `change_me` — commit
+- [ ] **`PROPOSAL_MEM.md` deletion** — file deleted, stage `git rm PROPOSAL_MEM.md`
+- [ ] **New untracked files to stage and commit**:
+  - `.claude/agents/sub_agents/python-developer.md`
+  - `.claude/agents/sub_agents/python-code-reviewer.md`
+  - `.claude/agents/sub_agents/watchdog.md`
+  - `.claude/skills/devices/` (ssd/, usb/ domains)
+  - `.github/` directory (workflows)
+  - `.memory/` directory (audit.jsonl, root_commands.jsonl, violations.jsonl)
+  - `src/db/browser_profiles.py` — BrowserCookiesDB ORM wrapper for Firefox/Chrome/Brave SQLite
+  - `src/db/seeds/__init__.py`
+
+#### N.2 — `src/db/browser_profiles.py` — Complete & Harden
+- [ ] Add missing `"""` docstring opening line (file starts without triple-quote)
+- [ ] Context manager (`with sqlite3.connect()`) instead of manual `conn.close()` — resource leak risk
+- [ ] Add `BrowserHistoryDB`, `BrowserDownloadsDB` classes (Chrome/Firefox/Brave parity)
+- [ ] Type hints throughout (PEP 484/526 mandatory)
+- [ ] Wire into `db/models/__init__.py` or `db/__init__.py` — currently unregistered
+- [ ] Write tests in `tests/test_browser_profiles.py`
+
+#### N.3 — Sub-Agent Quality Gate
+- [ ] Review `.claude/agents/sub_agents/python-developer.md` — align capabilities with mode instructions
+- [ ] Review `.claude/agents/sub_agents/python-code-reviewer.md` — check review checklist completeness
+- [ ] Review `.claude/agents/sub_agents/watchdog.md` — verify hook integration points
+- [ ] Add new sub-agents to `MEMORY.md` agent count (currently: 34 agents total)
+- [ ] Update `docs/agents.md` with new sub-agent entries
+
+#### N.4 — Test Coverage Gate (Current: ~19% pass rate)
+- [ ] Fix 34 failing DB async tests — need PostgreSQL running or proper mocking in conftest.py
+- [ ] Fix 4 ERROR tests in `test_ai_proxy.py` — `ComboRouter` export missing
+- [ ] Un-skip crypto tests — `KeyManager` and `ArtifactManager` APIs now stable
+- [ ] Un-skip Agent SDK tests — `AgentRunner`, `SessionRecord` now available
+- [ ] Add `tests/test_browser_profiles.py` — cover `BrowserCookiesDB` happy path + errors
+- [ ] Target: ≥60% coverage gate via `uv run --group test pytest --cov=src --cov-report=term-missing`
+
+#### N.5 — MEMORY.md Sync
+- [ ] Update agent count (34 → check actual after N.3)
+- [ ] Update skills count after new `devices/` domain (942 → verify)
+- [ ] Update MCP tool count if new tools added
+- [ ] Update `_Last updated_` timestamp after N.1 commit
+
+#### N.6 — pyproject.toml Cleanup
+- [ ] Move `pytest>=9.0.2` from `[dependencies]` to `[dependency-groups.test]` — currently in wrong section
+- [ ] Verify `claude>=0.4.11` and `tortoise>=0.1.1` in `[dependencies]` are not duplicates
+- [ ] Run `uv lock` after cleanup
+
+---
+
 ### ✅ Done
 - Phases 0–7, A–M.1: config, seeds, skills taxonomy, MCP split (36 tools), A2A wiring, telemetry, PoC model, linting (0 ruff errors), hooks wiring (10), agent-sdk migration, `dashboard/api/` package split
 - Phase K.1 — `renderTable()` JS component + Explorer tab
@@ -193,6 +247,8 @@ async def _fn(args: dict) -> dict:
 - **Docs sweep** ✅ — README: 15-tab→27-tab, 933→942 skills, 11 hooks; architecture.md: OpenSearch in diagram + ports table; deployment.md: 5 services + ports; mcp-tools.md: 34→65 tools + OmniRoute section; quickstart.md: tool counts; MEMORY.md synced
 - Commands audit — dissolved `commands/` into 8 SKILL.md entries in `skills/`
 - Ruff clean — `exclude = [".claude"]` added to pyproject.toml; `src/` + `tests/` → 0 errors
+- **Fixture caching** ✅ (commit `3659b80e`) — `cwe_full.py`, `capec_full.py`, `mitre_full.py`, `nvd.py` all cache to `data/fixtures/*.json`; NIST fixtures moved to `src/db/fixtures/` (committed); `seed_poc()` loads from `poc_entries.json`; fixed all 3 broken model imports (CWE→CWEIntel, CAPEC→CapecAttackPatternIntel, MITRE*→Mitre*Intel)
+- **ACP agent** ✅ (commit `1c11f50a`) — `src/acp_agent/` package, JSON-RPC 2.0 over stdio, ACP protocol for JetBrains AI Assistant; `~/.jetbrains/acp.json` configured
 - CVE fixture — expanded from 30 → 68 entries (DirtyCOW, SMBGhost, PwnKit, Log4Shell variants, RegreSSHion, etc.)
 - `BrowserForensicFinding` model — created `db/models/browser_forensic.py` (table `browser_forensic_findings`), registered in MODEL_MODULES, fixed `datetime.utcnow()` → `datetime.now(timezone.utc)`, fixed `.annotate()` dict access via `.values()`
 
@@ -211,6 +267,45 @@ async def _fn(args: dict) -> dict:
 - `manage/__main__.py`: new 5-line entry point — `python -m manage` now works
 - `manage.py`: slimmed to 17-line shim; `python src/manage.py` still works
 - `cybersecsuite` installed script (`manage:main_sync`) now resolves correctly
+
+---
+
+## ACP Agent (JetBrains AI Assistant) ✅
+
+**Status**: Complete (commit `1c11f50a`). Registered in `~/.jetbrains/acp.json`.
+
+**Module**: `src/acp_agent/` — JSON-RPC 2.0 over stdio with Content-Length framing (LSP-style)
+
+| File                        | Purpose                                                      |
+|-----------------------------|--------------------------------------------------------------|
+| `src/acp_agent/__init__.py` | Package marker                                               |
+| `src/acp_agent/__main__.py` | Entry: `python -m acp_agent`                                 |
+| `src/acp_agent/server.py`   | Full ACP protocol server — initialize, session/new, session/prompt |
+
+**ACP methods implemented**:
+- `initialize` → returns protocol version + capabilities
+- `session/new` → creates UUID session, returns `sessionId`
+- `session/prompt` → streams `session/update` notifications + final `PromptResponse`
+
+**Bridges to**: `CYBERSEC_PROXY_URL` (default `http://localhost:8000/v1`) via httpx streaming
+
+**Entry point**: `cybersec-acp = "acp_agent.server:main"` in pyproject.toml scripts
+
+**`~/.jetbrains/acp.json`**:
+```json
+{
+  "default_mcp_settings": { "use_custom_mcp": true, "use_idea_mcp": true },
+  "agent_servers": {
+    "CyberSecSuite": {
+      "command": "/usr/bin/uv",
+      "args": ["run", "--project", "/home/daen/Projects/cybersecsuite", "python", "-m", "acp_agent"],
+      "env": { "CYBERSEC_PROXY_URL": "http://localhost:8000/v1", "CYBERSEC_MODEL": "claude-sonnet-4-5" }
+    }
+  }
+}
+```
+
+**To use in JetBrains**: Settings → AI Assistant → Agents → refresh list → select "CyberSecSuite"
 
 ---
 
