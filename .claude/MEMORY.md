@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-19 (Dashboard: JetBrains IDE palette, sidebar recategorize, MCP/hooks installer, agent registry fix, settings scope UI)_
+_Last updated: 2026-04-19 (Dashboard: context-aware header, sidebar recategorization, agent factory UI, template API, generate endpoint)_
 
 ## Architecture
 
@@ -53,10 +53,10 @@ Claude Code / agent_sdk.py
 | `_html.py`                    | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                                           |
 | `templates/__init__.py`       | 25    | `build_dashboard_html()` assembler                                                                                  |
 | `templates/_components.py`    | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`                   |
-| `templates/_base.py`          | ~750  | CSS (JetBrains Darcula palette, IDE statusbar, pagination fix), `head()`, `header()`, `stats_row()`, `tiers_row()`  |
-| `templates/_tabs.py`          | ~70   | `tab_bar()` — 29 items in 7 groups (OVERVIEW/AI PROXY/AGENTS/OPS/FORENSICS/DATA/SETTINGS)                          |
-| `templates/_panels.py`        | ~700  | `all_panels()` — 29 panel fns + MCP installer form + hooks manager form                                             |
-| `templates/_js.py`            | ~1800 | All JS: SSE, team builder, settings CRUD, explorer, agent query, MCP installer, hooks CRUD, status bar              |
+| `templates/_base.py`          | ~760  | CSS (JetBrains Darcula palette, IDE statusbar, pagination fix, .af-check), `head()`, `header()`, `context_bar()` — replaces deprecated `stats_row()`/`tiers_row()` |
+| `templates/_tabs.py`          | ~70   | `tab_bar()` — 26 items in 7 groups (PLATFORM/AI PROXY/AGENTS/OPERATIONS/FORENSICS/DATA/SETTINGS); removed providers/factory/agents-registry tabs |
+| `templates/_panels.py`        | ~820  | `all_panels()` — 26 panel fns; `_agent_craft()` has full factory section; `_workflows()` separate |
+| `templates/_js.py`            | ~2050 | All JS: SSE, team builder, settings CRUD, explorer, agent query, MCP installer, hooks CRUD, context bar, `afLoadTemplates()`, `afGenerate()` |
 | `api/core.py`                 | 153   | overview, providers, usage, health, crypto                                                                          |
 | `api/agents.py`               | ~150  | a2a, agents (from .claude/agents/**/*.md), routing, factory, agent-query                                            |
 | `api/forensic.py`             | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                                       |
@@ -65,20 +65,25 @@ Claude Code / agent_sdk.py
 | `api/settings.py`             | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
 | `api/settings_toggles.py`     | ~350  | All toggle/installer APIs: MCPs (project+global), skills, plugins, global summary, MCP install/remove, hooks CRUD   |
 | `api/team_builder.py`         | 310   | `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `PUT/DELETE /api/teams/{name}`                 |
-| `api/agent_crud.py`           | 279   | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` — create/edit/delete .md files                   |
+| `api/agent_crud.py`           | ~420  | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` · `POST /api/agents/generate` — factory generate endpoint |
 | `api/workflows.py`            | 247   | `GET/POST /api/workflows` · `GET/DELETE /api/workflows/{id}` — multi-step pipeline                                  |
 | `api/opensearch_stats.py`     | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
 | `api/sse.py`                  | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
 | `_schema.py`                  | 149   | Tortoise model introspector — 83 models                                                                             |
 
-**29 tabs in 7 groups**:
-- **OVERVIEW**: Providers · Usage & Cost · Health
-- **AI PROXY**: Routing · Crypto
-- **AGENTS**: Agents · Agent Craft · Team Builder · Agent Query · Factory · Prompts
-- **OPS CENTER**: Cases · Tasks · PoCs · Workflows · A2A Proto
+**26 tabs in 7 groups** (commit `1f22e496`):
+- **PLATFORM**: Health · Telemetry
+- **AI PROXY**: Usage & Cost · Routing · Crypto
+- **AGENTS**: Agent Craft · Team Builder · Agent Query · Workflows
+- **OPERATIONS**: Cases · Tasks · PoCs · A2A Proto
 - **FORENSICS**: Investigations · Findings · IOCs · YARA Rules · Network · Intel Feed · Audit Log · Compliance
-- **DATA**: DB Counts · Telemetry · OpenSearch · Explorer
+- **DATA**: DB Counts · OpenSearch · Explorer
 - **SETTINGS**: Settings
+
+> ⚠️ Removed tabs: Providers, Factory (standalone), Agent Registry — consolidated/replaced.
+- **SETTINGS**: Settings
+
+**Context bar**: `#context-bar` div sits between topbar and content. Hidden by default (`display:none`). JS `_updateContextBar(tabName)` fetches tab-specific stats lazily, calls `_showCtxStats()` which sets `bar.style.display='flex'`. Cache per-tab in `_ctxCache` (invalidated by `refresh()`). Stats slots: `#ctx-s1..5`.
 
 **Settings tab** (2 scope panes — 🌐 Global / 📁 Project):
 - **Global scope**: MCP server toggles + Install MCP form + Remove button · Plugin toggles · Hooks manager (list + add/remove) · Env vars (read-only) · Summary
@@ -100,7 +105,15 @@ Claude Code / agent_sdk.py
 | `/api/settings/remove-mcp` | DELETE | Remove MCP from ~/.claude/settings.json |
 | `/api/settings/hooks` | GET/POST/DELETE | List/add/remove hooks in ~/.claude/settings.json |
 
-**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `POST /api/agents/crud` · `POST /api/workflows` · `GET /api/opensearch`
+**Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `POST /api/agents/crud` · `POST /api/agents/generate` · `GET /api/settings/agent-templates` · `POST /api/workflows` · `GET /api/opensearch`
+
+**Agent factory endpoints**:
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/settings/agent-templates` | GET | List `.claude/agents/templates/*.md` stems (31 templates) |
+| `/api/agents/generate` | POST | Factory: generate structured agent markdown from FACTORY_VARS |
+
+`POST /api/agents/generate` body: `{type, name, description, model, maxTurns, tools, templates, research, project_context, extra_instructions, save}`. Returns `{content, agent, file?, saved?}`. Builds: frontmatter → Chapter 1 Role/Mission → Chapter 2 Core Principles → Template content → Research sections → Project context block → Extra instructions → Delegation matrix (orchestrators only).
 
 **Design system** (JetBrains New UI Darcula palette):
 | Token | Value | Usage |
@@ -122,7 +135,18 @@ Status bar: fixed bottom bar (24px, accent blue) showing current tab name + live
 
 **Team Builder tab**: Agent Browser (filterable table of 37 agents), Skill Browser (26 domains × 942 skills), Team Composer (save to .claude/agents/teams/).
 
-**Agent Craft tab**: Create form (name/model/maxTurns/description/tools/mcpServers/instructions) → POST /api/agents/crud. Edit/Delete with protected agents guard.
+**Agent Craft tab** (enhanced, commit `1f22e496`):
+- Create form: name/model/maxTurns/description/tools/mcpServers/instructions → `POST /api/agents/crud`
+- Edit/Delete with protected agents guard (`cybersec-agent`, `AGENT_FACTORY`)
+- **Factory Mode** (`<details>` collapsible):
+  - Type selector: `specialist` / `orchestrator` / `team`
+  - Model + MaxTurns
+  - Template checkboxes: loaded from `GET /api/settings/agent-templates` → 31 templates from `.claude/agents/templates/*.md`
+  - Research checkboxes: MITRE ATT&CK · CVE Database · Tool Docs · API Reference
+  - Toggles: Include project context · Save to .claude/agents/
+  - Extra instructions textarea
+  - Generate button → `afGenerate()` → `POST /api/agents/generate`
+  - Preview `<pre>` shows generated markdown
 
 **Workflows tab**: Step builder → POST /api/workflows. Topological execution with `{{step_id}}` interpolation.
 
@@ -246,6 +270,28 @@ New documentation created:
 ---
 
 ## Roadmap
+
+### ✅ Phase P — Dashboard Context Header + Sidebar Recat + Agent Factory (2026-04-19)
+
+| Sub | What | Status |
+|-----|------|--------|
+| P.1 | Sidebar recategorized: 7 groups (PLATFORM/AI PROXY/AGENTS/OPERATIONS/FORENSICS/DATA/SETTINGS) | ✅ |
+| P.2 | Removed static stats header (providers/models/requests/tokens/cost/FREE/STD/PREMIUM) | ✅ |
+| P.3 | Context-aware header: `#context-bar` with per-tab stats fetched lazily, cached in `_ctxCache` | ✅ |
+| P.4 | Removed irrelevant tabs: Providers, Agent Registry, Factory (standalone) | ✅ |
+| P.5 | Agent Craft factory UI: type selector, template checkboxes, research checkboxes, project ctx toggle | ✅ |
+| P.6 | `GET /api/settings/agent-templates` — lists 31 templates from `.claude/agents/templates/` | ✅ |
+| P.7 | `POST /api/agents/generate` — deterministic factory: frontmatter + chapter body from FACTORY_VARS | ✅ |
+| P.8 | `afLoadTemplates()` + `afGenerate()` JS functions wired to factory UI | ✅ |
+| P.9 | Fixed `context_bar()` CSS conflict (display:none wins, JS sets flex on demand) | ✅ |
+| P.10 | Fixed `_panels.py` syntax error: missing closing `)` on `_agent_craft()`, `_workflows()` was merged | ✅ |
+| P.11 | Fixed JS init: activates `tab-health` not removed `tab-providers` | ✅ |
+
+**Commits**: `28e9666e` (palette/sidebar) → `1f22e496` (factory UI/API/context bar fix)
+**Tests**: 87 passed, 23 skipped — no regressions
+**Pending**: `AGENT_FACTORY.md` deterministic rewrite (structured FACTORY_VARS JSON input, strict chapter pipeline)
+
+---
 
 ### ✅ Phase N (Remaining) — Completed (2026-04-19)
 
@@ -373,10 +419,10 @@ New documentation created:
 
 **Module**: `src/acp_agent/` — JSON-RPC 2.0 over stdio with Content-Length framing (LSP-style)
 
-| File                        | Purpose                                                      |
-|-----------------------------|--------------------------------------------------------------|
-| `src/acp_agent/__init__.py` | Package marker                                               |
-| `src/acp_agent/__main__.py` | Entry: `python -m acp_agent`                                 |
+| File                        | Purpose                                                            |
+|-----------------------------|--------------------------------------------------------------------|
+| `src/acp_agent/__init__.py` | Package marker                                                     |
+| `src/acp_agent/__main__.py` | Entry: `python -m acp_agent`                                       |
 | `src/acp_agent/server.py`   | Full ACP protocol server — initialize, session/new, session/prompt |
 
 **ACP methods implemented**:
