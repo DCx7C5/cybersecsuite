@@ -65,7 +65,7 @@ class ForensicSession(Model):
     )
     start_time = fields.DatetimeField(auto_now_add=True, db_index=True)
     end_time = fields.DatetimeField(null=True)
-    phase = fields.CharEnumField(SessionPhase, default=SessionPhase.INIT, db_index=True)
+    phase = fields.CharEnumField(SessionPhase, default=SessionPhase.RECONNAISSANCE, db_index=True)
     status = fields.CharEnumField(SessionStatus, default=SessionStatus.ACTIVE, db_index=True)
     investigator = fields.CharField(max_length=255, db_index=True, default="")
     agent = fields.CharField(max_length=100, db_index=True)

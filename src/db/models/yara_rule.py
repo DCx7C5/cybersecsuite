@@ -37,7 +37,7 @@ class YaraRule(Model):
 
     # Classification
     status = fields.CharEnumField(YaraRuleStatus, default=YaraRuleStatus.DRAFT, db_index=True)
-    source = fields.CharEnumField(YaraRuleSource, default=YaraRuleSource.IOC_DERIVED, db_index=True)
+    source = fields.CharEnumField(YaraRuleSource, default=YaraRuleSource.GENERATED, db_index=True)
     severity = fields.CharEnumField(SeverityLevel, default=SeverityLevel.MEDIUM, db_index=True)
     confidence = fields.CharEnumField(ConfidenceLevel, default=ConfidenceLevel.MEDIUM, db_index=True)
 

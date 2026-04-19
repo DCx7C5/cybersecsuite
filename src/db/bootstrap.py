@@ -132,8 +132,8 @@ async def get_database_health_async(
         await init_tortoise_async()
         from tortoise import Tortoise
 
-        # Use ORM describe_model to list registered tables instead of raw SQL
-        registered_models = Tortoise.apps.get("models", {})
+        # Use ORM to list registered tables
+        registered_models = Tortoise.apps["models"] if Tortoise.apps and "models" in Tortoise.apps else {}
         tables = sorted(
             model.Meta.table
             for model in registered_models.values()
@@ -156,7 +156,7 @@ async def get_database_health_async(
         try:
             from tortoise import Tortoise
 
-            registered_models = Tortoise.apps.get("models", {})
+            registered_models = Tortoise.apps["models"] if Tortoise.apps and "models" in Tortoise.apps else {}
             counts = {}
             for model in registered_models.values():
                 if hasattr(model, "Meta") and hasattr(model.Meta, "table"):

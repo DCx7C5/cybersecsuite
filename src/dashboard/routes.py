@@ -37,6 +37,7 @@ from dashboard._handlers import (
     api_models,
     api_table,
     api_agent_query,
+    api_opensearch,
     api_settings_get,
     api_settings_patch,
     api_team_agents,
