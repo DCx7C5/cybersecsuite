@@ -158,6 +158,28 @@ These are already correctly placed at depth 3+, so NO action needed. Audit is cl
 
 ---
 
+## ✅ FIXED: Name ≠ Path Issue (231 corrections)
+
+### Problem
+The `name:` field must follow convention: `name = path.split('/')[1:].join('-')` (skip domain)
+
+### Solution Applied ✅
+Ran bulk-fix script. All 231 name fields recomputed from paths.
+
+### Fixes by Domain
+- **linux**: 120 fixes
+- **network**: 27 fixes
+- **windows**: 25 fixes
+- **soc**: 19 fixes
+- **cloud**: 17 fixes
+- **osint**: 6, **email**: 4, **identity**: 3
+- **web-application**: 2, **browser**: 2, **database**: 2, **malware**: 2
+- **mobile**: 1, **intel**: 1
+
+**Status: ✅ COMPLETE**
+
+---
+
 ## Execution Plan
 
 ### Phase 1: Depth-2 Fix (116 moves)
