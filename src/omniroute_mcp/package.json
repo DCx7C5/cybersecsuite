@@ -1,0 +1,19 @@
+{
+  "name": "omniroute-mcp-cybersecsuite",
+  "version": "1.9.0",
+  "description": "Self-contained OmniRoute MCP server for CyberSecSuite — no cross-repo imports",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun run server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "better-sqlite3": "^11.10.0",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/bun": "latest"
+  }
+}

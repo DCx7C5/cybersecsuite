@@ -148,10 +148,19 @@ async def _fn(args: dict) -> dict:
 
 ## OmniRoute Integration ✅
 
-**Status**: Complete (commit `2b633887`). 29 tools via `bun run server.ts`.
+**Status**: Self-contained server embedded in CyberSecSuite (session `69854c5c`).
 
-- `mcp.json`: registered `omniroute` server (bun, cwd=`../OmniRoute`, env `OMNIROUTE_BASE_URL=http://localhost:20128`)
-- Tools: health, combos, routing, quota, cost, models, cache, memory (3), skills (4), explain route, db health
+- `src/omniroute_mcp/server.ts` — **fully self-contained** TypeScript MCP server (version `1.9.0`, ~1100 lines)
+  - Zero cross-repo imports — no longer depends on sibling `../OmniRoute` repo
+  - All OmniRoute helpers inlined: `resolveOmniRouteBaseUrl`, `normalizeQuotaResponse`, combo step helpers
+  - Memory tools (3) → HTTP calls to `/api/memory/*`
+  - Skill tools (4) → HTTP calls to `/api/skills/*`
+  - Audit logger, scope enforcement, runtime heartbeat all inlined
+  - 27 tools total: 9 essential + 11 advanced + 3 memory + 4 skills
+- `src/omniroute_mcp/package.json` — deps: `@modelcontextprotocol/sdk`, `zod`, `better-sqlite3`
+- `src/omniroute_mcp/tsconfig.json` — Bun-compatible (`moduleResolution: bundler`)
+- `mcp.json`: `omniroute` entry now uses `cwd: ${workspaceFolder}/src/omniroute_mcp`, `args: ["run", "${workspaceFolder}/src/omniroute_mcp/server.ts"]`
+- Tools: health, combos, routing, quota, cost, models, web_search, simulate_route, budget_guard, resilience, provider metrics, session snapshot, pricing sync, memory (3), skills (4), explain route, db health, and more
 - `docs/configuration.md`: OmniRoute env vars + OpenSearch env vars added, port reference updated
 
 ---
