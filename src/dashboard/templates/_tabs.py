@@ -27,6 +27,8 @@ def tab_bar() -> str:
         ("agent-query", "&#x1f916; Agent Query", False),
         ("settings", "&#x2699;&#xfe0f; Settings", False),
         ("team-builder", "&#x1f3d7; Team Builder", False),
+        ("agent-craft", "&#x1f527; Agent Craft", False),
+        ("workflows", "&#x1f504; Workflows", False),
         ("telemetry", "&#x1f4ca; Telemetry", False),
         ("opensearch", "&#x1f50d; OpenSearch", False),
         ("explorer", "&#x1f50e; Explorer", False),

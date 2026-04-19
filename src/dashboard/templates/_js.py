@@ -1098,7 +1098,300 @@ function tbCopyTeam() {
   navigator.clipboard.writeText(pre.textContent).catch(() => {});
 }
 
-// ── SSE: EventSource wiring for cases, tasks, health, telemetry ─────────────
+async function tbSaveTeam() {
+  const status = $('tb-save-status');
+  const name = ($('tb-team-name') || {}).value || '';
+  if (!name.trim()) { status.textContent = '✗ Enter a team name'; status.style.color = '#f87171'; return; }
+
+  const phases = [];
+  document.querySelectorAll('[id^="tb-phase-"]').forEach(row => {
+    const pname = row.querySelector('.tb-phase-name').value.trim() || 'Phase';
+    const agent = row.querySelector('.tb-agent-select').value;
+    phases.push({name: pname, agents: agent ? [agent] : []});
+  });
+  if (!phases.length) { status.textContent = '✗ Add at least one phase'; status.style.color = '#f87171'; return; }
+
+  status.textContent = 'Saving...'; status.style.color = '#9ca3af';
+  try {
+    const res = await fetch('/dashboard/api/teams', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: name.trim(), phases}),
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '✗ ' + (data.error || 'Failed'); status.style.color = '#f87171'; return; }
+    status.textContent = '✓ Saved: ' + data.team; status.style.color = '#34d399';
+    tbLoadSavedTeams();
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
+}
+
+async function tbLoadSavedTeams() {
+  try {
+    const res = await fetch('/dashboard/api/teams');
+    const data = await res.json();
+    const teams = data.teams || [];
+    const el = $('tb-saved-teams');
+    if (!el) return;
+    if (!teams.length) { el.innerHTML = '<div class="text-xs text-gray-500">No saved teams.</div>'; return; }
+
+    renderTable('tb-saved-teams', [
+      {key: 'name', label: 'Team', type: 'string'},
+      {key: 'role', label: 'Role', type: 'string'},
+      {key: 'description', label: 'Description', type: 'string'},
+      {key: 'actions', label: 'Actions', type: 'html'},
+    ], teams.map(t => ({
+      name: '<strong>' + (t.name || '') + '</strong>',
+      role: t.role || '—',
+      description: t.description || '—',
+      actions: (['blue-team','red-team','purple-team'].includes(t.name))
+        ? '<span class="text-gray-600 text-xs">built-in</span>'
+        : '<button onclick="tbDeleteTeam(\'' + t.name + '\')" class="px-2 py-0.5 bg-red-900 hover:bg-red-800 text-xs rounded">Delete</button>',
+    })), {pageSize: 10});
+  } catch(e) { console.error('tbLoadSavedTeams', e); }
+}
+
+async function tbDeleteTeam(name) {
+  if (!confirm('Delete team "' + name + '"?')) return;
+  try {
+    await fetch('/dashboard/api/teams/' + encodeURIComponent(name), {method: 'DELETE'});
+    tbLoadSavedTeams();
+  } catch(e) { console.error(e); }
+}
+
+// ── Agent Craft ─────────────────────────────────────────────────────────────
+let _acAgents = [];
+
+async function acLoadAgents() {
+  try {
+    const res = await fetch('/dashboard/api/team-agents');
+    const data = await res.json();
+    _acAgents = data.agents || [];
+    acRenderAgents(_acAgents);
+  } catch(e) { console.error('acLoadAgents', e); }
+}
+
+function acFilterAgents() {
+  const q = ($('ac-filter') || {}).value || '';
+  const ql = q.toLowerCase();
+  const filtered = ql
+    ? _acAgents.filter(a =>
+        (a.name||'').toLowerCase().includes(ql) ||
+        (a.description||'').toLowerCase().includes(ql))
+    : _acAgents;
+  acRenderAgents(filtered);
+}
+
+function acRenderAgents(agents) {
+  $('ac-count').textContent = agents.length + ' agents';
+  renderTable('ac-agents-table', [
+    {key: 'name', label: 'Agent', type: 'string'},
+    {key: 'model', label: 'Model', type: 'string'},
+    {key: 'source_dir', label: 'Dir', type: 'string'},
+    {key: 'description', label: 'Description', type: 'string'},
+    {key: 'actions', label: '', type: 'html'},
+  ], agents.map(a => ({
+    name: '<strong>' + (a.name||'') + '</strong>',
+    model: a.model || '—',
+    source_dir: a.source_dir || '—',
+    description: (a.description||'').substring(0, 80) + ((a.description||'').length > 80 ? '...' : ''),
+    actions: (a.name === 'cybersec-agent')
+      ? '<span class="text-gray-600 text-xs">protected</span>'
+      : '<button onclick="acEditAgent(\'' + (a.name||'') + '\')" class="px-2 py-0.5 bg-cyan-800 hover:bg-cyan-700 text-xs rounded mr-1">Edit</button>'
+        + '<button onclick="acDeleteAgent(\'' + (a.name||'') + '\')" class="px-2 py-0.5 bg-red-900 hover:bg-red-800 text-xs rounded">Del</button>',
+  })), {pageSize: 15});
+}
+
+async function acCreateAgent() {
+  const status = $('ac-status');
+  const name = ($('ac-name') || {}).value || '';
+  if (!name.trim()) { status.textContent = '✗ Name required'; status.style.color = '#f87171'; return; }
+
+  const tools = [];
+  document.querySelectorAll('#ac-tools input[type=checkbox]:checked').forEach(cb => tools.push(cb.value));
+
+  const mcpStr = ($('ac-mcp') || {}).value || '';
+  const mcpServers = mcpStr.split(',').map(s => s.trim()).filter(Boolean);
+
+  const body = {
+    name: name.trim(),
+    description: ($('ac-desc') || {}).value || '',
+    model: ($('ac-model') || {}).value || 'sonnet',
+    maxTurns: parseInt(($('ac-maxturns') || {}).value || '25', 10),
+    tools,
+    mcpServers,
+    instructions: ($('ac-instructions') || {}).value || '',
+  };
+
+  status.textContent = 'Creating...'; status.style.color = '#9ca3af';
+  try {
+    const res = await fetch('/dashboard/api/agents/crud', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '✗ ' + (data.error || 'Failed'); status.style.color = '#f87171'; return; }
+    status.textContent = '✓ Created: ' + data.agent; status.style.color = '#34d399';
+    $('ac-name').value = ''; $('ac-desc').value = ''; $('ac-instructions').value = '';
+    acLoadAgents();
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
+}
+
+async function acEditAgent(name) {
+  try {
+    const res = await fetch('/dashboard/api/agents/crud/' + encodeURIComponent(name));
+    const data = await res.json();
+    if (data.error) { alert(data.error); return; }
+    $('ac-edit-name').textContent = name;
+    $('ac-edit-name').dataset.name = name;
+    $('ac-edit-model').value = (data.frontmatter || {}).model || 'sonnet';
+    $('ac-edit-maxturns').value = (data.frontmatter || {}).maxTurns || 25;
+    $('ac-edit-desc').value = (data.frontmatter || {}).description || '';
+    $('ac-edit-instructions').value = data.body || '';
+    $('ac-edit-modal').style.display = '';
+  } catch(e) { alert(e.message); }
+}
+
+function acCloseEdit() { $('ac-edit-modal').style.display = 'none'; }
+
+async function acSaveEdit() {
+  const name = $('ac-edit-name').dataset.name;
+  const status = $('ac-edit-status');
+  const body = {
+    description: $('ac-edit-desc').value,
+    model: $('ac-edit-model').value,
+    maxTurns: parseInt($('ac-edit-maxturns').value, 10),
+    instructions: $('ac-edit-instructions').value,
+  };
+  status.textContent = 'Saving...'; status.style.color = '#9ca3af';
+  try {
+    const res = await fetch('/dashboard/api/agents/crud/' + encodeURIComponent(name), {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '✗ ' + (data.error||'Failed'); status.style.color = '#f87171'; return; }
+    status.textContent = '✓ Saved'; status.style.color = '#34d399';
+    acCloseEdit();
+    acLoadAgents();
+  } catch(e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
+}
+
+async function acDeleteAgent(name) {
+  if (!confirm('Delete agent "' + name + '"?')) return;
+  try {
+    const res = await fetch('/dashboard/api/agents/crud/' + encodeURIComponent(name), {method: 'DELETE'});
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Failed'); return; }
+    acLoadAgents();
+  } catch(e) { alert(e.message); }
+}
+
+// ── Workflow Builder ────────────────────────────────────────────────────────
+let _wfStepIdx = 0;
+
+function wfAddStep() {
+  const i = _wfStepIdx++;
+  const div = document.createElement('div');
+  div.id = 'wf-step-' + i;
+  div.className = 'bg-gray-900 border border-gray-700 rounded-lg px-4 py-3';
+  const existingIds = [];
+  document.querySelectorAll('[id^="wf-step-"]').forEach(el => {
+    const inp = el.querySelector('.wf-step-id');
+    if (inp && inp.value) existingIds.push(inp.value);
+  });
+  const depOpts = existingIds.map(id => '<option value="' + id + '">' + id + '</option>').join('');
+  div.innerHTML =
+    '<div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">'
+    + '<div><label class="text-xs text-gray-400 block mb-1">Step ID</label>'
+    + '<input class="wf-step-id w-full px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded font-mono" value="step-' + (i+1) + '"></div>'
+    + '<div><label class="text-xs text-gray-400 block mb-1">Agent</label>'
+    + '<input class="wf-step-agent w-full px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded font-mono" placeholder="agent-name" list="wf-agent-list"></div>'
+    + '<div><label class="text-xs text-gray-400 block mb-1">Depends On</label>'
+    + '<select class="wf-step-deps w-full px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded" multiple><option value="">none</option>' + depOpts + '</select></div>'
+    + '<div class="flex items-end"><button onclick="document.getElementById(\'wf-step-' + i + '\').remove()" class="px-2 py-1 text-xs bg-gray-800 hover:bg-red-900 rounded">✕ Remove</button></div>'
+    + '</div>'
+    + '<div><label class="text-xs text-gray-400 block mb-1">Prompt</label>'
+    + '<textarea class="wf-step-prompt w-full px-2 py-1 text-sm bg-gray-800 border border-gray-700 rounded font-mono resize-y" rows="2" placeholder="Analyze the target system..."></textarea></div>';
+  $('wf-steps').appendChild(div);
+}
+
+function wfClear() {
+  $('wf-steps').innerHTML = '';
+  $('wf-name').value = '';
+  _wfStepIdx = 0;
+}
+
+async function wfExecute() {
+  const status = $('wf-status');
+  const name = ($('wf-name') || {}).value || '';
+  if (!name.trim()) { status.textContent = '✗ Enter workflow name'; status.style.color = '#f87171'; return; }
+
+  const steps = [];
+  document.querySelectorAll('[id^="wf-step-"]').forEach(el => {
+    const id = el.querySelector('.wf-step-id').value.trim();
+    const agent = el.querySelector('.wf-step-agent').value.trim();
+    const prompt = el.querySelector('.wf-step-prompt').value.trim();
+    const deps = Array.from(el.querySelector('.wf-step-deps').selectedOptions)
+      .map(o => o.value).filter(Boolean);
+    if (id && agent && prompt) steps.push({id, agent, prompt, depends_on: deps});
+  });
+  if (!steps.length) { status.textContent = '✗ Add at least one step'; status.style.color = '#f87171'; return; }
+
+  status.textContent = '⏳ Executing...'; status.style.color = '#fbbf24';
+  try {
+    const res = await fetch('/dashboard/api/workflows', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name: name.trim(), steps, execute: true}),
+    });
+    const data = await res.json();
+    if (!res.ok) { status.textContent = '✗ ' + (data.error || 'Failed'); status.style.color = '#f87171'; return; }
+    status.textContent = '✓ ' + data.status; status.style.color = data.status === 'completed' ? '#34d399' : '#f87171';
+    wfRenderResult(data);
+  } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
+}
+
+function wfRenderResult(wf) {
+  const history = $('wf-history');
+  const card = document.createElement('div');
+  card.className = 'bg-gray-900 border border-gray-700 rounded-lg p-4';
+  const statusBadge = wf.status === 'completed'
+    ? '<span class="badge badge-ok">completed</span>'
+    : '<span class="badge badge-error">' + wf.status + '</span>';
+  let stepsHtml = '';
+  (wf.steps || []).forEach(s => {
+    const sBadge = s.status === 'completed' ? '✓' : s.status === 'failed' ? '✗' : s.status === 'skipped' ? '⊘' : '?';
+    const sColor = s.status === 'completed' ? 'text-green-400' : s.status === 'failed' ? 'text-red-400' : 'text-gray-500';
+    stepsHtml += '<div class="mb-2 border-b border-gray-800 pb-2">'
+      + '<div class="flex items-center gap-2 mb-1">'
+      + '<span class="' + sColor + ' font-mono text-xs">' + sBadge + ' ' + s.id + '</span>'
+      + '<span class="text-gray-500 text-xs">(' + s.agent + ', ' + s.elapsed_ms + 'ms)</span></div>';
+    if (s.result) stepsHtml += '<pre class="text-xs text-gray-300 whitespace-pre-wrap max-h-32 overflow-y-auto">' + (s.result||'').substring(0,1000) + '</pre>';
+    if (s.error) stepsHtml += '<div class="text-xs text-red-400">' + s.error + '</div>';
+    stepsHtml += '</div>';
+  });
+  card.innerHTML = '<div class="flex items-center gap-2 mb-2"><strong class="text-sm">' + (wf.name||wf.id) + '</strong> ' + statusBadge + '</div>' + stepsHtml;
+  history.prepend(card);
+}
+
+async function wfLoadAgentList() {
+  try {
+    const res = await fetch('/dashboard/api/team-agents');
+    const data = await res.json();
+    let dl = document.getElementById('wf-agent-list');
+    if (!dl) {
+      dl = document.createElement('datalist');
+      dl.id = 'wf-agent-list';
+      document.body.appendChild(dl);
+    }
+    dl.innerHTML = (data.agents||[]).map(a => '<option value="' + (a.name||'') + '">').join('');
+  } catch(e) { console.error(e); }
+}
+
 const _sseConns = {};
 const _sseConnected = new Set();
 
@@ -1310,6 +1603,9 @@ async function loadExplorerTable() {
 loadExplorerModels();
 loadSettings();
 loadTeamBuilder();
+tbLoadSavedTeams();
+acLoadAgents();
+wfLoadAgentList();
 loadOpenSearch();
 initSSE();
 

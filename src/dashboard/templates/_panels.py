@@ -308,18 +308,172 @@ def _team_builder() -> str:
 
         # ── Team Composer ────────────────────────────────────────────────────
         '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Team Composer</h4>\n'
+        '  <div class="mb-3">\n'
+        '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Team Name</label>\n'
+        '    <input id="tb-team-name" type="text" placeholder="my-team"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:300px">\n'
+        '  </div>\n'
         '  <div id="tb-phases" class="space-y-2 mb-3"></div>\n'
         '  <div class="flex items-center gap-3 mb-4">\n'
         '    <button onclick="tbAddPhase()"\n'
         '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">+ Add Phase</button>\n'
         '    <button onclick="tbGenerateTeam()"\n'
-        '      class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Generate JSON</button>\n'
+        '      class="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">Preview JSON</button>\n'
+        '    <button onclick="tbSaveTeam()"\n'
+        '      class="px-4 py-1.5 bg-green-700 hover:bg-green-600 text-sm rounded-lg font-semibold transition-colors">&#x1f4be; Save Team</button>\n'
         '    <button onclick="tbCopyTeam()"\n'
         '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">Copy</button>\n'
+        '    <span id="tb-save-status" class="text-xs"></span>\n'
         '  </div>\n'
+
+        # ── Saved Teams ──────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Saved Teams</h4>\n'
+        '  <div id="tb-saved-teams" class="mb-4"></div>\n'
+
         '  <pre id="tb-team-json" class="bg-gray-900 border border-gray-700 rounded-lg p-4 text-xs font-mono text-gray-300 whitespace-pre-wrap" style="display:none;max-height:300px;overflow-y:auto"></pre>\n'
         "</div>\n"
     )
+
+
+def _agent_craft() -> str:
+    return (
+        '<div id="tab-agent-craft" class="card" style="display:none">\n'
+        '  <h3 class="text-lg font-semibold mb-4">&#x1f527; Agent Craft</h3>\n'
+        '  <p class="text-xs text-gray-500 mb-4">Create, edit, and delete custom agent definitions. Changes are saved to <code>.claude/agents/</code>.</p>\n'
+
+        # ── Create Form ──────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Create Agent</h4>\n'
+        '  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">\n'
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Name</label>\n'
+        '      <input id="ac-name" type="text" placeholder="my-analyst"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none font-mono" />\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Model</label>\n'
+        '      <select id="ac-model"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
+        '        <option value="sonnet">sonnet</option>\n'
+        '        <option value="haiku">haiku</option>\n'
+        '        <option value="opus">opus</option>\n'
+        '      </select>\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Max Turns</label>\n'
+        '      <input id="ac-maxturns" type="number" value="25" min="1" max="100"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" />\n'
+        '    </div>\n'
+        '  </div>\n'
+
+        '  <div class="mb-3">\n'
+        '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Description</label>\n'
+        '    <textarea id="ac-desc" rows="2" placeholder="What this agent specializes in..."\n'
+        '      class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none resize-y"></textarea>\n'
+        '  </div>\n'
+
+        '  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">\n'
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Tools <span class="text-gray-600">(check to include)</span></label>\n'
+        '      <div id="ac-tools" class="flex flex-wrap gap-2">\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Read" checked> Read</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Write" checked> Write</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Edit" checked> Edit</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Bash" checked> Bash</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Glob" checked> Glob</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Grep" checked> Grep</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="WebSearch"> WebSearch</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="WebFetch"> WebFetch</label>\n'
+        '        <label class="inline-flex items-center gap-1 text-xs"><input type="checkbox" value="Task"> Task</label>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">MCP Servers <span class="text-gray-600">(comma-sep)</span></label>\n'
+        '      <input id="ac-mcp" type="text" value="cybersec" placeholder="cybersec, dystopian"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none font-mono" />\n'
+        '    </div>\n'
+        '  </div>\n'
+
+        '  <div class="mb-3">\n'
+        '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Instructions <span class="text-gray-600">(markdown body)</span></label>\n'
+        '    <textarea id="ac-instructions" rows="6" placeholder="## Role\\nYou are a specialist that..."\n'
+        '      class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none resize-y font-mono"></textarea>\n'
+        '  </div>\n'
+
+        '  <div class="flex items-center gap-3 mb-6">\n'
+        '    <button onclick="acCreateAgent()"\n'
+        '      class="px-4 py-2 bg-green-700 hover:bg-green-600 text-sm rounded-lg font-semibold transition-colors">&#x2795; Create Agent</button>\n'
+        '    <span id="ac-status" class="text-xs"></span>\n'
+        '  </div>\n'
+
+        # ── Existing Agents ──────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">Existing Agents</h4>\n'
+        '  <div class="flex items-center gap-3 mb-3">\n'
+        '    <input id="ac-filter" type="text" placeholder="Filter agents..." oninput="acFilterAgents()"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:240px">\n'
+        '    <button onclick="acLoadAgents()"\n'
+        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">&#x21bb; Refresh</button>\n'
+        '    <span id="ac-count" class="text-xs text-gray-500"></span>\n'
+        '  </div>\n'
+        '  <div id="ac-agents-table"></div>\n'
+
+        # ── Edit Modal ───────────────────────────────────────────────────────
+        '  <div id="ac-edit-modal" style="display:none" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">\n'
+        '    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">\n'
+        '      <h4 class="text-lg font-semibold mb-3">Edit Agent: <span id="ac-edit-name" class="text-cyan-400"></span></h4>\n'
+        '      <div class="grid grid-cols-2 gap-3 mb-3">\n'
+        '        <div><label class="text-xs text-gray-400 block mb-1">Model</label>\n'
+        '          <select id="ac-edit-model" class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg">\n'
+        '            <option value="sonnet">sonnet</option><option value="haiku">haiku</option><option value="opus">opus</option>\n'
+        '          </select></div>\n'
+        '        <div><label class="text-xs text-gray-400 block mb-1">Max Turns</label>\n'
+        '          <input id="ac-edit-maxturns" type="number" class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg" /></div>\n'
+        '      </div>\n'
+        '      <div class="mb-3"><label class="text-xs text-gray-400 block mb-1">Description</label>\n'
+        '        <textarea id="ac-edit-desc" rows="2" class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg resize-y"></textarea></div>\n'
+        '      <div class="mb-3"><label class="text-xs text-gray-400 block mb-1">Instructions</label>\n'
+        '        <textarea id="ac-edit-instructions" rows="8" class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg resize-y font-mono"></textarea></div>\n'
+        '      <div class="flex items-center gap-3">\n'
+        '        <button onclick="acSaveEdit()" class="px-4 py-2 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold">Save</button>\n'
+        '        <button onclick="acCloseEdit()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-sm rounded-lg">Cancel</button>\n'
+        '        <span id="ac-edit-status" class="text-xs"></span>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '  </div>\n'
+
+        "</div>\n"
+    )
+
+
+def _workflows() -> str:
+    return (
+        '<div id="tab-workflows" class="card" style="display:none">\n'
+        '  <h3 class="text-lg font-semibold mb-4">&#x1f504; Workflow Builder</h3>\n'
+        '  <p class="text-xs text-gray-500 mb-4">Create multi-step agent pipelines. Steps run in dependency order; use <code>{{step_id}}</code> in prompts to reference prior results.</p>\n'
+
+        # ── Create Workflow ───────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">New Workflow</h4>\n'
+        '  <div class="mb-3">\n'
+        '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Workflow Name</label>\n'
+        '    <input id="wf-name" type="text" placeholder="my-investigation"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:300px">\n'
+        '  </div>\n'
+        '  <div id="wf-steps" class="space-y-3 mb-3"></div>\n'
+        '  <div class="flex items-center gap-3 mb-4">\n'
+        '    <button onclick="wfAddStep()"\n'
+        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">+ Add Step</button>\n'
+        '    <button onclick="wfExecute()"\n'
+        '      class="px-4 py-1.5 bg-green-700 hover:bg-green-600 text-sm rounded-lg font-semibold transition-colors">&#x25b6; Execute</button>\n'
+        '    <button onclick="wfClear()"\n'
+        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">Clear</button>\n'
+        '    <span id="wf-status" class="text-xs"></span>\n'
+        '  </div>\n'
+
+        # ── Results ──────────────────────────────────────────────────────────
+        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">History</h4>\n'
+        '  <div id="wf-history" class="space-y-4"></div>\n'
+        "</div>\n"
+    )
+
 
 
 def _settings() -> str:
@@ -429,6 +583,8 @@ def all_panels() -> str:
         _agent_query(),
         _settings(),
         _team_builder(),
+        _agent_craft(),
+        _workflows(),
         _telemetry(),
         _opensearch(),
         _explorer(),

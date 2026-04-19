@@ -48,9 +48,11 @@ from dashboard.api.sse import (
     sse_telemetry,
 )
 from dashboard.api.settings import api_settings_get, api_settings_patch
-from dashboard.api.team_builder import api_team_agents, api_skills, api_teams
+from dashboard.api.team_builder import api_team_agents, api_skills, api_teams, api_team_create, api_team_update, api_team_delete, api_team_get
 from dashboard.api.opensearch_stats import api_opensearch
 from dashboard.api.page import dashboard_page
+from dashboard.api.agent_crud import api_agent_create, api_agent_update, api_agent_delete, api_agent_get
+from dashboard.api.workflows import api_workflow_create, api_workflow_list, api_workflow_get, api_workflow_cancel
 
 __all__ = [
     # core
@@ -101,6 +103,20 @@ __all__ = [
     "api_team_agents",
     "api_skills",
     "api_teams",
+    "api_team_create",
+    "api_team_update",
+    "api_team_delete",
+    "api_team_get",
+    # agent crud
+    "api_agent_create",
+    "api_agent_update",
+    "api_agent_delete",
+    "api_agent_get",
+    # workflows
+    "api_workflow_create",
+    "api_workflow_list",
+    "api_workflow_get",
+    "api_workflow_cancel",
     # opensearch
     "api_opensearch",
     # page

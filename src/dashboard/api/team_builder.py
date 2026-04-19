@@ -154,3 +154,165 @@ async def api_teams(request: Request) -> JSONResponse:
         return JSONResponse({"total": len(teams), "teams": teams})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── Team CRUD ────────────────────────────────────────────────────────────────
+
+async def api_team_create(request: Request) -> JSONResponse:
+    """POST /api/teams — create a new team definition.
+
+    Body: {name, description?, phases: [{name, agents: [str], goal?}]}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    name = body.get("name", "").strip()
+    if not name:
+        return JSONResponse({"error": "name is required"}, status_code=400)
+
+    slug = re.sub(r"[^a-z0-9-]", "-", name.lower())
+    slug = re.sub(r"-+", "-", slug).strip("-")
+    if not slug:
+        return JSONResponse({"error": "name produces empty slug"}, status_code=400)
+
+    teams_dir = _AGENTS_DIR / "teams"
+    teams_dir.mkdir(parents=True, exist_ok=True)
+    filepath = teams_dir / f"{slug}.md"
+
+    if filepath.exists():
+        return JSONResponse({"error": f"team '{slug}' already exists"}, status_code=409)
+
+    phases = body.get("phases", [])
+    description = body.get("description", f"Team workflow: {name}")
+
+    # Build frontmatter
+    lines = [
+        "---",
+        f"name: {slug}",
+        "role: team-mode",
+        f"description: {description}",
+        "---",
+        "",
+        f"# {name.replace('-', ' ').title()}",
+        "",
+        description,
+        "",
+    ]
+
+    # Build phases as markdown sections
+    if phases:
+        lines.append("## Phases")
+        lines.append("")
+        for i, phase in enumerate(phases, 1):
+            phase_name = phase.get("name", f"Phase {i}")
+            agents = phase.get("agents", [])
+            goal = phase.get("goal", "")
+            lines.append(f"### {i}. {phase_name}")
+            if goal:
+                lines.append(f"**Goal**: {goal}")
+            lines.append(f"**Agents**: {', '.join(agents) if agents else 'none'}")
+            lines.append("")
+
+    content = "\n".join(lines) + "\n"
+    filepath.write_text(content, encoding="utf-8")
+
+    return JSONResponse({
+        "status": "created",
+        "team": slug,
+        "file": filepath.name,
+        "phases": len(phases),
+    }, status_code=201)
+
+
+async def api_team_update(request: Request) -> JSONResponse:
+    """PUT /api/teams/{name} — update a team definition."""
+    name = request.path_params.get("name", "").strip()
+    if not name:
+        return JSONResponse({"error": "team name is required"}, status_code=400)
+
+    teams_dir = _AGENTS_DIR / "teams"
+    filepath = teams_dir / f"{name}.md"
+    if not filepath.exists():
+        return JSONResponse({"error": f"team '{name}' not found"}, status_code=404)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    phases = body.get("phases", [])
+    description = body.get("description", f"Team workflow: {name}")
+
+    lines = [
+        "---",
+        f"name: {name}",
+        "role: team-mode",
+        f"description: {description}",
+        "---",
+        "",
+        f"# {name.replace('-', ' ').title()}",
+        "",
+        description,
+        "",
+    ]
+
+    if phases:
+        lines.append("## Phases")
+        lines.append("")
+        for i, phase in enumerate(phases, 1):
+            phase_name = phase.get("name", f"Phase {i}")
+            agents = phase.get("agents", [])
+            goal = phase.get("goal", "")
+            lines.append(f"### {i}. {phase_name}")
+            if goal:
+                lines.append(f"**Goal**: {goal}")
+            lines.append(f"**Agents**: {', '.join(agents) if agents else 'none'}")
+            lines.append("")
+
+    content = "\n".join(lines) + "\n"
+    filepath.write_text(content, encoding="utf-8")
+
+    return JSONResponse({"status": "updated", "team": name})
+
+
+async def api_team_delete(request: Request) -> JSONResponse:
+    """DELETE /api/teams/{name} — delete a team definition."""
+    name = request.path_params.get("name", "").strip()
+    if not name:
+        return JSONResponse({"error": "team name is required"}, status_code=400)
+
+    # Protect built-in teams
+    if name in ("blue-team", "red-team", "purple-team"):
+        return JSONResponse({"error": f"cannot delete built-in team: {name}"}, status_code=403)
+
+    teams_dir = _AGENTS_DIR / "teams"
+    filepath = teams_dir / f"{name}.md"
+    if not filepath.exists():
+        return JSONResponse({"error": f"team '{name}' not found"}, status_code=404)
+
+    filepath.unlink()
+    return JSONResponse({"status": "deleted", "team": name})
+
+
+async def api_team_get(request: Request) -> JSONResponse:
+    """GET /api/teams/{name} — get full team definition."""
+    name = request.path_params.get("name", "").strip()
+    if not name:
+        return JSONResponse({"error": "team name is required"}, status_code=400)
+
+    teams_dir = _AGENTS_DIR / "teams"
+    filepath = teams_dir / f"{name}.md"
+    if not filepath.exists():
+        return JSONResponse({"error": f"team '{name}' not found"}, status_code=404)
+
+    text = filepath.read_text(encoding="utf-8", errors="replace")
+    fm = _parse_frontmatter(text)
+
+    return JSONResponse({
+        "team": fm.get("name", name),
+        "file": filepath.name,
+        "frontmatter": fm,
+        "raw": text,
+    })
