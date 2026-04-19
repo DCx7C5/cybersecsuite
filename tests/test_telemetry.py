@@ -1,157 +1,124 @@
-"""Tests for telemetry — metrics store, middleware, collectors."""
+"""Tests for telemetry — metrics store, path normalization, aggregation."""
 
 import pytest
 
 from telemetry import (
     record_event,
     get_snapshot,
-    metrics_store,
     TelemetryEvent,
 )
-from telemetry.middleware import TelemetryMiddleware
+from telemetry.store import MetricsStore
+from telemetry.middleware import _normalise
 
 
+@pytest.mark.anyio
 class TestTelemetryStore:
     """Test in-process metrics store."""
 
-    def test_record_event(self):
-        """Test recording a telemetry event."""
-        event = TelemetryEvent(
-            metric_name="test_metric",
-            value=42,
-            tags={"status": "ok"},
-        )
-        record_event(event)
-        # Event should be stored in ring buffer
-        assert len(metrics_store.events) > 0
-
-    def test_get_snapshot(self):
-        """Test getting a snapshot of metrics."""
-        record_event(TelemetryEvent(metric_name="test1", value=10))
-        record_event(TelemetryEvent(metric_name="test2", value=20))
-
-        snapshot = get_snapshot()
+    async def test_record_event(self):
+        event = TelemetryEvent(name="test.metric", value=42.0, labels={"status": "ok"})
+        await record_event(event.name, event.value, event.labels)
+        snapshot = await get_snapshot()
         assert isinstance(snapshot, dict)
-        assert "timestamp" in snapshot
 
-    def test_metrics_store_ring_buffer(self):
-        """Test that metrics store uses ring buffer (max 1000 events)."""
-        # Record many events
-        for i in range(1500):
-            record_event(
-                TelemetryEvent(
-                    metric_name=f"metric_{i}",
-                    value=i,
-                )
-            )
-        # Should not exceed 1000 (ring buffer limit)
-        assert len(metrics_store.events) <= 1000
+    async def test_get_snapshot(self):
+        await record_event("snap.test1", 10.0)
+        await record_event("snap.test2", 20.0)
+        snapshot = await get_snapshot()
+        assert isinstance(snapshot, dict)
 
+    async def test_metrics_store_ring_buffer(self):
+        store = MetricsStore(ring_max=100)
+        for i in range(150):
+            await store.record(TelemetryEvent(name="ring.test", value=float(i)))
+        summary = await store.get_summary("ring.test")
+        assert summary is not None
+        assert summary.count <= 100
 
-class TestTelemetryMiddleware:
-    """Test ASGI telemetry middleware."""
-
-    @pytest.mark.asyncio
-    async def test_middleware_initialization(self):
-        """Test middleware initializes."""
-
-        async def dummy_app(scope, receive, send):
-            await send(
-                {
-                    "type": "http.response.start",
-                    "status": 200,
-                }
-            )
-
-        middleware = TelemetryMiddleware(dummy_app)
-        assert middleware.app == dummy_app
-
-    @pytest.mark.asyncio
-    async def test_path_normalization(self):
-        """Test path normalization for metrics."""
-        # Test that UUID paths are normalized to /{uuid} tag
-        paths = [
-            "/api/findings/123e4567-e89b-12d3-a456-426614174000",
-            "/api/findings/987654321",
-            "/api/findings/abc-def-ghi",
-        ]
-        for path in paths:
-            normalized = TelemetryMiddleware._normalize_path(path)
-            # Should normalize ID patterns
-            assert normalized
+    async def test_metrics_store_keys(self):
+        store = MetricsStore()
+        await store.record(TelemetryEvent(name="keys.a", value=1.0))
+        await store.record(TelemetryEvent(name="keys.b", value=2.0))
+        keys = await store.keys()
+        assert "keys.a" in keys
+        assert "keys.b" in keys
 
 
+class TestPathNormalization:
+    """Test path normalization for metrics keys."""
+
+    def test_uuid_normalization(self):
+        path = "/api/findings/123e4567-e89b-12d3-a456-426614174000"
+        result = _normalise(path)
+        assert "{" in result or result != path
+
+    def test_numeric_id_normalization(self):
+        path = "/api/findings/987654321"
+        result = _normalise(path)
+        assert result
+
+    def test_plain_path_unchanged(self):
+        path = "/api/v1/chat"
+        result = _normalise(path)
+        assert result == "/api/v1/chat"
+
+
+@pytest.mark.anyio
 class TestTelemetryMetrics:
     """Test specific metrics collection."""
 
-    def test_request_latency_metric(self):
-        """Test recording request latency."""
-        event = TelemetryEvent(
-            metric_name="http.request.duration_ms",
-            value=123.45,
-            tags={"path": "/api/v1/chat", "method": "POST"},
+    async def test_request_latency_metric(self):
+        await record_event(
+            "http.request.duration_ms", 123.45,
+            {"path": "/api/v1/chat", "method": "POST"},
         )
-        record_event(event)
-        snapshot = get_snapshot()
+        snapshot = await get_snapshot()
         assert snapshot is not None
 
-    def test_error_rate_metric(self):
-        """Test recording error metrics."""
-        for i in range(5):
-            event = TelemetryEvent(
-                metric_name="http.error",
-                value=1,
-                tags={"status": "500", "path": "/api/test"},
-            )
-            record_event(event)
-
-        snapshot = get_snapshot()
+    async def test_error_rate_metric(self):
+        for _ in range(5):
+            await record_event("http.error", 1.0, {"status": "500", "path": "/api/test"})
+        snapshot = await get_snapshot()
         assert snapshot is not None
 
-    def test_token_usage_metric(self):
-        """Test recording token usage."""
-        event = TelemetryEvent(
-            metric_name="ai.tokens.used",
-            value=1250,
-            tags={"model": "claude-opus", "direction": "input"},
+    async def test_token_usage_metric(self):
+        await record_event(
+            "ai.tokens.used", 1250.0,
+            {"model": "claude-opus", "direction": "input"},
         )
-        record_event(event)
-        snapshot = get_snapshot()
+        snapshot = await get_snapshot()
         assert snapshot is not None
 
 
+@pytest.mark.anyio
 class TestMetricsAggregation:
     """Test metrics aggregation and summaries."""
 
-    def test_snapshot_includes_summary(self):
-        """Test that snapshots include aggregated metrics."""
-        # Record multiple events of same metric
+    async def test_summary_for_metric(self):
+        store = MetricsStore()
         for i in range(10):
-            record_event(
-                TelemetryEvent(
-                    metric_name="response_time",
-                    value=50 + i * 10,
-                )
-            )
+            await store.record(TelemetryEvent(name="agg.response_time", value=50.0 + i * 10))
+        summary = await store.get_summary("agg.response_time")
+        assert summary is not None
+        assert summary.count == 10
+        assert summary.mean > 0
 
-        snapshot = get_snapshot()
-        # Snapshot should have timestamp and metrics
-        assert "timestamp" in snapshot
+    async def test_percentile_calculations(self):
+        store = MetricsStore()
+        for lat in [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]:
+            await store.record(TelemetryEvent(name="agg.latency", value=float(lat)))
+        summary = await store.get_summary("agg.latency")
+        assert summary is not None
+        assert summary.p50 > 0
+        assert summary.p95 >= summary.p50
+        assert summary.p99 >= summary.p95
 
-    def test_percentile_calculations(self):
-        """Test p50, p95, p99 percentile calculations."""
-        # Record latencies
-        latencies = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-        for lat in latencies:
-            record_event(
-                TelemetryEvent(
-                    metric_name="latency_ms",
-                    value=lat,
-                )
-            )
-
-        snapshot = get_snapshot()
-        assert snapshot is not None
+    async def test_snapshot_returns_all_metrics(self):
+        store = MetricsStore()
+        await store.record(TelemetryEvent(name="snap.a", value=1.0))
+        await store.record(TelemetryEvent(name="snap.b", value=2.0))
+        snapshot = await store.get_snapshot()
+        assert isinstance(snapshot, dict)
 
 
 if __name__ == "__main__":
