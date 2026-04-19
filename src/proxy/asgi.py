@@ -40,6 +40,9 @@ from ai_proxy.providers.registry import get_enabled_providers
 from dashboard.routes import create_dashboard_router
 from telemetry.middleware import TelemetryMiddleware
 from telemetry.collector import collector as _telemetry_collector
+from logger import root_logger
+
+log = root_logger.getChild("asgi")
 
 
 # ── Port / TLS configuration ─────────────────────────────────────────────────
@@ -72,6 +75,7 @@ def get_ssl_context() -> ssl.SSLContext | None:
 
 async def _on_startup() -> None:
     """Initialize DB + AI proxy rate limiters on startup."""
+    log.info("ASGI startup — initialising database and rate limiters")
     auto_create = os.environ.get("CYBERSEC_AUTO_CREATE_DB", "false").lower() == "true"
     auto_intel = os.environ.get("CYBERSEC_BOOTSTRAP_INTEL_ON_START", "false").lower() == "true"
     await init_tortoise_async(create_db=auto_create, bootstrap_intel=auto_intel)
@@ -94,11 +98,13 @@ async def _on_startup() -> None:
 
         await ensure_indices()
         start_flush_loop()
-    except Exception:
-        pass
+        log.info("OpenSearch indices ready")
+    except Exception as exc:
+        log.warning("OpenSearch unavailable — continuing without it: %s", exc)
 
 
 async def _on_shutdown() -> None:
+    log.info("ASGI shutdown — flushing telemetry and closing connections")
     _telemetry_collector.stop()
 
     try:
@@ -108,11 +114,13 @@ async def _on_shutdown() -> None:
         stop_flush_loop()
         await flush_all()
         await close_client()
-    except Exception:
-        pass
+        log.info("OpenSearch flushed and closed")
+    except Exception as exc:
+        log.warning("OpenSearch shutdown error: %s", exc)
 
     await cleanup_executors()
     await close_tortoise()
+    log.info("ASGI shutdown complete")
 
 
 # ── Health endpoint ───────────────────────────────────────────────────────────
@@ -121,8 +129,11 @@ async def _on_shutdown() -> None:
 async def health(request: Request) -> JSONResponse:
     from db.bootstrap import get_database_health_async
 
+    log.debug("Health check requested")
     data = await get_database_health_async(check_connection=True, include_counts=False)
     status_code = 200 if data.get("status") == "ok" else 503
+    if status_code != 200:
+        log.warning("Health check failed: %s", data)
     return JSONResponse(data, status_code=status_code)
 
 

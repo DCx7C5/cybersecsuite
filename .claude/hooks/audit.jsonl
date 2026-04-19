@@ -1,0 +1,34 @@
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-17T21:34:30.676328+00:00"}
+{"event": "FirstInit", "host": "anonsys", "ts": "2026-04-17T21:35:17.520634+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-17T21:35:43.873845+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-17T21:36:11.387761+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-17T21:38:26.345542+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T01:45:19.335116+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T01:46:40.836556+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T01:50:59.250607+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T03:16:26.413217+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T03:17:58.770030+00:00"}
+{"event": "AgentEnd", "agent": "unknown", "stats": {"findings": 0, "iocs": 0, "artifacts": 0}, "ts": "2026-04-18T03:21:00.601085+00:00"}
+{"event": "AgentStart", "agent": "unknown", "session_id": "", "ts": "2026-04-18T03:21:00.686943+00:00"}
+{"event": "BaselineUpdated", "domain": "unknown", "scope": "full", "ts": "2026-04-18T03:21:00.763471+00:00"}
+{"event": "EvidenceCollected", "evidence_id": "EVID-20260418032100", "type": "digital_evidence", "priority": "LOW", "ts": "2026-04-18T03:21:00.937061+00:00"}
+{"event": "FindingConfirmed", "finding_id": "F-20260418032101", "severity": "medium", "status": "confirmed", "ts": "2026-04-18T03:21:01.212166+00:00"}
+{"event": "InvestigationEnd", "investigation_id": "unknown", "verdict": "inconclusive", "stats": {"findings": 0, "iocs": 0, "artifacts": 0, "threats": 0}, "ts": "2026-04-18T03:21:01.376836+00:00"}
+{"event": "InvestigationStart", "investigation_id": "INV-20260418-032101", "target": "anonsys", "ts": "2026-04-18T03:21:01.449442+00:00"}
+{"event": "IOCDiscovered", "ioc": "unknown", "type": "unknown", "severity": "medium", "ts": "2026-04-18T03:21:01.522556+00:00"}
+{"event": "ModeSwitch", "mode": "blue", "agent": "unknown", "ts": "2026-04-18T03:21:01.595322+00:00"}
+{"event": "PermissionViolation", "ts": "2026-04-18T03:21:01.667227+00:00", "agent": "unknown", "action": "unknown", "resource": "unknown", "reason": "Unauthorized"}
+{"event": "PhaseEnd", "phase": "Unknown Phase", "stats": {"findings": 0, "iocs": 0, "artifacts": 0, "evidence_files": 0}, "ts": "2026-04-18T03:21:01.739967+00:00"}
+{"event": "PhaseStart", "phase": "Unknown Phase", "investigation_id": "20260418_032101", "ts": "2026-04-18T03:21:01.814270+00:00"}
+{"event": "PostToolUse", "tool": "unknown", "agent": "MCP", "ts": "2026-04-18T03:21:01.920893+00:00"}
+{"event": "RootCommandExecuted", "ts": "2026-04-18T03:21:02.050790+00:00", "agent": "unknown", "command": "unknown", "run_as_uid": 1000, "exit_code": null, "risk_level": "MEDIUM", "mode": "blue"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T03:21:02.199831+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T03:24:44.583862+00:00"}
+{"ts": "2026-04-18T03:27:56.389668+00:00", "event": "pre_tool_call", "session_id": "test", "tool": "", "input_keys": ["command"]}
+{"event": "PostToolUse", "tool": "Bash", "agent": "MCP", "ts": "2026-04-18T03:27:56.458569+00:00"}
+{"event": "AgentStart", "agent": "unknown", "session_id": "test", "ts": "2026-04-18T03:27:56.613269+00:00"}
+{"event": "AgentEnd", "agent": "unknown", "stats": {"findings": 0, "iocs": 0, "artifacts": 0}, "ts": "2026-04-18T03:27:56.692693+00:00"}
+{"event": "UserPromptSubmit", "prompt_length": 11, "context_injected": [], "ts": "2026-04-18T03:30:44.865491+00:00"}
+{"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T05:47:05.688471+00:00"}
+{"event": "UserPromptSubmit", "prompt_length": 4, "context_injected": [], "ts": "2026-04-18T05:47:15.226497+00:00"}
+{"ts": "2026-04-18T05:48:11.696187+00:00", "event": "pre_tool_call", "session_id": "unknown", "tool": "bash", "input_keys": ["command"]}
