@@ -12,33 +12,33 @@ _CSS = """\
 <style>
 /* ── Design tokens ── */
 :root {
-  --bg:          #0d1117;
-  --bg-deep:     #080b10;
-  --surface:     #111820;
-  --surface-2:   #161d28;
-  --border:      #1e2d3d;
-  --border-glow: rgba(99,102,241,0.35);
-  --accent:      #6366f1;
-  --accent-dim:  #4f46e5;
-  --accent-glow: rgba(99,102,241,0.12);
-  --cyan:        #38bdf8;
-  --cyan-glow:   rgba(56,189,248,0.12);
-  --amber:       #f59e0b;
-  --amber-glow:  rgba(245,158,11,0.12);
-  --red:         #ef4444;
-  --red-glow:    rgba(239,68,68,0.12);
-  --violet:      #a78bfa;
-  --success:      #10b981;
-  --success-glow: rgba(16,185,129,0.12);
-  --text-primary:  #e2eaf4;
-  --text-muted:    #64748b;
-  --text-faint:    #374151;
+  --bg:          #1e1f22;
+  --bg-deep:     #18191c;
+  --surface:     #2b2d30;
+  --surface-2:   #313438;
+  --border:      #3d3f43;
+  --border-glow: rgba(53,116,240,0.4);
+  --accent:      #3574f0;
+  --accent-dim:  #2d6099;
+  --accent-glow: rgba(53,116,240,0.12);
+  --cyan:        #6897bb;
+  --cyan-glow:   rgba(104,151,187,0.12);
+  --amber:       #cb902e;
+  --amber-glow:  rgba(203,144,46,0.12);
+  --red:         #c75450;
+  --red-glow:    rgba(199,84,80,0.12);
+  --violet:      #9876aa;
+  --success:     #6a9955;
+  --success-glow:rgba(106,153,85,0.12);
+  --text-primary: #cdd1d9;
+  --text-muted:   #808590;
+  --text-faint:   #4e5157;
   --font-ui:   'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --sidebar-w: 260px;
-  --header-h:  56px;
-  --radius:    8px;
-  --radius-lg: 12px;
+  --sidebar-w: 240px;
+  --header-h:  48px;
+  --radius:    6px;
+  --radius-lg: 8px;
 }
 
 /* ── Reset & base ── */
@@ -60,8 +60,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(99,102,241,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99,102,241,0.015) 1px, transparent 1px);
+    linear-gradient(rgba(53,116,240,0.008) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53,116,240,0.008) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
@@ -76,8 +76,8 @@ body::after {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0,0,0,0.04) 2px,
-    rgba(0,0,0,0.04) 4px
+    rgba(0,0,0,0.06) 2px,
+    rgba(0,0,0,0.06) 4px
   );
   pointer-events: none;
   z-index: 0;
@@ -169,16 +169,16 @@ body::after {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-faint);
-  padding: 16px 20px 4px;
+  padding: 14px 16px 3px;
 }
 
 .tab {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 20px;
+  gap: 8px;
+  padding: 6px 16px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
   border-left: 2px solid transparent;
@@ -190,13 +190,13 @@ body::after {
 }
 
 .tab:hover {
-  background: rgba(99,102,241,0.05);
+  background: rgba(53,116,240,0.08);
   color: var(--text-primary);
-  border-left-color: rgba(99,102,241,0.3);
+  border-left-color: rgba(53,116,240,0.4);
 }
 
 .tab.active {
-  background: var(--accent-glow);
+  background: rgba(53,116,240,0.15);
   color: var(--accent);
   border-left-color: var(--accent);
   font-weight: 600;
@@ -286,7 +286,7 @@ body::after {
 }
 
 /* ── Content area ── */
-#content { padding: 24px; flex: 1; }
+#content { padding: 24px 24px 28px; flex: 1; }
 
 /* ── Stats row ── */
 .stats-grid {
@@ -373,7 +373,7 @@ body::after {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   padding: 20px;
   transition: border-color 0.2s;
 }
@@ -402,7 +402,7 @@ body::after {
   height: 18px;
   background: var(--accent);
   border-radius: 2px;
-  box-shadow: 0 0 8px var(--accent);
+  box-shadow: 0 0 6px var(--accent);
   flex-shrink: 0;
 }
 
@@ -473,7 +473,7 @@ td {
 tr:last-child td { border-bottom: none; }
 
 tr:hover td {
-  background: rgba(99,102,241,0.03);
+  background: rgba(53,116,240,0.04);
 }
 
 /* Search + filter bar */
@@ -514,23 +514,25 @@ tr:hover td {
 }
 
 .rt-btn {
-  padding: 4px 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text-muted);
+  padding: 4px 10px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  color: var(--text-muted) !important;
   cursor: pointer !important;
-  transition: all 0.15s;
-  display: inline-flex;
-  align-items: center;
-  appearance: none;
-  -webkit-appearance: none;
+  transition: all 0.15s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  line-height: 1.2 !important;
+  user-select: none !important;
 }
 
-.rt-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-.rt-btn:disabled { opacity: 0.3; cursor: default; }
+.rt-btn:hover:not(:disabled) { border-color: var(--accent) !important; color: var(--accent) !important; background: var(--accent-glow) !important; }
+.rt-btn:disabled { opacity: 0.3 !important; cursor: default !important; }
 
 /* ── Badges ── */
 .badge {
@@ -544,8 +546,8 @@ tr:hover td {
   text-transform: uppercase;
 }
 
-.badge-free     { background: rgba(99,102,241,0.12);  color: var(--accent); border: 1px solid rgba(99,102,241,0.3); }
-.badge-budget   { background: rgba(56,189,248,0.10);  color: var(--cyan);   border: 1px solid rgba(56,189,248,0.3); }
+.badge-free     { background: rgba(53,116,240,0.12);  color: var(--accent); border: 1px solid rgba(53,116,240,0.3); }
+.badge-budget   { background: rgba(104,151,187,0.10); color: var(--cyan);   border: 1px solid rgba(104,151,187,0.3); }
 .badge-standard { background: rgba(167,139,250,0.12); color: var(--violet); border: 1px solid rgba(167,139,250,0.3); }
 .badge-premium  { background: rgba(239,68,68,0.12);   color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
 .badge-ok       { background: rgba(16,185,129,0.12);  color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
@@ -636,7 +638,7 @@ label {
 }
 
 /* ── Glow text ── */
-.glow-green { color: var(--accent); text-shadow: 0 0 16px rgba(99,102,241,0.5); }
+.glow-green { color: var(--accent); text-shadow: 0 0 12px rgba(53,116,240,0.5); }
 .glow-cyan  { color: var(--cyan);   text-shadow: 0 0 16px rgba(0,212,255,0.5); }
 
 /* ── Responsive ── */
@@ -692,7 +694,7 @@ label {
 .toggle-switch input:checked + .toggle-slider::before {
   transform: translateX(18px);
   background: var(--accent);
-  box-shadow: 0 0 6px rgba(99,102,241,0.5);
+  box-shadow: 0 0 4px rgba(53,116,240,0.4);
 }
 .toggle-grid {
   display: grid;
@@ -700,6 +702,12 @@ label {
   gap: 2px;
 }
 .toggles-loading { color: var(--text-muted); font-family: var(--font-mono); font-size: 12px; padding: 12px 0; }
+.ide-panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1px 0;
+}
 </style>"""
 
 
@@ -716,7 +724,7 @@ def head() -> str:
 
 
 def header() -> str:
-    """Top bar: tab breadcrumb + refresh/uptime."""
+    """Top bar: tab breadcrumb + refresh/uptime. Includes bottom status bar."""
     return (
         '<div id="topbar">\n'
         '  <div id="topbar-title" id="topbar-crumb">&#x25b6; PROVIDERS</div>\n'
@@ -724,6 +732,16 @@ def header() -> str:
         '    <span id="uptime"></span>\n'
         '    <button class="btn btn-ghost" onclick="refresh()">&#x21bb; REFRESH</button>\n'
         '  </div>\n'
+        '</div>\n'
+        '<div id="statusbar" style="'
+        'position: fixed; bottom: 0; left: var(--sidebar-w); right: 0;'
+        'height: 24px; background: var(--accent);'
+        'display: flex; align-items: center; padding: 0 16px; gap: 16px;'
+        'font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.85);'
+        'z-index: 200; border-top: 1px solid var(--border-glow);'
+        '">\n'
+        '  <span id="sb-tab">&#x2B21; PROVIDERS</span>\n'
+        '  <span style="margin-left:auto" id="sb-time"></span>\n'
         '</div>\n'
     )
 

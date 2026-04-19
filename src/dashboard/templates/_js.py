@@ -15,6 +15,7 @@ function showTab(name) {
   const crumb = document.querySelector('#topbar-title');
   if (crumb && navItem) crumb.textContent = '▶ ' + navItem.textContent.trim().toUpperCase();
   currentTab = name;
+  _updateStatusBar(name);
 }
 
 function fmt(n) {
@@ -991,6 +992,7 @@ async function loadSettingsToggles() {
     _renderGlobalMcpToggles(globalMcpRes.servers || []);
     _renderEnvTable('settings-global-env', globalEnvRes.env || {});
     _renderEnvTable('settings-project-env', projectEnvRes.env || {});
+    loadGlobalHooks();
   } catch(e) { console.error('loadSettingsToggles:', e); }
 }
 
@@ -1037,9 +1039,11 @@ function _renderGlobalMcpToggles(servers) {
   el.classList.remove('toggles-loading');
   el.innerHTML = servers.map(s =>
     '<div class="toggle-row">'
-    + '<div><div class="toggle-label">' + s.name + '</div>'
+    + '<div style="flex:1"><div class="toggle-label">' + s.name + '</div>'
     + '<div class="toggle-sub">' + (s.command || '') + '</div></div>'
     + _toggleSwitch('gmcp-' + s.name, s.enabled, 'toggleGlobalMcp("' + s.name + '",this.checked)')
+    + '<button class="btn btn-ghost" style="font-size:10px;padding:2px 8px;margin-left:8px" '
+      + 'onclick="removeMcp(\'' + s.name + '\')" title="Remove from ~/.claude/settings.json">&#x2715;</button>'
     + '</div>'
   ).join('');
 }
@@ -1795,6 +1799,126 @@ acLoadAgents();
 wfLoadAgentList();
 loadOpenSearch();
 initSSE();
+
+// ── Status bar ───────────────────────────────────────────────────────────────
+function _updateStatusBar(tab) {
+  const el = $('sb-tab');
+  if (el) el.textContent = '\u2B21 ' + tab.toUpperCase().replace(/-/g,' ');
+}
+setInterval(() => {
+  const el = $('sb-time');
+  if (el) el.textContent = new Date().toLocaleTimeString();
+}, 1000);
+
+// ── MCP Installer ─────────────────────────────────────────────────────────────
+async function installMcp() {
+  const name = ($('mcp-install-name') || {}).value && $('mcp-install-name').value.trim();
+  const cmd  = ($('mcp-install-cmd')  || {}).value && $('mcp-install-cmd').value.trim();
+  const argsStr = ($('mcp-install-args') || {}).value && $('mcp-install-args').value.trim();
+  const envStr  = ($('mcp-install-env')  || {}).value && $('mcp-install-env').value.trim();
+  const st = $('mcp-install-status');
+
+  if (!name || !cmd) { if(st) { st.textContent = '\u2717 Name and command are required'; st.style.color='var(--red)'; } return; }
+
+  const args = argsStr ? argsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const env = {};
+  if (envStr) envStr.split('\n').forEach(line => {
+    const eqIdx = line.indexOf('=');
+    if (eqIdx > 0) { const k = line.slice(0, eqIdx).trim(); const v = line.slice(eqIdx+1).trim(); if (k) env[k] = v; }
+  });
+
+  if(st) { st.textContent = 'Installing\u2026'; st.style.color='var(--text-muted)'; }
+  try {
+    const d = await fetch('/dashboard/api/settings/install-mcp', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, command: cmd, args, env}),
+    }).then(r => r.json());
+    if (d.error) { if(st) { st.textContent = '\u2717 ' + d.error; st.style.color='var(--red)'; } return; }
+    if(st) { st.textContent = '\u2713 Installed: ' + name; st.style.color='var(--success)'; }
+    ['mcp-install-name','mcp-install-cmd','mcp-install-args','mcp-install-env'].forEach(id => { const el = $(id); if(el) el.value = ''; });
+    fetch('/dashboard/api/settings/global-mcps').then(r => r.json()).then(d => _renderGlobalMcpToggles(d.servers || []));
+  } catch(e) { if(st) { st.textContent = '\u2717 ' + e.message; st.style.color='var(--red)'; } }
+}
+
+async function removeMcp(name) {
+  if (!confirm('Remove MCP server "' + name + '" from ~/.claude/settings.json?')) return;
+  try {
+    const d = await fetch('/dashboard/api/settings/remove-mcp', {
+      method: 'DELETE', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name}),
+    }).then(r => r.json());
+    if (d.error) { alert('Error: ' + d.error); return; }
+    fetch('/dashboard/api/settings/global-mcps').then(r => r.json()).then(d => _renderGlobalMcpToggles(d.servers || []));
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ── Hooks Manager ─────────────────────────────────────────────────────────────
+async function loadGlobalHooks() {
+  try {
+    const d = await fetch('/dashboard/api/settings/hooks').then(r => r.json());
+    _renderHooksList(d.hooks || {});
+  } catch(e) { console.error('loadGlobalHooks:', e); }
+}
+
+function _renderHooksList(hooks) {
+  const el = $('settings-global-hooks');
+  if (!el) return;
+  const events = Object.keys(hooks);
+  if (!events.length) {
+    el.innerHTML = '<span class="text-xs font-mono" style="color:var(--text-muted)">No hooks defined in ~/.claude/settings.json</span>';
+    el.classList.remove('toggles-loading');
+    return;
+  }
+  el.classList.remove('toggles-loading');
+  el.innerHTML = events.map(event =>
+    '<div style="margin-bottom:12px">'
+    + '<div style="font-size:11px;font-weight:600;font-family:var(--font-mono);color:var(--cyan);margin-bottom:6px">' + event + '</div>'
+    + (hooks[event] || []).map(h =>
+      '<div class="toggle-row" style="padding:6px 0">'
+      + '<div>'
+        + '<div class="toggle-label" style="font-size:11px">' + h.command + '</div>'
+        + (h.matcher ? '<div class="toggle-sub">matcher: ' + h.matcher + '</div>' : '')
+      + '</div>'
+      + '<button class="btn btn-ghost" style="font-size:10px;padding:2px 8px" '
+        + 'onclick="removeHook(\'' + event + '\',\'' + h.command.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')">'
+        + '\u2715 Remove</button>'
+      + '</div>'
+    ).join('')
+    + '</div>'
+  ).join('');
+}
+
+async function addHook() {
+  const event   = ($('hook-add-event')   || {}).value;
+  const matcher = ($('hook-add-matcher') || {}).value && $('hook-add-matcher').value.trim();
+  const command = ($('hook-add-cmd')     || {}).value && $('hook-add-cmd').value.trim();
+  const st = $('hook-add-status');
+  if (!command) { if(st) { st.textContent='\u2717 Command required'; st.style.color='var(--red)'; } return; }
+  if(st) { st.textContent='Adding\u2026'; st.style.color='var(--text-muted)'; }
+  try {
+    const d = await fetch('/dashboard/api/settings/hooks', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({event, command, matcher}),
+    }).then(r => r.json());
+    if (d.error) { if(st) { st.textContent='\u2717 '+d.error; st.style.color='var(--red)'; } return; }
+    if(st) { st.textContent='\u2713 Hook added'; st.style.color='var(--success)'; }
+    const cmdEl = $('hook-add-cmd'); if(cmdEl) cmdEl.value = '';
+    const matchEl = $('hook-add-matcher'); if(matchEl) matchEl.value = '';
+    loadGlobalHooks();
+  } catch(e) { if(st) { st.textContent='\u2717 '+e.message; st.style.color='var(--red)'; } }
+}
+
+async function removeHook(event, command) {
+  if (!confirm('Remove hook from ' + event + '?')) return;
+  try {
+    const d = await fetch('/dashboard/api/settings/hooks', {
+      method:'DELETE', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({event, command}),
+    }).then(r => r.json());
+    if (d.error) { alert('Error: '+d.error); return; }
+    loadGlobalHooks();
+  } catch(e) { alert('Error: '+e.message); }
+}
 
 // Activate first sidebar tab on load (no click event, use direct call)
 (function() {

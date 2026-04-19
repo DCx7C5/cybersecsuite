@@ -60,6 +60,11 @@ from dashboard.api.settings_toggles import (
     api_settings_global_mcps_patch,
     api_settings_global_env_get,
     api_settings_project_env_get,
+    api_settings_install_mcp,
+    api_settings_remove_mcp,
+    api_settings_hooks_get,
+    api_settings_hooks_post,
+    api_settings_hooks_delete,
 )
 from dashboard.api.team_builder import api_team_agents, api_skills, api_teams, api_team_create, api_team_update, api_team_delete, api_team_get
 from dashboard.api.opensearch_stats import api_opensearch
@@ -124,6 +129,11 @@ __all__ = [
     "api_settings_global_mcps_patch",
     "api_settings_global_env_get",
     "api_settings_project_env_get",
+    "api_settings_install_mcp",
+    "api_settings_remove_mcp",
+    "api_settings_hooks_get",
+    "api_settings_hooks_post",
+    "api_settings_hooks_delete",
     # team builder
     "api_team_agents",
     "api_skills",

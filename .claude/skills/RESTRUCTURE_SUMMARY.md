@@ -222,5 +222,5 @@ git commit -m "refactor(skills): restructure from activity-first to component-fi
 - [x] Old activity-first domains removed
 - [x] TAXONOMY.md, ACTIONS.md created
 - [x] Linux subsystems unified under `linux/`
-- [x] New stubs auto-populated with templates
+- [x] New stubs autopopulated with templates
 

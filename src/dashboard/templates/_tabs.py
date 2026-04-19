@@ -2,48 +2,52 @@
 
 # (name, label, icon, group)
 _NAV = [
-    # INTELLIGENCE
-    ("providers",  "Providers",   "⬡", "intelligence"),
-    ("usage",      "Usage & Cost","◈", "intelligence"),
-    ("agents",     "Agents",      "◎", "intelligence"),
-    ("routing",    "Routing",     "⇄", "intelligence"),
-    # OPS CENTER
-    ("cases",      "Cases",       "⊡", "ops"),
-    ("tasks",      "Tasks",       "⊛", "ops"),
-    ("pocs",       "PoCs",        "⊕", "ops"),
-    ("a2a",        "A2A Proto",   "⇌", "ops"),
-    ("workflows",  "Workflows",   "⇒", "ops"),
-    # FORENSICS
-    ("investigations", "Investigations", "◉", "forensics"),
-    ("findings",   "Findings",    "⊘", "forensics"),
-    ("iocs",       "IOCs",        "◈", "forensics"),
-    ("yara",       "YARA Rules",  "⊛", "forensics"),
-    ("network",    "Network",     "⊡", "forensics"),
-    ("intel",      "Intel Feed",  "◎", "forensics"),
-    ("audit",      "Audit Log",   "⊕", "forensics"),
-    ("compliance", "Compliance",  "⊗", "forensics"),
+    # OVERVIEW
+    ("providers",   "Providers",      "⬡", "overview"),
+    ("usage",       "Usage & Cost",   "◈", "overview"),
+    ("health",      "Health",         "♡", "overview"),
+    # AI PROXY
+    ("routing",     "Routing",        "⇄", "proxy"),
+    ("crypto",      "Crypto",         "⊗", "proxy"),
     # AGENTS
-    ("agent-craft",  "Agent Craft",   "⊞", "agents"),
-    ("team-builder", "Team Builder",  "⊟", "agents"),
-    ("agent-query",  "Agent Query",   "⊠", "agents"),
-    ("factory",      "Factory",       "⊡", "agents"),
-    ("prompts",      "Prompts",       "⊕", "agents"),
-    # PLATFORM
-    ("health",     "Health",      "◈", "platform"),
-    ("crypto",     "Crypto",      "⊗", "platform"),
-    ("dbcounts",   "DB Counts",   "◉", "platform"),
-    ("telemetry",  "Telemetry",   "◎", "platform"),
-    ("opensearch", "OpenSearch",  "⊘", "platform"),
-    ("settings",   "Settings",    "⊛", "platform"),
-    ("explorer",   "Explorer",    "⊡", "platform"),
+    ("agents",      "Agents",         "◎", "agents"),
+    ("agent-craft", "Agent Craft",    "⊞", "agents"),
+    ("team-builder","Team Builder",   "⊟", "agents"),
+    ("agent-query", "Agent Query",    "⇒", "agents"),
+    ("factory",     "Factory",        "⊕", "agents"),
+    ("prompts",     "Prompts",        "⊘", "agents"),
+    # OPS CENTER
+    ("cases",       "Cases",          "⊡", "ops"),
+    ("tasks",       "Tasks",          "⊛", "ops"),
+    ("pocs",        "PoCs",           "⊕", "ops"),
+    ("workflows",   "Workflows",      "⇌", "ops"),
+    ("a2a",         "A2A Proto",      "⇋", "ops"),
+    # FORENSICS
+    ("investigations","Investigations","◉","forensics"),
+    ("findings",    "Findings",       "⊘", "forensics"),
+    ("iocs",        "IOCs",           "◈", "forensics"),
+    ("yara",        "YARA Rules",     "⊛", "forensics"),
+    ("network",     "Network",        "⊡", "forensics"),
+    ("intel",       "Intel Feed",     "◎", "forensics"),
+    ("audit",       "Audit Log",      "⊕", "forensics"),
+    ("compliance",  "Compliance",     "⊗", "forensics"),
+    # DATA
+    ("dbcounts",    "DB Counts",      "◉", "data"),
+    ("telemetry",   "Telemetry",      "◎", "data"),
+    ("opensearch",  "OpenSearch",     "⊘", "data"),
+    ("explorer",    "Explorer",       "⊡", "data"),
+    # SETTINGS
+    ("settings",    "Settings",       "⊛", "settings"),
 ]
 
 _GROUPS = {
-    "intelligence": "INTELLIGENCE",
-    "ops":          "OPS CENTER",
-    "forensics":    "FORENSICS",
-    "agents":       "AGENTS",
-    "platform":     "PLATFORM",
+    "overview":   "OVERVIEW",
+    "proxy":      "AI PROXY",
+    "agents":     "AGENTS",
+    "ops":        "OPS CENTER",
+    "forensics":  "FORENSICS",
+    "data":       "DATA",
+    "settings":   "SETTINGS",
 }
 
 

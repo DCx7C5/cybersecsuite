@@ -291,3 +291,164 @@ async def api_settings_global_get(request: Request) -> JSONResponse:
         return JSONResponse({"global": summary})
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── MCP Installer ─────────────────────────────────────────────────────────────
+
+async def api_settings_install_mcp(request: Request) -> JSONResponse:
+    """Install a new MCP server into ~/.claude/settings.json.
+    Body: {"name": str, "command": str, "args": list[str], "env": dict[str,str]}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON"}, status_code=400)
+
+    name = (body.get("name") or "").strip()
+    command = (body.get("command") or "").strip()
+    args = body.get("args", [])
+    env = body.get("env", {})
+
+    if not name or not command:
+        return JSONResponse({"error": "name and command are required"}, status_code=400)
+
+    # Validate: no shell injection — command must be a bare executable name or path
+    import re as _re
+    if _re.search(r'[;&|`$<>]', command):
+        return JSONResponse({"error": "invalid characters in command"}, status_code=400)
+
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        mcp_servers = data.get("mcpServers", {})
+        if name in mcp_servers:
+            return JSONResponse({"error": f"MCP server '{name}' already exists. Use update instead."}, status_code=409)
+        entry: dict = {"command": command, "args": args}
+        if env:
+            entry["env"] = env
+        mcp_servers[name] = entry
+        data["mcpServers"] = mcp_servers
+        _dump_json(_GLOBAL_SETTINGS_PATH, data)
+        return JSONResponse({"ok": True, "name": name, "entry": entry})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+async def api_settings_remove_mcp(request: Request) -> JSONResponse:
+    """Remove a global MCP server from ~/.claude/settings.json.
+    Body: {"name": str}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON"}, status_code=400)
+
+    name = (body.get("name") or "").strip()
+    if not name:
+        return JSONResponse({"error": "name required"}, status_code=400)
+
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        mcp_servers = data.get("mcpServers", {})
+        if name not in mcp_servers:
+            return JSONResponse({"error": f"MCP server '{name}' not found"}, status_code=404)
+        del mcp_servers[name]
+        data["mcpServers"] = mcp_servers
+        _dump_json(_GLOBAL_SETTINGS_PATH, data)
+        return JSONResponse({"ok": True, "removed": name})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── Hooks Manager ─────────────────────────────────────────────────────────────
+
+_VALID_HOOK_EVENTS = {
+    "PreToolUse", "PostToolUse", "Stop", "SessionStart", "UserPromptSubmit",
+    "SubagentStart", "SubagentStop", "TeammateIdle", "PreCompact", "PostCompact",
+    "Notification",
+}
+
+
+async def api_settings_hooks_get(request: Request) -> JSONResponse:
+    """List all hooks from ~/.claude/settings.json."""
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        hooks = data.get("hooks", {})
+        result = {}
+        for event, entries in hooks.items():
+            result[event] = []
+            for entry in entries:
+                for hook in entry.get("hooks", []):
+                    result[event].append({
+                        "command": hook.get("command", ""),
+                        "matcher": entry.get("matcher", ""),
+                        "type": hook.get("type", "command"),
+                    })
+        return JSONResponse({"hooks": result, "valid_events": sorted(_VALID_HOOK_EVENTS)})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+async def api_settings_hooks_post(request: Request) -> JSONResponse:
+    """Add a hook to ~/.claude/settings.json.
+    Body: {"event": str, "command": str, "matcher": str (optional)}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON"}, status_code=400)
+
+    event = (body.get("event") or "").strip()
+    command = (body.get("command") or "").strip()
+    matcher = (body.get("matcher") or "").strip()
+
+    if event not in _VALID_HOOK_EVENTS:
+        return JSONResponse({"error": f"Invalid event. Must be one of: {sorted(_VALID_HOOK_EVENTS)}"}, status_code=400)
+    if not command:
+        return JSONResponse({"error": "command is required"}, status_code=400)
+
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        hooks = data.get("hooks", {})
+        event_list = hooks.get(event, [])
+        new_entry: dict = {"hooks": [{"type": "command", "command": command}]}
+        if matcher:
+            new_entry["matcher"] = matcher
+        event_list.append(new_entry)
+        hooks[event] = event_list
+        data["hooks"] = hooks
+        _dump_json(_GLOBAL_SETTINGS_PATH, data)
+        return JSONResponse({"ok": True, "event": event, "command": command})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+async def api_settings_hooks_delete(request: Request) -> JSONResponse:
+    """Remove a hook by event + command match.
+    Body: {"event": str, "command": str}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON"}, status_code=400)
+
+    event = (body.get("event") or "").strip()
+    command = (body.get("command") or "").strip()
+
+    if not event or not command:
+        return JSONResponse({"error": "event and command required"}, status_code=400)
+
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        hooks = data.get("hooks", {})
+        event_list = hooks.get(event, [])
+        # Remove entries whose hooks list contains the matching command
+        filtered = [
+            e for e in event_list
+            if not any(h.get("command") == command for h in e.get("hooks", []))
+        ]
+        hooks[event] = filtered
+        data["hooks"] = hooks
+        _dump_json(_GLOBAL_SETTINGS_PATH, data)
+        return JSONResponse({"ok": True, "event": event, "removed_command": command})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)

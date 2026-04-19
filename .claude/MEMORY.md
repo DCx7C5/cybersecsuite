@@ -1,6 +1,6 @@
 # CyberSecSuite — MEMORY.md
 
-_Last updated: 2026-04-19 (OmniRoute MCP self-contained, full architecture audit, docs rewrite)_
+_Last updated: 2026-04-19 (Dashboard: JetBrains IDE palette, sidebar recategorize, MCP/hooks installer, agent registry fix, settings scope UI)_
 
 ## Architecture
 
@@ -46,45 +46,87 @@ Claude Code / agent_sdk.py
 
 **src/csmcp/ rename**: `src/mcp/` → `src/csmcp/` (Phase H) — avoided naming conflict with pip `mcp` v1.26.0. `mcp_server.py` (1288L FastMCP) DELETED.
 
-### src/dashboard/ (41 routes)
-| File                       | Lines | Purpose                                                                                                             |
-|----------------------------|-------|---------------------------------------------------------------------------------------------------------------------|
-| `routes.py`                | 68    | Route wiring                                                                                                        |
-| `_html.py`                 | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                                           |
-| `templates/__init__.py`    | 25    | `build_dashboard_html()` assembler                                                                                  |
-| `templates/_components.py` | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`                   |
-| `templates/_base.py`       | 86    | CSS (+ `.stat-card` rules), `head()`, `header()`, `stats_row()`, `tiers_row()`                                      |
-| `templates/_tabs.py`       | 46    | `tab_bar()` — 27 tab items as a list                                                                                |
-| `templates/_panels.py`     | 415   | `all_panels()` — 27 panel fns using components                                                                      |
-| `templates/_js.py`         | 1215  | `_JS` — SSE wiring (initSSE, 4 EventSource) + team builder + settings CRUD + explorer + agent query JS + OpenSearch |
-| `api/core.py`              | 153   | overview, providers, usage, health, crypto                                                                          |
-| `api/agents.py`            | 215   | a2a, agents, routing, factory, agent-query                                                                          |
-| `api/forensic.py`          | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                                       |
-| `api/ops.py`               | 183   | cases, tasks, task lifecycle, PoCs                                                                                  |
-| `api/tables.py`            | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                |
-| `api/settings.py`          | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
-| `api/team_builder.py`      | 310   | `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `PUT/DELETE /api/teams/{name}` · `GET /api/teams/{name}` |
-| `api/agent_crud.py`        | 279   | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` — create/edit/delete .md files                    |
-| `api/workflows.py`         | 247   | `GET/POST /api/workflows` · `GET/DELETE /api/workflows/{id}` — multi-step pipeline with dep order                   |
-| `api/opensearch_stats.py`  | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
-| `api/sse.py`               | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
-| `_schema.py`               | 149   | Tortoise model introspector — 83 models                                                                             |
+### src/dashboard/ (66+ routes)
+| File                          | Lines | Purpose                                                                                                             |
+|-------------------------------|-------|---------------------------------------------------------------------------------------------------------------------|
+| `routes.py`                   | ~150  | Route wiring (66 routes)                                                                                            |
+| `_html.py`                    | 4     | Shim — imports `build_dashboard_html()` from `templates/`                                                           |
+| `templates/__init__.py`       | 25    | `build_dashboard_html()` assembler                                                                                  |
+| `templates/_components.py`    | 71    | `stat_card`, `mini_card`, `stat_grid`, `tab_panel`, `simple_panel`, `section_h3/h4`, `table_slot`                   |
+| `templates/_base.py`          | ~750  | CSS (JetBrains Darcula palette, IDE statusbar, pagination fix), `head()`, `header()`, `stats_row()`, `tiers_row()`  |
+| `templates/_tabs.py`          | ~70   | `tab_bar()` — 29 items in 7 groups (OVERVIEW/AI PROXY/AGENTS/OPS/FORENSICS/DATA/SETTINGS)                          |
+| `templates/_panels.py`        | ~700  | `all_panels()` — 29 panel fns + MCP installer form + hooks manager form                                             |
+| `templates/_js.py`            | ~1800 | All JS: SSE, team builder, settings CRUD, explorer, agent query, MCP installer, hooks CRUD, status bar              |
+| `api/core.py`                 | 153   | overview, providers, usage, health, crypto                                                                          |
+| `api/agents.py`               | ~150  | a2a, agents (from .claude/agents/**/*.md), routing, factory, agent-query                                            |
+| `api/forensic.py`             | 396   | findings, iocs, yara, network, intel, audit, compliance, NIST                                                       |
+| `api/ops.py`                  | 183   | cases, tasks, task lifecycle, PoCs                                                                                  |
+| `api/tables.py`               | 148   | db counts, investigations, models, generic table, prompts, telemetry                                                |
+| `api/settings.py`             | 55    | `GET/PATCH /api/settings` — editable: env/agent/proxy/asgi/cache/security/hooks_dir                                 |
+| `api/settings_toggles.py`     | ~350  | All toggle/installer APIs: MCPs (project+global), skills, plugins, global summary, MCP install/remove, hooks CRUD   |
+| `api/team_builder.py`         | 310   | `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `PUT/DELETE /api/teams/{name}`                 |
+| `api/agent_crud.py`           | 279   | `POST /api/agents/crud` · `GET/PUT/DELETE /api/agents/crud/{name}` — create/edit/delete .md files                   |
+| `api/workflows.py`            | 247   | `GET/POST /api/workflows` · `GET/DELETE /api/workflows/{id}` — multi-step pipeline                                  |
+| `api/opensearch_stats.py`     | 47    | `GET /api/opensearch` — cluster health + per-index doc count/size                                                   |
+| `api/sse.py`                  | 153   | /sse/cases · /sse/tasks · /sse/health · /sse/telemetry                                                              |
+| `_schema.py`                  | 149   | Tortoise model introspector — 83 models                                                                             |
 
-**29 tabs**: Providers · Usage & Cost · Agents · Routing · Factory · Prompts · Health · Crypto · A2A · Investigations · DB Counts · Cases · Tasks · PoCs · Findings · IOCs · YARA · Network · Intel · Audit · Compliance · Agent Query · Settings · Team Builder · **Agent Craft** · **Workflows** · Telemetry · OpenSearch · Explorer
+**29 tabs in 7 groups**:
+- **OVERVIEW**: Providers · Usage & Cost · Health
+- **AI PROXY**: Routing · Crypto
+- **AGENTS**: Agents · Agent Craft · Team Builder · Agent Query · Factory · Prompts
+- **OPS CENTER**: Cases · Tasks · PoCs · Workflows · A2A Proto
+- **FORENSICS**: Investigations · Findings · IOCs · YARA Rules · Network · Intel Feed · Audit Log · Compliance
+- **DATA**: DB Counts · Telemetry · OpenSearch · Explorer
+- **SETTINGS**: Settings
+
+**Settings tab** (2 scope panes — 🌐 Global / 📁 Project):
+- **Global scope**: MCP server toggles + Install MCP form + Remove button · Plugin toggles · Hooks manager (list + add/remove) · Env vars (read-only) · Summary
+- **Project scope**: MCP server toggles · Skill domain toggles (26 domains) · Env vars (read-only) · Agent & Proxy config · Custom env editor · Hooks display
+
+**Agent registry** (fixed `ba06006c`): `api_agents` scans `.claude/agents/**/*.md` directly — NO A2A protocol, NO fake URLs. Returns 37 agents (1 orchestrator, 36 specialists) with real frontmatter (name/description/role/model/tools/file).
+
+**Key settings endpoints**:
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/settings/mcps` | GET/PATCH | Project MCP enable/disable |
+| `/api/settings/skills` | GET/PATCH | Skill domain enable/disable |
+| `/api/settings/plugins` | GET/PATCH | Global plugin enable/disable |
+| `/api/settings/global` | GET | Global ~/.claude summary |
+| `/api/settings/global-mcps` | GET/PATCH | Global MCP enable/disable |
+| `/api/settings/global-env` | GET | Global env vars (masked) |
+| `/api/settings/project-env` | GET | Project env vars |
+| `/api/settings/install-mcp` | POST | Install MCP to ~/.claude/settings.json |
+| `/api/settings/remove-mcp` | DELETE | Remove MCP from ~/.claude/settings.json |
+| `/api/settings/hooks` | GET/POST/DELETE | List/add/remove hooks in ~/.claude/settings.json |
 
 **Key endpoints**: `GET /api/models` · `GET /api/tables/{model}` · `POST /api/agent-query` · `GET /api/settings` · `PATCH /api/settings` · `GET /api/team-agents` · `GET /api/skills` · `GET/POST /api/teams` · `POST /api/agents/crud` · `POST /api/workflows` · `GET /api/opensearch`
 
-**Team Builder tab**: Agent Browser (filterable table of 48 agents), Skill Browser (26 domains × 942 skills, domain select + search), Team Composer (add phases → assign agents → **save to .claude/agents/teams/** → load saved teams).
+**Design system** (JetBrains New UI Darcula palette):
+| Token | Value | Usage |
+|---|---|---|
+| `--bg` | `#1e1f22` | Window background |
+| `--surface` | `#2b2d30` | Editor / card background |
+| `--surface-2` | `#313438` | Panel background |
+| `--border` | `#3d3f43` | All borders |
+| `--accent` | `#3574f0` | Active/focus/buttons (JB blue) |
+| `--cyan` | `#6897bb` | Info/numbers (JB info blue) |
+| `--amber` | `#cb902e` | Warnings (JB orange) |
+| `--red` | `#c75450` | Errors (JB red) |
+| `--violet` | `#9876aa` | Keywords (JB purple) |
+| `--success` | `#6a9955` | Success/strings (JB green) |
+| `--text-primary` | `#cdd1d9` | Default text |
+| `--text-muted` | `#808590` | Secondary text |
 
-**Agent Craft tab**: Create form (name/model/maxTurns/description/tools/mcpServers/instructions) → POST /api/agents/crud. Agent list with Edit (modal) and Delete buttons. Protected agents (cybersec-agent) cannot be modified.
+Status bar: fixed bottom bar (24px, accent blue) showing current tab name + live clock. Sidebar: 240px, 7 groups, 12px font, IDE-like tree style.
 
-**Workflows tab**: Step builder (id/agent/prompt/depends_on) → POST /api/workflows. Topological execution with {{step_id}} result interpolation. History panel with status badges and result preview.
+**Team Builder tab**: Agent Browser (filterable table of 37 agents), Skill Browser (26 domains × 942 skills), Team Composer (save to .claude/agents/teams/).
 
-**Settings tab**: Agent & Proxy (editable), Env Variables (add/remove/save rows), Hooks (read-only renderTable). PATCH validates against editable/readonly key sets — forbidden keys → 400.
+**Agent Craft tab**: Create form (name/model/maxTurns/description/tools/mcpServers/instructions) → POST /api/agents/crud. Edit/Delete with protected agents guard.
 
-**OpenSearch tab**: Cluster health badge (green/yellow/red), node/shard counts, total docs. Index table showing all `cybersecsuite-*` indices with doc count + size in MB. `loadOpenSearch()` fetches `GET /api/opensearch`. Refresh button.
+**Workflows tab**: Step builder → POST /api/workflows. Topological execution with `{{step_id}}` interpolation.
 
-**renderTable() pattern**: `renderTable(containerId, schema, rows)` — schema: `{key, label, type}` where type = string|number|bool|datetime|json. Pre-format badge HTML as strings before passing.
+**renderTable() pattern**: `renderTable(containerId, schema, rows)` — schema: `{key, label, type}` where type = string|number|bool|datetime|json.
 
 **Known DB model skips**: `db.models.forensic` (SessionPhase.INIT missing) · `db.models.yara_rule` (YaraRuleSource.IOC_DERIVED missing) — `_schema.py` silently skips on import error.
 
