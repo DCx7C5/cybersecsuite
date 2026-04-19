@@ -53,8 +53,8 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
+  "acp_agent",
   "src/a2a",
-  "src/acp_agent",
   "src/agent",
   "src/ai_proxy",
   "src/crypto",
@@ -86,7 +86,7 @@ browser = [
 
 [tool.pytest.ini_options]
 testpaths   = ["tests"]
-pythonpath  = ["src"]
+pythonpath  = ["src", "."]
 asyncio_mode = "auto"
 
 [tool.ruff]
