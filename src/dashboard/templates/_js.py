@@ -320,19 +320,19 @@ async function refresh() {
         + '<div id="agents-table"></div>';
       const agentRows = (agv.agents || []).map(a => ({
         name: a.name,
-        description: (a.description || '').substring(0, 80),
+        description: (a.description || '').substring(0, 90),
         role: (a.claude_metadata || {}).role || 'specialist',
         model: (a.claude_metadata || {}).model || '-',
-        skills: (a.skills || []).map(s => s.name).join(', '),
-        url: a.url || '-',
+        tools: (a.tools || []).length ? (a.tools || []).slice(0, 6).join(', ') + (a.tools.length > 6 ? ' …' : '') : '—',
+        file: a.file || '-',
       }));
       renderTable('agents-table', [
         {key: 'name', label: 'Agent', type: 'string'},
         {key: 'description', label: 'Description', type: 'string'},
         {key: 'role', label: 'Role', type: 'string'},
         {key: 'model', label: 'Model', type: 'string'},
-        {key: 'skills', label: 'Skills', type: 'string'},
-        {key: 'url', label: 'URL', type: 'string'},
+        {key: 'tools', label: 'Tools', type: 'string'},
+        {key: 'file', label: 'File', type: 'string'},
       ], agentRows);
       // Populate agent-query selector
       _aqPopulateAgents(agv.agents || []);

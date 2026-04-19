@@ -1,6 +1,7 @@
 """Agent and routing API handlers: agents, routing, agent factory, A2A, agent query."""
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from starlette.requests import Request
@@ -13,44 +14,6 @@ from ai_proxy.routing.combo import (
     get_circuit_breaker_status,
     get_usage_counts,
 )
-
-
-def _agent_priority(entry: dict) -> tuple[int, int, int, str]:
-    meta = entry.get("claude_metadata") or {}
-    source_kind = meta.get("source_kind", "")
-    source_rank = {
-        "project-agent": 3,
-        "project-sub-agent": 2,
-        "project-team": 1,
-        "external-agent": 0,
-    }.get(source_kind, 0)
-    return (
-        source_rank,
-        1 if meta.get("default") else 0,
-        1 if meta.get("role") == "orchestrator" else 0,
-        entry.get("name", "").lower(),
-    )
-
-
-def _dedupe_agent_summaries(agents: list[dict]) -> list[dict]:
-    deduped: dict[str, dict] = {}
-    for entry in agents:
-        name = str(entry.get("name", "")).strip()
-        if not name:
-            continue
-        key = name.casefold()
-        current = deduped.get(key)
-        if current is None or _agent_priority(entry) > _agent_priority(current):
-            deduped[key] = entry
-    return sorted(
-        deduped.values(),
-        key=lambda entry: (
-            -int(bool((entry.get("claude_metadata") or {}).get("default"))),
-            -int((entry.get("claude_metadata") or {}).get("role") == "orchestrator"),
-            -_agent_priority(entry)[0],
-            entry.get("name", "").lower(),
-        ),
-    )
 
 
 async def api_a2a(request: Request) -> JSONResponse:
@@ -81,30 +44,97 @@ async def api_a2a(request: Request) -> JSONResponse:
     })
 
 
+def _scan_agents_from_dir() -> list[dict]:
+    """Scan .claude/agents/**/*.md and return structured agent metadata."""
+    agents_dir = Path(__file__).resolve().parent.parent.parent.parent / ".claude" / "agents"
+    if not agents_dir.exists():
+        return []
+
+    _SKIP_PREFIXES = ("AGENT_FACTORY", "DEV_", "CLAUDE_", "COPILOT_")
+
+    def _parse_fm(text: str) -> dict:
+        m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+        if not m:
+            return {}
+        result: dict = {}
+        current_list_key: str | None = None
+        for line in m.group(1).splitlines():
+            if line.startswith("  - ") or (line.startswith("- ") and current_list_key):
+                val = line.lstrip("- ").strip()
+                if current_list_key:
+                    result[current_list_key].append(val)
+            elif ":" in line and not line.startswith(" "):
+                current_list_key = None
+                key, _, val = line.partition(":")
+                key, val = key.strip(), val.strip()
+                if val == "":
+                    result[key] = []
+                    current_list_key = key
+                elif val.lower() in ("true", "yes"):
+                    result[key] = True
+                elif val.lower() in ("false", "no"):
+                    result[key] = False
+                else:
+                    try:
+                        result[key] = int(val)
+                    except ValueError:
+                        result[key] = val.strip('"').strip("'")
+        return result
+
+    results = []
+    seen: set[str] = set()
+
+    for md in sorted(agents_dir.rglob("*.md")):
+        if any(md.name.upper().startswith(p) for p in _SKIP_PREFIXES):
+            continue
+        # Determine if it's a sub-agent
+        is_sub = md.parent.name == "sub_agents"
+        source_label = "Sub-Agents" if is_sub else "Project Agents"
+        source_kind = "project-sub-agent" if is_sub else "project-agent"
+
+        try:
+            fm = _parse_fm(md.read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            continue
+
+        name = fm.get("name") or md.stem
+        key = str(name).casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+
+        results.append({
+            "name": name,
+            "description": fm.get("description", ""),
+            "tools": fm.get("tools", []),
+            "maxTurns": fm.get("maxTurns", 30),
+            "file": md.name,
+            "claude_metadata": {
+                "role": fm.get("role", "specialist"),
+                "model": fm.get("model", "sonnet"),
+                "default": bool(fm.get("default", False)),
+                "source_label": source_label,
+                "source_kind": source_kind,
+            },
+        })
+
+    return results
+
+
 async def api_agents(request: Request) -> JSONResponse:
-    """Agent registry: all registered A2A agents with skills and metadata."""
+    """Agent registry: all agents from .claude/agents/**/*.md"""
     try:
-        from a2a.registry import AgentRegistry
-        from a2a.agent_loader import load_cybersecsuite_agents
-
-        registry = AgentRegistry()
-        load_cybersecsuite_agents(registry)
-        agents = registry.summary()
-
-        # Also load from AI/agents if available
-        ai_agents_dir = Path(__file__).resolve().parent.parent.parent.parent / "AI" / "agents"
-        if not ai_agents_dir.exists():
-            ai_agents_dir = Path.home() / "Projects" / "AI" / "agents"
-        if ai_agents_dir.exists():
-            from a2a.agent_loader import load_agents_from_dir
-            load_agents_from_dir(ai_agents_dir, registry, recurse=True)
-            agents = registry.summary()
-
-        agents = _dedupe_agent_summaries(agents)
-
-        orchestrators = [a for a in agents if a.get("claude_metadata", {}).get("role") == "orchestrator"]
-        specialists = [a for a in agents if a.get("claude_metadata", {}).get("role") != "orchestrator"]
-
+        agents = _scan_agents_from_dir()
+        agents = sorted(
+            agents,
+            key=lambda a: (
+                -int(a["claude_metadata"].get("default", False)),
+                -int(a["claude_metadata"].get("role") == "orchestrator"),
+                a["name"].lower(),
+            ),
+        )
+        orchestrators = [a for a in agents if a["claude_metadata"].get("role") == "orchestrator"]
+        specialists = [a for a in agents if a["claude_metadata"].get("role") != "orchestrator"]
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
 
