@@ -201,19 +201,92 @@ async def api_settings_plugins_patch(request: Request) -> JSONResponse:
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-# ── Global ~/.claude/settings.json view ──────────────────────────────────────
+# ── Global ~/.claude MCP Servers ─────────────────────────────────────────────
 
-async def api_settings_global_get(request: Request) -> JSONResponse:
-    """Return a summary of key global ~/.claude settings."""
+async def api_settings_global_mcps_get(request: Request) -> JSONResponse:
+    """List MCP servers from global ~/.claude/settings.json with enabled state."""
     try:
         data = _load_json(_GLOBAL_SETTINGS_PATH)
-        # Return safe summary — exclude sensitive env values
+        enabled_list = data.get("enabledGlobalMcps", None)  # None = all enabled
+        servers = []
+        for name, cfg in data.get("mcpServers", {}).items():
+            enabled = (enabled_list is None) or (name in enabled_list)
+            servers.append({
+                "name": name,
+                "command": cfg.get("command", ""),
+                "enabled": enabled,
+            })
+        return JSONResponse({"servers": servers})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+async def api_settings_global_mcps_patch(request: Request) -> JSONResponse:
+    """Toggle global MCP server. Body: {"name": str, "enabled": bool}"""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON"}, status_code=400)
+
+    name = body.get("name")
+    enabled = body.get("enabled")
+    if not name or enabled is None:
+        return JSONResponse({"error": "name and enabled required"}, status_code=400)
+
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        all_names = list(data.get("mcpServers", {}).keys())
+        enabled_list = data.get("enabledGlobalMcps", list(all_names))
+        if enabled:
+            if name not in enabled_list:
+                enabled_list.append(name)
+        else:
+            enabled_list = [n for n in enabled_list if n != name]
+        data["enabledGlobalMcps"] = enabled_list
+        _dump_json(_GLOBAL_SETTINGS_PATH, data)
+        return JSONResponse({"ok": True, "name": name, "enabled": enabled})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── Env vars (read-only views) ────────────────────────────────────────────────
+
+async def api_settings_global_env_get(request: Request) -> JSONResponse:
+    """Return global ~/.claude env vars (values masked for security)."""
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
+        env = data.get("env", {})
+        _SAFE_KEYS = {"CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS",
+                      "NODE_EXTRA_CA_CERTS", "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS_MAX_AGENTS"}
+        result = {k: (v if k in _SAFE_KEYS else "•••") for k, v in env.items()}
+        return JSONResponse({"env": result})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+async def api_settings_project_env_get(request: Request) -> JSONResponse:
+    """Return project .claude env vars."""
+    try:
+        data = _load_json(_SETTINGS_PATH)
+        env = data.get("env", {})
+        return JSONResponse({"env": env})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+# ── Global ~/.claude/settings.json summary view ───────────────────────────────
+
+async def api_settings_global_get(request: Request) -> JSONResponse:
+    """Return full global ~/.claude settings summary."""
+    try:
+        data = _load_json(_GLOBAL_SETTINGS_PATH)
         summary = {
             "effortLevel": data.get("effortLevel", ""),
             "codemossProviderId": data.get("codemossProviderId", ""),
             "enabledPlugins": data.get("enabledPlugins", {}),
             "mcpServers": list(data.get("mcpServers", {}).keys()),
             "extraKnownMarketplaces": list(data.get("extraKnownMarketplaces", {}).keys()),
+            "hooks": list(data.get("hooks", {}).keys()),
         }
         return JSONResponse({"global": summary})
     except Exception as e:

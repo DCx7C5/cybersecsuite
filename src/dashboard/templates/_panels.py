@@ -477,67 +477,121 @@ def _workflows() -> str:
 
 
 def _settings() -> str:
+    # Scope badge helper
+    def scope_badge(label: str, color: str) -> str:
+        return (
+            f'<span style="display:inline-flex;align-items:center;gap:4px;'
+            f'font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;'
+            f'padding:2px 8px;border-radius:4px;'
+            f'background:{color}1a;color:{color};border:1px solid {color}33">'
+            f'{label}</span>'
+        )
+
+    global_badge = scope_badge("🌐 Global ~/.claude", "#38bdf8")
+    project_badge = scope_badge("📁 Project .claude/", "#6366f1")
+
     return (
         '<div id="tab-settings" class="card" style="display:none">\n'
-        # Panel header
         '  <div class="panel-header">'
         '<div class="panel-accent-bar"></div>'
-        '<span class="panel-title">&#x2699;&#xfe0f; Settings &amp; Controls</span>'
+        '<span class="panel-title">&#x2699;&#xfe0f; Claude Settings</span>'
         '</div>\n'
 
-        # ── Agent & Proxy ──
-        '  <div class="mb-6">\n'
-        '    <div class="section-h3">Agent &amp; Proxy</div>\n'
-        '    <div id="settings-agent-form" class="space-y-3"></div>\n'
-        '    <div class="flex items-center gap-3 mt-3">\n'
-        '      <button onclick="saveSettingsAgent()" class="btn btn-accent">Save</button>\n'
-        '      <span id="settings-agent-status" class="text-xs font-mono"></span>\n'
+        # ── Scope tabs ──
+        '  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px">\n'
+        '    <button id="scope-btn-global" onclick="switchSettingsScope(\'global\')" '
+        '      class="btn btn-accent" style="font-size:12px">🌐 Global ~/.claude</button>\n'
+        '    <button id="scope-btn-project" onclick="switchSettingsScope(\'project\')" '
+        '      class="btn btn-ghost" style="font-size:12px">📁 Project .claude/</button>\n'
+        '  </div>\n'
+
+        # ══ GLOBAL SCOPE PANE ══
+        '  <div id="settings-scope-global">\n'
+        f'    <div style="margin-bottom:20px">{global_badge}</div>\n'
+
+        # Global MCPs
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">MCP Servers</div>\n'
+        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
+        'MCP servers in ~/.claude/settings.json. Toggle to enable/disable globally.</p>\n'
+        '      <div id="settings-global-mcps" class="toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Global Plugins
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Plugins</div>\n'
+        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
+        'Plugins installed in ~/.claude. Toggle writes to ~/.claude/settings.json.</p>\n'
+        '      <div id="settings-plugins" class="toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Global Env (read-only)
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Environment Variables <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(read-only)</span></div>\n'
+        '      <div id="settings-global-env" class="toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Global summary (hooks, etc.)
+        '    <div class="mb-4">\n'
+        '      <div class="section-h3">Summary</div>\n'
+        '      <div id="settings-global" class="toggles-loading">Loading…</div>\n'
         '    </div>\n'
         '  </div>\n'
 
-        # ── Env Variables ──
-        '  <div class="mb-6">\n'
-        '    <div class="section-h3">Environment Variables</div>\n'
-        '    <div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
-        '    <div class="flex items-center gap-3">\n'
-        '      <button onclick="settingsAddEnvRow()" class="btn btn-ghost">+ Add Variable</button>\n'
-        '      <button onclick="saveSettingsEnv()" class="btn btn-accent">Save Env</button>\n'
-        '      <span id="settings-env-status" class="text-xs font-mono"></span>\n'
+        # ══ PROJECT SCOPE PANE ══
+        '  <div id="settings-scope-project" style="display:none">\n'
+        f'    <div style="margin-bottom:20px">{project_badge}</div>\n'
+
+        # Project Agent & Proxy settings
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Agent &amp; Proxy</div>\n'
+        '      <div id="settings-agent-form" class="space-y-3"></div>\n'
+        '      <div class="flex items-center gap-3 mt-3">\n'
+        '        <button onclick="saveSettingsAgent()" class="btn btn-accent">Save</button>\n'
+        '        <span id="settings-agent-status" class="text-xs font-mono"></span>\n'
+        '      </div>\n'
+        '    </div>\n'
+
+        # Project MCPs
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">MCP Servers</div>\n'
+        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
+        'MCP servers from project mcp.json. Toggle stores state in .claude/settings.json.</p>\n'
+        '      <div id="settings-mcps" class="toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Project Skill Domains
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Skill Domains</div>\n'
+        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
+        'Enable or disable skill domain libraries from .claude/skills/.</p>\n'
+        '      <div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Project Env (read-only)
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Environment Variables <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(read-only)</span></div>\n'
+        '      <div id="settings-project-env" class="toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Project Hooks (read-only)
+        '    <div class="mb-4">\n'
+        '      <div class="section-h4">Hooks <span style="font-weight:400;text-transform:none">(read-only)</span></div>\n'
+        '      <div id="settings-hooks-table"></div>\n'
+        '    </div>\n'
+
+        # Project Env Editor
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Custom Env Overrides</div>\n'
+        '      <div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
+        '      <div class="flex items-center gap-3">\n'
+        '        <button onclick="settingsAddEnvRow()" class="btn btn-ghost">+ Add Variable</button>\n'
+        '        <button onclick="saveSettingsEnv()" class="btn btn-accent">Save Env</button>\n'
+        '        <span id="settings-env-status" class="text-xs font-mono"></span>\n'
+        '      </div>\n'
         '    </div>\n'
         '  </div>\n'
 
-        # ── MCP Servers ──
-        '  <div class="mb-6">\n'
-        '    <div class="section-h3">MCP Servers</div>\n'
-        '    <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Toggle which MCP servers are active in this project. Restart required for changes to take effect.</p>\n'
-        '    <div id="settings-mcps" class="toggles-loading">Loading…</div>\n'
-        '  </div>\n'
-
-        # ── Skill Domains ──
-        '  <div class="mb-6">\n'
-        '    <div class="section-h3">Skill Domains</div>\n'
-        '    <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Enable or disable entire skill domain libraries. Disabled domains are excluded from agent context.</p>\n'
-        '    <div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>\n'
-        '  </div>\n'
-
-        # ── Plugins ──
-        '  <div class="mb-6">\n'
-        '    <div class="section-h3">Plugins</div>\n'
-        '    <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Global ~/.claude installed plugins. Changes write to ~/.claude/settings.json.</p>\n'
-        '    <div id="settings-plugins" class="toggles-loading">Loading…</div>\n'
-        '  </div>\n'
-
-        # ── Global ~/.claude ──
-        '  <div class="mb-6">\n'
-        '    <div class="section-h3">Global ~/.claude Summary</div>\n'
-        '    <div id="settings-global" class="toggles-loading">Loading…</div>\n'
-        '  </div>\n'
-
-        # ── Hooks (read-only) ──
-        '  <div class="mb-4">\n'
-        '    <div class="section-h4">Hooks <span style="font-weight:400;text-transform:none">(read-only)</span></div>\n'
-        '    <div id="settings-hooks-table"></div>\n'
-        '  </div>\n'
         "</div>\n"
     )
 

@@ -961,19 +961,36 @@ async function saveSettingsEnv() {
   } catch (e) { status.textContent = '✗ ' + e.message; status.style.color = '#f87171'; }
 }
 
+// ── Settings Scope Switcher ───────────────────────────────────────────────────
+function switchSettingsScope(scope) {
+  const isGlobal = scope === 'global';
+  $('settings-scope-global').style.display = isGlobal ? '' : 'none';
+  $('settings-scope-project').style.display = isGlobal ? 'none' : '';
+  $('scope-btn-global').className = 'btn ' + (isGlobal ? 'btn-accent' : 'btn-ghost');
+  $('scope-btn-project').className = 'btn ' + (isGlobal ? 'btn-ghost' : 'btn-accent');
+  $('scope-btn-global').style.fontSize = '12px';
+  $('scope-btn-project').style.fontSize = '12px';
+}
+
 // ── Settings Toggles (MCPs, Skills, Plugins, Global) ────────────────────────
 async function loadSettingsToggles() {
   try {
-    const [mcpRes, skillRes, pluginRes, globalRes] = await Promise.all([
+    const [mcpRes, skillRes, pluginRes, globalRes, globalMcpRes, globalEnvRes, projectEnvRes] = await Promise.all([
       fetch('/dashboard/api/settings/mcps').then(r => r.json()).catch(() => ({servers:[]})),
       fetch('/dashboard/api/settings/skills').then(r => r.json()).catch(() => ({domains:[]})),
       fetch('/dashboard/api/settings/plugins').then(r => r.json()).catch(() => ({plugins:[]})),
       fetch('/dashboard/api/settings/global').then(r => r.json()).catch(() => ({global:{}})),
+      fetch('/dashboard/api/settings/global-mcps').then(r => r.json()).catch(() => ({servers:[]})),
+      fetch('/dashboard/api/settings/global-env').then(r => r.json()).catch(() => ({env:{}})),
+      fetch('/dashboard/api/settings/project-env').then(r => r.json()).catch(() => ({env:{}})),
     ]);
     _renderMcpToggles(mcpRes.servers || []);
     _renderSkillToggles(skillRes.domains || []);
     _renderPluginToggles(pluginRes.plugins || []);
     _renderGlobalSummary(globalRes.global || {});
+    _renderGlobalMcpToggles(globalMcpRes.servers || []);
+    _renderEnvTable('settings-global-env', globalEnvRes.env || {});
+    _renderEnvTable('settings-project-env', projectEnvRes.env || {});
   } catch(e) { console.error('loadSettingsToggles:', e); }
 }
 
@@ -1007,6 +1024,55 @@ async function toggleMcp(name, enabled) {
     const d = await res.json();
     if (d.error) console.error('toggleMcp:', d.error);
   } catch(e) { console.error('toggleMcp:', e); }
+}
+
+function _renderGlobalMcpToggles(servers) {
+  const el = $('settings-global-mcps');
+  if (!el) return;
+  if (!servers.length) {
+    el.innerHTML = '<span class="text-xs font-mono" style="color:var(--text-muted)">No MCP servers in ~/.claude/settings.json</span>';
+    el.classList.remove('toggles-loading');
+    return;
+  }
+  el.classList.remove('toggles-loading');
+  el.innerHTML = servers.map(s =>
+    '<div class="toggle-row">'
+    + '<div><div class="toggle-label">' + s.name + '</div>'
+    + '<div class="toggle-sub">' + (s.command || '') + '</div></div>'
+    + _toggleSwitch('gmcp-' + s.name, s.enabled, 'toggleGlobalMcp("' + s.name + '",this.checked)')
+    + '</div>'
+  ).join('');
+}
+
+async function toggleGlobalMcp(name, enabled) {
+  try {
+    const d = await fetch('/dashboard/api/settings/global-mcps', {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, enabled}),
+    }).then(r => r.json());
+    if (d.error) console.error('toggleGlobalMcp:', d.error);
+  } catch(e) { console.error('toggleGlobalMcp:', e); }
+}
+
+function _renderEnvTable(elId, env) {
+  const el = $(elId);
+  if (!el) return;
+  const entries = Object.entries(env);
+  if (!entries.length) {
+    el.innerHTML = '<span class="text-xs font-mono" style="color:var(--text-muted)">No env vars set</span>';
+    el.classList.remove('toggles-loading');
+    return;
+  }
+  el.classList.remove('toggles-loading');
+  el.innerHTML = '<div class="space-y-1">'
+    + entries.map(([k, v]) =>
+      '<div style="display:flex;align-items:flex-start;gap:12px;padding:4px 0;border-bottom:1px solid var(--border)">'
+      + '<span class="text-xs font-mono" style="color:var(--cyan);min-width:280px;flex-shrink:0">' + k + '</span>'
+      + '<span class="text-xs font-mono" style="color:var(--text-muted);word-break:break-all">' + v + '</span>'
+      + '</div>'
+    ).join('')
+    + '</div>';
 }
 
 function _renderSkillToggles(domains) {
@@ -1061,14 +1127,15 @@ function _renderGlobalSummary(g) {
   if (!el) return;
   const rows = [
     {k: 'Effort Level',      v: g.effortLevel || '—'},
-    {k: 'Codemoss Provider', v: g.codemossProviderId || '—'},
-    {k: 'Global MCP Servers', v: (g.mcpServers || []).join(', ') || '—'},
+    {k: 'Codemoss Provider', v: g.codemossProviderId ? g.codemossProviderId.substring(0,16)+'…' : '—'},
+    {k: 'Active MCP Servers', v: (g.mcpServers || []).join(', ') || '—'},
     {k: 'Marketplaces',      v: (g.extraKnownMarketplaces || []).join(', ') || '—'},
+    {k: 'Active Hooks',      v: (g.hooks || []).join(', ') || '—'},
   ];
   el.innerHTML = '<div class="space-y-1">'
     + rows.map(r =>
-      '<div class="flex items-center gap-3 py-1">'
-      + '<span class="text-xs font-mono w-40 shrink-0" style="color:var(--text-muted)">' + r.k + '</span>'
+      '<div style="display:flex;align-items:center;gap:12px;padding:4px 0;border-bottom:1px solid var(--border)">'
+      + '<span class="text-xs font-mono" style="color:var(--text-muted);min-width:140px;flex-shrink:0">' + r.k + '</span>'
       + '<span class="text-xs font-mono" style="color:var(--text-primary)">' + r.v + '</span>'
       + '</div>'
     ).join('')
