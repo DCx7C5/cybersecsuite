@@ -136,6 +136,7 @@ from dashboard.api.plugin import (
     api_plugin_broadcast,
     api_plugin_clear_events,
 )
+from dashboard.api.ts_proxy import ts_api_proxy
 
 
 def create_dashboard_router() -> Router:
@@ -277,6 +278,8 @@ def create_dashboard_router() -> Router:
             Route("/api/plugin/events", api_plugin_events, methods=["GET"]),
             Route("/api/plugin/broadcast", api_plugin_broadcast, methods=["POST"]),
             Route("/api/plugin/events/clear", api_plugin_clear_events, methods=["POST"]),
+            # TypeScript SDK API proxy — proxies /ts/* → http://127.0.0.1:8765/ts/*
+            Mount("/ts", app=ts_api_proxy),
             # SSE streaming endpoints
             Route("/sse/cases", sse_cases, methods=["GET"]),
             Route("/sse/tasks", sse_tasks, methods=["GET"]),

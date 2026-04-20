@@ -20,6 +20,7 @@ from .advanced import (
     _agent_factory,
     _workflows,
     _flowgraph,
+    _sdk_lab,
 )
 from .settings import _settings, _settings_cybersecsuite, _crypto
 
@@ -61,6 +62,7 @@ __all__ = [
     "_agent_factory",
     "_workflows",
     "_flowgraph",
+    "_sdk_lab",
     # Settings
     "_settings",
     "_settings_cybersecsuite",
@@ -106,4 +108,5 @@ def all_panels() -> str:
         + _telemetry()
         + _templates()
         + _flowgraph()
+        + _sdk_lab()
     )

@@ -144,6 +144,14 @@ watch-ts:  ## Watch and recompile TypeScript on change
 lint-ts:  ## Type-check TypeScript without emitting
 	cd src/dashboard && npx tsc -p tsconfig.json --noEmit
 
+.PHONY: ts-api-start
+ts-api-start:  ## Start TypeScript SDK API server (port 8765)
+	cd src/ts_api && npm start
+
+.PHONY: ts-api-dev
+ts-api-dev:  ## Start TypeScript SDK API server with hot reload
+	cd src/ts_api && npm run dev
+
 # ── Code quality ──────────────────────────────────────────────────────────────
 
 .PHONY: lint

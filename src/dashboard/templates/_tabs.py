@@ -22,6 +22,7 @@ _NAV: list = [
     ("workflows",     "Workflows",        "⇌", "agents"),
     ("flowgraph",     "Flowgraph",        "⬡", "agents"),
     ("prompts",       "Prompts",          "⊘", "agents"),
+    ("sdk-lab",       "SDK Lab",          "⊗", "agents"),
     # OPERATIONS
     ("cases",         "Cases",            "⊡", "ops"),
     ("tasks",         "Tasks",            "⊛", "ops"),

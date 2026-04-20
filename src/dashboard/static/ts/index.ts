@@ -103,6 +103,16 @@ import {
   fgImportDialog,
   fgExecute,
 } from './flowgraph.js';
+import {
+  sdkStreamRun,
+  sdkStructuredRun,
+  sdkThinkingRun,
+  sdkToolsRun,
+  sdkMemoryRun,
+  sdkMemoryRead,
+  sdkApiHealth,
+  initSdkPanel,
+} from './sdk_panel.js';
 declare global {
   interface Window {
     // core
@@ -231,6 +241,16 @@ declare global {
     fgExportDialog: typeof fgExportDialog;
     fgImportDialog: typeof fgImportDialog;
     fgExecute: typeof fgExecute;
+
+    // sdk lab
+    sdkStreamRun: typeof sdkStreamRun;
+    sdkStructuredRun: typeof sdkStructuredRun;
+    sdkThinkingRun: typeof sdkThinkingRun;
+    sdkToolsRun: typeof sdkToolsRun;
+    sdkMemoryRun: typeof sdkMemoryRun;
+    sdkMemoryRead: typeof sdkMemoryRead;
+    sdkApiHealth: typeof sdkApiHealth;
+    sdkSubTab: (name: string) => void;
   }
 }
 
@@ -349,6 +369,29 @@ window.fgExportDialog = fgExportDialog;
 window.fgImportDialog = fgImportDialog;
 window.fgExecute = fgExecute;
 
+// SDK Lab
+window.sdkStreamRun = sdkStreamRun;
+window.sdkStructuredRun = sdkStructuredRun;
+window.sdkThinkingRun = sdkThinkingRun;
+window.sdkToolsRun = sdkToolsRun;
+window.sdkMemoryRun = sdkMemoryRun;
+window.sdkMemoryRead = sdkMemoryRead;
+window.sdkApiHealth = sdkApiHealth;
+window.sdkSubTab = (name: string) => {
+  document.querySelectorAll('.sdk-sub').forEach((el) => {
+    (el as HTMLElement).style.display = 'none';
+  });
+  const sub = document.getElementById(`sdk-sub-${name}`);
+  if (sub) sub.style.display = '';
+  // update active button styling
+  document.querySelectorAll('#sdk-sub-tabs button').forEach((btn) => {
+    const b = btn as HTMLButtonElement;
+    b.className = b.textContent?.toLowerCase().trim() === name
+      ? 'btn btn-accent text-xs'
+      : 'btn btn-ghost text-xs';
+  });
+};
+
 // Initialize dashboard on DOM ready
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize sidebar (collapsible + theme mode)
@@ -395,5 +438,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'compliance') { loadComplianceCharts().catch(() => {}); }
     if (name === 'health')     { loadHealthCharts().catch(() => {}); }
     if (name === 'flowgraph')  { initFlowgraph(); fgLoadAgents().catch(() => {}); }
+    if (name === 'sdk-lab')    { initSdkPanel(); }
   };
 });
