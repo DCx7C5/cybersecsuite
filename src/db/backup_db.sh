@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# DEPRECATED: This script is no longer maintained.
+# Use the Python management command instead: uv run python -m manage backup-db
 # Database backup script for forensic evidence preservation
 set -euo pipefail
 

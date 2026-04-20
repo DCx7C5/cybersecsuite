@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# DEPRECATED: This script is no longer maintained.
+# Use the Python management command instead: uv run python -m manage init-db
 # =============================================
 # CyberSec — PostgreSQL Database Init Script
 # =============================================
