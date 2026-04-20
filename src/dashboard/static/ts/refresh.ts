@@ -10,7 +10,7 @@ interface APIResponse {
 
 export async function refresh(): Promise<void> {
   try {
-    const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv, findingsv, iocsv, yarav, netv, intv, auditv, compv] = await Promise.all([
+    const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv, findingsv, iocsv, yarav, netv, intv, auditv, compv, hv] = await Promise.all([
       fetch('/api/overview').then((r) => r.json()),
       fetch('/api/usage').then((r) => r.json()),
       fetch('/api/crypto').then((r) => r.json()),
@@ -28,6 +28,7 @@ export async function refresh(): Promise<void> {
       fetch('/api/intelligence').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/audit').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/compliance').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
+      fetch('/api/health').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
     ]);
 
     if ($('uptime') && ov.uptime_seconds !== undefined)
@@ -679,6 +680,29 @@ export async function refresh(): Promise<void> {
         ],
         compv.recent || []
       );
+    }
+
+    // Health tab
+    if (!hv.error) {
+      const db = hv.database || {};
+      const px = hv.proxy || {};
+      const dbStatus = $('health-db-status');
+      if (dbStatus) {
+        dbStatus.textContent = db.status === 'ok' ? '✅ OK' : '❌ ' + (db.status || 'unknown');
+      }
+      const tables = $('health-tables');
+      if (tables) tables.textContent = String(db.table_count ?? '—');
+      const prov = $('health-providers');
+      if (prov) prov.textContent = String(px.providers_enabled ?? '—');
+      const provFree = $('health-providers-free');
+      if (provFree) provFree.textContent = String(px.providers_free ?? '—');
+      const uptimeEl = $('health-uptime');
+      if (uptimeEl) {
+        const secs = px.uptime_seconds;
+        uptimeEl.textContent = secs !== undefined ? Math.round(secs) + 's' : '—';
+      }
+      const intel = $('health-intel');
+      if (intel) intel.textContent = db.intel_bootstrapped ? '✅ Yes' : '⚠ No';
     }
   } catch (e) {
     console.error('Dashboard refresh error:', e);

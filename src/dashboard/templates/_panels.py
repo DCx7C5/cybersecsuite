@@ -27,7 +27,16 @@ def _usage() -> str:
 def _health() -> str:
     return (
         '<div id="tab-health" class="card" style="display:none">\n'
-        '  <div id="health-content" class="loading">Checking health...</div>\n'
+        '  <h2>&#x2764; System Health</h2>\n'
+        '  <div class="stat-row">\n'
+        '    <div class="stat-box"><span id="health-db-status">—</span><br><small>Database</small></div>\n'
+        '    <div class="stat-box"><span id="health-tables">—</span><br><small>Tables</small></div>\n'
+        '    <div class="stat-box"><span id="health-providers">—</span><br><small>Providers On</small></div>\n'
+        '    <div class="stat-box"><span id="health-providers-free">—</span><br><small>Free Providers</small></div>\n'
+        '    <div class="stat-box"><span id="health-uptime">—</span><br><small>Uptime</small></div>\n'
+        '    <div class="stat-box"><span id="health-intel">—</span><br><small>Intel Seeded</small></div>\n'
+        '  </div>\n'
+        '  <div id="health-content"></div>\n'
         "</div>\n"
     )
 
@@ -275,6 +284,46 @@ def _agent_query() -> str:
         '    <span id="aq-status" class="text-xs text-gray-500"></span>\n'
         "  </div>\n"
         '  <div id="aq-history" class="space-y-4"></div>\n'
+        "</div>\n"
+    )
+
+
+def _chat() -> str:
+    return (
+        '<div id="tab-chat" class="card" style="display:none">\n'
+        '  <div class="flex items-center justify-between mb-3">\n'
+        '    <h3 class="text-lg font-semibold">&#x1f4ac; Agent Chat</h3>\n'
+        '    <span id="chat-status" class="text-xs font-mono" style="color:var(--text-muted)">Ready</span>\n'
+        "  </div>\n"
+        '  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">\n'
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Agent</label>\n'
+        '      <select id="chat-agent"\n'
+        '        class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none">\n'
+        '        <option value="cybersec-agent">cybersec-agent</option>\n'
+        "      </select>\n"
+        "    </div>\n"
+        '    <div>\n'
+        '      <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Mode</label>\n'
+        '      <button id="chat-stream-toggle" onclick="acChatToggleStream()"\n'
+        '        class="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg transition-colors">Streaming: ON</button>\n'
+        "    </div>\n"
+        '    <div class="flex items-end gap-2">\n'
+        '      <button id="chat-export" onclick="acChatExport()" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg transition-colors">Export</button>\n'
+        '      <button id="chat-clear" onclick="acChatClear()" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-lg transition-colors">Clear</button>\n'
+        "    </div>\n"
+        "  </div>\n"
+        '  <div id="chat-output"\n'
+        '    style="height:360px;overflow-y:auto;padding:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-deep);margin-bottom:12px"></div>\n'
+        '  <div>\n'
+        '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Prompt <span class="text-gray-600">(Shift+Enter for newline)</span></label>\n'
+        '    <textarea id="chat-input" rows="4" placeholder="Ask the selected agent&hellip;"\n'
+        '      class="w-full px-3 py-2 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none resize-y font-mono"></textarea>\n'
+        "  </div>\n"
+        '  <div class="flex items-center gap-3 mt-3">\n'
+        '    <button id="chat-send" onclick="acChatSend()" class="px-4 py-2 bg-cyan-700 hover:bg-cyan-600 text-sm rounded-lg font-semibold transition-colors">&#x25b6; Send</button>\n'
+        '    <button id="chat-stop" onclick="acChatStop()" class="px-4 py-2 bg-red-700 hover:bg-red-600 text-sm rounded-lg font-semibold transition-colors" style="display:none">Stop</button>\n'
+        "  </div>\n"
         "</div>\n"
     )
 
@@ -629,6 +678,14 @@ def _settings() -> str:
         '<span class="panel-title">&#x2699;&#xfe0f; Claude Settings</span>'
         '</div>\n'
 
+        # ── Project selector ──
+        '  <div style="margin-bottom:16px">\n'
+        '    <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Active Project</label>\n'
+        '    <select id="settings-project-select" onchange="switchActiveProject(this.value)" style="width:100%;max-width:300px">\n'
+        '      <option value="">None (Global only)</option>\n'
+        '    </select>\n'
+        '  </div>\n'
+
         # ── Scope tabs ──
         '  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px">\n'
         '    <button id="scope-btn-global" onclick="switchSettingsScope(\'global\')" '
@@ -683,6 +740,18 @@ def _settings() -> str:
         '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
         'Plugins installed in ~/.claude. Toggle writes to ~/.claude/settings.json.</p>\n'
         '      <div id="settings-plugins" class="toggles-loading">Loading…</div>\n'
+        '    </div>\n'
+
+        # Desktop Notifications
+        '    <div class="mb-6">\n'
+        '      <div class="section-h3">Desktop Notifications</div>\n'
+        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
+        'Toggle to enable desktop notifications for task completion, findings, etc.</p>\n'
+        '      <label class="flex items-center gap-3 cursor-pointer">\n'
+        '        <input type="checkbox" id="settings-dbus-enable" class="toggle" onchange="toggleDbusNotifications(this.checked)" />\n'
+        '        <span class="text-sm">Enable desktop notifications</span>\n'
+        '      </label>\n'
+        '      <div id="dbus-status" class="text-xs mt-2 text-gray-500"></div>\n'
         '    </div>\n'
 
         # Global Env (read-only)
@@ -815,7 +884,7 @@ def _opensearch() -> str:
     return (
         '<div id="tab-opensearch" class="card" style="display:none">\n'
         '  <div class="flex items-center justify-between mb-3">\n'
-        '    <h3 class="text-lg font-semibold">&#x1f50d; OpenSearch</h3>\n'
+        '    <h3 class="text-lg font-semibold">&#x1f50d; OpenObserve</h3>\n'
         '    <button onclick="loadOpenSearch()" class="btn btn-sm">&#x21bb; Refresh</button>\n'
         "  </div>\n"
         '  <div id="os-cluster" class="mb-4"></div>\n'
@@ -840,6 +909,29 @@ def _explorer() -> str:
     )
 
 
+def _templates() -> str:
+    return (
+        '<div id="tab-templates" class="card" style="display:none">\n'
+        '  <h3 class="text-lg font-semibold mb-3">&#x25ad; Templates</h3>\n'
+        '  <div class="flex items-center gap-3 mb-4">\n'
+        '    <select id="template-type" onchange="loadTemplates()"\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg">\n'
+        '      <option value="">All Types</option>\n'
+        '      <option value="agents">Agents</option>\n'
+        '      <option value="skills">Skills</option>\n'
+        '      <option value="hooks">Hooks</option>\n'
+        '      <option value="mcp">MCP</option>\n'
+        "    </select>\n"
+        '    <input type="text" id="template-search" placeholder="Search..."\n'
+        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg"\n'
+        '      oninput="loadTemplates()">\n'
+        '    <button onclick="createTemplate()" class="px-3 py-1.5 text-sm bg-cyan-600 hover:bg-cyan-500 rounded-lg">+ New</button>\n'
+        "</div>\n"
+        '  <div id="template-list" class="grid gap-2"></div>\n'
+        "</div>\n"
+    )
+
+
 def all_panels() -> str:
     return "".join([
         _health(),
@@ -851,6 +943,7 @@ def all_panels() -> str:
         _agent_crafter(),
         _team_builder(),
         _agent_query(),
+        _chat(),
         _workflows(),
         _prompts(),
         _cases(),
@@ -866,7 +959,7 @@ def all_panels() -> str:
         _audit(),
         _compliance(),
         _dbcounts(),
-        _opensearch(),
+_opensearch(),
         _explorer(),
-        _settings(),
+        _templates(),
     ])
