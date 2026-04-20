@@ -6,6 +6,7 @@ import sys
 
 from ._commands import (
     schema_command,
+    init_db_command,
     shell_command,
     status_command,
     seed_all_command,
@@ -39,6 +40,7 @@ def show_usage():
     print("CyberSec Management")
     print("Available commands:")
     print("  schema     - Create / update all tables (generate_schemas safe=True)")
+    print("  init-db    - One-shot setup: schema + seed all fixtures (use in entrypoint)")
     print("  shell      - Launch async Python shell with models")
     print("  status     - Show database status")
     print("  seed       - Seed ALL intel tables (NIST + MITRE + CWE + CAPEC)")
@@ -109,6 +111,7 @@ async def main():
 
     async_commands = {
         "schema": schema_command,
+        "init-db": init_db_command,
         "shell": shell_command,
         "status": status_command,
         "seed": seed_command,

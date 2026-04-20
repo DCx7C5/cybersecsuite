@@ -219,6 +219,43 @@ async def seed_all_command():
     print("✅ All fixture seeds complete.")
 
 
+async def init_db_command():
+    """One-shot setup: create schemas then seed all fixture-based intel tables."""
+    from db.bootstrap import init_tortoise_async, get_database_health_async
+    from db.models.seeds import (
+        seed_nist_csf,
+        seed_nist_ai_rmf,
+        seed_mitre_techniques,
+        seed_mitre_actors,
+        seed_mitre_software,
+        seed_cwe,
+        seed_capec,
+        seed_poc,
+    )
+
+    print("→ [init-db] Creating/updating database schemas...")
+    await init_tortoise_async(create_db=True)
+    health = await get_database_health_async(check_connection=True, include_counts=False)
+    print(f"  ✅ Schemas ready — {health.get('table_count', 0)} tables")
+
+    seeds = [
+        ("NIST CSF 2.0", seed_nist_csf),
+        ("NIST AI RMF 1.0", seed_nist_ai_rmf),
+        ("MITRE Techniques", seed_mitre_techniques),
+        ("MITRE Actors", seed_mitre_actors),
+        ("MITRE Software", seed_mitre_software),
+        ("CWE", seed_cwe),
+        ("CAPEC", seed_capec),
+        ("PoC", seed_poc),
+    ]
+    print("→ [init-db] Seeding intelligence fixtures...")
+    for label, fn in seeds:
+        print(f"  → {label}...")
+        r = await fn()
+        print(f"    ✅ {label}: {r['created']} created, {r['skipped']} skipped")
+    print("✅ [init-db] Database initialisation complete.")
+
+
 async def seed_command():
     """Seed default data."""
     from db.bootstrap import init_tortoise_async

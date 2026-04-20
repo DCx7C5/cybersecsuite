@@ -32,20 +32,12 @@ else
     done
 fi
 
-# Create database schemas
-echo "[dashboard-init] Creating database schemas..."
-if python3 src/manage.py schema; then
-    echo "[dashboard-init] ✓ Schemas created successfully"
+# Initialise database: create schemas + seed all fixtures
+echo "[dashboard-init] Running database initialisation (schema + seed fixtures)..."
+if uv run python -m manage init-db; then
+    echo "[dashboard-init] ✓ Database initialisation complete"
 else
-    echo "[dashboard-init] ✗ Schema creation failed (may already exist)"
-fi
-
-# Bootstrap intelligence data (optional, can be slow)
-echo "[dashboard-init] Bootstrapping intelligence data..."
-if python3 src/manage.py seed-intel 2>&1 | head -20; then
-    echo "[dashboard-init] ✓ Intelligence data loaded"
-else
-    echo "[dashboard-init] ⚠ Intelligence bootstrap encountered issues (check logs)"
+    echo "[dashboard-init] ⚠ Database initialisation encountered issues (check logs above)"
 fi
 
 echo "[dashboard-init] ✓ Initialization complete"
