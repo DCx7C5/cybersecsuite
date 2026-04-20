@@ -5,11 +5,11 @@ into SSE-ready dicts consumed by dashboard /api/agent-query endpoint.
 """
 from __future__ import annotations
 
-import logging
+from agent import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any
 
-logger = logging.getLogger("agent.streaming")
+logger = getLogger("agent.streaming")
 
 
 async def stream_query(

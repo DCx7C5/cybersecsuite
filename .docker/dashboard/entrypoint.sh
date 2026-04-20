@@ -49,12 +49,31 @@ else
 fi
 
 echo "[dashboard-init] ✓ Initialization complete"
-echo "[dashboard-init] Starting ASGI server (uvicorn) on port ${ASGI_PORT:-8000}..."
-echo ""
 
-# Start the ASGI server (includes dashboard at /dashboard/*, proxy at /v1/*, A2A at /a2a)
-exec uv run uvicorn proxy.asgi:app \
-    --host "${ASGI_HOST:-0.0.0.0}" \
-    --port "${ASGI_PORT:-8000}" \
-    --log-level info
+# Check for TLS certificates
+TLS_CERT="${ASGI_TLS_CERT:-/home/cybersec/.omniroute/certs/cert.pem}"
+TLS_KEY="${ASGI_TLS_KEY:-/home/cybersec/.omniroute/certs/key.pem}"
+
+# Default to port 8000, redirect 8443 → 8000 if no TLS
+HTTP_PORT="${ASGI_PORT:-8000}"
+HTTPS_PORT="${ASGI_TLS_PORT:-8443}"
+
+if [[ -f "$TLS_CERT" && -f "$TLS_KEY" ]]; then
+    echo "[dashboard-init] TLS certificates detected - starting HTTPS on port $HTTPS_PORT"
+    echo "[dashboard-init] Starting ASGI server with TLS..."
+    exec uv run uvicorn proxy.asgi:app \
+        --host "${ASGI_HOST:-0.0.0.0}" \
+        --port "$HTTP_PORT" \
+        --ssl-keyfile "$TLS_KEY" \
+        --ssl-certfile "$TLS_CERT" \
+        --log-level info
+else
+    echo "[dashboard-init] No TLS certificates found - serving HTTP only on port $HTTP_PORT"
+    echo "[dashboard-init] Redirect from port $HTTPS_PORT is handled by docker-compose (not exposed)"
+    echo "[dashboard-init] Starting ASGI server..."
+    exec uv run uvicorn proxy.asgi:app \
+        --host "${ASGI_HOST:-0.0.0.0}" \
+        --port "$HTTP_PORT" \
+        --log-level info
+fi
 

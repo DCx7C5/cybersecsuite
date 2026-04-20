@@ -71,7 +71,7 @@ Each provider has an automatic circuit breaker:
 - **Recovery**: 60 seconds cooldown
 - **State**: `closed` (normal) → `open` (tripped) → `half-open` (testing)
 
-Check circuit breaker status via MCP tool `cybersec.get_circuit_breakers` or the dashboard at `/dashboard/api/routing`.
+Check circuit breaker status via MCP tool `cybersec.get_circuit_breakers` or the dashboard at `/api/routing`.
 
 ## Rate Limiter
 

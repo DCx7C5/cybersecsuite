@@ -5,6 +5,7 @@ First match wins (highest-priority scope).
 """
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -101,5 +102,46 @@ def list_templates(
                     "scope": scope,
                     "path": str(p),
                 })
+
+    return results
+
+
+def discover_skills(
+    domain: str | None = None,
+    project_dir: Path | None = None,
+) -> list[dict]:
+    """Discover skills from .claude/skills/ directory."""
+    global_dir = Path("~/.claude").expanduser()
+    app_dir = Path("~/.cybersecsuite").expanduser()
+    if project_dir is None:
+        project_dir = Path.cwd()
+
+    skills_dir = global_dir / "skills"
+    index_file = global_dir / "skills-index.json"
+
+    results: list[dict] = []
+
+    if index_file.exists():
+        try:
+            index = json.loads(index_file.read_text())
+            skills = index.get("skills", [])
+            for s in skills:
+                if domain is None or s.get("domain") == domain:
+                    results.append(s)
+            return results
+        except Exception:
+            pass
+
+    if skills_dir.exists():
+        for p in sorted(skills_dir.rglob("SKILL.md")):
+            name = p.parent.name
+            rel = str(p.parent.relative_to(skills_dir))
+            if domain and not rel.startswith(domain):
+                continue
+            results.append({
+                "name": name,
+                "path": str(p),
+                "domain": rel.split("/")[0] if "/" in rel else "other",
+            })
 
     return results

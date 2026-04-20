@@ -1,13 +1,15 @@
 """csmcp — cybersec in-process SDK MCP servers.
 
 Usage:
-    from csmcp import all_servers, allowed_tools
+    from csmcp import all_servers, allowed_tools, getLogger
     options = ClaudeAgentOptions(
         mcp_servers=all_servers(),
-        allowed_tools=allowed_tools(),
+        allowed_tools=allowed_tools()
     )
 """
 from __future__ import annotations
+
+from logger import getLogger
 
 from typing import Any
 

@@ -23,6 +23,7 @@ class Session(Model):
     id = fields.IntField(primary_key=True)
     project = fields.ForeignKeyField("models.Project", related_name="sessions", on_delete=fields.CASCADE)
     session_id = fields.CharField(max_length=128, unique=True, db_index=True)
+    sdk_session_id = fields.CharField(max_length=128, null=True, db_index=True)
     name = fields.CharField(max_length=256, default="")
     description = fields.TextField(default="")
     path = fields.CharField(max_length=1024, default="")

@@ -6,6 +6,7 @@ from tortoise.context import TortoiseContext
 
 _initialized = False
 _ctx: TortoiseContext | None = None
+_intel_bootstrapped = False
 
 
 def get_database_config() -> dict:
@@ -20,6 +21,13 @@ def get_database_config() -> dict:
     # Always include port — asyncpg needs it to construct the Unix socket
     # filename (e.g. /tmp/.s.PGSQL.5432) even when host is a directory path.
     cfg["port"] = int(os.environ.get("CYBERSEC_DB_PORT", "5432"))
+    return cfg
+
+
+def get_database_config_safe() -> dict:
+    """DB config without password — safe for health/status responses."""
+    cfg = get_database_config()
+    cfg.pop("password", None)
     return cfg
 
 
@@ -82,6 +90,8 @@ async def init_tortoise_async(
         await _ctx.generate_schemas(safe=True)
     if bootstrap_intel:
         await bootstrap_intelligence_async(force=False, include_feeds=True)
+        global _intel_bootstrapped
+        _intel_bootstrapped = True
 
 
 async def close_tortoise() -> None:
@@ -105,7 +115,7 @@ async def bootstrap_intelligence_async(
 def get_status() -> dict:
     return {
         "initialized": _initialized,
-        "config": get_database_config(),
+        "config": get_database_config_safe(),
     }
 
 
@@ -121,7 +131,7 @@ async def get_database_health_async(
 
     health: dict = {
         "status": "ok",
-        "config": get_database_config(),
+        "config": get_database_config_safe(),
         "initialized": _initialized,
     }
 
@@ -149,7 +159,7 @@ async def get_database_health_async(
     except Exception as exc:
         health["status"] = "error"
         health["error"] = str(exc)
-        health["intel_bootstrapped"] = False
+        health["intel_bootstrapped"] = _intel_bootstrapped
         return health
 
     if include_counts and health["status"] == "ok":
@@ -166,5 +176,5 @@ async def get_database_health_async(
         except Exception:
             pass
 
-    health["intel_bootstrapped"] = False
+    health["intel_bootstrapped"] = _intel_bootstrapped
     return health

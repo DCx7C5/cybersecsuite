@@ -44,9 +44,9 @@ class MetricsStore:
             ring = self._rings.setdefault(event.name, deque(maxlen=self._ring_max))
             ring.append(event)
 
-        # Dual-write to OpenSearch (non-fatal)
+        # Dual-write to OpenObserve (non-fatal)
         try:
-            from opensearch.writer import bulk_index  # lazy import avoids hard dep
+            from openobserve.writer import bulk_index  # lazy import avoids hard dep
 
             await bulk_index(
                 "telemetry",

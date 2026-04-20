@@ -209,5 +209,5 @@ docker compose logs --tail=100 cybersec-dashboard
 
 Access logs are available via the dashboard SSE endpoint:
 ```bash
-curl -N http://localhost:8000/dashboard/sse/health
+curl -N http://localhost:8000/sse/health
 ```

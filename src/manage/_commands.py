@@ -4,10 +4,123 @@
 from __future__ import annotations
 
 import sys
+import json
+import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+
+_FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---(?:\n|$)", re.DOTALL)
+
+
+def _parse_scalar(value: str):
+    raw = value.strip()
+    if not raw:
+        return ""
+    low = raw.lower()
+    if low in {"true", "yes"}:
+        return True
+    if low in {"false", "no"}:
+        return False
+    if raw.isdigit():
+        try:
+            return int(raw)
+        except ValueError:
+            pass
+    return raw.strip('"').strip("'")
+
+
+def _parse_frontmatter(text: str) -> dict[str, object]:
+    match = _FRONTMATTER_RE.match(text)
+    if not match:
+        return {}
+    data: dict[str, object] = {}
+    current_list_key: str | None = None
+    for line in match.group(1).splitlines():
+        if not line.strip():
+            continue
+        stripped = line.lstrip()
+        if current_list_key and (stripped.startswith("- ") or line.startswith("  - ")):
+            current = data.get(current_list_key, [])
+            if isinstance(current, list):
+                current.append(_parse_scalar(stripped[2:]))
+                data[current_list_key] = current
+            continue
+
+        current_list_key = None
+        if ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        key = key.strip()
+        value = value.strip()
+        if value == "":
+            data[key] = []
+            current_list_key = key
+            continue
+        data[key] = _parse_scalar(value)
+    return data
+
+
+def _normalize_tags(raw_tags: object) -> list[str]:
+    if isinstance(raw_tags, list):
+        return [str(item) for item in raw_tags]
+    if isinstance(raw_tags, str) and raw_tags.strip():
+        return [part.strip() for part in raw_tags.split(",") if part.strip()]
+    return []
+
+
+def _scan_skill_dir(root: Path, scope: str) -> list[dict[str, object]]:
+    if not root.exists():
+        return []
+    out: list[dict[str, object]] = []
+    for skill_file in sorted(root.rglob("SKILL.md")):
+        try:
+            text = skill_file.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            text = ""
+        fm = _parse_frontmatter(text)
+        out.append(
+            {
+                "name": str(fm.get("name") or skill_file.parent.name),
+                "path": str(skill_file),
+                "scope": scope,
+                "domain": str(fm.get("domain") or ""),
+                "tags": _normalize_tags(fm.get("tags")),
+                "description": str(fm.get("description") or ""),
+            }
+        )
+    return out
+
+
+async def build_skill_index_command() -> None:
+    """Build merged skill index across global/app/project scopes."""
+    cwd = Path.cwd()
+    global_dir = Path.home() / ".claude" / "skills"
+    app_dir = Path.home() / ".cybersecsuite" / "skills"
+    project_dir = cwd / ".claude" / "skills"
+
+    entries: list[dict[str, object]] = []
+    entries.extend(_scan_skill_dir(global_dir, "global"))
+    entries.extend(_scan_skill_dir(app_dir, "app"))
+    project_entries = _scan_skill_dir(project_dir, "project")
+    entries.extend(project_entries)
+
+    app_out_dir = Path.home() / ".cybersecsuite"
+    app_out_dir.mkdir(parents=True, exist_ok=True)
+    app_index_path = app_out_dir / "skills-index.json"
+    project_out_dir = cwd / ".claude"
+    project_out_dir.mkdir(parents=True, exist_ok=True)
+    project_index_path = project_out_dir / "skills-index.json"
+
+    app_index_path.write_text(json.dumps(entries, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+    project_index_path.write_text(
+        json.dumps(project_entries, indent=2, ensure_ascii=True) + "\n",
+        encoding="utf-8",
+    )
+
+    print(f"Built index: {len(entries)} skills across 3 scopes -> {app_index_path}")
 
 
 async def schema_command():
@@ -621,16 +734,16 @@ def check_command() -> None:
 # ── OpenSearch fast-forward migrations ───────────────────────────────────────
 
 async def migrate_audit_command() -> None:
-    """Fast-forward AuditLog rows from PostgreSQL → OpenSearch, then drop PG table."""
+    """Fast-forward AuditLog rows from PostgreSQL → OpenObserve, then drop PG table."""
     from db.bootstrap import init_tortoise_async
-    from opensearch.client import get_client
-    from opensearch.indices import ensure_indices, daily_index
+    from openobserve.client import get_client
+    from openobserve.streams import ensure_streams, stream_name
 
     print("→ Initialising DB...")
     await init_tortoise_async()
 
-    print("→ Ensuring OpenSearch index agents...")
-    await ensure_indices()
+    print("→ Ensuring OpenObserve streams...")
+    await ensure_streams()
 
     from db.models.core import AuditLog
     from tortoise import connections
@@ -689,16 +802,16 @@ async def migrate_audit_command() -> None:
 
 
 async def migrate_api_usage_command() -> None:
-    """Fast-forward ApiUsageLog rows from PostgreSQL → OpenSearch, then drop PG table."""
+    """Fast-forward ApiUsageLog rows from PostgreSQL → OpenObserve, then drop PG table."""
     from db.bootstrap import init_tortoise_async
-    from opensearch.client import get_client
-    from opensearch.indices import ensure_indices, daily_index
+    from openobserve.client import get_client
+    from openobserve.streams import ensure_streams, stream_name
 
     print("→ Initialising DB...")
     await init_tortoise_async()
 
-    print("→ Ensuring OpenSearch index agents...")
-    await ensure_indices()
+    print("→ Ensuring OpenObserve streams...")
+    await ensure_streams()
 
     from db.models.api_usage_log import ApiUsageLog
     from tortoise import connections

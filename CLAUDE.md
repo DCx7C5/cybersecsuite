@@ -9,7 +9,7 @@
 
 **CyberSecSuite** is a full-stack cybersecurity forensics platform with:
 - **ASGI server** (Starlette, port 8000) — AI proxy, A2A protocol, live dashboard
-- **MCP server** — 34 tools for forensic investigation, intel lookup, crypto, AI routing
+- **MCP server** — 57 tools for forensic investigation, intel lookup, crypto, AI routing
 - **33 specialist sub-agents** — filesystem, memory, network, kernel, persistence, and more
 - **922 skills** — deep taxonomy across 24+ domains
 - **PostgreSQL** — 44 models (findings, IOCs, MITRE, CVE, CWE, CAPEC, NIST CSF/AI RMF, ...)
@@ -28,9 +28,9 @@ uv run python -m manage seed-all
 # cybersec-agent loads automatically via settings.json
 ```
 
-## MCP Tools (34 total)
+## MCP Tools (57 total)
 
-### cybersec server (29 tools, `mcp__cybersec__*`)
+### cybersec server (52 tools, `mcp__cybersec__*`)
 | Category     | Tools                                                                                                                                                                             |
 |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Findings     | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`                                                                                                                |
@@ -41,13 +41,20 @@ uv run python -m manage seed-all
 | Proxy        | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies` |
 | Session      | `session_snapshot`, `agent_registry`, `best_provider`                                                                                                                             |
 | Cases        | `case_open`, `case_status`                                                                                                                                                        |
+| PoC          | `add_poc`, `query_pocs`                                                                                                                                                           |
+| Routing      | `combo_list`, `combo_metrics`, `combo_switch`, `combo_test`, `route_request`, `simulate_route`, `set_routing_strategy`, `set_resilience_profile`, `best_combo_for_task`, `explain_route` |
+| Quota/Pricing| `check_quota`, `cost_report`, `list_models_catalog`                                                                                                                               |
+| AI Memory    | `memory_search`, `memory_add`, `memory_clear`                                                                                                                                    |
+| Web Search   | `web_search`                                                                                                                                                                      |
+| Sync         | `sync_pricing`                                                                                                                                                                    |
+| Health       | `get_health`, `get_provider_metrics`, `get_session_snapshot`                                                                                                                      |
 
 ### dystopian server (5 tools, `mcp__dystopian__*`)
 `crypto_generate_keypair`, `crypto_sign_artifact`, `crypto_verify_artifact`, `crypto_list_keys`, `crypto_rotate_key`
 
 ## Agent SDK Pattern
 
-All tools in `src/mcp/` follow the SDK pattern:
+All tools in `src/csmcp/` follow the SDK pattern:
 
 ```python
 @tool("tool_name", "description", {"param": {"type": "string", "description": "..."}})
@@ -56,7 +63,7 @@ async def _tool_fn(args: dict[str, Any]) -> dict:
     return sdk_result({"key": value})
 ```
 
-Use `from mcp import all_servers, allowed_tools` for SDK wiring.
+Use `from csmcp import all_servers, allowed_tools` for SDK wiring.
 
 ## Architecture
 
@@ -67,9 +74,9 @@ Claude Code / claude-agent-sdk query()
   ASGI /v1/* (AI Proxy — 60 providers, 13 strategies)
         │
   ┌─────┴──────┐
-  │ MCP (stdio)│  mcp_server.py → src/mcp/cybersec/ + src/mcp/dystopian.py
+  │ MCP (stdio)│  mcp_server.py → src/csmcp/cybersec/ + src/csmcp/dystopian.py
   │ A2A (/a2a) │  src/a2a/ → CybersecA2AAgent → SDK → .claude/agents/ → Proxy
-  │ Dashboard  │  /dashboard/* → 30 REST + 4 SSE endpoints
+  │ Dashboard  │  / + /api/* + /sse/* endpoints
   └────────────┘
 ```
 
@@ -77,8 +84,8 @@ Claude Code / claude-agent-sdk query()
 
 | Path                   | Purpose                                                            |
 |------------------------|--------------------------------------------------------------------|
-| `src/mcp/cybersec/`    | SDK MCP package (29 tools, 8 submodules)                           |
-| `src/mcp/dystopian.py` | Crypto tools (Ed25519, Argon2id, AES-256-GCM)                      |
+| `src/csmcp/cybersec/`  | SDK MCP package (52 tools, multiple submodules)                     |
+| `src/csmcp/dystopian.py` | Crypto tools (Ed25519, Argon2id, AES-256-GCM)                    |
 | `src/a2a/`             | A2A protocol, agent SDK bridge, orchestrator                       |
 | `src/ai_proxy/`        | AI proxy (60 providers, 13 routing strategies)                     |
 | `src/db/models/`       | 44 Tortoise ORM models                                             |
@@ -131,7 +138,6 @@ CYBERSEC_BOOTSTRAP_INTEL_ON_START=false
 
 - [`docs/architecture.md`](docs/architecture.md) — system design + flowcharts
 - [`docs/quickstart.md`](docs/quickstart.md) — getting started
-- [`docs/mcp-tools.md`](docs/mcp-tools.md) — all 34 tools reference
+- [`docs/mcp-tools.md`](docs/mcp-tools.md) — MCP tools reference
 - [`docs/agents.md`](docs/agents.md) — all 33 agents
 - [`docs/api.md`](docs/api.md) — REST API endpoints
-- [`.claude/MEMORY.md`](.claude/MEMORY.md) — session memory (DO NOT DELETE)

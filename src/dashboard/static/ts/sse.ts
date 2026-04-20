@@ -61,12 +61,43 @@ export function _sseConnect(
 }
 
 export function initSSE(): void {
-  // These render functions are defined in refresh.ts and imported dynamically
-  // For now, we register the SSE connections and they'll be hooked up in index.ts
-  _updateBadge();
-}
+  // Health stream — updates service indicators live
+  _sseConnect('health', '/sse/health', (data: any) => {
+    const db = data?.database || {};
+    const px = data?.proxy || {};
+    const dot = (id: string, status: string) => {
+      const el = document.getElementById(id);
+      if (el) el.className = 'svc-indicator ' + (status === 'ok' ? 'ok' : status === 'error' ? 'error' : 'unknown');
+    };
+    dot('health-db-dot', db.status);
+    const dbDetail = document.getElementById('health-db-detail');
+    if (dbDetail) dbDetail.textContent = db.table_count ? db.table_count + ' tables' : db.status || '—';
+    dot('health-proxy-dot', 'ok');
+    const proxyDetail = document.getElementById('health-proxy-detail');
+    if (proxyDetail) proxyDetail.textContent = (px.providers_enabled || 0) + ' providers';
+    const uptimeEl = document.getElementById('health-uptime');
+    if (uptimeEl && px.uptime_seconds !== undefined) {
+      const s = px.uptime_seconds;
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      uptimeEl.textContent = h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+    }
+  });
 
-// Helper to re-export for use in other modules
-function _updateBadge(): void {
+  // Telemetry stream
+  _sseConnect('telemetry', '/sse/telemetry', (_data: any) => {
+    // Telemetry data is handled by the telemetry tab renderer
+  }, 'telemetry_update');
+
+  // Cases stream
+  _sseConnect('cases', '/sse/cases', (_data: any) => {
+    // Case updates handled by cases tab
+  });
+
+  // Tasks stream
+  _sseConnect('tasks', '/sse/tasks', (_data: any) => {
+    // Task updates handled by tasks tab
+  });
+
   _sseUpdateBadge();
 }

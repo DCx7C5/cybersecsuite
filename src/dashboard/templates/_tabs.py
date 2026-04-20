@@ -14,6 +14,7 @@ _NAV = [
     ("agent-crafter", "Agent Crafter",   "✎", "agents"),
     ("team-builder",  "Team Builder",     "⊟", "agents"),
     ("agent-query",   "Agent Query",      "⇒", "agents"),
+    ("chat",          "Chat",             "💬", "agents"),
     ("workflows",     "Workflows",        "⇌", "agents"),
     ("prompts",       "Prompts",          "⊘", "agents"),
     # OPERATIONS
@@ -32,8 +33,9 @@ _NAV = [
     ("compliance",    "Compliance",       "⊗", "forensics"),
     # DATA
     ("dbcounts",      "DB Counts",        "◉", "data"),
-    ("opensearch",    "OpenSearch",       "⊘", "data"),
+    ("opensearch",    "OpenObserve",       "⊘", "data"),
     ("explorer",      "Explorer",         "⊡", "data"),
+    ("templates",    "Templates",       "◫", "data"),
     # SETTINGS
     ("settings",      "Settings",         "⊛", "settings"),
 ]

@@ -49,14 +49,41 @@ let _settingsData: SettingsData = {};
 
 export async function loadSettings(): Promise<void> {
   try {
+    await loadSettingsProjects();
     const res = await fetch('/api/settings');
     _settingsData = await res.json();
     _renderSettingsAgent();
     _renderSettingsEnv();
     _renderSettingsHooks();
+    await loadLocalLlmStatus();
   } catch (e) {
     console.error('Failed to load settings', e);
   }
+}
+
+interface Project {
+  id: number;
+  name: string;
+  path?: string;
+}
+
+export async function loadSettingsProjects(): Promise<void> {
+  try {
+    const res = await fetch('/api/projects');
+    const projects: Project[] = res.ok ? await res.json() : [];
+    const sel = document.getElementById('settings-project-select') as HTMLSelectElement;
+    if (!sel) return;
+    const active = localStorage.getItem('activeProjectId') || '';
+    sel.innerHTML = '<option value="">None (Global only)</option>' +
+      projects.map(p => `<option value="${p.id}" ${String(p.id) === active ? 'selected' : ''}>${p.name}</option>`).join('');
+  } catch (e) {
+    console.error('loadSettingsProjects:', e);
+  }
+}
+
+export function switchActiveProject(projectId: string): void {
+  localStorage.setItem('activeProjectId', projectId);
+  loadSettings();
 }
 
 function _inp(id: string, val: unknown, placeholder?: string): string {
@@ -744,5 +771,118 @@ export async function removeHook(event: string, command: string): Promise<void> 
     await loadGlobalHooks();
   } catch (e) {
     alert('Error: ' + (e instanceof Error ? e.message : String(e)));
+  }
+}
+
+
+/* ── Local LLM management ── */
+
+interface LocalLlmProvider {
+  id: string;
+  name: string;
+  base_url: string;
+  reachable: boolean;
+  models: string[];
+}
+
+interface LocalLlmStatus {
+  providers: LocalLlmProvider[];
+  active_model: string | null;
+  default_model: string;
+}
+
+export async function loadLocalLlmStatus(): Promise<void> {
+  const container = document.getElementById('local-llm-providers');
+  const select = document.getElementById('local-llm-model') as HTMLSelectElement | null;
+  const statusEl = document.getElementById('local-llm-status');
+  if (!container) return;
+
+  try {
+    const resp = await fetch('/api/local-llm/status');
+    const data: LocalLlmStatus = await resp.json();
+
+    if (!data.providers || data.providers.length === 0) {
+      container.innerHTML = '<span style="color:var(--text-muted);font-size:12px">No local LLM providers configured.</span>';
+      return;
+    }
+
+    let html = '';
+    for (const p of data.providers) {
+      const dot = p.reachable ? '🟢' : '🔴';
+      html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:13px">`
+        + `${dot} <strong>${p.name}</strong> <span style="color:var(--text-muted)">${p.base_url}</span>`
+        + ` <span style="color:var(--text-muted)">(${p.models.length} models)</span></div>`;
+    }
+    container.innerHTML = html;
+
+    // Populate model dropdown
+    if (select) {
+      const prev = select.value;
+      select.innerHTML = '<option value="">Select a local model...</option>';
+      for (const p of data.providers) {
+        for (const m of p.models) {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = `${m} (${p.id})`;
+          select.appendChild(opt);
+        }
+      }
+      if (prev) select.value = prev;
+    }
+
+    if (statusEl) {
+      if (data.active_model) {
+        statusEl.innerHTML = `Active model: <strong style="color:var(--accent)">${data.active_model}</strong>`;
+      } else if (data.default_model) {
+        statusEl.innerHTML = `Default: <strong>${data.default_model}</strong> (cloud)`;
+      } else {
+        statusEl.textContent = 'Using cloud default';
+      }
+    }
+  } catch (e) {
+    container.innerHTML = '<span style="color:#f87171;font-size:12px">Failed to load local LLM status</span>';
+  }
+}
+
+export async function activateLocalLlm(): Promise<void> {
+  const select = document.getElementById('local-llm-model') as HTMLSelectElement | null;
+  const model = select?.value;
+  if (!model) {
+    alert('Select a model first');
+    return;
+  }
+
+  try {
+    const resp = await fetch('/api/local-llm/activate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model }),
+    });
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      await loadLocalLlmStatus();
+    } else {
+      alert('Error: ' + (data.error || 'Unknown'));
+    }
+  } catch (e) {
+    alert('Failed to activate: ' + (e instanceof Error ? e.message : String(e)));
+  }
+}
+
+export async function deactivateLocalLlm(): Promise<void> {
+  try {
+    const resp = await fetch('/api/local-llm/activate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: '' }),
+    });
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      await loadLocalLlmStatus();
+    } else {
+      alert('Error: ' + (data.error || 'Unknown'));
+    }
+  } catch (e) {
+    alert('Failed to deactivate: ' + (e instanceof Error ? e.message : String(e)));
   }
 }

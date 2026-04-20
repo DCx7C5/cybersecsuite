@@ -10,9 +10,9 @@ Usage (mcp.json):
 from __future__ import annotations
 
 import asyncio
-import logging
+from csmcp import getLogger
 
-logger = logging.getLogger("csmcp.cybersec.server")
+logger = getLogger("csmcp.cybersec.server")
 
 
 async def _run_stdio() -> None:

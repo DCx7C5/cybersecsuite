@@ -1,40 +1,40 @@
 ---
 type: artifact
-name: "${ARTIFACT_NAME}"
-version: ${ARTIFACT_VERSION}
-description: "${ARTIFACT_DESCRIPTION}"
-created_at: "${CREATED_AT}"
-created_by: "${CREATED_BY}"
+name: "{{ artifact_name }}"
+version: {{ artifact_version }}
+description: "{{ artifact_description }}"
+created_at: "{{ created_at }}"
+created_by: "{{ created_by }}"
 alg: Ed25519
 hash: blake2b
-kid: "${KEY_ID}"
-sig: "${SIGNATURE}"
+kid: "{{ key_id }}"
+sig: "{{ signature }}"
 ---
 
-# ${ARTIFACT_NAME}
+# {{ artifact_name }}
 
 ## Content
 
 ```json
-${ARTIFACT_CONTENT}
+{{ artifact_content }}
 ```
 
 ## Integrity
 
 | Field           | Value              |
 |-----------------|--------------------|
-| Content Hash    | `${CONTENT_HASH}`  |
-| Body Hash       | `${BODY_HASH}`     |
-| Signature Valid | ${SIGNATURE_VALID} |
-| Expires At      | ${EXPIRES_AT}      |
+| Content Hash    | `{{ content_hash }}`  |
+| Body Hash       | `{{ body_hash }}`     |
+| Signature Valid | {{ signature_valid }} |
+| Expires At      | {{ expires_at }}      |
 
 ---
 
 ## Audit Trail
 
-${SIGNATURE_LOG}
+{{ signature_log }}
 
 ---
-checksum: "${CHECKSUM}"
-verified_at: "${VERIFIED_AT}"
+checksum: "{{ checksum }}"
+verified_at: "{{ verified_at }}"
 ---

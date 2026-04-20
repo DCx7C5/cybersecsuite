@@ -6,15 +6,15 @@ _Last updated: 2026-04-19_
 
 CyberSecSuite is a full-stack cybersecurity forensics platform with 7 interconnected layers:
 
-| Layer | Purpose | Entry point |
-|-------|---------|-------------|
-| **ASGI Application** | HTTP entry point, mounts all subsystems | `src/proxy/asgi.py` |
-| **AI Proxy** | Multi-provider LLM routing (60 providers, 13 strategies) | `src/ai_proxy/` |
-| **MCP Tools** | 63 tools across 4 servers (stdio + bun) | `src/csmcp/` + `src/omniroute_mcp/` |
-| **A2A Protocol** | External agent-to-agent communication (JSON-RPC 2.0) | `src/a2a/` |
-| **Agent System** | 48 agents, 942 skills, 3 team modes | `.claude/agents/` |
-| **Database** | PostgreSQL — 40+ models, Tortoise ORM (asyncpg) | `src/db/` |
-| **Observability** | Telemetry, OpenSearch, 41-endpoint dashboard | `src/telemetry/` + `src/dashboard/` |
+| Layer                | Purpose                                                  | Entry point                         |
+|----------------------|----------------------------------------------------------|-------------------------------------|
+| **ASGI Application** | HTTP entry point, mounts all subsystems                  | `src/proxy/asgi.py`                 |
+| **AI Proxy**         | Multi-provider LLM routing (60 providers, 13 strategies) | `src/ai_proxy/`                     |
+| **MCP Tools**        | 63 tools across 4 servers (stdio + bun)                  | `src/csmcp/` + `src/omniroute_mcp/` |
+| **A2A Protocol**     | External agent-to-agent communication (JSON-RPC 2.0)     | `src/a2a/`                          |
+| **Agent System**     | 48 agents, 942 skills, 3 team modes                      | `.claude/agents/`                   |
+| **Database**         | PostgreSQL — 40+ models, Tortoise ORM (asyncpg)          | `src/db/`                           |
+| **Observability**    | Telemetry, OpenObserve, 40+ endpoint dashboard            | `src/telemetry/` + `src/dashboard/` |
 
 See also: [layer-integration.md](layer-integration.md) for detailed data flow between layers.
 
@@ -30,7 +30,8 @@ External clients / Claude Code CLI
 │  ASGI Application  (src/proxy/asgi.py, port 8000)             │
 │                                                               │
 │  GET /health          → DB health check (200/503)             │
-│  /dashboard/*         → Dashboard UI + 41 REST/SSE endpoints  │
+│  /                    → Dashboard UI                           │
+│  /api/* + /sse/*      → Dashboard REST/SSE endpoints           │
 │  /v1/*                → AI Proxy (OpenAI-compatible)           │
 │  /a2a                 → A2A JSON-RPC 2.0 server                │
 │  /.well-known/        → Agent card discovery                   │
@@ -39,8 +40,8 @@ External clients / Claude Code CLI
        ▼          ▼            ▼                ▼
   ┌─────────┐ ┌──────────┐ ┌──────────┐  ┌──────────────┐
   │Dashboard│ │ AI Proxy │ │   A2A    │  │   Health     │
-  │ 41 APIs │ │ 13 strat │ │ JSON-RPC │  │   check      │
-  │ 4 SSE   │ │ 60 prov  │ │ SSE      │  └──────────────┘
+  │ 40+ APIs│ │ 13 strat │ │ JSON-RPC │  │   check      │
+  │ 5+ SSE  │ │ 60 prov  │ │ SSE      │  └──────────────┘
   └────┬────┘ └────┬─────┘ └────┬─────┘
        │           │            │
        ▼           ▼            ▼
@@ -51,7 +52,7 @@ External clients / Claude Code CLI
   │  Findings · IOCs · Cases · Artifacts         │
   └──────────────────────────────────────────────┘
   ┌──────────────────────────────────────────────┐
-  │  OpenSearch  (port 9200, Dashboards 5601)    │
+│ OpenObserve (port 5080)                      │
   │  cybersecsuite-telemetry-YYYY.MM.DD          │
   │  cybersecsuite-audit-YYYY.MM.DD              │
   │  cybersecsuite-api-usage-YYYY.MM.DD          │
@@ -186,18 +187,19 @@ cybersecsuite/
 │   │   └── ...             cache, config, pydantic_models, template_renderer
 │   │
 │   ├── dashboard/        Monitoring dashboard (Starlette)
-│   │   ├── routes.py       41 endpoints (37 REST + 4 SSE)
+│   │   ├── routes.py       40+ endpoints (REST + SSE)
 │   │   ├── _handlers.py    Re-export shim (from dashboard.api import *)
-│   │   ├── api/            8 endpoint modules
+│   │   ├── api/            9+ endpoint modules
 │   │   │   ├── core.py       overview, providers, usage, health, crypto
 │   │   │   ├── agents.py     a2a, agents, routing, factory, agent-query
+│   │   │   ├── agent_stream.py streaming chat start/stop + SSE bridge
 │   │   │   ├── forensic.py   findings, iocs, yara, network, intel, audit, compliance, NIST
 │   │   │   ├── ops.py        cases, tasks, task lifecycle, PoCs
 │   │   │   ├── tables.py     db counts, models, generic table, prompts, telemetry
 │   │   │   ├── settings.py   GET/PATCH settings with access control
 │   │   │   ├── team_builder.py team agents, skills, teams
-│   │   │   ├── opensearch_stats.py cluster health + index stats
-│   │   │   └── sse.py        /sse/cases, /sse/tasks, /sse/health, /sse/telemetry
+│   │   │   ├── openobserve_stats.py stream health + stats
+│   │   │   └── sse.py        /sse/cases, /sse/tasks, /sse/health, /sse/telemetry (+ agent-run stream route in routes.py)
 │   │   ├── _schema.py      Tortoise model introspector (40+ models)
 │   │   └── templates/      HTML dashboard assembler (base, tabs, panels, JS)
 │   │
@@ -212,7 +214,7 @@ cybersecsuite/
 │   │   ├── middleware.py   ASGI TelemetryMiddleware (path normalization)
 │   │   └── collector.py    TelemetryCollector (15s polling, rolling history)
 │   │
-│   ├── opensearch/       OpenSearch integration
+│   ├── openobserve/     OpenObserve integration (streams instead of indices)
 │   │   ├── client.py       Async singleton, index templates
 │   │   └── bulk_writer.py  Buffered bulk writer (100 docs / 5s flush)
 │   │
@@ -244,16 +246,15 @@ cybersecsuite/
 
 ## Port Configuration
 
-| Port | Protocol | Service | Env var |
-|------|----------|---------|---------|
-| `8000` | HTTP | Primary ASGI server (uvicorn) | `ASGI_PORT` |
-| `8080` | HTTP | Alt HTTP (Docker exposed) | — |
-| `8433` | HTTPS | TLS proxy (auto-activates with certs) | `ASGI_TLS_PORT` |
-| `5432` | TCP | PostgreSQL | `CYBERSEC_DB_PORT` |
-| `6379` | TCP | Redis cache | `REDIS_URL` |
-| `9200` | HTTP | OpenSearch REST API | `OPENSEARCH_HOST` |
-| `5601` | HTTP | OpenSearch Dashboards UI | — |
-| `20128` | HTTP | OmniRoute AI gateway | `OMNIROUTE_BASE_URL` |
+| Port    | Protocol | Service                               | Env var              |
+|---------|----------|---------------------------------------|----------------------|
+| `8000`  | HTTP     | Primary ASGI server (uvicorn)         | `ASGI_PORT`          |
+| `8080`  | HTTP     | Alt HTTP (Docker exposed)             | —                    |
+| `8433`  | HTTPS    | TLS proxy (auto-activates with certs) | `ASGI_TLS_PORT`      |
+| `5432`  | TCP      | PostgreSQL                            | `CYBERSEC_DB_PORT`   |
+| `6379`  | TCP      | Redis cache                           | `REDIS_URL`          |
+| `5080`  | HTTP     | OpenObserve UI + ingestion API        | `OPENOBSERVE_HOST`  |
+| `20128` | HTTP     | OmniRoute AI gateway                  | `OMNIROUTE_BASE_URL` |
 
 TLS is activated automatically when `ASGI_TLS_CERT` + `ASGI_TLS_KEY` exist. See [configuration.md](configuration.md).
 
@@ -261,12 +262,12 @@ TLS is activated automatically when `ASGI_TLS_CERT` + `ASGI_TLS_KEY` exist. See 
 
 ## MCP Tool Inventory (63 tools)
 
-| Server | Tools | Runtime | Transport |
-|--------|-------|---------|-----------|
-| **cybersec** | 31 | Python (uv) | stdio |
-| **dystopian-crypto** | 5 | Python (uv) | stdio |
-| **omniroute** | 27 | TypeScript (Bun) | stdio |
-| **kerneldev** | — | Python | stdio (external) |
+| Server               | Tools | Runtime          | Transport        |
+|----------------------|-------|------------------|------------------|
+| **cybersec**         | 31    | Python (uv)      | stdio            |
+| **dystopian-crypto** | 5     | Python (uv)      | stdio            |
+| **omniroute**        | 27    | TypeScript (Bun) | stdio            |
+| **kerneldev**        | —     | Python           | stdio (external) |
 
 Tool prefixes: `mcp__cybersec__*` · `mcp__dystopian__*` · `mcp__omniroute__*`
 
@@ -278,17 +279,17 @@ See [mcp-tools.md](mcp-tools.md) for full reference, [omniroute-mcp.md](omnirout
 
 60 providers supported by the AI proxy (9 core + 51 extended):
 
-| Provider | Models | Notes |
-|----------|--------|-------|
-| Anthropic | Claude Haiku/Sonnet/Opus 4.x | Primary for agent execution |
-| OpenAI | GPT-4o, o1, o3 | OpenAI-native + compat endpoint |
-| Google Gemini | 1.5 Pro/Flash, 2.0 Flash | Multimodal |
-| DeepSeek | V3, R1 | Cost-optimized |
-| Groq | Llama-3.3, Mixtral | Ultra-low latency |
-| Mistral | mistral-large, codestral | EU/code-focused |
-| xAI | Grok-2, Grok-beta | High context |
-| Together AI | 60+ open models | BYOM |
-| OpenRouter | 200+ models | Aggregator |
+| Provider      | Models                       | Notes                           |
+|---------------|------------------------------|---------------------------------|
+| Anthropic     | Claude Haiku/Sonnet/Opus 4.x | Primary for agent execution     |
+| OpenAI        | GPT-4o, o1, o3               | OpenAI-native + compat endpoint |
+| Google Gemini | 1.5 Pro/Flash, 2.0 Flash     | Multimodal                      |
+| DeepSeek      | V3, R1                       | Cost-optimized                  |
+| Groq          | Llama-3.3, Mixtral           | Ultra-low latency               |
+| Mistral       | mistral-large, codestral     | EU/code-focused                 |
+| xAI           | Grok-2, Grok-beta            | High context                    |
+| Together AI   | 60+ open models              | BYOM                            |
+| OpenRouter    | 200+ models                  | Aggregator                      |
 
 Plus 51 extended providers including AI21, Cerebras, Cloudflare, Cohere, DeepInfra, Fireworks, HuggingFace, Lambda, NVIDIA, Ollama, Perplexity, Replicate, SambaNova, and more.
 
@@ -300,29 +301,29 @@ Plus 51 extended providers including AI21, Cerebras, Cloudflare, Cohere, DeepInf
 
 ## Database Models (40+ models, 65 tables)
 
-| Domain | Count | Key Models |
-|--------|-------|------------|
-| **Scope** | 4 | Workspace, Project, Session, ScopedEntry (abstract) |
-| **Investigation** | 6 | Finding, IOC, Risk, Baseline, WatchlistItem, SharedEntry |
-| **Intel — MITRE** | 3 | MitreTechniqueIntel, MitreThreatActorIntel, MitreSoftwareFamilyIntel |
-| **Intel — Vulns** | 3 | CVEIntel, CWEIntel, CapecAttackPatternIntel |
-| **Intel — Compliance** | 2 | NistCsfControl (185 controls), NistAiRmfControl (72 controls) |
-| **Forensics** | 5 | ForensicProject, ForensicSession, IOCEntry, ForensicWatchlistItem, ClearedItem |
-| **Network** | 7 | Network, Host, IPAddress, Domain, Certificate, NetworkConnection, Machine |
-| **Hardware** | 5 | CPUInfo, MemoryModule, NetworkInterface, InterfaceAddress, StorageDrive |
-| **Artifacts** | 2 | Artifact (versioned + signed), ArtifactSignatureLog |
-| **Audit** | 3 | AuditLog (immutable), ApiUsageLog (UUID PK), CaseIntake |
-| **Other** | 4 | Vulnerability, POCIntel, Tag, YaraRule |
+| Domain                 | Count | Key Models                                                                     |
+|------------------------|-------|--------------------------------------------------------------------------------|
+| **Scope**              | 4     | Workspace, Project, Session, ScopedEntry (abstract)                            |
+| **Investigation**      | 6     | Finding, IOC, Risk, Baseline, WatchlistItem, SharedEntry                       |
+| **Intel — MITRE**      | 3     | MitreTechniqueIntel, MitreThreatActorIntel, MitreSoftwareFamilyIntel           |
+| **Intel — Vulns**      | 3     | CVEIntel, CWEIntel, CapecAttackPatternIntel                                    |
+| **Intel — Compliance** | 2     | NistCsfControl (185 controls), NistAiRmfControl (72 controls)                  |
+| **Forensics**          | 5     | ForensicProject, ForensicSession, IOCEntry, ForensicWatchlistItem, ClearedItem |
+| **Network**            | 7     | Network, Host, IPAddress, Domain, Certificate, NetworkConnection, Machine      |
+| **Hardware**           | 5     | CPUInfo, MemoryModule, NetworkInterface, InterfaceAddress, StorageDrive        |
+| **Artifacts**          | 2     | Artifact (versioned + signed), ArtifactSignatureLog                            |
+| **Audit**              | 3     | AuditLog (immutable), ApiUsageLog (UUID PK), CaseIntake                        |
+| **Other**              | 4     | Vulnerability, POCIntel, Tag, YaraRule                                         |
 
 ---
 
 ## Agent Tiers
 
-| Tier | Model | Examples |
-|------|-------|----------|
-| Haiku (fast) | claude-haiku-4.5 | watchdog, command-verifier |
-| Sonnet (standard) | claude-sonnet-4 | most analysts, developers, layer specialists |
-| Opus (heavy) | claude-opus-4.5 | firmware-analyst, reverse-engineer |
+| Tier              | Model            | Examples                                     |
+|-------------------|------------------|----------------------------------------------|
+| Haiku (fast)      | claude-haiku-4.5 | watchdog, command-verifier                   |
+| Sonnet (standard) | claude-sonnet-4  | most analysts, developers, layer specialists |
+| Opus (heavy)      | claude-opus-4.5  | firmware-analyst, reverse-engineer           |
 
 48 agents total: 37 main specialists + 3 team modes + 8 sub-agents. 1 orchestrator (`cybersec-agent`). See [agents.md](agents.md).
 
@@ -330,12 +331,12 @@ Plus 51 extended providers including AI21, Cerebras, Cloudflare, Cohere, DeepInf
 
 ## Cryptography Stack
 
-| Algorithm | Purpose | Parameters |
-|-----------|---------|------------|
-| **Ed25519** | Key generation, artifact signing | 256-bit keys |
-| **BLAKE2b** | Content hashing | 256-bit digests |
-| **Argon2id** | Password KDF, key encryption | mem=256MB, iters=4, lanes=4 |
-| **AES-256-GCM** | Authenticated encryption | Random 12-byte nonce per message |
+| Algorithm       | Purpose                          | Parameters                       |
+|-----------------|----------------------------------|----------------------------------|
+| **Ed25519**     | Key generation, artifact signing | 256-bit keys                     |
+| **BLAKE2b**     | Content hashing                  | 256-bit digests                  |
+| **Argon2id**    | Password KDF, key encryption     | mem=256MB, iters=4, lanes=4      |
+| **AES-256-GCM** | Authenticated encryption         | Random 12-byte nonce per message |
 
 Keys stored at `DYSTOPIAN_KEYS_DIR` (default `/etc/dystopian-crypto/keys`). Vault secrets at `~/.dystopian-crypto/vault/`.
 
@@ -343,13 +344,13 @@ Keys stored at `DYSTOPIAN_KEYS_DIR` (default `/etc/dystopian-crypto/keys`). Vaul
 
 ## Docker Compose Services
 
-| Service | Image | Port | Healthcheck | Depends |
-|---------|-------|------|-------------|---------|
-| cybersec-postgres | custom | 5432 | pg_isready | — |
-| cybersec-dashboard | custom (Python 3.14) | 8000, 8080, 8433 | curl /health | postgres |
-| cybersec-redis | custom | 6379 | redis-cli ping | — |
-| cybersec-opensearch | opensearch:2.17.1 | 9200 | curl /_cluster/health | — |
-| cybersec-opensearch-dashboards | opensearch-dashboards:2.17.1 | 5601 | — | opensearch |
+| Service                        | Image                        | Port             | Healthcheck           | Depends    |
+|--------------------------------|------------------------------|------------------|-----------------------|------------|
+| cybersec-postgres              | custom                       | 5432             | pg_isready            | —          |
+| cybersec-dashboard             | custom (Python 3.14)         | 8000, 8080, 8433 | curl /health          | postgres   |
+| cybersec-redis                 | custom                       | 6379             | redis-cli ping        | —          |
+| cybersec-opensearch            | opensearch:2.17.1            | 9200             | curl /_cluster/health | —          |
+| cybersec-opensearch-dashboards | opensearch-dashboards:2.17.1 | 5601             | —                     | opensearch |
 
 ---
 
@@ -380,7 +381,7 @@ flowchart LR
     subgraph Observability
         Telemetry["Ring-buffer\np50/p95/p99"]
         OpenSearch["OpenSearch\n3 daily indices"]
-        Dashboard["Dashboard\n41 endpoints"]
+        Dashboard["Dashboard\n40+ endpoints"]
     end
 
     DB --> Telemetry
@@ -400,7 +401,7 @@ flowchart TD
     Entry["Claude Code / External Client"] --> ASGI["ASGI App\n(src/proxy/asgi.py)"]
 
     ASGI --> V1["/v1/* → AI Proxy"]
-    ASGI --> Dash["/dashboard/* → 41 APIs"]
+    ASGI --> Dash["/ + /api/* + /sse/* → dashboard"]
     ASGI --> A2A["/a2a → JSON-RPC"]
     ASGI --> Health["/health → DB check"]
 

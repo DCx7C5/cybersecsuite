@@ -32,6 +32,7 @@ dependencies = [
     "openpyxl>=3.1.5",
     "opensearch-py[async]>=2.7",
     "dbus-next>=0.2.3",
+    "redis[asyncio]>=5.0",
 ]
 
 [project.scripts]
@@ -52,7 +53,9 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
+  "src/logger",
   "src/a2a",
+  "src/accounts",
   "src/agent",
   "src/ai_proxy",
   "src/crypto",
@@ -62,15 +65,21 @@ packages = [
   "src/db",
   "src/hooks",
   "src/manage",
+  "src/openobserve",
   "src/opensearch",
   "src/proxy",
+  "src/startup",
   "src/telemetry",
   "src/template_engine",
 ]
 
 [dependency-groups]
 dev = [
+    "coverage>=7.13.4",
     "ipython>=9.11.0",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
     "ruff>=0.9",
     "typescript>=0.0.12",
 ]

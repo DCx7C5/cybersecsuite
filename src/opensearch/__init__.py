@@ -5,10 +5,12 @@ Exports:
   ensure_indices()   — create index agents on startup
   bulk_index()       — fire-and-forget bulk writer helper
   close_client()     — graceful shutdown
+  getLogger          — module-level logger
 """
+from logger import getLogger
 
 from opensearch.client import close_client, get_client
 from opensearch.indices import ensure_indices
 from opensearch.writer import bulk_index
 
-__all__ = ["get_client", "close_client", "ensure_indices", "bulk_index"]
+__all__ = ["get_client", "close_client", "ensure_indices", "bulk_index", "getLogger"]

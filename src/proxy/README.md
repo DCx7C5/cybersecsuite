@@ -6,13 +6,13 @@ Starlette ASGI application — entry point for all HTTP traffic.
 
 `src/proxy/asgi.py` combines all subsystems into a single Starlette application:
 
-| Mount | Service |
-|-------|---------|
-| `GET /health` | Health check (DB + provider status) |
-| `/dashboard/*` | Dashboard UI and REST/SSE API |
-| `/v1/*` | AI proxy (OpenAI-compatible) |
-| `/a2a/*` | A2A JSON-RPC 2.0 server |
-| `/.well-known/agent.json` | Agent card discovery |
+| Mount                        | Service                             |
+|------------------------------|-------------------------------------|
+| `GET /health`                | Health check (DB + provider status) |
+| `/` (and `/api/*`, `/sse/*`) | Dashboard UI and REST/SSE API       |
+| `/v1/*`                      | AI proxy (OpenAI-compatible)        |
+| `/a2a/*`                     | A2A JSON-RPC 2.0 server             |
+| `/.well-known/agent.json`    | Agent card discovery                |
 
 ## Quick Start
 
@@ -29,13 +29,13 @@ uvicorn proxy.asgi:app --host 0.0.0.0 --port 8000 --app-dir src
 
 All ports are env-configurable:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `ASGI_HOST` | `0.0.0.0` | Bind address |
-| `ASGI_PORT` | `8000` | HTTP port |
-| `ASGI_TLS_PORT` | `8433` | HTTPS port |
-| `ASGI_TLS_CERT` | `~/.omniroute/certs/cert.pem` | TLS certificate |
-| `ASGI_TLS_KEY` | `~/.omniroute/certs/key.pem` | TLS private key |
+| Variable        | Default             | Description     |
+|-----------------|---------------------|-----------------|
+| `ASGI_HOST`     | `127.0.0.1`         | Bind address    |
+| `ASGI_PORT`     | `8000`              | HTTP port       |
+| `ASGI_TLS_PORT` | `8433`              | HTTPS port      |
+| `ASGI_TLS_CERT` | `~/.certs/cert.pem` | TLS certificate |
+| `ASGI_TLS_KEY`  | `~/.certs/key.pem`  | TLS private key |
 
 TLS activates automatically when both cert and key files exist:
 
@@ -70,6 +70,6 @@ Returns HTTP 200 when DB is healthy, 503 otherwise. Used by Docker Compose healt
 
 ## Files
 
-| File | Purpose |
-|------|---------|
+| File      | Purpose                                              |
+|-----------|------------------------------------------------------|
 | `asgi.py` | Starlette app, mounts, startup/shutdown, health, TLS |

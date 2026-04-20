@@ -29,7 +29,7 @@ make setup
 
 # Start the ASGI server (A2A + AI proxy + dashboard)
 make serve
-# → http://localhost:8000/dashboard
+# → http://localhost:8000/
 
 # Start the MCP server (for Claude Desktop / Claude Code)
 make mcp
@@ -57,7 +57,7 @@ Claude Code / claude-agent-sdk query()
   │            │  csmcp.dystopian_server (5 tools)
   │            │  omniroute (29 tools via bun)
   │ A2A (/a2a) │  CybersecA2AAgent → SDK → .claude/agents/
-  │ Dashboard  │  /dashboard/* → 36 REST + SSE endpoints
+  │ Dashboard  │  / (page), /api/*, /sse/* → 36 REST + SSE endpoints
   └────────────┘
 ```
 

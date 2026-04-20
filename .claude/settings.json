@@ -86,6 +86,16 @@
   },
   "hooks_dir": "src/hooks/",
   "hooks": {
+    "Setup": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "make ccs-first-setup"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": ".*",

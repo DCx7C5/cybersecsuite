@@ -133,12 +133,12 @@ Cancel a running task.
 
 ---
 
-### `GET /a2a/tasks/{id}/stream` (SSE)
+### `GET /a2a/stream/{task_id}` (SSE)
 
 Stream task updates as Server-Sent Events.
 
 ```bash
-curl -N http://localhost:8000/a2a/tasks/task-uuid/stream
+curl -N http://localhost:8000/a2a/stream/task-uuid
 ```
 
 Events: `task_update`, `task_complete`, `task_error`
@@ -194,76 +194,111 @@ List all available models across all active providers.
 
 ## Dashboard API
 
-All endpoints return JSON. Mounted at `/dashboard/api/`. The dashboard exposes approximately 30 routes including REST endpoints, SSE streams, and the HTML dashboard page.
+All dashboard JSON endpoints are mounted at `/api/*`. The dashboard page is mounted at `/`, and real-time streams at `/sse/*`.
 
-### `GET /dashboard/api/overview`
+### `GET /api/overview`
 System overview: version, uptime, active modules.
 
-### `GET /dashboard/api/providers`
+### `GET /api/providers`
 All 9 AI providers with status (`active`/`inactive`/`tripped`) and model counts.
 
-### `GET /dashboard/api/usage`
+### `GET /api/usage`
 Token + cost usage statistics, grouped by provider and model.
 
-### `GET /dashboard/api/health`
+### `GET /api/health`
 Full health check across all subsystems.
 
-### `GET /dashboard/api/crypto`
+### `GET /api/crypto`
 Crypto module status: key files present, algorithm info, last signing timestamp.
 
-### `GET /dashboard/api/a2a`
+### `GET /api/a2a`
 A2A server stats: agent count, active tasks, completed tasks, failure count.
 
-### `GET /dashboard/api/db/counts`
+### `GET /api/db-counts`
 Row counts for all 50 ORM models.
 
-### `GET /dashboard/api/investigations`
+### `GET /api/investigations`
 Recent investigations (paginated). Query params: `limit`, `offset`, `status`.
 
-### `GET /dashboard/api/agents`
+### `GET /api/agents`
 All loaded agents: name, model, skill count, A2A URL.
 
-### `GET /dashboard/api/routing`
+### `GET /api/routing`
 Circuit breaker states + routing strategy usage histogram.
 
-### `GET /dashboard/api/agent-factory`
+### `GET /api/agent-factory`
 AGENT_FACTORY configuration and available model tiers.
 
-### `GET /dashboard/api/cases`
+### `GET /api/cases`
 Open investigation cases (summary list).
 
-### `GET /dashboard/api/tasks`
+### `GET /api/tasks`
 Recent A2A tasks: state, assigned agent, timestamps. Query params: `limit`, `state`.
 
-### `POST /dashboard/api/tasks/{id}/cancel`
+### `POST /api/tasks/{id}/cancel`
 Cancel a running A2A task by ID.
 
-### `GET /dashboard/api/prompts`
+### `GET /api/prompts`
 Prompt template catalog.
+
+### `POST /api/agent-query`
+Single-shot agent query endpoint used by the Agent Query panel.
+
+### `POST /api/agent-run`
+Start streaming chat execution.
+
+**Request:**
+```json
+{
+  "agent": "cybersec-agent",
+  "prompt": "Analyze IOC 10.0.0.5",
+  "stream": true
+}
+```
+
+**Response:**
+```json
+{
+  "task_id": "uuid"
+}
+```
+
+### `DELETE /api/agent-run/{task_id}`
+Cancel an active chat stream task.
 
 ---
 
 ## Dashboard SSE
 
-### `GET /dashboard/sse/cases`
+### `GET /sse/cases`
 Live stream of case events: `case_opened`, `case_updated`, `case_closed`.
 
-### `GET /dashboard/sse/tasks`
+### `GET /sse/tasks`
 Live stream of A2A task state changes.
 
-### `GET /dashboard/sse/health`
+### `GET /sse/health`
 Periodic health pulse (every 30 seconds).
 
 ```bash
 # Example: stream health events
-curl -N http://localhost:8000/dashboard/sse/health
+curl -N http://localhost:8000/sse/health
 ```
+
+### `GET /sse/agent-run/{task_id}`
+Streaming chat events emitted by `POST /api/agent-run`.
+
+Event types:
+- `token` → incremental assistant text chunks
+- `tool_start` → tool invocation start marker
+- `tool_done` → tool completion marker with elapsed ms
+- `done` → terminal success event (`elapsed_ms`, `stop_reason`, optional `text`)
+- `error` → terminal failure event
 
 ---
 
 ## Dashboard UI
 
-### `GET /dashboard/`
+### `GET /`
 Full monitoring dashboard HTML page.
 
 ---
@@ -293,3 +328,123 @@ Standard HTTP status codes: `400` (bad request), `404` (not found), `500` (inter
 ```
 
 Standard A2A error codes defined in `src/a2a/models.py` (`A2AErrorCodes`).
+
+---
+
+## Accounts API
+
+API key management with vault-backed storage.
+
+### `GET /api/accounts`
+
+List all accounts.
+
+**Response:**
+```json
+{
+  "accounts": [
+    {
+      "vault_key": "openai-abc123",
+      "provider_id": "openai",
+      "label": "My OpenAI Key",
+      "active": true,
+      "test_status": "success",
+      "last_tested_at": "2026-04-19T12:00:00Z"
+    }
+  ]
+}
+```
+
+### `POST /api/accounts`
+
+Create a new account.
+
+**Request:**
+```json
+{
+  "provider_id": "openai",
+  "api_key": "sk-...",
+  "label": "My Key"
+}
+```
+
+### `GET /api/accounts/{vault_key}`
+
+Get a single account.
+
+### `PUT /api/accounts/{vault_key}`
+
+Update an account (set_active, rotate, test).
+
+**Request:**
+```json
+{
+  "action": "set_active"
+}
+```
+
+Actions: `set_active`, `rotate`, `test`
+
+### `DELETE /api/accounts/{vault_key}`
+
+Delete an account.
+
+### `GET /api/accounts/resolve?provider_id={id}`
+
+Resolve API key for a provider (checks vault first, then env var).
+
+---
+
+## SDK Options
+
+### `GET /api/sdk/options`
+Get merged runtime options (MCPs, agents, model, permission_mode).
+
+**Query params:** `?id=<project_id>` for project scope.
+
+**Response:**
+```json
+{
+  "mcps": {"cybersec": true, "dystopian": true},
+  "agents": {"filesystem-analyst": true, "memory-analyst": true},
+  "permission_mode": null,
+  "model": null,
+  "hooks": null
+}
+```
+
+### `POST /api/sdk/options`
+Update options for a scope layer.
+
+**Query params:** `?scope=global|app|project` (default: global), `?id=<project_id>` for project.
+
+**Request:**
+```json
+{
+  "mcps": {"cybersec": false},
+  "model": "sonnet"
+}
+```
+
+### `GET /api/sdk/options/scopes`
+Get raw snapshot of all scope layers (before merge).
+
+### `DELETE /api/sdk/options`
+Reset a scope to defaults.
+
+---
+
+## Startup
+
+### `GET /api/startup/status`
+
+Returns startup status including first-run info and marketplace.
+
+**Response:**
+```json
+{
+  "is_first_run": false,
+  "marketplace": {"providers": [], "skills": [], "agents": []},
+  "cybersecsuite_dir": "/home/user/.cybersecsuite"
+}
+```

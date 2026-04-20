@@ -33,10 +33,15 @@ Usage:
 """
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
 import os
+import time
 from pathlib import Path
 from typing import Any
+
+import httpx
 
 from claude_agent_sdk import (
     query,
@@ -53,6 +58,10 @@ from a2a.agent_loader import (
     frontmatter_to_claude_agent,
     iter_agent_markdown_files,
 )
+try:
+    from hooks.sdk_hooks import build_python_hooks
+except ImportError:  # optional during minimal/test installs
+    build_python_hooks = None  # type: ignore[assignment]
 
 logger = logging.getLogger("a2a.agent_sdk")
 
@@ -242,11 +251,17 @@ def _build_agent_options_uncached(
         mcp_servers = all_servers()
         allowed.extend(mcp_tools())
 
+    hooks = (
+        build_python_hooks()
+        if callable(build_python_hooks)
+        else {"PreToolUse": [HookMatcher(hooks=[_audit_hook])]}
+    )
+
     return ClaudeAgentOptions(
         allowed_tools=allowed,
         agents=agents,
         mcp_servers=mcp_servers,
-        hooks={"PreToolUse": [HookMatcher(hooks=[_audit_hook])]},
+        hooks=hooks,
         env={
             "ANTHROPIC_BASE_URL": os.environ.get("ANTHROPIC_BASE_URL", "http://localhost:8000/v1"),
             "ANTHROPIC_API_KEY": os.environ.get("ANTHROPIC_API_KEY", ""),
@@ -273,6 +288,9 @@ async def run_agent_query(
     agent_name: str,
     prompt: str,
     session_id: str | None = None,
+    db_session_id: int | None = None,
+    project_id: int | None = None,
+    link_session: bool = False,
     _session_out: dict[str, Any] | None = None,
 ) -> str | None:
     """Run a query as a specific named agent and return the result text.
@@ -289,6 +307,9 @@ async def run_agent_query(
         agent_name: Name of the agent to run as (e.g. ``'cybersec-analyst'``).
         prompt: The task prompt.
         session_id: Optional Claude SDK session ID to resume.
+        db_session_id: Optional DB session ID; resolves to SDK session_id.
+        project_id: Optional project ID for auto-linking (if link_session=True).
+        link_session: If True, auto-create DB session and link to SDK session.
         _session_out: Optional dict; if provided, the SDK-allocated
             ``session_id`` from ``SystemMessage.init`` is written into
             ``_session_out["session_id"]`` so callers can thread sessions.
@@ -296,6 +317,14 @@ async def run_agent_query(
     Returns:
         The result text, or ``None`` if no result was produced.
     """
+    # Resolve db_session_id to sdk session_id
+    if db_session_id and not session_id:
+        try:
+            from agent.session_linking import resolve_sdk_id
+            session_id = await resolve_sdk_id(db_session_id) or None
+        except Exception:
+            pass
+
     agent_defs = build_agent_definitions()
 
     overrides: dict[str, Any] = {}
@@ -325,6 +354,19 @@ async def run_agent_query(
             logger.debug("run_agent_query: session_id=%s agent=%s", captured, agent_name)
         elif isinstance(message, ResultMessage) and message.subtype == "success":
             result_text = message.result
+
+    # Auto-link session to DB if requested
+    if link_session and captured and project_id:
+        try:
+            from agent.session_linking import create_linked_session
+            await create_linked_session(
+                project_id=project_id,
+                name=f"Auto-linked session for {agent_name}",
+                sdk_session_id=captured,
+                agent=agent_name,
+            )
+        except Exception as exc:
+            logger.warning("auto-link failed: %s", exc)
 
     return result_text
 
@@ -363,3 +405,179 @@ async def run_orchestrator_query(
         "result": result_text,
         "mode": mode,
     }
+
+
+def _stream_proxy_url() -> str:
+    """Resolve OpenAI-compatible chat completion URL from ANTHROPIC_BASE_URL."""
+    base = os.environ.get("ANTHROPIC_BASE_URL", "http://localhost:8000/v1").rstrip("/")
+    if base.endswith("/chat/completions"):
+        return base
+    if base.endswith("/v1"):
+        return f"{base}/chat/completions"
+    return f"{base}/v1/chat/completions"
+
+
+def _extract_delta_text(delta: Any) -> str:
+    """Extract text chunks from OpenAI delta payloads."""
+    if not isinstance(delta, dict):
+        return ""
+
+    content = delta.get("content")
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts: list[str] = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict):
+                txt = item.get("text")
+                if isinstance(txt, str):
+                    parts.append(txt)
+        return "".join(parts)
+
+    return ""
+
+
+async def run_agent_stream(
+    agent_name: str,
+    prompt: str,
+    queue: asyncio.Queue[dict[str, Any]],
+    stream: bool = True,
+) -> None:
+    """Stream an agent response into queue events for dashboard SSE consumers."""
+    started = time.monotonic()
+    collected: list[str] = []
+    open_tools: dict[str, tuple[str, float]] = {}
+
+    agent_defs = build_agent_definitions()
+    default_model = os.environ.get("CYBERSEC_DEFAULT_MODEL", os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5"))
+    model = default_model
+    if agent_name in agent_defs and agent_defs[agent_name].model:
+        model = agent_defs[agent_name].model
+
+    if agent_name in agent_defs:
+        agent_context = (
+            f"[AGENT CONTEXT]\n{agent_defs[agent_name].prompt}\n[/AGENT CONTEXT]\n\n"
+        )
+    else:
+        agent_context = f"[AGENT: {agent_name}]\n\n"
+
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": f"{agent_context}{prompt}"}],
+        "stream": True,
+    }
+
+    headers = {"Content-Type": "application/json"}
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+
+    stop_reason = "end_turn"
+
+    try:
+        timeout = httpx.Timeout(connect=10.0, write=30.0, pool=30.0, read=None)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            async with client.stream(
+                "POST",
+                _stream_proxy_url(),
+                json=payload,
+                headers=headers,
+            ) as resp:
+                if resp.status_code >= 400:
+                    body = (await resp.aread()).decode("utf-8", errors="replace")
+                    raise RuntimeError(
+                        f"stream request failed ({resp.status_code}): {body[:320]}"
+                    )
+
+                async for raw_line in resp.aiter_lines():
+                    line = raw_line.strip()
+                    if not line or not line.startswith("data:"):
+                        continue
+                    data = line[5:].strip()
+                    if not data:
+                        continue
+                    if data == "[DONE]":
+                        break
+
+                    try:
+                        chunk = json.loads(data)
+                    except json.JSONDecodeError:
+                        continue
+
+                    choices = chunk.get("choices")
+                    if not isinstance(choices, list) or not choices:
+                        continue
+                    choice = choices[0] if isinstance(choices[0], dict) else {}
+                    delta = choice.get("delta") if isinstance(choice, dict) else {}
+                    finish_reason = (
+                        choice.get("finish_reason") if isinstance(choice, dict) else None
+                    )
+
+                    if isinstance(delta, dict):
+                        tool_calls = delta.get("tool_calls")
+                        if isinstance(tool_calls, list):
+                            for tc in tool_calls:
+                                if not isinstance(tc, dict):
+                                    continue
+                                tid = str(
+                                    tc.get("id")
+                                    or tc.get("index")
+                                    or f"tool-{len(open_tools) + 1}"
+                                )
+                                fn = tc.get("function")
+                                fn_name = fn.get("name") if isinstance(fn, dict) else None
+                                tool_name = fn_name or "tool"
+                                if tid not in open_tools:
+                                    open_tools[tid] = (tool_name, time.monotonic())
+                                    await queue.put(
+                                        {
+                                            "type": "tool_start",
+                                            "name": tool_name,
+                                            "ts": int((time.monotonic() - started) * 1000),
+                                        }
+                                    )
+
+                    text = _extract_delta_text(delta)
+                    if text:
+                        collected.append(text)
+                        if stream:
+                            await queue.put({"type": "token", "text": text})
+
+                    if finish_reason:
+                        stop_reason = (
+                            "end_turn" if finish_reason == "stop" else str(finish_reason)
+                        )
+
+                        if finish_reason in ("tool_calls", "stop", "end_turn"):
+                            now = time.monotonic()
+                            for tool_id, (name, ts) in list(open_tools.items()):
+                                await queue.put(
+                                    {
+                                        "type": "tool_done",
+                                        "name": name,
+                                        "elapsed_ms": int((now - ts) * 1000),
+                                    }
+                                )
+                                open_tools.pop(tool_id, None)
+
+                        if finish_reason in ("stop", "end_turn"):
+                            break
+
+    except asyncio.CancelledError:
+        await queue.put({"type": "error", "error": "cancelled"})
+        raise
+    except Exception as exc:
+        await queue.put({"type": "error", "error": str(exc)})
+        return
+
+    done_event: dict[str, Any] = {
+        "type": "done",
+        "elapsed_ms": int((time.monotonic() - started) * 1000),
+        "stop_reason": stop_reason,
+    }
+    if not stream:
+        done_event["text"] = "".join(collected)
+    await queue.put(done_event)

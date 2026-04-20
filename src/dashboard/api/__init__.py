@@ -6,6 +6,8 @@ from dashboard.api.core import (
     api_usage,
     api_health,
     api_crypto,
+    api_local_llm_status,
+    api_local_llm_activate,
 )
 from dashboard.api.agents import (
     api_a2a,
@@ -47,6 +49,11 @@ from dashboard.api.sse import (
     sse_health,
     sse_telemetry,
 )
+from dashboard.api.agent_stream import (
+    api_agent_run_start,
+    sse_agent_run,
+    api_agent_run_cancel,
+)
 from dashboard.api.settings import api_settings_get, api_settings_patch
 from dashboard.api.settings_toggles import (
     api_settings_mcps_get,
@@ -79,6 +86,13 @@ from dashboard.api.projects import (
     api_project_update,
     api_project_delete,
 )
+from dashboard.api.template_registry import api_template_registry_list
+from dashboard.api.sdk_options import (
+    api_sdk_options_get,
+    api_sdk_options_post,
+    api_sdk_options_scopes_get,
+    api_sdk_options_delete,
+)
 
 __all__ = [
     # core
@@ -87,6 +101,8 @@ __all__ = [
     "api_usage",
     "api_health",
     "api_crypto",
+    "api_local_llm_status",
+    "api_local_llm_activate",
     # agents
     "api_a2a",
     "api_agents",
@@ -110,6 +126,8 @@ __all__ = [
     "api_task_create",
     "api_task_get",
     "api_pocs",
+    "api_agent_run_start",
+    "api_agent_run_cancel",
     # tables
     "api_db_counts",
     "api_investigations",
@@ -122,6 +140,7 @@ __all__ = [
     "sse_tasks",
     "sse_health",
     "sse_telemetry",
+    "sse_agent_run",
     # settings
     "api_settings_get",
     "api_settings_patch",
@@ -172,4 +191,11 @@ __all__ = [
     "api_project_get",
     "api_project_update",
     "api_project_delete",
+    # templates
+    "api_template_registry_list",
+    # sdk options
+    "api_sdk_options_get",
+    "api_sdk_options_post",
+    "api_sdk_options_scopes_get",
+    "api_sdk_options_delete",
 ]

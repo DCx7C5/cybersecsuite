@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from starlette.routing import Route, Router
+from starlette.routing import Mount, Route, Router
+from starlette.staticfiles import StaticFiles
 
 from dashboard._handlers import (
     dashboard_page,
@@ -11,6 +12,8 @@ from dashboard._handlers import (
     api_usage,
     api_health,
     api_crypto,
+    api_local_llm_status,
+    api_local_llm_activate,
     api_a2a,
     api_investigations,
     api_db_counts,
@@ -37,6 +40,8 @@ from dashboard._handlers import (
     api_models,
     api_table,
     api_agent_query,
+    api_agent_run_start,
+    api_agent_run_cancel,
     api_opensearch,
     api_settings_get,
     api_settings_patch,
@@ -77,20 +82,61 @@ from dashboard._handlers import (
     sse_tasks,
     sse_health,
     sse_telemetry,
+    sse_agent_run,
 )
 from dashboard._handlers import (
+    api_template_registry_list,
+)
+from dashboard.api.template_registry import (
+    api_template_create,
+    api_template_delete,
+)
+from dashboard.api.sdk_tool import api_sdk_tool
+from dashboard.api.sdk_session import api_sdk_session_last, api_sdk_session_resume
+from dashboard.api.dbus import (
+    api_dbus_notify,
+    api_dbus_signal,
+    api_dbus_status,
+)
+from dashboard.api.projects import (
     api_projects_list,
     api_project_create,
     api_project_get,
     api_project_update,
     api_project_delete,
 )
+from dashboard.api.accounts import (
+    api_accounts_list,
+    api_accounts_create,
+    api_accounts_get,
+    api_accounts_update,
+    api_accounts_delete,
+    api_accounts_resolve,
+)
+from dashboard.api.startup import (
+    api_startup_status,
+)
+from dashboard.api.sdk_options import (
+    api_sdk_options_get,
+    api_sdk_options_post,
+    api_sdk_options_scopes_get,
+    api_sdk_options_delete,
+)
 
 
 def create_dashboard_router() -> Router:
     """Create the root router (dashboard at /, API at /api/*, SSE at /sse/*)."""
+    from starlette.requests import Request
+    from starlette.responses import RedirectResponse
+
+    async def redirect_to_root(request: Request) -> RedirectResponse:
+        return RedirectResponse("/", status_code=308)
+
     return Router(
         routes=[
+            Mount("/static", app=StaticFiles(directory="src/dashboard/static"), name="static"),
+            Route("/dashboard", redirect_to_root, methods=["GET"]),
+            Route("/dashboard/", redirect_to_root, methods=["GET"]),
             Route("/", dashboard_page, methods=["GET"]),
             Route("/api/overview", api_overview, methods=["GET"]),
             Route("/api/providers", api_providers, methods=["GET"]),
@@ -126,6 +172,8 @@ def create_dashboard_router() -> Router:
             Route("/api/tables/{model}", api_table, methods=["GET"]),
             # Agent-SDK query endpoint
             Route("/api/agent-query", api_agent_query, methods=["POST"]),
+            Route("/api/agent-run", api_agent_run_start, methods=["POST"]),
+            Route("/api/agent-run/{task_id}", api_agent_run_cancel, methods=["DELETE"]),
             Route("/api/settings", api_settings_get, methods=["GET"]),
             Route("/api/settings", api_settings_patch, methods=["PATCH"]),
             Route("/api/settings/mcps", api_settings_mcps_get, methods=["GET"]),
@@ -164,16 +212,46 @@ def create_dashboard_router() -> Router:
             Route("/api/workflows/{id}", api_workflow_get, methods=["GET"]),
             Route("/api/workflows/{id}", api_workflow_cancel, methods=["DELETE"]),
             Route("/api/opensearch", api_opensearch, methods=["GET"]),
+            # Local LLM
+            Route("/api/local-llm/status", api_local_llm_status, methods=["GET"]),
+            Route("/api/local-llm/activate", api_local_llm_activate, methods=["POST"]),
+            # DBus notifications
+            Route("/api/dbus/notify", api_dbus_notify, methods=["POST"]),
+            Route("/api/dbus/signal", api_dbus_signal, methods=["POST"]),
+            Route("/api/dbus/status", api_dbus_status, methods=["GET"]),
+            # Accounts API
+            Route("/api/accounts", api_accounts_list, methods=["GET"]),
+            Route("/api/accounts", api_accounts_create, methods=["POST"]),
+            Route("/api/accounts/{vault_key}", api_accounts_get, methods=["GET"]),
+            Route("/api/accounts/{vault_key}", api_accounts_update, methods=["PUT"]),
+            Route("/api/accounts/{vault_key}", api_accounts_delete, methods=["DELETE"]),
+            Route("/api/accounts/resolve", api_accounts_resolve, methods=["GET"]),
             # Projects CRUD
             Route("/api/projects", api_projects_list, methods=["GET"]),
             Route("/api/projects", api_project_create, methods=["POST"]),
             Route("/api/projects/{id}", api_project_get, methods=["GET"]),
             Route("/api/projects/{id}", api_project_update, methods=["PATCH"]),
             Route("/api/projects/{id}", api_project_delete, methods=["DELETE"]),
+            Route("/api/templates", api_template_registry_list, methods=["GET"]),
+            Route("/api/templates", api_template_create, methods=["POST"]),
+            Route("/api/templates", api_template_delete, methods=["DELETE"]),
+            # Startup status
+            Route("/api/startup/status", api_startup_status, methods=["GET"]),
+            # SDK Options
+            Route("/api/sdk/options", api_sdk_options_get, methods=["GET"]),
+            Route("/api/sdk/options", api_sdk_options_post, methods=["POST"]),
+            Route("/api/sdk/options/scopes", api_sdk_options_scopes_get, methods=["GET"]),
+            Route("/api/sdk/options", api_sdk_options_delete, methods=["DELETE"]),
+            # SDK Tool
+            Route("/api/sdk-tool", api_sdk_tool, methods=["POST"]),
+            # SDK Session
+            Route("/api/sdk/session/last", api_sdk_session_last, methods=["GET"]),
+            Route("/api/sdk/session/resume", api_sdk_session_resume, methods=["POST"]),
             # SSE streaming endpoints
             Route("/sse/cases", sse_cases, methods=["GET"]),
             Route("/sse/tasks", sse_tasks, methods=["GET"]),
             Route("/sse/health", sse_health, methods=["GET"]),
             Route("/sse/telemetry", sse_telemetry, methods=["GET"]),
+            Route("/sse/agent-run/{task_id}", sse_agent_run, methods=["GET"]),
         ]
     )

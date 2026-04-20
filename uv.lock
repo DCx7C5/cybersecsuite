@@ -465,7 +465,11 @@ browser = [
     { name = "playwright-stealth" },
 ]
 dev = [
+    { name = "coverage" },
     { name = "ipython" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-cov" },
     { name = "ruff" },
     { name = "typescript" },
 ]
@@ -502,7 +506,11 @@ browser = [
     { name = "playwright-stealth", specifier = ">=1.0" },
 ]
 dev = [
+    { name = "coverage", specifier = ">=7.13.4" },
     { name = "ipython", specifier = ">=9.11.0" },
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-asyncio", specifier = ">=1.3.0" },
+    { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "ruff", specifier = ">=0.9" },
     { name = "typescript", specifier = ">=0.0.12" },
 ]

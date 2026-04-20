@@ -1,6 +1,6 @@
 // Dashboard refresh: fetch all data and render all tabs
 
-import { $, currentTab, fmt, _updateContextBar } from './core.js';
+import { $, currentTab, fmt, _updateContextBar, clearCtxCache } from './core.js';
 import { renderTable } from './table.js';
 
 interface APIResponse {
@@ -35,7 +35,7 @@ export async function refresh(): Promise<void> {
       $('uptime')!.textContent = Math.round(ov.uptime_seconds) + 's uptime';
 
     // Invalidate context cache so next showTab fetches fresh data
-    Object.keys(_ctxCache).forEach((k) => delete _ctxCache[k]);
+    clearCtxCache();
     _updateContextBar(currentTab);
 
     // Remove loading
@@ -683,13 +683,27 @@ export async function refresh(): Promise<void> {
     }
 
     // Health tab
-    if (!hv.error) {
+    const errorBanner = $('health-error');
+    if (hv.error) {
+      if (errorBanner) {
+        errorBanner.textContent = '⚠ Health check failed: ' + hv.error;
+        errorBanner.style.display = 'block';
+      }
+    } else {
+      if (errorBanner) errorBanner.style.display = 'none';
       const db = hv.database || {};
       const px = hv.proxy || {};
-      const dbStatus = $('health-db-status');
-      if (dbStatus) {
-        dbStatus.textContent = db.status === 'ok' ? '✅ OK' : '❌ ' + (db.status || 'unknown');
-      }
+      const rd = hv.redis || {};
+      const oo = hv.openobserve || {};
+      const localLlm: Array<{id: string; name: string; reachable: boolean}> = hv.local_llm || [];
+
+      // Service indicators
+      _setHealthDot('health-db-dot', 'health-db-detail', db.status, db.table_count ? db.table_count + ' tables' : '');
+      _setHealthDot('health-redis-dot', 'health-redis-detail', rd.status, rd.used_memory_human || '');
+      _setHealthDot('health-oo-dot', 'health-oo-detail', oo.status, oo.http_status ? 'HTTP ' + oo.http_status : '');
+      _setHealthDot('health-proxy-dot', 'health-proxy-detail', 'ok', px.providers_enabled + ' providers');
+
+      // Stat boxes
       const tables = $('health-tables');
       if (tables) tables.textContent = String(db.table_count ?? '—');
       const prov = $('health-providers');
@@ -699,14 +713,34 @@ export async function refresh(): Promise<void> {
       const uptimeEl = $('health-uptime');
       if (uptimeEl) {
         const secs = px.uptime_seconds;
-        uptimeEl.textContent = secs !== undefined ? Math.round(secs) + 's' : '—';
+        if (secs !== undefined) {
+          const h = Math.floor(secs / 3600);
+          const m = Math.floor((secs % 3600) / 60);
+          const s = Math.floor(secs % 60);
+          uptimeEl.textContent = h > 0 ? h + 'h ' + m + 'm' : m > 0 ? m + 'm ' + s + 's' : s + 's';
+        } else {
+          uptimeEl.textContent = '—';
+        }
       }
       const intel = $('health-intel');
       if (intel) intel.textContent = db.intel_bootstrapped ? '✅ Yes' : '⚠ No';
+      const localEl = $('health-local-llm');
+      if (localEl) {
+        const reachable = localLlm.filter((l: {reachable: boolean}) => l.reachable);
+        localEl.textContent = reachable.length > 0 ? '✅ ' + reachable.length : '—';
+      }
     }
   } catch (e) {
     console.error('Dashboard refresh error:', e);
   }
+}
+
+function _setHealthDot(dotId: string, detailId: string, status: string | undefined, detail: string): void {
+  const dot = $(dotId);
+  const det = $(detailId);
+  const s = (status || 'unknown').toLowerCase();
+  if (dot) dot.className = 'svc-indicator ' + (s === 'ok' ? 'ok' : s === 'error' ? 'error' : 'unknown');
+  if (det) det.textContent = detail || s;
 }
 
 export async function cancelTask(taskId: string): Promise<void> {
@@ -724,5 +758,4 @@ export async function cancelTask(taskId: string): Promise<void> {
   }
 }
 
-// Context cache for storing per-tab stats (imported from core in production)
-const _ctxCache: Record<string, any> = {};
+

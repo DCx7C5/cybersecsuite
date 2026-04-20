@@ -28,16 +28,35 @@ def _health() -> str:
     return (
         '<div id="tab-health" class="card" style="display:none">\n'
         '  <h2>&#x2764; System Health</h2>\n'
+        '  <div id="health-error" class="health-error-banner"></div>\n'
+        '  <div class="health-services">\n'
+        '    <div class="health-svc">'
+        '<span class="svc-indicator unknown" id="health-db-dot"></span>'
+        '<span class="svc-name">Database</span>'
+        '<span class="svc-detail" id="health-db-detail">—</span></div>\n'
+        '    <div class="health-svc">'
+        '<span class="svc-indicator unknown" id="health-redis-dot"></span>'
+        '<span class="svc-name">Redis</span>'
+        '<span class="svc-detail" id="health-redis-detail">—</span></div>\n'
+        '    <div class="health-svc">'
+        '<span class="svc-indicator unknown" id="health-oo-dot"></span>'
+        '<span class="svc-name">OpenObserve</span>'
+        '<span class="svc-detail" id="health-oo-detail">—</span></div>\n'
+        '    <div class="health-svc">'
+        '<span class="svc-indicator unknown" id="health-proxy-dot"></span>'
+        '<span class="svc-name">AI Proxy</span>'
+        '<span class="svc-detail" id="health-proxy-detail">—</span></div>\n'
+        '  </div>\n'
         '  <div class="stat-row">\n'
-        '    <div class="stat-box"><span id="health-db-status">—</span><br><small>Database</small></div>\n'
         '    <div class="stat-box"><span id="health-tables">—</span><br><small>Tables</small></div>\n'
         '    <div class="stat-box"><span id="health-providers">—</span><br><small>Providers On</small></div>\n'
-        '    <div class="stat-box"><span id="health-providers-free">—</span><br><small>Free Providers</small></div>\n'
+        '    <div class="stat-box"><span id="health-providers-free">—</span><br><small>Free</small></div>\n'
         '    <div class="stat-box"><span id="health-uptime">—</span><br><small>Uptime</small></div>\n'
-        '    <div class="stat-box"><span id="health-intel">—</span><br><small>Intel Seeded</small></div>\n'
+        '    <div class="stat-box"><span id="health-intel">—</span><br><small>Intel</small></div>\n'
+        '    <div class="stat-box"><span id="health-local-llm">—</span><br><small>Local LLM</small></div>\n'
         '  </div>\n'
         '  <div id="health-content"></div>\n'
-        "</div>\n"
+        '</div>\n'
     )
 
 
@@ -862,6 +881,23 @@ def _settings() -> str:
         '    </div>\n'
         '  </div>\n'
 
+        # ══ LOCAL LLM SECTION ══
+        '  <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:24px">\n'
+        '    <div class="section-h3">🖥️ Local LLM</div>\n'
+        '    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'
+        'Connect to a local Ollama or LM Studio instance for offline AI.</p>\n'
+        '    <div id="local-llm-providers" style="margin-bottom:12px">'
+        '<span class="text-xs text-gray-500">Loading...</span></div>\n'
+        '    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">\n'
+        '      <select id="local-llm-model" style="flex:1;max-width:300px">\n'
+        '        <option value="">Select a local model...</option>\n'
+        '      </select>\n'
+        '      <button onclick="activateLocalLlm()" class="btn btn-accent" style="font-size:12px">Activate</button>\n'
+        '      <button onclick="deactivateLocalLlm()" class="btn btn-ghost" style="font-size:12px">Deactivate</button>\n'
+        '    </div>\n'
+        '    <div id="local-llm-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></div>\n'
+        '  </div>\n'
+
         "</div>\n"
     )
 
@@ -934,11 +970,13 @@ def _templates() -> str:
 
 def all_panels() -> str:
     return "".join([
+        _providers(),
         _health(),
         _usage(),
         _telemetry(),
         _routing(),
         _crypto(),
+        _agents(),
         _agent_factory(),
         _agent_crafter(),
         _team_builder(),
@@ -959,7 +997,8 @@ def all_panels() -> str:
         _audit(),
         _compliance(),
         _dbcounts(),
-_opensearch(),
+        _opensearch(),
         _explorer(),
         _templates(),
+        _settings(),
     ])

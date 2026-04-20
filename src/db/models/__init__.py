@@ -4,6 +4,7 @@ MODEL_MODULES: list[str] = [
     # Scope + core shared entry store
     "db.models.scope",
     "db.models.core",
+    "db.models.settings",
     # Enums (no models, but included for Tortoise enum registration)
     # Intelligence
     "db.models.cve",
@@ -21,6 +22,9 @@ MODEL_MODULES: list[str] = [
     "db.models.misp",
     "db.models.opencti",
     "db.models.threat_intel",
+    # Accounts + API keys
+    "db.models.api_account",
+    "db.models.provider",
     # Investigation + forensic
     "db.models.investigation",
     "db.models.forensic",
@@ -54,6 +58,17 @@ MODEL_MODULES: list[str] = [
     "db.models.user_guidance",
 ]
 
+from db.models.api_account import ApiAccount
 from db.models.browser_forensic import BrowserForensicFinding
+from db.models.provider import Provider, ProviderAuthMethod
+from db.models.settings import ScopedEntry, GlobalSettings
 
-__all__ = ["MODEL_MODULES", "BrowserForensicFinding"]
+__all__ = [
+    "MODEL_MODULES",
+    "ApiAccount",
+    "BrowserForensicFinding",
+    "Provider",
+    "ProviderAuthMethod",
+    "ScopedEntry",
+    "GlobalSettings",
+]

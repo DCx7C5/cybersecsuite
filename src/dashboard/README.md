@@ -7,7 +7,7 @@ Live monitoring dashboard for CyberSecSuite — REST API + SSE streaming + HTML 
 The dashboard provides:
 - 16 REST API endpoints covering all subsystem metrics
 - 3 SSE (Server-Sent Events) endpoints for live streaming
-- A single-page HTML dashboard at `/dashboard/`
+- A single-page HTML dashboard at `/`
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ The dashboard provides:
 make serve
 
 # Open dashboard
-open http://localhost:8000/dashboard/
+open http://localhost:8000/
 
 # Or generate a static HTML snapshot
 make dashboard
@@ -51,13 +51,13 @@ Server-Sent Events for real-time updates. Connect with `EventSource` in the brow
 
 | Endpoint | Event type | Description |
 |----------|-----------|-------------|
-| `/dashboard/sse/cases` | `case_update` | New/updated investigation cases |
-| `/dashboard/sse/tasks` | `task_update` | A2A task state changes |
-| `/dashboard/sse/health` | `health_pulse` | Periodic health check (every 30s) |
+| `/sse/cases` | `case_update` | New/updated investigation cases |
+| `/sse/tasks` | `task_update` | A2A task state changes |
+| `/sse/health` | `health_pulse` | Periodic health check (every 30s) |
 
 ```javascript
 // Browser example
-const es = new EventSource('/dashboard/sse/health');
+const es = new EventSource('/sse/health');
 es.addEventListener('health_pulse', (e) => {
   const data = JSON.parse(e.data);
   console.log('DB status:', data.status);
@@ -66,12 +66,12 @@ es.addEventListener('health_pulse', (e) => {
 
 ```bash
 # CLI example
-curl -N http://localhost:8000/dashboard/sse/health
+curl -N http://localhost:8000/sse/health
 ```
 
 ## HTML Dashboard
 
-The dashboard page at `/dashboard/` is a single HTML page that:
+The dashboard page at `/` is a single HTML page that:
 - Connects to all SSE endpoints for live updates
 - Polls the REST API for initial data load
 - Displays: provider status, active tasks, case list, DB health, routing stats
@@ -88,7 +88,7 @@ The static HTML can also be generated with `make dashboard` (produces `skills/da
 ## Example: get system health
 
 ```bash
-curl http://localhost:8000/dashboard/api/health | python -m json.tool
+curl http://localhost:8000/api/health | python -m json.tool
 ```
 
 Example response:

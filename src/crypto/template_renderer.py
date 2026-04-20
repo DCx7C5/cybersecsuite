@@ -5,15 +5,16 @@ Renders artifact.md template with Ed25519 signatures in frontmatter.
 import hashlib
 import json
 from pathlib import Path
-from string import Template
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
+
+from template_engine import render_string
 
 
 class ArtifactTemplateRenderer:
     """Render artifact plugins with signature data."""
 
-    TEMPLATE_PATH = Path(__file__).parent.parent.parent / "plugins" / "artifact.md"
+    TEMPLATE_PATH = Path(__file__).parent.parent.parent / ".claude" / "templates" / "artifact.md"
 
     def __init__(self, template_path: Optional[str] = None):
         """
@@ -34,7 +35,7 @@ class ArtifactTemplateRenderer:
         """Load and cache template."""
         if self._template is None:
             self._template = self.template_path.read_text()
-        return self._template  # type: ignore[return-value]
+        return self._template
 
     def render(
         self,
@@ -77,17 +78,14 @@ class ArtifactTemplateRenderer:
         """
         now = created_at or datetime.now(timezone.utc)
 
-        # Compute content hash if not provided
         if content_hash is None:
             content_hash = hashlib.blake2b(
                 json.dumps(content, sort_keys=True).encode(),
                 digest_size=32
             ).hexdigest()
 
-        # Format content as JSON
         content_json = json.dumps(content, indent=2, sort_keys=True)
 
-        # Format signature log
         if signature_log:
             log_lines = ["| Action | Operator | Status | Timestamp |",
                         "|--------|----------|--------|-----------|"]
@@ -102,7 +100,6 @@ class ArtifactTemplateRenderer:
         else:
             log_text = "_No audit entries_"
 
-        # Compute overall checksum if not provided
         if checksum is None:
             checksum_data = {
                 "name": name,
@@ -115,31 +112,29 @@ class ArtifactTemplateRenderer:
                 digest_size=32
             ).hexdigest()
 
-        # Build substitution dict
-        subs = {
-            "ARTIFACT_NAME": name,
-            "ARTIFACT_VERSION": str(version),
-            "ARTIFACT_DESCRIPTION": description,
-            "CREATED_AT": now.isoformat(),
-            "CREATED_BY": created_by,
-            "KEY_ID": key_id,
-            "SIGNATURE": signature,
-            "ARTIFACT_CONTENT": content_json,
-            "CONTENT_HASH": content_hash,
-            "BODY_HASH": body_hash or "-",
-            "SIGNATURE_VALID": "✅ Yes" if signature_valid else "❌ No",
-            "EXPIRES_AT": expires_at.isoformat() if expires_at else "Never",
-            "SIGNATURE_LOG": log_text,
-            "CHECKSUM": checksum,
-            "VERIFIED_AT": datetime.now(timezone.utc).isoformat(),
+        ctx = {
+            "artifact_name": name,
+            "artifact_version": str(version),
+            "artifact_description": description,
+            "created_at": now.isoformat(),
+            "created_by": created_by,
+            "key_id": key_id,
+            "signature": signature,
+            "artifact_content": content_json,
+            "content_hash": content_hash,
+            "body_hash": body_hash or "-",
+            "signature_valid": "✅ Yes" if signature_valid else "❌ No",
+            "expires_at": expires_at.isoformat() if expires_at else "Never",
+            "signature_log": log_text,
+            "checksum": checksum,
+            "verified_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        # Use safe_substitute to handle missing variables gracefully
-        return Template(self.template).safe_substitute(subs)
+        return render_string(self.template, ctx)
 
     def render_from_artifact(
         self,
-        artifact: Any,  # Artifact model
+        artifact: Any,
         signature_logs: Optional[List[Any]] = None,
     ) -> str:
         """
@@ -152,7 +147,6 @@ class ArtifactTemplateRenderer:
         Returns:
             Rendered markdown string
         """
-        # Convert signature logs to dicts
         log_dicts = None
         if signature_logs:
             log_dicts = [
@@ -203,7 +197,6 @@ class ArtifactTemplateRenderer:
         return path
 
 
-# Convenience function
 def render_artifact(
     name: str,
     content: Dict[str, Any],
@@ -224,5 +217,3 @@ def render_artifact(
     """
     renderer = ArtifactTemplateRenderer()
     return renderer.render(name=name, content=content, signature=signature, **kwargs)
-
-

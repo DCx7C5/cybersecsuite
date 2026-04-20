@@ -47,6 +47,7 @@ services:
       CYBERSEC_DB_HOST: /tmp
       CYBERSEC_DB_PORT: 5432
       CYBERSEC_AUTO_CREATE_DB: "true"
+      CYBERSEC_REDIS_URL: "redis://cybersec-redis:6379/0"
       # Settings toggle paths — mount project .claude/ + host ~/.claude as read-write
       GLOBAL_CLAUDE_DIR: /app/.claude-global
     ports:
@@ -145,12 +146,38 @@ services:
       test: ["CMD-SHELL", "curl -fsk https://localhost:55000/ || exit 1"]
       start_period: 60s
 
+  cybersec-ollama:
+    image: ollama/ollama:latest
+    container_name: cybersec-ollama
+    profiles: [local-llm]
+    <<: *common
+    environment:
+      OLLAMA_HOST: 0.0.0.0
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 
 volumes:
   pg_data:
   pg_socket:
   redis_data:
   oo_data:
+  ollama_data:
   wazuh_data:
   wazuh_logs:
   wazuh_etc:

@@ -23,13 +23,15 @@ Ports (env-configurable):
 
 from __future__ import annotations
 
+import asyncio
 import os
 import ssl
 from pathlib import Path
 
 from starlette.applications import Starlette
+from starlette.middleware import Middleware
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
@@ -42,9 +44,9 @@ from ai_proxy.providers.registry import get_enabled_providers
 from dashboard.routes import create_dashboard_router
 from telemetry.middleware import TelemetryMiddleware
 from telemetry.collector import collector as _telemetry_collector
-from logger import root_logger
+from logger import getLogger
 
-log = root_logger.getChild("asgi")
+log = getLogger(__name__)
 
 
 # ── Port / TLS configuration ─────────────────────────────────────────────────
@@ -61,15 +63,43 @@ ASGI_TLS_KEY = os.environ.get(
     str(Path.home() / ".omniroute" / "certs" / "key.pem"),
 )
 
+# Check if TLS is available
+TLS_AVAILABLE = (
+    Path(ASGI_TLS_CERT).is_file() and Path(ASGI_TLS_KEY).is_file()
+)
+
 
 def get_ssl_context() -> ssl.SSLContext | None:
     """Return an SSL context if TLS cert/key exist, else None."""
-    cert, key = Path(ASGI_TLS_CERT), Path(ASGI_TLS_KEY)
-    if cert.is_file() and key.is_file():
+    if TLS_AVAILABLE:
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        ctx.load_cert_chain(str(cert), str(key))
+        ctx.load_cert_chain(ASGI_TLS_CERT, ASGI_TLS_KEY)
         return ctx
     return None
+
+
+# ── HTTP → HTTPS redirect middleware ─────────────────────────────────────────────
+
+
+class HTTPSRedirectMiddleware:
+    """Redirect HTTP to HTTPS if TLS is enabled, otherwise no-op."""
+
+    def __init__(self, app, tls_enabled: bool = TLS_AVAILABLE) -> None:
+        self.app = app
+        self.tls_enabled = tls_enabled
+
+    async def __call__(self, scope, receive, send) -> None:
+        if scope["type"] == "http" and self.tls_enabled:
+            headers = dict(scope.get("headers", []))
+            host = headers.get(b"host", b"localhost:8000").decode()
+            if ":" in host:
+                host = host.rsplit(":", 1)[0]
+            path = scope.get("root_path", "") + scope.get("path", "/")
+            new_url = f"https://{host}:{ASGI_TLS_PORT}{path}"
+            response = RedirectResponse(new_url, status=301)
+            await response(scope, receive, send)
+            return
+        await self.app(scope, receive, send)
 
 
 # ── Startup / shutdown ────────────────────────────────────────────────────────
@@ -78,6 +108,23 @@ def get_ssl_context() -> ssl.SSLContext | None:
 async def _on_startup() -> None:
     """Initialize DB + AI proxy rate limiters on startup."""
     log.info("ASGI startup — initialising database and rate limiters")
+
+    # First-run check (non-fatal)
+    try:
+        from startup.first_run import first_run_setup
+        await first_run_setup()
+        log.info("Startup status checked")
+    except Exception as exc:
+        log.warning("First-run check failed: %s", exc)
+
+    # IPC server (non-fatal)
+    try:
+        from hooks.ipc_receiver import ensure_ipc_server
+        await ensure_ipc_server()
+        log.info("IPC server started")
+    except Exception as exc:
+        log.warning("IPC server failed: %s", exc)
+
     auto_create = os.environ.get("CYBERSEC_AUTO_CREATE_DB", "false").lower() == "true"
     auto_intel = os.environ.get("CYBERSEC_BOOTSTRAP_INTEL_ON_START", "false").lower() == "true"
     await init_tortoise_async(create_db=auto_create, bootstrap_intel=auto_intel)
@@ -93,32 +140,44 @@ async def _on_startup() -> None:
 
     _telemetry_collector.start()
 
-    # OpenSearch — non-fatal if unavailable
-    try:
-        from opensearch.indices import ensure_indices
-        from opensearch.writer import start_flush_loop
+    app.state.agent_stream_tasks: dict[str, asyncio.Task] = {}
+    app.state.agent_stream_queues: dict[str, asyncio.Queue] = {}
 
-        await ensure_indices()
+    # OpenObserve — non-fatal if unavailable
+    try:
+        from openobserve.streams import ensure_streams
+        from openobserve.writer import start_flush_loop
+
+        await ensure_streams()
         start_flush_loop()
-        log.info("OpenSearch indices ready")
+        log.info("OpenObserve streams ready")
     except Exception as exc:
-        log.warning("OpenSearch unavailable — continuing without it: %s", exc)
+        log.warning("OpenObserve unavailable — continuing without it: %s", exc)
 
 
 async def _on_shutdown() -> None:
     log.info("ASGI shutdown — flushing telemetry and closing connections")
     _telemetry_collector.stop()
 
+    # IPC server
     try:
-        from opensearch.writer import flush_all, stop_flush_loop
-        from opensearch.client import close_client
+        from hooks.ipc_receiver import stop_ipc_server
+        await stop_ipc_server()
+        log.info("IPC server stopped")
+    except Exception as exc:
+        log.warning("IPC server shutdown error: %s", exc)
+
+    # OpenObserve
+    try:
+        from openobserve.writer import flush_all, stop_flush_loop
+        from openobserve.client import close_client
 
         stop_flush_loop()
         await flush_all()
         await close_client()
-        log.info("OpenSearch flushed and closed")
+        log.info("OpenObserve flushed and closed")
     except Exception as exc:
-        log.warning("OpenSearch shutdown error: %s", exc)
+        log.warning("OpenObserve shutdown error: %s", exc)
 
     await cleanup_executors()
     await close_tortoise()
@@ -165,6 +224,8 @@ app = Starlette(
     ],
     on_startup=[_on_startup],
     on_shutdown=[_on_shutdown],
-    middleware=[],
+    middleware=[
+        Middleware(HTTPSRedirectMiddleware, tls_enabled=TLS_AVAILABLE),
+    ],
 )
 app.add_middleware(TelemetryMiddleware)

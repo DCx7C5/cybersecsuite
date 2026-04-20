@@ -72,7 +72,7 @@ variables govern each connection.
 │                                                  │   │  uv run python   │
 │  Mount Points:                                   │   │  -m csmcp...     │
 │    /v1/*          → AI Proxy  (Layer 2)          │   └────────┬─────────┘
-│    /dashboard/*   → Dashboard (Layer 7)          │            │
+│    / (and /api/*, /sse/*)     → Dashboard (Layer 7) │            │
 │    /a2a           → A2A       (Layer 4)          │            │
 │    /.well-known/* → Agent Card                   │            │
 └──────┬──────────┬────────────┬───────────────────┘            │
@@ -157,14 +157,14 @@ management — live here.
 | Path                      | Target                      | Layer             |
 |---------------------------|-----------------------------|-------------------|
 | `/v1/*`                   | `create_proxy_router()`     | AI Proxy (2)      |
-| `/dashboard/*`            | `create_dashboard_router()` | Observability (7) |
+| `/` (and `/api/*`, `/sse/*`) | `create_dashboard_router()` | Observability (7) |
 | `/a2a`                    | `A2AServer`                 | A2A Protocol (4)  |
 | `/.well-known/agent.json` | Agent card                  | A2A Protocol (4)  |
 
 **Connects to:**
 - Layer 2 (AI Proxy) — forwards `/v1/chat/completions` and model endpoints
 - Layer 4 (A2A) — forwards JSON-RPC requests on `/a2a`
-- Layer 7 (Dashboard) — forwards all `/dashboard/*` requests
+- Layer 7 (Dashboard) — forwards `/`, `/api/*`, and `/sse/*` requests
 - Layer 6 (Database) — lifespan hooks call `init_tortoise_async()` on startup
 
 ---
@@ -464,7 +464,7 @@ Event occurs (tool call, proxy request, error)
 - Buffered bulk writer: 100 documents or 5-second flush (whichever first)
 
 **Connects to:**
-- Layer 1 (ASGI) — mounted at `/dashboard`
+- Layer 1 (ASGI) — mounted at `/` (dashboard page), `/api/*` (JSON endpoints), `/sse/*` (SSE streams)
 - Layer 6 (Database) — queries all models for display
 - Layer 2 (AI Proxy) — queries provider/routing status
 - Layer 3 (MCP Tools) — telemetry store receives tool execution events
@@ -710,7 +710,7 @@ src/crypto/
 ```
 Browser
   │
-  │  POST /dashboard/api/agent-query
+  │  POST /api/agent-query
   │  Body: {prompt: "Analyze suspicious binary", agent_name: "reverse-engineer"}
   │
   ▼

@@ -2,7 +2,7 @@
 
 Entry point: build_dashboard_html() → full SPA HTML string.
 """
-from ._base import head, header, context_bar
+from ._base import head, header, context_bar, _TOAST_JS
 from ._panels import all_panels
 from ._tabs import tab_bar, first_tab
 
@@ -42,5 +42,7 @@ def build_dashboard_html() -> str:
         + '<div id="shell">\n'
         + sidebar
         + main
-        + '</div>\n\n<script type="module" src="/static/js/index.js"></script>\n</body>\n</html>\n'
+        + '</div>\n'
+        + _TOAST_JS
+        + '\n<script type="module" src="/static/js/index.js"></script>\n</body>\n</html>\n'
     )

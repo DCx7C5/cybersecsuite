@@ -28,6 +28,7 @@ export function renderTable(
   let sortCol = opts.sortCol ?? null;
   let sortDir = opts.sortDir || 'asc';
   let filter = '';
+  const safeName = containerId.replace(/-/g, '_');
 
   function formatCell(val: unknown, col: Column): string {
     if (val === null || val === undefined) return '<span style="color:var(--text-faint)">—</span>';
@@ -101,7 +102,6 @@ export function renderTable(
     const sliced = data.slice(page * pageSize, (page + 1) * pageSize);
 
     let h = '<div class="rt-bar">';
-    const safeName = containerId.replace(/-/g, '_');
     h +=
       '<input type="text" class="rt-search" placeholder="Search…" value="' +
       filter.replace(/"/g, '&quot;') +
@@ -160,30 +160,18 @@ export function renderTable(
     el!.innerHTML = h;
   }
 
-  (window as any)['_rt_' + (containerId.replace(/-/g, '_') as string) + '_sort'] = function (
-    i: number
-  ) {
+  (window as any)['_rt_' + safeName + '_sort'] = function (i: number) {
     if (sortCol === i) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    else {
-      sortCol = i;
-      sortDir = 'asc';
-    }
+    else { sortCol = i; sortDir = 'asc'; }
     render();
   };
 
-  (window as any)['_rt_' + (containerId.replace(/-/g, '_') as string) + '_filter'] = function (
-    v: string
-  ) {
-    filter = v;
-    page = 0;
-    render();
+  (window as any)['_rt_' + safeName + '_filter'] = function (v: string) {
+    filter = v; page = 0; render();
   };
 
-  (window as any)['_rt_' + (containerId.replace(/-/g, '_') as string) + '_page'] = function (
-    d: number
-  ) {
-    page += d;
-    render();
+  (window as any)['_rt_' + safeName + '_page'] = function (d: number) {
+    page += d; render();
   };
 
   render();

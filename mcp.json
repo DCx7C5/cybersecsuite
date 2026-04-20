@@ -48,21 +48,6 @@
         "KERNEL_SRC": "/usr/src/linux",
         "KERNELDEV_WORKSPACE": "./kernel-modules"
       }
-    },
-    "omniroute": {
-      "name": "OmniRoute",
-      "description": "27 tools for AI gateway intelligence — health, combo switching, routing, quota, cost, models, web search, simulate route, budget guard, resilience, provider metrics, session snapshot, pricing sync, memory, skills (stdio via bun). Self-contained server at src/omniroute_mcp/server.ts — no sibling-repo dependency.",
-      "command": "bun",
-      "args": [
-        "run",
-        "${workspaceFolder}/src/omniroute_mcp/server.ts"
-      ],
-      "env": {
-        "OMNIROUTE_BASE_URL": "http://localhost:20128",
-        "OMNIROUTE_API_KEY": "",
-        "OMNIROUTE_MCP_ENFORCE_SCOPES": "false"
-      },
-      "cwd": "${workspaceFolder}/src/omniroute_mcp"
     }
   }
 }

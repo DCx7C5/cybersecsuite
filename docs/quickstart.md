@@ -59,6 +59,22 @@ make install
 
 ---
 
+## Step 3.5 — Run one-time bootstrap (recommended)
+
+```bash
+make ccs-first-setup
+```
+
+This target is idempotent and performs the first-run machine/project setup:
+- Patches `~/.claude/settings.json` to ensure `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+- Creates `~/.cybersecsuite/{sessions,templates,cache,logs}` (mode `700`)
+- Runs `make schema` + `make seed` equivalents
+- Writes local sentinel `.ccs-initialized`
+
+After this, `make serve`, `make docker-up`, and `make test` will automatically skip bootstrap when `.ccs-initialized` exists.
+
+---
+
 ## Step 4 — Start PostgreSQL
 
 If you have Docker:
@@ -108,6 +124,8 @@ make serve
 # Starts uvicorn at http://127.0.0.1:8000 with --reload
 ```
 
+If `.ccs-initialized` is missing, `make serve` auto-runs `make ccs-first-setup` first.
+
 Verify it's running:
 
 ```bash
@@ -120,7 +138,7 @@ curl http://localhost:8000/health
 ## Step 7 — Open the dashboard
 
 ```
-http://localhost:8000/dashboard/
+http://localhost:8000/
 ```
 
 Or generate a static dashboard HTML:
@@ -141,7 +159,7 @@ For Claude Desktop or Claude Code, start the MCP server in a separate terminal:
 
 ```bash
 make mcp
-# Starts FastMCP stdio server with 29 cybersec tools
+# Starts FastMCP stdio server with 31 cybersec tools
 # Dystopian MCP server provides 5 additional crypto tools (mcp__dystopian__*)
 ```
 

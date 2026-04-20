@@ -3,16 +3,15 @@
 Provides four hooks for use in ClaudeAgentOptions.hooks:
   - security_hook   (PreToolUse)   — block dangerous commands
   - audit_hook      (PreToolUse)   — log every tool call
-  - ioc_hook        (PostToolUse)  — extract IOCs from tool output
-  - cost_hook       (Stop)         — log total cost + session ID
 """
 from __future__ import annotations
 
-import logging
 import re
-from typing import Any
 
-logger = logging.getLogger("agent.hooks")
+from agent import getLogger
+
+
+logger = getLogger("agent.hooks")
 
 # ── Dangerous pattern blocklist ──────────────────────────────────────────────
 

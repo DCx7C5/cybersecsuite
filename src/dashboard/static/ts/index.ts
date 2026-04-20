@@ -23,6 +23,9 @@ import {
   addHook,
   removeHook,
   settingsAddEnvRow,
+  loadLocalLlmStatus,
+  activateLocalLlm,
+  deactivateLocalLlm,
 } from './settings.js';
 import {
   loadTeamBuilder,
@@ -60,6 +63,22 @@ import {
   afGenerate,
   setupAgentFactoryLoader,
 } from './factory.js';
+import {
+  acChatSend,
+  acChatStop,
+  acChatExport,
+  acChatClear,
+  acChatAppendToken,
+  acChatAppendMessage,
+  acChatRenderTool,
+  acChatRenderMarkdown,
+  acChatAppendUserBubble,
+  acChatAppendAssistantBubble,
+  acChatScrollLock,
+  acChatAutoScroll,
+  acChatToggleStream,
+  initChat,
+} from './chat.js';
 
 // Assign all functions to window for global access from HTML onclick handlers
 declare global {
@@ -110,6 +129,9 @@ declare global {
     addHook: typeof addHook;
     removeHook: typeof removeHook;
     settingsAddEnvRow: typeof settingsAddEnvRow;
+    loadLocalLlmStatus: typeof loadLocalLlmStatus;
+    activateLocalLlm: typeof activateLocalLlm;
+    deactivateLocalLlm: typeof deactivateLocalLlm;
 
     // team
     loadTeamBuilder: typeof loadTeamBuilder;
@@ -146,6 +168,21 @@ declare global {
     setupTypeHints: typeof setupTypeHints;
     afGenerate: typeof afGenerate;
     setupAgentFactoryLoader: typeof setupAgentFactoryLoader;
+
+    // chat
+    acChatSend: typeof acChatSend;
+    acChatStop: typeof acChatStop;
+    acChatExport: typeof acChatExport;
+    acChatClear: typeof acChatClear;
+    acChatAppendToken: typeof acChatAppendToken;
+    acChatAppendMessage: typeof acChatAppendMessage;
+    acChatRenderTool: typeof acChatRenderTool;
+    acChatRenderMarkdown: typeof acChatRenderMarkdown;
+    acChatAppendUserBubble: typeof acChatAppendUserBubble;
+    acChatAppendAssistantBubble: typeof acChatAppendAssistantBubble;
+    acChatScrollLock: typeof acChatScrollLock;
+    acChatAutoScroll: typeof acChatAutoScroll;
+    acChatToggleStream: typeof acChatToggleStream;
   }
 }
 
@@ -188,6 +225,9 @@ window.loadGlobalHooks = loadGlobalHooks;
 window.addHook = addHook;
 window.removeHook = removeHook;
 window.settingsAddEnvRow = settingsAddEnvRow;
+window.loadLocalLlmStatus = loadLocalLlmStatus;
+window.activateLocalLlm = activateLocalLlm;
+window.deactivateLocalLlm = deactivateLocalLlm;
 
 window.loadTeamBuilder = loadTeamBuilder;
 window.tbFilterAgents = tbFilterAgents;
@@ -221,6 +261,20 @@ window.setupTypeHints = setupTypeHints;
 window.afGenerate = afGenerate;
 window.setupAgentFactoryLoader = setupAgentFactoryLoader;
 
+window.acChatSend = acChatSend;
+window.acChatStop = acChatStop;
+window.acChatExport = acChatExport;
+window.acChatClear = acChatClear;
+window.acChatAppendToken = acChatAppendToken;
+window.acChatAppendMessage = acChatAppendMessage;
+window.acChatRenderTool = acChatRenderTool;
+window.acChatRenderMarkdown = acChatRenderMarkdown;
+window.acChatAppendUserBubble = acChatAppendUserBubble;
+window.acChatAppendAssistantBubble = acChatAppendAssistantBubble;
+window.acChatScrollLock = acChatScrollLock;
+window.acChatAutoScroll = acChatAutoScroll;
+window.acChatToggleStream = acChatToggleStream;
+
 // Initialize dashboard on DOM ready
 document.addEventListener('DOMContentLoaded', async () => {
   // Activate first sidebar tab on load
@@ -246,4 +300,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Set up agent factory loader
   setupAgentFactoryLoader();
   setupTypeHints();
+  await initChat();
 });

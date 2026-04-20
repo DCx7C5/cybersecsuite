@@ -62,7 +62,7 @@ machine:  ## Seed local machine hardware inventory
 # ── Run ───────────────────────────────────────────────────────────────────────
 
 .PHONY: serve
-serve:  ## Start the ASGI server (A2A + AI proxy at /v1/)
+serve: .ccs-initialized  ## Start the ASGI server (A2A + AI proxy at /v1/)
 	$(UV) run uvicorn proxy.asgi:app \
 		--host $(UVICORN_HOST) \
 		--port $(UVICORN_PORT) \
@@ -86,7 +86,7 @@ proxy-chat:  ## Chat via CLI (usage: make proxy-chat PROMPT="hello")
 	$(UV) run python -m ai_proxy.cli chat "$(PROMPT)" -v
 
 .PHONY: docker-up
-docker-up:  ## Start all services (DB + app) via Docker Compose
+docker-up: .ccs-initialized  ## Start all services (DB + app) via Docker Compose
 	docker compose up -d
 
 .PHONY: docker-down
@@ -104,7 +104,7 @@ shell:  ## Interactive Python shell with all models loaded
 # ── Testing ───────────────────────────────────────────────────────────────────
 
 .PHONY: test
-test:  ## Run all tests
+test: .ccs-initialized  ## Run all tests
 	$(UV) run --group test pytest
 
 .PHONY: test-cov
@@ -156,6 +156,34 @@ fmt:  ## Auto-format with ruff
 
 # ── First-time setup ──────────────────────────────────────────────────────────
 
+.ccs-initialized:
+	@$(MAKE) --no-print-directory ccs-first-setup
+	@touch .ccs-initialized
+
+.PHONY: ccs-first-setup
+ccs-first-setup:  ## One-time Claude + DB setup (auto-triggered on first make run)
+	@echo "==> [1/4] Patching ~/.claude/settings.json..."
+	@python3 -c "\
+import json, pathlib; \
+p = pathlib.Path.home() / '.claude' / 'settings.json'; \
+d = json.loads(p.read_text()) if p.exists() else {}; \
+env = d.setdefault('env', {}); \
+env.setdefault('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS', '1'); \
+p.parent.mkdir(parents=True, exist_ok=True); \
+p.write_text(json.dumps(d, indent=2) + '\n'); \
+print('  OK: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS set')"
+	@echo "==> [2/4] Creating ~/.cybersecsuite/..."
+	@mkdir -p ~/.cybersecsuite/{sessions,templates,cache,logs}
+	@chmod 700 ~/.cybersecsuite
+	@echo "  OK: ~/.cybersecsuite/"
+	@echo "==> [3/4] DB schema..."
+	$(UV) run --no-project python src/manage.py schema
+	@echo "==> [4/4] DB seed..."
+	$(UV) run --no-project python src/manage.py seed
+	@touch .ccs-initialized
+	@echo ""
+	@echo "✅ ccs-first-setup complete. Run 'make serve' to start."
+
 .PHONY: setup
 setup: env install db schema seed  ## Full first-run setup: env + deps + db + schema + seed
 	@echo ""
@@ -173,4 +201,3 @@ help:  ## Show this help
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 .DEFAULT_GOAL := help
-

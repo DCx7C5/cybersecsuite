@@ -1,6 +1,8 @@
 """SSE (Server-Sent Events) streaming handlers: cases, tasks, health, telemetry."""
 from __future__ import annotations
 
+import asyncio
+import json
 import time
 
 from starlette.requests import Request
@@ -10,14 +12,13 @@ from ai_proxy.providers.registry import (
     get_enabled_providers,
     get_free_providers,
 )
+from dashboard.api.core import _APP_START
 
 
 async def sse_cases(request: Request) -> StreamingResponse:
     """Server-Sent Events stream for case intake updates."""
     async def event_generator():
         try:
-            import json
-            import asyncio
             while True:
                 from db.models.case_intake import CaseIntake
                 cases = await CaseIntake.all().order_by("-created_at").limit(20)
@@ -48,7 +49,9 @@ async def sse_cases(request: Request) -> StreamingResponse:
                     "cases": case_list,
                 }
                 yield f"data: {json.dumps(data)}\n\n"
-                await asyncio.sleep(5)  # Update every 5 seconds
+                await asyncio.sleep(5)
+        except asyncio.CancelledError:
+            return
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
@@ -63,8 +66,6 @@ async def sse_tasks(request: Request) -> StreamingResponse:
     """Server-Sent Events stream for task management updates."""
     async def event_generator():
         try:
-            import json
-            import asyncio
             while True:
                 from db.models.a2a_task import A2ATask
                 tasks = await A2ATask.all().order_by("-updated_at").limit(50)
@@ -90,7 +91,9 @@ async def sse_tasks(request: Request) -> StreamingResponse:
                     "tasks": task_list,
                 }
                 yield f"data: {json.dumps(data)}\n\n"
-                await asyncio.sleep(5)  # Update every 5 seconds
+                await asyncio.sleep(5)
+        except asyncio.CancelledError:
+            return
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
@@ -105,8 +108,6 @@ async def sse_health(request: Request) -> StreamingResponse:
     """Server-Sent Events stream for health monitoring."""
     async def event_generator():
         try:
-            import json
-            import asyncio
             while True:
                 from db.bootstrap import get_database_health_async
                 db_health = await get_database_health_async(check_connection=True, include_counts=False)
@@ -117,11 +118,13 @@ async def sse_health(request: Request) -> StreamingResponse:
                     "proxy": {
                         "providers_enabled": len(enabled),
                         "providers_free": len(get_free_providers()),
-                        "uptime_seconds": round(time.monotonic(), 1),
+                        "uptime_seconds": round(time.monotonic() - _APP_START, 1),
                     },
                 }
                 yield f"data: {json.dumps(data, default=str)}\n\n"
-                await asyncio.sleep(10)  # Update every 10 seconds
+                await asyncio.sleep(10)
+        except asyncio.CancelledError:
+            return
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
@@ -136,13 +139,13 @@ async def sse_telemetry(request: Request) -> StreamingResponse:
     """SSE stream of telemetry snapshots every 5 s."""
     async def event_generator():
         try:
-            import json
-            import asyncio
             from telemetry import get_snapshot
             while True:
                 snap = await get_snapshot()
                 yield f"event: telemetry_update\ndata: {json.dumps(snap, default=str)}\n\n"
                 await asyncio.sleep(5)
+        except asyncio.CancelledError:
+            return
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 

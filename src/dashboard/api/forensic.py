@@ -5,8 +5,15 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 
+def _parse_pagination(request: Request, default_limit: int = 20) -> tuple[int, int]:
+    """Parse page/limit query params."""
+    page = int(request.query_params.get("page", 0))
+    limit = int(request.query_params.get("limit", default_limit))
+    return page, min(limit, 100)  # cap at 100
+
+
 async def api_findings(request: Request) -> JSONResponse:
-    """Security findings summary — totals by severity/status + recent 20."""
+    """Security findings summary — totals by severity/status + recent."""
     try:
         from db.models.investigation import Finding
         total = await Finding.all().count()
@@ -32,7 +39,9 @@ async def api_findings(request: Request) -> JSONResponse:
             "cross_validation", "next_action", "analyst_notes", "remediation",
             "resolved_at", "tags", "created_at", "updated_at", "is_active",
         ]
-        recent = await Finding.all().order_by("-created_at").limit(20).values(*_FINDING_FIELDS)
+        page, limit = _parse_pagination(request, 20)
+        offset = page * limit
+        recent = await Finding.all().order_by("-created_at").offset(offset).limit(limit).values(*_FINDING_FIELDS)
         recent_list = [
             {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
              for k, v in row.items()}

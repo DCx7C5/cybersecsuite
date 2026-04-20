@@ -2,9 +2,12 @@
 
 All 33 specialist agents available in CyberSecSuite, plus 3 team compositions.
 
-Agents are defined in `.claude/agents/*.md` and loaded at startup by `AgentRegistry` for A2A routing.
+Agent templates are defined in two locations:
+- **Template definitions**: `templates/agents/*.md` - base agent definitions
+- **Active agents**: `.claude/agents/*.md` - loaded at startup by `AgentRegistry` for A2A routing
+- **Team definitions**: `.claude/agents/teams/*.md`
 
-> **Team mode** is enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json`. Team definitions live in `.claude/agents/teams/`. See [teams.md](teams.md) for full details.
+> **Team mode** is enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json`. See [teams.md](teams.md) for full details.
 
 ---
 

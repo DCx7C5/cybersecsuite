@@ -1,4 +1,5 @@
 """manage package — async CLI dispatcher for CyberSecSuite."""
+from logger import getLogger
 
 import asyncio
 import sys
@@ -30,6 +31,7 @@ from ._commands import (
     check_command,
     migrate_audit_command,
     migrate_api_usage_command,
+    build_skill_index_command,
 )
 
 
@@ -95,6 +97,7 @@ def show_usage():
     print("OpenSearch Migrations (fast-forward):")
     print("  migrate-audit     - Copy audit_logs PG → OpenSearch, then drop PG table")
     print("  migrate-api-usage - Copy api_usage_log PG → OpenSearch, then drop PG table")
+    print("  build-skill-index - Build merged skill index JSON for global/app/project scopes")
 
 
 async def main():
@@ -127,6 +130,7 @@ async def main():
         "team-task": team_task_command,
         "migrate-audit": migrate_audit_command,
         "migrate-api-usage": migrate_api_usage_command,
+        "build-skill-index": build_skill_index_command,
     }
 
     if command not in async_commands:

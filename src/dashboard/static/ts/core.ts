@@ -12,6 +12,10 @@ interface ContextStat {
 
 const _ctxCache: Record<string, ContextStat[]> = {};
 
+export function clearCtxCache(): void {
+  Object.keys(_ctxCache).forEach((k) => delete _ctxCache[k]);
+}
+
 function _setCtxStat(el: HTMLElement | null, label: string, value: string | number): void {
   if (!el) return;
   el.innerHTML = '<strong>' + value + '</strong>' + label;

@@ -87,3 +87,32 @@ _manager = RuntimeOptionsManager()
 def get_manager() -> RuntimeOptionsManager:
     """Get the global RuntimeOptionsManager instance."""
     return _manager
+
+
+async def load_from_db() -> None:
+    """Load project-scoped options from ScopedEntry table."""
+    from db.models import ScopedEntry
+    entries = await ScopedEntry.filter(entry_type="sdk_options", is_active=True)
+    for entry in entries:
+        if entry.project_id:
+            _manager._store["project"][entry.project_id] = entry.data
+
+
+async def save_to_db(scope: str, scope_id: int | None, data: dict) -> None:
+    """Save options to ScopedEntry table."""
+    from db.models import ScopedEntry
+    from tortoise import Tortoise
+    await Tortoise.init_connections()
+    entry = await ScopedEntry.filter(
+        entry_type="sdk_options",
+        project_id=scope_id,
+        is_active=True,
+    ).first()
+    if entry:
+        await entry.update(data=data)
+    else:
+        await ScopedEntry.create(
+            entry_type="sdk_options",
+            project_id=scope_id,
+            data=data,
+        )

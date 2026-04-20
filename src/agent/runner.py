@@ -5,11 +5,11 @@ with session persistence, mode switching, and streaming support.
 """
 from __future__ import annotations
 
-import logging
+from agent import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any
 
-logger = logging.getLogger("agent.runner")
+logger = getLogger("agent.runner")
 
 _MODE_PREFIXES: dict[str, str] = {
     "blue":   "",
@@ -25,6 +25,11 @@ class AgentRunner:
         runner = AgentRunner(agent_name="cybersec-analyst", mode="blue")
         result = await runner.query("Analyse CVE-2024-1234")
         session_id = runner.session_id  # resume later
+
+    Or with pool:
+        from agent import get_pool
+        pool = get_pool()
+        runner = AgentRunner(agent_name="cybersec-agent", pool=pool)
     """
 
     def __init__(
@@ -33,11 +38,13 @@ class AgentRunner:
         session_id: str | None = None,
         mode: str = "blue",
         extra_tools: list[str] | None = None,
+        pool: Any | None = None,
     ) -> None:
         self.agent_name = agent_name
         self.session_id = session_id
         self.mode = mode
         self.extra_tools = extra_tools or []
+        self.pool = pool
         self._client: Any | None = None  # ClaudeSDKClient
 
     # ── Internal helpers ─────────────────────────────────────────────────────
@@ -46,7 +53,11 @@ class AgentRunner:
         return _MODE_PREFIXES.get(self.mode, f"[MODE: {self.mode.upper()}] ")
 
     async def _get_client(self) -> Any:
-        """Lazily initialise ClaudeSDKClient (reuse across turns)."""
+        """Lazily initialise ClaudeSDKClient (reuse across turns) or get from pool."""
+        # Use pool if provided
+        if self.pool is not None:
+            return await self.pool.acquire(self.session_id)
+
         if self._client is None:
             from claude_agent_sdk import ClaudeSDKClient
             from a2a.agent_sdk import build_agent_options
@@ -93,8 +104,11 @@ class AgentRunner:
             yield chunk
 
     async def close(self) -> None:
-        """Clean up the SDK client."""
-        if self._client is not None:
+        """Clean up the SDK client or release to pool."""
+        if self.pool is not None and self._client is not None:
+            await self.pool.release(self._client, self.session_id)
+            self._client = None
+        elif self._client is not None:
             try:
                 await self._client.close()
             except Exception:

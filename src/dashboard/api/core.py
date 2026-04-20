@@ -1,8 +1,11 @@
 """Core dashboard API handlers: overview, providers, usage, health, crypto."""
 from __future__ import annotations
 
+import asyncio
+import os
 import time
 
+import httpx
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -22,6 +25,8 @@ from ai_proxy.routing.combo import (
 )
 from ai_proxy.services.rate_limiter import rate_limiter
 from ai_proxy.services.usage_tracker import usage_tracker
+
+_APP_START = time.monotonic()
 
 
 async def api_overview(request: Request) -> JSONResponse:
@@ -59,7 +64,7 @@ async def api_overview(request: Request) -> JSONResponse:
         "budget": budget_guard.get_all(),
         "circuits": {"total": len(cb_status), "open": open_circuits},
         "strategies": [s.value for s in Strategy],
-        "uptime_seconds": time.monotonic(),
+        "uptime_seconds": round(time.monotonic() - _APP_START, 1),
     })
 
 
@@ -104,21 +109,70 @@ async def api_usage(request: Request) -> JSONResponse:
 
 
 async def api_health(request: Request) -> JSONResponse:
-    """Combined health: DB + proxy + providers."""
+    """Combined health: DB + Redis + OpenObserve + proxy."""
+    # DB health with timeout
     try:
         from db.bootstrap import get_database_health_async
-        db_health = await get_database_health_async(check_connection=True, include_counts=False)
+        db_health = await asyncio.wait_for(
+            get_database_health_async(check_connection=True, include_counts=False),
+            timeout=5.0,
+        )
+    except asyncio.TimeoutError:
+        db_health = {"status": "error", "error": "health check timed out"}
     except Exception as e:
         db_health = {"status": "error", "error": str(e)}
+
+    # Redis health
+    redis_health: dict = {"status": "unknown"}
+    try:
+        import redis.asyncio as aioredis
+        redis_url = os.environ.get("CYBERSEC_REDIS_URL", "redis://localhost:6379/0")
+        r = aioredis.from_url(redis_url, socket_connect_timeout=3)
+        pong = await asyncio.wait_for(r.ping(), timeout=3.0)
+        redis_health = {"status": "ok" if pong else "error"}
+        info = await r.info(section="memory")
+        redis_health["used_memory_human"] = info.get("used_memory_human", "?")
+        await r.aclose()
+    except Exception as e:
+        redis_health = {"status": "error", "error": str(e)}
+
+    # OpenObserve health
+    oo_health: dict = {"status": "unknown"}
+    try:
+        oo_url = os.environ.get("OPENOBSERVE_HOST", os.environ.get("CYBERSEC_OPENOBSERVE_URL", "http://localhost:5080"))
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{oo_url}/healthz")
+            oo_health = {"status": "ok" if resp.status_code == 200 else "degraded",
+                         "http_status": resp.status_code}
+    except Exception as e:
+        oo_health = {"status": "error", "error": str(e)}
+
+    # Local LLM providers
+    local_providers = []
+    for pid in ("ollama", "lmstudio"):
+        from ai_proxy.providers.registry import get_provider
+        p = get_provider(pid)
+        if p and p.enabled:
+            reachable = False
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    resp = await client.get(f"{p.base_url.rstrip('/')}/models")
+                    reachable = resp.status_code == 200
+            except Exception:
+                pass
+            local_providers.append({"id": pid, "name": p.name, "reachable": reachable})
 
     enabled = get_enabled_providers()
     return JSONResponse({
         "database": db_health,
+        "redis": redis_health,
+        "openobserve": oo_health,
         "proxy": {
             "providers_enabled": len(enabled),
             "providers_free": len(get_free_providers()),
-            "uptime_seconds": round(time.monotonic(), 1),
+            "uptime_seconds": round(time.monotonic() - _APP_START, 1),
         },
+        "local_llm": local_providers,
     })
 
 
@@ -151,3 +205,77 @@ async def api_crypto(request: Request) -> JSONResponse:
         "invalid": invalid_artifacts,
         "recent_signature_logs": recent_logs,
     })
+
+
+# In-process active local model (survives until container restart)
+_active_local_model: str | None = None
+
+
+async def api_local_llm_status(request: Request) -> JSONResponse:
+    """GET /api/local-llm/status — check local LLM provider reachability + models."""
+    from ai_proxy.providers.registry import get_provider
+    results = []
+    for pid in ("ollama", "lmstudio"):
+        p = get_provider(pid)
+        if not p or not p.enabled:
+            continue
+        info: dict = {"id": pid, "name": p.name, "base_url": p.base_url,
+                      "reachable": False, "models": []}
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(f"{p.base_url.rstrip('/')}/models")
+                if resp.status_code == 200:
+                    info["reachable"] = True
+                    data = resp.json()
+                    if isinstance(data, dict) and "data" in data:
+                        info["models"] = [m.get("id", "") for m in data["data"] if isinstance(m, dict)]
+                    elif isinstance(data, dict) and "models" in data:
+                        info["models"] = [m.get("name", "") for m in data["models"] if isinstance(m, dict)]
+        except Exception:
+            pass
+        results.append(info)
+
+    return JSONResponse({
+        "providers": results,
+        "active_model": _active_local_model,
+        "default_model": os.environ.get("CYBERSEC_DEFAULT_MODEL", ""),
+    })
+
+
+async def api_local_llm_activate(request: Request) -> JSONResponse:
+    """POST /api/local-llm/activate — set the default model to a local LLM model."""
+    global _active_local_model
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"status": "error", "error": "invalid JSON"}, status_code=400)
+
+    model_id = (body.get("model") or "").strip()
+    if not model_id:
+        # Deactivate — revert to cloud default
+        _active_local_model = None
+        os.environ.pop("CYBERSEC_DEFAULT_MODEL", None)
+        return JSONResponse({"status": "ok", "active_model": None, "message": "Reverted to cloud default"})
+
+    # Verify the model is reachable
+    from ai_proxy.providers.registry import get_provider
+    reachable = False
+    for pid in ("ollama", "lmstudio"):
+        p = get_provider(pid)
+        if not p or not p.enabled:
+            continue
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(f"{p.base_url.rstrip('/')}/models")
+                if resp.status_code == 200:
+                    reachable = True
+                    break
+        except Exception:
+            continue
+
+    if not reachable:
+        return JSONResponse({"status": "error", "error": "no local LLM provider reachable"}, status_code=503)
+
+    _active_local_model = model_id
+    os.environ["CYBERSEC_DEFAULT_MODEL"] = model_id
+    return JSONResponse({"status": "ok", "active_model": model_id})
