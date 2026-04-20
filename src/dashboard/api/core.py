@@ -15,6 +15,7 @@ from ai_proxy.providers.registry import (
     get_browser_providers,
     get_enabled_providers,
     get_free_providers,
+    get_provider,
     list_all_models,
 )
 from ai_proxy.routing.combo import (
@@ -222,6 +223,38 @@ async def api_providers_hub(request: Request) -> JSONResponse:
             "accounts": accounts_by_provider.get(p.id, []),
         })
     return JSONResponse(result)
+
+
+async def api_provider_set_enabled(request: Request) -> JSONResponse:
+    """PATCH /api/providers/{provider_id} — enable or disable a provider at runtime."""
+    provider_id = request.path_params["provider_id"]
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    enabled = body.get("enabled")
+    if not isinstance(enabled, bool):
+        return JSONResponse({"error": "'enabled' must be a boolean"}, status_code=400)
+
+    p = get_provider(provider_id)
+    if p is None:
+        return JSONResponse({"error": f"provider '{provider_id}' not found"}, status_code=404)
+
+    p.enabled = enabled
+
+    # Best-effort DB update so state survives restart.
+    try:
+        from db.models.provider import Provider as ProviderModel
+        await asyncio.wait_for(
+            ProviderModel.filter(id=provider_id).update(enabled=enabled),
+            timeout=5.0,
+        )
+    except Exception:
+        pass
+
+    status = "available" if (p.is_available and p.enabled) else ("disabled" if not p.enabled else "no_credentials")
+    return JSONResponse({"id": provider_id, "enabled": p.enabled, "status": status})
 
 
 async def api_usage(request: Request) -> JSONResponse:

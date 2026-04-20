@@ -120,6 +120,13 @@ function renderProviderDetail(p: PhProvider): string {
 
 function renderProviderRow(p: PhProvider): string {
   const truncUrl = p.base_url.length > 40 ? p.base_url.slice(0, 40) + '…' : p.base_url;
+  const isEnabled = p.status !== 'disabled';
+  const toggleBtn =
+    `<button class="btn btn-ghost" id="ph-toggle-${esc(p.id)}" ` +
+    `style="font-size:11px;padding:3px 8px;min-width:62px;color:${isEnabled ? 'var(--success)' : 'var(--text-muted)'}" ` +
+    `onclick="event.stopPropagation();phSetProviderEnabled('${esc(p.id)}',${!isEnabled})" ` +
+    `title="${isEnabled ? 'Disable' : 'Enable'} provider">` +
+    `${isEnabled ? '● On' : '○ Off'}</button>`;
   return (
     `<div class="ph-provider-row" data-provider="${esc(p.id)}" data-name="${esc(p.name.toLowerCase())}" style="border-bottom:1px solid var(--border)">` +
     `<div class="ph-row-summary" onclick="document.getElementById('ph-detail-${esc(p.id)}').style.display=document.getElementById('ph-detail-${esc(p.id)}').style.display==='none'?'':'none'" style="display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='var(--accent-glow)'" onmouseleave="this.style.background=''">` +
@@ -130,6 +137,7 @@ function renderProviderRow(p: PhProvider): string {
     `<span style="font-size:11px;color:var(--text-muted);min-width:60px;text-align:right;font-family:var(--font-mono)">${p.models_count} models</span>` +
     `<span style="flex:1;min-width:120px">${accountPills(p.accounts)}</span>` +
     `<span onclick="event.stopPropagation()">${addButtons(p)}</span>` +
+    `<span onclick="event.stopPropagation()">${toggleBtn}</span>` +
     `<span style="font-size:10px;color:var(--text-muted);margin-left:4px">▾</span>` +
     `</div>` +
     `<div id="ph-detail-${esc(p.id)}" style="display:none;background:var(--surface)">${renderProviderDetail(p)}</div>` +
@@ -278,6 +286,31 @@ export async function phSaveAccount(): Promise<void> {
 export function phCloseModal(): void {
   const modal = document.getElementById('ph-modal');
   if (modal) modal.style.display = 'none';
+}
+
+export async function phSetProviderEnabled(providerId: string, enabled: boolean): Promise<void> {
+  const btn = document.getElementById(`ph-toggle-${providerId}`) as HTMLButtonElement | null;
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+
+  try {
+    const resp = await fetch(`/api/providers/${encodeURIComponent(providerId)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled }),
+    });
+    if (!resp.ok) {
+      const body = await resp.json() as Record<string, unknown>;
+      console.error('provider toggle failed:', body['error'] ?? resp.statusText);
+      if (btn) { btn.disabled = false; btn.textContent = enabled ? '● On' : '○ Off'; }
+      return;
+    }
+  } catch (err) {
+    console.error('provider toggle error:', err);
+    if (btn) { btn.disabled = false; }
+    return;
+  }
+
+  loadProvidersHub().catch(() => {});
 }
 
 export function phFilterProviders(query: string): void {

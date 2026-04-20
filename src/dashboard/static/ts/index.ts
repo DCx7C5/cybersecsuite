@@ -119,6 +119,7 @@ import {
   phSaveAccount,
   phCloseModal,
   phFilterProviders,
+  phSetProviderEnabled,
 } from './providers_hub.js';
 import {
   loadVaultStatus,
@@ -250,6 +251,7 @@ declare global {
     phSaveAccount: typeof phSaveAccount;
     phCloseModal: typeof phCloseModal;
     phFilterProviders: typeof phFilterProviders;
+    phSetProviderEnabled: typeof phSetProviderEnabled;
 
     // vault
     loadVaultStatus: typeof loadVaultStatus;
@@ -389,6 +391,7 @@ window.phOpenModal = phOpenModal;
 window.phSaveAccount = phSaveAccount;
 window.phCloseModal = phCloseModal;
 window.phFilterProviders = phFilterProviders;
+window.phSetProviderEnabled = phSetProviderEnabled;
 
 // Vault
 window.loadVaultStatus = loadVaultStatus;
