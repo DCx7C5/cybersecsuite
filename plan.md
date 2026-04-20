@@ -1,1079 +1,751 @@
-# CyberSecSuite — Development Plan & Governance
+# Git Worktree + Session-ID + Conditional Hooks — Project Plan
 
-**Date:** 2026-04-20  
-**Scope:** Code Review (299 Python files) + Project Governance  
-**Status:** Critical issues identified + governance framework defined
+## 1. Project Overview
 
----
-
-## 📋 TABLE OF CONTENTS
-
-1. **Code Review & Error Analysis** (Technical Issues)
-2. **Governance & Policy Framework** (Project Standards)
+Two agents (a human developer and an AI coding agent, or two automated agents) must work simultaneously on the same Git repository without triggering index-lock collisions, hook conflicts, or cross-contamination of working-tree state. The chosen solution leverages **Git worktrees** with a strict `worktree-<sid>` naming convention, where `<sid>` is a 12-character lowercase hexadecimal session ID derived from `uuid.uuid4().hex[:12]`. Each agent owns one worktree for the duration of its session. Hook isolation is achieved by setting `core.hooksPath` in the per-worktree Git config to that worktree's private `.git/hooks/` directory, enabled through `extensions.worktreeConfig true`. A central Python 3 manager script (`worktree-session-manager.py`) automates creation, configuration, hook installation, and teardown. All operations are idempotent, race-condition-safe, and designed for production use.
 
 ---
 
-# SECTION 1: Code Review & Error Analysis
+## 2. Detailed Requirements
 
-## 📊 Executive Summary
+### Functional Requirements
 
-**Codebase Metrics:**
-- **Total Python files:** 299
-- **Try blocks:** 534
-- **Bare Exception catches:** 117 (HIGH RISK)
-- **ORM filter/all calls:** 108 (potential N+1 issues)
-- **Security violations found:** 14 CRITICAL, 23 HIGH, 18 MEDIUM
+- **Unique session IDs**: Every worktree MUST be identified by a 12-character lowercase hex session ID (`[0-9a-f]{12}`) generated via `uuid.uuid4().hex[:12]`.
+- **Strict naming**: Worktree directories MUST follow the pattern `worktree-<sid>` relative to the parent of the main repository root.
+- **Marker file**: Each worktree root MUST contain a `.worktree-session` file with the single-line content `<sid>`.
+- **Per-worktree hooks**: Each worktree MUST configure `core.hooksPath` pointing to `<worktree-root>/.git/hooks/` so hooks installed there fire only for that agent's operations.
+- **Hook lifecycle**:
+  - Hooks are installed at worktree creation time.
+  - Hooks are removed (or the directory is wiped) at teardown time.
+  - Hooks in one worktree MUST NEVER fire in another worktree.
+- **Conditional hook fallback**: For shared hooks (e.g., project-wide quality gates), a `get_current_worktree_sid()` helper allows a hook to identify its owning session and conditionally skip non-owning work.
+- **Teardown safety**: `worktree-session-manager.py teardown <sid>` MUST run `git worktree remove` and `git worktree prune`, and clean up the marker file and any stale lock files.
+- **Idempotency**: Running `create` for the same `<sid>` twice MUST be a no-op on the second call (detect existing worktree and skip).
+- **Alias integration**: Shell aliases `gwt-create`, `gwt-teardown`, `gwt-sid` MUST be provided for zsh and bash.
 
-**Key Finding:** Multiple production vulnerabilities including SQL injection, weak crypto (SHA1), missing type hints, and inadequate error handling.
+### Non-Functional Requirements
 
----
-
-## 🚨 CRITICAL Issues (Must Fix Before Deployment)
-
-### 1. **SQL Injection — f-string in CREATE DATABASE** [CRITICAL]
-- **File:** `src/db/bootstrap.py:70`
-- **Severity:** CRITICAL — Database compromise risk
-- **Code:**
-  ```python
-  await conn.execute(f'CREATE DATABASE "{db_name}"')  # VULNERABLE
-  ```
-- **Exploit Path:** If `db_name` is user-controlled, attacker can inject SQL
-- **Fix:**
-  ```python
-  # Use parameterized approach
-  quoted_name = await conn.fetchval('SELECT quote_ident($1)', db_name)
-  await conn.execute(f'CREATE DATABASE {quoted_name}')
-  ```
-- **Reference:** CWE-89 SQL Injection
-
-### 2. **Weak Crypto: SHA1 for Security-Critical Hashing** [CRITICAL]
-- **Files:** 
-  - `src/db/intel/_loaders.py:73` — SHA1 for payload hashing
-  - `src/db/intel/_utils.py:30` — SHA1 for deduplication
-  - `src/hooks/database.py` — SHA1 for IOC digest
-- **Severity:** CRITICAL — Hash collision weakness
-- **Policy:** Project mandates BLAKE2b-256 for all hashing
-- **Fix:**
-  ```python
-  # WRONG
-  hashlib.sha1(payload.encode("utf-8")).hexdigest()[:40]
-  
-  # CORRECT
-  hashlib.blake2b(payload.encode("utf-8"), digest_size=32).hexdigest()
-  ```
-
-### 3. **Missing Type Hints on Public Functions** [HIGH]
-- **Count:** 20+ functions in critical paths
-- **Examples:**
-  - `src/dashboard/api/core.py` — `_record_dashboard_activity()` no return type
-  - `src/dashboard/api/sse.py` — `event_generator()` untyped
-- **Severity:** HIGH — Type safety violations
-- **Policy:** PEP 484/526 required for all public methods
-
-### 4. **Bare Exception Catching** [HIGH]
-- **Count:** 117 instances of `except Exception:`
-- **Severity:** HIGH — Security risk, impossible debugging
-- **Policy:** Only catch specific exceptions
-- **Fix:**
-  ```python
-  # WRONG
-  except Exception as e:
-  
-  # CORRECT
-  except tortoise.DoesNotExist:
-  except asyncpg.PostgresError as e:
-  ```
-
-### 5. **Potential N+1 Query Issues** [HIGH]
-- **Count:** 108 ORM calls in loops
-- **Severity:** HIGH — Performance degradation
-- **Fix:** Use `prefetch_related()` for batch loading
+- **Race-condition safety**: Worktree creation MUST use `git worktree add --lock` to prevent concurrent pruning of a partially-initialised worktree.
+- **Python version**: All scripts MUST be compatible with Python 3.9+.
+- **No external dependencies**: The manager script MUST use only the Python standard library + `subprocess`.
+- **Logging**: All operations MUST emit structured log lines to stderr (`[WSM] <level> <message>`).
+- **Exit codes**: The manager script MUST exit non-zero on any unrecoverable error.
+- **Portability**: Must work on Linux, macOS, and WSL2 (Windows paths are out of scope).
+- **Config hygiene**: `extensions.worktreeConfig true` MUST be set exactly once in the main repo; the manager script MUST be idempotent when re-setting it.
+- **Security**: Hook scripts MUST NOT contain hardcoded credentials or tokens.
 
 ---
 
-## ⚠️ HIGH Priority Issues
+## 3. Architecture & Best Practices
 
-### 6. **Hardcoded Empty Default Database Password** [HIGH]
-- **File:** `src/db/bootstrap.py:17-18`
-- **Code:**
-  ```python
-  "password": os.environ.get("CYBERSEC_DB_PASSWORD", "")  # Empty!
-  ```
-- **Fix:** Require explicit env vars, fail fast
+### Why Per-Worktree `core.hooksPath` Is Superior
 
-### 7. **Missing Tortoise ORM Migrations Directory** [HIGH]
-- **Finding:** No `migrations/` folder found
-- **Impact:** Schema changes unversioned, deployment risky
-- **Action:** `aerich init -t src.db.config.TORTOISE_ORM`
+The naive approach — shared hooks with runtime `if` guards checking which worktree is active — has three critical flaws:
 
-### 8. **Pydantic v1 Patterns in v2 Codebase** [MEDIUM]
-- **Count:** 2 instances of `class Config:` (deprecated)
-- **Fix:** Use Pydantic v2 `ConfigDict`
+1. **Race window**: Two agents reading the same shared hook file simultaneously can observe inconsistent state.
+2. **Maintenance burden**: Every new hook must remember to add the conditional guard; it is trivially omitted.
+3. **Blast radius**: A bug in the shared hook kills both agents' workflows simultaneously.
 
-### 9. **Async Context Manager Abuse** [MEDIUM]
-- **File:** `src/db/bootstrap.py:85-88`
-- **Issue:** Manual `__aenter__` call instead of `async with`
-- **Fix:** Use proper async context manager syntax
+The per-worktree `core.hooksPath` approach eliminates all three problems:
 
-### 10. **SQL Injection Risk in Multiple Locations** [HIGH]
-- **Status:** Line 70 in bootstrap.py is most critical
-- **Contrast:** Line 68 correctly parameterized
+- The hooks directory lives inside `<worktree>/.git/hooks/`, which is physically isolated.
+- Git automatically reads `core.hooksPath` from the worktree-specific config when `extensions.worktreeConfig true` is set.
+- Each agent installs exactly the hooks it needs; other agents are entirely unaffected.
 
----
+### Git Documentation References
 
-## 📋 MEDIUM Priority Issues
+- **`extensions.worktreeConfig`** (Git 2.20+): When set to `true` in the main repository's `.git/config`, Git reads an additional `config.worktree` file inside each worktree's private `.git/` directory. This is the mechanism that allows per-worktree `core.hooksPath`. See: `git help worktree` and `git help config` §`extensions.worktreeConfig`.
+- **`core.hooksPath`** (Git 2.9+): Overrides the default `$GIT_DIR/hooks` location with an arbitrary directory. When set per-worktree, hooks fire only for that worktree's Git operations.
 
-### 11. **Race Conditions in Global State** [MEDIUM]
-- **Files:** `src/db/bootstrap.py` — globals `_initialized`, `_intel_bootstrapped`
-- **Risk:** Concurrent `init_tortoise_async()` calls cause issues
-- **Fix:** Add `asyncio.Lock()`
+### Architecture Diagram
 
-### 12. **Weak Hash for IOC Deduplication** [MEDIUM]
-- **File:** `src/hooks/database.py`
-- **Issue:** SHA1 for IOC type+value digest
-- **Fix:** Replace with BLAKE2b-256
-
-### 13. **Missing Error Handling in Async Ops** [MEDIUM]
-- **Count:** 8+ functions without try-except
-- **Impact:** Silent failures, no observability
-
-### 14. **Inconsistent Exception Handling** [MEDIUM]
-- **Issue:** Mix of raw Exception and specific exceptions
-- **Fix:** Create exception hierarchy
-
----
-
-## 🔍 LOW Priority Issues
-
-### 15. **Magic Numbers Without Constants** [LOW]
-- **Examples:** `[:40]`, `[:20]`, `[:16]` hardcoded
-- **Fix:** Create named constants
-
-### 16. **Unused Imports** [LOW]
-- **Tool:** `ruff --select F401`
-
-### 17. **Inconsistent Docstring Styles** [LOW]
-- **Target:** Google style standardization
-
----
-
-## 📈 Remediation Timeline (Code Review)
-
-### Phase 1: Security (3 hours) — CRITICAL ⚠️
-1. Fix SQL injection (bootstrap.py:70)
-2. Replace SHA1 → BLAKE2b-256 (3 files)
-3. Add type hints to public APIs
-4. Require DB credentials
-
-### Phase 2: Robustness (4.5 hours) — HIGH ⚠️
-1. Replace bare Exception catches
-2. Initialize ORM migrations
-3. Fix async context managers
-4. Add race condition locks
-
-### Phase 3: Quality (9 hours) — MEDIUM
-1. Run mypy --strict
-2. Resolve N+1 patterns
-3. Standardize docstrings
-4. Pre-commit hooks
-
-### Phase 4: Observability (7 hours) — LOW
-1. Structured logging
-2. Metrics/telemetry
-3. Sentry integration
-
-**Subtotal: 23.5 hours**
-
----
-
-## ✅ Code Review Verification Checklist
-
-- [ ] All SQL queries parameterized (0 f-strings)
-- [ ] All hashing uses BLAKE2b-256 or sha512 (0 SHA1)
-- [ ] All public functions typed (PEP 484/526)
-- [ ] No bare `Exception` catches
-- [ ] Database migrations initialized
-- [ ] Pydantic v2 ConfigDict everywhere
-- [ ] mypy --strict passes
-- [ ] Async operations use context managers
-- [ ] Database credentials required (not empty)
-- [ ] N+1 patterns resolved
-- [ ] Pre-commit hooks configured
-
----
-
-# SECTION 2: Governance & Policy Framework
-
-## 🎯 Project Vision & Standards
-
-**Mission:** Secure, reproducible, and auditable distribution of AI agents, skills, and cybersecurity tools via GitHub-hosted marketplace with production-grade governance.
-
-**Core Principles:**
-- Dependency management: `uv` exclusively (no `pip install`)
-- Cryptography: BLAKE2b-256, Ed25519, Argon2id only
-- Type safety: PEP 484/526 compliance on all public APIs
-- SQL safety: Parameterized queries exclusively
-- Error handling: Specific exceptions, no bare `Exception`
-- Async discipline: Proper context managers, no blocking calls
-- Secrets: Never hardcoded, always environment variables
-
----
-
-## 📦 Scope
-
-| Component | Purpose | Location |
-|-----------|---------|----------|
-| **Agents** | Sub-agent definitions with frontmatter | `/agents/*.md` |
-| **Skills** | Capability modules in hierarchy | `/skills/**` |
-| **Scripts** | Build automation, validation | `/scripts/` |
-| **CI/CD** | GitHub Actions workflows | `.github/workflows/` |
-| **Database** | PostgreSQL ORM models | `/src/db/models/` |
-| **Proxy** | AI proxy routing (60 providers) | `/src/ai_proxy/` |
-| **MCP** | Model Context Protocol servers | `/src/csmcp/` |
-| **A2A** | Agent-to-Agent protocol | `/src/a2a/` |
-
----
-
-## 🔐 Security Classification
-
-### GREEN (Safe)
-- Informational content
-- Defensive tools
-- Documentation-only skills
-- No intrusive capabilities
-
-### YELLOW (Review Required)
-- Network scanning tools
-- Vulnerability assessment
-- Intrusive reconnaissance
-- **Requirements:**
-  - Disclaimer in SKILL.md
-  - Usage policy documentation
-  - Contributor authorization checklist
-
-### RED (Restricted)
-- Exploit generation
-- Payload delivery
-- Offensive automation
-- **Requirements:**
-  - Explicit `--authorized` CLI flag
-  - Runtime authorization confirmation
-  - Private/gated marketplace only
-  - Formal approval process
-
----
-
-## 🛡️ Dependency Management Policy
-
-### ✅ REQUIRED: `uv` for all Python workflows
-```bash
-# Initialize virtual environment
-uv venv .venv --python python3
-source .venv/bin/activate
-
-# Add dependencies
-uv add pandas numpy cryptography
-
-# Add dev/test dependencies
-uv add --group test pytest pytest-asyncio
-
-# Manage via pyproject.toml with [dependency-groups]
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Filesystem Layout                           │
+│                                                                     │
+│  ~/projects/                                                        │
+│  ├── myrepo/                          ← main worktree (bare clone)  │
+│  │   ├── .git/                                                      │
+│  │   │   ├── config                  ← extensions.worktreeConfig=true │
+│  │   │   ├── hooks/                  ← main worktree hooks (agent A) │
+│  │   │   └── worktrees/                                             │
+│  │   │       └── worktree-<sid-B>/                                  │
+│  │   │           ├── gitdir          ← pointer to linked worktree   │
+│  │   │           └── config.worktree ← core.hooksPath for agent B   │
+│  │   ├── .worktree-session           ← "main" or absent             │
+│  │   └── worktree-session-manager.py                                │
+│  │                                                                  │
+│  └── worktree-<sid-B>/               ← agent B's isolated worktree  │
+│      ├── .git                        ← file: gitdir=../myrepo/.git/  │
+│      │                                          worktrees/<sid-B>/  │
+│      ├── .worktree-session           ← contains "<sid-B>"           │
+│      └── (full working tree)                                        │
+│                                                                     │
+│  Hook Resolution:                                                   │
+│  Agent A operation → reads .git/config.worktree for main worktree  │
+│                    → core.hooksPath = .git/hooks/  (main hooks)     │
+│  Agent B operation → reads .git/worktrees/<sid-B>/config.worktree  │
+│                    → core.hooksPath = /path/to/worktree-<sid-B>/.git/hooks/ │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-### ❌ FORBIDDEN: `pip install`, `pip freeze`
-- Any `pip` references in code/docs is HIGH severity
-- CI enforces: validation script scans and fails on `pip` patterns
-- Exception: Policy documentation (plan.md, CONTRIBUTING.md) may show as negative examples
+```mermaid
+flowchart TD
+    A[worktree-session-manager.py create] --> B{SID exists?}
+    B -- yes --> Z[No-op, exit 0]
+    B -- no --> C[generate sid = uuid4.hex 12]
+    C --> D[git worktree add --lock ../worktree-SID branch]
+    D --> E[git worktree lock worktree-SID --reason session-SID]
+    E --> F[write .worktree-session file]
+    F --> G[git config --worktree extensions.worktreeConfig true]
+    G --> H[git config --worktree core.hooksPath WORKTREE/.git/hooks/]
+    H --> I[install hook scripts into WORKTREE/.git/hooks/]
+    I --> J[chmod +x all hooks]
+    J --> K[emit SID to stdout]
 
-### Enforcement
-- `scripts/validate.sh` pattern scanner
-- GitHub Actions `validate` job blocks merge
-- Pre-commit hooks check pyproject.toml
-
----
-
-## 🔒 Cryptographic Standards Compliance
-
-### Mandatory Algorithms
-| Use Case | Algorithm | Parameters |
-|----------|-----------|-----------|
-| Hashing | BLAKE2b-256 | `digest_size=32` |
-| Signing | Ed25519 | Standard (no params) |
-| KDF | Argon2id | `memory_cost=262144, lanes=4, length=32, iterations=4` |
-| Encryption | AES-256-GCM | 256-bit key, random IV per message |
-| Salt Generation | `secrets.token_bytes()` | Always 32 bytes |
-
-### Forbidden Algorithms
-- ❌ MD5, SHA1, SHA256 for security-critical hashing
-- ❌ RSA for new code (use Ed25519)
-- ❌ Weak KDF parameters (< 262144 memory_cost)
-- ❌ Fixed salts or hardcoded IVs
-
-### Verification
-- Code review checks all crypto implementations
-- CRITICAL severity: Wrong algorithm used
-- Policy: CLAUDE.md conventions section
-
----
-
-## 🚀 CI/CD & Automation
-
-### Current Workflows
-| Job | Trigger | Purpose |
-|-----|---------|---------|
-| `validate` | Push/PR | Schema & pattern validation |
-| `index` | Push to main | Auto-generate index.json |
-
-### Validation Checks
-1. Agent/skill frontmatter present & valid
-2. No forbidden patterns (`pip install`, hardcoded secrets)
-3. Required fields in YAML (name, description, model)
-4. All files pass linting
-
-### Enhancement Roadmap
-- [ ] Add CVE audit (`pip-audit`)
-- [ ] Add static code analysis (bandit, semgrep)
-- [ ] Add cryptographic pattern scanning
-- [ ] Add type checking (mypy --strict)
-- [ ] Add security scanning (detect secrets, injection)
-
----
-
-## 🤝 Contribution Workflow
-
-### Step 1: Prepare
-```bash
-# Clone and setup
-git clone https://github.com/Dystopian/cybersecsuite.git
-cd cybersecsuite
-uv venv .venv --python python3
-source .venv/bin/activate
-uv add --all-groups
+    L[worktree-session-manager.py teardown SID] --> M{worktree exists?}
+    M -- no --> N[git worktree prune, exit 0]
+    M -- yes --> O[git worktree unlock worktree-SID]
+    O --> P[git worktree remove --force worktree-SID]
+    P --> Q[git worktree prune]
+    Q --> R[remove stale .worktree-session if present]
 ```
 
-### Step 2: Develop
-```bash
-# Create branch
-git checkout -b feat/my-agent-name
+---
 
-# Add agent/skill
-# ... create files ...
+## 4. Repository File Structure
 
-# Validate locally
-bash scripts/validate.sh
+```
+myrepo/                                    ← main repository root
+├── .git/
+│   ├── config                             ← main config (extensions.worktreeConfig = true)
+│   ├── hooks/                             ← main worktree hooks (agent A / human dev)
+│   │   ├── pre-commit
+│   │   ├── post-checkout
+│   │   └── pre-push
+│   └── worktrees/
+│       ├── worktree-a3f1c8d20b4e/
+│       │   ├── gitdir
+│       │   ├── HEAD
+│       │   └── config.worktree            ← [core] hooksPath = /abs/path/to/worktree-a3f1c8d20b4e/.git/hooks/
+│       └── worktree-7b9e2f051d6a/
+│           ├── gitdir
+│           ├── HEAD
+│           └── config.worktree
+│
+├── .worktree-session                      ← absent in main, or contains "main"
+├── worktree-session-manager.py            ← THE central manager script
+├── scripts/
+│   ├── hooks/                             ← hook templates (copied at create time)
+│   │   ├── pre-commit.tpl
+│   │   ├── post-checkout.tpl
+│   │   ├── post-merge.tpl
+│   │   ├── pre-push.tpl
+│   │   └── commit-msg.tpl
+│   └── gwt-aliases.sh                     ← source this in .bashrc / .zshrc
+│
+├── plan.md                                ← this file
+└── (project source files...)
 
-# Run tests
-uv run --group test pytest
+../worktree-a3f1c8d20b4e/                 ← agent A's worktree (sibling directory)
+├── .git                                   ← file pointing to myrepo/.git/worktrees/worktree-a3f1c8d20b4e/
+├── .git/                                  ← NOTE: linked worktrees expose a merged .git/ view
+│   └── hooks/                             ← agent A's PRIVATE hooks (installed by manager)
+│       ├── pre-commit
+│       ├── post-checkout
+│       └── pre-push
+├── .worktree-session                      ← "a3f1c8d20b4e"
+└── (working tree files)
+
+../worktree-7b9e2f051d6a/                 ← agent B's worktree (sibling directory)
+├── .git
+├── .git/
+│   └── hooks/
+│       ├── pre-commit
+│       └── pre-push
+├── .worktree-session                      ← "7b9e2f051d6a"
+└── (working tree files)
 ```
 
-### Step 3: Commit & Push
-```bash
-# Follow conventional commits
-git add -A
-git commit -m "feat(agents): add new-agent-name — description"
-git push origin feat/my-agent-name
-```
+---
 
-### Step 4: Pull Request
-- Use PR template (auto-loaded from `.github/pull_request_template.md`)
-- Complete security checklist
-- Link to related issues
+## 5. Detailed Implementation Plan
 
-### Approval Gates
-- **All PRs:** Must pass `validate` job
-- **Offensive content:** Requires security reviewer + authorization checkbox
-- **Security-critical:** Requires code review + architecture review
+### Phase 0 — Prerequisites & Verification
+
+1. Verify Git version ≥ 2.20 (`git --version`). Extensions.worktreeConfig and per-worktree config require 2.20+.
+2. Verify Python ≥ 3.9 (`python3 --version`).
+3. Confirm the repository is NOT a bare clone (bare clones already support multiple worktrees differently).
+4. Ensure no existing conflicting `core.hooksPath` in main `.git/config`.
+
+### Phase 1 — Enable Per-Worktree Configuration
+
+1. Run once in the main repository:
+   ```bash
+   git config extensions.worktreeConfig true
+   ```
+2. Verify with:
+   ```bash
+   git config --get extensions.worktreeConfig
+   # expected output: true
+   ```
+3. Optionally commit a `.gitconfig-setup.sh` bootstrapping script so future contributors can replicate the setup.
+
+### Phase 2 — Create Central Manager Script
+
+1. Create `./worktree-session-manager.py` with the following commands:
+   - `create [--sid SID] [--branch BRANCH] [--hooks-template DIR]`
+   - `teardown <sid> [--force]`
+   - `list`
+   - `sid` (print SID for current working directory)
+   - `install-hooks <sid> [--template DIR]`
+   - `remove-hooks <sid>`
+2. Implement all helper functions (see §6 for full signatures).
+3. Add a `__main__` block with `argparse`.
+4. Add structured logging to stderr throughout.
+5. Make the file executable: `chmod +x worktree-session-manager.py`.
+
+### Phase 3 — Create Hook Templates
+
+1. Create `./scripts/hooks/` directory.
+2. Create the following template hook scripts:
+   - `pre-commit.tpl` — runs linters/formatters for the session's context
+   - `post-checkout.tpl` — emits the session SID and branch name on checkout
+   - `post-merge.tpl` — runs post-merge validation steps
+   - `pre-push.tpl` — runs tests before push; respects CI skip tokens
+   - `commit-msg.tpl` — enforces conventional commit format
+3. Each template MUST contain the token `@@SID@@` which is replaced at install time with the actual session ID.
+4. Each hook script MUST be self-contained (no external library imports beyond Python stdlib).
+
+### Phase 4 — Shell Aliases
+
+1. Create `./scripts/gwt-aliases.sh`.
+2. Implement the following aliases:
+   - `gwt-create [branch]` → calls `worktree-session-manager.py create --branch <branch>`; exports `GWT_SID`
+   - `gwt-teardown [sid]` → calls `worktree-session-manager.py teardown <sid or $GWT_SID>`
+   - `gwt-sid` → calls `worktree-session-manager.py sid`
+   - `gwt-list` → calls `worktree-session-manager.py list`
+   - `gwt-hooks-install [sid]` → calls `worktree-session-manager.py install-hooks <sid>`
+3. Add instructions for sourcing in `~/.bashrc` or `~/.zshrc`.
+
+### Phase 5 — Integration Testing
+
+1. Write `./tests/test_worktree_manager.py` using `unittest` + `tempfile.TemporaryDirectory`:
+   - `test_create_generates_valid_sid` — SID matches `[0-9a-f]{12}`
+   - `test_create_idempotent` — second `create` with same SID is a no-op
+   - `test_worktree_directory_named_correctly` — directory is `worktree-<sid>`
+   - `test_marker_file_contains_sid` — `.worktree-session` contains exact SID
+   - `test_hooks_path_config_set` — `core.hooksPath` in worktree config points to correct dir
+   - `test_hooks_installed_and_executable` — all template hooks exist and have `+x` bit
+   - `test_hooks_do_not_fire_in_sibling_worktree` — create two worktrees, trigger pre-commit in one, assert the other's hook is NOT invoked
+   - `test_teardown_removes_worktree` — teardown + prune leaves no stale dirs
+   - `test_teardown_idempotent` — teardown on already-removed SID exits 0
+   - `test_get_current_worktree_sid_returns_correct_value`
+   - `test_concurrent_create_no_race` — spawn two processes creating worktrees simultaneously, assert both succeed without lock errors
+
+2. Run full test suite:
+   ```bash
+   python3 -m pytest tests/test_worktree_manager.py -v
+   ```
+
+### Phase 6 — Documentation Update
+
+1. Update `README.md` with a "Multi-Agent Worktree Workflow" section.
+2. Document the `.worktree-session` marker file format.
+3. Document the `GWT_SID` environment variable convention.
+4. Add a "Troubleshooting" section covering: stale `.git/worktrees/` entries, lock file conflicts, `extensions.worktreeConfig` missing.
+
+### Phase 7 — CI Integration (Optional)
+
+1. Add a GitHub Actions workflow step that sets `GWT_SID` for each parallel job.
+2. Ensure the CI runner does NOT share a `.git/` directory across parallel jobs (each job checks out fresh).
+3. If sharing a mounted repo in CI, apply the worktree manager pattern identically.
 
 ---
 
-## 📄 Templates & Checklists
+## 6. Code Files to Create
 
-### Agent Submission Checklist
-- [ ] Frontmatter complete (name, description, model, maxTurns)
-- [ ] README or usage documentation included
-- [ ] All code dependencies use `uv` (not `pip`)
-- [ ] No hardcoded secrets or defaults
-- [ ] Type hints on public methods
-- [ ] Follows cybersecsuite style guide
+### 6.1 `./worktree-session-manager.py`
 
-### Skill Submission Checklist
-- [ ] SKILL.md frontmatter complete
-- [ ] Content organized in proper directory
-- [ ] Python/shell scripts use `uv` (not `pip`)
-- [ ] No hardcoded secrets
-- [ ] References/examples accurate
-- [ ] If offensive: author confirms authorized use
+**Purpose**: Central Python 3 CLI tool for the entire worktree lifecycle.
 
-### PR Checklist (Auto-Loaded)
-- [ ] Validation passes: `bash scripts/validate.sh`
-- [ ] No `pip install` references
-- [ ] No hardcoded credentials
-- [ ] Type hints and docstrings included
-- [ ] If security-sensitive: security review completed
-- [ ] Commit messages follow conventional commits
-
----
-
-## 📈 Long-Term Roadmap
-
-| Phase | Goals | Timeline |
-|-------|-------|----------|
-| **Phase 1: Hardening** | Fix critical code issues, CI enforcement | Week 1-2 (NOW) |
-| **Phase 2: Security Scanning** | Automated static analysis, CVE audits | Week 3-4 |
-| **Phase 3: Publishing** | Versioned releases, curated feeds | Month 2 |
-| **Phase 4: Observability** | Usage telemetry, community metrics | Month 3 |
-
----
-
-## ✅ Governance Verification Checklist
-
-### Policy Enforcement
-- [ ] All Python code uses `uv` (not `pip`)
-- [ ] All crypto uses BLAKE2b-256, Ed25519, Argon2id
-- [ ] All SQL queries parameterized (0 f-strings)
-- [ ] All public functions typed (PEP 484/526)
-- [ ] CI validates schemas and patterns
-- [ ] Branch protection: require passing jobs
-- [ ] CONTRIBUTING.md updated with policies
-
-### Community
-- [ ] Contributing guidelines clear
-- [ ] PR/issue templates in place
-- [ ] Code of Conduct defined
-- [ ] Security policy documented
-- [ ] Maintainer responsibilities assigned
-
-### Documentation
-- [ ] plan.md (this file) committed
-- [ ] CLAUDE.md conventions linked
-- [ ] README.md with quick start
-- [ ] CONTRIBUTING.md with workflow
-- [ ] docs/SECURITY.md with guidelines
-
----
-
-## 🔗 Related Documents
-
-- **CLAUDE.md** — CyberSecSuite project overview
-- **CONTRIBUTING.md** — Contribution guidelines with policy reminders
-- **README.md** — Quick start and marketplace usage
-- **scripts/validate.sh** — Automated validation script
-- **.github/workflows/validate.yml** — CI configuration
-- **.github/pull_request_template.md** — PR template with checklists
-
----
-
-## 📞 Contacts & Governance
-
-- **Repository Owner:** Dystopian
-- **Security Reviews:** cybersec-agent (A2A protocol)
-- **Python Development:** python-developer agent
-- **Marketplace Coordination:** GitHub Discussions
-
----
-
-**Document Status:** ⚠️ ACTIVE — Two independent sections (Code Review + Governance)
-
-**Section 1 Status:** Ready for remediation (Phase 1-4)  
-**Blocking:** Phase 1 + Phase 2 must complete before production  
-**Assigned to:** python-developer agent (cybersec-agent)
-
-**Section 2 Status:** Governance framework active  
-**Enforcement:** CI validates policies automatically  
-**Review:** Quarterly (every 3 months)
-
-
----
-
-# SECTION 3: GitHub MCP Server Implementation
-
-## 📡 Overview
-
-Implement a GitHub MCP Server using the SDK/Tools pattern to enable AI agents to interact with Git repositories and GitHub APIs. **Scope:** Worktree operations (clone, branch, commit, push, PR, merge).
-
-**Purpose:**
-- Enable agents to autonomously manage git workflows
-- Provide structured access to GitHub APIs via MCP protocol
-- Support CI/CD automation and code review workflows
-- Maintain security & audit trail for all operations
-
----
-
-## 🎯 Architecture
-
-### MCP Server Structure
-```
-src/csmcp/github/
-├── __init__.py              # SDK package exports
-├── server.py                # MCP server entry point
-├── tools/
-│   ├── __init__.py
-│   ├── worktree.py          # Worktree operations
-│   ├── branch.py            # Branch management
-│   ├── commit.py            # Commit operations
-│   ├── push.py              # Push & remote sync
-│   └── pull_request.py      # PR management
-├── models.py                # Pydantic models for I/O
-└── config.py                # Configuration & constants
-```
-
-### SDK Pattern (Tools)
-All tools follow the csmcp SDK pattern:
+**Key functions and signatures**:
 
 ```python
-from csmcp import tool, sdk_result
+import argparse
+import logging
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import uuid
+from pathlib import Path
+from typing import Optional
 
-@tool("tool_name", "Description of what this tool does", {
-    "param_name": {"type": "string", "description": "..."},
-    "another_param": {"type": "integer", "description": "..."}
-})
-async def _tool_impl(args: dict[str, Any]) -> dict:
-    """Implementation of the tool."""
-    param_value = args.get("param_name", "default")
-    # ... tool logic ...
-    return sdk_result({"status": "success", "result": value})
+SID_PATTERN = re.compile(r'^[0-9a-f]{12}$')
+MARKER_FILE = '.worktree-session'
+LOG_PREFIX = '[WSM]'
+
+def generate_sid() -> str:
+    """Generate a fresh 12-char lowercase hex session ID."""
+    return uuid.uuid4().hex[:12]
+
+def validate_sid(sid: str) -> None:
+    """Raise ValueError if sid does not match [0-9a-f]{12}."""
+
+def get_repo_root() -> Path:
+    """Return the absolute path to the main repository root (not a worktree root)."""
+
+def get_worktree_root(sid: str, repo_root: Optional[Path] = None) -> Path:
+    """Return the expected absolute path for worktree-<sid>."""
+
+def enable_worktree_config(repo_root: Path) -> None:
+    """Idempotently set extensions.worktreeConfig = true in main config."""
+
+def worktree_exists(sid: str, repo_root: Optional[Path] = None) -> bool:
+    """Return True if git reports a worktree named worktree-<sid>."""
+
+def create_worktree(
+    sid: str,
+    branch: str,
+    repo_root: Optional[Path] = None,
+    hooks_template_dir: Optional[Path] = None,
+) -> Path:
+    """
+    Main create entrypoint. Idempotent.
+    Steps:
+      1. validate_sid(sid)
+      2. enable_worktree_config(repo_root)
+      3. if worktree_exists(sid): log and return existing path
+      4. git worktree add --lock ../worktree-<sid> <branch>
+      5. write_marker_file(worktree_path, sid)
+      6. set_hooks_path(sid, worktree_path, repo_root)
+      7. install_hooks(sid, worktree_path, hooks_template_dir)
+    Returns the worktree Path.
+    """
+
+def write_marker_file(worktree_path: Path, sid: str) -> None:
+    """Write sid to <worktree>/.worktree-session (atomic via tmp + rename)."""
+
+def set_hooks_path(sid: str, worktree_path: Path, repo_root: Path) -> None:
+    """
+    Set core.hooksPath in the worktree-specific config.
+    Uses: git -C <repo_root> config --worktree -f <worktrees/<sid>/config.worktree> core.hooksPath <abs_hooks_dir>
+    The hooks dir is: <worktree_path>/.git/hooks/   (resolved via the .git file pointer)
+    """
+
+def resolve_worktree_git_hooks_dir(worktree_path: Path) -> Path:
+    """
+    Read <worktree>/.git (a file) to find gitdir, then append /hooks.
+    Returns the absolute path to the worktree's private hooks directory.
+    """
+
+def install_hooks(
+    sid: str,
+    worktree_path: Path,
+    template_dir: Optional[Path] = None,
+) -> None:
+    """
+    Copy hook templates from template_dir (default: ./scripts/hooks/) into
+    the worktree's private hooks dir. Replace @@SID@@ token with sid.
+    Set chmod +x on each installed hook.
+    """
+
+def remove_hooks(sid: str, worktree_path: Path) -> None:
+    """Remove all hook files from the worktree's private hooks directory."""
+
+def teardown_worktree(
+    sid: str,
+    repo_root: Optional[Path] = None,
+    force: bool = False,
+) -> None:
+    """
+    Idempotent teardown.
+    Steps:
+      1. validate_sid(sid)
+      2. if not worktree_exists(sid): git worktree prune, exit 0
+      3. git worktree unlock worktree-<sid>  (ignore if already unlocked)
+      4. git worktree remove [--force] ../worktree-<sid>
+      5. git worktree prune
+      6. remove stale marker file if any
+    """
+
+def get_current_worktree_sid(cwd: Optional[Path] = None) -> Optional[str]:
+    """
+    Read .worktree-session from cwd (default: os.getcwd()) and return sid,
+    or None if not in a managed worktree. Used by shared hook scripts for
+    conditional execution.
+    """
+
+def list_worktrees(repo_root: Optional[Path] = None) -> list[dict]:
+    """
+    Return a list of dicts with keys: name, sid, path, branch, locked, HEAD.
+    Uses: git worktree list --porcelain
+    """
+
+def cmd_create(args: argparse.Namespace) -> int:
+    """CLI handler for 'create' subcommand. Prints generated SID to stdout."""
+
+def cmd_teardown(args: argparse.Namespace) -> int:
+    """CLI handler for 'teardown' subcommand."""
+
+def cmd_list(args: argparse.Namespace) -> int:
+    """CLI handler for 'list' subcommand. Prints table to stdout."""
+
+def cmd_sid(args: argparse.Namespace) -> int:
+    """CLI handler for 'sid' subcommand. Prints current SID or error."""
+
+def cmd_install_hooks(args: argparse.Namespace) -> int:
+    """CLI handler for 'install-hooks' subcommand."""
+
+def cmd_remove_hooks(args: argparse.Namespace) -> int:
+    """CLI handler for 'remove-hooks' subcommand."""
+
+def build_parser() -> argparse.ArgumentParser:
+    """Build and return the CLI argument parser."""
+
+def main() -> int:
+    """Entry point. Returns exit code."""
+
+if __name__ == '__main__':
+    sys.exit(main())
 ```
+
+**Error handling contract**:
+- All `subprocess.run()` calls MUST use `check=False` and inspect `returncode`.
+- On subprocess failure, log the stderr output and raise a `RuntimeError` or return non-zero exit code.
+- Never use `shell=True` with user-supplied arguments.
 
 ---
 
-## 🛠️ Worktree Tools (Implemented via SDK)
+### 6.2 `./scripts/hooks/pre-commit.tpl`
 
-### 1. **Initialize Repository (Clone Once)** [TOOL]
-```python
-@tool("git_init_repo", "Clone a GitHub repository once (cache for reuse)", {
-    "repo_url": {"type": "string", "description": "GitHub HTTPS URL"},
-    "cache_path": {"type": "string", "description": "Local cache directory for bare clone"}
-})
-async def _git_init_repo(args: dict) -> dict:
-    repo_url = args.get("repo_url")
-    cache_path = args.get("cache_path")
-    
-    # Clone as bare repository (cache only, no working tree)
-    # git clone --bare {repo_url} {cache_path}
-    return sdk_result({"status": "initialized", "cache": cache_path})
-```
+**Purpose**: Template pre-commit hook installed into each agent's private hooks dir.
 
-**Why Git Worktree > Clone:**
-- ✅ Clone once → create multiple worktrees from bare repo
-- ✅ Disk-space efficient (shared objects)
-- ✅ Fast branch switching (no re-clone)
-- ✅ Multiple branches working simultaneously
-- ✅ Ideal for CI/CD & agents
-
----
-
-### 1b. **Create Worktree** [TOOL]
-```python
-@tool("git_create_worktree", "Create a working tree for a branch", {
-    "repo_cache": {"type": "string", "description": "Path to bare repository"},
-    "branch": {"type": "string", "description": "Branch name (e.g., main, feat/feature1)"},
-    "worktree_path": {"type": "string", "description": "Where to create worktree"}
-})
-async def _git_create_worktree(args: dict) -> dict:
-    repo_cache = args.get("repo_cache")
-    branch = args.get("branch")
-    worktree_path = args.get("worktree_path")
-    
-    # git -C {repo_cache} worktree add {worktree_path} {branch}
-    # OR: git -C {repo_cache} worktree add -b {worktree_path} origin/{branch}
-    return sdk_result({"status": "created", "worktree": worktree_path, "branch": branch})
-```
-
-**Commands (git worktree):**
+**Key sections**:
 ```bash
-# List all worktrees
-git worktree list
+#!/usr/bin/env bash
+# Worktree session: @@SID@@
+# This hook fires ONLY in worktree-@@SID@@
 
-# Create new worktree from existing branch
-git -C /path/to/bare/repo worktree add /path/to/worktree main
+SID="@@SID@@"
+MARKER="$(git rev-parse --show-toplevel)/.worktree-session"
+if [ -f "$MARKER" ] && [ "$(cat "$MARKER")" != "$SID" ]; then
+  echo "[WSM] pre-commit: SID mismatch — skipping (expected $SID)" >&2
+  exit 0
+fi
 
-# Create new worktree + new branch
-git -C /path/to/bare/repo worktree add -b feat/new /path/to/worktree origin/main
-
-# Remove worktree
-git -C /path/to/bare/repo worktree remove /path/to/worktree
-
-# Prune stale entries
-git worktree prune
+# --- Project-specific checks below ---
+# e.g.: run linter, formatter check, secrets scan
 ```
 
 ---
 
-### 2. **Create Branch** [TOOL]
-```python
-@tool("git_create_branch", "Create new branch from remote", {
-    "repo_cache": {"type": "string", "description": "Path to bare repo cache"},
-    "worktree_path": {"type": "string", "description": "Worktree directory path"},
-    "branch_name": {"type": "string", "description": "New branch name (e.g., feat/my-feature)"},
-    "from_branch": {"type": "string", "description": "Source branch (default: origin/main)"}
-})
-async def _git_create_branch(args: dict) -> dict:
-    repo_cache = args.get("repo_cache")
-    worktree_path = args.get("worktree_path")
-    branch_name = args.get("branch_name")
-    from_branch = args.get("from_branch", "origin/main")
-    
-    # git -C {repo_cache} worktree add -b {branch_name} {worktree_path} {from_branch}
-    if not _is_valid_branch_name(branch_name):
-        return sdk_result({"status": "error", "message": "Invalid branch name"})
-    
-    return sdk_result({"status": "created", "branch": branch_name, "worktree": worktree_path})
-```
+### 6.3 `./scripts/hooks/post-checkout.tpl`
 
-**Git Commands:**
-```bash
-# Create worktree with new branch
-git -C /path/to/bare/repo worktree add -b feat/new-feature /path/to/worktree origin/main
-
-# Inside worktree: switch/create branch
-cd /path/to/worktree
-git checkout -b feat/feature-name
-git switch -c feat/feature-name
-```
-
----
-
-### 3. **Commit Changes** [TOOL]
-```python
-@tool("git_commit", "Stage and commit changes in worktree", {
-    "worktree_path": {"type": "string", "description": "Path to worktree"},
-    "message": {"type": "string", "description": "Commit message (conventional commits)"},
-    "files": {"type": "array", "description": "Files to stage (or '*' for all)"},
-    "author_name": {"type": "string", "description": "Author name"},
-    "author_email": {"type": "string", "description": "Author email"}
-})
-async def _git_commit(args: dict) -> dict:
-    worktree_path = args.get("worktree_path")
-    message = args.get("message")
-    files = args.get("files", ["*"])
-    author_name = args.get("author_name")
-    author_email = args.get("author_email")
-    
-    if not _validate_conventional_commit(message):
-        return sdk_result({"status": "error", "message": "Invalid commit message"})
-    
-    # cd {worktree_path} && git add + git commit
-    return sdk_result({"status": "committed", "sha": commit_sha})
-```
-
-**Git Commands:**
-```bash
-cd /path/to/worktree
-
-# Stage files
-git add file1.py file2.py
-git add .  # all changes
-
-# Commit
-git commit -m "feat: add new feature"
-git commit --author="Name <email>" -m "feat: description"
-
-# Check status before commit
-git status
-git diff
-```
-
----
-
-### 4. **Push to Remote** [TOOL]
-```python
-@tool("git_push", "Push commits from worktree to GitHub", {
-    "repo_cache": {"type": "string", "description": "Path to bare repo (for push)"},
-    "branch": {"type": "string", "description": "Branch to push"},
-    "remote": {"type": "string", "description": "Remote name (default: origin)"},
-    "force": {"type": "boolean", "description": "Force push (with caution)"}
-})
-async def _git_push(args: dict) -> dict:
-    repo_cache = args.get("repo_cache")
-    branch = args.get("branch")
-    remote = args.get("remote", "origin")
-    force = args.get("force", False)
-    
-    if force and not _confirm_force_push():
-        return sdk_result({"status": "error", "message": "Force push rejected"})
-    
-    # git -C {repo_cache} push {remote} {branch}
-    return sdk_result({"status": "pushed", "branch": branch, "remote": remote})
-```
-
-**Git Commands:**
-```bash
-# Inside worktree
-cd /path/to/worktree
-
-# Push to remote
-git push origin feat/my-feature
-git push -u origin feat/my-feature  # Set upstream
-
-# Force push (dangerous!)
-git push -f origin branch-name
-git push --force-with-lease origin branch-name  # Safer
-
-# Push all branches
-git push origin --all
-```
-
----
-
-### 5. **Create Pull Request** [TOOL]
-```python
-@tool("github_create_pr", "Create a GitHub Pull Request", {
-    "repo_url": {"type": "string", "description": "GitHub repo URL"},
-    "head_branch": {"type": "string", "description": "Feature branch"},
-    "base_branch": {"type": "string", "description": "Target branch (default: main)"},
-    "title": {"type": "string", "description": "PR title"},
-    "body": {"type": "string", "description": "PR description (markdown)"},
-    "draft": {"type": "boolean", "description": "Create as draft (default: false)"}
-})
-async def _github_create_pr(args: dict) -> dict:
-    repo_url = args.get("repo_url")
-    head_branch = args.get("head_branch")
-    base_branch = args.get("base_branch", "main")
-    title = args.get("title")
-    body = args.get("body", "")
-    draft = args.get("draft", False)
-    
-    # Use GitHub API via httpx
-    # POST /repos/{owner}/{repo}/pulls
-    return sdk_result({"status": "created", "pr_number": 123, "pr_url": "..."})
-```
-
----
-
-### 6. **Merge Pull Request** [TOOL]
-```python
-@tool("github_merge_pr", "Merge a GitHub Pull Request", {
-    "repo_url": {"type": "string", "description": "GitHub repo URL"},
-    "pr_number": {"type": "integer", "description": "PR number"},
-    "merge_method": {"type": "string", "description": "merge | squash | rebase (default: squash)"},
-    "delete_branch": {"type": "boolean", "description": "Delete head branch after merge (default: true)"}
-})
-async def _github_merge_pr(args: dict) -> dict:
-    repo_url = args.get("repo_url")
-    pr_number = args.get("pr_number")
-    merge_method = args.get("merge_method", "squash")
-    delete_branch = args.get("delete_branch", True)
-    
-    # Validate PR is ready to merge
-    # Use GitHub API: PUT /repos/{owner}/{repo}/pulls/{pr_number}/merge
-    return sdk_result({"status": "merged", "pr_number": pr_number})
-```
-
----
-
-### 7. **Get Worktree Status** [TOOL]
-```python
-@tool("git_status", "Get status of worktree (staged, unstaged, branch)", {
-    "worktree_path": {"type": "string", "description": "Path to worktree"}
-})
-async def _git_status(args: dict) -> dict:
-    worktree_path = args.get("worktree_path")
-    
-    # cd {worktree_path} && git status --porcelain
-    return sdk_result({
-        "status": "clean" | "dirty",
-        "current_branch": "feat/my-feature",
-        "staged": ["file1.py"],
-        "unstaged": ["file2.py"],
-        "untracked": ["file3.py"],
-        "ahead": 1,  # commits not yet pushed
-        "behind": 0
-    })
-```
-
-**Git Commands:**
-```bash
-cd /path/to/worktree
-
-# Full status
-git status
-
-# Compact porcelain format
-git status --porcelain
-
-# Show remote tracking
-git status -sb
-
-# Show remote branch info
-git branch -vv
-```
-
----
-
-### 8. **List Branches & Worktrees** [TOOL]
-```python
-@tool("git_list_worktrees", "List all worktrees and branches", {
-    "repo_cache": {"type": "string", "description": "Path to bare repo"}
-})
-async def _git_list_worktrees(args: dict) -> dict:
-    repo_cache = args.get("repo_cache")
-    
-    # git -C {repo_cache} worktree list
-    # git -C {repo_cache} branch -a
-    return sdk_result({
-        "status": "success",
-        "worktrees": [
-            {"branch": "main", "path": "/tmp/wt/main", "detached": False},
-            {"branch": "feat/feature1", "path": "/tmp/wt/feat1", "detached": False}
-        ],
-        "branches": {
-            "local": ["main", "dev", "feat/feature1"],
-            "remote": ["origin/main", "origin/dev", "origin/feat/feature1"]
-        }
-    })
-```
-
-**Git Commands:**
-```bash
-# List worktrees
-git worktree list
-
-# List branches (local)
-git branch
-git branch -l
-
-# List remote branches
-git branch -r
-git branch -a  # All (local + remote)
-
-# List with verbose info
-git branch -vv
-```
-
----
-
-## 🔐 Security & Authorization
-
-### Authentication
-- GitHub token via environment variable: `GITHUB_TOKEN`
-- Validate token has required scopes: `repo`, `workflow`, `gist`
-- Rotate tokens every 90 days
-
-### Access Control
-- Only allow operations on authorized repositories
-- Whitelist repo URLs in configuration
-- Require confirmation for destructive ops (force push, merge without review)
-
-### Audit Trail
-- Log all git/GitHub operations with timestamp
-- Include: user, action, repo, branch, result
-- Store in database for compliance
-
-### Validation
-- Validate branch names (alphanumeric, no spaces)
-- Validate commit messages (conventional commits format)
-- Validate PR titles/descriptions
-- Block merge if CI checks failing
-
----
-
-## 📋 Implementation Roadmap
-
-### Phase 1: Core Worktree (Week 1)
-- [x] Clone repository
-- [x] Create branch
-- [x] Commit changes
-- [x] Push to remote
-- [ ] Get status
-
-### Phase 2: GitHub Integration (Week 2)
-- [ ] Create PR
-- [ ] Merge PR
-- [ ] List branches
-- [ ] Get PR status
-
-### Phase 3: Advanced (Week 3)
-- [ ] Rebase branches
-- [ ] Cherry-pick commits
-- [ ] Tag releases
-- [ ] Stash/pop changes
-
-### Phase 4: CI/CD Integration (Week 4)
-- [ ] Check CI status before merge
-- [ ] Trigger workflows
-- [ ] Get workflow results
-
----
-
-## 🎯 Git Worktree Workflow (Best Practice)
-
-### Why `git worktree` > `git clone`?
-
-| Feature | Clone | Worktree |
-|---------|-------|----------|
-| Disk space | 100% per clone | Shared objects (~10% each) |
-| Clone speed | Slow (full fetch) | Fast (hard links) |
-| Parallel work | Separate repos | Multiple trees, 1 repo |
-| Branch management | Per-repo | Shared refs |
-| CI/CD efficiency | Wasteful | Optimal |
-
-### Standard Git Worktree Workflow
+**Purpose**: Emits session info on checkout; can trigger environment re-activation.
 
 ```bash
-# 1️⃣ INITIAL SETUP (once per repo)
-git clone --bare https://github.com/user/repo.git ~/.cache/repo.bare
-
-# 2️⃣ CREATE WORKTREE FOR MAIN BRANCH
-git -C ~/.cache/repo.bare worktree add ~/work/main main
-
-# 3️⃣ CREATE WORKTREE FOR FEATURE BRANCH
-git -C ~/.cache/repo.bare worktree add -b feat/my-feature ~/work/feat origin/main
-
-# 4️⃣ INSIDE WORKTREE: WORK NORMALLY
-cd ~/work/feat
-git status
-git add .
-git commit -m "feat: add new feature"
-
-# 5️⃣ PUSH FROM WORKTREE
-git push origin feat/my-feature
-
-# 6️⃣ LIST ALL WORKTREES
-git -C ~/.cache/repo.bare worktree list
-
-# 7️⃣ CLEAN UP (remove worktree when done)
-git -C ~/.cache/repo.bare worktree remove ~/work/feat
-git -C ~/.cache/repo.bare worktree prune
-```
-
-### Complete Command Reference
-
-```bash
-# ═══ BARE REPO SETUP ═══
-git clone --bare {url} {path}.bare      # Create bare repo (cache)
-git -C {path}.bare gc                    # Garbage collect to save space
-
-# ═══ WORKTREE OPERATIONS ═══
-git -C {path}.bare worktree add {path} {branch}      # Add worktree (existing branch)
-git -C {path}.bare worktree add -b {branch} {path} {source}  # Add + create branch
-git -C {path}.bare worktree list                     # Show all worktrees
-git -C {path}.bare worktree remove {path}            # Remove worktree
-git -C {path}.bare worktree prune                    # Clean stale entries
-git -C {path}.bare worktree lock {path}              # Prevent removal
-git -C {path}.bare worktree unlock {path}            # Allow removal
-
-# ═══ INSIDE WORKTREE ═══
-cd {path}
-git status                               # Check status
-git add {files}                          # Stage changes
-git commit -m "message"                  # Commit
-git push {remote} {branch}               # Push
-git fetch origin                         # Update refs
-git branch -vv                           # Show tracking info
-```
-
-### Example: Python Developer Agent Workflow
-
-```python
-# Agent receives task: "Add type hints to core.py and commit"
-
-# Step 1: Clone repo
-await tools.git_clone({
-    "repo_url": "https://github.com/Dystopian/cybersecsuite.git",
-    "target_path": "/tmp/cybersecsuite",
-    "branch": "main"
-})
-
-# Step 2: Create branch
-await tools.git_create_branch({
-    "repo_path": "/tmp/cybersecsuite",
-    "branch_name": "feat/add-type-hints",
-    "from_branch": "main"
-})
-
-# Step 3: Modify file (agent edits core.py)
-# ... agent makes changes ...
-
-# Step 4: Check status
-status = await tools.git_status({
-    "repo_path": "/tmp/cybersecsuite"
-})
-
-# Step 5: Commit
-await tools.git_commit({
-    "repo_path": "/tmp/cybersecsuite",
-    "message": "feat(core): add type hints to public API functions",
-    "files": ["src/dashboard/api/core.py"],
-    "author_name": "Python Developer Agent",
-    "author_email": "python-developer@cybersec.ai"
-})
-
-# Step 6: Push
-await tools.git_push({
-    "repo_path": "/tmp/cybersecsuite",
-    "branch": "feat/add-type-hints",
-    "remote": "origin"
-})
-
-# Step 7: Create PR
-await tools.github_create_pr({
-    "repo_url": "https://github.com/Dystopian/cybersecsuite.git",
-    "head_branch": "feat/add-type-hints",
-    "base_branch": "main",
-    "title": "feat(core): add type hints to public API",
-    "body": "...",
-    "draft": False
-})
+#!/usr/bin/env bash
+# Worktree session: @@SID@@
+SID="@@SID@@"
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "[WSM] post-checkout: session=$SID branch=$BRANCH" >&2
 ```
 
 ---
 
-## 🔄 Error Handling & Retry Strategy
+### 6.4 `./scripts/hooks/pre-push.tpl`
 
-### Standard Error Responses
-```python
-{
-    "status": "error",
-    "code": "GIT_AUTH_FAILED | GIT_MERGE_CONFLICT | GITHUB_API_ERROR | ...",
-    "message": "Human-readable error message",
-    "details": {"field": "value"}  # Optional context
+**Purpose**: Runs tests before any push from this session's worktree.
+
+```bash
+#!/usr/bin/env bash
+# Worktree session: @@SID@@
+SID="@@SID@@"
+# Fast guard: skip in wrong worktree
+MARKER="$(git rev-parse --show-toplevel)/.worktree-session"
+[ -f "$MARKER" ] && [ "$(cat "$MARKER")" != "$SID" ] && exit 0
+
+# Run project tests
+# python3 -m pytest --tb=short -q || exit 1
+```
+
+---
+
+### 6.5 `./scripts/hooks/commit-msg.tpl`
+
+**Purpose**: Enforce Conventional Commits format.
+
+```bash
+#!/usr/bin/env bash
+# Worktree session: @@SID@@
+MSG_FILE="$1"
+PATTERN='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,100}'
+if ! grep -qE "$PATTERN" "$MSG_FILE"; then
+  echo "[WSM] commit-msg: does not match Conventional Commits pattern" >&2
+  echo "  Expected: type(scope): description" >&2
+  exit 1
+fi
+```
+
+---
+
+### 6.6 `./scripts/gwt-aliases.sh`
+
+**Purpose**: Shell aliases for daily worktree operations. Source in `.bashrc`/`.zshrc`.
+
+```bash
+#!/usr/bin/env bash
+# Git Worktree Session Manager — shell aliases
+# Usage: source ./scripts/gwt-aliases.sh
+
+_GWT_MANAGER="$(git rev-parse --show-toplevel 2>/dev/null)/worktree-session-manager.py"
+
+gwt-create() {
+  local branch="${1:-$(git rev-parse --abbrev-ref HEAD)}"
+  local sid
+  sid=$(python3 "$_GWT_MANAGER" create --branch "$branch") || return 1
+  export GWT_SID="$sid"
+  echo "[gwt] Created worktree-$sid on branch $branch"
+  echo "[gwt] Run: cd ../worktree-$sid"
+}
+
+gwt-teardown() {
+  local sid="${1:-$GWT_SID}"
+  [ -z "$sid" ] && { echo "[gwt] No SID. Pass one or set GWT_SID." >&2; return 1; }
+  python3 "$_GWT_MANAGER" teardown "$sid"
+  [ "$sid" = "$GWT_SID" ] && unset GWT_SID
+}
+
+gwt-sid() {
+  python3 "$_GWT_MANAGER" sid
+}
+
+gwt-list() {
+  python3 "$_GWT_MANAGER" list
+}
+
+gwt-hooks-install() {
+  local sid="${1:-$GWT_SID}"
+  [ -z "$sid" ] && { echo "[gwt] No SID." >&2; return 1; }
+  python3 "$_GWT_MANAGER" install-hooks "$sid"
 }
 ```
 
-### Retry Logic
-- Network errors (timeout, connection refused): Retry 3x with exponential backoff
-- Rate limits (GitHub API): Wait for reset time, then retry
-- Merge conflicts: Return error, require manual intervention
-- Branch diverged: Return error, require rebase
+---
+
+### 6.7 `./tests/test_worktree_manager.py`
+
+**Purpose**: Comprehensive unittest suite covering all lifecycle operations.
+
+**Key test classes**:
+```python
+class TestSIDGeneration(unittest.TestCase):
+    def test_generate_sid_format(self): ...
+    def test_generate_sid_uniqueness(self): ...
+    def test_validate_sid_rejects_uppercase(self): ...
+    def test_validate_sid_rejects_short(self): ...
+
+class TestWorktreeCreate(unittest.TestCase):
+    def setUp(self): ...  # init temp git repo
+    def test_create_directory_name(self): ...
+    def test_create_marker_file(self): ...
+    def test_create_hooks_path_config(self): ...
+    def test_create_idempotent(self): ...
+    def test_create_hooks_executable(self): ...
+
+class TestWorktreeTeardown(unittest.TestCase):
+    def test_teardown_removes_directory(self): ...
+    def test_teardown_idempotent(self): ...
+    def test_teardown_prunes_stale_entries(self): ...
+
+class TestHookIsolation(unittest.TestCase):
+    def test_hook_fires_only_in_owner_worktree(self): ...
+    def test_sibling_worktree_hook_not_triggered(self): ...
+
+class TestGetCurrentSID(unittest.TestCase):
+    def test_returns_sid_in_managed_worktree(self): ...
+    def test_returns_none_outside_managed_worktree(self): ...
+
+class TestConcurrency(unittest.TestCase):
+    def test_concurrent_create_both_succeed(self): ...  # threading.Thread x2
+```
 
 ---
 
-## 🧪 Testing Strategy
+## 7. Risk Register & Mitigations
 
-### Unit Tests
-- Test each tool independently
-- Mock GitHub API responses
-- Verify error handling
-
-### Integration Tests
-- Test full workflows (clone → branch → commit → push → PR)
-- Use test repository on GitHub
-- Clean up test branches after each run
-
-### Security Tests
-- Verify token validation
-- Verify access control
-- Verify audit logging
+| Risk | Likelihood | Impact | Mitigation | Owner |
+|---|---|---|---|---|
+| Git version < 2.20 on some machines (no `extensions.worktreeConfig`) | Medium | High | Add version check in manager script; fail with clear message | Manager script |
+| `.git/worktrees/<sid>/` directory not cleaned up after crash | Medium | Medium | `git worktree prune` called on every `create` and `teardown`; CI cleanup job | Manager script + CI |
+| Two agents generate same 12-char SID (birthday collision) | Very Low | Medium | Collision probability ~1 in 2^48; add `worktree_exists()` guard + retry loop (max 3) | Manager script |
+| `core.hooksPath` set to non-existent dir after worktree removal | Low | Medium | Teardown clears `core.hooksPath` config entry before removing directory | Teardown function |
+| Hook template contains `@@SID@@` replacement error (e.g. literal `@@SID@@` left in) | Low | Low | Post-install verification: grep for `@@SID@@` in installed hooks; fail if found | `install_hooks()` |
+| Agent A accidentally `cd`s into Agent B's worktree and commits | Low | High | `.worktree-session` marker + optional `post-checkout` warning; directory naming makes it obvious | Hooks + convention |
+| `git worktree add --lock` not respected across NFS mounts | Medium | Medium | Document: NFS mounts not supported; use local filesystem only | Documentation |
+| Stale lock file prevents `git worktree remove` | Low | Medium | `--force` flag in teardown; log warning when used | Teardown function |
+| Hook script has syntax error, blocking ALL commits in that worktree | Low | High | Lint all templates with `bash -n` during install; abort if lint fails | `install_hooks()` |
+| `extensions.worktreeConfig` incompatible with repo used as a submodule | Low | Medium | Document: do not use worktree manager in submodules; check `git rev-parse --is-inside-work-tree` | Manager script guard |
 
 ---
 
-## ✅ Verification Checklist
+## 8. Setup & Usage Instructions
 
-- [ ] All 8 worktree tools implemented
-- [ ] SDK pattern followed (tools, models, sdk_result)
-- [ ] Type hints on all parameters (PEP 484/526)
-- [ ] Error handling with specific exceptions
-- [ ] Audit logging for all operations
-- [ ] GitHub token validation
-- [ ] Conventional commit message validation
-- [ ] Unit tests (>80% coverage)
-- [ ] Integration tests pass
-- [ ] Security tests pass
-- [ ] Documentation complete
+### 8.1 One-Time Repository Setup
+
+```bash
+# 1. Clone (or enter) the repository
+cd ~/projects/myrepo
+
+# 2. Verify Git version (must be >= 2.20)
+git --version
+
+# 3. Enable per-worktree configuration
+git config extensions.worktreeConfig true
+
+# 4. Verify
+git config --get extensions.worktreeConfig
+# → true
+
+# 5. Make manager script executable
+chmod +x worktree-session-manager.py
+
+# 6. Source the aliases (add this to ~/.bashrc or ~/.zshrc)
+echo 'source ~/projects/myrepo/scripts/gwt-aliases.sh' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 8.2 Creating a New Session / Worktree
+
+```bash
+# Option A: Using alias (recommended)
+gwt-create main
+# → [gwt] Created worktree-a3f1c8d20b4e on branch main
+# → [gwt] Run: cd ../worktree-a3f1c8d20b4e
+# → GWT_SID=a3f1c8d20b4e is now exported in your shell
+
+# Option B: Direct script invocation
+SID=$(python3 worktree-session-manager.py create --branch main)
+echo "Session: $SID"
+
+# Option C: Specify your own SID (e.g. for reproducible CI runs)
+SID=$(python3 worktree-session-manager.py create --sid a3f1c8d20b4e --branch feature/my-feature)
+
+# Navigate to the new worktree
+cd ../worktree-$SID
+```
+
+### 8.3 Querying the Current Session ID
+
+```bash
+# From inside a managed worktree
+gwt-sid
+# → a3f1c8d20b4e
+
+# Or directly
+python3 ~/projects/myrepo/worktree-session-manager.py sid
+# → a3f1c8d20b4e
+
+# From a hook script (Python)
+import sys
+sys.path.insert(0, '/path/to/repo')
+from worktree_session_manager import get_current_worktree_sid
+sid = get_current_worktree_sid()
+```
+
+### 8.4 Listing All Active Worktrees
+
+```bash
+gwt-list
+# → SID              BRANCH              PATH                          LOCKED
+# → a3f1c8d20b4e     main                ../worktree-a3f1c8d20b4e      yes
+# → 7b9e2f051d6a     feature/agents      ../worktree-7b9e2f051d6a      yes
+```
+
+### 8.5 Teardown
+
+```bash
+# Tear down current session
+gwt-teardown
+# → [WSM] INFO Unlocking worktree-a3f1c8d20b4e
+# → [WSM] INFO Removing worktree-a3f1c8d20b4e
+# → [WSM] INFO Pruning stale worktree entries
+# → [WSM] INFO Done. GWT_SID unset.
+
+# Tear down a specific session by SID
+gwt-teardown 7b9e2f051d6a
+
+# Force teardown (e.g. if uncommitted changes)
+python3 worktree-session-manager.py teardown 7b9e2f051d6a --force
+```
+
+### 8.6 Re-installing Hooks (e.g. after template update)
+
+```bash
+gwt-hooks-install a3f1c8d20b4e
+# → [WSM] INFO Removed 3 stale hooks
+# → [WSM] INFO Installed pre-commit → worktree-a3f1c8d20b4e/.git/hooks/pre-commit
+# → [WSM] INFO Installed pre-push   → worktree-a3f1c8d20b4e/.git/hooks/pre-push
+# → [WSM] INFO Installed commit-msg → worktree-a3f1c8d20b4e/.git/hooks/commit-msg
+# → [WSM] INFO Hook verification passed (no @@SID@@ tokens remaining)
+```
+
+### 8.7 Recommended Shell Aliases (copy to `~/.bashrc` or `~/.zshrc`)
+
+```bash
+# Add to ~/.zshrc or ~/.bashrc:
+export GWT_REPO="$HOME/projects/myrepo"
+source "$GWT_REPO/scripts/gwt-aliases.sh"
+
+# Optional: auto-export SID when entering a worktree (via direnv or chpwd hook)
+# zsh example:
+chpwd() {
+  local marker=".worktree-session"
+  if [ -f "$marker" ]; then
+    export GWT_SID="$(cat "$marker")"
+    echo "[gwt] Session: $GWT_SID"
+  fi
+}
+```
+
+### 8.8 Troubleshooting
+
+```bash
+# Stale worktrees listed but directory missing
+git worktree prune --verbose
+
+# Locked worktree won't remove
+git worktree unlock worktree-<sid>
+git worktree remove --force worktree-<sid>
+
+# extensions.worktreeConfig missing (hooks not isolated)
+git config extensions.worktreeConfig true
+
+# Hook not firing — check hooksPath
+git -C /path/to/worktree-<sid> config --list | grep hookspath
+
+# Verify SID in current dir
+cat .worktree-session
+```
 
 ---
 
-**GitHub MCP Server Status:** 📋 Design document complete  
-**Implementation:** Ready to assign to python-developer agent  
-**Scope:** Worktree operations (clone, branch, commit, push, PR, merge)  
-**SDK Pattern:** Tools following csmcp SDK conventions
+## 9. Future Extensions
+
+1. **C/C++ native session detector** (`get_session_id.c`): Compile a tiny shared library that reads `.worktree-session` from `$GIT_WORK_TREE` — callable from CMake/Makefile hooks for C++ build pipelines without spawning a Python process per hook invocation.
+
+2. **Centralised hook template repository**: Move `./scripts/hooks/` to a separate Git repository (or Git submodule) so multiple projects share a single versioned set of hook templates. The manager script gains a `--hooks-repo <url>` flag to clone and use remote templates.
+
+3. **GitHub Actions / GitLab CI integration**: Publish a composite GitHub Action `gwt-session-setup` that calls `worktree-session-manager.py create` for each parallel job matrix entry, exports `GWT_SID` as an output, and calls `teardown` in a `post` step.
+
+4. **Hook audit log**: Each hook appends a JSON-L entry to `~/.gwt-audit.jsonl` with fields `{ts, sid, hook, repo, exit_code, duration_ms}`. A companion `gwt-audit` CLI command queries and displays the log.
+
+5. **Automatic branch-from-sid**: When no `--branch` is specified, the manager script creates a new branch named `session/<sid>` and pushes it with `--set-upstream`, giving each agent a completely isolated branch lifecycle.
+
+6. **Worktree health monitor** (`gwt-doctor`): A CLI command that inspects all registered worktrees, checks for: missing `.worktree-session`, mismatched `core.hooksPath`, stale lock files, hooks containing un-replaced `@@SID@@` tokens, and uncommitted changes older than N hours. Emits a colour-coded health report.
+
+7. **VSCode / Cursor workspace integration**: Auto-generate a `.code-workspace` file per session that sets `git.path` to the worktree root, so the IDE's Source Control panel shows only the current session's changes without mixing in sibling worktrees.
