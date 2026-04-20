@@ -189,7 +189,7 @@
 ## ✅ Code Review Verification Checklist
 
 - [ ] All SQL queries parameterized (0 f-strings)
-- [ ] All hashing uses BLAKE2b-256 (0 SHA1)
+- [ ] All hashing uses BLAKE2b-256 or sha512 (0 SHA1)
 - [ ] All public functions typed (PEP 484/526)
 - [ ] No bare `Exception` catches
 - [ ] Database migrations initialized
@@ -481,3 +481,427 @@ git push origin feat/my-agent-name
 **Section 2 Status:** Governance framework active  
 **Enforcement:** CI validates policies automatically  
 **Review:** Quarterly (every 3 months)
+
+
+---
+
+# SECTION 3: GitHub MCP Server Implementation
+
+## 📡 Overview
+
+Implement a GitHub MCP Server using the SDK/Tools pattern to enable AI agents to interact with Git repositories and GitHub APIs. **Scope:** Worktree operations (clone, branch, commit, push, PR, merge).
+
+**Purpose:**
+- Enable agents to autonomously manage git workflows
+- Provide structured access to GitHub APIs via MCP protocol
+- Support CI/CD automation and code review workflows
+- Maintain security & audit trail for all operations
+
+---
+
+## 🎯 Architecture
+
+### MCP Server Structure
+```
+src/csmcp/github/
+├── __init__.py              # SDK package exports
+├── server.py                # MCP server entry point
+├── tools/
+│   ├── __init__.py
+│   ├── worktree.py          # Worktree operations
+│   ├── branch.py            # Branch management
+│   ├── commit.py            # Commit operations
+│   ├── push.py              # Push & remote sync
+│   └── pull_request.py      # PR management
+├── models.py                # Pydantic models for I/O
+└── config.py                # Configuration & constants
+```
+
+### SDK Pattern (Tools)
+All tools follow the csmcp SDK pattern:
+
+```python
+from csmcp import tool, sdk_result
+
+@tool("tool_name", "Description of what this tool does", {
+    "param_name": {"type": "string", "description": "..."},
+    "another_param": {"type": "integer", "description": "..."}
+})
+async def _tool_impl(args: dict[str, Any]) -> dict:
+    """Implementation of the tool."""
+    param_value = args.get("param_name", "default")
+    # ... tool logic ...
+    return sdk_result({"status": "success", "result": value})
+```
+
+---
+
+## 🛠️ Worktree Tools (Implemented via SDK)
+
+### 1. **Clone Repository** [TOOL]
+```python
+@tool("git_clone", "Clone a GitHub repository to local worktree", {
+    "repo_url": {"type": "string", "description": "GitHub HTTPS URL (e.g., https://github.com/user/repo.git)"},
+    "target_path": {"type": "string", "description": "Local directory path"},
+    "branch": {"type": "string", "description": "Branch to clone (default: main)"}
+})
+async def _git_clone(args: dict) -> dict:
+    repo_url = args.get("repo_url")
+    target_path = args.get("target_path")
+    branch = args.get("branch", "main")
+    
+    cmd = f"git clone --branch {branch} {repo_url} {target_path}"
+    # Execute safely with subprocess, return result
+    return sdk_result({"status": "cloned", "path": target_path})
+```
+
+**Parameters:**
+- `repo_url` (required): Full GitHub HTTPS URL
+- `target_path` (required): Destination directory
+- `branch` (optional): Branch to clone (default: main)
+
+**Returns:**
+- `status`: "cloned" | "error"
+- `path`: Cloned repository path
+- `error`: Error message if applicable
+
+---
+
+### 2. **Create Branch** [TOOL]
+```python
+@tool("git_create_branch", "Create a new feature branch", {
+    "repo_path": {"type": "string", "description": "Path to repo"},
+    "branch_name": {"type": "string", "description": "New branch name (e.g., feat/my-feature)"},
+    "from_branch": {"type": "string", "description": "Source branch (default: main)"}
+})
+async def _git_create_branch(args: dict) -> dict:
+    repo_path = args.get("repo_path")
+    branch_name = args.get("branch_name")
+    from_branch = args.get("from_branch", "main")
+    
+    # Validate branch name format
+    if not _is_valid_branch_name(branch_name):
+        return sdk_result({"status": "error", "message": "Invalid branch name format"})
+    
+    # git checkout -b feature_branch origin/main
+    return sdk_result({"status": "created", "branch": branch_name})
+```
+
+---
+
+### 3. **Commit Changes** [TOOL]
+```python
+@tool("git_commit", "Stage and commit changes to worktree", {
+    "repo_path": {"type": "string", "description": "Path to repo"},
+    "message": {"type": "string", "description": "Commit message (must follow conventional commits)"},
+    "files": {"type": "array", "description": "List of files to stage (or '*' for all)"},
+    "author_name": {"type": "string", "description": "Commit author name"},
+    "author_email": {"type": "string", "description": "Commit author email"}
+})
+async def _git_commit(args: dict) -> dict:
+    repo_path = args.get("repo_path")
+    message = args.get("message")
+    files = args.get("files", ["*"])
+    author_name = args.get("author_name")
+    author_email = args.get("author_email")
+    
+    # Validate commit message (conventional commits)
+    if not _validate_conventional_commit(message):
+        return sdk_result({"status": "error", "message": "Invalid commit message format"})
+    
+    # git add + commit
+    return sdk_result({"status": "committed", "sha": commit_sha})
+```
+
+**Message Format (Conventional Commits):**
+- `feat: description`
+- `fix: description`
+- `docs: description`
+- `chore: description`
+- Multiline: `feat: title\n\nbody text`
+
+---
+
+### 4. **Push to Remote** [TOOL]
+```python
+@tool("git_push", "Push commits to GitHub remote", {
+    "repo_path": {"type": "string", "description": "Path to repo"},
+    "branch": {"type": "string", "description": "Branch to push"},
+    "remote": {"type": "string", "description": "Remote name (default: origin)"},
+    "force": {"type": "boolean", "description": "Force push (use with caution)"}
+})
+async def _git_push(args: dict) -> dict:
+    repo_path = args.get("repo_path")
+    branch = args.get("branch")
+    remote = args.get("remote", "origin")
+    force = args.get("force", False)
+    
+    if force and not _confirm_force_push():
+        return sdk_result({"status": "error", "message": "Force push rejected"})
+    
+    # git push origin branch
+    return sdk_result({"status": "pushed", "branch": branch, "remote": remote})
+```
+
+---
+
+### 5. **Create Pull Request** [TOOL]
+```python
+@tool("github_create_pr", "Create a GitHub Pull Request", {
+    "repo_url": {"type": "string", "description": "GitHub repo URL"},
+    "head_branch": {"type": "string", "description": "Feature branch"},
+    "base_branch": {"type": "string", "description": "Target branch (default: main)"},
+    "title": {"type": "string", "description": "PR title"},
+    "body": {"type": "string", "description": "PR description (markdown)"},
+    "draft": {"type": "boolean", "description": "Create as draft (default: false)"}
+})
+async def _github_create_pr(args: dict) -> dict:
+    repo_url = args.get("repo_url")
+    head_branch = args.get("head_branch")
+    base_branch = args.get("base_branch", "main")
+    title = args.get("title")
+    body = args.get("body", "")
+    draft = args.get("draft", False)
+    
+    # Use GitHub API via httpx
+    # POST /repos/{owner}/{repo}/pulls
+    return sdk_result({"status": "created", "pr_number": 123, "pr_url": "..."})
+```
+
+---
+
+### 6. **Merge Pull Request** [TOOL]
+```python
+@tool("github_merge_pr", "Merge a GitHub Pull Request", {
+    "repo_url": {"type": "string", "description": "GitHub repo URL"},
+    "pr_number": {"type": "integer", "description": "PR number"},
+    "merge_method": {"type": "string", "description": "merge | squash | rebase (default: squash)"},
+    "delete_branch": {"type": "boolean", "description": "Delete head branch after merge (default: true)"}
+})
+async def _github_merge_pr(args: dict) -> dict:
+    repo_url = args.get("repo_url")
+    pr_number = args.get("pr_number")
+    merge_method = args.get("merge_method", "squash")
+    delete_branch = args.get("delete_branch", True)
+    
+    # Validate PR is ready to merge
+    # Use GitHub API: PUT /repos/{owner}/{repo}/pulls/{pr_number}/merge
+    return sdk_result({"status": "merged", "pr_number": pr_number})
+```
+
+---
+
+### 7. **Get Worktree Status** [TOOL]
+```python
+@tool("git_status", "Get worktree status (staged, unstaged, untracked)", {
+    "repo_path": {"type": "string", "description": "Path to repo"}
+})
+async def _git_status(args: dict) -> dict:
+    repo_path = args.get("repo_path")
+    
+    # git status --porcelain
+    return sdk_result({
+        "status": "clean" | "dirty",
+        "current_branch": "main",
+        "staged": ["file1.py", "file2.py"],
+        "unstaged": ["file3.py"],
+        "untracked": ["file4.py"],
+        "ahead": 2,  # commits ahead of remote
+        "behind": 0
+    })
+```
+
+---
+
+### 8. **List Branches** [TOOL]
+```python
+@tool("git_list_branches", "List all branches (local and remote)", {
+    "repo_path": {"type": "string", "description": "Path to repo"},
+    "remote_only": {"type": "boolean", "description": "Show only remote branches"}
+})
+async def _git_list_branches(args: dict) -> dict:
+    repo_path = args.get("repo_path")
+    remote_only = args.get("remote_only", False)
+    
+    # git branch -a or git branch -r
+    return sdk_result({
+        "status": "success",
+        "branches": {
+            "local": ["main", "dev", "feat/feature1"],
+            "remote": ["origin/main", "origin/dev"]
+        }
+    })
+```
+
+---
+
+## 🔐 Security & Authorization
+
+### Authentication
+- GitHub token via environment variable: `GITHUB_TOKEN`
+- Validate token has required scopes: `repo`, `workflow`, `gist`
+- Rotate tokens every 90 days
+
+### Access Control
+- Only allow operations on authorized repositories
+- Whitelist repo URLs in configuration
+- Require confirmation for destructive ops (force push, merge without review)
+
+### Audit Trail
+- Log all git/GitHub operations with timestamp
+- Include: user, action, repo, branch, result
+- Store in database for compliance
+
+### Validation
+- Validate branch names (alphanumeric, no spaces)
+- Validate commit messages (conventional commits format)
+- Validate PR titles/descriptions
+- Block merge if CI checks failing
+
+---
+
+## 📋 Implementation Roadmap
+
+### Phase 1: Core Worktree (Week 1)
+- [x] Clone repository
+- [x] Create branch
+- [x] Commit changes
+- [x] Push to remote
+- [ ] Get status
+
+### Phase 2: GitHub Integration (Week 2)
+- [ ] Create PR
+- [ ] Merge PR
+- [ ] List branches
+- [ ] Get PR status
+
+### Phase 3: Advanced (Week 3)
+- [ ] Rebase branches
+- [ ] Cherry-pick commits
+- [ ] Tag releases
+- [ ] Stash/pop changes
+
+### Phase 4: CI/CD Integration (Week 4)
+- [ ] Check CI status before merge
+- [ ] Trigger workflows
+- [ ] Get workflow results
+
+---
+
+## 📊 Tool Integration with Agents
+
+### Example: Python Developer Agent Workflow
+
+```python
+# Agent receives task: "Add type hints to core.py and commit"
+
+# Step 1: Clone repo
+await tools.git_clone({
+    "repo_url": "https://github.com/Dystopian/cybersecsuite.git",
+    "target_path": "/tmp/cybersecsuite",
+    "branch": "main"
+})
+
+# Step 2: Create branch
+await tools.git_create_branch({
+    "repo_path": "/tmp/cybersecsuite",
+    "branch_name": "feat/add-type-hints",
+    "from_branch": "main"
+})
+
+# Step 3: Modify file (agent edits core.py)
+# ... agent makes changes ...
+
+# Step 4: Check status
+status = await tools.git_status({
+    "repo_path": "/tmp/cybersecsuite"
+})
+
+# Step 5: Commit
+await tools.git_commit({
+    "repo_path": "/tmp/cybersecsuite",
+    "message": "feat(core): add type hints to public API functions",
+    "files": ["src/dashboard/api/core.py"],
+    "author_name": "Python Developer Agent",
+    "author_email": "python-developer@cybersec.ai"
+})
+
+# Step 6: Push
+await tools.git_push({
+    "repo_path": "/tmp/cybersecsuite",
+    "branch": "feat/add-type-hints",
+    "remote": "origin"
+})
+
+# Step 7: Create PR
+await tools.github_create_pr({
+    "repo_url": "https://github.com/Dystopian/cybersecsuite.git",
+    "head_branch": "feat/add-type-hints",
+    "base_branch": "main",
+    "title": "feat(core): add type hints to public API",
+    "body": "...",
+    "draft": False
+})
+```
+
+---
+
+## 🔄 Error Handling & Retry Strategy
+
+### Standard Error Responses
+```python
+{
+    "status": "error",
+    "code": "GIT_AUTH_FAILED | GIT_MERGE_CONFLICT | GITHUB_API_ERROR | ...",
+    "message": "Human-readable error message",
+    "details": {"field": "value"}  # Optional context
+}
+```
+
+### Retry Logic
+- Network errors (timeout, connection refused): Retry 3x with exponential backoff
+- Rate limits (GitHub API): Wait for reset time, then retry
+- Merge conflicts: Return error, require manual intervention
+- Branch diverged: Return error, require rebase
+
+---
+
+## 🧪 Testing Strategy
+
+### Unit Tests
+- Test each tool independently
+- Mock GitHub API responses
+- Verify error handling
+
+### Integration Tests
+- Test full workflows (clone → branch → commit → push → PR)
+- Use test repository on GitHub
+- Clean up test branches after each run
+
+### Security Tests
+- Verify token validation
+- Verify access control
+- Verify audit logging
+
+---
+
+## ✅ Verification Checklist
+
+- [ ] All 8 worktree tools implemented
+- [ ] SDK pattern followed (tools, models, sdk_result)
+- [ ] Type hints on all parameters (PEP 484/526)
+- [ ] Error handling with specific exceptions
+- [ ] Audit logging for all operations
+- [ ] GitHub token validation
+- [ ] Conventional commit message validation
+- [ ] Unit tests (>80% coverage)
+- [ ] Integration tests pass
+- [ ] Security tests pass
+- [ ] Documentation complete
+
+---
+
+**GitHub MCP Server Status:** 📋 Design document complete  
+**Implementation:** Ready to assign to python-developer agent  
+**Scope:** Worktree operations (clone, branch, commit, push, PR, merge)  
+**SDK Pattern:** Tools following csmcp SDK conventions
