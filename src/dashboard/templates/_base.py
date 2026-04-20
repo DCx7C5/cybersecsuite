@@ -1,7 +1,7 @@
 """
 DESIGN DIRECTION: Cyber Operations Command Console — Industrial Terminal
 TYPOGRAPHY: Space Grotesk (headings/UI) / JetBrains Mono (data/code)
-COLOR PALETTE: #0d1117 base · #00ff41 phosphor-green accent · #f59e0b amber (warn) · #ef4444 threat-red · #00d4ff info-cyan
+COLOR PALETTE: centralized via CSS vars (base neutrals + mode accent + amber/red/success/cyan semantic tones)
 MOTION: Staggered card entrance (opacity+translateY), scanline sweep, sidebar item hover slide
 LAYOUT: Fixed left sidebar (260px) + scrollable main content; sidebar groups tabs into 5 categories
 """
@@ -11,16 +11,27 @@ _FONT_LINKS = """\
 <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700|jetbrains-mono:400,500,600" rel="stylesheet">
 """
 
-_CSS = '<link rel="stylesheet" href="/static/css/dashboard.css">\n'
+_CSS = (
+    '<link rel="stylesheet" href="/static/css/dashboard.css">\n'
+    '<link rel="stylesheet" href="/static/css/themes.css">\n'
+)
+
+# CDN: Chart.js 4, Apache ECharts 5, Drawflow
+_CDN_SCRIPTS = (
+    '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>\n'
+    '<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>\n'
+    '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/drawflow@0.0.59/dist/drawflow.min.css">\n'
+    '<script src="https://cdn.jsdelivr.net/npm/drawflow@0.0.59/dist/drawflow.min.js"></script>\n'
+)
 
 _TOAST_CSS = """\
 <style>
 #toast-container { position: fixed; bottom: 40px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 360px; }
-.toast { padding: 12px 16px; border-radius: 6px; font-size: 13px; font-family: var(--font-mono); display: flex; align-items: center; gap: 10px; animation: toast-in 0.3s ease-out; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-.toast.toast-info { background: #0c4a6e; border-left: 3px solid #00d4ff; color: #e0f2fe; }
-.toast.toast-success { background: #052e16; border-left: 3px solid #00ff41; color: #dcfce7; }
-.toast.toast-warning { background: #451a03; border-left: 3px solid #f59e0b; color: #fef3c7; }
-.toast.toast-error { background: #450a0a; border-left: 3px solid #ef4444; color: #fee2e2; }
+.toast { padding: 12px 16px; border-radius: 6px; font-size: 13px; font-family: var(--font-mono); display: flex; align-items: center; gap: 10px; animation: toast-in 0.3s ease-out; background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.toast.toast-info { border-left: 3px solid var(--cyan); }
+.toast.toast-success { border-left: 3px solid var(--success); }
+.toast.toast-warning { border-left: 3px solid var(--amber); }
+.toast.toast-error { border-left: 3px solid var(--red); }
 .toast button { background: none; border: none; color: inherit; cursor: pointer; margin-left: auto; opacity: 0.7; }
 .toast button:hover { opacity: 1; }
 @keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -65,16 +76,25 @@ def head() -> str:
         + _FONT_LINKS
         + _CSS
         + _TOAST_CSS
+        + _CDN_SCRIPTS
         + "\n</head>\n"
     )
 
 
 def header() -> str:
-    """Top bar: tab breadcrumb + refresh/uptime. Includes bottom status bar."""
+    """Top bar: tab breadcrumb + refresh/uptime + sidebar toggle + mode toggle. Includes bottom status bar."""
     return (
         '<div id="topbar">\n'
-        '  <div id="topbar-title" id="topbar-crumb">&#x25b6; PROVIDERS</div>\n'
-        '  <div id="topbar-actions">\n'
+        '  <div style="display:flex;align-items:center;gap:8px">\n'
+        '    <button id="sidebar-toggle" class="btn btn-ghost" onclick="toggleSidebar()" style="width:40px;height:40px;display:none">☰</button>\n'
+        '    <div id="topbar-title" id="topbar-crumb">&#x25b6; PROVIDERS</div>\n'
+        '  </div>\n'
+        '  <div id="topbar-actions" style="display:flex;align-items:center;gap:12px">\n'
+        '    <div style="display:flex;gap:4px;padding:0 8px;border-right:1px solid var(--border)">\n'
+        '      <button id="mode-btn-blue" class="mode-button active" onclick="setThemeMode(\'blue\')" title="Blue Team">🔵</button>\n'
+        '      <button id="mode-btn-purple" class="mode-button" onclick="setThemeMode(\'purple\')" title="Purple Team">🟣</button>\n'
+        '      <button id="mode-btn-red" class="mode-button" onclick="setThemeMode(\'red\')" title="Red Team">🔴</button>\n'
+        '    </div>\n'
         '    <span id="uptime"></span>\n'
         '    <button class="btn btn-ghost" onclick="refresh()">&#x21bb; REFRESH</button>\n'
         '  </div>\n'

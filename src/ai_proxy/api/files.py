@@ -6,10 +6,11 @@ Analysts can upload PCAP, logs, memory dumps, PDFs once and re-use the
 file_id across multiple agent queries without re-uploading.
 
 Routes:
-  POST   /v1/files                   — upload a file
-  GET    /v1/files                   — list uploaded files
-  GET    /v1/files/{file_id}         — get file metadata
-  DELETE /v1/files/{file_id}         — delete a file
+  POST   /v1/files                       — upload a file
+  GET    /v1/files                       — list uploaded files
+  GET    /v1/files/{file_id}             — get file metadata
+  GET    /v1/files/{file_id}/download    — download file content
+  DELETE /v1/files/{file_id}             — delete a file
 """
 from __future__ import annotations
 
@@ -19,7 +20,7 @@ from typing import Any
 import anthropic
 from starlette.datastructures import UploadFile
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from ai_proxy.providers.registry import get_provider
 
@@ -154,6 +155,37 @@ async def delete_file(request: Request) -> JSONResponse:
     try:
         await client.beta.files.delete(file_id, betas=[FILES_BETA])
         return JSONResponse({"deleted": True, "id": file_id})
+    except anthropic.NotFoundError:
+        return JSONResponse({"error": {"message": f"File {file_id!r} not found"}}, status_code=404)
+    except anthropic.APIStatusError as exc:
+        return JSONResponse(
+            {"error": {"message": exc.message, "type": "upstream_error"}},
+            status_code=exc.status_code,
+        )
+    finally:
+        await client.close()
+
+
+async def download_file(request: Request) -> Response:
+    """GET /v1/files/{file_id}/download — stream raw file content."""
+    file_id: str = request.path_params["file_id"]
+    provider_id = request.headers.get("x-provider", "anthropic")
+    client = _get_client(provider_id)
+    if not client:
+        return JSONResponse(
+            {"error": {"message": f"Provider {provider_id!r} not configured", "type": "configuration_error"}},
+            status_code=503,
+        )
+
+    try:
+        raw = await client.beta.files.download(file_id, betas=[FILES_BETA])
+        content = await raw.aread()
+        # Use Content-Disposition so browser/clients know the filename
+        return Response(
+            content=content,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{file_id}"'},
+        )
     except anthropic.NotFoundError:
         return JSONResponse({"error": {"message": f"File {file_id!r} not found"}}, status_code=404)
     except anthropic.APIStatusError as exc:

@@ -13,7 +13,9 @@ from typing import Optional
 # ── Project layout ────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(os.environ.get("CYBERSECSUITE_ROOT", Path(__file__).resolve().parent.parent.parent))
 HOOKS_DIR    = PROJECT_ROOT / ".claude" / "hooks"
-SESSIONS_DIR = PROJECT_ROOT / ".claude" / "sessions"
+SESSION_SCOPE = (os.environ.get("CYBERSEC_SESSION_SCOPE", "cybersec").strip().lstrip(".") or "cybersec")
+SESSIONS_DIR = PROJECT_ROOT / f".{SESSION_SCOPE}" / "sessions"
+LEGACY_SESSIONS_DIR = PROJECT_ROOT / ".claude" / "sessions"
 AUDIT_LOG    = HOOKS_DIR / "audit.jsonl"
 
 
@@ -24,13 +26,21 @@ def get_project_dir() -> Path:
 def get_session_dir() -> Optional[Path]:
     session_id = os.environ.get("CYBERSEC_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID")
     if session_id:
-        d = SESSIONS_DIR / session_id
-        d.mkdir(parents=True, exist_ok=True)
-        return d
+        primary = SESSIONS_DIR / session_id
+        if primary.exists():
+            return primary
+        legacy = LEGACY_SESSIONS_DIR / session_id
+        if legacy.exists():
+            return legacy
+        primary.mkdir(parents=True, exist_ok=True)
+        return primary
     # Fall back to latest session symlink
     latest = SESSIONS_DIR / "latest"
     if latest.exists():
         return latest.resolve()
+    legacy_latest = LEGACY_SESSIONS_DIR / "latest"
+    if legacy_latest.exists():
+        return legacy_latest.resolve()
     return None
 
 
@@ -79,4 +89,3 @@ def count_lines(path: Path, pattern: str) -> int:
 
 
 SEVERITY_EMOJI = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🔵", "info": "⚪"}
-

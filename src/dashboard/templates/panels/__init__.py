@@ -1,20 +1,8 @@
-"""Dashboard panels - re-export from _panels for backward compatibility."""
-from dashboard.templates._panels import (
-    _health,
-    _usage,
-    _telemetry,
-    _routing,
-    _crypto,
-    _agent_factory,
-    _agent_crafter,
-    _team_builder,
-    _agent_query,
-    _chat,
-    _workflows,
-    _prompts,
-    _cases,
-    _tasks,
-    _pocs,
+"""Dashboard panels module — organized by category."""
+from .platform import _providers, _usage, _health, _telemetry
+from .agents import _agents, _routing, _factory, _prompts, _agent_query
+from .forensics import (
+    _investigations,
     _findings,
     _iocs,
     _yara,
@@ -22,34 +10,33 @@ from dashboard.templates._panels import (
     _intel,
     _audit,
     _compliance,
-    _opensearch,
-    _explorer,
-    _templates,
-    _settings,
-    _providers,
-    _agents,
-    _investigations,
-    _dbcounts,
-    _a2a,
-    all_panels,
 )
+from .operations import _cases, _tasks, _pocs, _a2a
+from .data import _dbcounts, _opensearch, _explorer, _templates
+from .advanced import (
+    _chat,
+    _team_builder,
+    _agent_crafter,
+    _agent_factory,
+    _workflows,
+    _flowgraph,
+)
+from .settings import _settings, _settings_cybersecsuite, _crypto
 
 __all__ = [
-    "_health",
+    # Platform
+    "_providers",
     "_usage",
+    "_health",
     "_telemetry",
+    # Agents
+    "_agents",
     "_routing",
-    "_crypto",
-    "_agent_factory",
-    "_agent_crafter",
-    "_team_builder",
-    "_agent_query",
-    "_chat",
-    "_workflows",
+    "_factory",
     "_prompts",
-    "_cases",
-    "_tasks",
-    "_pocs",
+    "_agent_query",
+    # Forensics
+    "_investigations",
     "_findings",
     "_iocs",
     "_yara",
@@ -57,14 +44,66 @@ __all__ = [
     "_intel",
     "_audit",
     "_compliance",
+    # Operations
+    "_cases",
+    "_tasks",
+    "_pocs",
+    "_a2a",
+    # Data
+    "_dbcounts",
     "_opensearch",
     "_explorer",
     "_templates",
+    # Advanced
+    "_chat",
+    "_team_builder",
+    "_agent_crafter",
+    "_agent_factory",
+    "_workflows",
+    "_flowgraph",
+    # Settings
     "_settings",
-    "_providers",
-    "_agents",
-    "_investigations",
-    "_dbcounts",
-    "_a2a",
+    "_settings_cybersecsuite",
+    "_crypto",
     "all_panels",
 ]
+
+
+def all_panels() -> str:
+    """Aggregate all panels into single HTML string."""
+    return (
+        _providers()
+        + _usage()
+        + _health()
+        + _agents()
+        + _routing()
+        + _factory()
+        + _prompts()
+        + _crypto()
+        + _a2a()
+        + _investigations()
+        + _findings()
+        + _iocs()
+        + _yara()
+        + _network()
+        + _intel()
+        + _audit()
+        + _compliance()
+        + _dbcounts()
+        + _opensearch()
+        + _explorer()
+        + _cases()
+        + _tasks()
+        + _pocs()
+        + _agent_query()
+        + _chat()
+        + _team_builder()
+        + _agent_crafter()
+        + _agent_factory()
+        + _workflows()
+        + _settings()
+        + _settings_cybersecsuite()
+        + _telemetry()
+        + _templates()
+        + _flowgraph()
+    )

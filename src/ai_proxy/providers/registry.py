@@ -32,6 +32,7 @@ class ApiFormat(str, Enum):
     GEMINI = "gemini"
     BEDROCK = "bedrock"    # AWS Bedrock via AnthropicBedrock SDK
     VERTEX = "vertex"      # Google Vertex AI via AnthropicVertex SDK
+    FOUNDRY = "foundry"    # Microsoft Azure AI Foundry via AsyncAnthropicFoundry
     CUSTOM = "custom"      # Custom format requiring a dedicated executor
 
 

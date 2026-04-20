@@ -30,6 +30,7 @@ _STATUS_MAP: dict[type[anthropic.APIError], int] = {
     anthropic.UnprocessableEntityError: 422,
     anthropic.RateLimitError: 429,
     anthropic.InternalServerError: 500,
+    anthropic.APITimeoutError: 504,
 }
 
 
@@ -40,8 +41,9 @@ class AnthropicSdkExecutor(BaseExecutor):
     Gains over raw httpx:
     - Typed error classes with status codes
     - Built-in exponential-backoff retry (SDK-level)
-    - `message._request_id` capture for tracing
-    - Proper streaming via AsyncStream[RawMessageStreamEvent]
+    - request_id capture via with_raw_response for tracing
+    - Proper streaming via messages.stream() context manager
+    - Thinking (extended thinking) parameter support
     """
 
     def __init__(self, provider: ProviderConfig) -> None:
@@ -96,6 +98,14 @@ class AnthropicSdkExecutor(BaseExecutor):
                 return await self._stream(sdk, kwargs, model, start)
             return await self._complete(sdk, kwargs, model, start)
 
+        except anthropic.APITimeoutError as exc:
+            return ExecutorResult(
+                status_code=504,
+                error=f"Request timed out: {exc}",
+                latency_ms=(time.monotonic() - start) * 1000,
+                provider_id=self.provider.id,
+                model_id=model,
+            )
         except anthropic.APIConnectionError as exc:
             return ExecutorResult(
                 status_code=502,
@@ -130,9 +140,11 @@ class AnthropicSdkExecutor(BaseExecutor):
         model: str,
         start: float,
     ) -> ExecutorResult:
-        message: anthropic.types.Message = await sdk.messages.create(**kwargs)
+        # Use with_raw_response for reliable x-request-id capture from headers
+        raw = await sdk.messages.with_raw_response.create(**kwargs)
+        message = raw.parse()
         latency = (time.monotonic() - start) * 1000
-        request_id: str | None = getattr(message, "_request_id", None)
+        request_id: str | None = raw.headers.get("x-request-id")
         return ExecutorResult(
             status_code=200,
             body=message.model_dump(),
@@ -149,11 +161,12 @@ class AnthropicSdkExecutor(BaseExecutor):
         model: str,
         start: float,
     ) -> ExecutorResult:
-        sdk_stream = await sdk.messages.create(**kwargs, stream=True)
+        # Use messages.stream() context manager for structured event access
+        # and access to get_final_message() / request_id helpers
         latency = (time.monotonic() - start) * 1000
 
         async def _sse_bytes() -> AsyncIterator[bytes]:
-            async with sdk_stream as s:
+            async with sdk.messages.stream(**kwargs) as s:
                 async for event in s:
                     event_type = event.type
                     data = json.dumps(
@@ -187,7 +200,17 @@ def _extract_kwargs(body: dict[str, Any], model: str) -> dict[str, Any]:
         "messages": body.get("messages", []),
         "max_tokens": body.get("max_tokens") or 4096,
     }
-    for opt in ("system", "temperature", "top_p", "tools", "stop_sequences"):
+    for opt in ("system", "temperature", "top_p", "tools", "stop_sequences", "tool_choice"):
         if body.get(opt) is not None:
             kwargs[opt] = body[opt]
+
+    # Extended thinking support: pass through if caller sends thinking config
+    # Expected body format: {"thinking": {"type": "enabled", "budget_tokens": 8000}}
+    if body.get("thinking") is not None:
+        kwargs["thinking"] = body["thinking"]
+
+    # betas list for beta features (e.g. interleaved-thinking-2025-05-14)
+    if body.get("betas") is not None:
+        kwargs["betas"] = body["betas"]
+
     return kwargs

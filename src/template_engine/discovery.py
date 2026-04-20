@@ -9,6 +9,8 @@ import json
 import os
 from pathlib import Path
 
+from template_engine.session_scope import legacy_project_sessions_dir, project_sessions_dir
+
 
 def _template_search_dirs(
     project_dir: Path | None = None,
@@ -25,19 +27,32 @@ def _template_search_dirs(
         project_dir = Path.cwd()
 
     claude_dir = project_dir / ".claude"
+    sessions_dir = project_sessions_dir(project_dir)
+    legacy_sessions_dir = legacy_project_sessions_dir(project_dir)
 
     # Session dir (highest priority)
     sid = session_id or os.environ.get("CYBERSEC_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID")
-    session_dir: Path | None = None
+    session_dirs: list[Path] = []
     if sid:
-        session_dir = claude_dir / "sessions" / sid
+        primary = sessions_dir / sid
+        legacy = legacy_sessions_dir / sid
+        if primary.exists():
+            session_dirs.append(primary)
+        if legacy.exists() and legacy != primary:
+            session_dirs.append(legacy)
+        if not session_dirs:
+            session_dirs.append(primary)
     else:
-        latest = claude_dir / "sessions" / "latest"
+        latest = sessions_dir / "latest"
         if latest.is_symlink() or latest.is_dir():
-            session_dir = latest
+            session_dirs.append(latest)
+        else:
+            legacy_latest = legacy_sessions_dir / "latest"
+            if legacy_latest.is_symlink() or legacy_latest.is_dir():
+                session_dirs.append(legacy_latest)
 
     dirs: list[Path] = []
-    if session_dir:
+    for session_dir in session_dirs:
         dirs.append(session_dir / "templates")
     dirs.append(claude_dir / "templates")
     dirs.append(app_dir / "templates")
@@ -112,7 +127,6 @@ def discover_skills(
 ) -> list[dict]:
     """Discover skills from .claude/skills/ directory."""
     global_dir = Path("~/.claude").expanduser()
-    app_dir = Path("~/.cybersecsuite").expanduser()
     if project_dir is None:
         project_dir = Path.cwd()
 

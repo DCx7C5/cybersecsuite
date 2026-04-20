@@ -29,13 +29,15 @@ def form_input(
     placeholder: str = "",
     value: str = "",
     type: str = "text",
+    oninput: str = "",
     extra_style: str = "",
 ) -> str:
     """Styled text / number input."""
     style = _INPUT_BASE + (f";{extra_style}" if extra_style else "")
     val = f' value="{value}"' if value else ""
+    oninput_attr = f' oninput="{oninput}"' if oninput else ""
     return (
-        f'<input id="{elem_id}" type="{type}"{val} placeholder="{placeholder}" '
+        f'<input id="{elem_id}" type="{type}"{val} placeholder="{placeholder}"{oninput_attr} '
         f'style="{style}">'
     )
 
@@ -60,13 +62,15 @@ def form_textarea(
     rows: int = 4,
     placeholder: str = "",
     mono: bool = False,
+    onkeydown: str = "",
     extra_style: str = "",
 ) -> str:
     """Styled <textarea>."""
     mono_style = ";font-family:var(--font-mono)" if mono else ""
     style = _INPUT_BASE + ";resize:vertical" + mono_style + (f";{extra_style}" if extra_style else "")
+    onkeydown_attr = f' onkeydown="{onkeydown}"' if onkeydown else ""
     return (
-        f'<textarea id="{elem_id}" rows="{rows}" placeholder="{placeholder}" '
+        f'<textarea id="{elem_id}" rows="{rows}" placeholder="{placeholder}"{onkeydown_attr} '
         f'style="{style}"></textarea>'
     )
 
@@ -157,7 +161,7 @@ def modal_overlay(elem_id: str, *content: str, width: str = "600px") -> str:
     return (
         f'<div id="{elem_id}" style="display:none;position:fixed;inset:0;'
         f'background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center">\n'
-        f'  <div style="background:var(--surface-1);border:1px solid var(--border);'
+        f'  <div style="background:var(--surface);border:1px solid var(--border);'
         f'border-radius:10px;padding:24px;width:{width};max-width:95vw;'
         f'max-height:90vh;overflow-y:auto">\n'
         f'    {inner}\n'
@@ -252,7 +256,7 @@ def mini_card(elem_id: str, label: str, color: str = "") -> str:
     return (
         f'<div class="card text-center">'
         f'<div class="{val_cls}" id="{elem_id}">-</div>'
-        f'<div class="text-xs text-gray-500">{label}</div>'
+        f'<div class="text-xs" style="color:var(--text-muted)">{label}</div>'
         f'</div>'
     )
 
@@ -274,7 +278,7 @@ def section_h4(text: str) -> str:
 def table_slot(elem_id: str, *, loading: bool = False, loading_text: str = "Loading...") -> str:
     """Placeholder div for renderTable() injection."""
     if loading:
-        return f'<div id="{elem_id}" class="loading text-gray-500">{loading_text}</div>'
+        return f'<div id="{elem_id}" class="loading" style="color:var(--text-muted)">{loading_text}</div>'
     return f'<div id="{elem_id}"></div>'
 
 

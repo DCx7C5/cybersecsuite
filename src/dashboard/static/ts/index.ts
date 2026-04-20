@@ -7,6 +7,7 @@ import { refresh, cancelTask } from './refresh.js';
 import { runAgentQuery, clearAgentHistory } from './agents.js';
 import { loadOpenSearch } from './opensearch.js';
 import { loadExplorerModels, loadExplorerTable } from './explorer.js';
+import { toggleSidebar, setThemeMode, initSidebar } from './sidebar.js';
 import {
   loadSettings,
   saveSettingsAgent,
@@ -80,7 +81,28 @@ import {
   initChat,
 } from './chat.js';
 
-// Assign all functions to window for global access from HTML onclick handlers
+import {
+  checkBootstrapStatus,
+  bootstrapRun,
+  bootstrapSkip,
+} from './bootstrap.js';
+import {
+  loadUsageCharts,
+  loadIocCharts,
+  loadFindingsCharts,
+  loadComplianceCharts,
+  loadHealthCharts,
+} from './charts.js';
+import {
+  initFlowgraph,
+  fgLoadAgents,
+  fgClear,
+  fgExport,
+  fgImport,
+  fgExportDialog,
+  fgImportDialog,
+  fgExecute,
+} from './flowgraph.js';
 declare global {
   interface Window {
     // core
@@ -133,6 +155,11 @@ declare global {
     activateLocalLlm: typeof activateLocalLlm;
     deactivateLocalLlm: typeof deactivateLocalLlm;
 
+    // sidebar
+    toggleSidebar: typeof toggleSidebar;
+    setThemeMode: typeof setThemeMode;
+    initSidebar: typeof initSidebar;
+
     // team
     loadTeamBuilder: typeof loadTeamBuilder;
     tbFilterAgents: typeof tbFilterAgents;
@@ -183,6 +210,27 @@ declare global {
     acChatScrollLock: typeof acChatScrollLock;
     acChatAutoScroll: typeof acChatAutoScroll;
     acChatToggleStream: typeof acChatToggleStream;
+
+    // bootstrap modal (called from HTML onclick)
+    _bootstrapRun: () => void;
+    _bootstrapSkip: () => void;
+
+    // charts
+    loadUsageCharts: typeof loadUsageCharts;
+    loadIocCharts: typeof loadIocCharts;
+    loadFindingsCharts: typeof loadFindingsCharts;
+    loadComplianceCharts: typeof loadComplianceCharts;
+    loadHealthCharts: typeof loadHealthCharts;
+
+    // flowgraph
+    initFlowgraph: typeof initFlowgraph;
+    fgLoadAgents: typeof fgLoadAgents;
+    fgClear: typeof fgClear;
+    fgExport: typeof fgExport;
+    fgImport: typeof fgImport;
+    fgExportDialog: typeof fgExportDialog;
+    fgImportDialog: typeof fgImportDialog;
+    fgExecute: typeof fgExecute;
   }
 }
 
@@ -228,6 +276,11 @@ window.settingsAddEnvRow = settingsAddEnvRow;
 window.loadLocalLlmStatus = loadLocalLlmStatus;
 window.activateLocalLlm = activateLocalLlm;
 window.deactivateLocalLlm = deactivateLocalLlm;
+
+// Sidebar
+window.toggleSidebar = toggleSidebar;
+window.setThemeMode = setThemeMode;
+window.initSidebar = initSidebar;
 
 window.loadTeamBuilder = loadTeamBuilder;
 window.tbFilterAgents = tbFilterAgents;
@@ -275,8 +328,32 @@ window.acChatScrollLock = acChatScrollLock;
 window.acChatAutoScroll = acChatAutoScroll;
 window.acChatToggleStream = acChatToggleStream;
 
+// Bootstrap modal — exposed for HTML onclick handlers
+window._bootstrapRun = () => { bootstrapRun(); };
+window._bootstrapSkip = () => { bootstrapSkip(); };
+
+// Charts
+window.loadUsageCharts = loadUsageCharts;
+window.loadIocCharts = loadIocCharts;
+window.loadFindingsCharts = loadFindingsCharts;
+window.loadComplianceCharts = loadComplianceCharts;
+window.loadHealthCharts = loadHealthCharts;
+
+// Flowgraph
+window.initFlowgraph = initFlowgraph;
+window.fgLoadAgents = fgLoadAgents;
+window.fgClear = fgClear;
+window.fgExport = fgExport;
+window.fgImport = fgImport;
+window.fgExportDialog = fgExportDialog;
+window.fgImportDialog = fgImportDialog;
+window.fgExecute = fgExecute;
+
 // Initialize dashboard on DOM ready
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize sidebar (collapsible + theme mode)
+  initSidebar();
+
   // Activate first sidebar tab on load
   document.querySelectorAll('[id^="tab-"]').forEach((el) => {
     (el as HTMLElement).style.display = 'none';
@@ -291,6 +368,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize SSE connection
   await initSSE();
 
+  // Check first-run bootstrap status (shows modal if DB not seeded)
+  await checkBootstrapStatus();
+
   // Fetch initial data
   await refresh();
 
@@ -301,4 +381,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupAgentFactoryLoader();
   setupTypeHints();
   await initChat();
+
+  // Load health charts on initial tab
+  loadHealthCharts().catch(() => {});
+
+  // Patch showTab to lazy-load charts and init flowgraph on first visit
+  const _origShowTab = window.showTab;
+  window.showTab = (name: string) => {
+    _origShowTab(name);
+    if (name === 'usage')      { loadUsageCharts().catch(() => {}); }
+    if (name === 'iocs')       { loadIocCharts().catch(() => {}); }
+    if (name === 'findings')   { loadFindingsCharts().catch(() => {}); }
+    if (name === 'compliance') { loadComplianceCharts().catch(() => {}); }
+    if (name === 'health')     { loadHealthCharts().catch(() => {}); }
+    if (name === 'flowgraph')  { initFlowgraph(); fgLoadAgents().catch(() => {}); }
+  };
 });

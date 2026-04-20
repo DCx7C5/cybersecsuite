@@ -4,7 +4,7 @@ Priority (lowest → highest — never change this order):
   1. Global:  ~/.claude/context.yaml
   2. App:     ~/.cybersecsuite/context.yaml
   3. Project: $(pwd)/.claude/context.yaml
-  4. Session: $(pwd)/.claude/sessions/<session_id>/context.yaml  ← always wins
+  4. Session: $(pwd)/.<scope>/sessions/<session_id>/context.yaml  ← always wins
 """
 from __future__ import annotations
 
@@ -12,6 +12,8 @@ import copy
 import os
 from pathlib import Path
 from typing import Any
+
+from template_engine.session_scope import legacy_project_sessions_dir, project_sessions_dir
 
 try:
     import yaml  # pyyaml — already in dependencies
@@ -67,16 +69,25 @@ def _scope_dirs(
         project_dir = Path.cwd()
 
     claude_dir = project_dir / ".claude"
+    sessions_dir = project_sessions_dir(project_dir)
+    legacy_sessions_dir = legacy_project_sessions_dir(project_dir)
     dirs: list[Path] = [global_dir, app_dir, claude_dir]
 
     # Resolve session dir
     sid = session_id or os.environ.get("CYBERSEC_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID")
     if sid:
-        dirs.append(claude_dir / "sessions" / sid)
+        legacy_session = legacy_sessions_dir / sid
+        if legacy_session.exists() and legacy_session != (sessions_dir / sid):
+            dirs.append(legacy_session)
+        dirs.append(sessions_dir / sid)
     else:
-        latest = claude_dir / "sessions" / "latest"
+        latest = sessions_dir / "latest"
         if latest.is_symlink() or latest.is_dir():
             dirs.append(latest)
+        else:
+            legacy_latest = legacy_sessions_dir / "latest"
+            if legacy_latest.is_symlink() or legacy_latest.is_dir():
+                dirs.append(legacy_latest)
 
     return dirs
 

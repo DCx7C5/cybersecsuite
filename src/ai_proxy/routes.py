@@ -31,13 +31,24 @@ from ai_proxy.api.batches import (
     get_batch,
     get_batch_results,
     cancel_batch,
+    delete_batch,
 )
 from ai_proxy.api.files import (
     upload_file,
     list_files,
     get_file,
     delete_file,
+    download_file,
 )
+from ai_proxy.api.skills import (
+    create_skill,
+    list_skills,
+    get_skill,
+    delete_skill,
+    list_skill_versions,
+    get_skill_version,
+)
+from ai_proxy.api.models import list_models_live, get_model_live
 
 logger = logging.getLogger("ai_proxy.routes")
 
@@ -301,6 +312,7 @@ def create_proxy_router() -> Router:
         Route("/messages/batches", list_batches, methods=["GET"]),
         Route("/messages/batches", create_batch, methods=["POST"]),
         Route("/messages/batches/{batch_id}", get_batch, methods=["GET"]),
+        Route("/messages/batches/{batch_id}", delete_batch, methods=["DELETE"]),
         Route("/messages/batches/{batch_id}/results", get_batch_results, methods=["GET"]),
         Route("/messages/batches/{batch_id}/cancel", cancel_batch, methods=["POST"]),
         # Files API (Anthropic beta — upload once, reference by file_id)
@@ -308,5 +320,16 @@ def create_proxy_router() -> Router:
         Route("/files", upload_file, methods=["POST"]),
         Route("/files/{file_id}", get_file, methods=["GET"]),
         Route("/files/{file_id}", delete_file, methods=["DELETE"]),
+        Route("/files/{file_id}/download", download_file, methods=["GET"]),
+        # Live Models API (direct from Anthropic, not registry cache)
+        Route("/models/live", list_models_live, methods=["GET"]),
+        Route("/models/live/{model_id}", get_model_live, methods=["GET"]),
+        # Skills API (Anthropic beta — knowledge packages for models)
+        Route("/beta/skills", list_skills, methods=["GET"]),
+        Route("/beta/skills", create_skill, methods=["POST"]),
+        Route("/beta/skills/{skill_id}", get_skill, methods=["GET"]),
+        Route("/beta/skills/{skill_id}", delete_skill, methods=["DELETE"]),
+        Route("/beta/skills/{skill_id}/versions", list_skill_versions, methods=["GET"]),
+        Route("/beta/skills/{skill_id}/versions/{version_id}", get_skill_version, methods=["GET"]),
     ])
 

@@ -261,5 +261,8 @@ def get_executor(provider: ProviderConfig) -> BaseExecutor:
     if provider.api_format == ApiFormat.VERTEX:
         from ai_proxy.executors.vertex import VertexSdkExecutor
         return VertexSdkExecutor(provider)
+    if provider.api_format == ApiFormat.FOUNDRY:
+        from ai_proxy.executors.foundry import FoundrySdkExecutor
+        return FoundrySdkExecutor(provider)
     return DefaultExecutor(provider)
 

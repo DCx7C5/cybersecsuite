@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, audit, emit, hook_context
+from _utils import SESSIONS_DIR, ensure_structure, get_project_dir, audit, emit, hook_context
 
 MARKER = get_project_dir() / ".claude" / ".initialized"
 
@@ -55,7 +55,7 @@ async def main():
     MARKER.write_text(datetime.now(timezone.utc).isoformat())
 
     # Sessions dir
-    (project_dir / ".claude" / "sessions").mkdir(parents=True, exist_ok=True)
+    SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
 
     audit({"event": "FirstInit", "host": sys_info["hostname"]})
 
@@ -71,4 +71,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

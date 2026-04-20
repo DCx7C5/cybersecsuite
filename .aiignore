@@ -2,4 +2,5 @@
 .idea/
 templates/
 !plan0.md
-!src/
+!src/**
+*OmniRoute*

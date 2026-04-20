@@ -149,13 +149,13 @@ body {
 }
 
 .tab:hover {
-  background: rgba(53,116,240,0.08);
+  background: var(--accent-glow);
   color: var(--text-primary);
-  border-left-color: rgba(53,116,240,0.4);
+  border-left-color: var(--border-glow);
 }
 
 .tab.active {
-  background: rgba(53,116,240,0.15);
+  background: var(--accent-glow);
   color: var(--accent);
   border-left-color: var(--accent);
   font-weight: 600;
@@ -166,7 +166,7 @@ body {
 .tab-icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
 
 /* ── Main content ── */
-#main {
+#main-content {
   margin-left: var(--sidebar-w);
   flex: 1;
   display: flex;
@@ -233,7 +233,7 @@ body {
 }
 
 .btn-accent:hover {
-  background: rgba(99,102,241,0.2);
+  background: var(--accent-glow);
   box-shadow: 0 0 12px var(--border-glow);
 }
 
@@ -505,7 +505,7 @@ th:hover { color: var(--accent); }
 
 td {
   padding: 8px 10px;
-  border-bottom: 1px solid rgba(30,45,61,0.5);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 12px;
   vertical-align: middle;
@@ -514,7 +514,7 @@ td {
 tr:last-child td { border-bottom: none; }
 
 tr:hover td {
-  background: rgba(53,116,240,0.04);
+  background: var(--accent-glow);
 }
 
 /* Search + filter bar */
@@ -587,14 +587,14 @@ tr:hover td {
   text-transform: uppercase;
 }
 
-.badge-free     { background: rgba(53,116,240,0.12);  color: var(--accent); border: 1px solid rgba(53,116,240,0.3); }
-.badge-budget   { background: rgba(104,151,187,0.10); color: var(--cyan);   border: 1px solid rgba(104,151,187,0.3); }
-.badge-standard { background: rgba(167,139,250,0.12); color: var(--violet); border: 1px solid rgba(167,139,250,0.3); }
-.badge-premium  { background: rgba(239,68,68,0.12);   color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
-.badge-ok       { background: rgba(16,185,129,0.12);  color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
-.badge-err      { background: rgba(239,68,68,0.12);   color: var(--red);    border: 1px solid rgba(239,68,68,0.3); }
-.badge-browser  { background: rgba(167,139,250,0.12); color: var(--violet); border: 1px solid rgba(167,139,250,0.3); }
-.badge-warn     { background: rgba(245,158,11,0.12);  color: var(--amber);  border: 1px solid rgba(245,158,11,0.3); }
+.badge-free     { background: var(--accent-glow);  color: var(--accent); border: 1px solid var(--border-glow); }
+.badge-budget   { background: var(--cyan-glow);    color: var(--cyan);   border: 1px solid var(--cyan); }
+.badge-standard { background: rgba(152,118,170,0.12); color: var(--violet); border: 1px solid var(--violet); }
+.badge-premium  { background: var(--red-glow);     color: var(--red);    border: 1px solid var(--red); }
+.badge-ok       { background: var(--success-glow); color: var(--success); border: 1px solid var(--success); }
+.badge-err      { background: var(--red-glow);     color: var(--red);    border: 1px solid var(--red); }
+.badge-browser  { background: rgba(152,118,170,0.12); color: var(--violet); border: 1px solid var(--violet); }
+.badge-warn     { background: var(--amber-glow);   color: var(--amber);  border: 1px solid var(--amber); }
 
 /* ── Progress ── */
 .progress { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
@@ -679,8 +679,8 @@ label {
 }
 
 /* ── Glow text ── */
-.glow-green { color: var(--accent); text-shadow: 0 0 12px rgba(53,116,240,0.5); }
-.glow-cyan  { color: var(--cyan);   text-shadow: 0 0 16px rgba(0,212,255,0.5); }
+.glow-green { color: var(--accent); text-shadow: 0 0 12px var(--border-glow); }
+.glow-cyan  { color: var(--cyan);   text-shadow: 0 0 16px var(--cyan-glow); }
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
@@ -695,7 +695,7 @@ label {
   align-items: center;
   justify-content: space-between;
   padding: 9px 0;
-  border-bottom: 1px solid rgba(30,45,61,0.5);
+  border-bottom: 1px solid var(--border);
 }
 .toggle-row:last-child { border-bottom: none; }
 .toggle-label { font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); }
@@ -735,7 +735,7 @@ label {
 .toggle-switch input:checked + .toggle-slider::before {
   transform: translateX(18px);
   background: var(--accent);
-  box-shadow: 0 0 4px rgba(53,116,240,0.4);
+  box-shadow: 0 0 4px var(--border-glow);
 }
 .toggle-grid {
   display: grid;

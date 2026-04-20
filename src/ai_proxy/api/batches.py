@@ -5,11 +5,12 @@ Batch API processes up to 10,000 requests asynchronously at 50% cost discount.
 Ideal for bulk forensic scans: IOC classification, log analysis, hash scoring.
 
 Routes:
-  POST /v1/messages/batches                    — create a batch
-  GET  /v1/messages/batches                    — list recent batches
-  GET  /v1/messages/batches/{id}               — get batch status
-  GET  /v1/messages/batches/{id}/results       — stream batch results (NDJSON)
-  POST /v1/messages/batches/{id}/cancel        — cancel a batch
+  POST   /v1/messages/batches                    — create a batch
+  GET    /v1/messages/batches                    — list recent batches
+  GET    /v1/messages/batches/{id}               — get batch status
+  GET    /v1/messages/batches/{id}/results       — stream batch results (NDJSON)
+  POST   /v1/messages/batches/{id}/cancel        — cancel a batch
+  DELETE /v1/messages/batches/{id}               — delete a completed batch
 """
 from __future__ import annotations
 
@@ -18,6 +19,7 @@ import logging
 from typing import Any
 
 import anthropic
+from anthropic.types.messages.batch_create_params import Request as BatchRequest
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 
@@ -72,7 +74,7 @@ async def create_batch(request: Request) -> JSONResponse:
 
     try:
         batch_requests = [
-            anthropic.types.message_create_params.Request(
+            BatchRequest(
                 custom_id=r["custom_id"],
                 params=r["params"],
             )
@@ -183,6 +185,31 @@ async def cancel_batch(request: Request) -> JSONResponse:
     try:
         batch = await client.messages.batches.cancel(batch_id)
         return JSONResponse(batch.model_dump())
+    except anthropic.NotFoundError:
+        return JSONResponse({"error": {"message": f"Batch {batch_id!r} not found"}}, status_code=404)
+    except anthropic.APIStatusError as exc:
+        return JSONResponse(
+            {"error": {"message": exc.message, "type": "upstream_error"}},
+            status_code=exc.status_code,
+        )
+    finally:
+        await client.close()
+
+
+async def delete_batch(request: Request) -> JSONResponse:
+    """DELETE /v1/messages/batches/{batch_id} — delete a completed batch and its results."""
+    batch_id: str = request.path_params["batch_id"]
+    provider_id = request.headers.get("x-provider", "anthropic")
+    client = _get_client(provider_id)
+    if not client:
+        return JSONResponse(
+            {"error": {"message": f"Provider {provider_id!r} not configured", "type": "configuration_error"}},
+            status_code=503,
+        )
+
+    try:
+        result = await client.messages.batches.delete(batch_id)
+        return JSONResponse(result.model_dump())
     except anthropic.NotFoundError:
         return JSONResponse({"error": {"message": f"Batch {batch_id!r} not found"}}, status_code=404)
     except anthropic.APIStatusError as exc:

@@ -1,6 +1,6 @@
 """Scope hierarchy — the foundation every other model depends on."""
 from tortoise.models import Model
-from tortoise import fields
+from tortoise import fields, models
 
 from db.models.enums import RedBlueMode
 
@@ -17,6 +17,23 @@ class Project(Model):
 
     class Meta:
         table = "projects"
+
+
+class Application(Model):
+    id = fields.IntField(primary_key=True)
+    name = fields.CharField(max_length=256, db_index=True, unique=True)
+    description = fields.TextField(default="")
+    path = fields.CharField(max_length=1024, default="")
+    is_active = fields.BooleanField(default=True, db_index=True)
+    deleted_at = fields.DatetimeField(null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    class Meta:
+        table = "applications"
+        indexes = [
+            models.Index(fields=["name"]),
+        ]
+        unique_together = ["name"]
 
 
 class Session(Model):

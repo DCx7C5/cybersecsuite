@@ -20,6 +20,7 @@ _NAV: list = [
     ("agent-query",   "Agent Query",      "⇒", "agents"),
     ("chat",          "Chat",             "💬", "agents"),
     ("workflows",     "Workflows",        "⇌", "agents"),
+    ("flowgraph",     "Flowgraph",        "⬡", "agents"),
     ("prompts",       "Prompts",          "⊘", "agents"),
     # OPERATIONS
     ("cases",         "Cases",            "⊡", "ops"),
@@ -76,8 +77,8 @@ _NAV_DROPDOWN_STYLE = """\
   user-select: none;
 }
 .nav-dropdown-header:hover {
-  background: rgba(53,116,240,0.08); color: var(--text-primary);
-  border-left-color: rgba(53,116,240,0.4);
+  background: var(--accent-glow); color: var(--text-primary);
+  border-left-color: var(--border-glow);
 }
 .nav-dropdown-header.open { color: var(--accent); }
 .nav-dropdown-arrow {

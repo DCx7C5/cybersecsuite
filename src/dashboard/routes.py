@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from starlette.routing import Mount, Route, Router
+from starlette.routing import Mount, Route, Router, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 
 from dashboard._handlers import (
@@ -121,6 +121,20 @@ from dashboard.api.sdk_options import (
     api_sdk_options_post,
     api_sdk_options_scopes_get,
     api_sdk_options_delete,
+)
+from dashboard.api.bootstrap import (
+    api_bootstrap_status,
+    api_bootstrap_run,
+    api_bootstrap_skip,
+)
+from dashboard.api.charts import api_charts
+from dashboard.api.flowgraph import api_flowgraph_agents, api_flowgraph_execute
+from dashboard.api.plugin import (
+    PluginWebSocketEndpoint,
+    api_plugin_status,
+    api_plugin_events,
+    api_plugin_broadcast,
+    api_plugin_clear_events,
 )
 
 
@@ -247,6 +261,22 @@ def create_dashboard_router() -> Router:
             # SDK Session
             Route("/api/sdk/session/last", api_sdk_session_last, methods=["GET"]),
             Route("/api/sdk/session/resume", api_sdk_session_resume, methods=["POST"]),
+            # Bootstrap (first-run)
+            Route("/api/bootstrap/status", api_bootstrap_status, methods=["GET"]),
+            Route("/api/bootstrap/run", api_bootstrap_run, methods=["POST"]),
+            Route("/api/bootstrap/skip", api_bootstrap_skip, methods=["POST"]),
+            # Charts data API
+            Route("/api/charts/{name}", api_charts, methods=["GET"]),
+            # Flowgraph API
+            Route("/api/flowgraph/agents", api_flowgraph_agents, methods=["GET"]),
+            Route("/api/flowgraph/execute", api_flowgraph_execute, methods=["POST"]),
+            # Browser plugin WS/API
+            WebSocketRoute("/ws", PluginWebSocketEndpoint),
+            WebSocketRoute("/api/plugin/ws", PluginWebSocketEndpoint),
+            Route("/api/plugin/status", api_plugin_status, methods=["GET"]),
+            Route("/api/plugin/events", api_plugin_events, methods=["GET"]),
+            Route("/api/plugin/broadcast", api_plugin_broadcast, methods=["POST"]),
+            Route("/api/plugin/events/clear", api_plugin_clear_events, methods=["POST"]),
             # SSE streaming endpoints
             Route("/sse/cases", sse_cases, methods=["GET"]),
             Route("/sse/tasks", sse_tasks, methods=["GET"]),

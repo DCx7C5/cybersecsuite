@@ -52,6 +52,7 @@ services:
       GLOBAL_CLAUDE_DIR: /app/.claude-global
     ports:
       - "8000:8000"
+      - "8765:8000"
       - "8443:8443"
     volumes:
       - pg_socket:/tmp                          # shared socket directory with postgres

@@ -18,8 +18,8 @@ from jinja2 import (
     Environment,
     FileSystemLoader,
     Undefined,
-    UndefinedError,
 )
+from template_engine.session_scope import legacy_project_sessions_dir, project_sessions_dir
 
 logger = logging.getLogger(__name__)
 
@@ -78,19 +78,31 @@ def _build_loaders(
         project_dir = Path.cwd()
 
     claude_dir = project_dir / ".claude"
+    sessions_dir = project_sessions_dir(project_dir)
+    legacy_sessions_dir = legacy_project_sessions_dir(project_dir)
 
     sid = session_id or os.environ.get("CYBERSEC_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID")
-    session_tpl_dir: Path | None = None
+    session_tpl_dirs: list[Path] = []
     if sid:
-        session_tpl_dir = claude_dir / "sessions" / sid / "templates"
+        primary_tpl = sessions_dir / sid / "templates"
+        legacy_tpl = legacy_sessions_dir / sid / "templates"
+        if primary_tpl.exists():
+            session_tpl_dirs.append(primary_tpl)
+        if legacy_tpl.exists() and legacy_tpl != primary_tpl:
+            session_tpl_dirs.append(legacy_tpl)
+        if not session_tpl_dirs:
+            session_tpl_dirs.append(primary_tpl)
     else:
-        latest = claude_dir / "sessions" / "latest"
+        latest = sessions_dir / "latest"
         if latest.is_symlink() or latest.is_dir():
-            session_tpl_dir = latest / "templates"
+            session_tpl_dirs.append(latest / "templates")
+        else:
+            legacy_latest = legacy_sessions_dir / "latest"
+            if legacy_latest.is_symlink() or legacy_latest.is_dir():
+                session_tpl_dirs.append(legacy_latest / "templates")
 
     dirs: list[Path] = []
-    if session_tpl_dir:
-        dirs.append(session_tpl_dir)
+    dirs.extend(session_tpl_dirs)
     dirs.append(claude_dir / "templates")
     dirs.append(app_dir / "templates")
     dirs.append(global_dir / "templates")

@@ -3,8 +3,9 @@
 Entry point: build_dashboard_html() → full SPA HTML string.
 """
 from ._base import head, header, context_bar, _TOAST_JS
-from ._panels import all_panels
+from .panels import all_panels
 from ._tabs import tab_bar, first_tab
+from ._bootstrap_modal import bootstrap_modal_html
 
 
 def build_dashboard_html() -> str:
@@ -26,7 +27,7 @@ def build_dashboard_html() -> str:
     )
 
     main = (
-        '<div id="main">\n'
+        '<div id="main-content">\n'
         + header()
         + context_bar()
         + '<div id="content">\n'
@@ -39,6 +40,7 @@ def build_dashboard_html() -> str:
         '<!DOCTYPE html>\n<html lang="en">\n'
         + head()
         + '<body>\n'
+        + bootstrap_modal_html()
         + '<div id="shell">\n'
         + sidebar
         + main
