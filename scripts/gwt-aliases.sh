@@ -108,6 +108,42 @@ gwt-hooks-remove() {
   python3 "$manager" remove-hooks "$sid"
 }
 
+# ─── gwt-llm-open [sid] ────────────────────────────────────────────────────
+gwt-llm-open() {
+  local sid="${1:-${GWT_SID:-}}"
+  if [ -z "$sid" ]; then
+    echo "[gwt] ERROR: No session ID. Pass one or set GWT_SID." >&2
+    return 1
+  fi
+  local manager
+  manager="$(_gwt_manager)" || return 1
+  python3 "$manager" llm-session-open "$sid"
+}
+
+# ─── gwt-llm-close [sid] ───────────────────────────────────────────────────
+gwt-llm-close() {
+  local sid="${1:-${GWT_SID:-}}"
+  if [ -z "$sid" ]; then
+    echo "[gwt] ERROR: No session ID. Pass one or set GWT_SID." >&2
+    return 1
+  fi
+  local manager
+  manager="$(_gwt_manager)" || return 1
+  python3 "$manager" llm-session-close "$sid"
+}
+
+# ─── gwt-llm-cost [sid] ────────────────────────────────────────────────────
+gwt-llm-cost() {
+  local sid="${1:-${GWT_SID:-}}"
+  if [ -z "$sid" ]; then
+    echo "[gwt] ERROR: No session ID. Pass one or set GWT_SID." >&2
+    return 1
+  fi
+  local manager
+  manager="$(_gwt_manager)" || return 1
+  python3 "$manager" llm-cost "$sid"
+}
+
 # ─── Auto-detect SID on directory change (opt-in) ──────────────────────────
 # Uncomment the appropriate block for your shell to auto-export GWT_SID
 # whenever you cd into a managed worktree.
@@ -132,4 +168,4 @@ gwt-hooks-remove() {
 #   fi
 # '
 
-echo "[gwt] aliases loaded: gwt-create gwt-teardown gwt-sid gwt-list gwt-hooks-install gwt-hooks-remove"
+echo "[gwt] aliases loaded: gwt-create gwt-teardown gwt-sid gwt-list gwt-hooks-install gwt-hooks-remove gwt-llm-open gwt-llm-close gwt-llm-cost"

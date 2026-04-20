@@ -577,6 +577,111 @@ def cmd_remove_hooks(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# LLM layer commands
+# ---------------------------------------------------------------------------
+
+def _require_llm():
+    """Lazy-import LLM DB helpers; print helpful error if unavailable."""
+    try:
+        import sys
+        import os
+        # Ensure src/ is on the path when running the script directly
+        _script_dir = Path(__file__).parent
+        _src = str(_script_dir / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        from llm.db import open_session, close_session, cost_report, run_sync
+        return open_session, close_session, cost_report, run_sync
+    except ImportError as exc:
+        raise SystemExit(
+            f"[WSM] LLM layer not available: {exc}\n"
+            "Run:  uv sync\n"
+            "Ensure PYTHONPATH includes src/ or run from the project root."
+        ) from exc
+
+
+def cmd_llm_session_open(args: argparse.Namespace) -> int:
+    """Create an llm_sessions row for the given SID. Idempotent."""
+    open_session, _, _, run_sync = _require_llm()
+    try:
+        validate_sid(args.sid)
+    except ValueError as exc:
+        log.error("%s", exc)
+        return 1
+    try:
+        repo_root = str(get_repo_root())
+        run_sync(open_session(args.sid, repo_root, args.branch))
+        print(f"[llm-session-open] sid={args.sid} branch={args.branch} ✓")
+        return 0
+    except Exception as exc:
+        log.error("llm-session-open failed: %s", exc)
+        return 1
+
+
+def cmd_llm_session_close(args: argparse.Namespace) -> int:
+    """Set closed_at and aggregate totals for the given SID."""
+    _, close_session, _, run_sync = _require_llm()
+    try:
+        validate_sid(args.sid)
+    except ValueError as exc:
+        log.error("%s", exc)
+        return 1
+    try:
+        summary = run_sync(close_session(args.sid))
+        if summary:
+            print(
+                f"[llm-session-close] sid={summary.get('sid')}"
+                f"  calls={summary.get('total_calls', 0)}"
+                f"  input={summary.get('total_input_tokens', 0)}"
+                f"  output={summary.get('total_output_tokens', 0)}"
+                f"  cost=${summary.get('total_cost_usd', 0):.6f}"
+            )
+        else:
+            log.warning("Session %s not found in llm_sessions", args.sid)
+        return 0
+    except Exception as exc:
+        log.error("llm-session-close failed: %s", exc)
+        return 1
+
+
+def cmd_llm_cost(args: argparse.Namespace) -> int:
+    """Print per-model cost report for the given SID."""
+    _, _, cost_report, run_sync = _require_llm()
+    try:
+        validate_sid(args.sid)
+    except ValueError as exc:
+        log.error("%s", exc)
+        return 1
+    try:
+        report = run_sync(cost_report(args.sid))
+    except Exception as exc:
+        log.error("llm-cost failed: %s", exc)
+        return 1
+
+    print(f"\nSID: {report.get('sid')}")
+    rows = report.get("by_model", [])
+    if not rows:
+        print("  No calls recorded for this session.")
+        return 0
+    header = f"  {'Model':<38} {'Calls':>6}  {'Input':>10}  {'Output':>10}  {'Cost (USD)':>12}"
+    print(header)
+    print("  " + "-" * (len(header) - 2))
+    total_cost = 0.0
+    for r in rows:
+        c = float(r.get("cost_usd", 0) or 0)
+        total_cost += c
+        print(
+            f"  {r.get('model', ''):<38}"
+            f" {int(r.get('calls', 0)):>6}"
+            f"  {int(r.get('input_tokens', 0) or 0):>10,}"
+            f"  {int(r.get('output_tokens', 0) or 0):>10,}"
+            f"  ${c:>11.6f}"
+        )
+    print(f"\n  {'TOTAL':<38} {'':>6}  {'':>10}  {'':>10}  ${total_cost:>11.6f}\n")
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # CLI parser
 # ---------------------------------------------------------------------------
 
@@ -623,6 +728,22 @@ def build_parser() -> argparse.ArgumentParser:
     p_rh = sub.add_parser("remove-hooks", help="Remove all hooks for a session")
     p_rh.add_argument("sid", help="12-char hex session ID")
     p_rh.set_defaults(func=cmd_remove_hooks)
+
+    # llm-session-open
+    p_lso = sub.add_parser("llm-session-open", help="Open an LLM DB session for a worktree SID")
+    p_lso.add_argument("sid", help="12-char hex session ID")
+    p_lso.add_argument("--branch", default="", help="Branch name (informational)")
+    p_lso.set_defaults(func=cmd_llm_session_open)
+
+    # llm-session-close
+    p_lsc = sub.add_parser("llm-session-close", help="Close an LLM DB session and aggregate totals")
+    p_lsc.add_argument("sid", help="12-char hex session ID")
+    p_lsc.set_defaults(func=cmd_llm_session_close)
+
+    # llm-cost
+    p_lc = sub.add_parser("llm-cost", help="Print per-model cost report for a session")
+    p_lc.add_argument("sid", help="12-char hex session ID")
+    p_lc.set_defaults(func=cmd_llm_cost)
 
     return parser
 

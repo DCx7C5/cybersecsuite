@@ -57,6 +57,9 @@ MODEL_MODULES: list[str] = [
     "db.models.api_usage_log",
     "db.models.update_log_entry",
     "db.models.user_guidance",
+    # LLM orchestration layer
+    "db.models.llm_session",
+    "db.models.llm_call",
 ]
 
 from db.models.api_account import ApiAccount
@@ -64,6 +67,8 @@ from db.models.provider import Provider, ProviderAuthMethod
 from db.models.provider_model import ProviderModel, AccountModel
 from db.models.tool_registry import ToolRegistry, ToolToggleState, ToolToggleRegistry, AccountToolAccess
 from db.models.settings import ScopedEntry, GlobalSettings
+from db.models.llm_session import LlmSession
+from db.models.llm_call import LlmCall
 
 __all__ = [
     "MODEL_MODULES",
@@ -78,4 +83,6 @@ __all__ = [
     "AccountToolAccess",
     "ScopedEntry",
     "GlobalSettings",
+    "LlmSession",
+    "LlmCall",
 ]
