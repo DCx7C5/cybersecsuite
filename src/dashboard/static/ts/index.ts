@@ -125,6 +125,21 @@ import {
   loadVaultStatus,
   vaultChatSend,
 } from './vault.js';
+import { loadRouting, routingSetStrategy, routingSetResilience, routingSimulate } from './routing.js';
+import {
+  loadCases, caseCreate, caseSave, caseDelete, caseEdit,
+  loadTasks, taskCreate, taskSave, taskDelete, taskEdit,
+  loadPocs, pocCreate, pocSave, pocDelete, pocEdit,
+  loadA2aTasks, a2aTaskCreate, a2aTaskSave, a2aTaskDelete, a2aTaskEdit,
+  loadInvestigations, invCreate, invSave, invDelete, invEdit,
+  loadFindings, findingCreate, findingSave, findingDelete, findingEdit,
+  loadIocs, iocCreate, iocSave, iocDelete, iocEdit,
+  loadPrompts, promptCreate, promptSave, promptDelete, promptEdit,
+  loadIntelSources, intelSourceCreate, intelSourceSave, intelSourceDelete, intelSourceEdit,
+  seedIntelSources,
+  filterCases, filterTasks, filterPocs, filterA2a, filterInv,
+  filterFindings, filterIocs, filterPrompts, filterIntelSources,
+} from './crud_ops.js';
 declare global {
   interface Window {
     // core
@@ -276,6 +291,21 @@ declare global {
     sdkMemoryRead: typeof sdkMemoryRead;
     sdkApiHealth: typeof sdkApiHealth;
     sdkSubTab: (name: string) => void;
+    // routing
+    loadRouting: typeof loadRouting;
+    routingSetStrategy: typeof routingSetStrategy;
+    routingSetResilience: typeof routingSetResilience;
+    routingSimulate: typeof routingSimulate;
+    // crud ops
+    loadCases: typeof loadCases; caseCreate: typeof caseCreate; caseSave: typeof caseSave; caseDelete: typeof caseDelete; caseEdit: typeof caseEdit; filterCases: typeof filterCases;
+    loadTasks: typeof loadTasks; taskCreate: typeof taskCreate; taskSave: typeof taskSave; taskDelete: typeof taskDelete; taskEdit: typeof taskEdit; filterTasks: typeof filterTasks;
+    loadPocs: typeof loadPocs; pocCreate: typeof pocCreate; pocSave: typeof pocSave; pocDelete: typeof pocDelete; pocEdit: typeof pocEdit; filterPocs: typeof filterPocs;
+    loadA2aTasks: typeof loadA2aTasks; a2aTaskCreate: typeof a2aTaskCreate; a2aTaskSave: typeof a2aTaskSave; a2aTaskDelete: typeof a2aTaskDelete; a2aTaskEdit: typeof a2aTaskEdit; filterA2a: typeof filterA2a;
+    loadInvestigations: typeof loadInvestigations; invCreate: typeof invCreate; invSave: typeof invSave; invDelete: typeof invDelete; invEdit: typeof invEdit; filterInv: typeof filterInv;
+    loadFindings: typeof loadFindings; findingCreate: typeof findingCreate; findingSave: typeof findingSave; findingDelete: typeof findingDelete; findingEdit: typeof findingEdit; filterFindings: typeof filterFindings;
+    loadIocs: typeof loadIocs; iocCreate: typeof iocCreate; iocSave: typeof iocSave; iocDelete: typeof iocDelete; iocEdit: typeof iocEdit; filterIocs: typeof filterIocs;
+    loadPrompts: typeof loadPrompts; promptCreate: typeof promptCreate; promptSave: typeof promptSave; promptDelete: typeof promptDelete; promptEdit: typeof promptEdit; filterPrompts: typeof filterPrompts;
+    loadIntelSources: typeof loadIntelSources; intelSourceCreate: typeof intelSourceCreate; intelSourceSave: typeof intelSourceSave; intelSourceDelete: typeof intelSourceDelete; intelSourceEdit: typeof intelSourceEdit; filterIntelSources: typeof filterIntelSources; seedIntelSources: typeof seedIntelSources;
   }
 }
 
@@ -397,6 +427,23 @@ window.phSetProviderEnabled = phSetProviderEnabled;
 window.loadVaultStatus = loadVaultStatus;
 window.vaultChatSend = vaultChatSend;
 
+// Routing
+window.loadRouting = loadRouting;
+window.routingSetStrategy = routingSetStrategy;
+window.routingSetResilience = routingSetResilience;
+window.routingSimulate = routingSimulate;
+
+// CRUD ops
+window.loadCases = loadCases; window.caseCreate = caseCreate; window.caseSave = caseSave; window.caseDelete = caseDelete; window.caseEdit = caseEdit; window.filterCases = filterCases;
+window.loadTasks = loadTasks; window.taskCreate = taskCreate; window.taskSave = taskSave; window.taskDelete = taskDelete; window.taskEdit = taskEdit; window.filterTasks = filterTasks;
+window.loadPocs = loadPocs; window.pocCreate = pocCreate; window.pocSave = pocSave; window.pocDelete = pocDelete; window.pocEdit = pocEdit; window.filterPocs = filterPocs;
+window.loadA2aTasks = loadA2aTasks; window.a2aTaskCreate = a2aTaskCreate; window.a2aTaskSave = a2aTaskSave; window.a2aTaskDelete = a2aTaskDelete; window.a2aTaskEdit = a2aTaskEdit; window.filterA2a = filterA2a;
+window.loadInvestigations = loadInvestigations; window.invCreate = invCreate; window.invSave = invSave; window.invDelete = invDelete; window.invEdit = invEdit; window.filterInv = filterInv;
+window.loadFindings = loadFindings; window.findingCreate = findingCreate; window.findingSave = findingSave; window.findingDelete = findingDelete; window.findingEdit = findingEdit; window.filterFindings = filterFindings;
+window.loadIocs = loadIocs; window.iocCreate = iocCreate; window.iocSave = iocSave; window.iocDelete = iocDelete; window.iocEdit = iocEdit; window.filterIocs = filterIocs;
+window.loadPrompts = loadPrompts; window.promptCreate = promptCreate; window.promptSave = promptSave; window.promptDelete = promptDelete; window.promptEdit = promptEdit; window.filterPrompts = filterPrompts;
+window.loadIntelSources = loadIntelSources; window.intelSourceCreate = intelSourceCreate; window.intelSourceSave = intelSourceSave; window.intelSourceDelete = intelSourceDelete; window.intelSourceEdit = intelSourceEdit; window.filterIntelSources = filterIntelSources; window.seedIntelSources = seedIntelSources;
+
 // Flowgraph
 window.initFlowgraph = initFlowgraph;
 window.fgLoadAgents = fgLoadAgents;
@@ -484,6 +531,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'settings')       { loadSettings().catch(() => {}); }
     if (name === 'settings-cybersecsuite') { loadSettingsToggles().catch(() => {}); }
     if (name === 'vault')          { loadVaultStatus().catch(() => {}); }
+    if (name === 'routing')        { loadRouting().catch(() => {}); }
+    if (name === 'cases')          { loadCases().catch(() => {}); }
+    if (name === 'tasks')          { loadTasks().catch(() => {}); }
+    if (name === 'pocs')           { loadPocs().catch(() => {}); }
+    if (name === 'a2a')            { loadA2aTasks().catch(() => {}); }
+    if (name === 'investigations') { loadInvestigations().catch(() => {}); }
+    if (name === 'prompts')        { loadPrompts().catch(() => {}); }
+    if (name === 'intel')          { loadIntelSources().catch(() => {}); }
     if (name === 'agent-factory')  { afLoadTemplates().catch(() => {}); }
     if (name === 'agent-crafter')  { acLoadAgents().catch(() => {}); }
     if (name === 'team-builder')   { loadTeamBuilder().catch(() => {}); }

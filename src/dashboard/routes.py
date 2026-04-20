@@ -180,6 +180,12 @@ from dashboard.api.ops import (
 )
 from dashboard.api.template_registry import api_template_update
 from dashboard.api.workflows import api_workflow_update
+from dashboard.api.a2a_crud import (
+    api_a2a_tasks_list,
+    api_a2a_tasks_create,
+    api_a2a_tasks_update,
+    api_a2a_tasks_delete,
+)
 
 
 def create_dashboard_router() -> Router:
@@ -215,6 +221,10 @@ def create_dashboard_router() -> Router:
             Route("/api/plugin/status", api_plugin_status, methods=["GET"]),
             Route("/api/crypto", api_crypto, methods=["GET"]),
             Route("/api/a2a", api_a2a, methods=["GET"]),
+            Route("/api/a2a/tasks", api_a2a_tasks_list, methods=["GET"]),
+            Route("/api/a2a/tasks", api_a2a_tasks_create, methods=["POST"]),
+            Route("/api/a2a/tasks/{id}", api_a2a_tasks_update, methods=["PATCH"]),
+            Route("/api/a2a/tasks/{id}", api_a2a_tasks_delete, methods=["DELETE"]),
             Route("/api/db-counts", api_db_counts, methods=["GET"]),
             Route("/api/agents", api_agents, methods=["GET"]),
             Route("/api/routing", api_routing, methods=["GET"]),
