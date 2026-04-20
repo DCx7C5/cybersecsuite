@@ -13,6 +13,11 @@ class ApiAccount(Model):
     active = fields.BooleanField(default=False)
     test_status = fields.CharField(max_length=20, null=True)
     last_tested_at = fields.DatetimeField(null=True)
+    auth_method = fields.CharField(max_length=20, default="api_key")
+    subject = fields.CharField(max_length=255, null=True)
+    email = fields.CharField(max_length=255, null=True)
+    display_name = fields.CharField(max_length=255, null=True)
+    tenant = fields.CharField(max_length=255, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 

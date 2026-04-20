@@ -113,6 +113,13 @@ import {
   sdkApiHealth,
   initSdkPanel,
 } from './sdk_panel.js';
+import {
+  loadProvidersHub,
+  phOpenModal,
+  phSaveAccount,
+  phCloseModal,
+  phFilterProviders,
+} from './providers_hub.js';
 declare global {
   interface Window {
     // core
@@ -232,6 +239,13 @@ declare global {
     loadFindingsCharts: typeof loadFindingsCharts;
     loadComplianceCharts: typeof loadComplianceCharts;
     loadHealthCharts: typeof loadHealthCharts;
+
+    // providers hub
+    loadProvidersHub: typeof loadProvidersHub;
+    phOpenModal: typeof phOpenModal;
+    phSaveAccount: typeof phSaveAccount;
+    phCloseModal: typeof phCloseModal;
+    phFilterProviders: typeof phFilterProviders;
 
     // flowgraph
     initFlowgraph: typeof initFlowgraph;
@@ -361,6 +375,13 @@ window.loadFindingsCharts = loadFindingsCharts;
 window.loadComplianceCharts = loadComplianceCharts;
 window.loadHealthCharts = loadHealthCharts;
 
+// Providers Hub
+window.loadProvidersHub = loadProvidersHub;
+window.phOpenModal = phOpenModal;
+window.phSaveAccount = phSaveAccount;
+window.phCloseModal = phCloseModal;
+window.phFilterProviders = phFilterProviders;
+
 // Flowgraph
 window.initFlowgraph = initFlowgraph;
 window.fgLoadAgents = fgLoadAgents;
@@ -442,7 +463,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'findings')   { loadFindingsCharts().catch(() => {}); }
     if (name === 'compliance') { loadComplianceCharts().catch(() => {}); }
     if (name === 'health')     { loadHealthCharts().catch(() => {}); }
-    if (name === 'flowgraph')  { initFlowgraph(); fgLoadAgents().catch(() => {}); }
-    if (name === 'sdk-lab')    { initSdkPanel(); }
+    if (name === 'flowgraph')      { initFlowgraph(); fgLoadAgents().catch(() => {}); }
+    if (name === 'sdk-lab')        { initSdkPanel(); }
+    if (name === 'providers-hub')  { loadProvidersHub().catch(() => {}); }
   };
 });

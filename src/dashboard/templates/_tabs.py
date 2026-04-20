@@ -11,6 +11,7 @@ _NAV: list = [
     ("health",        "Health",           "♡", "platform"),
     ("usage",         "Usage & Cost",     "◈", "platform"),
     ("telemetry",     "Telemetry",        "◉", "platform"),
+    ("providers-hub", "Provider Hub",     "⊞", "platform"),
     # AI PROXY
     ("routing",       "Routing",          "⇄", "proxy"),
     # AGENTS

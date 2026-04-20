@@ -1,5 +1,5 @@
 """Dashboard panels module — organized by category."""
-from .platform import _providers, _usage, _health, _telemetry
+from .platform import _providers, _usage, _health, _telemetry, _providers_hub
 from .agents import _agents, _routing, _factory, _prompts, _agent_query
 from .forensics import (
     _investigations,
@@ -30,6 +30,7 @@ __all__ = [
     "_usage",
     "_health",
     "_telemetry",
+    "_providers_hub",
     # Agents
     "_agents",
     "_routing",
@@ -106,6 +107,7 @@ def all_panels() -> str:
         + _settings()
         + _settings_cybersecsuite()
         + _telemetry()
+        + _providers_hub()
         + _templates()
         + _flowgraph()
         + _sdk_lab()

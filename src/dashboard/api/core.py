@@ -25,6 +25,8 @@ from ai_proxy.routing.combo import (
 )
 from ai_proxy.services.rate_limiter import rate_limiter
 from ai_proxy.services.usage_tracker import usage_tracker
+from db.models.provider import ProviderAuthMethod
+from db.models.api_account import ApiAccount
 
 _APP_START = time.monotonic()
 
@@ -94,6 +96,66 @@ async def api_providers(request: Request) -> JSONResponse:
             ],
             "rate_limit": rl,
             "usage": get_usage_counts().get(p.id, 0),
+        })
+    return JSONResponse(result)
+
+
+async def api_providers_hub(request: Request) -> JSONResponse:
+    """Aggregated provider hub: registry + DB auth methods + DB accounts."""
+    # Fetch DB records with graceful fallback
+    auth_methods_by_provider: dict[str, list[dict]] = {}
+    accounts_by_provider: dict[str, list[dict]] = {}
+    try:
+        db_auth_methods = await asyncio.wait_for(
+            ProviderAuthMethod.all().select_related("provider"),
+            timeout=5.0,
+        )
+        for am in db_auth_methods:
+            pid = am.provider_id
+            auth_methods_by_provider.setdefault(pid, []).append({
+                "auth_method": am.auth_method,
+                "config": am.config or {},
+            })
+    except Exception:
+        pass
+
+    try:
+        db_accounts = await asyncio.wait_for(
+            ApiAccount.all().select_related("provider"),
+            timeout=5.0,
+        )
+        for acc in db_accounts:
+            pid = acc.provider_id
+            accounts_by_provider.setdefault(pid, []).append({
+                "vault_key": acc.vault_key,
+                "label": acc.label,
+                "auth_method": acc.auth_method,
+                "email": acc.email,
+                "display_name": acc.display_name,
+                "subject": acc.subject,
+                "tenant": acc.tenant,
+                "active": acc.active,
+                "test_status": acc.test_status,
+            })
+    except Exception:
+        pass
+
+    result = []
+    for p in get_all_providers().values():
+        status = "available" if p.is_available else "no_credentials"
+        if not p.enabled:
+            status = "disabled"
+
+        result.append({
+            "id": p.id,
+            "name": p.name,
+            "base_url": p.base_url,
+            "status": status,
+            "is_free": p.is_free,
+            "auth_type": p.auth_type.value,
+            "models_count": len([m for m in p.models if not m.deprecated]),
+            "auth_methods": auth_methods_by_provider.get(p.id, []),
+            "accounts": accounts_by_provider.get(p.id, []),
         })
     return JSONResponse(result)
 

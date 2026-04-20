@@ -58,3 +58,31 @@ def _telemetry() -> str:
         ),
         '<div id="telemetry-content">Loading telemetry...</div>',
     )
+
+
+def _providers_hub() -> str:
+    return (
+        '<div id="tab-providers-hub" class="card panel-enter" style="display:none">\n'
+        '  <div class="panel-header">\n'
+        '    <h2>&#x229e; Provider Hub</h2>\n'
+        '    <div>\n'
+        '      <input id="ph-search" type="text" placeholder="Search providers..." class="form-input" style="width:200px"'
+        ' oninput="phFilterProviders(this.value)">\n'
+        '      <span id="ph-stats" style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted); margin-left:12px"></span>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <div id="ph-list">\n'
+        '    <div style="color:var(--text-muted); font-size:13px">Loading providers...</div>\n'
+        '  </div>\n'
+        '  <div id="ph-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0;'
+        ' background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">\n'
+        '    <div class="card" style="width:420px; position:relative">\n'
+        '      <button onclick="phCloseModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px">&#x2715;</button>\n'
+        '      <h3 id="ph-modal-title" style="margin-bottom:16px; font-size:14px; color:var(--accent)">Add Account</h3>\n'
+        '      <input type="hidden" id="ph-modal-provider">\n'
+        '      <div id="ph-modal-body"></div>\n'
+        '      <div id="ph-modal-status" class="status-line" style="margin-top:8px; min-height:20px; font-size:12px; font-family:var(--font-mono)"></div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
+    )
