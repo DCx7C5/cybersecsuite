@@ -47,7 +47,6 @@ class Finding(ScopedEntry):
         table = "findings"
         ordering = ["-updated_at"]
         indexes = [
-            ("workspace", "severity", "status"),
             ("project", "severity", "status"),
             ("session", "severity"),
             ("created_at",),
@@ -79,7 +78,7 @@ class IOC(ScopedEntry):
         table = "iocs"
         ordering = ["-updated_at"]
         indexes = [
-            ("workspace", "ioc_type", "status"),
+            ("ioc_type", "status"),
             ("value",),
         ]
 

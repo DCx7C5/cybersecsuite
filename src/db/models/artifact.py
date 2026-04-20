@@ -48,7 +48,6 @@ class Artifact(Model):
         table = "artifacts"
         ordering = ["-updated_at"]
         indexes = [
-            ("workspace", "name"),
             ("signature_valid", "created_at"),
         ]
 

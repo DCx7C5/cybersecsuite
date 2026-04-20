@@ -83,7 +83,7 @@ class CaseIntake(ScopedEntry):
         table = "case_intakes"
         ordering = ["-created_at"]
         indexes = [
-            ("workspace", "priority"),
+            ("project", "priority"),
             ("session", "created_at"),
         ]
 

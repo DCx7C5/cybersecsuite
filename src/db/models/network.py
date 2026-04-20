@@ -40,7 +40,7 @@ class Host(ScopedEntry):
 
     class Meta:
         table = "hosts"
-        unique_together = [("workspace", "hostname")]
+        unique_together = [("project", "hostname")]
 
 
 class Domain(ScopedEntry):
@@ -53,7 +53,7 @@ class Domain(ScopedEntry):
 
     class Meta:
         table = "domains"
-        unique_together = [("workspace", "name")]
+        unique_together = [("project", "name")]
 
 
 class Certificate(ScopedEntry):
