@@ -284,6 +284,36 @@ async function _loadAgents(): Promise<void> {
   }
 }
 
+async function _loadChatModels(): Promise<void> {
+  const sel = $('chat-model') as HTMLSelectElement | null;
+  if (!sel) return;
+  try {
+    const res = await fetch('/api/chat-models');
+    const data = await res.json();
+    const models: Array<{ id: string; name: string; provider_id: string; provider_name: string }> =
+      Array.isArray(data.models) ? data.models : [];
+
+    sel.innerHTML = '<option value="">Auto</option>';
+    const byProvider: Record<string, typeof models> = {};
+    for (const m of models) {
+      (byProvider[m.provider_name] = byProvider[m.provider_name] || []).push(m);
+    }
+    for (const [providerName, providerModels] of Object.entries(byProvider)) {
+      const group = document.createElement('optgroup');
+      group.label = providerName;
+      for (const m of providerModels) {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.name || m.id;
+        group.appendChild(opt);
+      }
+      sel.appendChild(group);
+    }
+  } catch {
+    // leave "Auto" option
+  }
+}
+
 export async function acChatSend(): Promise<void> {
   _ensureState();
   if (window._acChatTaskId) return;
@@ -294,6 +324,8 @@ export async function acChatSend(): Promise<void> {
 
   const prompt = input.value.trim();
   const agent = sel.value || 'cybersec-agent';
+  const modelSel = $('chat-model') as HTMLSelectElement | null;
+  const model = modelSel?.value || '';
   if (!prompt) {
     _setStatus('Prompt is empty', 'var(--amber)');
     return;
@@ -318,6 +350,7 @@ export async function acChatSend(): Promise<void> {
         agent,
         prompt,
         stream: window.acChatStreamMode,
+        ...(model ? { model } : {}),
       }),
       signal: _startAbort.signal,
     });
@@ -458,7 +491,7 @@ export function acChatToggleStream(): void {
 export async function initChat(): Promise<void> {
   _ensureState();
   _toggleStreamLabel();
-  await _loadAgents();
+  await Promise.all([_loadAgents(), _loadChatModels()]);
 
   const input = $('chat-input') as HTMLTextAreaElement | null;
   const output = _chatOutput();

@@ -149,14 +149,22 @@ async def _mitre_heatmap() -> JSONResponse:
     try:
         from db.models.mitre_technique import MitreTechnique
         techniques = await MitreTechnique.all().only(
-            "technique_id", "name", "tactic"
-        ).values("technique_id", "name", "tactic")
-        tactics = sorted({str(t.get("tactic") or "unknown") for t in techniques})
+            "technique_id", "name", "tactics"
+        ).values("technique_id", "name", "tactics")
+        tactic_set: set[str] = set()
+        for t in techniques:
+            raw = t.get("tactics") or []
+            if isinstance(raw, list):
+                tactic_set.update(str(x) for x in raw if x)
+            else:
+                tactic_set.add(str(raw) if raw else "unknown")
+        tactics = sorted(tactic_set) or ["unknown"]
         tech_ids = [str(t["technique_id"]) for t in techniques]
         counts: list[list] = []
         max_val = 1
         for t_idx, tech in enumerate(techniques):
-            tac = str(tech.get("tactic") or "unknown")
+            raw = tech.get("tactics") or []
+            tac = (raw[0] if isinstance(raw, list) and raw else str(raw)) or "unknown"
             tac_idx = tactics.index(tac) if tac in tactics else 0
             count = 1
             counts.append([tac_idx, t_idx, count])

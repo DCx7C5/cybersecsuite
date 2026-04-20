@@ -451,6 +451,7 @@ async def run_agent_stream(
     prompt: str,
     queue: asyncio.Queue[dict[str, Any]],
     stream: bool = True,
+    model: str | None = None,
 ) -> None:
     """Stream an agent response into queue events for dashboard SSE consumers."""
     started = time.monotonic()
@@ -459,9 +460,12 @@ async def run_agent_stream(
 
     agent_defs = build_agent_definitions()
     default_model = os.environ.get("CYBERSEC_DEFAULT_MODEL", os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5"))
-    model = default_model
-    if agent_name in agent_defs and agent_defs[agent_name].model:
-        model = agent_defs[agent_name].model
+    if model:
+        resolved_model = model
+    elif agent_name in agent_defs and agent_defs[agent_name].model:
+        resolved_model = agent_defs[agent_name].model
+    else:
+        resolved_model = default_model
 
     if agent_name in agent_defs:
         agent_context = (
@@ -471,7 +475,7 @@ async def run_agent_stream(
         agent_context = f"[AGENT: {agent_name}]\n\n"
 
     payload = {
-        "model": model,
+        "model": resolved_model,
         "messages": [{"role": "user", "content": f"{agent_context}{prompt}"}],
         "stream": True,
     }

@@ -699,7 +699,7 @@ src/crypto/
 | Hooks               | Evidence integrity checksums                  |
 | A2A agent           | Artifact signing skill                        |
 
-**Key storage:** `DYSTOPIAN_KEYS_DIR` (default: `/etc/dystopian-crypto/keys`)
+**Key storage:** `DYSTOPIAN_KEYS_DIR` (default: `/etc/dystopian/crypto/cert/private`)
 
 ---
 
@@ -919,7 +919,7 @@ cybersec-opensearch  ───────────────────�
 
 | Variable             | Default                      | Purpose             |
 |----------------------|------------------------------|---------------------|
-| `DYSTOPIAN_KEYS_DIR` | `/etc/dystopian-crypto/keys` | Ed25519 key storage |
+| `DYSTOPIAN_KEYS_DIR` | `/etc/dystopian/crypto/cert/private` | Ed25519 key storage |
 
 ### OmniRoute
 

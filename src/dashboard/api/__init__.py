@@ -8,6 +8,7 @@ from dashboard.api.core import (
     api_crypto,
     api_local_llm_status,
     api_local_llm_activate,
+    api_chat_models,
 )
 from dashboard.api.agents import (
     api_a2a,
@@ -103,6 +104,7 @@ __all__ = [
     "api_crypto",
     "api_local_llm_status",
     "api_local_llm_activate",
+    "api_chat_models",
     # agents
     "api_a2a",
     "api_agents",

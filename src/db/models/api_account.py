@@ -24,5 +24,9 @@ class ApiAccount(Model):
     class Meta:
         table = "api_account"
 
+    def __init__(self, **kwargs: Any):
+        super().__init__(kwargs)
+        self.provider_id = None
+
     def __str__(self):
         return f"ApiAccount({self.vault_key})"

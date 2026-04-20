@@ -140,6 +140,43 @@ def tab_bar() -> str:
     return "\n".join(lines) + "\n"
 
 
+def topbar_nav_menu() -> str:
+    """Collapsed-state topbar navigation menu."""
+    lines = ['<div id="topbar-nav" class="topbar-nav">']
+    lines.append(
+        '  <button id="topbar-nav-toggle" class="btn btn-ghost" onclick="toggleTopbarNav()" '
+        'title="Browse pages" aria-label="Browse pages" aria-controls="topbar-nav-menu" '
+        'aria-expanded="false">☰ Pages</button>'
+    )
+    lines.append('  <div id="topbar-nav-menu" class="topbar-nav-menu">')
+
+    current_group = None
+    for entry in _NAV:
+        if isinstance(entry, dict) and entry.get("dropdown"):
+            group = entry["group"]
+            if group != current_group:
+                current_group = group
+                lines.append(f'    <div class="topbar-nav-group">{_GROUPS[group]}</div>')
+            for name, label, icon in entry["children"]:
+                lines.append(
+                    f'    <button class="topbar-nav-item" onclick="showTab(\'{name}\'); closeTopbarNav()">'
+                    f'<span class="tab-icon">{icon}</span>{label}</button>'
+                )
+        else:
+            name, label, icon, group = entry
+            if group != current_group:
+                current_group = group
+                lines.append(f'    <div class="topbar-nav-group">{_GROUPS[group]}</div>')
+            lines.append(
+                f'    <button class="topbar-nav-item" onclick="showTab(\'{name}\'); closeTopbarNav()">'
+                f'<span class="tab-icon">{icon}</span>{label}</button>'
+            )
+
+    lines.append('  </div>')
+    lines.append('</div>')
+    return "\n".join(lines) + "\n"
+
+
 def first_tab() -> str:
     """Return name of the default tab (first standard entry in nav list)."""
     for entry in _NAV:

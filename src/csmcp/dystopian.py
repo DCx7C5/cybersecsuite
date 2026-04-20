@@ -16,7 +16,7 @@ from csmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
     {
         "name": "string",
         "key_type": {"type": "string", "enum": ["ca", "signing"], "default": "signing"},
-        "keys_dir": {"type": "string", "default": "/etc/dystopian-crypto/keys"},
+        "keys_dir": {"type": "string", "default": "/etc/dystopian/crypto/cert/private"},
         "password_file": {"type": "string", "nullable": True},
     },
 )
@@ -26,23 +26,23 @@ def crypto_generate_keypair(args: dict[str, Any]) -> JsonDict:
     except ImportError:
         return sdk_error("crypto.key_manager not available — ensure src/ is in PYTHONPATH")
 
-    km = KeyManager(keys_dir=args.get("keys_dir", "/etc/dystopian-crypto/keys"))
+    km = KeyManager(keys_dir=args.get("keys_dir", "/etc/dystopian/crypto/cert/private"))
     name = args["name"]
     key_type = args.get("key_type", "signing")
     password_file = args.get("password_file") or f"/tmp/{name}.pwd"
 
     try:
         if key_type == "ca":
-            pub_path, priv_path = km.create_ca_keypair(name=name, password_file=password_file)
+            metadata = km.create_ca_keypair(name=name, password_file=password_file)
         else:
-            pub_path, priv_path = km.create_signing_keypair(name=name, password_file=password_file)
+            metadata = km.create_signing_keypair(name=name, password_file=password_file)
 
         return sdk_result({
             "status": "success",
             "name": name,
             "key_type": key_type,
-            "public_key_path": str(pub_path),
-            "private_key_path": str(priv_path),
+            "public_key_path": metadata["public_key_path"],
+            "private_key_path": metadata["private_key_path"],
             "algorithm": "Ed25519",
             "kdf": "Argon2id",
             "cipher": "AES-256-GCM",
@@ -57,7 +57,7 @@ def crypto_generate_keypair(args: dict[str, Any]) -> JsonDict:
     {
         "artifact_path": "string",
         "key_name": "string",
-        "keys_dir": {"type": "string", "default": "/etc/dystopian-crypto/keys"},
+        "keys_dir": {"type": "string", "default": "/etc/dystopian/crypto/cert/private"},
         "password_file": {"type": "string", "nullable": True},
     },
 )
@@ -68,7 +68,7 @@ def crypto_sign_artifact(args: dict[str, Any]) -> JsonDict:
         return sdk_error("crypto.ssl_signer not available")
 
     key_name = args["key_name"]
-    keys_dir = args.get("keys_dir", "/etc/dystopian-crypto/keys")
+    keys_dir = args.get("keys_dir", "/etc/dystopian/crypto/cert/private")
     password_file = args.get("password_file") or f"/tmp/{key_name}.pwd"
 
     try:
@@ -92,7 +92,7 @@ def crypto_sign_artifact(args: dict[str, Any]) -> JsonDict:
     {
         "token": "string",
         "key_name": "string",
-        "keys_dir": {"type": "string", "default": "/etc/dystopian-crypto/keys"},
+        "keys_dir": {"type": "string", "default": "/etc/dystopian/crypto/cert/private"},
     },
 )
 def crypto_verify_artifact(args: dict[str, Any]) -> JsonDict:
@@ -102,7 +102,7 @@ def crypto_verify_artifact(args: dict[str, Any]) -> JsonDict:
         return sdk_error("crypto.ssl_signer not available")
 
     key_name = args["key_name"]
-    keys_dir = args.get("keys_dir", "/etc/dystopian-crypto/keys")
+    keys_dir = args.get("keys_dir", "/etc/dystopian/crypto/cert/private")
 
     try:
         signer = SSLArtifactSigner(
@@ -118,7 +118,7 @@ def crypto_verify_artifact(args: dict[str, Any]) -> JsonDict:
 @tool(
     "crypto_list_keys",
     "List all managed Ed25519 key pairs with metadata.",
-    {"keys_dir": {"type": "string", "default": "/etc/dystopian-crypto/keys"}},
+    {"keys_dir": {"type": "string", "default": "/etc/dystopian/crypto/cert/private"}},
 )
 def crypto_list_keys(args: dict[str, Any]) -> JsonDict:
     try:
@@ -127,7 +127,7 @@ def crypto_list_keys(args: dict[str, Any]) -> JsonDict:
         return sdk_error("crypto.key_manager not available")
 
     try:
-        km = KeyManager(keys_dir=args.get("keys_dir", "/etc/dystopian-crypto/keys"))
+        km = KeyManager(keys_dir=args.get("keys_dir", "/etc/dystopian/crypto/cert/private"))
         keys = km.list_keys()
         return sdk_result({"status": "success", "keys": keys, "count": len(keys)})
     except Exception as exc:
@@ -141,7 +141,7 @@ def crypto_list_keys(args: dict[str, Any]) -> JsonDict:
         "name": "string",
         "old_password_file": "string",
         "new_password_file": "string",
-        "keys_dir": {"type": "string", "default": "/etc/dystopian-crypto/keys"},
+        "keys_dir": {"type": "string", "default": "/etc/dystopian/crypto/cert/private"},
     },
 )
 def crypto_rotate_key(args: dict[str, Any]) -> JsonDict:
@@ -151,7 +151,7 @@ def crypto_rotate_key(args: dict[str, Any]) -> JsonDict:
         return sdk_error("crypto.key_manager not available")
 
     try:
-        km = KeyManager(keys_dir=args.get("keys_dir", "/etc/dystopian-crypto/keys"))
+        km = KeyManager(keys_dir=args.get("keys_dir", "/etc/dystopian/crypto/cert/private"))
         result = km.rotate_key(
             name=args["name"],
             old_password_file=args["old_password_file"],

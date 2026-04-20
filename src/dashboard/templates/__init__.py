@@ -13,7 +13,7 @@ def build_dashboard_html() -> str:
         '<div id="sidebar-logo">\n'
         '  <div class="logo-text">&#x25c6; CyberSecSuite</div>\n'
         '  <div class="logo-sub">COMMAND CONSOLE v2</div>\n'
-        '  <button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar">&#x25c4;</button>\n'
+        '  <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Collapse sidebar" aria-controls="sidebar" aria-expanded="true">&#x25c4;</button>\n'
         '</div>\n'
         '<div id="sidebar-status">'
         '<span class="status-dot"></span>SYSTEM ONLINE'

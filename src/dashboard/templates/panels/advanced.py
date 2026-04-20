@@ -42,34 +42,246 @@ def _chat() -> str:
 
 
 def _team_builder() -> str:
-    return tab_panel(
-        "team-builder",
-        "&#x1f465; Team Builder",
-        '<div id="team-builder-content" style="padding:16px;color:var(--text-muted)">Loading team builder...</div>',
+    _inp = 'style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)"'
+    _lbl = 'style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:4px"'
+    return (
+        '<div id="tab-team-builder" class="card" style="display:none">\n'
+        '  <h3 style="font-size:1rem;font-weight:600;margin-bottom:14px">&#x1f465; Team Builder</h3>\n'
+        '  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">\n'
+        # Left: agent browser
+        '    <div>\n'
+        '      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">\n'
+        '        <input id="tb-filter" placeholder="Filter agents…" oninput="tbFilterAgents(this.value)" ' + _inp + ' style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"/>\n'
+        '        <span id="tb-agent-count" style="font-size:12px;color:var(--text-muted);white-space:nowrap">0 agents</span>\n'
+        '      </div>\n'
+        '      <div id="tb-agents-table" style="max-height:280px;overflow-y:auto"></div>\n'
+        '    </div>\n'
+        # Right: skills browser
+        '    <div>\n'
+        '      <div style="display:flex;gap:8px;margin-bottom:8px">\n'
+        '        <input id="tb-skill-q" placeholder="Filter skills…" oninput="tbLoadSkills()" ' + _inp + ' style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"/>\n'
+        '        <select id="tb-skill-domain" onchange="tbLoadSkills()" ' + _inp + ' style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"><option value="">All domains</option></select>\n'
+        '        <span id="tb-skill-count" style="font-size:12px;color:var(--text-muted);white-space:nowrap;align-self:center"></span>\n'
+        '      </div>\n'
+        '      <div id="tb-skills-table" style="max-height:280px;overflow-y:auto"></div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        # Team members
+        '  <div style="margin-top:16px">\n'
+        '    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">\n'
+        '      <h4 style="font-size:13px;font-weight:600">Team Members</h4>\n'
+        '      <button class="btn" style="font-size:11px" onclick="tbAddMember()">+ Add Member</button>\n'
+        '    </div>\n'
+        '    <div id="tb-members" style="display:flex;flex-direction:column;gap:6px;min-height:40px;border:1px dashed var(--border);border-radius:var(--radius);padding:8px"></div>\n'
+        '  </div>\n'
+        # Preview + save
+        '  <details style="margin-top:14px">\n'
+        '    <summary style="cursor:pointer;font-size:12px;color:var(--text-muted)">Team JSON preview</summary>\n'
+        '    <pre id="tb-team-json" style="margin-top:6px;padding:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;overflow-x:auto;white-space:pre-wrap;color:var(--text-primary)"></pre>\n'
+        '  </details>\n'
+        '  <div style="display:flex;align-items:center;gap:10px;margin-top:12px">\n'
+        '    <label ' + _lbl + ' style="margin-bottom:0">Team Name</label>\n'
+        '    <input id="tb-team-name" placeholder="my-team" ' + _inp + ' style="width:180px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
+        '    <button class="btn btn-accent" onclick="tbGenerateTeam()">&#x2699; Generate</button>\n'
+        '    <button class="btn" onclick="tbCopyTeam()">&#x1f4cb; Copy</button>\n'
+        '    <button class="btn" onclick="tbSaveTeam()">&#x1f4be; Save</button>\n'
+        '    <span id="tb-save-status" style="font-size:12px"></span>\n'
+        '  </div>\n'
+        # Saved teams
+        '  <div style="margin-top:16px">\n'
+        '    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">\n'
+        '      <h4 style="font-size:13px;font-weight:600">Saved Teams</h4>\n'
+        '      <button class="btn" style="font-size:11px" onclick="tbLoadSavedTeams()">&#x21bb; Refresh</button>\n'
+        '    </div>\n'
+        '    <div id="tb-saved-teams"></div>\n'
+        '  </div>\n'
+        '</div>\n'
     )
 
 
 def _agent_crafter() -> str:
-    return tab_panel(
-        "agent-crafter",
-        "&#x1f9d9; Agent Crafter",
-        '<div id="agent-crafter-content" style="padding:16px;color:var(--text-muted)">Loading agent crafter...</div>',
+    _inp = 'style="width:100%;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)"'
+    _lbl = 'style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:4px"'
+    return (
+        '<div id="tab-agent-crafter" class="card" style="display:none">\n'
+        '  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">\n'
+        '    <h3 style="font-size:1rem;font-weight:600">&#x1f9d9; Agent Crafter</h3>\n'
+        '    <span id="ac-count" style="font-size:12px;color:var(--text-muted)">0 agents</span>\n'
+        '  </div>\n'
+        # Filter + table
+        '  <div style="display:flex;gap:8px;margin-bottom:10px">\n'
+        '    <input id="ac-filter" placeholder="Filter agents…" oninput="acFilterAgents()" ' + _inp + ' style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"/>\n'
+        '  </div>\n'
+        '  <div id="ac-agents-table" style="margin-bottom:20px"></div>\n'
+        # Create form
+        '  <details style="margin-top:8px">\n'
+        '    <summary style="cursor:pointer;font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)">+ Create New Agent</summary>\n'
+        '    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">\n'
+        '      <div><label ' + _lbl + '>Name</label><input id="ac-name" placeholder="my-agent" ' + _inp + '></div>\n'
+        '      <div><label ' + _lbl + '>Model</label><input id="ac-model" placeholder="claude-sonnet-4-5" ' + _inp + '></div>\n'
+        '      <div><label ' + _lbl + '>Description</label><input id="ac-desc" placeholder="One-line description" ' + _inp + '></div>\n'
+        '      <div><label ' + _lbl + '>Max Turns</label><input id="ac-maxturns" type="number" value="25" ' + _inp + '></div>\n'
+        '      <div><label ' + _lbl + '>MCP Servers (comma-sep)</label><input id="ac-mcp" placeholder="cybersec,dystopian" ' + _inp + '></div>\n'
+        '    </div>\n'
+        '    <div style="margin-top:10px">\n'
+        '      <label ' + _lbl + '>Tools</label>\n'
+        '      <div id="ac-tools" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Read"> Read</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Write"> Write</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Glob"> Glob</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Grep"> Grep</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Bash"> Bash</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="WebFetch"> WebFetch</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="WebSearch"> WebSearch</label>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '    <div style="margin-top:10px">\n'
+        '      <label ' + _lbl + '>Instructions</label>\n'
+        '      <textarea id="ac-instructions" rows="4" placeholder="Agent persona and task instructions…" ' + _inp + '></textarea>\n'
+        '    </div>\n'
+        '    <div style="display:flex;align-items:center;gap:10px;margin-top:10px">\n'
+        '      <button class="btn btn-accent" onclick="acCreateAgent()">Create Agent</button>\n'
+        '      <span id="ac-status" style="font-size:12px"></span>\n'
+        '    </div>\n'
+        '  </details>\n'
+        # Edit modal (hidden)
+        '  <div id="ac-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:center;justify-content:center">\n'
+        '    <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:24px;width:520px;max-height:80vh;overflow-y:auto">\n'
+        '      <h4 style="font-size:14px;font-weight:600;margin-bottom:14px">Edit: <span id="ac-edit-name"></span></h4>\n'
+        '      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">\n'
+        '        <div><label ' + _lbl + '>Model</label><input id="ac-edit-model" ' + _inp + '></div>\n'
+        '        <div><label ' + _lbl + '>Max Turns</label><input id="ac-edit-maxturns" type="number" ' + _inp + '></div>\n'
+        '        <div style="grid-column:1/-1"><label ' + _lbl + '>Description</label><input id="ac-edit-desc" ' + _inp + '></div>\n'
+        '      </div>\n'
+        '      <label ' + _lbl + '>Instructions</label>\n'
+        '      <textarea id="ac-edit-instructions" rows="6" ' + _inp + ' style="width:100%;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)"></textarea>\n'
+        '      <div style="display:flex;align-items:center;gap:10px;margin-top:12px">\n'
+        '        <button class="btn btn-accent" onclick="acSaveEdit()">Save</button>\n'
+        '        <button class="btn btn-ghost" onclick="acCloseEdit()">Cancel</button>\n'
+        '        <span id="ac-edit-status" style="font-size:12px"></span>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
     )
 
 
 def _agent_factory() -> str:
-    return tab_panel(
-        "agent-factory",
-        "&#x1f4ed; Agent Factory",
-        '<div id="agent-factory-content" style="padding:16px;color:var(--text-muted)">Loading agent factory...</div>',
+    _inp = 'style="width:100%;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)"'
+    _lbl = 'style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:4px"'
+    return (
+        '<div id="tab-agent-factory" class="card" style="display:none">\n'
+        '  <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px">&#x1f4ed; Agent Factory</h3>\n'
+        # Stats section populated by refresh.ts
+        '  <div id="agent-factory-content" style="margin-bottom:20px;color:var(--text-muted)">Loading agent factory…</div>\n'
+        # Generate form
+        '  <details open style="margin-top:4px">\n'
+        '    <summary style="cursor:pointer;font-size:13px;font-weight:600;margin-bottom:12px;color:var(--accent)">Generate New Agent</summary>\n'
+        '    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">\n'
+        '      <div><label ' + _lbl + '>Agent Name</label><input id="af-name" placeholder="my-specialist" ' + _inp + '></div>\n'
+        '      <div>\n'
+        '        <label ' + _lbl + '>Type</label>\n'
+        '        <select id="af-type" ' + _inp + '>\n'
+        '          <option value="specialist">Specialist</option>\n'
+        '          <option value="team-leader">Team Leader</option>\n'
+        '          <option value="orchestrator">Orchestrator</option>\n'
+        '        </select>\n'
+        '        <span id="af-type-hint" style="font-size:11px;color:var(--text-muted);display:block;margin-top:3px"></span>\n'
+        '      </div>\n'
+        '      <div>\n'
+        '        <label ' + _lbl + '>Model</label>\n'
+        '        <select id="af-model" ' + _inp + '>\n'
+        '          <option value="sonnet">claude-sonnet-4-5</option>\n'
+        '          <option value="haiku">claude-haiku-4-5</option>\n'
+        '          <option value="opus">claude-opus-4-5</option>\n'
+        '        </select>\n'
+        '      </div>\n'
+        '      <div><label ' + _lbl + '>Max Turns</label><input id="af-maxturns" type="number" value="30" ' + _inp + '></div>\n'
+        '      <div style="grid-column:1/-1"><label ' + _lbl + '>Description</label><textarea id="af-desc" rows="2" placeholder="What this agent does…" ' + _inp + '></textarea></div>\n'
+        '    </div>\n'
+        # Tools
+        '    <div style="margin-top:12px">\n'
+        '      <label ' + _lbl + '>Tools</label>\n'
+        '      <div id="af-tools" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Read" checked> Read</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Write"> Write</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Glob" checked> Glob</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Grep" checked> Grep</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="Bash"> Bash</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="WebFetch"> WebFetch</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" value="WebSearch"> WebSearch</label>\n'
+        '      </div>\n'
+        '    </div>\n'
+        # Research (af-r-*)
+        '    <div style="margin-top:12px">\n'
+        '      <label ' + _lbl + '>Research Context</label>\n'
+        '      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">\n'
+        '        <label style="font-size:12px"><input type="checkbox" id="af-r-mitre" value="mitre"> MITRE ATT&amp;CK</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" id="af-r-cve" value="cve"> CVE/NVD</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" id="af-r-owasp" value="owasp"> OWASP</label>\n'
+        '        <label style="font-size:12px"><input type="checkbox" id="af-r-nist" value="nist"> NIST CSF</label>\n'
+        '      </div>\n'
+        '    </div>\n'
+        # Base templates + skills
+        '    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">\n'
+        '      <div>\n'
+        '        <label ' + _lbl + '>Base Template</label>\n'
+        '        <div style="display:flex;gap:6px;align-items:center">\n'
+        '          <select id="af-tpl-0" ' + _inp + ' style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"><option value="">— none —</option></select>\n'
+        '          <button class="btn" style="font-size:11px;padding:3px 8px" onclick="afAddTemplate()">+</button>\n'
+        '        </div>\n'
+        '        <div id="af-tpl-rows" style="margin-top:4px;display:flex;flex-direction:column;gap:4px"></div>\n'
+        '      </div>\n'
+        '      <div>\n'
+        '        <label ' + _lbl + '>Skill</label>\n'
+        '        <div style="display:flex;gap:6px;align-items:center">\n'
+        '          <select id="af-skill-0" ' + _inp + ' style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"><option value="">— none —</option></select>\n'
+        '          <button class="btn" style="font-size:11px;padding:3px 8px" onclick="afAddSkill()">+</button>\n'
+        '        </div>\n'
+        '        <div id="af-skill-rows" style="margin-top:4px;display:flex;flex-direction:column;gap:4px"></div>\n'
+        '      </div>\n'
+        '    </div>\n'
+        # Extra instructions
+        '    <div style="margin-top:10px">\n'
+        '      <label ' + _lbl + '>Extra Instructions</label>\n'
+        '      <textarea id="af-extra" rows="3" placeholder="Additional instructions or constraints…" ' + _inp + '></textarea>\n'
+        '    </div>\n'
+        # Options + actions
+        '    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-top:12px">\n'
+        '      <label style="font-size:12px"><input type="checkbox" id="af-save-file" checked> Save to .claude/agents/</label>\n'
+        '      <label style="font-size:12px"><input type="checkbox" id="af-project-ctx"> Include project context</label>\n'
+        '      <button class="btn btn-accent" onclick="afGenerate()">&#x2699; Generate</button>\n'
+        '      <span id="af-status" style="font-size:12px"></span>\n'
+        '    </div>\n'
+        '    <pre id="af-preview" style="display:none;margin-top:14px;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;color:var(--text-primary)"></pre>\n'
+        '  </details>\n'
+        '</div>\n'
     )
 
 
 def _workflows() -> str:
-    return tab_panel(
-        "workflows",
-        "&#x1f501; Workflows",
-        '<div id="workflows-content" style="padding:16px;color:var(--text-muted)">Loading workflows...</div>',
+    _inp = 'style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)"'
+    return (
+        '<div id="tab-workflows" class="card" style="display:none">\n'
+        '  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">\n'
+        '    <h3 style="font-size:1rem;font-weight:600">&#x21c4; Workflows</h3>\n'
+        '    <div style="display:flex;gap:8px">\n'
+        '      <input id="wf-name" placeholder="Workflow name…" ' + _inp + ' style="width:200px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
+        '      <button class="btn" onclick="wfAddStep()">+ Add Step</button>\n'
+        '      <button class="btn btn-accent" onclick="wfExecute()">&#x25b6; Execute</button>\n'
+        '      <button class="btn btn-ghost" onclick="wfClear()">&#x2715; Clear</button>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <div id="wf-steps" style="display:flex;flex-direction:column;gap:10px;min-height:60px;margin-bottom:14px"></div>\n'
+        '  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">\n'
+        '    <span id="wf-status" style="font-size:12px;font-family:var(--font-mono)"></span>\n'
+        '  </div>\n'
+        '  <div id="wf-output" style="display:none;margin-top:8px">\n'
+        '    <h4 style="font-size:13px;font-weight:600;margin-bottom:8px">Results</h4>\n'
+        '    <div id="wf-result-steps" style="display:flex;flex-direction:column;gap:8px"></div>\n'
+        '  </div>\n'
+        '  <datalist id="wf-agent-list"></datalist>\n'
+        '</div>\n'
     )
 
 

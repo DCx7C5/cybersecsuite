@@ -13,14 +13,27 @@ def _dbcounts() -> str:
 
 
 def _opensearch() -> str:
-    return simple_panel("opensearch", "&#x1f50d; OpenObserve", "opensearch-content", "Loading logs...")
+    return (
+        '<div id="tab-opensearch" class="card" style="display:none">\n'
+        '  <h3 style="font-size:1rem;font-weight:600;margin-bottom:14px">&#x1f50d; OpenObserve</h3>\n'
+        '  <div id="os-cluster" style="margin-bottom:10px;color:var(--text-muted);font-size:13px"></div>\n'
+        '  <div id="os-indices"></div>\n'
+        '</div>\n'
+    )
 
 
 def _explorer() -> str:
-    return tab_panel(
-        "explorer",
-        "&#x1f5a5; Data Explorer",
-        '<div id="explorer-content" style="padding: 16px; color: var(--text-muted);">Loading explorer...</div>',
+    _inp = 'style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px"'
+    return (
+        '<div id="tab-explorer" class="card" style="display:none">\n'
+        '  <h3 style="font-size:1rem;font-weight:600;margin-bottom:14px">&#x1f5a5; Data Explorer</h3>\n'
+        '  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">\n'
+        '    <select id="explorer-model" onchange="loadExplorerTable()" ' + _inp + ' style="width:260px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">'
+        '<option value="">Select model…</option></select>\n'
+        '    <span id="explorer-count" style="font-size:12px;color:var(--text-muted)"></span>\n'
+        '  </div>\n'
+        '  <div id="explorer-table"></div>\n'
+        '</div>\n'
     )
 
 

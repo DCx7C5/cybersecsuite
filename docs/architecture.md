@@ -338,7 +338,7 @@ Plus 51 extended providers including AI21, Cerebras, Cloudflare, Cohere, DeepInf
 | **Argon2id**    | Password KDF, key encryption     | mem=256MB, iters=4, lanes=4      |
 | **AES-256-GCM** | Authenticated encryption         | Random 12-byte nonce per message |
 
-Keys stored at `DYSTOPIAN_KEYS_DIR` (default `/etc/dystopian-crypto/keys`). Vault secrets at `~/.dystopian-crypto/vault/`.
+Keys stored at `DYSTOPIAN_KEYS_DIR` (default `/etc/dystopian/crypto/cert/private`). Vault secrets at `~/.dystopian-crypto/vault/`.
 
 ---
 

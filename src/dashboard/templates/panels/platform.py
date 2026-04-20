@@ -56,7 +56,7 @@ def _telemetry() -> str:
             stat_card("telemetry-latency", "p95 Latency"),
             stat_card("telemetry-providers", "Providers"),
         ),
-        '<div id="telemetry-content">Loading telemetry...</div>',
+        '<div id="telemetry-content"></div>',
     )
 
 

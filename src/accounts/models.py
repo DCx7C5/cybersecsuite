@@ -13,6 +13,11 @@ class AccountEntry(BaseModel):
     provider_id: str = Field(description="Provider identifier (e.g., 'openai', 'anthropic')")
     label: str | None = Field(default=None, description="User-friendly label")
     active: bool = Field(default=False, description="Is this the active account for provider")
+    auth_method: str = Field(default="api_key", description="Configured auth method")
+    subject: str | None = Field(default=None, description="OAuth subject or upstream account id")
+    email: str | None = Field(default=None, description="Associated email address")
+    display_name: str | None = Field(default=None, description="Human-friendly account display name")
+    tenant: str | None = Field(default=None, description="Optional tenant/org/workspace identifier")
     test_status: Literal["untested", "success", "failed"] | None = Field(
         default=None, description="Last test result"
     )

@@ -122,6 +122,24 @@ _register(ProviderConfig(
         ModelConfig(id="grok-3-mini", name="Grok 3 Mini", context_window=131_072, max_output=16_384,
                     cost=ModelCost(input=0.3, output=0.5), supports_tools=True),
     ],
+    extra={
+        "auth_methods": [
+            {"name": "api_key", "config": {"label": "xAI API Key"}},
+            {
+                "name": "oauth",
+                "config": {
+                    "label": "X OAuth",
+                    "backend": "twitter_oauth",
+                    "fields": [
+                        {"name": "oauth_token", "label": "OAuth Token", "type": "password", "secret": True},
+                        {"name": "oauth_token_secret", "label": "OAuth Token Secret", "type": "password", "secret": True},
+                        {"name": "subject", "label": "Subject / User ID", "type": "text"},
+                        {"name": "email", "label": "Email", "type": "email"},
+                    ],
+                },
+            },
+        ],
+    },
 ))
 
 _register(ProviderConfig(
@@ -656,6 +674,32 @@ _register(ProviderConfig(
         ModelConfig(id="grok-3-mini", name="Grok 3 Mini (x.com Web)", context_window=128_000, max_output=16_384),
     ],
     extra={
+        "auth_methods": [
+            {
+                "name": "browser",
+                "config": {
+                    "label": "X Web Session",
+                    "backend": "x_web",
+                    "fields": [
+                        {"name": "auth_token", "label": "auth_token", "type": "password", "secret": True},
+                        {"name": "ct0", "label": "ct0 / CSRF Token", "type": "password", "secret": True},
+                        {"name": "x_com_cookies", "label": "Full X Cookie Header", "type": "textarea", "secret": True},
+                        {"name": "user_agent", "label": "User-Agent", "type": "text"},
+                    ],
+                },
+            },
+            {
+                "name": "oauth",
+                "config": {
+                    "label": "X OAuth",
+                    "backend": "twitter_oauth",
+                    "fields": [
+                        {"name": "oauth_token", "label": "OAuth Token", "type": "password", "secret": True},
+                        {"name": "oauth_token_secret", "label": "OAuth Token Secret", "type": "password", "secret": True},
+                    ],
+                },
+            },
+        ],
         "input_selector": 'div[data-testid="grokInput"] textarea, textarea[placeholder*="Ask"], div[contenteditable="true"]',
         "submit_selector": 'button[data-testid="grokSubmitButton"], button[aria-label="Submit"], button[type="submit"]',
         "output_selector": 'div[data-testid="grokResponse"], div[class*="response"], div[class*="message"]',
@@ -681,12 +725,67 @@ _register(ProviderConfig(
         ModelConfig(id="grok-3-mini", name="Grok 3 Mini (grok.com)", context_window=128_000, max_output=16_384),
     ],
     extra={
+        "auth_methods": [
+            {
+                "name": "browser",
+                "config": {
+                    "label": "grok.com Session",
+                    "backend": "grok_com",
+                    "fields": [
+                        {"name": "cookie", "label": "Cookie Header", "type": "textarea", "secret": True},
+                        {"name": "user_agent", "label": "User-Agent", "type": "text"},
+                    ],
+                },
+            },
+        ],
         "input_selector": 'textarea, div[contenteditable="true"], input[type="text"]',
         "submit_selector": 'button[type="submit"], button[aria-label*="Send"], button[aria-label*="submit"]',
         "output_selector": 'div[class*="message"][class*="assistant"], div[class*="response"], div[data-role="assistant"]',
         "wait_selector": 'div[class*="message"][class*="assistant"], div[class*="response"]',
         "wait_timeout_ms": 120_000,
         "pre_auth_url": "https://grok.com",
+    },
+))
+
+_register(ProviderConfig(
+    id="github-copilot-auth",
+    name="GitHub Copilot Auth",
+    base_url="https://github.com",
+    auth_type=AuthType.OAUTH,
+    api_format=ApiFormat.CUSTOM,
+    env_key="GITHUB_COPILOT_TOKEN",
+    models=[],
+    extra={
+        "auth_methods": [
+            {
+                "name": "device_flow",
+                "config": {
+                    "label": "GitHub Device Flow",
+                    "backend": "github_device_flow",
+                    "fields": [
+                        {"name": "client_id", "label": "Client ID", "type": "text"},
+                        {"name": "device_code", "label": "Device Code", "type": "password", "secret": True},
+                        {"name": "user_code", "label": "User Code", "type": "text"},
+                        {"name": "verification_uri", "label": "Verification URI", "type": "url"},
+                        {"name": "access_token", "label": "Access Token", "type": "password", "secret": True},
+                        {"name": "refresh_token", "label": "Refresh Token", "type": "password", "secret": True},
+                    ],
+                },
+            },
+            {
+                "name": "oauth",
+                "config": {
+                    "label": "GitHub OAuth",
+                    "backend": "github_oauth",
+                    "fields": [
+                        {"name": "access_token", "label": "Access Token", "type": "password", "secret": True},
+                        {"name": "refresh_token", "label": "Refresh Token", "type": "password", "secret": True},
+                        {"name": "subject", "label": "Subject / User ID", "type": "text"},
+                        {"name": "email", "label": "Email", "type": "email"},
+                    ],
+                },
+            },
+        ],
     },
 ))
 
@@ -851,5 +950,4 @@ _register(ProviderConfig(
                     cost=ModelCost(input=2.00, output=8.00), supports_tools=True),
     ],
 ))
-
 

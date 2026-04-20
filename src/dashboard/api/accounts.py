@@ -23,6 +23,7 @@ async def api_accounts_list(request: Request) -> JSONResponse:
                 "provider_id": a.provider_id,
                 "label": a.label,
                 "active": a.active,
+                "auth_method": a.auth_method,
                 "test_status": a.test_status,
                 "last_tested_at": a.last_tested_at.isoformat() if a.last_tested_at else None,
             }
@@ -39,16 +40,30 @@ async def api_accounts_create(request: Request) -> JSONResponse:
 
     try:
         data = await request.json()
+        auth_method = data.get("auth_method", "api_key")
+        secret: str | dict
+        if auth_method == "api_key":
+            secret = data["api_key"]
+        else:
+            secret = data.get("credentials") or {}
+            if not secret:
+                return JSONResponse({"error": "credentials required"}, status_code=400)
         entry = await mgr.add(
             provider_id=data["provider_id"],
-            api_key=data["api_key"],
+            secret=secret,
             label=data.get("label"),
+            auth_method=auth_method,
+            display_name=data.get("display_name"),
+            subject=data.get("subject"),
+            email=data.get("email"),
+            tenant=data.get("tenant"),
         )
         return JSONResponse({
             "vault_key": entry.vault_key,
             "provider_id": entry.provider_id,
             "label": entry.label,
             "active": entry.active,
+            "auth_method": entry.auth_method,
         })
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=400)
@@ -60,8 +75,6 @@ async def api_accounts_get(request: Request, vault_key: str) -> JSONResponse:
     if mgr is None:
         return JSONResponse({"error": "not initialized"}, status_code=500)
 
-    from accounts.registry import get_registry
-
     entry = get_registry().get(vault_key)
     if entry is None:
         return JSONResponse({"error": "not found"}, status_code=404)
@@ -71,6 +84,7 @@ async def api_accounts_get(request: Request, vault_key: str) -> JSONResponse:
         "provider_id": entry.provider_id,
         "label": entry.label,
         "active": entry.active,
+        "auth_method": entry.auth_method,
         "test_status": entry.test_status,
     })
 
@@ -91,10 +105,10 @@ async def api_accounts_update(request: Request, vault_key: str) -> JSONResponse:
         return JSONResponse({"ok": True, "active": entry.active})
 
     if action == "rotate":
-        new_key = data.get("api_key")
-        if not new_key:
-            return JSONResponse({"error": "api_key required"}, status_code=400)
-        entry = await mgr.rotate(vault_key, new_key)
+        new_secret = data.get("api_key") or data.get("credentials")
+        if not new_secret:
+            return JSONResponse({"error": "api_key or credentials required"}, status_code=400)
+        entry = await mgr.rotate(vault_key, new_secret)
         if entry is None:
             return JSONResponse({"error": "not found"}, status_code=404)
         return JSONResponse({"ok": True})

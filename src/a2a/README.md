@@ -340,7 +340,7 @@ To verify incoming requests, add middleware to `A2AServer`:
 ```python
 from crypto.ssl_signer import SSLArtifactSigner
 
-signer = SSLArtifactSigner(public_key_path="/etc/dystopian-crypto/keys/agent-public.pem")
+signer = SSLArtifactSigner(public_key_path="/etc/dystopian/crypto/cert/private/agent-public.pem")
 
 # In middleware: verify the Authorization header contains a valid Ed25519 token
 is_valid, payload = signer.verify_artifact(request.headers.get("Authorization", ""))

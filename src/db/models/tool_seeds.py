@@ -62,6 +62,19 @@ _SDK_BETA_TOOLS: list[tuple[str, str, str, str, str]] = [
     ),
 ]
 
+_AGENT_SDK_BUILTINS: list[tuple[str, str, str]] = [
+    ("Agent", "Agent Delegation", "Delegate work to a specialist sub-agent."),
+    ("Bash", "Bash", "Run shell commands in a persistent session."),
+    ("Edit", "Edit", "Edit an existing file in-place."),
+    ("Glob", "Glob", "Find files by glob pattern."),
+    ("Grep", "Grep", "Search code and text content."),
+    ("Monitor", "Monitor", "Observe long-running task or session output."),
+    ("Read", "Read", "Read file contents."),
+    ("WebFetch", "Web Fetch", "Fetch and inspect a web page."),
+    ("WebSearch", "Web Search", "Search the web for current information."),
+    ("Write", "Write", "Create or overwrite files."),
+]
+
 
 async def seed_tool_registry() -> dict[str, Any]:
     """
@@ -69,6 +82,7 @@ async def seed_tool_registry() -> dict[str, Any]:
     1. All live MCP tools from cybersec + dystopian servers
     2. Known Anthropic SDK builtin tools
     3. Known Anthropic SDK beta tools
+    4. Agent SDK builtin + discovered custom agent tools
     """
     from db.models.tool_registry import ToolRegistry
     from db.models.enums import ToolType, ModelTier
@@ -182,6 +196,64 @@ async def seed_tool_registry() -> dict[str, Any]:
             updated += int(not was_created)
         except Exception as e:
             errors.append(f"sdk_beta {sdk_type}: {e}")
+
+    # ── 4. Agent SDK builtin + discovered custom tools ──────────────────────
+    for tool_name, display_name, desc in _AGENT_SDK_BUILTINS:
+        try:
+            _, was_created = await ToolRegistry.update_or_create(
+                tool_name=tool_name,
+                defaults={
+                    "display_name": display_name,
+                    "description": desc,
+                    "tool_type": ToolType.AGENT_SDK,
+                    "agent_source": "builtin",
+                    "input_schema": {},
+                    "min_tier": ModelTier.FREE,
+                    "enabled_by_default": True,
+                    "tags": ["agent-sdk", "builtin"],
+                },
+            )
+            created += int(was_created)
+            updated += int(not was_created)
+        except Exception as e:
+            errors.append(f"agent_sdk builtin {tool_name}: {e}")
+
+    try:
+        from pathlib import Path
+        from a2a.agent_loader import frontmatter_to_claude_agent, iter_agent_markdown_files
+
+        project_root = Path(__file__).resolve().parents[3]
+        agents_dir = project_root / ".claude" / "agents"
+        seen_custom: set[str] = set()
+        builtin_names = {name for name, _, _ in _AGENT_SDK_BUILTINS}
+        for md_path in iter_agent_markdown_files(agents_dir, recurse=True, include_sub_agents=True):
+            card = frontmatter_to_claude_agent(md_path)
+            if not card:
+                continue
+            agent_name = card.card.name
+            source = str(card.metadata.get("source") or "")
+            source_kind = str(card.metadata.get("source_kind") or "agent")
+            for tool_name in card.tools:
+                if tool_name in builtin_names or tool_name in seen_custom:
+                    continue
+                seen_custom.add(tool_name)
+                _, was_created = await ToolRegistry.update_or_create(
+                    tool_name=tool_name,
+                    defaults={
+                        "display_name": tool_name.replace("_", " ").replace("-", " ").title(),
+                        "description": f"Custom tool discovered from agent '{agent_name}'.",
+                        "tool_type": ToolType.EXTERNAL,
+                        "agent_source": source,
+                        "input_schema": {},
+                        "min_tier": ModelTier.FREE,
+                        "enabled_by_default": True,
+                        "tags": ["agent-sdk", "custom", source_kind],
+                    },
+                )
+                created += int(was_created)
+                updated += int(not was_created)
+    except Exception as e:
+        errors.append(f"agent_sdk custom tools: {e}")
 
     total = created + updated
     logger.info("ToolRegistry seed: %d created, %d updated (%d total)", created, updated, total)

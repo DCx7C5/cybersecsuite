@@ -438,3 +438,39 @@ async def api_local_llm_activate(request: Request) -> JSONResponse:
     _active_local_model = model_id
     os.environ["CYBERSEC_DEFAULT_MODEL"] = model_id
     return JSONResponse({"status": "ok", "active_model": model_id})
+
+
+async def api_chat_models(request: Request) -> JSONResponse:
+    """GET /api/chat-models — list models available for chat from providers with API keys.
+
+    A provider is considered "keyed" when it has either:
+    - An environment variable API key (is_available == True), OR
+    - At least one active ApiAccount row in the DB for that provider.
+    Returns a flat list of {id, name, provider_id, provider_name} entries.
+    """
+    # Collect provider IDs that have a DB-stored account
+    db_keyed_provider_ids: set[str] = set()
+    try:
+        accounts = await ApiAccount.filter(active=True).values_list("provider_id", flat=True)
+        db_keyed_provider_ids = set(accounts)
+    except Exception:
+        pass
+
+    models: list[dict] = []
+    for p in get_all_providers().values():
+        if not p.enabled:
+            continue
+        has_key = p.is_available or (p.id in db_keyed_provider_ids)
+        if not has_key:
+            continue
+        for m in p.models:
+            if m.deprecated:
+                continue
+            models.append({
+                "id": m.id,
+                "name": m.name,
+                "provider_id": p.id,
+                "provider_name": p.name,
+            })
+
+    return JSONResponse({"models": models})

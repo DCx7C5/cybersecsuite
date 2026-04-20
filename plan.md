@@ -538,100 +538,153 @@ async def _tool_impl(args: dict[str, Any]) -> dict:
 
 ## 🛠️ Worktree Tools (Implemented via SDK)
 
-### 1. **Clone Repository** [TOOL]
+### 1. **Initialize Repository (Clone Once)** [TOOL]
 ```python
-@tool("git_clone", "Clone a GitHub repository to local worktree", {
-    "repo_url": {"type": "string", "description": "GitHub HTTPS URL (e.g., https://github.com/user/repo.git)"},
-    "target_path": {"type": "string", "description": "Local directory path"},
-    "branch": {"type": "string", "description": "Branch to clone (default: main)"}
+@tool("git_init_repo", "Clone a GitHub repository once (cache for reuse)", {
+    "repo_url": {"type": "string", "description": "GitHub HTTPS URL"},
+    "cache_path": {"type": "string", "description": "Local cache directory for bare clone"}
 })
-async def _git_clone(args: dict) -> dict:
+async def _git_init_repo(args: dict) -> dict:
     repo_url = args.get("repo_url")
-    target_path = args.get("target_path")
-    branch = args.get("branch", "main")
+    cache_path = args.get("cache_path")
     
-    cmd = f"git clone --branch {branch} {repo_url} {target_path}"
-    # Execute safely with subprocess, return result
-    return sdk_result({"status": "cloned", "path": target_path})
+    # Clone as bare repository (cache only, no working tree)
+    # git clone --bare {repo_url} {cache_path}
+    return sdk_result({"status": "initialized", "cache": cache_path})
 ```
 
-**Parameters:**
-- `repo_url` (required): Full GitHub HTTPS URL
-- `target_path` (required): Destination directory
-- `branch` (optional): Branch to clone (default: main)
+**Why Git Worktree > Clone:**
+- ✅ Clone once → create multiple worktrees from bare repo
+- ✅ Disk-space efficient (shared objects)
+- ✅ Fast branch switching (no re-clone)
+- ✅ Multiple branches working simultaneously
+- ✅ Ideal for CI/CD & agents
 
-**Returns:**
-- `status`: "cloned" | "error"
-- `path`: Cloned repository path
-- `error`: Error message if applicable
+---
+
+### 1b. **Create Worktree** [TOOL]
+```python
+@tool("git_create_worktree", "Create a working tree for a branch", {
+    "repo_cache": {"type": "string", "description": "Path to bare repository"},
+    "branch": {"type": "string", "description": "Branch name (e.g., main, feat/feature1)"},
+    "worktree_path": {"type": "string", "description": "Where to create worktree"}
+})
+async def _git_create_worktree(args: dict) -> dict:
+    repo_cache = args.get("repo_cache")
+    branch = args.get("branch")
+    worktree_path = args.get("worktree_path")
+    
+    # git -C {repo_cache} worktree add {worktree_path} {branch}
+    # OR: git -C {repo_cache} worktree add -b {worktree_path} origin/{branch}
+    return sdk_result({"status": "created", "worktree": worktree_path, "branch": branch})
+```
+
+**Commands (git worktree):**
+```bash
+# List all worktrees
+git worktree list
+
+# Create new worktree from existing branch
+git -C /path/to/bare/repo worktree add /path/to/worktree main
+
+# Create new worktree + new branch
+git -C /path/to/bare/repo worktree add -b feat/new /path/to/worktree origin/main
+
+# Remove worktree
+git -C /path/to/bare/repo worktree remove /path/to/worktree
+
+# Prune stale entries
+git worktree prune
+```
 
 ---
 
 ### 2. **Create Branch** [TOOL]
 ```python
-@tool("git_create_branch", "Create a new feature branch", {
-    "repo_path": {"type": "string", "description": "Path to repo"},
+@tool("git_create_branch", "Create new branch from remote", {
+    "repo_cache": {"type": "string", "description": "Path to bare repo cache"},
+    "worktree_path": {"type": "string", "description": "Worktree directory path"},
     "branch_name": {"type": "string", "description": "New branch name (e.g., feat/my-feature)"},
-    "from_branch": {"type": "string", "description": "Source branch (default: main)"}
+    "from_branch": {"type": "string", "description": "Source branch (default: origin/main)"}
 })
 async def _git_create_branch(args: dict) -> dict:
-    repo_path = args.get("repo_path")
+    repo_cache = args.get("repo_cache")
+    worktree_path = args.get("worktree_path")
     branch_name = args.get("branch_name")
-    from_branch = args.get("from_branch", "main")
+    from_branch = args.get("from_branch", "origin/main")
     
-    # Validate branch name format
+    # git -C {repo_cache} worktree add -b {branch_name} {worktree_path} {from_branch}
     if not _is_valid_branch_name(branch_name):
-        return sdk_result({"status": "error", "message": "Invalid branch name format"})
+        return sdk_result({"status": "error", "message": "Invalid branch name"})
     
-    # git checkout -b feature_branch origin/main
-    return sdk_result({"status": "created", "branch": branch_name})
+    return sdk_result({"status": "created", "branch": branch_name, "worktree": worktree_path})
+```
+
+**Git Commands:**
+```bash
+# Create worktree with new branch
+git -C /path/to/bare/repo worktree add -b feat/new-feature /path/to/worktree origin/main
+
+# Inside worktree: switch/create branch
+cd /path/to/worktree
+git checkout -b feat/feature-name
+git switch -c feat/feature-name
 ```
 
 ---
 
 ### 3. **Commit Changes** [TOOL]
 ```python
-@tool("git_commit", "Stage and commit changes to worktree", {
-    "repo_path": {"type": "string", "description": "Path to repo"},
-    "message": {"type": "string", "description": "Commit message (must follow conventional commits)"},
-    "files": {"type": "array", "description": "List of files to stage (or '*' for all)"},
-    "author_name": {"type": "string", "description": "Commit author name"},
-    "author_email": {"type": "string", "description": "Commit author email"}
+@tool("git_commit", "Stage and commit changes in worktree", {
+    "worktree_path": {"type": "string", "description": "Path to worktree"},
+    "message": {"type": "string", "description": "Commit message (conventional commits)"},
+    "files": {"type": "array", "description": "Files to stage (or '*' for all)"},
+    "author_name": {"type": "string", "description": "Author name"},
+    "author_email": {"type": "string", "description": "Author email"}
 })
 async def _git_commit(args: dict) -> dict:
-    repo_path = args.get("repo_path")
+    worktree_path = args.get("worktree_path")
     message = args.get("message")
     files = args.get("files", ["*"])
     author_name = args.get("author_name")
     author_email = args.get("author_email")
     
-    # Validate commit message (conventional commits)
     if not _validate_conventional_commit(message):
-        return sdk_result({"status": "error", "message": "Invalid commit message format"})
+        return sdk_result({"status": "error", "message": "Invalid commit message"})
     
-    # git add + commit
+    # cd {worktree_path} && git add + git commit
     return sdk_result({"status": "committed", "sha": commit_sha})
 ```
 
-**Message Format (Conventional Commits):**
-- `feat: description`
-- `fix: description`
-- `docs: description`
-- `chore: description`
-- Multiline: `feat: title\n\nbody text`
+**Git Commands:**
+```bash
+cd /path/to/worktree
+
+# Stage files
+git add file1.py file2.py
+git add .  # all changes
+
+# Commit
+git commit -m "feat: add new feature"
+git commit --author="Name <email>" -m "feat: description"
+
+# Check status before commit
+git status
+git diff
+```
 
 ---
 
 ### 4. **Push to Remote** [TOOL]
 ```python
-@tool("git_push", "Push commits to GitHub remote", {
-    "repo_path": {"type": "string", "description": "Path to repo"},
+@tool("git_push", "Push commits from worktree to GitHub", {
+    "repo_cache": {"type": "string", "description": "Path to bare repo (for push)"},
     "branch": {"type": "string", "description": "Branch to push"},
     "remote": {"type": "string", "description": "Remote name (default: origin)"},
-    "force": {"type": "boolean", "description": "Force push (use with caution)"}
+    "force": {"type": "boolean", "description": "Force push (with caution)"}
 })
 async def _git_push(args: dict) -> dict:
-    repo_path = args.get("repo_path")
+    repo_cache = args.get("repo_cache")
     branch = args.get("branch")
     remote = args.get("remote", "origin")
     force = args.get("force", False)
@@ -639,8 +692,25 @@ async def _git_push(args: dict) -> dict:
     if force and not _confirm_force_push():
         return sdk_result({"status": "error", "message": "Force push rejected"})
     
-    # git push origin branch
+    # git -C {repo_cache} push {remote} {branch}
     return sdk_result({"status": "pushed", "branch": branch, "remote": remote})
+```
+
+**Git Commands:**
+```bash
+# Inside worktree
+cd /path/to/worktree
+
+# Push to remote
+git push origin feat/my-feature
+git push -u origin feat/my-feature  # Set upstream
+
+# Force push (dangerous!)
+git push -f origin branch-name
+git push --force-with-lease origin branch-name  # Safer
+
+# Push all branches
+git push origin --all
 ```
 
 ---
@@ -693,44 +763,81 @@ async def _github_merge_pr(args: dict) -> dict:
 
 ### 7. **Get Worktree Status** [TOOL]
 ```python
-@tool("git_status", "Get worktree status (staged, unstaged, untracked)", {
-    "repo_path": {"type": "string", "description": "Path to repo"}
+@tool("git_status", "Get status of worktree (staged, unstaged, branch)", {
+    "worktree_path": {"type": "string", "description": "Path to worktree"}
 })
 async def _git_status(args: dict) -> dict:
-    repo_path = args.get("repo_path")
+    worktree_path = args.get("worktree_path")
     
-    # git status --porcelain
+    # cd {worktree_path} && git status --porcelain
     return sdk_result({
         "status": "clean" | "dirty",
-        "current_branch": "main",
-        "staged": ["file1.py", "file2.py"],
-        "unstaged": ["file3.py"],
-        "untracked": ["file4.py"],
-        "ahead": 2,  # commits ahead of remote
+        "current_branch": "feat/my-feature",
+        "staged": ["file1.py"],
+        "unstaged": ["file2.py"],
+        "untracked": ["file3.py"],
+        "ahead": 1,  # commits not yet pushed
         "behind": 0
     })
 ```
 
+**Git Commands:**
+```bash
+cd /path/to/worktree
+
+# Full status
+git status
+
+# Compact porcelain format
+git status --porcelain
+
+# Show remote tracking
+git status -sb
+
+# Show remote branch info
+git branch -vv
+```
+
 ---
 
-### 8. **List Branches** [TOOL]
+### 8. **List Branches & Worktrees** [TOOL]
 ```python
-@tool("git_list_branches", "List all branches (local and remote)", {
-    "repo_path": {"type": "string", "description": "Path to repo"},
-    "remote_only": {"type": "boolean", "description": "Show only remote branches"}
+@tool("git_list_worktrees", "List all worktrees and branches", {
+    "repo_cache": {"type": "string", "description": "Path to bare repo"}
 })
-async def _git_list_branches(args: dict) -> dict:
-    repo_path = args.get("repo_path")
-    remote_only = args.get("remote_only", False)
+async def _git_list_worktrees(args: dict) -> dict:
+    repo_cache = args.get("repo_cache")
     
-    # git branch -a or git branch -r
+    # git -C {repo_cache} worktree list
+    # git -C {repo_cache} branch -a
     return sdk_result({
         "status": "success",
+        "worktrees": [
+            {"branch": "main", "path": "/tmp/wt/main", "detached": False},
+            {"branch": "feat/feature1", "path": "/tmp/wt/feat1", "detached": False}
+        ],
         "branches": {
             "local": ["main", "dev", "feat/feature1"],
-            "remote": ["origin/main", "origin/dev"]
+            "remote": ["origin/main", "origin/dev", "origin/feat/feature1"]
         }
     })
+```
+
+**Git Commands:**
+```bash
+# List worktrees
+git worktree list
+
+# List branches (local)
+git branch
+git branch -l
+
+# List remote branches
+git branch -r
+git branch -a  # All (local + remote)
+
+# List with verbose info
+git branch -vv
 ```
 
 ---
@@ -788,7 +895,72 @@ async def _git_list_branches(args: dict) -> dict:
 
 ---
 
-## 📊 Tool Integration with Agents
+## 🎯 Git Worktree Workflow (Best Practice)
+
+### Why `git worktree` > `git clone`?
+
+| Feature | Clone | Worktree |
+|---------|-------|----------|
+| Disk space | 100% per clone | Shared objects (~10% each) |
+| Clone speed | Slow (full fetch) | Fast (hard links) |
+| Parallel work | Separate repos | Multiple trees, 1 repo |
+| Branch management | Per-repo | Shared refs |
+| CI/CD efficiency | Wasteful | Optimal |
+
+### Standard Git Worktree Workflow
+
+```bash
+# 1️⃣ INITIAL SETUP (once per repo)
+git clone --bare https://github.com/user/repo.git ~/.cache/repo.bare
+
+# 2️⃣ CREATE WORKTREE FOR MAIN BRANCH
+git -C ~/.cache/repo.bare worktree add ~/work/main main
+
+# 3️⃣ CREATE WORKTREE FOR FEATURE BRANCH
+git -C ~/.cache/repo.bare worktree add -b feat/my-feature ~/work/feat origin/main
+
+# 4️⃣ INSIDE WORKTREE: WORK NORMALLY
+cd ~/work/feat
+git status
+git add .
+git commit -m "feat: add new feature"
+
+# 5️⃣ PUSH FROM WORKTREE
+git push origin feat/my-feature
+
+# 6️⃣ LIST ALL WORKTREES
+git -C ~/.cache/repo.bare worktree list
+
+# 7️⃣ CLEAN UP (remove worktree when done)
+git -C ~/.cache/repo.bare worktree remove ~/work/feat
+git -C ~/.cache/repo.bare worktree prune
+```
+
+### Complete Command Reference
+
+```bash
+# ═══ BARE REPO SETUP ═══
+git clone --bare {url} {path}.bare      # Create bare repo (cache)
+git -C {path}.bare gc                    # Garbage collect to save space
+
+# ═══ WORKTREE OPERATIONS ═══
+git -C {path}.bare worktree add {path} {branch}      # Add worktree (existing branch)
+git -C {path}.bare worktree add -b {branch} {path} {source}  # Add + create branch
+git -C {path}.bare worktree list                     # Show all worktrees
+git -C {path}.bare worktree remove {path}            # Remove worktree
+git -C {path}.bare worktree prune                    # Clean stale entries
+git -C {path}.bare worktree lock {path}              # Prevent removal
+git -C {path}.bare worktree unlock {path}            # Allow removal
+
+# ═══ INSIDE WORKTREE ═══
+cd {path}
+git status                               # Check status
+git add {files}                          # Stage changes
+git commit -m "message"                  # Commit
+git push {remote} {branch}               # Push
+git fetch origin                         # Update refs
+git branch -vv                           # Show tracking info
+```
 
 ### Example: Python Developer Agent Workflow
 

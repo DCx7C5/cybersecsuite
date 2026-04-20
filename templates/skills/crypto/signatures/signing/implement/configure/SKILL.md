@@ -57,8 +57,8 @@ content_hash = hashlib.blake2b(
 from crypto.ssl_signer import SSLArtifactSigner
 
 signer = SSLArtifactSigner(
-    private_key_path="/etc/dystopian-crypto/keys/default-private.key",
-    public_key_path="/etc/dystopian-crypto/keys/default-public.pem",
+    private_key_path="/etc/dystopian/crypto/cert/private/default-private.key",
+    public_key_path="/etc/dystopian/crypto/cert/private/default-public.pem",
     key_id="default",
 )
 
@@ -141,7 +141,7 @@ print(artifact.frontmatter)
 ```python
 from crypto.key_manager import KeyManager
 
-km = KeyManager(keys_dir="/etc/dystopian-crypto/keys")
+km = KeyManager(keys_dir="/etc/dystopian/crypto/cert/private")
 
 # Create CA keypair (Ed25519, password-protected)
 metadata = km.create_ca_keypair(

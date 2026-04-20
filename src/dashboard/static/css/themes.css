@@ -30,16 +30,18 @@
   transition: left 0.25s ease;
 }
 
-/* Topbar expand button: hidden while sidebar is expanded */
+/* Topbar sidebar button: always visible so collapse/expand is reachable */
 #sidebar-toggle {
-  display: none !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 }
 
 /* ── Collapsed state: body.sidebar-collapsed drives everything ── */
 body.sidebar-collapsed #sidebar        { left: calc(-1 * var(--sidebar-w)); }
 body.sidebar-collapsed #main-content   { margin-left: 0; }
 body.sidebar-collapsed #statusbar      { left: 0; }
-body.sidebar-collapsed #sidebar-toggle { display: inline-flex !important; }
 
 /* Sidebar collapse button (inside sidebar header, visible while expanded) */
 #sidebar-logo {

@@ -484,6 +484,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'settings')       { loadSettings().catch(() => {}); }
     if (name === 'settings-cybersecsuite') { loadSettingsToggles().catch(() => {}); }
     if (name === 'vault')          { loadVaultStatus().catch(() => {}); }
+    if (name === 'agent-factory')  { afLoadTemplates().catch(() => {}); }
+    if (name === 'agent-crafter')  { acLoadAgents().catch(() => {}); }
+    if (name === 'team-builder')   { loadTeamBuilder().catch(() => {}); }
+    if (name === 'opensearch')     { loadOpenSearch().catch(() => {}); }
+    if (name === 'explorer')       { loadExplorerModels().catch(() => {}); }
+    if (name === 'workflows')      { wfLoadAgentList().catch(() => {}); }
   };
 
   if (savedTab === 'settings') {

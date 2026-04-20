@@ -15,6 +15,7 @@ from dashboard._handlers import (
     api_crypto,
     api_local_llm_status,
     api_local_llm_activate,
+    api_chat_models,
     api_a2a,
     api_investigations,
     api_db_counts,
@@ -247,6 +248,7 @@ def create_dashboard_router() -> Router:
             # Local LLM
             Route("/api/local-llm/status", api_local_llm_status, methods=["GET"]),
             Route("/api/local-llm/activate", api_local_llm_activate, methods=["POST"]),
+            Route("/api/chat-models", api_chat_models, methods=["GET"]),
             # DBus notifications
             Route("/api/dbus/notify", api_dbus_notify, methods=["POST"]),
             Route("/api/dbus/signal", api_dbus_signal, methods=["POST"]),

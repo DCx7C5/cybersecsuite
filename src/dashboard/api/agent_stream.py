@@ -64,6 +64,7 @@ async def api_agent_run_start(request: Request) -> JSONResponse:
     agent_name = body.get("agent", "cybersec-agent")
     prompt = (body.get("prompt") or "").strip()
     stream = _to_stream_flag(body.get("stream", True))
+    model_override = (body.get("model") or "").strip() or None
 
     if not prompt:
         return JSONResponse({"status": "error", "error": "prompt is required"}, status_code=400)
@@ -73,7 +74,7 @@ async def api_agent_run_start(request: Request) -> JSONResponse:
     queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
     queues[task_id] = queue
     tasks[task_id] = asyncio.create_task(
-        run_agent_stream(agent_name=agent_name, prompt=prompt, queue=queue, stream=stream)
+        run_agent_stream(agent_name=agent_name, prompt=prompt, queue=queue, stream=stream, model=model_override)
     )
     asyncio.create_task(_ttl_cleanup(request.app, task_id, ttl_seconds=30))
 

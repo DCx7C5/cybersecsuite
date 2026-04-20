@@ -10,6 +10,18 @@ def _val(x):
     return x.value if hasattr(x, "value") else str(x)
 
 
+def _normalize_auth_method(entry):
+    if isinstance(entry, str):
+        return entry, {}
+    if isinstance(entry, dict):
+        name = str(entry.get("name") or entry.get("auth_method") or "").strip()
+        config = dict(entry.get("config") or {})
+        if not name:
+            raise ValueError("auth method entry missing name")
+        return name, config
+    raise ValueError(f"Unsupported auth method entry: {entry!r}")
+
+
 async def sync_providers_to_db() -> int:
     """Sync ProviderConfig registry to DB. Returns count of synced providers."""
     try:
@@ -44,8 +56,13 @@ async def sync_providers_to_db() -> int:
         synced += 1
         if auths := cfg.extra.get("auth_methods"):
             p = await Provider.get(id=pid)
-            for a in auths:
-                await ProviderAuthMethod.get_or_create(provider=p, auth_method=a, defaults={"config": {}})
+            for auth_entry in auths:
+                auth_method, config = _normalize_auth_method(auth_entry)
+                await ProviderAuthMethod.update_or_create(
+                    provider=p,
+                    auth_method=auth_method,
+                    defaults={"config": config},
+                )
 
     logger.info(f"Synced {synced} providers to DB")
     return synced
@@ -63,5 +80,10 @@ async def sync_auth_methods(provider_id: str) -> None:
     p = await Provider.get_or_none(id=provider_id)
     if not p:
         return
-    for a in cfg.extra.get("auth_methods", []):
-        await ProviderAuthMethod.get_or_create(provider=p, auth_method=a, defaults={"config": {}})
+    for auth_entry in cfg.extra.get("auth_methods", []):
+        auth_method, config = _normalize_auth_method(auth_entry)
+        await ProviderAuthMethod.update_or_create(
+            provider=p,
+            auth_method=auth_method,
+            defaults={"config": config},
+        )

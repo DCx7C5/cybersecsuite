@@ -6,6 +6,8 @@ MOTION: Staggered card entrance (opacity+translateY), scanline sweep, sidebar it
 LAYOUT: Fixed left sidebar (260px) + scrollable main content; sidebar groups tabs into 5 categories
 """
 
+from ._tabs import topbar_nav_menu
+
 _FONT_LINKS = """\
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700|jetbrains-mono:400,500,600" rel="stylesheet">
@@ -116,7 +118,8 @@ def header() -> str:
     return (
         '<div id="topbar">\n'
         '  <div style="display:flex;align-items:center;gap:8px">\n'
-        '    <button id="sidebar-toggle" class="btn btn-ghost" onclick="toggleSidebar()" style="width:40px;height:40px" title="Expand sidebar">☰</button>\n'
+        '    <button id="sidebar-toggle" class="btn btn-ghost" onclick="toggleSidebar()" style="width:40px;height:40px" title="Collapse sidebar" aria-label="Collapse sidebar" aria-controls="sidebar" aria-expanded="true">&#x25c4;</button>\n'
+        f'{topbar_nav_menu()}'
         '    <div id="topbar-title" id="topbar-crumb">&#x25b6; PROVIDERS</div>\n'
         '  </div>\n'
         '  <div id="topbar-actions" style="display:flex;align-items:center;gap:12px">\n'
@@ -136,6 +139,13 @@ def header() -> str:
         '<style>\n'
         '@keyframes pulse-led { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }\n'
         '#plugin-status { display:flex; }\n'
+        '.topbar-nav { position:relative; display:none; }\n'
+        '.topbar-nav-menu { position:absolute; top:calc(100% + 8px); left:0; min-width:260px; max-height:70vh; overflow:auto; display:none; padding:8px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; box-shadow:0 12px 30px rgba(0,0,0,0.35); z-index:120; }\n'
+        '.topbar-nav.open .topbar-nav-menu { display:block; }\n'
+        '.topbar-nav-group { padding:10px 14px 4px; font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; color:var(--text-faint); text-transform:uppercase; }\n'
+        '.topbar-nav-item { width:100%; display:flex; align-items:center; gap:8px; padding:7px 14px; border:0; background:transparent; color:var(--text-muted); font:inherit; cursor:pointer; text-align:left; }\n'
+        '.topbar-nav-item:hover { background:var(--accent-glow); color:var(--text-primary); }\n'
+        'body.sidebar-collapsed .topbar-nav { display:block; }\n'
         '</style>\n'
         + plugin_checker_js +
         '<div id="statusbar" style="'

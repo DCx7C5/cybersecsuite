@@ -177,7 +177,7 @@ Status bar: fixed bottom bar (24px, accent blue) showing current tab name + live
 - **Starlette ASGI** + uvicorn port 8000
 - **Pydantic v2** · **claude-agent-sdk** @ v0.1.61
 - **Subagents CANNOT call subagents** — never `"Agent"` in `AgentDefinition.tools`
-- SSL certs: `~/.omniroute/certs/` · Keys: `/etc/dystopian-crypto/keys`
+- SSL certs: `~/.omniroute/certs/` · Keys: `/etc/dystopian/crypto/cert/private`
 
 **MCP tool pattern**:
 ```python

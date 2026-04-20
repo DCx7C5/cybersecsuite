@@ -65,7 +65,7 @@ class KeyPermissions:
 @dataclass
 class KeysConfig:
     """Key storage settings."""
-    directory: str = "/etc/dystopian-crypto/keys"
+    directory: str = "/etc/dystopian/crypto/cert/private"
     metadata_subdir: str = ".metadata"
     backup_subdir: str = ".backups"
     permissions: KeyPermissions = field(default_factory=KeyPermissions)
@@ -118,7 +118,7 @@ class AppSettings:
 
         keys_data = data.get("keys", {})
         keys = KeysConfig(
-            directory=keys_data.get("directory", "/etc/dystopian-crypto/keys"),
+            directory=keys_data.get("directory", "/etc/dystopian/crypto/cert/private"),
             metadata_subdir=keys_data.get("metadata_subdir", ".metadata"),
             backup_subdir=keys_data.get("backup_subdir", ".backups"),
             permissions=KeyPermissions(**keys_data.get("permissions", {})),

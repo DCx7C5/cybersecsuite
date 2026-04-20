@@ -17,21 +17,23 @@ async def api_findings(request: Request) -> JSONResponse:
     try:
         from db.models.investigation import Finding
         total = await Finding.all().count()
-        by_severity: dict[str, int] = {}
-        for sev in ("critical", "high", "medium", "low", "info"):
-            by_severity[sev] = await Finding.filter(severity=sev).count()
-        by_status: dict[str, int] = {}
-        for st in ("open", "investigating", "confirmed", "resolved", "false_positive"):
-            by_status[st] = await Finding.filter(status=st).count()
 
-        last_24h = await Finding.filter(
-            created_at__gte=__import__("datetime").datetime.now(__import__("datetime").timezone.utc)
-            - __import__("datetime").timedelta(hours=24)
-        ).count()
-        last_7d = await Finding.filter(
-            created_at__gte=__import__("datetime").datetime.now(__import__("datetime").timezone.utc)
-            - __import__("datetime").timedelta(days=7)
-        ).count()
+        all_severities = await Finding.all().values_list("severity", flat=True)
+        by_severity: dict[str, int] = {}
+        for sev in all_severities:
+            k = str(sev.value if hasattr(sev, "value") else sev) if sev else "unknown"
+            by_severity[k] = by_severity.get(k, 0) + 1
+
+        all_statuses = await Finding.all().values_list("status", flat=True)
+        by_status: dict[str, int] = {}
+        for st in all_statuses:
+            k = str(st.value if hasattr(st, "value") else st) if st else "unknown"
+            by_status[k] = by_status.get(k, 0) + 1
+
+        import datetime
+        now = datetime.datetime.now(datetime.timezone.utc)
+        last_24h = await Finding.filter(created_at__gte=now - datetime.timedelta(hours=24)).count()
+        last_7d = await Finding.filter(created_at__gte=now - datetime.timedelta(days=7)).count()
 
         _FINDING_FIELDS = [
             "id", "title", "description", "severity", "status", "confidence",
@@ -64,18 +66,17 @@ async def api_iocs(request: Request) -> JSONResponse:
         from db.models.investigation import IOC
         total = await IOC.all().count()
 
-        # Aggregate by ioc_type (free-form field)
-        all_iocs = await IOC.all().values_list("ioc_type", flat=True)
+        all_rows = await IOC.all().values_list("ioc_type", "status", "confidence", flat=False)
         by_type: dict[str, int] = {}
-        for t in all_iocs:
-            by_type[t or "unknown"] = by_type.get(t or "unknown", 0) + 1
-
         by_status: dict[str, int] = {}
-        for st in ("active", "cleared", "watchlist", "expired"):
-            by_status[st] = await IOC.filter(status=st).count()
         by_confidence: dict[str, int] = {}
-        for cf in ("low", "medium", "high", "confirmed"):
-            by_confidence[cf] = await IOC.filter(confidence=cf).count()
+        for ioc_type, status, confidence in all_rows:
+            t = str(ioc_type) if ioc_type else "unknown"
+            by_type[t] = by_type.get(t, 0) + 1
+            s = str(status.value if hasattr(status, "value") else status) if status else "unknown"
+            by_status[s] = by_status.get(s, 0) + 1
+            c = str(confidence.value if hasattr(confidence, "value") else confidence) if confidence else "unknown"
+            by_confidence[c] = by_confidence.get(c, 0) + 1
 
         _IOC_FIELDS = [
             "id", "ioc_id", "ioc_type", "value", "confidence", "status",
@@ -104,23 +105,24 @@ async def api_yara(request: Request) -> JSONResponse:
     try:
         from db.models.yara_rule import YaraRule
         total = await YaraRule.all().count()
+
+        all_rows = await YaraRule.all().values_list("status", "source", flat=False)
         by_status: dict[str, int] = {}
-        for st in ("draft", "tested", "optimized", "active", "deprecated"):
-            by_status[st] = await YaraRule.filter(status=st).count()
         by_source: dict[str, int] = {}
-        for src in ("ioc_derived", "manual", "imported", "generated"):
-            by_source[src] = await YaraRule.filter(source=src).count()
+        for status, source in all_rows:
+            s = str(status.value if hasattr(status, "value") else status) if status else "unknown"
+            by_status[s] = by_status.get(s, 0) + 1
+            src = str(source.value if hasattr(source, "value") else source) if source else "unknown"
+            by_source[src] = by_source.get(src, 0) + 1
 
         _YARA_FIELDS = [
             "id", "rule_id", "name", "description", "content", "status", "source",
             "severity", "detection_count", "false_positive_rate",
             "test_results", "tags", "created_at", "updated_at",
         ]
-        # Use values() to avoid enum instantiation issues
         try:
             recent = await YaraRule.all().order_by("-created_at").limit(20).values(*_YARA_FIELDS)
         except Exception:
-            # Fallback if some fields don't exist on this model version
             recent = await YaraRule.all().order_by("-created_at").limit(20).values(
                 "id", "rule_id", "name", "status", "source", "created_at"
             )
@@ -201,9 +203,14 @@ async def api_intelligence(request: Request) -> JSONResponse:
         cwe_count = await CWEIntel.all().count()
         capec_count = await CapecAttackPatternIntel.all().count()
 
-        # Unique tactics from MITRE
-        tactics = await MitreTechniqueIntel.all().values_list("tactic", flat=True)
-        unique_tactics = len({t for t in tactics if t})
+        tactics_raw = await MitreTechniqueIntel.all().values_list("tactics", flat=True)
+        tactic_set: set[str] = set()
+        for raw in tactics_raw:
+            if isinstance(raw, list):
+                tactic_set.update(str(t) for t in raw if t)
+            elif raw:
+                tactic_set.add(str(raw))
+        unique_tactics = len(tactic_set)
 
         # Last seeded — check feed snapshot or update log
         last_seeded = None

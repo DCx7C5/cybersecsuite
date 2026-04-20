@@ -10,7 +10,7 @@ interface APIResponse {
 
 export async function refresh(): Promise<void> {
   try {
-    const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv, findingsv, iocsv, yarav, netv, intv, auditv, compv, hv] = await Promise.all([
+    const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv, findingsv, iocsv, yarav, netv, intv, auditv, compv, hv, afv] = await Promise.all([
       fetch('/api/overview').then((r) => r.json()),
       fetch('/api/usage').then((r) => r.json()),
       fetch('/api/crypto').then((r) => r.json()),
@@ -29,6 +29,7 @@ export async function refresh(): Promise<void> {
       fetch('/api/audit').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/compliance').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/health').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
+      fetch('/api/agent-factory').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
     ]);
 
     if ($('uptime') && ov.uptime_seconds !== undefined)
@@ -312,36 +313,36 @@ export async function refresh(): Promise<void> {
     }
 
     // Factory tab
-    const fc = $('factory-content');
-    if (agv.error) {
-      fc!.innerHTML = '<p class="text-red-400">Error: ' + agv.error + '</p>';
+    const fc = $('agent-factory-content');
+    if (afv.error) {
+      fc!.innerHTML = '<p class="text-red-400">Error: ' + afv.error + '</p>';
     } else {
       fc!.innerHTML =
         '<div class="grid grid-cols-4 gap-4 mb-4">' +
         '<div class="card text-center"><div class="text-2xl font-bold ' +
-        (agv.factory_available ? 'text-green-400' : 'text-red-400') +
+        (afv.factory_available ? 'text-green-400' : 'text-red-400') +
         '">' +
-        (agv.factory_available ? '&#x2705;' : '&#x274c;') +
+        (afv.factory_available ? '&#x2705;' : '&#x274c;') +
         '</div><div class="text-xs text-gray-500">Factory</div></div>' +
         '<div class="card text-center"><div class="text-2xl font-bold">' +
-        agv.total_agents +
+        afv.total_agents +
         '</div><div class="text-xs text-gray-500">Agent Files</div></div>' +
         '<div class="card text-center"><div class="text-2xl font-bold">' +
-        agv.total_teams +
+        afv.total_teams +
         '</div><div class="text-xs text-gray-500">Team Files</div></div>' +
         '<div class="card text-center"><div class="text-2xl font-bold">' +
-        (agv.plugins || []).length +
+        (afv.plugins || []).length +
         '</div><div class="text-xs text-gray-500">Templates</div></div>' +
         '</div>' +
         '<h4 class="font-semibold mb-2">Archetypes</h4>' +
         '<div class="flex gap-2 mb-4">' +
-        (agv.archetypes || []).map((a: string) => '<span class="badge badge-standard">' + a + '</span>').join('') +
+        (afv.archetypes || []).map((a: string) => '<span class="badge badge-standard">' + a + '</span>').join('') +
         '</div>' +
         '<h4 class="font-semibold mb-2">Agent Files</h4>' +
         '<div id="factory-agents-table"></div>' +
         '<h4 class="font-semibold mt-4 mb-2">Teams</h4>' +
         '<div id="factory-teams-table"></div>';
-      const agentFileRows = (agv.agents || []).map((a: any) => ({
+      const agentFileRows = (afv.agents || []).map((a: any) => ({
         name: a.name,
         size_kb: Math.round((a.size / 1024) * 10) / 10,
         lines: a.lines,
@@ -358,7 +359,7 @@ export async function refresh(): Promise<void> {
       renderTable(
         'factory-teams-table',
         [{ key: 'name', label: 'Team', type: 'string' }],
-        (agv.teams || []).map((t: any) => ({ name: t.name }))
+        (afv.teams || []).map((t: any) => ({ name: t.name }))
       );
     }
 

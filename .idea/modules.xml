@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/../ccs-browser-plugin/.idea/ccs-browser-plugin.iml" filepath="$PROJECT_DIR$/../ccs-browser-plugin/.idea/ccs-browser-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite@1.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite@1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../AI/mcps/.idea/mcps.iml" filepath="$PROJECT_DIR$/../AI/mcps/.idea/mcps.iml" />
       <module fileurl="file://$PROJECT_DIR$/../AI/plugins/.idea/plugins.iml" filepath="$PROJECT_DIR$/../AI/plugins/.idea/plugins.iml" />
     </modules>
   </component>

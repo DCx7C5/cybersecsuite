@@ -58,6 +58,7 @@ class FindingStatus(str, Enum):
     RESOLVED = "resolved"
     FALSE_POSITIVE = "false_positive"
     WONT_FIX = "wont_fix"
+    INVESTIGATING = "investigating"
 
 
 class IOCStatus(str, Enum):
@@ -65,6 +66,7 @@ class IOCStatus(str, Enum):
     INACTIVE = "inactive"
     INVESTIGATING = "investigating"
     RESOLVED = "resolved"
+    CLEARED = "cleared"
 
 
 class ForensicIOCStatus(str, Enum):
@@ -181,6 +183,7 @@ class YaraRuleStatus(str, Enum):
     ACTIVE = "active"
     DISABLED = "disabled"
     ARCHIVED = "archived"
+    TESTED = "tested"
 
 
 class YaraRuleSource(str, Enum):
@@ -366,6 +369,7 @@ class FindingStatus(str, Enum):
     RESOLVED = "resolved"
     FALSE_POSITIVE = "false_positive"
     WONT_FIX = "wont_fix"
+    INVESTIGATING = "investigating"
 
 
 class IOCStatus(str, Enum):
@@ -373,6 +377,7 @@ class IOCStatus(str, Enum):
     INACTIVE = "inactive"
     INVESTIGATING = "investigating"
     RESOLVED = "resolved"
+    CLEARED = "cleared"
 
 
 class ForensicIOCStatus(str, Enum):
@@ -489,6 +494,7 @@ class YaraRuleStatus(str, Enum):
     ACTIVE = "active"
     DISABLED = "disabled"
     ARCHIVED = "archived"
+    TESTED = "tested"
 
 
 class YaraRuleSource(str, Enum):
