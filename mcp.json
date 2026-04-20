@@ -35,7 +35,8 @@
       ],
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src",
-        "DYSTOPIAN_KEYS_DIR": "/etc/dystopian-crypto/keys"
+        "DYSTOPIAN_KEYS_DIR": "/etc/dystopian/crypto/cert/private",
+        "DYSTOPIAN_VAULT_PASSWORD_FILE": "${HOME}/.dystopian-vault-password"
       },
       "cwd": "${workspaceFolder}"
     },
@@ -48,6 +49,39 @@
         "KERNEL_SRC": "/usr/src/linux",
         "KERNELDEV_WORKSPACE": "./kernel-modules"
       }
+    },
+    "playwright-stealth": {
+      "name": "Playwright Stealth",
+      "description": "Browser automation with stealth capabilities — headless detection evasion, fingerprint randomization, proxy management (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/AI/mcps/playwright-stealth-mcp",
+        "run",
+        "python",
+        "main.py"
+      ],
+      "env": {
+        "USER_DATA_DIR": "/home/daen/Projects/AI/mcps/brave_stealth_profile"
+      },
+      "cwd": "/home/daen/Projects/AI/mcps/playwright-stealth-mcp"
+    },
+    "token-optimization": {
+      "name": "Token Optimization",
+      "description": "Token usage analysis and optimization — input token counting, output token estimation, prompt engineering suggestions (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${workspaceFolder}",
+        "run",
+        "python",
+        "-m",
+        "csmcp.token_optimization.server"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "cwd": "${workspaceFolder}",
     }
   }
 }

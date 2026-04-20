@@ -19,6 +19,7 @@ _DEFAULT_PASSWORD_CANDIDATES = (
     "/etc/dystopian/crypto/vault/password",
     "/etc/dystopian/crypto/cert/private/.vault-password",
     "/etc/dystopian-crypto/password",
+    str(Path.home() / ".dystopian-vault-password"),
     str(Path.home() / ".dystopian-crypto" / "password"),
 )
 
