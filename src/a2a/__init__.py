@@ -44,6 +44,7 @@ try:
         run_agent_query,
         run_orchestrator_query,
         run_agent_stream,
+        run_agent_stream_with_memory,
     )
     _HAS_AGENT_SDK = True
 except ImportError:
@@ -71,4 +72,5 @@ __all__ = [
     # Agent SDK (optional)
     "build_agent_options", "build_agent_definitions", "clear_caches",
     "run_agent_query", "run_orchestrator_query", "run_agent_stream",
+    "run_agent_stream_with_memory",
 ]

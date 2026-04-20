@@ -31,6 +31,10 @@ from csmcp.cybersec.skill_manager import ALL_TOOLS as _skill_tools
 from csmcp.cybersec.vault_tool import ALL_TOOLS as _vault_tools
 from csmcp.cybersec.canvas_tool import ALL_TOOLS as _canvas_tools
 from csmcp.cybersec.tool_toggles import ALL_TOOLS as _toggle_tools
+from csmcp.cybersec.structured_extract import ALL_TOOLS as _structured_tools
+from csmcp.cybersec.thinking_tool import ALL_TOOLS as _thinking_tools
+from csmcp.cybersec.tool_search import ALL_TOOLS as _tool_search_tools
+from csmcp.cybersec.agents_beta import ALL_TOOLS as _agents_beta_tools
 
 _ALL_CYBERSEC_TOOLS = (
     _findings_tools
@@ -53,6 +57,10 @@ _ALL_CYBERSEC_TOOLS = (
     + _vault_tools
     + _canvas_tools
     + _toggle_tools
+    + _structured_tools
+    + _thinking_tools
+    + _tool_search_tools
+    + _agents_beta_tools
 )
 
 cybersec_server = create_sdk_mcp_server(

@@ -25,6 +25,12 @@ into it so callers can thread the same session across multiple queries::
                                    _session_out=session_out)
     task.session_id = session_out.get("session_id") or task.session_id
 
+Memory-enhanced streaming
+--------------------------
+``run_agent_stream_with_memory()`` uses the Anthropic SDK ``tool_runner`` with
+``BetaLocalFilesystemMemoryTool`` and context management for persistent memory
+across sessions. Enable via ``use_memory_runner=True`` in ``run_agent_stream``.
+
 Usage:
     from a2a.agent_sdk import build_agent_options, run_agent_query
 
@@ -581,3 +587,136 @@ async def run_agent_stream(
     if not stream:
         done_event["text"] = "".join(collected)
     await queue.put(done_event)
+
+
+# ── Context Management Config ────────────────────────────────────────────────
+
+_DEFAULT_CONTEXT_MANAGEMENT: dict[str, Any] = {
+    "edits": [
+        {
+            "type": "clear_tool_uses_20250919",
+            "trigger": {"type": "input_tokens", "value": 30000},
+            "keep": {"type": "tool_uses", "value": 3},
+            "clear_at_least": {"type": "input_tokens", "value": 5000},
+        }
+    ]
+}
+
+_MEMORY_SYSTEM_PROMPT = (
+    "You are a forensic cybersecurity analyst assistant with persistent memory.\n"
+    "- Store facts about the investigation: IOCs, findings, threat actors, case context.\n"
+    "- Check memory before responding to build on prior context.\n"
+    "- Keep memories concise and up-to-date. Remove stale entries.\n"
+    "- Use structured XML-like tags in memory: <ioc>, <finding>, <threat_actor>, <case>.\n"
+    "- Do NOT mention your memory tool unless the user asks about it."
+)
+
+
+async def run_agent_stream_with_memory(
+    agent_name: str,
+    prompt: str,
+    queue: asyncio.Queue[dict[str, Any]],
+    stream: bool = True,
+    memory_dir: str | None = None,
+) -> None:
+    """Stream an agent response using Anthropic SDK tool_runner + persistent memory.
+
+    Uses ``BetaLocalFilesystemMemoryTool`` for session-persistent memory and
+    ``context-management-2025-06-27`` beta for automatic context window management.
+
+    This is the preferred stream backend when the Anthropic SDK is available and
+    the agent benefits from cross-session memory (most forensic use cases).
+    """
+    started = time.monotonic()
+    collected: list[str] = []
+
+    try:
+        import anthropic
+        from anthropic.tools import BetaLocalFilesystemMemoryTool
+    except ImportError:
+        # Fall back to legacy stream if SDK not available
+        await run_agent_stream(agent_name, prompt, queue, stream)
+        return
+
+    agent_defs = build_agent_definitions()
+    default_model = os.environ.get(
+        "CYBERSEC_DEFAULT_MODEL", os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5-20250929")
+    )
+    model = default_model
+    if agent_name in agent_defs and agent_defs[agent_name].model:
+        model = agent_defs[agent_name].model
+
+    agent_context = ""
+    if agent_name in agent_defs:
+        agent_context = f"[AGENT CONTEXT]\n{agent_defs[agent_name].prompt}\n[/AGENT CONTEXT]\n\n"
+    else:
+        agent_context = f"[AGENT: {agent_name}]\n\n"
+
+    # Resolve memory directory
+    mem_dir = memory_dir or os.environ.get("CYBERSEC_MEMORY_DIR")
+    memory = BetaLocalFilesystemMemoryTool(base_dir=mem_dir) if mem_dir else BetaLocalFilesystemMemoryTool()
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    base_url = os.environ.get("ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+
+    async_client = anthropic.AsyncAnthropic(api_key=api_key, base_url=base_url)
+    stop_reason = "end_turn"
+
+    try:
+        runner = async_client.beta.messages.tool_runner(
+            model=model,
+            max_tokens=4096,
+            system=_MEMORY_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": f"{agent_context}{prompt}"}],
+            tools=[memory],
+            betas=["context-management-2025-06-27"],
+            context_management=_DEFAULT_CONTEXT_MANAGEMENT,
+        )
+
+        async for message in runner:
+            # Emit context management events
+            cm = getattr(message, "context_management", None)
+            if cm:
+                for edit in getattr(cm, "applied_edits", []):
+                    await queue.put({"type": "context_cleared", "edit_type": getattr(edit, "type", "")})
+
+            # Check stop reason
+            sr = getattr(message, "stop_reason", None)
+            if sr:
+                stop_reason = str(sr)
+
+            for content in message.content:
+                ct = getattr(content, "type", "")
+                if ct == "text":
+                    text = getattr(content, "text", "")
+                    if text:
+                        collected.append(text)
+                        if stream:
+                            await queue.put({"type": "token", "text": text})
+                elif ct == "tool_use":
+                    tool_name = getattr(content, "name", "tool")
+                    await queue.put({
+                        "type": "tool_start",
+                        "name": tool_name,
+                        "ts": int((time.monotonic() - started) * 1000),
+                    })
+                elif ct == "tool_result":
+                    pass  # tool results handled internally by tool_runner
+
+    except asyncio.CancelledError:
+        await queue.put({"type": "error", "error": "cancelled"})
+        raise
+    except Exception as exc:
+        await queue.put({"type": "error", "error": str(exc)})
+        return
+
+    done_event: dict[str, Any] = {
+        "type": "done",
+        "elapsed_ms": int((time.monotonic() - started) * 1000),
+        "stop_reason": stop_reason,
+        "memory_enabled": True,
+    }
+    if not stream:
+        done_event["text"] = "".join(collected)
+    await queue.put(done_event)
+
