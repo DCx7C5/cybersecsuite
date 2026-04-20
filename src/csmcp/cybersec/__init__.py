@@ -30,6 +30,7 @@ from csmcp.cybersec.template import ALL_TOOLS as _template_tools
 from csmcp.cybersec.skill_manager import ALL_TOOLS as _skill_tools
 from csmcp.cybersec.vault_tool import ALL_TOOLS as _vault_tools
 from csmcp.cybersec.canvas_tool import ALL_TOOLS as _canvas_tools
+from csmcp.cybersec.tool_toggles import ALL_TOOLS as _toggle_tools
 
 _ALL_CYBERSEC_TOOLS = (
     _findings_tools
@@ -51,6 +52,7 @@ _ALL_CYBERSEC_TOOLS = (
     + _skill_tools
     + _vault_tools
     + _canvas_tools
+    + _toggle_tools
 )
 
 cybersec_server = create_sdk_mcp_server(
