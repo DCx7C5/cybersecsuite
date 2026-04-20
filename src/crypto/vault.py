@@ -13,6 +13,14 @@ from crypto.key_manager import PasswordManager
 
 
 _DEFAULT_VAULT_DIR = str(Path.home() / ".dystopian-crypto" / "vault")
+_DEFAULT_PASSWORD_CANDIDATES = (
+    os.environ.get("CYBERSEC_VAULT_PASSWORD_FILE"),
+    os.environ.get("DYSTOPIAN_VAULT_PASSWORD_FILE"),
+    "/etc/dystopian/crypto/vault/password",
+    "/etc/dystopian/crypto/cert/private/.vault-password",
+    "/etc/dystopian-crypto/password",
+    str(Path.home() / ".dystopian-crypto" / "password"),
+)
 
 
 class VaultError(Exception):
@@ -167,6 +175,27 @@ class Vault:
             ``True`` if the secret is present on disk.
         """
         return self._secret_path(name).exists()
+
+    def set_secret(self, name: str, content: str, *, overwrite: bool = True) -> Path:
+        """Compatibility wrapper for account/vault callers."""
+        return self.store(name, content, self._default_password_file(), overwrite=overwrite)
+
+    def get_secret(self, name: str) -> str:
+        """Compatibility wrapper for account/vault callers."""
+        return self.retrieve(name, self._default_password_file())
+
+    def delete_secret(self, name: str) -> bool:
+        """Compatibility wrapper for account/vault callers."""
+        return self.delete(name)
+
+    def _default_password_file(self) -> str:
+        for candidate in _DEFAULT_PASSWORD_CANDIDATES:
+            if candidate and Path(candidate).exists():
+                return candidate
+        raise FileNotFoundError(
+            "Vault password file not found. Set CYBERSEC_VAULT_PASSWORD_FILE or "
+            "DYSTOPIAN_VAULT_PASSWORD_FILE, or create /etc/dystopian/crypto/vault/password."
+        )
 
     # ------------------------------------------------------------------
     # dunder helpers
