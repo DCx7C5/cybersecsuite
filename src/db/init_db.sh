@@ -371,21 +371,147 @@ fi
 # PHASE 8 — Performance indexes
 # ==============================================================================
 if [ "$SKIP_INDEXES" -eq 0 ]; then
-  _blue "→ [Phase 8] Creating special indexes (GIN/trgm — not expressible in Tortoise ORM)..."
+  _blue "→ [Phase 8] Creating performance indexes (FK + GIN/trgm — not in Tortoise ORM Meta)..."
   psql -h "$DB_HOST" -p "$DB_PORT" -d "$DB_NAME" -U "$DB_USER" <<'SQL' || true
 -- GIN trigram index for fast substring/fuzzy search on IOC values
--- (requires pg_trgm extension; cannot be declared in Tortoise model Meta)
-CREATE INDEX IF NOT EXISTS idx_ioc_entries_value_trgm
-    ON ioc_entries USING gin(value gin_trgm_ops);
-
+CREATE INDEX IF NOT EXISTS idx_ioc_entries_value_trgm ON ioc_entries USING gin(value gin_trgm_ops);
 -- GIN full-text search index on finding descriptions
--- (requires to_tsvector; cannot be declared in Tortoise model Meta)
-CREATE INDEX IF NOT EXISTS idx_findings_description_fts
-    ON findings USING gin(to_tsvector('english', description));
+CREATE INDEX IF NOT EXISTS idx_findings_description_fts ON findings USING gin(to_tsvector('english', description));
+
+-- FK indexes: Tortoise ORM does not add db-level indexes for ForeignKeyFields by default.
+-- These are required for all join/filter operations on FK columns.
+CREATE INDEX IF NOT EXISTS idx_api_account_provider_id ON api_account(provider_id);
+CREATE INDEX IF NOT EXISTS idx_artifact_signature_logs_artifact_id ON artifact_signature_logs(artifact_id);
+CREATE INDEX IF NOT EXISTS idx_artifacts_parent_version_id ON artifacts(parent_version_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_session_id ON audit_logs(session_id);
+CREATE INDEX IF NOT EXISTS idx_baselines_session_id ON baselines(session_id);
+CREATE INDEX IF NOT EXISTS idx_case_intakes_session_id ON case_intakes(session_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_session_id ON certificates(session_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_domain_id ON certificates(domain_id);
+CREATE INDEX IF NOT EXISTS idx_cleared_items_original_watchlist_id ON cleared_items(original_watchlist_id);
+CREATE INDEX IF NOT EXISTS idx_cleared_items_original_ioc_id ON cleared_items(original_ioc_id);
+CREATE INDEX IF NOT EXISTS idx_cleared_items_cleared_by_session_id ON cleared_items(cleared_by_session_id);
+CREATE INDEX IF NOT EXISTS idx_compliance_checks_rule_id ON compliance_checks(rule_id);
+CREATE INDEX IF NOT EXISTS idx_compliance_checks_session_id ON compliance_checks(session_id);
+CREATE INDEX IF NOT EXISTS idx_cpu_info_machine_id ON cpu_info(machine_id);
+CREATE INDEX IF NOT EXISTS idx_domains_session_id ON domains(session_id);
+CREATE INDEX IF NOT EXISTS idx_domains_host_id ON domains(host_id);
+CREATE INDEX IF NOT EXISTS idx_finding_host_findings_id ON finding_host(findings_id);
+CREATE INDEX IF NOT EXISTS idx_finding_host_host_id ON finding_host(host_id);
+CREATE INDEX IF NOT EXISTS idx_finding_ioc_ioc_id ON finding_ioc(ioc_id);
+CREATE INDEX IF NOT EXISTS idx_finding_ioc_findings_id ON finding_ioc(findings_id);
+CREATE INDEX IF NOT EXISTS idx_findings_mitre_mitretechnique_id ON findings_mitre_techniques(mitretechnique_id);
+CREATE INDEX IF NOT EXISTS idx_findings_mitre_findings_id ON findings_mitre_techniques(findings_id);
+CREATE INDEX IF NOT EXISTS idx_fft_forensic_findings_id ON forensic_finding_techniques(forensic_findings_id);
+CREATE INDEX IF NOT EXISTS idx_fft_forensicmitretechnique_id ON forensic_finding_techniques(forensicmitretechnique_id);
+CREATE INDEX IF NOT EXISTS idx_fffa_forensic_findings_id ON forensic_findings_forensic_artifacts(forensic_findings_id);
+CREATE INDEX IF NOT EXISTS idx_fffa_forensicartifact_id ON forensic_findings_forensic_artifacts(forensicartifact_id);
+CREATE INDEX IF NOT EXISTS idx_ffie_iocentry_id ON forensic_findings_ioc_entries(iocentry_id);
+CREATE INDEX IF NOT EXISTS idx_ffie_forensic_findings_id ON forensic_findings_ioc_entries(forensic_findings_id);
+CREATE INDEX IF NOT EXISTS idx_forensic_projects_scope_project_id ON forensic_projects(scope_project_id);
+CREATE INDEX IF NOT EXISTS idx_forensic_sessions_scope_session_id ON forensic_sessions(scope_session_id);
+CREATE INDEX IF NOT EXISTS idx_fwi_added_by_session_id ON forensic_watchlist_items(added_by_session_id);
+CREATE INDEX IF NOT EXISTS idx_fwi_last_checked_session_id ON forensic_watchlist_items(last_checked_session_id);
+CREATE INDEX IF NOT EXISTS idx_fwi_escalated_to_ioc_id ON forensic_watchlist_items(escalated_to_ioc_id);
+CREATE INDEX IF NOT EXISTS idx_host_ip_addresses_hosts_id ON host_ip_addresses(hosts_id);
+CREATE INDEX IF NOT EXISTS idx_host_ip_addresses_ipaddress_id ON host_ip_addresses(ipaddress_id);
+CREATE INDEX IF NOT EXISTS idx_hosts_session_id ON hosts(session_id);
+CREATE INDEX IF NOT EXISTS idx_iasr_actor_id ON intel_actor_software_refs(actor_id);
+CREATE INDEX IF NOT EXISTS idx_iasr_software_id ON intel_actor_software_refs(software_id);
+CREATE INDEX IF NOT EXISTS idx_iatr_actor_id ON intel_actor_technique_refs(actor_id);
+CREATE INDEX IF NOT EXISTS idx_iatr_technique_id ON intel_actor_technique_refs(technique_id);
+CREATE INDEX IF NOT EXISTS idx_icmr_technique_id ON intel_capec_mitre_refs(technique_id);
+CREATE INDEX IF NOT EXISTS idx_icmr_capec_id ON intel_capec_mitre_refs(capec_id);
+CREATE INDEX IF NOT EXISTS idx_iccr_cve_id ON intel_cve_cwe_refs(cve_id);
+CREATE INDEX IF NOT EXISTS idx_iccr_cwe_id ON intel_cve_cwe_refs(cwe_id);
+CREATE INDEX IF NOT EXISTS idx_intel_cve_entries_cve_id ON intel_cve_entries(cve_id);
+CREATE INDEX IF NOT EXISTS idx_icvemr_cve_id ON intel_cve_mitre_refs(cve_id);
+CREATE INDEX IF NOT EXISTS idx_icvemr_technique_id ON intel_cve_mitre_refs(technique_id);
+CREATE INDEX IF NOT EXISTS idx_icsecr_cwe_id ON intel_cwe_capec_refs(cwe_id);
+CREATE INDEX IF NOT EXISTS idx_icsecr_capec_id ON intel_cwe_capec_refs(capec_id);
+CREATE INDEX IF NOT EXISTS idx_ima_event_id ON intel_misp_attributes(event_id);
+CREATE INDEX IF NOT EXISTS idx_ima_source_snapshot_id ON intel_misp_attributes(source_snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_ime_source_snapshot_id ON intel_misp_events(source_snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_ioe_source_snapshot_id ON intel_opencti_entities(source_snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_ioi_source_snapshot_id ON intel_opencti_indicators(source_snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_istr_software_id ON intel_software_technique_refs(software_id);
+CREATE INDEX IF NOT EXISTS idx_istr_technique_id ON intel_software_technique_refs(technique_id);
+CREATE INDEX IF NOT EXISTS idx_itpe_actor_id ON intel_threat_profile_entries(actor_id);
+CREATE INDEX IF NOT EXISTS idx_interface_addresses_interface_id ON interface_addresses(interface_id);
+CREATE INDEX IF NOT EXISTS idx_ioc_entries_last_session_id ON ioc_entries(last_session_id);
+CREATE INDEX IF NOT EXISTS idx_ioc_entries_intel_match_id ON ioc_entries(intel_match_id);
+CREATE INDEX IF NOT EXISTS idx_iocs_intel_match_id ON iocs(intel_match_id);
+CREATE INDEX IF NOT EXISTS idx_iocs_session_id ON iocs(session_id);
+CREATE INDEX IF NOT EXISTS idx_kernel_baselines_session_id ON kernel_baselines(session_id);
+CREATE INDEX IF NOT EXISTS idx_kernel_modules_kernel_id ON kernel_modules(kernel_id);
+CREATE INDEX IF NOT EXISTS idx_kernels_session_id ON kernels(session_id);
+CREATE INDEX IF NOT EXISTS idx_machines_host_id ON machines(host_id);
+CREATE INDEX IF NOT EXISTS idx_memory_modules_machine_id ON memory_modules(machine_id);
+CREATE INDEX IF NOT EXISTS idx_mitre_techniques_finding_id ON mitre_techniques(finding_id);
+CREATE INDEX IF NOT EXISTS idx_mitre_techniques_session_id ON mitre_techniques(session_id);
+CREATE INDEX IF NOT EXISTS idx_network_baselines_session_id ON network_baselines(session_id);
+CREATE INDEX IF NOT EXISTS idx_network_connections_session_id ON network_connections(session_id);
+CREATE INDEX IF NOT EXISTS idx_network_interfaces_machine_id ON network_interfaces(machine_id);
+CREATE INDEX IF NOT EXISTS idx_pci_devices_machine_id ON pci_devices(machine_id);
+CREATE INDEX IF NOT EXISTS idx_persistence_baselines_session_id ON persistence_baselines(session_id);
+CREATE INDEX IF NOT EXISTS idx_process_baselines_session_id ON process_baselines(session_id);
+CREATE INDEX IF NOT EXISTS idx_provider_auth_methods_provider_id ON provider_auth_methods(provider_id);
+CREATE INDEX IF NOT EXISTS idx_risks_session_id ON risks(session_id);
+CREATE INDEX IF NOT EXISTS idx_scoped_entries_session_id ON scoped_entries(session_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_project_id ON sessions(project_id);
+CREATE INDEX IF NOT EXISTS idx_shared_entries_session_id ON shared_entries(session_id);
+CREATE INDEX IF NOT EXISTS idx_storage_drives_machine_id ON storage_drives(machine_id);
+CREATE INDEX IF NOT EXISTS idx_storage_partitions_drive_id ON storage_partitions(drive_id);
+CREATE INDEX IF NOT EXISTS idx_timeline_entries_ioc_reference_id ON timeline_entries(ioc_reference_id);
+CREATE INDEX IF NOT EXISTS idx_vulnerabilities_session_discovered_id ON vulnerabilities(session_discovered_id);
+CREATE INDEX IF NOT EXISTS idx_watchlist_items_session_id ON watchlist_items(session_id);
+CREATE INDEX IF NOT EXISTS idx_yara_rules_generated_by_session_id ON yara_rules(generated_by_session_id);
+CREATE INDEX IF NOT EXISTS idx_yara_test_runs_rule_id ON yara_test_runs(rule_id);
+CREATE INDEX IF NOT EXISTS idx_yara_test_runs_session_id ON yara_test_runs(session_id);
+
+-- Composite PKs for M2M junction tables (Tortoise ORM omits these)
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='finding_host'::regclass AND contype='p') THEN
+    ALTER TABLE finding_host ADD PRIMARY KEY (findings_id, host_id); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='finding_ioc'::regclass AND contype='p') THEN
+    ALTER TABLE finding_ioc ADD PRIMARY KEY (findings_id, ioc_id); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='findings_mitre_techniques'::regclass AND contype='p') THEN
+    ALTER TABLE findings_mitre_techniques ADD PRIMARY KEY (findings_id, mitretechnique_id); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='forensic_finding_techniques'::regclass AND contype='p') THEN
+    ALTER TABLE forensic_finding_techniques ADD PRIMARY KEY (forensic_findings_id, forensicmitretechnique_id); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='forensic_findings_forensic_artifacts'::regclass AND contype='p') THEN
+    ALTER TABLE forensic_findings_forensic_artifacts ADD PRIMARY KEY (forensic_findings_id, forensicartifact_id); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='forensic_findings_ioc_entries'::regclass AND contype='p') THEN
+    ALTER TABLE forensic_findings_ioc_entries ADD PRIMARY KEY (forensic_findings_id, iocentry_id); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='host_ip_addresses'::regclass AND contype='p') THEN
+    ALTER TABLE host_ip_addresses ADD PRIMARY KEY (hosts_id, ipaddress_id); END IF;
+END $$;
+
+-- CHECK constraints for enum-like varchar columns
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_anti_forensic_techniques_severity') THEN
+    ALTER TABLE anti_forensic_techniques ADD CONSTRAINT chk_anti_forensic_techniques_severity CHECK (severity IN ('info','low','medium','high','critical')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_anti_forensic_techniques_confidence') THEN
+    ALTER TABLE anti_forensic_techniques ADD CONSTRAINT chk_anti_forensic_techniques_confidence CHECK (confidence IN ('low','medium','high','confirmed')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_compliance_rules_severity') THEN
+    ALTER TABLE compliance_rules ADD CONSTRAINT chk_compliance_rules_severity CHECK (severity IN ('info','low','medium','high','critical')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_intel_cwes_status') THEN
+    ALTER TABLE intel_cwes ADD CONSTRAINT chk_intel_cwes_status CHECK (status IN ('open','patched','mitigated','accepted','false_positive','active','deprecated','draft')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_intel_ioc_db_entries_confidence') THEN
+    ALTER TABLE intel_ioc_db_entries ADD CONSTRAINT chk_intel_ioc_db_entries_confidence CHECK (confidence IN ('low','medium','high','confirmed')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_intel_pocs_severity') THEN
+    ALTER TABLE intel_pocs ADD CONSTRAINT chk_intel_pocs_severity CHECK (severity IN ('info','low','medium','high','critical')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_ioc_entries_confidence') THEN
+    ALTER TABLE ioc_entries ADD CONSTRAINT chk_ioc_entries_confidence CHECK (confidence IN ('low','medium','high','confirmed')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_ioc_entries_severity') THEN
+    ALTER TABLE ioc_entries ADD CONSTRAINT chk_ioc_entries_severity CHECK (severity IN ('info','low','medium','high','critical')); END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='chk_vulnerabilities_severity') THEN
+    ALTER TABLE vulnerabilities ADD CONSTRAINT chk_vulnerabilities_severity CHECK (severity IN ('info','low','medium','high','critical')); END IF;
+END $$;
 SQL
-  _green "✓ Special GIN indexes created"
+  _green "✓ Performance indexes, junction PKs, and CHECK constraints applied"
 else
-  _yellow "⚠  Special indexes skipped (--skip-indexes)"
+  _yellow "⚠  Performance indexes skipped (--skip-indexes)"
 fi
 echo ""
 
