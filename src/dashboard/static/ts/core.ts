@@ -183,6 +183,7 @@ export function showTab(name: string): void {
   const crumb = document.querySelector('#topbar-title') as HTMLElement | null;
   if (crumb && navItem) crumb.textContent = '▶ ' + navItem.textContent!.trim().toUpperCase();
   currentTab = name;
+  localStorage.setItem('activeTab', name);
   _updateStatusBar(name);
   _updateContextBar(name);
 }

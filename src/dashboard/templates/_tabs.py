@@ -66,7 +66,7 @@ _GROUPS = {
     "settings":   "SETTINGS",
 }
 
-# Inline CSS + JS injected once inside <nav>
+# Inline CSS injected once inside <nav> — JS moved to sidebar.ts
 _NAV_DROPDOWN_STYLE = """\
 <style>
 .nav-dropdown-header {
@@ -91,15 +91,6 @@ _NAV_DROPDOWN_STYLE = """\
 .nav-dropdown-body.open { max-height: 200px; }
 .nav-sub-tab { padding-left: 36px !important; font-size: 11px !important; }
 </style>
-<script>
-function toggleNavDropdown(id) {
-  var hdr = document.getElementById(id + '-hdr');
-  var body = document.getElementById(id + '-body');
-  if (!hdr || !body) return;
-  var open = body.classList.toggle('open');
-  hdr.classList.toggle('open', open);
-}
-</script>
 """
 
 

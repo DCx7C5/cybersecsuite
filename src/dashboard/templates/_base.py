@@ -86,7 +86,7 @@ def header() -> str:
     return (
         '<div id="topbar">\n'
         '  <div style="display:flex;align-items:center;gap:8px">\n'
-        '    <button id="sidebar-toggle" class="btn btn-ghost" onclick="toggleSidebar()" style="width:40px;height:40px;display:none">☰</button>\n'
+        '    <button id="sidebar-toggle" class="btn btn-ghost" onclick="toggleSidebar()" style="width:40px;height:40px" title="Expand sidebar">☰</button>\n'
         '    <div id="topbar-title" id="topbar-crumb">&#x25b6; PROVIDERS</div>\n'
         '  </div>\n'
         '  <div id="topbar-actions" style="display:flex;align-items:center;gap:12px">\n'
@@ -100,7 +100,7 @@ def header() -> str:
         '  </div>\n'
         '</div>\n'
         '<div id="statusbar" style="'
-        'position: fixed; bottom: 0; left: var(--sidebar-w); right: 0;'
+        'position: fixed; bottom: 0; right: 0;'
         'height: 24px; background: var(--accent);'
         'display: flex; align-items: center; padding: 0 16px; gap: 16px;'
         'font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.85);'

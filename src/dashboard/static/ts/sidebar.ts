@@ -1,124 +1,93 @@
 /**
  * Sidebar collapsible + theme mode system
- * - toggleSidebar() — collapse/expand sidebar
- * - setThemeMode(mode) — switch between blue/purple/red themes
- * - State persisted in localStorage
+ * - toggleSidebar()         — collapse/expand; drives body.sidebar-collapsed class
+ * - setThemeMode(mode)      — switch blue/purple/red; drives body.theme-* class
+ * - toggleNavDropdown(id)   — open/close sidebar dropdown; state persisted
+ * - initSidebar()           — restore all persisted state on page load
  */
 
 declare const document: Document;
 declare const window: any;
 
-let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true' || false;
+let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 let themeMode: 'blue' | 'purple' | 'red' = (localStorage.getItem('themeMode') as any) || 'blue';
 
-function getSidebarWidth(): string {
-  const value = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w').trim();
-  return value || '240px';
-}
+const THEME_COLORS: Record<string, string> = {
+  blue:   '#3574f0',
+  purple: '#a855f7',
+  red:    '#ef4444',
+};
+
+// ── Sidebar collapse ──────────────────────────────────────────────────────────
 
 export function toggleSidebar() {
   sidebarCollapsed = !sidebarCollapsed;
   localStorage.setItem('sidebarCollapsed', String(sidebarCollapsed));
-  updateSidebarLayout();
-  updateToggleButton();
+  applySidebarState();
 }
+
+function applySidebarState() {
+  document.body.classList.toggle('sidebar-collapsed', sidebarCollapsed);
+}
+
+// ── Theme mode ────────────────────────────────────────────────────────────────
 
 export function setThemeMode(mode: 'blue' | 'purple' | 'red') {
   themeMode = mode;
   localStorage.setItem('themeMode', mode);
-  updateThemeColors();
-  updateModeButtons();
+  applyTheme();
 }
 
-function updateSidebarLayout() {
-  const sidebar = document.getElementById('sidebar');
-  const content = document.getElementById('main-content');
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  const statusbar = document.getElementById('statusbar');
-  const sidebarWidth = getSidebarWidth();
+function applyTheme() {
+  document.body.classList.remove('theme-blue', 'theme-purple', 'theme-red');
+  document.body.classList.add(`theme-${themeMode}`);
 
-  if (sidebar) {
-    if (sidebarCollapsed) {
-      sidebar.style.left = `calc(-1 * ${sidebarWidth})`;
-    } else {
-      sidebar.style.left = '0';
-    }
-  }
+  // --mode-color drives all mode-aware CSS (mode-button borders, active nav items, etc.)
+  document.documentElement.style.setProperty('--mode-color', THEME_COLORS[themeMode] || THEME_COLORS.blue);
 
-  if (content) {
-    if (sidebarCollapsed) {
-      content.style.marginLeft = '0';
-    } else {
-      content.style.marginLeft = sidebarWidth;
-    }
-  }
-
-  if (statusbar) {
-    if (sidebarCollapsed) {
-      statusbar.style.left = '0';
-    } else {
-      statusbar.style.left = sidebarWidth;
-    }
-  }
-
-  if (toggleBtn) {
-    toggleBtn.style.display = sidebarCollapsed ? 'inline-flex' : 'none';
-  }
-}
-
-function updateToggleButton() {
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  if (toggleBtn) {
-    toggleBtn.textContent = sidebarCollapsed ? '☰' : '✕';
-  }
-}
-
-function updateThemeColors() {
-  const root = document.documentElement;
-  const body = document.body;
-  const modeButtonBlue = document.getElementById('mode-btn-blue');
-  const modeButtonPurple = document.getElementById('mode-btn-purple');
-  const modeButtonRed = document.getElementById('mode-btn-red');
+  const modeLabels: Record<string, string> = { blue: 'BLUE MODE', purple: 'PURPLE MODE', red: 'RED MODE' };
   const sidebarStatus = document.getElementById('sidebar-status');
-
-  switch (themeMode) {
-    case 'blue':
-      root.style.setProperty('--mode-color', '#3574f0');
-      root.style.setProperty('--accent', '#3574f0');
-      if (sidebarStatus) sidebarStatus.innerHTML = '<span class="status-dot"></span>BLUE MODE';
-      break;
-    case 'purple':
-      root.style.setProperty('--mode-color', '#a855f7');
-      root.style.setProperty('--accent', '#a855f7');
-      if (sidebarStatus) sidebarStatus.innerHTML = '<span class="status-dot"></span>PURPLE MODE';
-      break;
-    case 'red':
-      root.style.setProperty('--mode-color', '#ef4444');
-      root.style.setProperty('--accent', '#ef4444');
-      if (sidebarStatus) sidebarStatus.innerHTML = '<span class="status-dot"></span>RED MODE';
-      break;
+  if (sidebarStatus) {
+    sidebarStatus.innerHTML = `<span class="status-dot"></span>${modeLabels[themeMode]}`;
   }
-  body.classList.remove('theme-blue', 'theme-purple', 'theme-red');
-  body.classList.add(`theme-${themeMode}`);
 
-  if (modeButtonBlue) modeButtonBlue.classList.toggle('active', themeMode === 'blue');
-  if (modeButtonPurple) modeButtonPurple.classList.toggle('active', themeMode === 'purple');
-  if (modeButtonRed) modeButtonRed.classList.toggle('active', themeMode === 'red');
+  ['blue', 'purple', 'red'].forEach(m => {
+    const btn = document.getElementById(`mode-btn-${m}`);
+    if (btn) btn.classList.toggle('active', m === themeMode);
+  });
 }
 
-function updateModeButtons() {
-  const modeButtonBlue = document.getElementById('mode-btn-blue');
-  const modeButtonPurple = document.getElementById('mode-btn-purple');
-  const modeButtonRed = document.getElementById('mode-btn-red');
+// ── Nav dropdowns ─────────────────────────────────────────────────────────────
 
-  if (modeButtonBlue) modeButtonBlue.classList.toggle('active', themeMode === 'blue');
-  if (modeButtonPurple) modeButtonPurple.classList.toggle('active', themeMode === 'purple');
-  if (modeButtonRed) modeButtonRed.classList.toggle('active', themeMode === 'red');
+export function toggleNavDropdown(id: string) {
+  const hdr  = document.getElementById(id + '-hdr');
+  const body = document.getElementById(id + '-body');
+  if (!hdr || !body) return;
+  const open = body.classList.toggle('open');
+  hdr.classList.toggle('open', open);
+  _persistDropdown(id, open);
 }
+
+function _persistDropdown(id: string, open: boolean) {
+  const stored: string[] = JSON.parse(localStorage.getItem('openDropdowns') || '[]');
+  if (open && !stored.includes(id)) { stored.push(id); }
+  if (!open) { const i = stored.indexOf(id); if (i !== -1) stored.splice(i, 1); }
+  localStorage.setItem('openDropdowns', JSON.stringify(stored));
+}
+
+function _restoreDropdowns() {
+  const stored: string[] = JSON.parse(localStorage.getItem('openDropdowns') || '[]');
+  stored.forEach(id => {
+    const hdr  = document.getElementById(id + '-hdr');
+    const body = document.getElementById(id + '-body');
+    if (hdr && body) { body.classList.add('open'); hdr.classList.add('open'); }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
 
 export function initSidebar() {
-  updateSidebarLayout();
-  updateThemeColors();
-  updateToggleButton();
-  updateModeButtons();
+  applySidebarState();
+  applyTheme();
+  _restoreDropdowns();
 }

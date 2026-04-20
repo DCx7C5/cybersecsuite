@@ -7,7 +7,7 @@ import { refresh, cancelTask } from './refresh.js';
 import { runAgentQuery, clearAgentHistory } from './agents.js';
 import { loadOpenSearch } from './opensearch.js';
 import { loadExplorerModels, loadExplorerTable } from './explorer.js';
-import { toggleSidebar, setThemeMode, initSidebar } from './sidebar.js';
+import { toggleSidebar, setThemeMode, initSidebar, toggleNavDropdown } from './sidebar.js';
 import {
   loadSettings,
   saveSettingsAgent,
@@ -169,6 +169,7 @@ declare global {
     toggleSidebar: typeof toggleSidebar;
     setThemeMode: typeof setThemeMode;
     initSidebar: typeof initSidebar;
+    toggleNavDropdown: typeof toggleNavDropdown;
 
     // team
     loadTeamBuilder: typeof loadTeamBuilder;
@@ -301,6 +302,7 @@ window.deactivateLocalLlm = deactivateLocalLlm;
 window.toggleSidebar = toggleSidebar;
 window.setThemeMode = setThemeMode;
 window.initSidebar = initSidebar;
+window.toggleNavDropdown = toggleNavDropdown;
 
 window.loadTeamBuilder = loadTeamBuilder;
 window.tbFilterAgents = tbFilterAgents;
@@ -397,16 +399,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize sidebar (collapsible + theme mode)
   initSidebar();
 
-  // Activate first sidebar tab on load
+  // Restore last active tab (or default to first tab)
+  const savedTab = localStorage.getItem('activeTab') || 'health';
   document.querySelectorAll('[id^="tab-"]').forEach((el) => {
     (el as HTMLElement).style.display = 'none';
   });
-  const first = document.getElementById('tab-health') as HTMLElement | null;
-  if (first) first.style.display = '';
-  const nav = document.getElementById('nav-health') as HTMLElement | null;
-  if (nav) nav.classList.add('active');
+  const firstPanel = document.getElementById(`tab-${savedTab}`) as HTMLElement | null;
+  if (firstPanel) firstPanel.style.display = '';
+  const firstNav = document.getElementById(`nav-${savedTab}`) as HTMLElement | null;
+  if (firstNav) firstNav.classList.add('active');
   const crumb = document.querySelector('#topbar-title') as HTMLElement | null;
-  if (crumb) crumb.textContent = '▶ HEALTH';
+  if (crumb && firstNav) crumb.textContent = '▶ ' + firstNav.textContent!.trim().toUpperCase();
+  // currentTab is updated via showTab — set module var via re-export trick
+  window.showTab(savedTab);
 
   // Initialize SSE connection
   await initSSE();
