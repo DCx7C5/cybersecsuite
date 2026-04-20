@@ -120,6 +120,10 @@ import {
   phCloseModal,
   phFilterProviders,
 } from './providers_hub.js';
+import {
+  loadVaultStatus,
+  vaultChatSend,
+} from './vault.js';
 declare global {
   interface Window {
     // core
@@ -246,6 +250,10 @@ declare global {
     phSaveAccount: typeof phSaveAccount;
     phCloseModal: typeof phCloseModal;
     phFilterProviders: typeof phFilterProviders;
+
+    // vault
+    loadVaultStatus: typeof loadVaultStatus;
+    vaultChatSend: typeof vaultChatSend;
 
     // flowgraph
     initFlowgraph: typeof initFlowgraph;
@@ -382,6 +390,10 @@ window.phSaveAccount = phSaveAccount;
 window.phCloseModal = phCloseModal;
 window.phFilterProviders = phFilterProviders;
 
+// Vault
+window.loadVaultStatus = loadVaultStatus;
+window.vaultChatSend = vaultChatSend;
+
 // Flowgraph
 window.initFlowgraph = initFlowgraph;
 window.fgLoadAgents = fgLoadAgents;
@@ -466,5 +478,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'flowgraph')      { initFlowgraph(); fgLoadAgents().catch(() => {}); }
     if (name === 'sdk-lab')        { initSdkPanel(); }
     if (name === 'providers-hub')  { loadProvidersHub().catch(() => {}); }
+    if (name === 'vault')          { loadVaultStatus().catch(() => {}); }
   };
 });

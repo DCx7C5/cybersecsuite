@@ -22,7 +22,7 @@ from .advanced import (
     _flowgraph,
     _sdk_lab,
 )
-from .settings import _settings, _settings_cybersecsuite, _crypto
+from .settings import _settings, _settings_cybersecsuite, _crypto, _vault_widget
 
 __all__ = [
     # Platform
@@ -68,6 +68,7 @@ __all__ = [
     "_settings",
     "_settings_cybersecsuite",
     "_crypto",
+    "_vault_widget",
     "all_panels",
 ]
 
@@ -106,6 +107,7 @@ def all_panels() -> str:
         + _workflows()
         + _settings()
         + _settings_cybersecsuite()
+        + _vault_widget()
         + _telemetry()
         + _providers_hub()
         + _templates()

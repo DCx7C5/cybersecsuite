@@ -9,7 +9,6 @@ from dashboard._handlers import (
     dashboard_page,
     api_overview,
     api_providers,
-    api_providers_hub,
     api_usage,
     api_health,
     api_crypto,
@@ -94,6 +93,7 @@ from dashboard.api.template_registry import (
 )
 from dashboard.api.sdk_tool import api_sdk_tool
 from dashboard.api.sdk_session import api_sdk_session_last, api_sdk_session_resume
+from dashboard.api.core import api_providers_hub, api_dashboard_activity, _record_dashboard_activity
 from dashboard.api.dbus import (
     api_dbus_notify,
     api_dbus_signal,
@@ -130,6 +130,8 @@ from dashboard.api.bootstrap import (
 )
 from dashboard.api.charts import api_charts
 from dashboard.api.flowgraph import api_flowgraph_agents, api_flowgraph_execute
+from dashboard.api.memory_chat import api_memory_chat
+from dashboard.api.vault_status import api_vault_status
 from dashboard.api.plugin import (
     PluginWebSocketEndpoint,
     api_plugin_status,
@@ -144,11 +146,18 @@ def create_dashboard_router() -> Router:
     """Create the root router (dashboard at /, API at /api/*, SSE at /sse/*)."""
     from starlette.requests import Request
     from starlette.responses import RedirectResponse
+    from starlette.middleware.base import BaseHTTPMiddleware
+
+    class ActivityTrackingMiddleware(BaseHTTPMiddleware):
+        """Track dashboard activity for plugin detection."""
+        async def dispatch(self, request: Request, call_next):
+            _record_dashboard_activity()
+            return await call_next(request)
 
     async def redirect_to_root(request: Request) -> RedirectResponse:
         return RedirectResponse("/", status_code=308)
 
-    return Router(
+    router = Router(
         routes=[
             Mount("/static", app=StaticFiles(directory="src/dashboard/static"), name="static"),
             Route("/dashboard", redirect_to_root, methods=["GET"]),
@@ -159,6 +168,7 @@ def create_dashboard_router() -> Router:
             Route("/api/providers/hub", api_providers_hub, methods=["GET"]),
             Route("/api/usage", api_usage, methods=["GET"]),
             Route("/api/health", api_health, methods=["GET"]),
+            Route("/api/activity", api_dashboard_activity, methods=["GET"]),
             Route("/api/crypto", api_crypto, methods=["GET"]),
             Route("/api/a2a", api_a2a, methods=["GET"]),
             Route("/api/investigations", api_investigations, methods=["GET"]),
@@ -273,6 +283,9 @@ def create_dashboard_router() -> Router:
             # Flowgraph API
             Route("/api/flowgraph/agents", api_flowgraph_agents, methods=["GET"]),
             Route("/api/flowgraph/execute", api_flowgraph_execute, methods=["POST"]),
+            # Memory-enhanced chat + vault status
+            Route("/api/proxy/memory-chat", api_memory_chat, methods=["POST"]),
+            Route("/api/vault/status", api_vault_status, methods=["GET"]),
             # Browser plugin WS/API
             WebSocketRoute("/ws", PluginWebSocketEndpoint),
             WebSocketRoute("/api/plugin/ws", PluginWebSocketEndpoint),
@@ -290,3 +303,5 @@ def create_dashboard_router() -> Router:
             Route("/sse/agent-run/{task_id}", sse_agent_run, methods=["GET"]),
         ]
     )
+    router.add_middleware(ActivityTrackingMiddleware)
+    return router

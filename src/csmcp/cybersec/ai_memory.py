@@ -1,23 +1,102 @@
-"""AI memory management tools — SDK in-process MCP server module."""
+"""AI memory management tools — vault-backed MCP server module.
+
+Memories persist to disk under CYBERSEC_VAULT_PATH/memories/{type}/*.md.
+Falls back to in-process dict if the vault path is not writable.
+"""
 from __future__ import annotations
 
+import datetime
+import os
+from pathlib import Path
 from typing import Any
 
 from csmcp._sdk_compat import tool
 from csmcp.cybersec.helpers import JsonDict, _get_current_scope, sdk_result, sdk_error
 
-# Module-level memory store: scope_key -> list of memory entries
+_VAULT_PATH = os.getenv("CYBERSEC_VAULT_PATH", "./data/vault")
+
+# Fallback in-memory store used when disk writes fail
 _MEMORY_STORE: dict[str, list[dict[str, Any]]] = {}
 
 
+def _mem_root() -> Path:
+    p = Path(_VAULT_PATH) / "memories"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _type_dir(mem_type: str) -> Path:
+    d = _mem_root() / mem_type
+    d.mkdir(exist_ok=True)
+    return d
+
+
 def _get_scope_key(scope: dict[str, Any]) -> str:
-    """Generate a unique key for the current scope."""
     return f"{scope['project']}:{scope['session'] or 'global'}"
+
+
+def _ts() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def _write_memory(mem_id: str, mem_type: str, content: str, tags: list[str], scope: dict) -> None:
+    """Write memory entry as Markdown to vault; raise on failure."""
+    tag_str = ", ".join(f'"{t}"' for t in tags)
+    frontmatter = (
+        f"---\n"
+        f"id: {mem_id}\n"
+        f"type: {mem_type}\n"
+        f"tags: [{tag_str}]\n"
+        f"scope: {scope['project']}\n"
+        f"timestamp: {_ts()}\n"
+        f"---\n\n"
+    )
+    path = _type_dir(mem_type) / f"{mem_id}.md"
+    path.write_text(frontmatter + content + "\n", encoding="utf-8")
+
+
+def _read_memories(mem_type: str | None, query: str, limit: int) -> list[dict[str, Any]]:
+    """Read memories from vault, filter by type/query, return up to limit entries."""
+    root = _mem_root()
+    results: list[dict[str, Any]] = []
+    q = query.lower()
+
+    dirs = [root / mem_type] if mem_type else [d for d in root.iterdir() if d.is_dir()]
+    for d in dirs:
+        if not d.exists():
+            continue
+        for md in sorted(d.glob("*.md"), key=lambda f: f.stat().st_mtime, reverse=True):
+            try:
+                text = md.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            if q and q not in text.lower():
+                continue
+            # Parse minimal frontmatter
+            entry: dict[str, Any] = {"id": md.stem, "type": d.name}
+            if text.startswith("---"):
+                fm_end = text.find("---", 3)
+                if fm_end != -1:
+                    for line in text[3:fm_end].splitlines():
+                        if ": " in line:
+                            k, v = line.split(": ", 1)
+                            entry[k.strip()] = v.strip()
+                    entry["content"] = text[fm_end + 3:].strip()
+                else:
+                    entry["content"] = text
+            else:
+                entry["content"] = text
+            results.append(entry)
+            if len(results) >= limit:
+                break
+        if len(results) >= limit:
+            break
+    return results
 
 
 @tool(
     "memory_search",
-    "Search memories by query, type, or API key with token budget enforcement.",
+    "Search vault-persisted memories by query and optional type.",
     {
         "query": {"type": "string", "default": ""},
         "type": {"type": "string", "enum": ["factual", "episodic", "procedural", "semantic"], "nullable": True},
@@ -26,34 +105,42 @@ def _get_scope_key(scope: dict[str, Any]) -> str:
 )
 async def memory_search(args: dict[str, Any]) -> JsonDict:
     scope = _get_current_scope()
-    scope_key = _get_scope_key(scope)
-    query = args.get("query", "").lower()
+    query = args.get("query", "")
     mem_type = args.get("type")
-    limit = min(args.get("limit", 10), 50)  # Cap at 50
+    limit = min(int(args.get("limit", 10)), 50)
 
-    memories = _MEMORY_STORE.get(scope_key, [])
-    if mem_type:
-        memories = [m for m in memories if m.get("type") == mem_type]
-
-    if query:
-        memories = [m for m in memories if query in m.get("content", "").lower() or query in m.get("tags", [])]
-
-    # Sort by timestamp descending
-    memories.sort(key=lambda m: m.get("timestamp", ""), reverse=True)
-    results = memories[:limit]
-
-    return sdk_result({
-        "status": "success",
-        "memories": results,
-        "count": len(results),
-        "total_available": len(memories),
-        "scope": scope,
-    })
+    try:
+        results = _read_memories(mem_type, query, limit)
+        return sdk_result({
+            "status": "success",
+            "memories": results,
+            "count": len(results),
+            "vault_path": str(Path(_VAULT_PATH) / "memories"),
+            "scope": scope,
+        })
+    except Exception as exc:
+        # Graceful fallback to in-memory store
+        scope_key = _get_scope_key(scope)
+        memories = _MEMORY_STORE.get(scope_key, [])
+        q = query.lower()
+        if mem_type:
+            memories = [m for m in memories if m.get("type") == mem_type]
+        if q:
+            memories = [m for m in memories if q in m.get("content", "").lower()]
+        memories.sort(key=lambda m: m.get("timestamp", ""), reverse=True)
+        return sdk_result({
+            "status": "success",
+            "memories": memories[:limit],
+            "count": len(memories[:limit]),
+            "fallback": True,
+            "error": str(exc),
+            "scope": scope,
+        })
 
 
 @tool(
     "memory_add",
-    "Add memory entry (factual/episodic/procedural/semantic).",
+    "Add memory entry (factual/episodic/procedural/semantic). Persisted to vault on disk.",
     {
         "content": "string",
         "type": {"type": "string", "enum": ["factual", "episodic", "procedural", "semantic"], "default": "factual"},
@@ -63,37 +150,50 @@ async def memory_search(args: dict[str, Any]) -> JsonDict:
 )
 async def memory_add(args: dict[str, Any]) -> JsonDict:
     scope = _get_current_scope()
-    scope_key = _get_scope_key(scope)
     content = args.get("content", "").strip()
     if not content:
         return sdk_error("content is required")
 
-    import datetime
-    entry = {
-        "id": f"mem_{int(datetime.datetime.now().timestamp() * 1000)}",
-        "content": content,
-        "type": args.get("type", "factual"),
-        "tags": args.get("tags", []),
-        "metadata": args.get("metadata", {}),
-        "timestamp": datetime.datetime.now().isoformat(),
-        "scope": scope,
-    }
+    mem_type = args.get("type", "factual")
+    tags = args.get("tags", [])
+    mem_id = f"mem_{int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)}"
 
-    if scope_key not in _MEMORY_STORE:
-        _MEMORY_STORE[scope_key] = []
-    _MEMORY_STORE[scope_key].append(entry)
-
-    return sdk_result({
-        "status": "success",
-        "memory_id": entry["id"],
-        "message": f"Added {entry['type']} memory entry",
-        "scope": scope,
-    })
+    try:
+        _write_memory(mem_id, mem_type, content, tags, scope)
+        return sdk_result({
+            "status": "success",
+            "memory_id": mem_id,
+            "message": f"Added {mem_type} memory entry",
+            "vault_path": str(Path(_VAULT_PATH) / "memories" / mem_type / f"{mem_id}.md"),
+            "scope": scope,
+        })
+    except Exception as exc:
+        # Fallback to in-memory store
+        scope_key = _get_scope_key(scope)
+        entry = {
+            "id": mem_id,
+            "content": content,
+            "type": mem_type,
+            "tags": tags,
+            "timestamp": _ts(),
+            "scope": scope,
+        }
+        if scope_key not in _MEMORY_STORE:
+            _MEMORY_STORE[scope_key] = []
+        _MEMORY_STORE[scope_key].append(entry)
+        return sdk_result({
+            "status": "success",
+            "memory_id": mem_id,
+            "message": f"Added {mem_type} memory entry (in-memory fallback)",
+            "fallback": True,
+            "error": str(exc),
+            "scope": scope,
+        })
 
 
 @tool(
     "memory_clear",
-    "Clear memories for API key, optionally filtered by type or age.",
+    "Clear vault memories, optionally filtered by type or age.",
     {
         "type": {"type": "string", "enum": ["factual", "episodic", "procedural", "semantic"], "nullable": True},
         "older_than_days": {"type": "integer", "nullable": True},
@@ -101,30 +201,43 @@ async def memory_add(args: dict[str, Any]) -> JsonDict:
 )
 async def memory_clear(args: dict[str, Any]) -> JsonDict:
     scope = _get_current_scope()
-    scope_key = _get_scope_key(scope)
     mem_type = args.get("type")
     older_than_days = args.get("older_than_days")
 
-    if scope_key not in _MEMORY_STORE:
-        return sdk_result({"status": "success", "cleared_count": 0, "message": "No memories to clear"})
+    cleared = 0
+    try:
+        root = _mem_root()
+        dirs = [root / mem_type] if mem_type else [d for d in root.iterdir() if d.is_dir()]
+        cutoff: datetime.datetime | None = None
+        if older_than_days:
+            cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=int(older_than_days))
+        for d in dirs:
+            if not d.exists():
+                continue
+            for md in list(d.glob("*.md")):
+                if cutoff is not None:
+                    mtime = datetime.datetime.fromtimestamp(md.stat().st_mtime, tz=datetime.timezone.utc)
+                    if mtime > cutoff:
+                        continue
+                md.unlink(missing_ok=True)
+                cleared += 1
+    except Exception as exc:
+        # Also clear in-memory fallback
+        scope_key = _get_scope_key(scope)
+        old = len(_MEMORY_STORE.get(scope_key, []))
+        _MEMORY_STORE.pop(scope_key, None)
+        return sdk_result({
+            "status": "success",
+            "cleared_count": old,
+            "message": f"Cleared {old} in-memory entries (vault error: {exc})",
+            "scope": scope,
+        })
 
-    memories = _MEMORY_STORE[scope_key]
-    original_count = len(memories)
-
-    if mem_type:
-        memories[:] = [m for m in memories if m.get("type") != mem_type]
-
-    if older_than_days:
-        import datetime
-        cutoff = datetime.datetime.now() - datetime.timedelta(days=older_than_days)
-        memories[:] = [m for m in memories if datetime.datetime.fromisoformat(m.get("timestamp", "")) > cutoff]
-
-    cleared_count = original_count - len(memories)
     return sdk_result({
         "status": "success",
-        "cleared_count": cleared_count,
-        "remaining_count": len(memories),
-        "message": f"Cleared {cleared_count} memories",
+        "cleared_count": cleared,
+        "message": f"Cleared {cleared} memory file(s) from vault",
+        "vault_path": str(Path(_VAULT_PATH) / "memories"),
         "scope": scope,
     })
 

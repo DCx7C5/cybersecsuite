@@ -53,6 +53,7 @@ _NAV: list = [
         "children": [
             ("settings",              "Claude",         "◈"),
             ("settings-cybersecsuite","CyberSecSuite",  "◉"),
+            ("vault",                 "Memory Vault",   "🧠"),
         ],
     },
 ]

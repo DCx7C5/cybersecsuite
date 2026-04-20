@@ -29,6 +29,27 @@ from db.models.provider import ProviderAuthMethod
 from db.models.api_account import ApiAccount
 
 _APP_START = time.monotonic()
+_LAST_REQUEST_TIME = _APP_START  # Track last dashboard request
+
+
+async def api_dashboard_activity(request: Request) -> JSONResponse:
+    """Check if dashboard is currently in use (activity in last 5 seconds).
+    
+    Used by browser plugin to detect if streaming should be blocked.
+    Returns: { "active": bool, "idle_seconds": float }
+    """
+    global _LAST_REQUEST_TIME
+    now = time.monotonic()
+    idle = now - _LAST_REQUEST_TIME
+    active = idle < 5.0  # Consider active if request in last 5 seconds
+    
+    return JSONResponse({"active": active, "idle_seconds": idle})
+
+
+def _record_dashboard_activity():
+    """Record that dashboard had activity (called on every request)."""
+    global _LAST_REQUEST_TIME
+    _LAST_REQUEST_TIME = time.monotonic()
 
 
 async def api_overview(request: Request) -> JSONResponse:
