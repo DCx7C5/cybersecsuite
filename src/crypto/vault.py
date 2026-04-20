@@ -7,6 +7,7 @@ by a master password read from a file — identical to the scheme used by
 :class:`crypto.key_manager.PasswordManager`.
 """
 import os
+import tempfile
 from pathlib import Path
 
 from crypto.key_manager import PasswordManager
@@ -22,6 +23,11 @@ _DEFAULT_PASSWORD_CANDIDATES = (
     str(Path.home() / ".dystopian-vault-password"),
     str(Path.home() / ".dystopian-crypto" / "password"),
 )
+
+
+def _vault_password_from_env() -> str | None:
+    """Return vault password written directly into DYSTOPIAN_VAULT_PASSWORD env var."""
+    return os.environ.get("DYSTOPIAN_VAULT_PASSWORD") or os.environ.get("CYBERSEC_VAULT_PASSWORD")
 
 
 class VaultError(Exception):
@@ -190,6 +196,17 @@ class Vault:
         return self.delete(name)
 
     def _default_password_file(self) -> str:
+        # Direct password in env var — write to a temp file for PasswordManager.
+        inline = _vault_password_from_env()
+        if inline:
+            tmp = tempfile.NamedTemporaryFile(
+                mode="w", suffix=".pwd", delete=False, prefix=".vault-"
+            )
+            tmp.write(inline)
+            tmp.close()
+            os.chmod(tmp.name, 0o600)
+            return tmp.name
+
         for candidate in _DEFAULT_PASSWORD_CANDIDATES:
             if candidate and Path(candidate).exists():
                 return candidate

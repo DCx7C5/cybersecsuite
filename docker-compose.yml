@@ -28,6 +28,10 @@ x-oo-env: &oo-env
   OPENOBSERVE_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
   OPENOBSERVE_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
 
+x-crypto-env: &crypto-env
+  DYSTOPIAN_VAULT_PASSWORD: ${DYSTOPIAN_VAULT_PASSWORD:-}
+  DYSTOPIAN_VAULT_PASSWORD_FILE: ${DYSTOPIAN_VAULT_PASSWORD_FILE:-}
+
 services:
   cybersec-dashboard:
     build:
@@ -42,14 +46,14 @@ services:
       cybersec-postgres:
         condition: service_healthy
     environment:
-      <<: [ *db-env, *ai-keys, *oo-env ]
+      <<: [ *db-env, *ai-keys, *oo-env, *crypto-env ]
       # Unix socket: just the directory — asyncpg appends /.s.PGSQL.<port>
       CYBERSEC_DB_HOST: /tmp
       CYBERSEC_DB_PORT: 5432
       CYBERSEC_AUTO_CREATE_DB: "true"
       CYBERSEC_REDIS_URL: "redis://cybersec-redis:6379/0"
       # Settings toggle paths — mount project .claude/ + host ~/.claude as read-write
-      GLOBAL_CLAUDE_DIR: /app/.claude-global
+      GLOBAL_CLAUDE_DIR: ~/.claude
     ports:
       - "8000:8000"
       - "8765:8000"
