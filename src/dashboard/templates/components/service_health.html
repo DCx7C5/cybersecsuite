@@ -1,0 +1,50 @@
+{# service_health component macros #}
+{% macro health_grid(services) -%}
+<div class="health-services" role="group" aria-label="Service health status">
+  {%- for svc in services %}
+  {{- service_card(
+        svc.id,
+        svc.name,
+        svc.icon    if svc.icon    is defined else '',
+        svc.status  if svc.status  is defined else 'unknown',
+        svc.detail  if svc.detail  is defined else ''
+      ) }}
+  {%- endfor %}
+</div>
+{%- endmacro %}
+
+
+{# ─────────────────────────────────────────────────────────────────────────────
+   service_card(id, name, icon, status, detail)
+   Single service health tile. JS mutates the dot class and detail text.
+   id  → used as prefix: <id>-dot for the indicator, <id>-detail for the text.
+───────────────────────────────────────────────────────────────────────────── #}
+{% macro service_card(id, name, icon='', status='unknown', detail='') -%}
+<div class="health-svc"
+     role="status"
+     aria-label="{{ name }}: {{ status }}"
+     data-service="{{ id }}">
+  <span class="svc-indicator {{ status }}"
+        id="{{ id }}-dot"
+        aria-hidden="true"
+        title="{{ status }}"></span>
+  {%- if icon %}
+  <span class="svc-icon" aria-hidden="true">{{ icon }}</span>
+  {%- endif %}
+  <span class="svc-name">{{ name }}</span>
+  <span class="svc-detail" id="{{ id }}-detail">{{ detail if detail else '—' }}</span>
+</div>
+{%- endmacro %}
+
+
+{# ─────────────────────────────────────────────────────────────────────────────
+   uptime_badge(id)
+   A .stat-box sized uptime display tile.
+   JS updates the inner span: document.getElementById(id).textContent = '4d 12h';
+───────────────────────────────────────────────────────────────────────────── #}
+{% macro uptime_badge(id='health-uptime') -%}
+<div class="stat-box" role="status" aria-live="polite" aria-label="System uptime">
+  <span id="{{ id }}">—</span>
+  <small>Uptime</small>
+</div>
+{%- endmacro %}

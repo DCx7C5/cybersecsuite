@@ -749,3 +749,492 @@ label {
   border-radius: var(--radius);
   padding: 1px 0;
 }
+
+
+/* ═══════════════════════════════════════
+   JINJA2 COMPONENT LIBRARY — css additions
+   ═══════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   COMPONENT LIBRARY ADDITIONS
+   src/dashboard/templates/components/ macro library support styles.
+   Appended to dashboard.css — all new classes prefixed comp- to avoid conflict.
+   Tokens used: existing CSS custom properties only (no new hex values).
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── btn-sm — small button variant ─────────────────────────────────────────── */
+.btn-sm {
+  padding: 3px 10px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+/* ── .card hover — left-accent inset shadow ─────────────────────────────────
+   Extends the existing .card:hover rule (which sets border-color).
+   Uses inset box-shadow so no layout shift from border-width change.       */
+.card {
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.card:hover {
+  border-color: var(--border-glow);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+/* ── panel-subtitle — right-side subtitle in panel-header ───────────────── */
+.panel-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── comp-section-header — rich section title with optional action ────────── */
+.comp-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.comp-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-left: 8px;
+  border-left: 2px solid var(--accent);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 1.4;
+}
+
+.comp-section-action {
+  flex-shrink: 0;
+}
+
+/* ── comp-empty-state — centred zero-data placeholder ───────────────────── */
+.comp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  gap: 10px;
+  text-align: center;
+}
+
+.comp-empty-icon {
+  font-size: 28px;
+  line-height: 1;
+  opacity: 0.45;
+  display: block;
+}
+
+.comp-empty-msg {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+/* ── comp-error-banner — styled error ribbon (more prominent than .health-error-banner) */
+.comp-error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  background: var(--red-glow);
+  border: 1px solid rgba(199,84,80,0.25);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+/* ── kv-table — compact key-value data table ─────────────────────────────── */
+.kv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.kv-row {
+  border-bottom: 1px solid rgba(61,63,67,0.5);
+}
+.kv-row:last-child {
+  border-bottom: none;
+}
+
+.kv-key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 7px 20px 7px 0;
+  white-space: nowrap;
+  width: 1%;
+  vertical-align: top;
+}
+
+.kv-val {
+  font-size: 12px;
+  color: var(--text-primary);
+  padding: 7px 0;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.kv-val--mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Labelled progress bar wrapper ───────────────────────────────────────── */
+.comp-progress-wrap {
+  margin-bottom: 10px;
+}
+
+.comp-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.comp-progress-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+}
+
+.comp-progress-pct {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ── comp-alert — inline alert banner, 4 type variants ──────────────────── */
+.comp-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid;
+  border-left-width: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  animation: enter-up 0.25s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.comp-alert--info {
+  background: var(--cyan-glow);
+  border-color: rgba(104,151,187,0.2);
+  border-left-color: var(--cyan);
+}
+
+.comp-alert--success {
+  background: var(--success-glow);
+  border-color: rgba(106,153,85,0.2);
+  border-left-color: var(--success);
+}
+
+.comp-alert--warning {
+  background: var(--amber-glow);
+  border-color: rgba(203,144,46,0.2);
+  border-left-color: var(--amber);
+}
+
+.comp-alert--danger {
+  background: var(--red-glow);
+  border-color: rgba(199,84,80,0.2);
+  border-left-color: var(--red);
+}
+
+.comp-alert-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-style: normal;
+}
+
+/* Type-matched icon colours */
+.comp-alert--info    .comp-alert-icon { color: var(--cyan); }
+.comp-alert--success .comp-alert-icon { color: var(--success); }
+.comp-alert--warning .comp-alert-icon { color: var(--amber); }
+.comp-alert--danger  .comp-alert-icon { color: var(--red); }
+
+.comp-alert-msg {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.comp-alert-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  margin-left: auto;
+  opacity: 0.55;
+  transition: opacity 0.15s, color 0.15s;
+  align-self: flex-start;
+}
+
+.comp-alert-dismiss:hover {
+  opacity: 1;
+  color: var(--text-primary);
+}
+
+/* ── comp-inline-status — monospace status span ─────────────────────────── */
+.comp-inline-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  transition: color 0.2s;
+}
+
+.comp-inline-status--muted  { color: var(--text-muted); }
+.comp-inline-status--ok     { color: var(--success); }
+.comp-inline-status--warn   { color: var(--amber); }
+.comp-inline-status--error  { color: var(--red); }
+.comp-inline-status--info   { color: var(--cyan); }
+.comp-inline-status--accent { color: var(--accent); }
+
+/* ── comp-timeline — vertical event timeline ─────────────────────────────── */
+.comp-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.comp-timeline-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+}
+
+.comp-tl-gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 18px;
+}
+
+.comp-tl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface-2);
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.comp-tl-line {
+  width: 1px;
+  flex: 1;
+  background: var(--border);
+  margin: 4px 0;
+  min-height: 16px;
+}
+
+/* Hide connecting line on last item */
+.comp-timeline-item:last-child .comp-tl-line {
+  display: none;
+}
+
+.comp-tl-content {
+  flex: 1;
+  padding-bottom: 20px;
+}
+
+.comp-tl-time {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
+}
+
+.comp-tl-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.comp-tl-body {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Timeline dot colours by event type */
+.comp-timeline-item--info .comp-tl-dot {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-glow);
+}
+
+.comp-timeline-item--success .comp-tl-dot {
+  background: var(--success);
+  border-color: var(--success);
+  box-shadow: 0 0 6px var(--success-glow);
+}
+
+.comp-timeline-item--warning .comp-tl-dot {
+  background: var(--amber);
+  border-color: var(--amber);
+  box-shadow: 0 0 6px var(--amber-glow);
+}
+
+.comp-timeline-item--danger .comp-tl-dot {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 0 6px var(--red-glow);
+}
+
+/* Connecting line tints to match dot type */
+.comp-timeline-item--info    .comp-tl-line { background: rgba(104,151,187,0.18); }
+.comp-timeline-item--success .comp-tl-line { background: rgba(106,153,85,0.18); }
+.comp-timeline-item--warning .comp-tl-line { background: rgba(203,144,46,0.18); }
+.comp-timeline-item--danger  .comp-tl-line { background: rgba(199,84,80,0.18); }
+
+/* ── comp-field — form field wrapper ─────────────────────────────────────── */
+.comp-field {
+  margin-bottom: 14px;
+}
+
+/* ── comp-action-row — flex row of action buttons ────────────────────────── */
+.comp-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+/* ── comp-toggle-row — toggle switch + label pair ────────────────────────── */
+.comp-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+/* ── comp-table-wrap — scrollable table container ─────────────────────────── */
+.comp-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+}
+
+.comp-table-empty {
+  text-align: center;
+  padding: 28px 20px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+/* ── Sortable table header ────────────────────────────────────────────────── */
+.comp-th-sortable {
+  user-select: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.comp-th-sortable:hover {
+  color: var(--accent);
+}
+
+.comp-th--active {
+  color: var(--accent);
+}
+
+.comp-sort-icon {
+  margin-left: 4px;
+  font-size: 8px;
+  vertical-align: middle;
+  opacity: 0.55;
+  display: inline-block;
+  line-height: 1;
+}
+
+.comp-th--active .comp-sort-icon {
+  opacity: 1;
+}
+
+/* ── Skeleton loading rows ────────────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%,100% { opacity: 0.35; }
+  50%      { opacity: 0.7; }
+}
+
+.comp-skeleton-row td {
+  padding: 8px 10px;
+}
+
+.comp-skeleton {
+  height: 10px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Stagger shimmer across rows for organic feel */
+.comp-skeleton-row:nth-child(1) .comp-skeleton { animation-delay: 0.00s; }
+.comp-skeleton-row:nth-child(2) .comp-skeleton { animation-delay: 0.12s; }
+.comp-skeleton-row:nth-child(3) .comp-skeleton { animation-delay: 0.24s; }
+.comp-skeleton-row:nth-child(4) .comp-skeleton { animation-delay: 0.36s; }
+.comp-skeleton-row:nth-child(5) .comp-skeleton { animation-delay: 0.48s; }
+.comp-skeleton-row:nth-child(6) .comp-skeleton { animation-delay: 0.60s; }
+.comp-skeleton-row:nth-child(7) .comp-skeleton { animation-delay: 0.72s; }
+
+/* ── Service health — degraded dot + icon ────────────────────────────────── */
+.health-svc .svc-indicator.degraded {
+  background: var(--amber);
+  box-shadow: 0 0 6px var(--amber-glow);
+}
+
+.health-svc .svc-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Responsive adjustments for component library ────────────────────────── */
+@media (max-width: 768px) {
+  .comp-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .comp-action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .comp-action-row .btn {
+    justify-content: center;
+  }
+}

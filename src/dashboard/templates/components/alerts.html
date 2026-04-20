@@ -1,0 +1,48 @@
+{# alerts component macros #}
+{% macro alert(message, type='info', dismissible=False, id='') -%}
+{%- set _icons = {'info': 'ℹ', 'success': '✓', 'warning': '⚠', 'danger': '✕'} -%}
+{%- set _roles = {'danger': 'alert'} -%}
+{%- set _live  = {'danger': 'assertive'} -%}
+<div{% if id %} id="{{ id }}"{% endif %}
+     class="comp-alert comp-alert--{{ type }}"
+     role="{{ _roles.get(type, 'status') }}"
+     aria-live="{{ _live.get(type, 'polite') }}">
+  <span class="comp-alert-icon" aria-hidden="true">{{ _icons.get(type, 'ℹ') }}</span>
+  <span class="comp-alert-msg">{{ message }}</span>
+  {%- if dismissible %}
+  <button class="comp-alert-dismiss"
+          type="button"
+          aria-label="Dismiss alert"
+          onclick="this.closest('.comp-alert').remove()">×</button>
+  {%- endif %}
+</div>
+{%- endmacro %}
+
+
+{# ─────────────────────────────────────────────────────────────────────────────
+   toast_container()
+   Fixed-position container for JS-injected toast notifications.
+   Place once in the page layout, typically just before </body>.
+   Populated by window.toast(msg, type, duration) defined in _base.py.
+───────────────────────────────────────────────────────────────────────────── #}
+{% macro toast_container() -%}
+<div id="toast-container"
+     role="log"
+     aria-live="polite"
+     aria-atomic="false"
+     aria-label="Notifications"
+     aria-relevant="additions"></div>
+{%- endmacro %}
+
+
+{# ─────────────────────────────────────────────────────────────────────────────
+   inline_status(id, text, type)
+   Inline status span for use next to buttons or in form rows.
+   JS updates: el.textContent = 'Saved'; el.className = 'comp-inline-status comp-inline-status--ok';
+   types: muted · ok · warn · error · info · accent
+───────────────────────────────────────────────────────────────────────────── #}
+{% macro inline_status(id, text='', type='muted') -%}
+<span id="{{ id }}"
+      class="comp-inline-status comp-inline-status--{{ type }}"
+      aria-live="polite">{{ text }}</span>
+{%- endmacro %}
