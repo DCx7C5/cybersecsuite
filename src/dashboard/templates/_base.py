@@ -83,6 +83,36 @@ def head() -> str:
 
 def header() -> str:
     """Top bar: tab breadcrumb + refresh/uptime + sidebar toggle + mode toggle. Includes bottom status bar."""
+    plugin_checker_js = """
+    <script>
+    (function() {
+      const pluginStatus = document.getElementById('plugin-status');
+      
+      async function checkPluginStatus() {
+        try {
+          const res = await fetch('/api/plugin/status', { timeout: 2000 });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.active) {
+              pluginStatus.style.display = 'flex';
+            } else {
+              pluginStatus.style.display = 'none';
+            }
+          } else {
+            pluginStatus.style.display = 'none';
+          }
+        } catch (e) {
+          pluginStatus.style.display = 'none';
+        }
+      }
+      
+      // Check on load and every 5 seconds
+      checkPluginStatus();
+      setInterval(checkPluginStatus, 5000);
+    })();
+    </script>
+    """
+    
     return (
         '<div id="topbar">\n'
         '  <div style="display:flex;align-items:center;gap:8px">\n'
@@ -90,6 +120,10 @@ def header() -> str:
         '    <div id="topbar-title" id="topbar-crumb">&#x25b6; PROVIDERS</div>\n'
         '  </div>\n'
         '  <div id="topbar-actions" style="display:flex;align-items:center;gap:12px">\n'
+        '    <div id="plugin-status" style="display:none;align-items:center;gap:6px;padding:4px 12px;background:rgba(34,197,94,0.1);border:1px solid rgb(34,197,94);border-radius:4px;font-size:11px;font-family:var(--font-mono);color:rgb(34,197,94)">\n'
+        '      <span style="width:6px;height:6px;background:rgb(34,197,94);border-radius:50%;display:inline-block;animation:pulse-led 2s infinite"></span>\n'
+        '      <span id="plugin-status-text">Plugin Active</span>\n'
+        '    </div>\n'
         '    <div style="display:flex;gap:4px;padding:0 8px;border-right:1px solid var(--border)">\n'
         '      <button id="mode-btn-blue" class="mode-button active" onclick="setThemeMode(\'blue\')" title="Blue Team">🔵</button>\n'
         '      <button id="mode-btn-purple" class="mode-button" onclick="setThemeMode(\'purple\')" title="Purple Team">🟣</button>\n'
@@ -99,6 +133,11 @@ def header() -> str:
         '    <button class="btn btn-ghost" onclick="refresh()">&#x21bb; REFRESH</button>\n'
         '  </div>\n'
         '</div>\n'
+        '<style>\n'
+        '@keyframes pulse-led { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }\n'
+        '#plugin-status { display:flex; }\n'
+        '</style>\n'
+        + plugin_checker_js +
         '<div id="statusbar" style="'
         'position: fixed; bottom: 0; right: 0;'
         'height: 24px; background: var(--accent);'

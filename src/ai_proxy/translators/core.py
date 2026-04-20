@@ -235,6 +235,10 @@ def translate_request(
     if source_format == target_format:
         return body
 
+    # Custom format: pass-through (client sends raw format, target handles it)
+    if target_format == ApiFormat.CUSTOM:
+        return body
+
     key = (source_format, target_format)
     translator = _REQUEST_TRANSLATORS.get(key)
     if translator is None:
@@ -249,6 +253,10 @@ def translate_response(
 ) -> dict[str, Any]:
     """Translate response body between API formats."""
     if source_format == target_format:
+        return resp
+
+    # Custom format: pass-through (provider sends raw format, client handles it)
+    if source_format == ApiFormat.CUSTOM:
         return resp
 
     key = (source_format, target_format)
