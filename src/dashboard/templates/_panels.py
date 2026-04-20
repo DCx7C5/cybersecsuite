@@ -968,6 +968,83 @@ def _templates() -> str:
     )
 
 
+def _settings_cybersecsuite() -> str:
+    from ._components import (
+        section_badge, info_box, form_field, form_input, form_select,
+        action_bar, btn, status_span, loading_slot, divider,
+    )
+    cs_badge = section_badge("⚙ CyberSecSuite", "#00ff41")
+    return (
+        '<div id="tab-settings-cybersecsuite" class="card" style="display:none">\n'
+        '  <div class="panel-header">'
+        '<div class="panel-accent-bar"></div>'
+        '<span class="panel-title">⚙ CyberSecSuite Settings</span>'
+        '</div>\n'
+        f'  <div style="margin-bottom:20px">{cs_badge}</div>\n'
+
+        # ── Database ──
+        '  <div class="section-h3">Database</div>\n'
+        + info_box("PostgreSQL connection used by the forensics backend.")
+        + '  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">\n'
+        + f'    {form_field("Host", form_input("cs-db-host", placeholder="localhost"))}\n'
+        + f'    {form_field("Port", form_input("cs-db-port", placeholder="5432", type="number"))}\n'
+        + '  </div>\n'
+        + '  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">\n'
+        + f'    {form_field("User", form_input("cs-db-user", placeholder="cybersec"))}\n'
+        + f'    {form_field("Password", form_input("cs-db-pass", placeholder="••••••••", type="password"))}\n'
+        + f'    {form_field("Database", form_input("cs-db-name", placeholder="cybersec_forensics"))}\n'
+        + '  </div>\n'
+        + action_bar(
+            btn("Test Connection", onclick="csTestDbConnection()", cls="btn btn-ghost", extra_style="font-size:12px"),
+            status_span("cs-db-status"),
+        )
+        + '\n'
+
+        # ── Bootstrap ──
+        + divider(label="INTELLIGENCE BOOTSTRAP")
+        + '  <div class="section-h3">Database Bootstrap</div>\n'
+        + info_box("Seed NIST CSF, MITRE, CWE, CAPEC and PoC data into the database.")
+        + '  <div id="cs-bootstrap-status-box" style="margin-bottom:12px"></div>\n'
+        + action_bar(
+            btn("▶ Run Bootstrap", onclick="window._bootstrapRun && _bootstrapRun()", cls="btn btn-accent", extra_style="font-size:12px"),
+            btn("↺ Refresh Status", onclick="csRefreshBootstrap()", cls="btn btn-ghost", extra_style="font-size:12px"),
+            status_span("cs-bootstrap-status"),
+        )
+        + '\n'
+
+        # ── Workspace ──
+        + divider(label="WORKSPACE")
+        + '  <div class="section-h3">Workspace &amp; Project</div>\n'
+        + info_box("Sets the active scope for findings, IOCs, and cases.")
+        + '  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">\n'
+        + f'    {form_field("Workspace", form_input("cs-workspace", placeholder="default"))}\n'
+        + f'    {form_field("Project", form_input("cs-project", placeholder="my-project"))}\n'
+        + '  </div>\n'
+
+        # ── Intel Dir ──
+        + f'  {form_field("Intel Directory", form_input("cs-intel-dir", placeholder="./data/cybersec-shared/intelligence"))}\n'
+        + '  <div style="margin-top:8px">\n'
+        + action_bar(
+            btn("Save Workspace", onclick="csSaveWorkspace()", cls="btn btn-accent", extra_style="font-size:12px"),
+            status_span("cs-workspace-status"),
+        )
+        + '\n  </div>\n'
+
+        # ── AI Proxy ──
+        + divider(label="AI PROXY")
+        + '  <div class="section-h3">AI Proxy</div>\n'
+        + info_box("ASGI proxy base URL and default routing strategy.")
+        + '  <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px">\n'
+        + f'    {form_field("Proxy Base URL", form_input("cs-proxy-url", placeholder="http://localhost:8000/v1"))}\n'
+        + f'    {form_field("Routing Strategy", form_select("cs-routing-strategy", [("cost", "Cost"), ("latency", "Latency"), ("quality", "Quality"), ("round_robin", "Round Robin"), ("failover", "Failover")]))}\n'
+        + '  </div>\n'
+        + loading_slot("cs-proxy-status-box")
+        + '\n'
+
+        '</div>\n'
+    )
+
+
 def all_panels() -> str:
     return "".join([
         _providers(),
@@ -975,7 +1052,6 @@ def all_panels() -> str:
         _usage(),
         _telemetry(),
         _routing(),
-        _crypto(),
         _agents(),
         _agent_factory(),
         _agent_crafter(),
@@ -1001,4 +1077,5 @@ def all_panels() -> str:
         _explorer(),
         _templates(),
         _settings(),
+        _settings_cybersecsuite(),
     ])
