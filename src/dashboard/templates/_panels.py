@@ -1,11 +1,24 @@
 """All 23 dashboard tab panels."""
 from ._components import (
+    action_bar,
+    btn,
+    code_preview,
+    divider,
+    form_field,
+    form_input,
+    form_select,
+    form_textarea,
+    grid,
+    info_box,
+    loading_slot,
     mini_card,
     mini_grid,
+    section_badge,
     section_h4,
     simple_panel,
     stat_card,
     stat_grid,
+    status_span,
     tab_panel,
     table_slot,
 )
@@ -677,18 +690,197 @@ def _workflows() -> str:
 
 
 def _settings() -> str:
-    # Scope badge helper
-    def scope_badge(label: str, color: str) -> str:
-        return (
-            f'<span style="display:inline-flex;align-items:center;gap:4px;'
-            f'font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;'
-            f'padding:2px 8px;border-radius:4px;'
-            f'background:{color}1a;color:{color};border:1px solid {color}33">'
-            f'{label}</span>'
-        )
+    global_badge  = section_badge("🌐 Global ~/.claude", "#38bdf8")
+    project_badge = section_badge("📁 Project .claude/", "#6366f1")
 
-    global_badge = scope_badge("🌐 Global ~/.claude", "#38bdf8")
-    project_badge = scope_badge("📁 Project .claude/", "#6366f1")
+    # ── project selector ────────────────────────────────────────────────────
+    project_selector = form_field(
+        "Active Project",
+        '<select id="settings-project-select" onchange="switchActiveProject(this.value)"'
+        ' style="width:100%;max-width:300px">'
+        '<option value="">None (Global only)</option>'
+        '</select>',
+    )
+
+    # ── scope switcher buttons ────────────────────────────────────────────────
+    scope_bar = (
+        '<div style="display:flex;gap:8px;margin-bottom:24px;'
+        'border-bottom:1px solid var(--border);padding-bottom:16px">\n'
+        + f'  {btn("🌐 Global ~/.claude", onclick="switchSettingsScope(\'global\')", cls="btn btn-accent", extra_style="font-size:12px")}\n'
+        + f'  {btn("📁 Project .claude/", onclick="switchSettingsScope(\'project\')", cls="btn btn-ghost", extra_style="font-size:12px")}\n'
+        + '</div>'
+    )
+
+    # ── MCP installer form ────────────────────────────────────────────────────
+    mcp_installer = (
+        '<div class="mb-6">\n'
+        '  <div class="section-h3">Install New MCP Server</div>\n'
+        + info_box("Add a new MCP server to ~/.claude/settings.json. Restart Claude Code to activate.")
+        + grid(
+            form_field("Server Name", form_input("mcp-install-name", placeholder="e.g. my-mcp-server")),
+            form_field("Command",     form_input("mcp-install-cmd",  placeholder="e.g. uvx, npx, node")),
+            cols=2,
+        )
+        + '<div style="margin-bottom:12px">\n'
+        + form_field("Args (comma-separated)",
+                     form_input("mcp-install-args", placeholder="e.g. @modelcontextprotocol/server-filesystem, /tmp"))
+        + '</div>\n'
+        + '<div style="margin-bottom:12px">\n'
+        + form_field("Env Vars (KEY=VALUE, one per line)",
+                     form_textarea("mcp-install-env", rows=3, placeholder="API_KEY=xxx\nDEBUG=1", mono=True))
+        + '</div>\n'
+        + action_bar(
+            btn("+ Install MCP", onclick="installMcp()", cls="btn btn-accent"),
+            status_span("mcp-install-status"),
+        )
+        + '\n</div>'
+    )
+
+    # ── hooks manager ──────────────────────────────────────────────────────────
+    _hook_events = [
+        ("PreToolUse", "PreToolUse"), ("PostToolUse", "PostToolUse"),
+        ("Stop", "Stop"), ("SessionStart", "SessionStart"),
+        ("UserPromptSubmit", "UserPromptSubmit"), ("SubagentStart", "SubagentStart"),
+        ("SubagentStop", "SubagentStop"), ("TeammateIdle", "TeammateIdle"),
+        ("PreCompact", "PreCompact"), ("PostCompact", "PostCompact"),
+        ("Notification", "Notification"),
+    ]
+    hooks_manager = (
+        '<div class="mb-6">\n'
+        '  <div class="section-h3">Hooks Manager</div>\n'
+        + info_box("Manage Claude Code hooks in ~/.claude/settings.json.")
+        + loading_slot("settings-global-hooks")
+        + divider(label="ADD NEW HOOK")
+        + '<div class="section-h4">Add New Hook</div>\n'
+        + grid(
+            form_field("Event",                   form_select("hook-add-event", _hook_events)),
+            form_field("Matcher (regex, optional)", form_input("hook-add-matcher", placeholder=".*")),
+            cols=2,
+        )
+        + '<div style="margin-bottom:12px">\n'
+        + form_field("Command", form_input("hook-add-cmd", placeholder="e.g. python3 /path/to/hook.py"))
+        + '</div>\n'
+        + action_bar(
+            btn("+ Add Hook", onclick="addHook()", cls="btn btn-accent"),
+            status_span("hook-add-status"),
+        )
+        + '\n</div>'
+    )
+
+    # ══ GLOBAL SCOPE PANE ══ ────────────────────────────────────────────────
+    global_pane = (
+        '<div id="settings-scope-global">\n'
+        f'  <div style="margin-bottom:20px">{global_badge}</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">MCP Servers</div>\n'
+        + info_box("MCP servers in ~/.claude/settings.json. Toggle to enable/disable globally.")
+        + loading_slot("settings-global-mcps")
+        + '\n</div>\n'
+
+        + mcp_installer
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Plugins</div>\n'
+        + info_box("Plugins installed in ~/.claude. Toggle writes to ~/.claude/settings.json.")
+        + loading_slot("settings-plugins")
+        + '\n</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Desktop Notifications</div>\n'
+        + info_box("Toggle to enable desktop notifications for task completion, findings, etc.")
+        + '<label class="flex items-center gap-3 cursor-pointer">\n'
+        + '  <input type="checkbox" id="settings-dbus-enable" class="toggle"'
+        + ' onchange="toggleDbusNotifications(this.checked)" />\n'
+        + '  <span class="text-sm">Enable desktop notifications</span>\n'
+        + '</label>\n'
+        + '<div id="dbus-status" class="text-xs mt-2 text-gray-500"></div>\n'
+        + '</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Environment Variables'
+        + '  <span style="font-weight:400;font-size:11px;color:var(--text-muted)"> (read-only)</span></div>\n'
+        + loading_slot("settings-global-env")
+        + '\n</div>\n'
+
+        + '<div class="mb-4">\n'
+        + '  <div class="section-h3">Summary</div>\n'
+        + loading_slot("settings-global")
+        + '\n</div>\n'
+
+        + hooks_manager
+
+        + '</div>\n'
+    )
+
+    # ══ PROJECT SCOPE PANE ══ ───────────────────────────────────────────────
+    project_pane = (
+        '<div id="settings-scope-project" style="display:none">\n'
+        f'  <div style="margin-bottom:20px">{project_badge}</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Agent &amp; Proxy</div>\n'
+        + '<div id="settings-agent-form" class="space-y-3"></div>\n'
+        + action_bar(
+            btn("Save", onclick="saveSettingsAgent()", cls="btn btn-accent"),
+            status_span("settings-agent-status"),
+            gap=3,
+        )
+        + '\n</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">MCP Servers</div>\n'
+        + info_box("MCP servers from project mcp.json. Toggle stores state in .claude/settings.json.")
+        + loading_slot("settings-mcps")
+        + '\n</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Skill Domains</div>\n'
+        + info_box("Enable or disable skill domain libraries from .claude/skills/.")
+        + '<div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>\n'
+        + '</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Environment Variables'
+        + '  <span style="font-weight:400;font-size:11px;color:var(--text-muted)"> (read-only)</span></div>\n'
+        + loading_slot("settings-project-env")
+        + '\n</div>\n'
+
+        + '<div class="mb-4">\n'
+        + f'  {section_h4("Hooks")}'
+        + '  <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--text-muted)"> (read-only)</span>\n'
+        + '<div id="settings-hooks-table"></div>\n'
+        + '</div>\n'
+
+        + '<div class="mb-6">\n'
+        + '  <div class="section-h3">Custom Env Overrides</div>\n'
+        + '<div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
+        + action_bar(
+            btn("+ Add Variable", onclick="settingsAddEnvRow()", cls="btn btn-ghost"),
+            btn("Save Env",       onclick="saveSettingsEnv()",   cls="btn btn-accent"),
+            status_span("settings-env-status"),
+        )
+        + '\n</div>\n'
+
+        + '</div>\n'
+    )
+
+    # ══ LOCAL LLM ══ ────────────────────────────────────────────────────────
+    local_llm = (
+        divider()
+        + '<div class="section-h3">🖥️ Local LLM</div>\n'
+        + info_box("Connect to a local Ollama or LM Studio instance for offline AI.")
+        + '<div id="local-llm-providers" style="margin-bottom:12px">'
+        + '<span class="text-xs text-gray-500">Loading...</span></div>\n'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">\n'
+        + '  <select id="local-llm-model" style="flex:1;max-width:300px">'
+        + '<option value="">Select a local model...</option></select>\n'
+        + f'  {btn("Activate",   onclick="activateLocalLlm()",   cls="btn btn-accent", extra_style="font-size:12px")}\n'
+        + f'  {btn("Deactivate", onclick="deactivateLocalLlm()", cls="btn btn-ghost",  extra_style="font-size:12px")}\n'
+        + '</div>\n'
+        + status_span("local-llm-status")
+        + '\n'
+    )
 
     return (
         '<div id="tab-settings" class="card" style="display:none">\n'
@@ -696,209 +888,14 @@ def _settings() -> str:
         '<div class="panel-accent-bar"></div>'
         '<span class="panel-title">&#x2699;&#xfe0f; Claude Settings</span>'
         '</div>\n'
-
-        # ── Project selector ──
-        '  <div style="margin-bottom:16px">\n'
-        '    <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Active Project</label>\n'
-        '    <select id="settings-project-select" onchange="switchActiveProject(this.value)" style="width:100%;max-width:300px">\n'
-        '      <option value="">None (Global only)</option>\n'
-        '    </select>\n'
-        '  </div>\n'
-
-        # ── Scope tabs ──
-        '  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px">\n'
-        '    <button id="scope-btn-global" onclick="switchSettingsScope(\'global\')" '
-        '      class="btn btn-accent" style="font-size:12px">🌐 Global ~/.claude</button>\n'
-        '    <button id="scope-btn-project" onclick="switchSettingsScope(\'project\')" '
-        '      class="btn btn-ghost" style="font-size:12px">📁 Project .claude/</button>\n'
-        '  </div>\n'
-
-        # ══ GLOBAL SCOPE PANE ══
-        '  <div id="settings-scope-global">\n'
-        f'    <div style="margin-bottom:20px">{global_badge}</div>\n'
-
-        # Global MCPs
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">MCP Servers</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
-        'MCP servers in ~/.claude/settings.json. Toggle to enable/disable globally.</p>\n'
-        '      <div id="settings-global-mcps" class="toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # MCP Installer
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Install New MCP Server</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Add a new MCP server to ~/.claude/settings.json. Restart Claude Code to activate.</p>\n'
-        '      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">\n'
-        '        <div>\n'
-        '          <label>Server Name</label>\n'
-        '          <input type="text" id="mcp-install-name" placeholder="e.g. my-mcp-server" />\n'
-        '        </div>\n'
-        '        <div>\n'
-        '          <label>Command</label>\n'
-        '          <input type="text" id="mcp-install-cmd" placeholder="e.g. uvx, npx, node" />\n'
-        '        </div>\n'
-        '      </div>\n'
-        '      <div style="margin-bottom:12px">\n'
-        '        <label>Args (comma-separated)</label>\n'
-        '        <input type="text" id="mcp-install-args" placeholder="e.g. @modelcontextprotocol/server-filesystem, /tmp" />\n'
-        '      </div>\n'
-        '      <div style="margin-bottom:12px">\n'
-        '        <label>Env Vars (KEY=VALUE, one per line)</label>\n'
-        '        <textarea id="mcp-install-env" rows="3" placeholder="API_KEY=xxx&#10;DEBUG=1"></textarea>\n'
-        '      </div>\n'
-        '      <div class="flex items-center gap-3">\n'
-        '        <button onclick="installMcp()" class="btn btn-accent">+ Install MCP</button>\n'
-        '        <span id="mcp-install-status" class="text-xs font-mono"></span>\n'
-        '      </div>\n'
-        '    </div>\n'
-
-        # Global Plugins
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Plugins</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
-        'Plugins installed in ~/.claude. Toggle writes to ~/.claude/settings.json.</p>\n'
-        '      <div id="settings-plugins" class="toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # Desktop Notifications
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Desktop Notifications</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
-        'Toggle to enable desktop notifications for task completion, findings, etc.</p>\n'
-        '      <label class="flex items-center gap-3 cursor-pointer">\n'
-        '        <input type="checkbox" id="settings-dbus-enable" class="toggle" onchange="toggleDbusNotifications(this.checked)" />\n'
-        '        <span class="text-sm">Enable desktop notifications</span>\n'
-        '      </label>\n'
-        '      <div id="dbus-status" class="text-xs mt-2 text-gray-500"></div>\n'
-        '    </div>\n'
-
-        # Global Env (read-only)
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Environment Variables <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(read-only)</span></div>\n'
-        '      <div id="settings-global-env" class="toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # Global summary (hooks, etc.)
-        '    <div class="mb-4">\n'
-        '      <div class="section-h3">Summary</div>\n'
-        '      <div id="settings-global" class="toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # Hooks Manager
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Hooks Manager</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">Manage Claude Code hooks in ~/.claude/settings.json.</p>\n'
-        '      <div id="settings-global-hooks" class="toggles-loading">Loading…</div>\n'
-        '      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">\n'
-        '        <div class="section-h4">Add New Hook</div>\n'
-        '        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">\n'
-        '          <div>\n'
-        '            <label>Event</label>\n'
-        '            <select id="hook-add-event">\n'
-        '              <option value="PreToolUse">PreToolUse</option>\n'
-        '              <option value="PostToolUse">PostToolUse</option>\n'
-        '              <option value="Stop">Stop</option>\n'
-        '              <option value="SessionStart">SessionStart</option>\n'
-        '              <option value="UserPromptSubmit">UserPromptSubmit</option>\n'
-        '              <option value="SubagentStart">SubagentStart</option>\n'
-        '              <option value="SubagentStop">SubagentStop</option>\n'
-        '              <option value="TeammateIdle">TeammateIdle</option>\n'
-        '              <option value="PreCompact">PreCompact</option>\n'
-        '              <option value="PostCompact">PostCompact</option>\n'
-        '              <option value="Notification">Notification</option>\n'
-        '            </select>\n'
-        '          </div>\n'
-        '          <div>\n'
-        '            <label>Matcher (regex, optional)</label>\n'
-        '            <input type="text" id="hook-add-matcher" placeholder=".*" />\n'
-        '          </div>\n'
-        '        </div>\n'
-        '        <div style="margin-bottom:12px">\n'
-        '          <label>Command</label>\n'
-        '          <input type="text" id="hook-add-cmd" placeholder="e.g. python3 /path/to/hook.py" />\n'
-        '        </div>\n'
-        '        <div class="flex items-center gap-3">\n'
-        '          <button onclick="addHook()" class="btn btn-accent">+ Add Hook</button>\n'
-        '          <span id="hook-add-status" class="text-xs font-mono"></span>\n'
-        '        </div>\n'
-        '      </div>\n'
-        '    </div>\n'
-
-        '  </div>\n'
-
-        # ══ PROJECT SCOPE PANE ══
-        '  <div id="settings-scope-project" style="display:none">\n'
-        f'    <div style="margin-bottom:20px">{project_badge}</div>\n'
-
-        # Project Agent & Proxy settings
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Agent &amp; Proxy</div>\n'
-        '      <div id="settings-agent-form" class="space-y-3"></div>\n'
-        '      <div class="flex items-center gap-3 mt-3">\n'
-        '        <button onclick="saveSettingsAgent()" class="btn btn-accent">Save</button>\n'
-        '        <span id="settings-agent-status" class="text-xs font-mono"></span>\n'
-        '      </div>\n'
-        '    </div>\n'
-
-        # Project MCPs
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">MCP Servers</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
-        'MCP servers from project mcp.json. Toggle stores state in .claude/settings.json.</p>\n'
-        '      <div id="settings-mcps" class="toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # Project Skill Domains
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Skill Domains</div>\n'
-        '      <p class="text-xs font-mono mb-3" style="color:var(--text-muted)">'
-        'Enable or disable skill domain libraries from .claude/skills/.</p>\n'
-        '      <div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # Project Env (read-only)
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Environment Variables <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(read-only)</span></div>\n'
-        '      <div id="settings-project-env" class="toggles-loading">Loading…</div>\n'
-        '    </div>\n'
-
-        # Project Hooks (read-only)
-        '    <div class="mb-4">\n'
-        '      <div class="section-h4">Hooks <span style="font-weight:400;text-transform:none">(read-only)</span></div>\n'
-        '      <div id="settings-hooks-table"></div>\n'
-        '    </div>\n'
-
-        # Project Env Editor
-        '    <div class="mb-6">\n'
-        '      <div class="section-h3">Custom Env Overrides</div>\n'
-        '      <div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
-        '      <div class="flex items-center gap-3">\n'
-        '        <button onclick="settingsAddEnvRow()" class="btn btn-ghost">+ Add Variable</button>\n'
-        '        <button onclick="saveSettingsEnv()" class="btn btn-accent">Save Env</button>\n'
-        '        <span id="settings-env-status" class="text-xs font-mono"></span>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '  </div>\n'
-
-        # ══ LOCAL LLM SECTION ══
-        '  <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:24px">\n'
-        '    <div class="section-h3">🖥️ Local LLM</div>\n'
-        '    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'
-        'Connect to a local Ollama or LM Studio instance for offline AI.</p>\n'
-        '    <div id="local-llm-providers" style="margin-bottom:12px">'
-        '<span class="text-xs text-gray-500">Loading...</span></div>\n'
-        '    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">\n'
-        '      <select id="local-llm-model" style="flex:1;max-width:300px">\n'
-        '        <option value="">Select a local model...</option>\n'
-        '      </select>\n'
-        '      <button onclick="activateLocalLlm()" class="btn btn-accent" style="font-size:12px">Activate</button>\n'
-        '      <button onclick="deactivateLocalLlm()" class="btn btn-ghost" style="font-size:12px">Deactivate</button>\n'
-        '    </div>\n'
-        '    <div id="local-llm-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></div>\n'
-        '  </div>\n'
-
-        "</div>\n"
+        + '<div style="margin-bottom:16px">\n'
+        + project_selector
+        + '</div>\n'
+        + scope_bar + '\n'
+        + global_pane
+        + project_pane
+        + local_llm
+        + '</div>\n'
     )
 
 
