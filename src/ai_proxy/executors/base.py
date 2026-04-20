@@ -28,7 +28,7 @@ RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 class ExecutorResult:
     """Result from an executor call."""
 
-    __slots__ = ("status_code", "headers", "body", "stream", "error", "latency_ms", "provider_id", "model_id")
+    __slots__ = ("status_code", "headers", "body", "stream", "error", "latency_ms", "provider_id", "model_id", "request_id")
 
     def __init__(
         self,
@@ -40,6 +40,7 @@ class ExecutorResult:
         latency_ms: float = 0,
         provider_id: str = "",
         model_id: str = "",
+        request_id: str | None = None,
     ):
         self.status_code = status_code
         self.headers = headers or {}
@@ -49,6 +50,7 @@ class ExecutorResult:
         self.latency_ms = latency_ms
         self.provider_id = provider_id
         self.model_id = model_id
+        self.request_id = request_id
 
     @property
     def ok(self) -> bool:
@@ -232,7 +234,7 @@ class GeminiExecutor(BaseExecutor):
 
 
 class AnthropicExecutor(BaseExecutor):
-    """Executor for Anthropic's native API."""
+    """Anthropic executor — delegates to the SDK-backed implementation."""
 
     def build_url(self, model: str, endpoint: str = "chat/completions") -> str:
         return f"{self.provider.base_url}/messages"
@@ -251,6 +253,13 @@ def get_executor(provider: ProviderConfig) -> BaseExecutor:
     if provider.api_format == ApiFormat.GEMINI:
         return GeminiExecutor(provider)
     if provider.api_format == ApiFormat.ANTHROPIC:
-        return AnthropicExecutor(provider)
+        from ai_proxy.executors.anthropic_sdk import AnthropicSdkExecutor
+        return AnthropicSdkExecutor(provider)
+    if provider.api_format == ApiFormat.BEDROCK:
+        from ai_proxy.executors.bedrock import BedrockSdkExecutor
+        return BedrockSdkExecutor(provider)
+    if provider.api_format == ApiFormat.VERTEX:
+        from ai_proxy.executors.vertex import VertexSdkExecutor
+        return VertexSdkExecutor(provider)
     return DefaultExecutor(provider)
 

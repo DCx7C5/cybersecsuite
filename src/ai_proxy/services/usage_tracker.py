@@ -27,6 +27,7 @@ class UsageRecord:
     stream: bool = False
     success: bool = True
     error: str | None = None
+    request_id: str | None = None
 
 
 class UsageTracker:
@@ -63,6 +64,7 @@ class UsageTracker:
         stream: bool = False,
         success: bool = True,
         error: str | None = None,
+        request_id: str | None = None,
     ) -> UsageRecord:
         """Extract usage from OpenAI-format response and record it."""
         usage = (response_body or {}).get("usage", {})
@@ -86,6 +88,7 @@ class UsageTracker:
             stream=stream,
             success=success,
             error=error,
+            request_id=request_id,
         )
         self.record(rec)
         return rec
@@ -125,6 +128,7 @@ class UsageTracker:
                 "latency_ms": round(r.latency_ms, 1),
                 "success": r.success,
                 "stream": r.stream,
+                "request_id": r.request_id,
             }
             for r in reversed(records)
         ]

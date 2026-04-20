@@ -30,7 +30,9 @@ class ApiFormat(str, Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GEMINI = "gemini"
-    CUSTOM = "custom"  # Custom format requiring a dedicated executor
+    BEDROCK = "bedrock"    # AWS Bedrock via AnthropicBedrock SDK
+    VERTEX = "vertex"      # Google Vertex AI via AnthropicVertex SDK
+    CUSTOM = "custom"      # Custom format requiring a dedicated executor
 
 
 class ModelCost(BaseModel):
