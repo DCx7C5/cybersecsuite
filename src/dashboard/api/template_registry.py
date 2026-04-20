@@ -201,3 +201,35 @@ async def api_template_delete(request: Request) -> JSONResponse:
         return JSONResponse({"deleted": str(template_path)})
 
     return JSONResponse({"error": "cannot delete non-custom template"}, status=400)
+
+
+async def api_template_update(request: Request) -> JSONResponse:
+    """PATCH /api/templates/{id} — update a custom template's content."""
+    template_id = request.path_params.get("id", "")
+    template_type = request.query_params.get("type", "")
+
+    if not template_id:
+        return JSONResponse({"error": "id required"}, status_code=400)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+
+    index = build_template_index()
+    templates = index.get(template_type, []) if template_type else [
+        t for tl in index.values() for t in tl
+    ]
+    template = next((t for t in templates if t["id"] == template_id), None)
+
+    if not template:
+        return JSONResponse({"error": "template not found"}, status_code=404)
+
+    template_path = Path(template.get("path", ""))
+    if not template_path.exists() or ".claude" not in str(template_path):
+        return JSONResponse({"error": "cannot edit non-custom template"}, status_code=400)
+
+    if "content" in body:
+        template_path.write_text(body["content"], encoding="utf-8")
+
+    return JSONResponse({"ok": True, "id": template_id})

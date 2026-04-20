@@ -10,13 +10,12 @@ interface APIResponse {
 
 export async function refresh(): Promise<void> {
   try {
-    const [ov, uv, cv, av, iv, dv, agv, rtv, pmv, pocv, findingsv, iocsv, yarav, netv, intv, auditv, compv, hv, afv] = await Promise.all([
+    const [ov, uv, cv, av, iv, agv, rtv, pmv, pocv, findingsv, iocsv, yarav, intv, auditv, compv, hv, afv] = await Promise.all([
       fetch('/api/overview').then((r) => r.json()),
       fetch('/api/usage').then((r) => r.json()),
       fetch('/api/crypto').then((r) => r.json()),
       fetch('/api/a2a').then((r) => r.json()),
       fetch('/api/investigations').then((r) => r.json()),
-      fetch('/api/db-counts').then((r) => r.json()),
       fetch('/api/agents').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/routing').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/prompts').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
@@ -24,7 +23,6 @@ export async function refresh(): Promise<void> {
       fetch('/api/findings').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/iocs').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/yara').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
-      fetch('/api/network').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/intelligence').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/audit').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
       fetch('/api/compliance').then((r) => r.json()).catch(() => ({ error: 'unavailable' })),
@@ -189,31 +187,6 @@ export async function refresh(): Promise<void> {
         sevRows,
         { sortCol: 1, sortDir: 'desc' }
       );
-    }
-
-    // DB Counts tab
-    const dc = $('db-content');
-    if (dv.error) {
-      dc!.innerHTML = '<p class="text-red-400">Error: ' + dv.error + '</p>';
-    } else {
-      dc!.innerHTML = '<div id="db-table"></div>';
-      const dbRows = Object.entries(dv.counts || {}).map(([t, c]) => ({
-        table_name: t,
-        rows: c,
-      }));
-      renderTable(
-        'db-table',
-        [
-          { key: 'table_name', label: 'Table', type: 'string' },
-          { key: 'rows', label: 'Rows', type: 'number' },
-        ],
-        dbRows,
-        { sortCol: 1, sortDir: 'desc' }
-      );
-      // Populate agent-query context table selector (assumes _aqPopulateContextTables exists in agents.ts)
-      if ((window as any)._aqPopulateContextTables) {
-        (window as any)._aqPopulateContextTables(Object.keys(dv.counts || {}));
-      }
     }
 
     // Agents tab
@@ -553,40 +526,6 @@ export async function refresh(): Promise<void> {
           ...y,
           status: '<span class="badge ' + (y.status === 'active' ? 'badge-ok' : 'badge-standard') + '">' + (y.status || '?').toUpperCase() + '</span>',
         }))
-      );
-    }
-
-    // Network tab
-    if (!netv.error) {
-      const nh = $('net-hosts');
-      if (nh) nh.textContent = String((netv.hosts || {}).total || 0);
-      const nc = $('net-compromised');
-      if (nc) nc.textContent = String((netv.hosts || {}).compromised || 0);
-      const ni = $('net-ips');
-      if (ni) ni.textContent = String((netv.ip_addresses || {}).total || 0);
-      const nco = $('net-countries');
-      if (nco) nco.textContent = String((netv.top_countries || []).length);
-
-      renderTable(
-        'network-hosts-table',
-        [
-          { key: 'hostname', label: 'Hostname', type: 'string' },
-          { key: 'os_name', label: 'OS', type: 'string' },
-          { key: 'is_compromised', label: 'Compromised', type: 'bool' },
-          { key: 'is_target', label: 'Target', type: 'bool' },
-        ],
-        netv.recent_hosts || []
-      );
-      renderTable(
-        'network-ips-table',
-        [
-          { key: 'address', label: 'IP Address', type: 'string' },
-          { key: 'version', label: 'Ver', type: 'number' },
-          { key: 'is_private', label: 'Private', type: 'bool' },
-          { key: 'geo_country', label: 'Country', type: 'string' },
-          { key: 'last_seen_at', label: 'Last Seen', type: 'datetime' },
-        ],
-        netv.recent_ips || []
       );
     }
 

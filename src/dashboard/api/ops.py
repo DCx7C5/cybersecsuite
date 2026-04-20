@@ -181,3 +181,187 @@ async def api_pocs(request: Request) -> JSONResponse:
         "by_severity": by_severity,
         "recent": recent_list,
     })
+
+
+# ── Cases CRUD ────────────────────────────────────────────────────────────────
+
+async def api_cases_create(request: Request) -> JSONResponse:
+    """POST /api/cases — create a new case intake."""
+    try:
+        from db.models.case_intake import CaseIntake
+        body = await request.json()
+        title = (body.get("title") or "").strip()
+        problem = (body.get("problem_statement") or "").strip()
+        if not title or not problem:
+            return JSONResponse({"error": "title and problem_statement are required"}, status_code=400)
+        case = await CaseIntake.create(
+            title=title,
+            problem_statement=problem,
+            attack_hypothesis=body.get("attack_hypothesis", ""),
+            known_facts=body.get("known_facts", []),
+            suspected_iocs=body.get("suspected_iocs", []),
+            affected_assets=body.get("affected_assets", []),
+            timeline_hints=body.get("timeline_hints", []),
+            scope_in=body.get("scope_in", []),
+        )
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": case.id}, status_code=201)
+
+
+async def api_cases_update(request: Request) -> JSONResponse:
+    """PATCH /api/cases/{id} — update a case intake."""
+    try:
+        from db.models.case_intake import CaseIntake
+        case_id = int(request.path_params["id"])
+        case = await CaseIntake.get_or_none(id=case_id)
+        if case is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        for field in ("title", "problem_statement", "attack_hypothesis", "known_facts",
+                      "suspected_iocs", "affected_assets", "timeline_hints", "scope_in"):
+            if field in body:
+                setattr(case, field, body[field])
+        await case.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": case_id})
+
+
+async def api_cases_delete(request: Request) -> JSONResponse:
+    """DELETE /api/cases/{id} — delete a case intake."""
+    try:
+        from db.models.case_intake import CaseIntake
+        case_id = int(request.path_params["id"])
+        deleted = await CaseIntake.filter(id=case_id).delete()
+        if not deleted:
+            return JSONResponse({"error": "not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True})
+
+
+# ── A2A Tasks CRUD ────────────────────────────────────────────────────────────
+
+async def api_tasks_list(request: Request) -> JSONResponse:
+    """GET /api/tasks — list A2A tasks."""
+    try:
+        from db.models.a2a_task import A2ATask
+        tasks = await A2ATask.all().order_by("-updated_at").limit(100).values()
+        rows = [
+            {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()}
+            for row in tasks
+        ]
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"tasks": rows, "total": len(rows)})
+
+
+async def api_tasks_create(request: Request) -> JSONResponse:
+    """POST /api/tasks — create a manual A2A task."""
+    try:
+        import uuid
+        from db.models.a2a_task import A2ATask
+        body = await request.json()
+        task = await A2ATask.create(
+            id=str(uuid.uuid4()),
+            session_id=body.get("session_id"),
+            state=body.get("state", "submitted"),
+            history=body.get("history", []),
+            artifacts=body.get("artifacts", []),
+            metadata=body.get("metadata", {}),
+        )
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": task.id}, status_code=201)
+
+
+async def api_tasks_update(request: Request) -> JSONResponse:
+    """PATCH /api/tasks/{id} — update a task state/metadata."""
+    try:
+        from db.models.a2a_task import A2ATask
+        task_id = request.path_params["id"]
+        task = await A2ATask.get_or_none(id=task_id)
+        if task is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        for field in ("state", "history", "artifacts", "metadata", "session_id"):
+            if field in body:
+                setattr(task, field, body[field])
+        await task.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": task_id})
+
+
+async def api_tasks_delete(request: Request) -> JSONResponse:
+    """DELETE /api/tasks/{id} — delete a task."""
+    try:
+        from db.models.a2a_task import A2ATask
+        task_id = request.path_params["id"]
+        deleted = await A2ATask.filter(id=task_id).delete()
+        if not deleted:
+            return JSONResponse({"error": "not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True})
+
+
+# ── PoC CRUD ──────────────────────────────────────────────────────────────────
+
+async def api_pocs_create(request: Request) -> JSONResponse:
+    """POST /api/pocs — create a new PoC record."""
+    try:
+        from db.models.poc import ProofOfConcept
+        body = await request.json()
+        poc = await ProofOfConcept.create(
+            title=body.get("title", ""),
+            description=body.get("description", ""),
+            poc_url=body.get("poc_url", ""),
+            source=body.get("source", ""),
+            language=body.get("language", ""),
+            status=body.get("status", "unverified"),
+            severity=body.get("severity"),
+            reliability_score=body.get("reliability_score"),
+            is_weaponized=body.get("is_weaponized", False),
+            requires_auth=body.get("requires_auth", False),
+            requires_interaction=body.get("requires_interaction", False),
+            affected_versions=body.get("affected_versions", []),
+            tags=body.get("tags", []),
+        )
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": poc.id}, status_code=201)
+
+
+async def api_pocs_update(request: Request) -> JSONResponse:
+    """PATCH /api/pocs/{id} — update a PoC record."""
+    try:
+        from db.models.poc import ProofOfConcept
+        poc_id = int(request.path_params["id"])
+        poc = await ProofOfConcept.get_or_none(id=poc_id)
+        if poc is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        for field in ("title", "description", "poc_url", "source", "language", "status",
+                      "severity", "reliability_score", "is_weaponized", "requires_auth",
+                      "requires_interaction", "affected_versions", "tags"):
+            if field in body:
+                setattr(poc, field, body[field])
+        await poc.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": poc_id})
+
+
+async def api_pocs_delete(request: Request) -> JSONResponse:
+    """DELETE /api/pocs/{id} — delete a PoC."""
+    try:
+        from db.models.poc import ProofOfConcept
+        poc_id = int(request.path_params["id"])
+        deleted = await ProofOfConcept.filter(id=poc_id).delete()
+        if not deleted:
+            return JSONResponse({"error": "not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True})

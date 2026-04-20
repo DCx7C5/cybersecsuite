@@ -59,10 +59,6 @@ function _renderSettingsPanels(): void {
         '<div class="text-sm font-semibold text-gray-100">Claude SDK settings</div>' +
         '<div class="text-xs text-gray-400">Editable values from .claude/settings.json</div>' +
         '</div>' +
-        '<div class="flex items-center gap-2">' +
-        '<span class="text-xs text-gray-400">Project scope</span>' +
-        '<select id="settings-project-select" onchange="switchActiveProject(this.value)" class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg"></select>' +
-        '</div>' +
         '</div>' +
         '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
         '<div class="flex items-center justify-between gap-3">' +
@@ -195,22 +191,11 @@ interface Project {
 }
 
 export async function loadSettingsProjects(): Promise<void> {
-  try {
-    const res = await fetch('/api/projects');
-    const projects: Project[] = res.ok ? await res.json() : [];
-    const sel = document.getElementById('settings-project-select') as HTMLSelectElement;
-    if (!sel) return;
-    const active = localStorage.getItem('activeProjectId') || '';
-    sel.innerHTML = '<option value="">None (Global only)</option>' +
-      projects.map(p => `<option value="${p.id}" ${String(p.id) === active ? 'selected' : ''}>${p.name}</option>`).join('');
-  } catch (e) {
-    console.error('loadSettingsProjects:', e);
-  }
+  // Project scope selector removed — settings are now global only
 }
 
-export function switchActiveProject(projectId: string): void {
-  localStorage.setItem('activeProjectId', projectId);
-  loadSettings();
+export function switchActiveProject(_projectId: string): void {
+  // No-op: project scope selector removed
 }
 
 function _inp(id: string, val: unknown, placeholder?: string): string {

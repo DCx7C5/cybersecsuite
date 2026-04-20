@@ -142,6 +142,44 @@ from dashboard.api.plugin import (
     api_plugin_clear_events,
 )
 from dashboard.api.ts_proxy import ts_api_proxy
+from dashboard.api.prompts_crud import (
+    api_prompts_list,
+    api_prompts_create,
+    api_prompts_update,
+    api_prompts_delete,
+)
+from dashboard.api.intel_sources import (
+    api_intel_sources_list,
+    api_intel_sources_create,
+    api_intel_sources_update,
+    api_intel_sources_delete,
+    api_intel_sources_seed,
+)
+from dashboard.api.forensic import (
+    api_findings_create,
+    api_findings_update,
+    api_findings_delete,
+    api_iocs_create,
+    api_iocs_update,
+    api_iocs_delete,
+    api_investigations_create,
+    api_investigations_update,
+    api_investigations_delete,
+)
+from dashboard.api.ops import (
+    api_cases_create,
+    api_cases_update,
+    api_cases_delete,
+    api_tasks_list,
+    api_tasks_create,
+    api_tasks_update,
+    api_tasks_delete,
+    api_pocs_create,
+    api_pocs_update,
+    api_pocs_delete,
+)
+from dashboard.api.template_registry import api_template_update
+from dashboard.api.workflows import api_workflow_update
 
 
 def create_dashboard_router() -> Router:
@@ -177,18 +215,38 @@ def create_dashboard_router() -> Router:
             Route("/api/plugin/status", api_plugin_status, methods=["GET"]),
             Route("/api/crypto", api_crypto, methods=["GET"]),
             Route("/api/a2a", api_a2a, methods=["GET"]),
-            Route("/api/investigations", api_investigations, methods=["GET"]),
             Route("/api/db-counts", api_db_counts, methods=["GET"]),
             Route("/api/agents", api_agents, methods=["GET"]),
             Route("/api/routing", api_routing, methods=["GET"]),
             Route("/api/agent-factory", api_agent_factory, methods=["GET"]),
             Route("/api/prompts", api_prompts, methods=["GET"]),
+            Route("/api/prompts", api_prompts_create, methods=["POST"]),
+            Route("/api/prompts/{id:int}", api_prompts_update, methods=["PATCH"]),
+            Route("/api/prompts/{id:int}", api_prompts_delete, methods=["DELETE"]),
+            Route("/api/prompts-list", api_prompts_list, methods=["GET"]),
             # Specific domain endpoints (summaries + recent full-field rows)
             Route("/api/cases", api_cases, methods=["GET"]),
+            Route("/api/cases", api_cases_create, methods=["POST"]),
+            Route("/api/cases/{id:int}", api_cases_update, methods=["PATCH"]),
+            Route("/api/cases/{id:int}", api_cases_delete, methods=["DELETE"]),
             Route("/api/tasks", api_tasks, methods=["GET"]),
+            Route("/api/tasks-list", api_tasks_list, methods=["GET"]),
+            Route("/api/tasks", api_tasks_create, methods=["POST"]),
+            Route("/api/tasks/{id}", api_tasks_update, methods=["PATCH"]),
+            Route("/api/tasks/{id}", api_tasks_delete, methods=["DELETE"]),
             Route("/api/tasks/{task_id}/cancel", api_task_cancel, methods=["POST"]),
             Route("/api/findings", api_findings, methods=["GET"]),
+            Route("/api/findings", api_findings_create, methods=["POST"]),
+            Route("/api/findings/{id:int}", api_findings_update, methods=["PATCH"]),
+            Route("/api/findings/{id:int}", api_findings_delete, methods=["DELETE"]),
             Route("/api/iocs", api_iocs, methods=["GET"]),
+            Route("/api/iocs", api_iocs_create, methods=["POST"]),
+            Route("/api/iocs/{id:int}", api_iocs_update, methods=["PATCH"]),
+            Route("/api/iocs/{id:int}", api_iocs_delete, methods=["DELETE"]),
+            Route("/api/investigations", api_investigations, methods=["GET"]),
+            Route("/api/investigations", api_investigations_create, methods=["POST"]),
+            Route("/api/investigations/{id:int}", api_investigations_update, methods=["PATCH"]),
+            Route("/api/investigations/{id:int}", api_investigations_delete, methods=["DELETE"]),
             Route("/api/yara", api_yara, methods=["GET"]),
             Route("/api/network", api_network, methods=["GET"]),
             Route("/api/intelligence", api_intelligence, methods=["GET"]),
@@ -198,6 +256,9 @@ def create_dashboard_router() -> Router:
             Route("/api/nist-ai-rmf", api_nist_ai_rmf, methods=["GET"]),
             Route("/api/telemetry", api_telemetry, methods=["GET"]),
             Route("/api/pocs", api_pocs, methods=["GET"]),
+            Route("/api/pocs", api_pocs_create, methods=["POST"]),
+            Route("/api/pocs/{id:int}", api_pocs_update, methods=["PATCH"]),
+            Route("/api/pocs/{id:int}", api_pocs_delete, methods=["DELETE"]),
             Route("/api/tasks/create", api_task_create, methods=["POST"]),
             Route("/api/tasks/{task_id}", api_task_get, methods=["GET"]),
             # Generic model table endpoint — all 82+ Tortoise models
@@ -243,7 +304,16 @@ def create_dashboard_router() -> Router:
             Route("/api/workflows", api_workflow_list, methods=["GET"]),
             Route("/api/workflows", api_workflow_create, methods=["POST"]),
             Route("/api/workflows/{id}", api_workflow_get, methods=["GET"]),
+            Route("/api/workflows/{id}", api_workflow_update, methods=["PATCH"]),
             Route("/api/workflows/{id}", api_workflow_cancel, methods=["DELETE"]),
+            # Intel feed sources
+            Route("/api/intel-sources", api_intel_sources_list, methods=["GET"]),
+            Route("/api/intel-sources", api_intel_sources_create, methods=["POST"]),
+            Route("/api/intel-sources/seed", api_intel_sources_seed, methods=["POST"]),
+            Route("/api/intel-sources/{id:int}", api_intel_sources_update, methods=["PATCH"]),
+            Route("/api/intel-sources/{id:int}", api_intel_sources_delete, methods=["DELETE"]),
+            # Templates CRUD
+            Route("/api/templates/{id}", api_template_update, methods=["PATCH"]),
             Route("/api/opensearch", api_opensearch, methods=["GET"]),
             # Local LLM
             Route("/api/local-llm/status", api_local_llm_status, methods=["GET"]),

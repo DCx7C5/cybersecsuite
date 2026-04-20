@@ -62,6 +62,8 @@ MODEL_MODULES: list[str] = [
     "db.models.llm_call",
     # Intelligence feed sources
     "db.models.intel_feed_source",
+    # Prompts
+    "db.models.prompt",
 ]
 
 from db.models.api_account import ApiAccount
@@ -72,6 +74,7 @@ from db.models.settings import ScopedEntry, GlobalSettings
 from db.models.llm_session import LlmSession
 from db.models.llm_call import LlmCall
 from db.models.intel_feed_source import IntelFeedSource
+from db.models.prompt import Prompt
 
 __all__ = [
     "MODEL_MODULES",
@@ -89,4 +92,5 @@ __all__ = [
     "LlmSession",
     "LlmCall",
     "IntelFeedSource",
+    "Prompt",
 ]

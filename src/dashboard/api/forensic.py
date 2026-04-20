@@ -410,3 +410,184 @@ async def api_nist_ai_rmf(request: Request) -> JSONResponse:
         "by_topic": dict(sorted(by_topic.items(), key=lambda x: -x[1])),
         "recent": recent_list,
     })
+
+
+# ── Findings CRUD ─────────────────────────────────────────────────────────────
+
+async def api_findings_create(request: Request) -> JSONResponse:
+    """POST /api/findings — create a new finding."""
+    try:
+        from db.models.investigation import Finding
+        body = await request.json()
+        title = (body.get("title") or "").strip()
+        if not title:
+            return JSONResponse({"error": "title is required"}, status_code=400)
+        finding = await Finding.create(
+            title=title,
+            description=body.get("description", ""),
+            severity=body.get("severity", "medium"),
+            status=body.get("status", "open"),
+            confidence=body.get("confidence", "medium"),
+            location=body.get("location"),
+            evidence=body.get("evidence"),
+            analyst_notes=body.get("analyst_notes", ""),
+            remediation=body.get("remediation", ""),
+            tags=body.get("tags", []),
+        )
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": finding.id}, status_code=201)
+
+
+async def api_findings_update(request: Request) -> JSONResponse:
+    """PATCH /api/findings/{id} — update a finding."""
+    try:
+        from db.models.investigation import Finding
+        finding_id = int(request.path_params["id"])
+        finding = await Finding.get_or_none(id=finding_id)
+        if finding is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        for field in ("title", "description", "severity", "status", "confidence",
+                      "location", "evidence", "analyst_notes", "remediation", "tags", "next_action"):
+            if field in body:
+                setattr(finding, field, body[field])
+        await finding.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": finding_id})
+
+
+async def api_findings_delete(request: Request) -> JSONResponse:
+    """DELETE /api/findings/{id} — delete a finding."""
+    try:
+        from db.models.investigation import Finding
+        finding_id = int(request.path_params["id"])
+        deleted = await Finding.filter(id=finding_id).delete()
+        if not deleted:
+            return JSONResponse({"error": "not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True})
+
+
+# ── IOC CRUD ──────────────────────────────────────────────────────────────────
+
+async def api_iocs_create(request: Request) -> JSONResponse:
+    """POST /api/iocs — create a new IOC."""
+    try:
+        import uuid
+        from db.models.investigation import IOC
+        body = await request.json()
+        value = (body.get("value") or "").strip()
+        ioc_type = (body.get("ioc_type") or "").strip()
+        if not value or not ioc_type:
+            return JSONResponse({"error": "value and ioc_type are required"}, status_code=400)
+        ioc = await IOC.create(
+            ioc_id=body.get("ioc_id") or str(uuid.uuid4())[:8],
+            ioc_type=ioc_type,
+            value=value,
+            confidence=body.get("confidence", "low"),
+            status=body.get("status", "active"),
+            source=body.get("source"),
+            context=body.get("context", {}),
+            tags=body.get("tags", []),
+        )
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": ioc.id}, status_code=201)
+
+
+async def api_iocs_update(request: Request) -> JSONResponse:
+    """PATCH /api/iocs/{id} — update an IOC."""
+    try:
+        from db.models.investigation import IOC
+        ioc_id = int(request.path_params["id"])
+        ioc = await IOC.get_or_none(id=ioc_id)
+        if ioc is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        for field in ("ioc_type", "value", "confidence", "status", "source", "context", "tags", "sightings"):
+            if field in body:
+                setattr(ioc, field, body[field])
+        await ioc.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": ioc_id})
+
+
+async def api_iocs_delete(request: Request) -> JSONResponse:
+    """DELETE /api/iocs/{id} — delete an IOC."""
+    try:
+        from db.models.investigation import IOC
+        ioc_id = int(request.path_params["id"])
+        deleted = await IOC.filter(id=ioc_id).delete()
+        if not deleted:
+            return JSONResponse({"error": "not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True})
+
+
+# ── Investigations CRUD ───────────────────────────────────────────────────────
+
+async def api_investigations_create(request: Request) -> JSONResponse:
+    """POST /api/investigations — create a new case session."""
+    try:
+        import uuid
+        from db.models.scope import Project, Session
+        body = await request.json()
+        name = (body.get("name") or "").strip()
+        if not name:
+            return JSONResponse({"error": "name is required"}, status_code=400)
+        # Use first active project or create default
+        project = await Project.filter(is_active=True).first()
+        if project is None:
+            project = await Project.create(name="Default", description="Auto-created")
+        session = await Session.create(
+            project=project,
+            session_id=str(uuid.uuid4()),
+            name=name,
+            description=body.get("description", ""),
+            agent=body.get("agent", "cybersec-agent"),
+            mode=body.get("mode", "blue"),
+            phase=body.get("phase", "init"),
+        )
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": session.id}, status_code=201)
+
+
+async def api_investigations_update(request: Request) -> JSONResponse:
+    """PATCH /api/investigations/{id} — update an investigation session."""
+    try:
+        from db.models.scope import Session
+        inv_id = int(request.path_params["id"])
+        session = await Session.get_or_none(id=inv_id)
+        if session is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        body = await request.json()
+        for field in ("name", "description", "agent", "mode", "phase", "is_active"):
+            if field in body:
+                setattr(session, field, body[field])
+        await session.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True, "id": inv_id})
+
+
+async def api_investigations_delete(request: Request) -> JSONResponse:
+    """DELETE /api/investigations/{id} — soft-delete an investigation."""
+    try:
+        import datetime
+        from db.models.scope import Session
+        inv_id = int(request.path_params["id"])
+        session = await Session.get_or_none(id=inv_id)
+        if session is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        session.is_active = False
+        session.deleted_at = datetime.datetime.now(datetime.timezone.utc)
+        await session.save()
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"ok": True})

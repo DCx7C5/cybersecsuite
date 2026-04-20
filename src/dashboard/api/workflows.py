@@ -245,3 +245,24 @@ async def api_workflow_cancel(request: Request) -> JSONResponse:
     if not wf:
         return JSONResponse({"error": f"workflow '{wf_id}' not found"}, status_code=404)
     return JSONResponse({"status": "deleted", "workflow": wf_id})
+
+
+async def api_workflow_update(request: Request) -> JSONResponse:
+    """PATCH /api/workflows/{id} — update workflow metadata or step status."""
+    wf_id = request.path_params.get("id", "")
+    wf = _workflows.get(wf_id)
+    if not wf:
+        return JSONResponse({"error": f"workflow '{wf_id}' not found"}, status_code=404)
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "invalid JSON body"}, status_code=400)
+    # Patch top-level scalar fields stored in the internal dict
+    d = wf.to_dict()
+    for field in ("status", "current_step", "metadata"):
+        if field in body:
+            d[field] = body[field]
+    # Reflect back into the WorkflowRun object where possible
+    if hasattr(wf, "status") and "status" in body:
+        wf.status = body["status"]
+    return JSONResponse({"ok": True, "workflow": wf_id})
