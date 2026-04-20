@@ -1,751 +1,1093 @@
-# Git Worktree + Session-ID + Conditional Hooks — Project Plan
+# LLM Orchestration Layer — Anthropic + PostgreSQL + OpenObserve
+
+> **Sprint blueprint** — Session-aware, streaming, fully observable LLM layer
+> bolted on top of the existing Git worktree session manager.
+
+---
 
 ## 1. Project Overview
 
-Two agents (a human developer and an AI coding agent, or two automated agents) must work simultaneously on the same Git repository without triggering index-lock collisions, hook conflicts, or cross-contamination of working-tree state. The chosen solution leverages **Git worktrees** with a strict `worktree-<sid>` naming convention, where `<sid>` is a 12-character lowercase hexadecimal session ID derived from `uuid.uuid4().hex[:12]`. Each agent owns one worktree for the duration of its session. Hook isolation is achieved by setting `core.hooksPath` in the per-worktree Git config to that worktree's private `.git/hooks/` directory, enabled through `extensions.worktreeConfig true`. A central Python 3 manager script (`worktree-session-manager.py`) automates creation, configuration, hook installation, and teardown. All operations are idempotent, race-condition-safe, and designed for production use.
+CyberSecSuite already ships a multi-provider AI proxy (`src/ai_proxy/`), an in-memory usage tracker, an OpenObserve async bulk-writer, and a Tortoise ORM `ApiUsageLog` model — but these components are **not bound to Git worktree sessions** and have **no OTEL tracing**. This sprint adds a production-grade `src/llm/` package that ties every Anthropic API call, its token usage, and cost to the running worktree session ID (`<sid>`). All calls are persisted in two new Postgres tables (`llm_sessions`, `llm_calls`), emitted as OTEL spans to OpenObserve, and streamed via `AsyncAnthropic` with structured outputs. The `worktree-session-manager.py` CLI gains two new sub-commands (`llm-session-open` / `llm-session-close`) that create/close a DB session row on worktree create/teardown respectively. The result is full per-agent observability: every token, every cost, every trace, isolated by `worktree-<sid>`.
 
 ---
 
-## 2. Detailed Requirements
+## 2. Exploration Validation Summary
 
-### Functional Requirements
+### Command outputs (executed 2026-04-20)
 
-- **Unique session IDs**: Every worktree MUST be identified by a 12-character lowercase hex session ID (`[0-9a-f]{12}`) generated via `uuid.uuid4().hex[:12]`.
-- **Strict naming**: Worktree directories MUST follow the pattern `worktree-<sid>` relative to the parent of the main repository root.
-- **Marker file**: Each worktree root MUST contain a `.worktree-session` file with the single-line content `<sid>`.
-- **Per-worktree hooks**: Each worktree MUST configure `core.hooksPath` pointing to `<worktree-root>/.git/hooks/` so hooks installed there fire only for that agent's operations.
-- **Hook lifecycle**:
-  - Hooks are installed at worktree creation time.
-  - Hooks are removed (or the directory is wiped) at teardown time.
-  - Hooks in one worktree MUST NEVER fire in another worktree.
-- **Conditional hook fallback**: For shared hooks (e.g., project-wide quality gates), a `get_current_worktree_sid()` helper allows a hook to identify its owning session and conditionally skip non-owning work.
-- **Teardown safety**: `worktree-session-manager.py teardown <sid>` MUST run `git worktree remove` and `git worktree prune`, and clean up the marker file and any stale lock files.
-- **Idempotency**: Running `create` for the same `<sid>` twice MUST be a no-op on the second call (detect existing worktree and skip).
-- **Alias integration**: Shell aliases `gwt-create`, `gwt-teardown`, `gwt-sid` MUST be provided for zsh and bash.
+**`pwd && ls -la .`**
+```
+/home/daen/Projects/cybersecsuite
+worktree-session-manager.py  (22884 bytes, executable -rwx------)
+plan.md, pyproject.toml, scripts/, src/, tests/, .git/
+```
 
-### Non-Functional Requirements
+**`ls -la worktree-session-manager.py`**
+```
+-rwx------ 1 daen daen 22884 20. Apr 18:54 worktree-session-manager.py  ✅ exists
+```
 
-- **Race-condition safety**: Worktree creation MUST use `git worktree add --lock` to prevent concurrent pruning of a partially-initialised worktree.
-- **Python version**: All scripts MUST be compatible with Python 3.9+.
-- **No external dependencies**: The manager script MUST use only the Python standard library + `subprocess`.
-- **Logging**: All operations MUST emit structured log lines to stderr (`[WSM] <level> <message>`).
-- **Exit codes**: The manager script MUST exit non-zero on any unrecoverable error.
-- **Portability**: Must work on Linux, macOS, and WSL2 (Windows paths are out of scope).
-- **Config hygiene**: `extensions.worktreeConfig true` MUST be set exactly once in the main repo; the manager script MUST be idempotent when re-setting it.
-- **Security**: Hook scripts MUST NOT contain hardcoded credentials or tokens.
+**`cat worktree-session-manager.py | head -n 80`**
+```
+SID_PATTERN = re.compile(r"^[0-9a-f]{12}$")
+MARKER_FILE = ".worktree-session"
+DEFAULT_HOOKS_TEMPLATE_DIR = Path(__file__).parent / "scripts" / "hooks"
+generate_sid(), validate_sid(), get_repo_root(), get_worktree_root() all present
+create_worktree() accepts sid, branch, repo_root, hooks_template_dir, new_branch
+```
+
+**`git config --get extensions.worktreeConfig`**
+```
+true  ✅ already enabled
+```
+
+**`find . -name ".worktree-session" -o -name "hooks"`**
+```
+./.claude/hooks  ./src/hooks  ./scripts/hooks  ./templates/hooks  ./src/agent_ts/hooks
+No active .worktree-session markers → no live worktrees at audit time
+```
+
+**`.git layout`**
+```
+.git/config  .git/hooks/  .git/objects/  .git/refs/
+No .git/worktrees/ directory → no linked worktrees currently active
+```
+
+**`grep -r "sid" . --include="*.py" --include="*.sh"`**
+```
+worktree-session-manager.py: generate_sid, validate_sid, worktree_exists(sid), get_worktree_root(sid)
+scripts/gwt-aliases.sh: GWT_SID, --sid flag, export
+src/dashboard/api/workflows.py: sid used as step-id variable (unrelated)
+src/db/models/api_usage_log.py: session_id = fields.CharField(max_length=64, null=True)  ← hook point
+```
+
+### Validation conclusions
+
+- ✅ `worktree-<sid>` structure confirmed: 12-char hex, `extensions.worktreeConfig=true`, `scripts/hooks/*.tpl` in place.
+- ✅ Integration points identified:
+  1. `worktree-session-manager.py` → add `cmd_llm_session_open` / `cmd_llm_session_close`
+  2. `src/db/models/` → new `llm_sessions.py`, `llm_calls.py` Tortoise models (raw asyncpg DDL also provided for standalone use)
+  3. `src/openobserve/writer.py` → already has `bulk_index` — wire LLM telemetry into it
+  4. `src/ai_proxy/services/usage_tracker.py` → already tracks per-provider tokens; extend to accept `worktree_sid`
+  5. New `src/llm/` package → `AsyncLLMClient`, `LLMOrchestrator`, OTEL instrumentation
 
 ---
 
-## 3. Architecture & Best Practices
+## 3. Detailed Requirements
 
-### Why Per-Worktree `core.hooksPath` Is Superior
+### Functional
 
-The naive approach — shared hooks with runtime `if` guards checking which worktree is active — has three critical flaws:
+- **Session binding** — every LLM call must carry the active `worktree_sid`; calls made outside a managed worktree use `sid="global"`.
+- **Async streaming** — use `AsyncAnthropic` with `stream=True`; yield tokens to callers in real-time.
+- **Structured outputs** — support `response_format` / tool-use for JSON-schema-constrained replies.
+- **DB persistence** — persist `llm_sessions` (one row per worktree lifecycle) and `llm_calls` (one row per API call) via asyncpg.
+- **Token accounting** — store `input_tokens`, `output_tokens`, `cache_read_tokens`, `cache_write_tokens`, and `cost_usd` (computed from published Anthropic pricing).
+- **OTEL tracing** — wrap every `AsyncAnthropic` call in an OpenTelemetry span; export to OpenObserve OTLP endpoint.
+- **OpenObserve logging** — fire-and-forget `bulk_index("llm-calls", [...])` via existing writer; do NOT log full prompt/response bodies by default.
+- **CLI hooks** — `worktree-session-manager.py llm-session-open <sid>` and `llm-session-close <sid>` to create/close DB rows alongside worktree lifecycle.
+- **Cost report** — `worktree-session-manager.py llm-cost <sid>` queries Postgres and prints token/cost summary.
 
-1. **Race window**: Two agents reading the same shared hook file simultaneously can observe inconsistent state.
-2. **Maintenance burden**: Every new hook must remember to add the conditional guard; it is trivially omitted.
-3. **Blast radius**: A bug in the shared hook kills both agents' workflows simultaneously.
+### Non-functional
 
-The per-worktree `core.hooksPath` approach eliminates all three problems:
+- **Isolation** — each worktree gets a separate `llm_sessions` row; no cross-session data leakage.
+- **Token efficiency** — NEVER store raw prompt text in Postgres by default; store only metadata + token counts; use `log_prompts=False` flag.
+- **Observability** — p50/p95/p99 latency per model; error rate per provider; all via OTEL + OpenObserve.
+- **Async-safe** — all DB writes are fire-and-forget `asyncio.create_task`; never block the streaming response path.
+- **Idempotency** — `llm-session-open` is idempotent; re-opening an existing sid is a no-op.
+- **Graceful degradation** — if Postgres is unreachable, log to OpenObserve only and continue; never crash the LLM call.
+- **Python 3.14** — all new code targets Python ≥ 3.14; use `asyncio.TaskGroup` where appropriate.
 
-- The hooks directory lives inside `<worktree>/.git/hooks/`, which is physically isolated.
-- Git automatically reads `core.hooksPath` from the worktree-specific config when `extensions.worktreeConfig true` is set.
-- Each agent installs exactly the hooks it needs; other agents are entirely unaffected.
+---
 
-### Git Documentation References
+## 4. Architecture & Best Practices
 
-- **`extensions.worktreeConfig`** (Git 2.20+): When set to `true` in the main repository's `.git/config`, Git reads an additional `config.worktree` file inside each worktree's private `.git/` directory. This is the mechanism that allows per-worktree `core.hooksPath`. See: `git help worktree` and `git help config` §`extensions.worktreeConfig`.
-- **`core.hooksPath`** (Git 2.9+): Overrides the default `$GIT_DIR/hooks` location with an arbitrary directory. When set per-worktree, hooks fire only for that worktree's Git operations.
+### Design rationale
 
-### Architecture Diagram
+Per-worktree isolation is achieved by threading `worktree_sid` through the entire call stack rather than using a global context variable. This avoids the asyncio `ContextVar` footgun where a `create_task` call can accidentally inherit the wrong context.
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Filesystem Layout                           │
-│                                                                     │
-│  ~/projects/                                                        │
-│  ├── myrepo/                          ← main worktree (bare clone)  │
-│  │   ├── .git/                                                      │
-│  │   │   ├── config                  ← extensions.worktreeConfig=true │
-│  │   │   ├── hooks/                  ← main worktree hooks (agent A) │
-│  │   │   └── worktrees/                                             │
-│  │   │       └── worktree-<sid-B>/                                  │
-│  │   │           ├── gitdir          ← pointer to linked worktree   │
-│  │   │           └── config.worktree ← core.hooksPath for agent B   │
-│  │   ├── .worktree-session           ← "main" or absent             │
-│  │   └── worktree-session-manager.py                                │
-│  │                                                                  │
-│  └── worktree-<sid-B>/               ← agent B's isolated worktree  │
-│      ├── .git                        ← file: gitdir=../myrepo/.git/  │
-│      │                                          worktrees/<sid-B>/  │
-│      ├── .worktree-session           ← contains "<sid-B>"           │
-│      └── (full working tree)                                        │
-│                                                                     │
-│  Hook Resolution:                                                   │
-│  Agent A operation → reads .git/config.worktree for main worktree  │
-│                    → core.hooksPath = .git/hooks/  (main hooks)     │
-│  Agent B operation → reads .git/worktrees/<sid-B>/config.worktree  │
-│                    → core.hooksPath = /path/to/worktree-<sid-B>/.git/hooks/ │
-└─────────────────────────────────────────────────────────────────────┘
-```
+The `LLMOrchestrator` wraps `AsyncAnthropic`, automatically:
+1. Resolves the current `worktree_sid` (from `GWT_SID` env var or `.worktree-session` file)
+2. Opens an OTEL span with `worktree.sid` attribute
+3. Calls the Anthropic API (streaming or non-streaming)
+4. On completion: schedules a background asyncio task to persist the call to Postgres
+5. Fires `bulk_index("llm-calls", [...])` for OpenObserve
+
+### Flow diagram
 
 ```mermaid
 flowchart TD
-    A[worktree-session-manager.py create] --> B{SID exists?}
-    B -- yes --> Z[No-op, exit 0]
-    B -- no --> C[generate sid = uuid4.hex 12]
-    C --> D[git worktree add --lock ../worktree-SID branch]
-    D --> E[git worktree lock worktree-SID --reason session-SID]
-    E --> F[write .worktree-session file]
-    F --> G[git config --worktree extensions.worktreeConfig true]
-    G --> H[git config --worktree core.hooksPath WORKTREE/.git/hooks/]
-    H --> I[install hook scripts into WORKTREE/.git/hooks/]
-    I --> J[chmod +x all hooks]
-    J --> K[emit SID to stdout]
-
-    L[worktree-session-manager.py teardown SID] --> M{worktree exists?}
-    M -- no --> N[git worktree prune, exit 0]
-    M -- yes --> O[git worktree unlock worktree-SID]
-    O --> P[git worktree remove --force worktree-SID]
-    P --> Q[git worktree prune]
-    Q --> R[remove stale .worktree-session if present]
+    A[gwt-create main] -->|python wsm.py create| B[worktree-&lt;sid&gt; created]
+    B -->|python wsm.py llm-session-open SID| C[(llm_sessions INSERT)]
+    C --> D[Developer / agent calls LLMOrchestrator.chat]
+    D --> E{resolve_sid}
+    E -->|GWT_SID env / .worktree-session| F[sid = abc123def456]
+    F --> G[OTEL span START\nworktree.sid=abc123...]
+    G --> H[AsyncAnthropic.messages.stream]
+    H -->|chunk| I[yield token to caller]
+    H -->|on_message_done| J[usage = input+output tokens]
+    J --> K[compute cost_usd]
+    K --> L[asyncio.create_task persist_call_bg]
+    K --> M[bulk_index llm-calls to OpenObserve]
+    G --> N[OTEL span END\nlatency_ms, tokens, model]
+    L --> O[(llm_calls INSERT)]
+    P[gwt-teardown SID] -->|python wsm.py llm-session-close SID| Q[(llm_sessions UPDATE closed_at)]
 ```
 
----
+### Integration into worktree-session-manager.py
 
-## 4. Repository File Structure
-
-```
-myrepo/                                    ← main repository root
-├── .git/
-│   ├── config                             ← main config (extensions.worktreeConfig = true)
-│   ├── hooks/                             ← main worktree hooks (agent A / human dev)
-│   │   ├── pre-commit
-│   │   ├── post-checkout
-│   │   └── pre-push
-│   └── worktrees/
-│       ├── worktree-a3f1c8d20b4e/
-│       │   ├── gitdir
-│       │   ├── HEAD
-│       │   └── config.worktree            ← [core] hooksPath = /abs/path/to/worktree-a3f1c8d20b4e/.git/hooks/
-│       └── worktree-7b9e2f051d6a/
-│           ├── gitdir
-│           ├── HEAD
-│           └── config.worktree
-│
-├── .worktree-session                      ← absent in main, or contains "main"
-├── worktree-session-manager.py            ← THE central manager script
-├── scripts/
-│   ├── hooks/                             ← hook templates (copied at create time)
-│   │   ├── pre-commit.tpl
-│   │   ├── post-checkout.tpl
-│   │   ├── post-merge.tpl
-│   │   ├── pre-push.tpl
-│   │   └── commit-msg.tpl
-│   └── gwt-aliases.sh                     ← source this in .bashrc / .zshrc
-│
-├── plan.md                                ← this file
-└── (project source files...)
-
-../worktree-a3f1c8d20b4e/                 ← agent A's worktree (sibling directory)
-├── .git                                   ← file pointing to myrepo/.git/worktrees/worktree-a3f1c8d20b4e/
-├── .git/                                  ← NOTE: linked worktrees expose a merged .git/ view
-│   └── hooks/                             ← agent A's PRIVATE hooks (installed by manager)
-│       ├── pre-commit
-│       ├── post-checkout
-│       └── pre-push
-├── .worktree-session                      ← "a3f1c8d20b4e"
-└── (working tree files)
-
-../worktree-7b9e2f051d6a/                 ← agent B's worktree (sibling directory)
-├── .git
-├── .git/
-│   └── hooks/
-│       ├── pre-commit
-│       └── pre-push
-├── .worktree-session                      ← "7b9e2f051d6a"
-└── (working tree files)
-```
-
----
-
-## 5. Detailed Implementation Plan
-
-### Phase 0 — Prerequisites & Verification
-
-1. Verify Git version ≥ 2.20 (`git --version`). Extensions.worktreeConfig and per-worktree config require 2.20+.
-2. Verify Python ≥ 3.9 (`python3 --version`).
-3. Confirm the repository is NOT a bare clone (bare clones already support multiple worktrees differently).
-4. Ensure no existing conflicting `core.hooksPath` in main `.git/config`.
-
-### Phase 1 — Enable Per-Worktree Configuration
-
-1. Run once in the main repository:
-   ```bash
-   git config extensions.worktreeConfig true
-   ```
-2. Verify with:
-   ```bash
-   git config --get extensions.worktreeConfig
-   # expected output: true
-   ```
-3. Optionally commit a `.gitconfig-setup.sh` bootstrapping script so future contributors can replicate the setup.
-
-### Phase 2 — Create Central Manager Script
-
-1. Create `./worktree-session-manager.py` with the following commands:
-   - `create [--sid SID] [--branch BRANCH] [--hooks-template DIR]`
-   - `teardown <sid> [--force]`
-   - `list`
-   - `sid` (print SID for current working directory)
-   - `install-hooks <sid> [--template DIR]`
-   - `remove-hooks <sid>`
-2. Implement all helper functions (see §6 for full signatures).
-3. Add a `__main__` block with `argparse`.
-4. Add structured logging to stderr throughout.
-5. Make the file executable: `chmod +x worktree-session-manager.py`.
-
-### Phase 3 — Create Hook Templates
-
-1. Create `./scripts/hooks/` directory.
-2. Create the following template hook scripts:
-   - `pre-commit.tpl` — runs linters/formatters for the session's context
-   - `post-checkout.tpl` — emits the session SID and branch name on checkout
-   - `post-merge.tpl` — runs post-merge validation steps
-   - `pre-push.tpl` — runs tests before push; respects CI skip tokens
-   - `commit-msg.tpl` — enforces conventional commit format
-3. Each template MUST contain the token `@@SID@@` which is replaced at install time with the actual session ID.
-4. Each hook script MUST be self-contained (no external library imports beyond Python stdlib).
-
-### Phase 4 — Shell Aliases
-
-1. Create `./scripts/gwt-aliases.sh`.
-2. Implement the following aliases:
-   - `gwt-create [branch]` → calls `worktree-session-manager.py create --branch <branch>`; exports `GWT_SID`
-   - `gwt-teardown [sid]` → calls `worktree-session-manager.py teardown <sid or $GWT_SID>`
-   - `gwt-sid` → calls `worktree-session-manager.py sid`
-   - `gwt-list` → calls `worktree-session-manager.py list`
-   - `gwt-hooks-install [sid]` → calls `worktree-session-manager.py install-hooks <sid>`
-3. Add instructions for sourcing in `~/.bashrc` or `~/.zshrc`.
-
-### Phase 5 — Integration Testing
-
-1. Write `./tests/test_worktree_manager.py` using `unittest` + `tempfile.TemporaryDirectory`:
-   - `test_create_generates_valid_sid` — SID matches `[0-9a-f]{12}`
-   - `test_create_idempotent` — second `create` with same SID is a no-op
-   - `test_worktree_directory_named_correctly` — directory is `worktree-<sid>`
-   - `test_marker_file_contains_sid` — `.worktree-session` contains exact SID
-   - `test_hooks_path_config_set` — `core.hooksPath` in worktree config points to correct dir
-   - `test_hooks_installed_and_executable` — all template hooks exist and have `+x` bit
-   - `test_hooks_do_not_fire_in_sibling_worktree` — create two worktrees, trigger pre-commit in one, assert the other's hook is NOT invoked
-   - `test_teardown_removes_worktree` — teardown + prune leaves no stale dirs
-   - `test_teardown_idempotent` — teardown on already-removed SID exits 0
-   - `test_get_current_worktree_sid_returns_correct_value`
-   - `test_concurrent_create_no_race` — spawn two processes creating worktrees simultaneously, assert both succeed without lock errors
-
-2. Run full test suite:
-   ```bash
-   python3 -m pytest tests/test_worktree_manager.py -v
-   ```
-
-### Phase 6 — Documentation Update
-
-1. Update `README.md` with a "Multi-Agent Worktree Workflow" section.
-2. Document the `.worktree-session` marker file format.
-3. Document the `GWT_SID` environment variable convention.
-4. Add a "Troubleshooting" section covering: stale `.git/worktrees/` entries, lock file conflicts, `extensions.worktreeConfig` missing.
-
-### Phase 7 — CI Integration (Optional)
-
-1. Add a GitHub Actions workflow step that sets `GWT_SID` for each parallel job.
-2. Ensure the CI runner does NOT share a `.git/` directory across parallel jobs (each job checks out fresh).
-3. If sharing a mounted repo in CI, apply the worktree manager pattern identically.
-
----
-
-## 6. Code Files to Create
-
-### 6.1 `./worktree-session-manager.py`
-
-**Purpose**: Central Python 3 CLI tool for the entire worktree lifecycle.
-
-**Key functions and signatures**:
+The manager already imports only stdlib modules. The LLM commands are **optional**: they import `src/llm/` lazily only if `asyncpg` and `anthropic` are available; otherwise they print a helpful error. This keeps the manager script usable even without the full Python environment.
 
 ```python
-import argparse
+# In worktree-session-manager.py — new optional import guard
+def _require_llm():
+    try:
+        from llm.db import open_session, close_session, cost_report
+        return open_session, close_session, cost_report
+    except ImportError as e:
+        raise SystemExit(f"[WSM] LLM layer not installed: {e}. Run: uv sync") from e
+```
+
+---
+
+## 5. Repository File Structure (Updated)
+
+```
+cybersecsuite/
+├── worktree-session-manager.py        ← UPDATED: +llm-session-open/close/cost commands
+├── plan.md                            ← this file
+├── scripts/
+│   ├── gwt-aliases.sh
+│   └── hooks/
+│       ├── pre-commit.tpl
+│       ├── pre-push.tpl
+│       └── ...
+├── src/
+│   ├── llm/                           ← NEW PACKAGE
+│   │   ├── __init__.py                ← exports LLMOrchestrator, AsyncLLMClient
+│   │   ├── client.py                  ← AsyncLLMClient wrapper around AsyncAnthropic
+│   │   ├── orchestrator.py            ← LLMOrchestrator: session-aware, traced
+│   │   ├── pricing.py                 ← Anthropic token pricing table + cost_usd()
+│   │   ├── otel.py                    ← OTEL tracer/meter setup, span helpers
+│   │   ├── db.py                      ← asyncpg helpers: open_session, persist_call, close_session
+│   │   └── schema.sql                 ← DDL for llm_sessions + llm_calls
+│   ├── db/
+│   │   └── models/
+│   │       ├── llm_session.py         ← NEW Tortoise model
+│   │       └── llm_call.py            ← NEW Tortoise model
+│   ├── openobserve/                   ← UNCHANGED (writer.py used as-is)
+│   └── ai_proxy/
+│       └── services/
+│           └── usage_tracker.py       ← MINOR UPDATE: accept worktree_sid kwarg
+├── tests/
+│   ├── test_worktree_manager.py       ← existing 42 tests
+│   └── test_llm_orchestrator.py       ← NEW: 30+ tests for LLM layer
+└── pyproject.toml                     ← MINOR: add opentelemetry deps
+```
+
+---
+
+## 6. Detailed Implementation Plan
+
+### Phase 0 — Prerequisites & dependency audit
+
+1. Confirm `anthropic>=0.84.0` is in `pyproject.toml` ✅ (already present)
+2. Confirm `asyncpg>=0.30` is in `pyproject.toml` ✅ (already present)
+3. Add OpenTelemetry packages to `pyproject.toml`:
+   ```
+   opentelemetry-sdk>=1.28
+   opentelemetry-exporter-otlp-proto-http>=1.28
+   opentelemetry-instrumentation-httpx>=0.49
+   ```
+4. Run `uv sync`
+5. Verify `OPENOBSERVE_OTLP_ENDPOINT` is set in `.env.example`
+
+**Effort:** 30 min
+
+### Phase 1 — Database schema
+
+1. Write `src/llm/schema.sql` with `llm_sessions` and `llm_calls` tables
+2. Write Tortoise models `src/db/models/llm_session.py` and `src/db/models/llm_call.py`
+3. Write `src/llm/db.py` with raw asyncpg helpers (for use outside the Tortoise ORM context)
+4. Register new models in `src/db/models/__init__.py`
+5. Apply migration: `psql cybersec_forensics < src/llm/schema.sql`
+6. Write tests: `tests/test_llm_db.py` (insert + query via asyncpg)
+
+**Effort:** 2 hours
+
+### Phase 2 — Pricing table
+
+1. Write `src/llm/pricing.py` with published Anthropic pricing for claude-3-5-sonnet, claude-3-haiku, claude-opus-4 etc.
+2. `cost_usd(model, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens) -> Decimal`
+3. Prices sourced from `https://anthropic.com/pricing` — include a `PRICING_LAST_UPDATED` constant
+4. Write unit tests
+
+**Effort:** 1 hour
+
+### Phase 3 — OTEL setup
+
+1. Write `src/llm/otel.py`:
+   - `get_tracer()` returns a module-level `opentelemetry.trace.Tracer`
+   - `get_meter()` returns a module-level `opentelemetry.metrics.Meter`
+   - `setup_otel(endpoint, service_name)` configures OTLP HTTP exporter pointing to OpenObserve
+   - Instruments httpx via `HTTPXClientInstrumentor`
+2. Wire `setup_otel()` into the ASGI lifespan startup in `src/proxy/asgi.py`
+3. Write integration test asserting span is exported (mock OTLP endpoint)
+
+**Effort:** 2 hours
+
+### Phase 4 — AsyncLLMClient
+
+1. Write `src/llm/client.py`:
+   - `AsyncLLMClient(model, sid, log_prompts=False)` wraps `AsyncAnthropic`
+   - `async def chat(messages, *, stream=True, tools=None, response_format=None) -> AsyncIterator[str] | Message`
+   - Streaming path: uses `async with client.messages.stream(...)` context manager
+   - Non-streaming path: uses `await client.messages.create(...)`
+   - Emits OTEL span for every call
+   - On completion fires background task to `db.persist_call()`
+2. Honour `ANTHROPIC_BASE_URL` env var (routes through local AI proxy if set)
+3. Write mock-based unit tests (no live API calls in CI)
+
+**Effort:** 3 hours
+
+### Phase 5 — LLMOrchestrator
+
+1. Write `src/llm/orchestrator.py`:
+   - `LLMOrchestrator(default_model, db_pool, sid=None)` — sid auto-detected if `None`
+   - `sid` resolution order: constructor arg → `GWT_SID` env var → `.worktree-session` file walk → `"global"`
+   - `async def chat(messages, **kwargs)` — delegates to `AsyncLLMClient`, attaches sid
+   - `async def structured(messages, schema: type[BaseModel], **kwargs) -> BaseModel` — uses tool_use for structured output
+   - `async def summarize(text, max_tokens=256) -> str` — single-turn summarisation helper
+2. Expose singleton `get_orchestrator()` with lazy init
+
+**Effort:** 3 hours
+
+### Phase 6 — worktree-session-manager.py integration
+
+1. Add three new subcommands:
+   - `llm-session-open <sid>` — creates `llm_sessions` row; idempotent
+   - `llm-session-close <sid>` — sets `closed_at`, computes total cost
+   - `llm-cost <sid>` — prints token/cost report from Postgres
+2. Integrate `llm-session-open` call into `create_worktree()` (optional, behind `--with-llm` flag)
+3. Integrate `llm-session-close` call into `teardown_worktree()` (same flag)
+4. Update `scripts/gwt-aliases.sh` with `gwt-llm-cost <sid>` alias
+
+**Effort:** 2 hours
+
+### Phase 7 — OpenObserve wiring
+
+1. In `AsyncLLMClient`, after each call fire `bulk_index("llm-calls", [{...}])` with:
+   - `worktree_sid`, `model`, `input_tokens`, `output_tokens`, `cost_usd`, `latency_ms`, `stream`, `success`
+   - **Never** include prompt text
+2. In `LLMOrchestrator`, fire `bulk_index("llm-sessions", [{...}])` on session open/close
+3. Verify events appear in OpenObserve dashboard
+
+**Effort:** 1 hour
+
+### Phase 8 — Tests
+
+1. Write `tests/test_llm_orchestrator.py`:
+   - Unit tests with `AsyncAnthropic` mocked via `respx` or `unittest.mock`
+   - DB tests with a real Postgres test database (skip if unavailable)
+   - OTEL span tests with an in-memory exporter
+   - SID resolution tests
+2. Target ≥ 80% coverage on `src/llm/`
+
+**Effort:** 3 hours
+
+### Phase 9 — Playwright stealth browser + dashboard test
+
+1. Ensure playwright-stealth MCP server is running
+2. Navigate to `http://localhost:8000` and run a full dashboard audit via screenshots
+3. Verify all 7 critical tabs load (telemetry, agent-factory, agent-crafter, team-builder, workflows, opensearch, explorer)
+4. Fix any new failures found
+
+**Effort:** 1 hour
+
+---
+
+## 7. Code Files to Create / Update
+
+### `src/llm/__init__.py`
+
+```python
+"""LLM orchestration layer — session-aware, OTEL-traced, cost-tracked."""
+from llm.orchestrator import LLMOrchestrator, get_orchestrator
+from llm.client import AsyncLLMClient
+from llm.pricing import cost_usd
+
+__all__ = ["LLMOrchestrator", "AsyncLLMClient", "cost_usd", "get_orchestrator"]
+```
+
+### `src/llm/pricing.py`
+
+```python
+"""Anthropic token pricing — updated 2026-04."""
+from decimal import Decimal
+
+PRICING_LAST_UPDATED = "2026-04-01"
+
+# (input_per_mtok, output_per_mtok, cache_write_per_mtok, cache_read_per_mtok)
+_PRICES: dict[str, tuple[Decimal, Decimal, Decimal, Decimal]] = {
+    "claude-opus-4-5":        (Decimal("15.00"), Decimal("75.00"), Decimal("18.75"), Decimal("1.50")),
+    "claude-sonnet-4-5":      (Decimal("3.00"),  Decimal("15.00"), Decimal("3.75"),  Decimal("0.30")),
+    "claude-haiku-4-5":       (Decimal("0.80"),  Decimal("4.00"),  Decimal("1.00"),  Decimal("0.08")),
+    "claude-3-5-sonnet-20241022": (Decimal("3.00"), Decimal("15.00"), Decimal("3.75"), Decimal("0.30")),
+    "claude-3-haiku-20240307":    (Decimal("0.25"), Decimal("1.25"), Decimal("0.30"), Decimal("0.03")),
+}
+_DEFAULT_PRICE = (Decimal("3.00"), Decimal("15.00"), Decimal("3.75"), Decimal("0.30"))
+
+def cost_usd(
+    model: str,
+    input_tokens: int,
+    output_tokens: int,
+    cache_write_tokens: int = 0,
+    cache_read_tokens: int = 0,
+) -> Decimal:
+    inp, out, cw, cr = _PRICES.get(model, _DEFAULT_PRICE)
+    mtok = Decimal("1_000_000")
+    return (
+        inp  * Decimal(input_tokens)       / mtok
+        + out * Decimal(output_tokens)     / mtok
+        + cw  * Decimal(cache_write_tokens)/ mtok
+        + cr  * Decimal(cache_read_tokens) / mtok
+    )
+```
+
+### `src/llm/otel.py`
+
+```python
+"""OpenTelemetry setup for the LLM layer."""
+from __future__ import annotations
+import os
+from opentelemetry import trace, metrics
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+
+_tracer: trace.Tracer | None = None
+_meter: metrics.Meter | None = None
+
+def setup_otel(
+    endpoint: str | None = None,
+    service_name: str = "cybersecsuite-llm",
+) -> None:
+    global _tracer, _meter
+    ep = endpoint or os.environ.get(
+        "OPENOBSERVE_OTLP_ENDPOINT", "http://localhost:5080/api/default"
+    )
+    headers = {
+        "Authorization": "Basic " + _basic_auth(),
+    }
+    tp = TracerProvider()
+    tp.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=f"{ep}/v1/traces", headers=headers)))
+    trace.set_tracer_provider(tp)
+
+    mr = PeriodicExportingMetricReader(OTLPMetricExporter(endpoint=f"{ep}/v1/metrics", headers=headers))
+    mp = MeterProvider(metric_readers=[mr])
+    metrics.set_meter_provider(mp)
+
+    HTTPXClientInstrumentor().instrument()
+    _tracer = trace.get_tracer(service_name)
+    _meter  = metrics.get_meter(service_name)
+
+def get_tracer() -> trace.Tracer:
+    return _tracer or trace.get_tracer("cybersecsuite-llm")
+
+def get_meter() -> metrics.Meter:
+    return _meter or metrics.get_meter("cybersecsuite-llm")
+
+def _basic_auth() -> str:
+    import base64, os
+    u = os.environ.get("OPENOBSERVE_EMAIL", "admin@cybersec.local")
+    p = os.environ.get("OPENOBSERVE_PASSWORD", "cYb3rS3c!")
+    return base64.b64encode(f"{u}:{p}".encode()).decode()
+```
+
+### `src/llm/db.py`
+
+```python
+"""asyncpg helpers for llm_sessions and llm_calls — no Tortoise ORM dependency."""
+from __future__ import annotations
+import asyncio
 import logging
 import os
-import re
-import shutil
-import stat
-import subprocess
-import sys
-import uuid
-from pathlib import Path
-from typing import Optional
+from datetime import datetime, timezone
+from decimal import Decimal
+from typing import Any
 
-SID_PATTERN = re.compile(r'^[0-9a-f]{12}$')
-MARKER_FILE = '.worktree-session'
-LOG_PREFIX = '[WSM]'
+import asyncpg
 
-def generate_sid() -> str:
-    """Generate a fresh 12-char lowercase hex session ID."""
-    return uuid.uuid4().hex[:12]
+log = logging.getLogger("llm.db")
 
-def validate_sid(sid: str) -> None:
-    """Raise ValueError if sid does not match [0-9a-f]{12}."""
+_pool: asyncpg.Pool | None = None
 
-def get_repo_root() -> Path:
-    """Return the absolute path to the main repository root (not a worktree root)."""
+async def get_pool() -> asyncpg.Pool:
+    global _pool
+    if _pool is None:
+        dsn = os.environ.get(
+            "CYBERSEC_DB_DSN",
+            "postgresql://{user}:{pw}@{host}:{port}/{db}".format(
+                user=os.environ.get("CYBERSEC_DB_USER", "cybersec"),
+                pw=os.environ.get("CYBERSEC_DB_PASSWORD", ""),
+                host=os.environ.get("CYBERSEC_DB_HOST", "localhost"),
+                port=os.environ.get("CYBERSEC_DB_PORT", "5432"),
+                db=os.environ.get("CYBERSEC_DB_NAME", "cybersec_forensics"),
+            ),
+        )
+        _pool = await asyncpg.create_pool(dsn, min_size=1, max_size=5)
+    return _pool
 
-def get_worktree_root(sid: str, repo_root: Optional[Path] = None) -> Path:
-    """Return the expected absolute path for worktree-<sid>."""
+async def open_session(sid: str, repo_root: str, branch: str) -> None:
+    """Create an llm_sessions row for this worktree. Idempotent."""
+    pool = await get_pool()
+    await pool.execute(
+        """
+        INSERT INTO llm_sessions (sid, repo_root, branch, opened_at)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (sid) DO NOTHING
+        """,
+        sid, repo_root, branch, datetime.now(timezone.utc),
+    )
+    log.info("llm_session opened for sid=%s", sid)
 
-def enable_worktree_config(repo_root: Path) -> None:
-    """Idempotently set extensions.worktreeConfig = true in main config."""
-
-def worktree_exists(sid: str, repo_root: Optional[Path] = None) -> bool:
-    """Return True if git reports a worktree named worktree-<sid>."""
-
-def create_worktree(
-    sid: str,
-    branch: str,
-    repo_root: Optional[Path] = None,
-    hooks_template_dir: Optional[Path] = None,
-) -> Path:
-    """
-    Main create entrypoint. Idempotent.
-    Steps:
-      1. validate_sid(sid)
-      2. enable_worktree_config(repo_root)
-      3. if worktree_exists(sid): log and return existing path
-      4. git worktree add --lock ../worktree-<sid> <branch>
-      5. write_marker_file(worktree_path, sid)
-      6. set_hooks_path(sid, worktree_path, repo_root)
-      7. install_hooks(sid, worktree_path, hooks_template_dir)
-    Returns the worktree Path.
-    """
-
-def write_marker_file(worktree_path: Path, sid: str) -> None:
-    """Write sid to <worktree>/.worktree-session (atomic via tmp + rename)."""
-
-def set_hooks_path(sid: str, worktree_path: Path, repo_root: Path) -> None:
-    """
-    Set core.hooksPath in the worktree-specific config.
-    Uses: git -C <repo_root> config --worktree -f <worktrees/<sid>/config.worktree> core.hooksPath <abs_hooks_dir>
-    The hooks dir is: <worktree_path>/.git/hooks/   (resolved via the .git file pointer)
-    """
-
-def resolve_worktree_git_hooks_dir(worktree_path: Path) -> Path:
-    """
-    Read <worktree>/.git (a file) to find gitdir, then append /hooks.
-    Returns the absolute path to the worktree's private hooks directory.
-    """
-
-def install_hooks(
-    sid: str,
-    worktree_path: Path,
-    template_dir: Optional[Path] = None,
+async def persist_call(
+    sid: str, model: str,
+    input_tokens: int, output_tokens: int,
+    cache_read_tokens: int, cache_write_tokens: int,
+    cost_usd: Decimal, latency_ms: float,
+    stream: bool, success: bool, error: str | None,
+    request_id: str | None,
 ) -> None:
-    """
-    Copy hook templates from template_dir (default: ./scripts/hooks/) into
-    the worktree's private hooks dir. Replace @@SID@@ token with sid.
-    Set chmod +x on each installed hook.
-    """
+    """Insert one llm_calls row. Fire-and-forget safe."""
+    pool = await get_pool()
+    await pool.execute(
+        """
+        INSERT INTO llm_calls
+          (sid, model, input_tokens, output_tokens,
+           cache_read_tokens, cache_write_tokens,
+           cost_usd, latency_ms, stream, success, error, request_id, called_at)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+        """,
+        sid, model, input_tokens, output_tokens,
+        cache_read_tokens, cache_write_tokens,
+        cost_usd, latency_ms, stream, success, error, request_id,
+        datetime.now(timezone.utc),
+    )
 
-def remove_hooks(sid: str, worktree_path: Path) -> None:
-    """Remove all hook files from the worktree's private hooks directory."""
+async def close_session(sid: str) -> dict[str, Any]:
+    """Set closed_at and compute aggregated totals. Returns summary dict."""
+    pool = await get_pool()
+    row = await pool.fetchrow(
+        """
+        UPDATE llm_sessions SET
+            closed_at = $2,
+            total_input_tokens  = (SELECT COALESCE(SUM(input_tokens),0)  FROM llm_calls WHERE sid=$1),
+            total_output_tokens = (SELECT COALESCE(SUM(output_tokens),0) FROM llm_calls WHERE sid=$1),
+            total_cost_usd      = (SELECT COALESCE(SUM(cost_usd),0)      FROM llm_calls WHERE sid=$1),
+            total_calls         = (SELECT COUNT(*)                        FROM llm_calls WHERE sid=$1)
+        WHERE sid = $1
+        RETURNING sid, total_input_tokens, total_output_tokens, total_cost_usd, total_calls
+        """,
+        sid, datetime.now(timezone.utc),
+    )
+    return dict(row) if row else {}
 
-def teardown_worktree(
-    sid: str,
-    repo_root: Optional[Path] = None,
-    force: bool = False,
-) -> None:
-    """
-    Idempotent teardown.
-    Steps:
-      1. validate_sid(sid)
-      2. if not worktree_exists(sid): git worktree prune, exit 0
-      3. git worktree unlock worktree-<sid>  (ignore if already unlocked)
-      4. git worktree remove [--force] ../worktree-<sid>
-      5. git worktree prune
-      6. remove stale marker file if any
-    """
-
-def get_current_worktree_sid(cwd: Optional[Path] = None) -> Optional[str]:
-    """
-    Read .worktree-session from cwd (default: os.getcwd()) and return sid,
-    or None if not in a managed worktree. Used by shared hook scripts for
-    conditional execution.
-    """
-
-def list_worktrees(repo_root: Optional[Path] = None) -> list[dict]:
-    """
-    Return a list of dicts with keys: name, sid, path, branch, locked, HEAD.
-    Uses: git worktree list --porcelain
-    """
-
-def cmd_create(args: argparse.Namespace) -> int:
-    """CLI handler for 'create' subcommand. Prints generated SID to stdout."""
-
-def cmd_teardown(args: argparse.Namespace) -> int:
-    """CLI handler for 'teardown' subcommand."""
-
-def cmd_list(args: argparse.Namespace) -> int:
-    """CLI handler for 'list' subcommand. Prints table to stdout."""
-
-def cmd_sid(args: argparse.Namespace) -> int:
-    """CLI handler for 'sid' subcommand. Prints current SID or error."""
-
-def cmd_install_hooks(args: argparse.Namespace) -> int:
-    """CLI handler for 'install-hooks' subcommand."""
-
-def cmd_remove_hooks(args: argparse.Namespace) -> int:
-    """CLI handler for 'remove-hooks' subcommand."""
-
-def build_parser() -> argparse.ArgumentParser:
-    """Build and return the CLI argument parser."""
-
-def main() -> int:
-    """Entry point. Returns exit code."""
-
-if __name__ == '__main__':
-    sys.exit(main())
+async def cost_report(sid: str) -> dict[str, Any]:
+    """Return cost summary for a session."""
+    pool = await get_pool()
+    rows = await pool.fetch(
+        """
+        SELECT model,
+               COUNT(*) AS calls,
+               SUM(input_tokens) AS input_tokens,
+               SUM(output_tokens) AS output_tokens,
+               SUM(cost_usd) AS cost_usd
+        FROM llm_calls WHERE sid=$1
+        GROUP BY model ORDER BY cost_usd DESC
+        """, sid,
+    )
+    return {"sid": sid, "by_model": [dict(r) for r in rows]}
 ```
 
-**Error handling contract**:
-- All `subprocess.run()` calls MUST use `check=False` and inspect `returncode`.
-- On subprocess failure, log the stderr output and raise a `RuntimeError` or return non-zero exit code.
-- Never use `shell=True` with user-supplied arguments.
+### `src/llm/client.py`
 
----
-
-### 6.2 `./scripts/hooks/pre-commit.tpl`
-
-**Purpose**: Template pre-commit hook installed into each agent's private hooks dir.
-
-**Key sections**:
-```bash
-#!/usr/bin/env bash
-# Worktree session: @@SID@@
-# This hook fires ONLY in worktree-@@SID@@
-
-SID="@@SID@@"
-MARKER="$(git rev-parse --show-toplevel)/.worktree-session"
-if [ -f "$MARKER" ] && [ "$(cat "$MARKER")" != "$SID" ]; then
-  echo "[WSM] pre-commit: SID mismatch — skipping (expected $SID)" >&2
-  exit 0
-fi
-
-# --- Project-specific checks below ---
-# e.g.: run linter, formatter check, secrets scan
-```
-
----
-
-### 6.3 `./scripts/hooks/post-checkout.tpl`
-
-**Purpose**: Emits session info on checkout; can trigger environment re-activation.
-
-```bash
-#!/usr/bin/env bash
-# Worktree session: @@SID@@
-SID="@@SID@@"
-BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-echo "[WSM] post-checkout: session=$SID branch=$BRANCH" >&2
-```
-
----
-
-### 6.4 `./scripts/hooks/pre-push.tpl`
-
-**Purpose**: Runs tests before any push from this session's worktree.
-
-```bash
-#!/usr/bin/env bash
-# Worktree session: @@SID@@
-SID="@@SID@@"
-# Fast guard: skip in wrong worktree
-MARKER="$(git rev-parse --show-toplevel)/.worktree-session"
-[ -f "$MARKER" ] && [ "$(cat "$MARKER")" != "$SID" ] && exit 0
-
-# Run project tests
-# python3 -m pytest --tb=short -q || exit 1
-```
-
----
-
-### 6.5 `./scripts/hooks/commit-msg.tpl`
-
-**Purpose**: Enforce Conventional Commits format.
-
-```bash
-#!/usr/bin/env bash
-# Worktree session: @@SID@@
-MSG_FILE="$1"
-PATTERN='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,100}'
-if ! grep -qE "$PATTERN" "$MSG_FILE"; then
-  echo "[WSM] commit-msg: does not match Conventional Commits pattern" >&2
-  echo "  Expected: type(scope): description" >&2
-  exit 1
-fi
-```
-
----
-
-### 6.6 `./scripts/gwt-aliases.sh`
-
-**Purpose**: Shell aliases for daily worktree operations. Source in `.bashrc`/`.zshrc`.
-
-```bash
-#!/usr/bin/env bash
-# Git Worktree Session Manager — shell aliases
-# Usage: source ./scripts/gwt-aliases.sh
-
-_GWT_MANAGER="$(git rev-parse --show-toplevel 2>/dev/null)/worktree-session-manager.py"
-
-gwt-create() {
-  local branch="${1:-$(git rev-parse --abbrev-ref HEAD)}"
-  local sid
-  sid=$(python3 "$_GWT_MANAGER" create --branch "$branch") || return 1
-  export GWT_SID="$sid"
-  echo "[gwt] Created worktree-$sid on branch $branch"
-  echo "[gwt] Run: cd ../worktree-$sid"
-}
-
-gwt-teardown() {
-  local sid="${1:-$GWT_SID}"
-  [ -z "$sid" ] && { echo "[gwt] No SID. Pass one or set GWT_SID." >&2; return 1; }
-  python3 "$_GWT_MANAGER" teardown "$sid"
-  [ "$sid" = "$GWT_SID" ] && unset GWT_SID
-}
-
-gwt-sid() {
-  python3 "$_GWT_MANAGER" sid
-}
-
-gwt-list() {
-  python3 "$_GWT_MANAGER" list
-}
-
-gwt-hooks-install() {
-  local sid="${1:-$GWT_SID}"
-  [ -z "$sid" ] && { echo "[gwt] No SID." >&2; return 1; }
-  python3 "$_GWT_MANAGER" install-hooks "$sid"
-}
-```
-
----
-
-### 6.7 `./tests/test_worktree_manager.py`
-
-**Purpose**: Comprehensive unittest suite covering all lifecycle operations.
-
-**Key test classes**:
 ```python
-class TestSIDGeneration(unittest.TestCase):
-    def test_generate_sid_format(self): ...
-    def test_generate_sid_uniqueness(self): ...
-    def test_validate_sid_rejects_uppercase(self): ...
-    def test_validate_sid_rejects_short(self): ...
+"""AsyncLLMClient — session-aware AsyncAnthropic wrapper with OTEL tracing."""
+from __future__ import annotations
+import asyncio
+import logging
+import os
+import time
+from collections.abc import AsyncIterator
+from decimal import Decimal
+from typing import Any
 
-class TestWorktreeCreate(unittest.TestCase):
-    def setUp(self): ...  # init temp git repo
-    def test_create_directory_name(self): ...
-    def test_create_marker_file(self): ...
-    def test_create_hooks_path_config(self): ...
-    def test_create_idempotent(self): ...
-    def test_create_hooks_executable(self): ...
+import anthropic
+from anthropic import AsyncAnthropic, AsyncStream
+from anthropic.types import Message, MessageStreamEvent
 
-class TestWorktreeTeardown(unittest.TestCase):
-    def test_teardown_removes_directory(self): ...
-    def test_teardown_idempotent(self): ...
-    def test_teardown_prunes_stale_entries(self): ...
+from llm.otel import get_tracer
+from llm.pricing import cost_usd as _cost_usd
 
-class TestHookIsolation(unittest.TestCase):
-    def test_hook_fires_only_in_owner_worktree(self): ...
-    def test_sibling_worktree_hook_not_triggered(self): ...
+log = logging.getLogger("llm.client")
 
-class TestGetCurrentSID(unittest.TestCase):
-    def test_returns_sid_in_managed_worktree(self): ...
-    def test_returns_none_outside_managed_worktree(self): ...
+class AsyncLLMClient:
+    """Thin session-aware wrapper around AsyncAnthropic."""
 
-class TestConcurrency(unittest.TestCase):
-    def test_concurrent_create_both_succeed(self): ...  # threading.Thread x2
+    def __init__(
+        self,
+        model: str = "claude-sonnet-4-5",
+        sid: str = "global",
+        log_prompts: bool = False,
+        db_persist_fn: Any = None,
+        oo_index_fn: Any = None,
+    ) -> None:
+        self.model = model
+        self.sid = sid
+        self.log_prompts = log_prompts
+        self._persist = db_persist_fn   # async callable or None
+        self._oo_index = oo_index_fn    # async callable or None
+        base_url = os.environ.get("ANTHROPIC_BASE_URL")
+        self._client = AsyncAnthropic(base_url=base_url) if base_url else AsyncAnthropic()
+
+    async def chat(
+        self,
+        messages: list[dict],
+        *,
+        max_tokens: int = 4096,
+        stream: bool = True,
+        tools: list[dict] | None = None,
+        system: str | None = None,
+        **kwargs: Any,
+    ) -> AsyncIterator[str] | Message:
+        if stream:
+            return self._stream(messages, max_tokens=max_tokens, tools=tools, system=system, **kwargs)
+        return await self._complete(messages, max_tokens=max_tokens, tools=tools, system=system, **kwargs)
+
+    async def _stream(self, messages, **kwargs) -> AsyncIterator[str]:
+        tracer = get_tracer()
+        t0 = time.perf_counter()
+        with tracer.start_as_current_span("llm.stream") as span:
+            span.set_attribute("worktree.sid", self.sid)
+            span.set_attribute("llm.model", self.model)
+            input_tokens = output_tokens = cache_read = cache_write = 0
+            error: str | None = None
+            try:
+                async with self._client.messages.stream(
+                    model=self.model, messages=messages, **kwargs
+                ) as stream:
+                    async for text in stream.text_stream:
+                        yield text
+                    final = await stream.get_final_message()
+                    u = final.usage
+                    input_tokens  = u.input_tokens
+                    output_tokens = u.output_tokens
+                    cache_read    = getattr(u, "cache_read_input_tokens", 0) or 0
+                    cache_write   = getattr(u, "cache_creation_input_tokens", 0) or 0
+            except Exception as exc:
+                error = str(exc)
+                span.record_exception(exc)
+                raise
+            finally:
+                latency = (time.perf_counter() - t0) * 1000
+                cost = _cost_usd(self.model, input_tokens, output_tokens, cache_write, cache_read)
+                span.set_attribute("llm.input_tokens",  input_tokens)
+                span.set_attribute("llm.output_tokens", output_tokens)
+                span.set_attribute("llm.cost_usd",      float(cost))
+                span.set_attribute("llm.latency_ms",    latency)
+                asyncio.create_task(self._bg_persist(
+                    input_tokens, output_tokens, cache_read, cache_write,
+                    cost, latency, stream=True, error=error,
+                ))
+
+    async def _complete(self, messages, **kwargs) -> Message:
+        tracer = get_tracer()
+        t0 = time.perf_counter()
+        with tracer.start_as_current_span("llm.complete") as span:
+            span.set_attribute("worktree.sid", self.sid)
+            span.set_attribute("llm.model", self.model)
+            try:
+                msg = await self._client.messages.create(
+                    model=self.model, messages=messages, **kwargs
+                )
+                u = msg.usage
+                cost = _cost_usd(
+                    self.model, u.input_tokens, u.output_tokens,
+                    getattr(u, "cache_creation_input_tokens", 0) or 0,
+                    getattr(u, "cache_read_input_tokens", 0) or 0,
+                )
+                latency = (time.perf_counter() - t0) * 1000
+                asyncio.create_task(self._bg_persist(
+                    u.input_tokens, u.output_tokens,
+                    getattr(u, "cache_read_input_tokens", 0) or 0,
+                    getattr(u, "cache_creation_input_tokens", 0) or 0,
+                    cost, latency, stream=False, error=None,
+                ))
+                return msg
+            except Exception as exc:
+                span.record_exception(exc)
+                raise
+
+    async def _bg_persist(
+        self,
+        input_tokens: int, output_tokens: int,
+        cache_read: int, cache_write: int,
+        cost: Decimal, latency_ms: float,
+        stream: bool, error: str | None,
+    ) -> None:
+        try:
+            if self._persist:
+                await self._persist(
+                    sid=self.sid, model=self.model,
+                    input_tokens=input_tokens, output_tokens=output_tokens,
+                    cache_read_tokens=cache_read, cache_write_tokens=cache_write,
+                    cost_usd=cost, latency_ms=latency_ms,
+                    stream=stream, success=error is None, error=error, request_id=None,
+                )
+            if self._oo_index:
+                await self._oo_index("llm-calls", [{
+                    "worktree_sid": self.sid, "model": self.model,
+                    "input_tokens": input_tokens, "output_tokens": output_tokens,
+                    "cost_usd": float(cost), "latency_ms": latency_ms,
+                    "stream": stream, "success": error is None,
+                }])
+        except Exception:
+            log.exception("Background persist failed (non-fatal)")
+```
+
+### `src/llm/orchestrator.py`
+
+```python
+"""LLMOrchestrator — session-aware high-level API."""
+from __future__ import annotations
+import os
+from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel
+
+from llm.client import AsyncLLMClient
+from llm.db import persist_call, get_pool
+
+_instance: LLMOrchestrator | None = None
+
+def resolve_sid(sid: str | None = None) -> str:
+    if sid:
+        return sid
+    env = os.environ.get("GWT_SID") or os.environ.get("CYBERSEC_SESSION_ID")
+    if env:
+        return env
+    # Walk up looking for .worktree-session
+    cwd = Path.cwd()
+    for parent in [cwd, *cwd.parents]:
+        marker = parent / ".worktree-session"
+        if marker.exists():
+            return marker.read_text().strip()
+    return "global"
+
+
+class LLMOrchestrator:
+    def __init__(
+        self,
+        default_model: str = "claude-sonnet-4-5",
+        sid: str | None = None,
+        log_prompts: bool = False,
+    ) -> None:
+        self.sid = resolve_sid(sid)
+        self._model = default_model
+        self._log_prompts = log_prompts
+
+    def _client(self, model: str | None = None) -> AsyncLLMClient:
+        from openobserve.writer import bulk_index
+        return AsyncLLMClient(
+            model=model or self._model,
+            sid=self.sid,
+            log_prompts=self._log_prompts,
+            db_persist_fn=persist_call,
+            oo_index_fn=bulk_index,
+        )
+
+    async def chat(self, messages: list[dict], model: str | None = None, **kwargs: Any):
+        return await self._client(model).chat(messages, **kwargs)
+
+    async def structured(
+        self,
+        messages: list[dict],
+        schema: type[BaseModel],
+        model: str | None = None,
+        **kwargs: Any,
+    ) -> BaseModel:
+        import json
+        tool = {
+            "name": "structured_output",
+            "description": "Return a structured JSON response matching the schema",
+            "input_schema": schema.model_json_schema(),
+        }
+        msg = await self._client(model).chat(
+            messages, stream=False, tools=[tool],
+            tool_choice={"type": "tool", "name": "structured_output"}, **kwargs,
+        )
+        for block in msg.content:
+            if block.type == "tool_use" and block.name == "structured_output":
+                return schema.model_validate(block.input)
+        raise ValueError("No structured output block in response")
+
+    async def summarize(self, text: str, max_tokens: int = 256, model: str | None = None) -> str:
+        messages = [{"role": "user", "content": f"Summarize concisely:\n\n{text}"}]
+        parts = []
+        async for chunk in await self._client(model).chat(messages, max_tokens=max_tokens):
+            parts.append(chunk)
+        return "".join(parts)
+
+
+def get_orchestrator(**kwargs: Any) -> LLMOrchestrator:
+    global _instance
+    if _instance is None:
+        _instance = LLMOrchestrator(**kwargs)
+    return _instance
+```
+
+### `src/db/models/llm_session.py`
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class LlmSession(Model):
+    """One row per worktree session lifecycle."""
+    sid          = fields.CharField(max_length=12, pk=True)
+    repo_root    = fields.CharField(max_length=512, default="")
+    branch       = fields.CharField(max_length=256, default="")
+    opened_at    = fields.DatetimeField()
+    closed_at    = fields.DatetimeField(null=True)
+    total_input_tokens  = fields.BigIntField(default=0)
+    total_output_tokens = fields.BigIntField(default=0)
+    total_cost_usd      = fields.DecimalField(max_digits=14, decimal_places=8, default=0)
+    total_calls         = fields.IntField(default=0)
+    class Meta:
+        table = "llm_sessions"
+```
+
+### `src/db/models/llm_call.py`
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class LlmCall(Model):
+    """One row per Anthropic API call, bound to a worktree session."""
+    id                  = fields.BigIntField(pk=True, generated=True)
+    sid                 = fields.CharField(max_length=12, db_index=True)
+    model               = fields.CharField(max_length=128)
+    input_tokens        = fields.IntField(default=0)
+    output_tokens       = fields.IntField(default=0)
+    cache_read_tokens   = fields.IntField(default=0)
+    cache_write_tokens  = fields.IntField(default=0)
+    cost_usd            = fields.DecimalField(max_digits=14, decimal_places=8, default=0)
+    latency_ms          = fields.FloatField(default=0)
+    stream              = fields.BooleanField(default=True)
+    success             = fields.BooleanField(default=True)
+    error               = fields.TextField(null=True)
+    request_id          = fields.CharField(max_length=64, null=True)
+    called_at           = fields.DatetimeField(auto_now_add=True)
+    class Meta:
+        table = "llm_calls"
+        indexes = [("sid", "called_at"), ("model", "called_at")]
 ```
 
 ---
 
-## 7. Risk Register & Mitigations
+## 8. Database Schema & OpenObserve Configuration
+
+### `src/llm/schema.sql`
+
+```sql
+-- LLM Sessions — one per worktree lifecycle
+CREATE TABLE IF NOT EXISTS llm_sessions (
+    sid                  CHAR(12)         PRIMARY KEY,
+    repo_root            TEXT             NOT NULL DEFAULT '',
+    branch               TEXT             NOT NULL DEFAULT '',
+    opened_at            TIMESTAMPTZ      NOT NULL,
+    closed_at            TIMESTAMPTZ,
+    total_input_tokens   BIGINT           NOT NULL DEFAULT 0,
+    total_output_tokens  BIGINT           NOT NULL DEFAULT 0,
+    total_cost_usd       NUMERIC(14, 8)   NOT NULL DEFAULT 0,
+    total_calls          INTEGER          NOT NULL DEFAULT 0
+);
+
+-- LLM Calls — one per Anthropic API request
+CREATE TABLE IF NOT EXISTS llm_calls (
+    id                   BIGSERIAL        PRIMARY KEY,
+    sid                  CHAR(12)         NOT NULL REFERENCES llm_sessions(sid) ON DELETE CASCADE,
+    model                VARCHAR(128)     NOT NULL,
+    input_tokens         INTEGER          NOT NULL DEFAULT 0,
+    output_tokens        INTEGER          NOT NULL DEFAULT 0,
+    cache_read_tokens    INTEGER          NOT NULL DEFAULT 0,
+    cache_write_tokens   INTEGER          NOT NULL DEFAULT 0,
+    cost_usd             NUMERIC(14, 8)   NOT NULL DEFAULT 0,
+    latency_ms           DOUBLE PRECISION NOT NULL DEFAULT 0,
+    stream               BOOLEAN          NOT NULL DEFAULT TRUE,
+    success              BOOLEAN          NOT NULL DEFAULT TRUE,
+    error                TEXT,
+    request_id           VARCHAR(64),
+    called_at            TIMESTAMPTZ      NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS llm_calls_sid_called_at    ON llm_calls (sid, called_at DESC);
+CREATE INDEX IF NOT EXISTS llm_calls_model_called_at  ON llm_calls (model, called_at DESC);
+CREATE INDEX IF NOT EXISTS llm_sessions_opened_at     ON llm_sessions (opened_at DESC);
+
+-- Materialized view for fast per-model cost aggregation
+CREATE MATERIALIZED VIEW IF NOT EXISTS llm_cost_by_model AS
+SELECT
+    sid,
+    model,
+    COUNT(*) AS calls,
+    SUM(input_tokens)  AS total_input,
+    SUM(output_tokens) AS total_output,
+    SUM(cost_usd)      AS total_cost
+FROM llm_calls
+GROUP BY sid, model;
+
+CREATE UNIQUE INDEX IF NOT EXISTS llm_cost_by_model_idx ON llm_cost_by_model (sid, model);
+```
+
+### OpenObserve OTEL environment variables
+
+Add to `.env` (and `.env.example`):
+
+```env
+# OpenObserve OTLP endpoint (HTTP)
+OPENOBSERVE_OTLP_ENDPOINT=http://localhost:5080/api/default
+
+# OpenObserve credentials (used for Basic Auth in OTLP headers)
+OPENOBSERVE_EMAIL=admin@cybersec.local
+OPENOBSERVE_PASSWORD=cYb3rS3c!
+
+# Optional: override OTEL service name
+OTEL_SERVICE_NAME=cybersecsuite-llm
+
+# Route LLM calls through local AI proxy (optional)
+ANTHROPIC_BASE_URL=http://localhost:8000/v1
+```
+
+### OTEL instrumentation streams in OpenObserve
+
+| Stream name pattern | Contents |
+|---|---|
+| `cybersecsuite-llm-calls-YYYY.MM.DD` | Per-call token/cost/latency events |
+| `cybersecsuite-llm-sessions-YYYY.MM.DD` | Session open/close events |
+| OTLP traces → `default._traces` | Full OTEL spans with worktree.sid attribute |
+| OTLP metrics → `default._metrics` | p50/p95/p99 latency, token counters |
+
+---
+
+## 9. Risk Register & Mitigations
 
 | Risk | Likelihood | Impact | Mitigation | Owner |
 |---|---|---|---|---|
-| Git version < 2.20 on some machines (no `extensions.worktreeConfig`) | Medium | High | Add version check in manager script; fail with clear message | Manager script |
-| `.git/worktrees/<sid>/` directory not cleaned up after crash | Medium | Medium | `git worktree prune` called on every `create` and `teardown`; CI cleanup job | Manager script + CI |
-| Two agents generate same 12-char SID (birthday collision) | Very Low | Medium | Collision probability ~1 in 2^48; add `worktree_exists()` guard + retry loop (max 3) | Manager script |
-| `core.hooksPath` set to non-existent dir after worktree removal | Low | Medium | Teardown clears `core.hooksPath` config entry before removing directory | Teardown function |
-| Hook template contains `@@SID@@` replacement error (e.g. literal `@@SID@@` left in) | Low | Low | Post-install verification: grep for `@@SID@@` in installed hooks; fail if found | `install_hooks()` |
-| Agent A accidentally `cd`s into Agent B's worktree and commits | Low | High | `.worktree-session` marker + optional `post-checkout` warning; directory naming makes it obvious | Hooks + convention |
-| `git worktree add --lock` not respected across NFS mounts | Medium | Medium | Document: NFS mounts not supported; use local filesystem only | Documentation |
-| Stale lock file prevents `git worktree remove` | Low | Medium | `--force` flag in teardown; log warning when used | Teardown function |
-| Hook script has syntax error, blocking ALL commits in that worktree | Low | High | Lint all templates with `bash -n` during install; abort if lint fails | `install_hooks()` |
-| `extensions.worktreeConfig` incompatible with repo used as a submodule | Low | Medium | Document: do not use worktree manager in submodules; check `git rev-parse --is-inside-work-tree` | Manager script guard |
+| Postgres unreachable at call time | Medium | Medium | Try/except in `_bg_persist`; fall back to OO-only; never crash stream | Dev |
+| OTEL exporter network failure | Medium | Low | `BatchSpanProcessor` with retry; errors suppressed | Dev |
+| Prompt text accidentally logged | Low | High | `log_prompts=False` default; grep CI check for "content" in OO payloads | Dev |
+| Anthropic API key exposed in logs | Low | Critical | Mask `Authorization` header in OTEL instrumentation; add `REDACT_HEADERS` list | Dev |
+| asyncpg pool exhaustion under load | Low | Medium | `max_size=5` pool; circuit breaker; queue background writes | Dev |
+| SID collision (1/2^48) | Very Low | Low | `worktree_exists()` guard already in place; DB `PRIMARY KEY` constraint | Dev |
+| `GWT_SID` env var not set | Medium | Low | Falls back to `.worktree-session` file walk then `"global"` | Dev |
+| Pricing table staleness | Medium | Low | `PRICING_LAST_UPDATED` constant; quarterly review reminder in TODO | Dev |
+| Materialized view staleness | Low | Low | `REFRESH MATERIALIZED VIEW CONCURRENTLY llm_cost_by_model` in teardown | Dev |
+| Python 3.14 asyncio breaking changes | Low | Medium | Pin to `asyncio.TaskGroup`; avoid deprecated `ensure_future` | Dev |
 
 ---
 
-## 8. Setup & Usage Instructions
+## 10. Setup & Usage Instructions
 
-### 8.1 One-Time Repository Setup
+### Initial setup (run once)
 
 ```bash
-# 1. Clone (or enter) the repository
-cd ~/projects/myrepo
+# 1. Add OpenTelemetry deps
+cd /home/daen/Projects/cybersecsuite
+uv add opentelemetry-sdk opentelemetry-exporter-otlp-proto-http opentelemetry-instrumentation-httpx
 
-# 2. Verify Git version (must be >= 2.20)
-git --version
+# 2. Apply DB schema
+psql $CYBERSEC_DB_DSN -f src/llm/schema.sql
 
-# 3. Enable per-worktree configuration
-git config extensions.worktreeConfig true
-
-# 4. Verify
-git config --get extensions.worktreeConfig
-# → true
-
-# 5. Make manager script executable
-chmod +x worktree-session-manager.py
-
-# 6. Source the aliases (add this to ~/.bashrc or ~/.zshrc)
-echo 'source ~/projects/myrepo/scripts/gwt-aliases.sh' >> ~/.zshrc
-source ~/.zshrc
+# 3. Copy env vars to your .env
+cat >> .env <<'EOF'
+OPENOBSERVE_OTLP_ENDPOINT=http://localhost:5080/api/default
+OPENOBSERVE_EMAIL=admin@cybersec.local
+OPENOBSERVE_PASSWORD=cYb3rS3c!
+OTEL_SERVICE_NAME=cybersecsuite-llm
+EOF
 ```
 
-### 8.2 Creating a New Session / Worktree
+### Creating a session-bound LLM worktree
 
 ```bash
-# Option A: Using alias (recommended)
-gwt-create main
-# → [gwt] Created worktree-a3f1c8d20b4e on branch main
-# → [gwt] Run: cd ../worktree-a3f1c8d20b4e
-# → GWT_SID=a3f1c8d20b4e is now exported in your shell
-
-# Option B: Direct script invocation
+# Create worktree with LLM session
 SID=$(python3 worktree-session-manager.py create --branch main)
-echo "Session: $SID"
+python3 worktree-session-manager.py llm-session-open $SID
 
-# Option C: Specify your own SID (e.g. for reproducible CI runs)
-SID=$(python3 worktree-session-manager.py create --sid a3f1c8d20b4e --branch feature/my-feature)
+# Or combined (if --with-llm flag implemented)
+SID=$(python3 worktree-session-manager.py create --branch main --with-llm)
 
-# Navigate to the new worktree
+# Jump into the worktree
 cd ../worktree-$SID
+export GWT_SID=$SID  # auto-detected if .worktree-session exists
 ```
 
-### 8.3 Querying the Current Session ID
+### Using the LLM layer in Python
 
-```bash
-# From inside a managed worktree
-gwt-sid
-# → a3f1c8d20b4e
+```python
+import asyncio
+from llm import get_orchestrator
 
-# Or directly
-python3 ~/projects/myrepo/worktree-session-manager.py sid
-# → a3f1c8d20b4e
+async def main():
+    orc = get_orchestrator()  # picks up GWT_SID automatically
+    print(f"Session: {orc.sid}")
 
-# From a hook script (Python)
-import sys
-sys.path.insert(0, '/path/to/repo')
-from worktree_session_manager import get_current_worktree_sid
-sid = get_current_worktree_sid()
+    # Streaming chat
+    async for chunk in await orc.chat([
+        {"role": "user", "content": "Analyse this CVE: CVE-2024-12345"}
+    ]):
+        print(chunk, end="", flush=True)
+
+    # Structured output
+    from pydantic import BaseModel
+    class ThreatAnalysis(BaseModel):
+        severity: str
+        affected_systems: list[str]
+        recommended_actions: list[str]
+
+    result = await orc.structured(
+        [{"role": "user", "content": "Analyse CVE-2024-12345"}],
+        ThreatAnalysis,
+    )
+    print(result.model_dump_json(indent=2))
+
+asyncio.run(main())
 ```
 
-### 8.4 Listing All Active Worktrees
+### Cost report
 
 ```bash
-gwt-list
-# → SID              BRANCH              PATH                          LOCKED
-# → a3f1c8d20b4e     main                ../worktree-a3f1c8d20b4e      yes
-# → 7b9e2f051d6a     feature/agents      ../worktree-7b9e2f051d6a      yes
+python3 worktree-session-manager.py llm-cost $SID
+# Output:
+# SID: abc123def456
+# ┌──────────────────────────────┬───────┬──────────────┬───────────────┬──────────────┐
+# │ Model                        │ Calls │ Input tokens │ Output tokens │ Cost (USD)   │
+# ├──────────────────────────────┼───────┼──────────────┼───────────────┼──────────────┤
+# │ claude-sonnet-4-5            │    42 │       84,231 │        12,445 │    $0.44     │
+# └──────────────────────────────┴───────┴──────────────┴───────────────┴──────────────┘
 ```
 
-### 8.5 Teardown
+### Teardown
 
 ```bash
-# Tear down current session
-gwt-teardown
-# → [WSM] INFO Unlocking worktree-a3f1c8d20b4e
-# → [WSM] INFO Removing worktree-a3f1c8d20b4e
-# → [WSM] INFO Pruning stale worktree entries
-# → [WSM] INFO Done. GWT_SID unset.
+# Teardown with LLM session close and cost summary
+python3 worktree-session-manager.py teardown $SID
 
-# Tear down a specific session by SID
-gwt-teardown 7b9e2f051d6a
-
-# Force teardown (e.g. if uncommitted changes)
-python3 worktree-session-manager.py teardown 7b9e2f051d6a --force
+# Or explicit close first
+python3 worktree-session-manager.py llm-session-close $SID
+python3 worktree-session-manager.py teardown $SID
 ```
 
-### 8.6 Re-installing Hooks (e.g. after template update)
+### Shell aliases (add to `~/.bashrc` or `~/.zshrc`)
 
 ```bash
-gwt-hooks-install a3f1c8d20b4e
-# → [WSM] INFO Removed 3 stale hooks
-# → [WSM] INFO Installed pre-commit → worktree-a3f1c8d20b4e/.git/hooks/pre-commit
-# → [WSM] INFO Installed pre-push   → worktree-a3f1c8d20b4e/.git/hooks/pre-push
-# → [WSM] INFO Installed commit-msg → worktree-a3f1c8d20b4e/.git/hooks/commit-msg
-# → [WSM] INFO Hook verification passed (no @@SID@@ tokens remaining)
-```
+source /home/daen/Projects/cybersecsuite/scripts/gwt-aliases.sh
 
-### 8.7 Recommended Shell Aliases (copy to `~/.bashrc` or `~/.zshrc`)
-
-```bash
-# Add to ~/.zshrc or ~/.bashrc:
-export GWT_REPO="$HOME/projects/myrepo"
-source "$GWT_REPO/scripts/gwt-aliases.sh"
-
-# Optional: auto-export SID when entering a worktree (via direnv or chpwd hook)
-# zsh example:
-chpwd() {
-  local marker=".worktree-session"
-  if [ -f "$marker" ]; then
-    export GWT_SID="$(cat "$marker")"
-    echo "[gwt] Session: $GWT_SID"
-  fi
-}
-```
-
-### 8.8 Troubleshooting
-
-```bash
-# Stale worktrees listed but directory missing
-git worktree prune --verbose
-
-# Locked worktree won't remove
-git worktree unlock worktree-<sid>
-git worktree remove --force worktree-<sid>
-
-# extensions.worktreeConfig missing (hooks not isolated)
-git config extensions.worktreeConfig true
-
-# Hook not firing — check hooksPath
-git -C /path/to/worktree-<sid> config --list | grep hookspath
-
-# Verify SID in current dir
-cat .worktree-session
+# After sourcing, usage:
+gwt-create main          # creates worktree + exports GWT_SID
+gwt-teardown $GWT_SID    # tears down
+gwt-sid                  # prints current SID
+gwt-list                 # lists all worktrees
 ```
 
 ---
 
-## 9. Future Extensions
+## 11. Token Optimization Notes & Warnings
 
-1. **C/C++ native session detector** (`get_session_id.c`): Compile a tiny shared library that reads `.worktree-session` from `$GIT_WORK_TREE` — callable from CMake/Makefile hooks for C++ build pipelines without spawning a Python process per hook invocation.
+### ⚠️ Critical: never log prompt text to OpenObserve or Postgres
 
-2. **Centralised hook template repository**: Move `./scripts/hooks/` to a separate Git repository (or Git submodule) so multiple projects share a single versioned set of hook templates. The manager script gains a `--hooks-repo <url>` flag to clone and use remote templates.
+The `bulk_index("llm-calls", [...])` payload **must never** contain `messages`, `content`, or `response_text` fields. Only metadata goes into OO:
 
-3. **GitHub Actions / GitLab CI integration**: Publish a composite GitHub Action `gwt-session-setup` that calls `worktree-session-manager.py create` for each parallel job matrix entry, exports `GWT_SID` as an output, and calls `teardown` in a `post` step.
+```python
+# CORRECT — metadata only
+{"worktree_sid": sid, "model": model, "input_tokens": 1234, "cost_usd": 0.004}
 
-4. **Hook audit log**: Each hook appends a JSON-L entry to `~/.gwt-audit.jsonl` with fields `{ts, sid, hook, repo, exit_code, duration_ms}`. A companion `gwt-audit` CLI command queries and displays the log.
+# WRONG — never do this
+{"worktree_sid": sid, "messages": messages, "response": full_response_text}
+```
 
-5. **Automatic branch-from-sid**: When no `--branch` is specified, the manager script creates a new branch named `session/<sid>` and pushes it with `--set-upstream`, giving each agent a completely isolated branch lifecycle.
+### Async background writes
 
-6. **Worktree health monitor** (`gwt-doctor`): A CLI command that inspects all registered worktrees, checks for: missing `.worktree-session`, mismatched `core.hooksPath`, stale lock files, hooks containing un-replaced `@@SID@@` tokens, and uncommitted changes older than N hours. Emits a colour-coded health report.
+All DB writes go through `asyncio.create_task(self._bg_persist(...))` — they are fully fire-and-forget and never block the streaming response. Errors in `_bg_persist` are caught and logged at WARNING level.
 
-7. **VSCode / Cursor workspace integration**: Auto-generate a `.code-workspace` file per session that sets `git.path` to the worktree root, so the IDE's Source Control panel shows only the current session's changes without mixing in sibling worktrees.
+### Streaming vs. non-streaming token efficiency
+
+- Use `stream=True` (default) for interactive responses — yields tokens immediately, no buffer memory overhead
+- Use `stream=False` only for structured outputs and batch processing
+
+### Anthropic prompt caching
+
+Structure messages to maximise cache hits:
+1. Put static system prompt **first** (marked with `"cache_control": {"type": "ephemeral"}`)
+2. Put dynamic user content **last**
+3. Cache read tokens cost 10× less than regular input tokens
+
+```python
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": STATIC_SYSTEM_CONTEXT,
+             "cache_control": {"type": "ephemeral"}},
+            {"type": "text", "text": dynamic_query},
+        ]
+    }
+]
+```
+
+### OTEL sampling in production
+
+Set sampling rate to 10% in production to reduce OTLP overhead:
+
+```python
+from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
+sampler = TraceIdRatioBased(0.1)  # 10% sampling
+```
+
+### Postgres write batching
+
+If call volume exceeds 100 req/s, switch `_bg_persist` to a write queue with 500ms flush:
+
+```python
+asyncio.create_task(write_queue.push(call_record))
+# Background loop flushes queue to Postgres every 500ms
+```
+
+### OpenObserve stream retention
+
+Set a 30-day retention policy on `cybersecsuite-llm-*` streams in the OpenObserve admin UI to prevent unbounded disk growth.
+
+---
+
+## 12. Future Extensions
+
+1. **Per-model cost budget guard** — extend `LLMOrchestrator` to enforce a `max_cost_usd_per_session` limit; raise `BudgetExceededError` and close the DB session automatically.
+
+2. **Prompt hash deduplication** — hash message arrays with BLAKE2b-256; store hash in `llm_calls.prompt_hash`; detect identical prompts and return cached responses (semantic cache layer).
+
+3. **Multi-provider routing** — route LLM calls through the existing `src/ai_proxy/` smart router (`smart_route()`), making `AsyncLLMClient` provider-agnostic and retrying on failure.
+
+4. **C++ SID detector hook** — compile a minimal C extension (via `ctypes` or `pybind11`) that reads the `.worktree-session` marker with zero Python import overhead, usable from pre-commit hooks in compiled agents.
+
+5. **Real-time cost dashboard panel** — add a new `/api/llm/cost` endpoint in `src/dashboard/api/` and a live-updating panel in the forensic dashboard, fed from `llm_cost_by_model` materialized view.
+
+6. **OTEL traces in Grafana** — expose OpenObserve OTLP data to Grafana Tempo for distributed trace UI, linking git worktree spans to upstream agent spans.
+
+7. **Conversation replay** — if `log_prompts=True` is explicitly set, store compressed message arrays in a separate `llm_conversations` table (ZSTD-compressed JSONB), enabling full session replay and debugging.
