@@ -4,8 +4,10 @@ from ._components import (
     btn,
     code_preview,
     divider,
+    filter_bar,
     form_field,
     form_input,
+    form_label,
     form_select,
     form_textarea,
     grid,
@@ -13,6 +15,8 @@ from ._components import (
     loading_slot,
     mini_card,
     mini_grid,
+    modal_overlay,
+    panel_section,
     section_badge,
     section_h4,
     simple_panel,
@@ -406,285 +410,229 @@ def _team_builder() -> str:
 
 
 def _agent_crafter() -> str:
-    return (
-        '<div id="tab-agent-crafter" class="card" style="display:none">\n'
-        '  <h3 class="text-lg font-semibold mb-1">&#x270e; Agent Crafter</h3>\n'
-        '  <p class="text-xs mb-4" style="color:var(--text-muted)">Create, edit and delete agent <code>.md</code> files in <code>.claude/agents/</code>.</p>\n'
+    _models = [
+        ("sonnet", "Claude Sonnet"),
+        ("haiku",  "Claude Haiku"),
+        ("opus",   "Claude Opus"),
+    ]
+    _tool_names   = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch", "Task"]
+    _default_on   = {"Read", "Write", "Edit", "Bash", "Glob", "Grep"}
 
-        # ── Agent List ───────────────────────────────────────────────────────
-        '  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">\n'
-        '    <input id="ac-filter" type="text" placeholder="Filter agents…" oninput="acFilterAgents()"\n'
-        '      style="flex:1;max-width:260px;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '    <span id="ac-count" style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono)"></span>\n'
-        '    <button onclick="acLoadAgents()" class="btn" style="font-size:11px;padding:4px 12px">&#x21ba; Refresh</button>\n'
-        '  </div>\n'
-        '  <div id="ac-agents-table" class="mb-6"></div>\n'
+    tools_widget = (
+        '<div id="ac-tools" style="display:flex;flex-wrap:wrap;gap:6px">\n'
+        + "".join(
+            f'  <label class="af-check">'
+            f'<input type="checkbox" value="{t}"'
+            + (" checked" if t in _default_on else "")
+            + f"> {t}</label>\n"
+            for t in _tool_names
+        )
+        + "</div>"
+    )
 
-        # ── Create Form ──────────────────────────────────────────────────────
-        '  <h4 class="text-sm font-semibold mb-3" style="color:var(--accent);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">New Agent</h4>\n'
-        '  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 100px;gap:12px;margin-bottom:12px">\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Name *</label>\n'
-        '      <input id="ac-name" type="text" placeholder="my-analyst"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:var(--font-mono)">\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Description</label>\n'
-        '      <input id="ac-desc" type="text" placeholder="What this agent does…"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Model</label>\n'
-        '      <select id="ac-model" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '        <option value="sonnet">Claude Sonnet</option>\n'
-        '        <option value="haiku">Claude Haiku</option>\n'
-        '        <option value="opus">Claude Opus</option>\n'
-        '      </select>\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Max Turns</label>\n'
-        '      <input type="number" id="ac-maxturns" value="25" min="1" max="200"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '    </div>\n'
-        '  </div>\n'
-        '  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Tools</label>\n'
-        '      <div id="ac-tools" style="display:flex;flex-wrap:wrap;gap:6px">\n'
-        '        <label class="af-check"><input type="checkbox" value="Read" checked> Read</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Write" checked> Write</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Edit" checked> Edit</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Bash" checked> Bash</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Glob" checked> Glob</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Grep" checked> Grep</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="WebSearch"> WebSearch</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="WebFetch"> WebFetch</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Task"> Task</label>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">MCP Servers <span style="color:var(--text-faint)">(comma-sep)</span></label>\n'
-        '      <input id="ac-mcp" type="text" value="cybersec" placeholder="cybersec, dystopian"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)">\n'
-        '    </div>\n'
-        '  </div>\n'
-        '  <div style="margin-bottom:12px">\n'
-        '    <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Instructions <span style="color:var(--text-faint)">(markdown body)</span></label>\n'
-        '    <textarea id="ac-instructions" rows="5" placeholder="## Role\nYou are a specialist that…"\n'
-        '      style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
-        '  </div>\n'
-        '  <div style="display:flex;align-items:center;gap:12px">\n'
-        '    <button onclick="acCreateAgent()" class="btn btn-accent">+ Create Agent</button>\n'
-        '    <span id="ac-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></span>\n'
-        '  </div>\n'
+    new_agent = panel_section(
+        "New Agent",
+        grid(
+            form_field("Name *",      form_input("ac-name", placeholder="my-analyst",
+                                                  extra_style="font-family:var(--font-mono)")),
+            form_field("Description", form_input("ac-desc", placeholder="What this agent does…")),
+            form_field("Model",       form_select("ac-model", _models)),
+            form_field("Max turns",   form_input("ac-maxturns", type="number", value="25")),
+            template="1fr 1fr 1fr 100px",
+        ),
+        grid(
+            form_field("Tools", tools_widget),
+            form_field("MCP servers",
+                       form_input("ac-mcp", value="cybersec", placeholder="cybersec, dystopian",
+                                  extra_style="font-family:var(--font-mono);font-size:12px"),
+                       hint="comma-separated"),
+        ),
+        form_field("Instructions",
+                   form_textarea("ac-instructions", rows=5,
+                                 placeholder="## Role\nYou are a specialist that…", mono=True),
+                   hint="markdown body"),
+        action_bar(
+            btn("+ Create Agent", onclick="acCreateAgent()", cls="btn btn-accent"),
+            status_span("ac-status"),
+        ),
+    )
 
-        # ── Edit Modal ───────────────────────────────────────────────────────
-        '  <div id="ac-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center">\n'
-        '    <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:24px;width:600px;max-width:95vw;max-height:90vh;overflow-y:auto">\n'
-        '      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">\n'
-        '        <h4 class="text-sm font-semibold" style="color:var(--text-primary)">Edit Agent: <span id="ac-edit-name" style="color:var(--accent);font-family:var(--font-mono)"></span></h4>\n'
-        '        <button onclick="acCloseEdit()" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer">✕</button>\n'
-        '      </div>\n'
-        '      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">\n'
-        '        <div>\n'
-        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Model</label>\n'
-        '          <select id="ac-edit-model" style="width:100%;padding:6px 8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
-        '            <option value="sonnet">Sonnet</option>\n'
-        '            <option value="haiku">Haiku</option>\n'
-        '            <option value="opus">Opus</option>\n'
-        '          </select>\n'
-        '        </div>\n'
-        '        <div>\n'
-        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Max Turns</label>\n'
-        '          <input type="number" id="ac-edit-maxturns" value="25" min="1" max="200"\n'
-        '            style="width:100%;padding:6px 8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
-        '        </div>\n'
-        '        <div>\n'
-        '          <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Description</label>\n'
-        '          <input id="ac-edit-desc" type="text"\n'
-        '            style="width:100%;padding:6px 8px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px">\n'
-        '        </div>\n'
-        '      </div>\n'
-        '      <div style="margin-bottom:12px">\n'
-        '        <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Instructions</label>\n'
-        '        <textarea id="ac-edit-instructions" rows="10"\n'
-        '          style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
-        '      </div>\n'
-        '      <div style="display:flex;align-items:center;gap:12px">\n'
-        '        <button onclick="acSaveEdit()" class="btn btn-accent" style="font-size:13px">&#x1f4be; Save</button>\n'
-        '        <button onclick="acCloseEdit()" class="btn" style="font-size:13px">Cancel</button>\n'
-        '        <span id="ac-edit-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></span>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '  </div>\n'
+    edit_modal = modal_overlay(
+        "ac-edit-modal",
+        (
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">\n'
+            '  <h4 class="text-sm font-semibold" style="color:var(--text-primary)">Edit Agent: '
+            '<span id="ac-edit-name" style="color:var(--accent);font-family:var(--font-mono)"></span></h4>\n'
+            + btn("✕", onclick="acCloseEdit()", cls="",
+                  extra_style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer")
+            + "\n</div>"
+        ),
+        grid(
+            form_field("Model",       form_select("ac-edit-model",
+                                                   [("sonnet", "Sonnet"), ("haiku", "Haiku"), ("opus", "Opus")])),
+            form_field("Max turns",   form_input("ac-edit-maxturns", type="number", value="25")),
+            form_field("Description", form_input("ac-edit-desc")),
+            cols=3,
+        ),
+        form_field("Instructions",
+                   form_textarea("ac-edit-instructions", rows=10, mono=True)),
+        action_bar(
+            btn("💾 Save",  onclick="acSaveEdit()",  cls="btn btn-accent"),
+            btn("Cancel",  onclick="acCloseEdit()", cls="btn"),
+            status_span("ac-edit-status"),
+        ),
+        width="600px",
+    )
 
-        "</div>\n"
+    return tab_panel(
+        "agent-crafter",
+        "✎ Agent Crafter",
+        '<p class="text-xs mb-4" style="color:var(--text-muted)">Create, edit and delete agent '
+        '<code>.md</code> files in <code>.claude/agents/</code>.</p>',
+        filter_bar("ac-filter", "Filter agents…", "acFilterAgents()", "ac-count",
+                   btn("↺ Refresh", onclick="acLoadAgents()",
+                       extra_style="font-size:11px;padding:4px 12px")),
+        table_slot("ac-agents-table"),
+        new_agent,
+        edit_modal,
     )
 
 
 def _agent_factory() -> str:
-    return (
-        '<div id="tab-agent-factory" class="card" style="display:none">\n'
-        '  <h3 class="text-lg font-semibold mb-1">&#x1f3ed; Agent Factory</h3>\n'
-        '  <p class="text-xs mb-5" style="color:var(--text-muted)">Generate production-grade agent definitions saved to <code>.claude/agents/</code>.</p>\n'
+    _models = [
+        ("sonnet", "Claude Sonnet"),
+        ("haiku",  "Claude Haiku"),
+        ("opus",   "Claude Opus"),
+    ]
+    _tool_names = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch", "Task"]
+    _default_on = {"Read", "Write", "Edit", "Bash", "Glob", "Grep"}
 
-        # ── Identity row ──────────────────────────────────────────────────────
-        '  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 110px;gap:12px;margin-bottom:14px">\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Agent Type</label>\n'
-        '      <select id="af-type" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '        <option value="specialist">Specialist</option>\n'
-        '        <option value="team-leader">TeamLeader</option>\n'
-        '        <option value="orchestrator">Orchestrator</option>\n'
-        '      </select>\n'
-        '      <p style="font-size:10px;color:var(--text-faint);margin-top:3px;font-family:var(--font-mono)" id="af-type-hint">Focused expert — executes tasks, returns results.</p>\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Name</label>\n'
-        '      <input id="af-name" type="text" placeholder="my-analyst"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:var(--font-mono)" />\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Model</label>\n'
-        '      <select id="af-model" style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '        <option value="sonnet">Claude Sonnet</option>\n'
-        '        <option value="haiku">Claude Haiku</option>\n'
-        '        <option value="opus">Claude Opus</option>\n'
-        '      </select>\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Max Turns</label>\n'
-        '      <input type="number" id="af-maxturns" value="30" min="1" max="200"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px">\n'
-        '    </div>\n'
-        '  </div>\n'
+    tools_widget = (
+        '<div id="af-tools" style="display:flex;flex-wrap:wrap;gap:6px">\n'
+        + "".join(
+            f'  <label class="af-check"><input type="checkbox" value="{t}"'
+            + (" checked" if t in _default_on else "")
+            + f"> {t}</label>\n"
+            for t in _tool_names
+        )
+        + "</div>"
+    )
 
-        # ── Description ───────────────────────────────────────────────────────
-        '  <div style="margin-bottom:14px">\n'
-        '    <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Description</label>\n'
-        '    <textarea id="af-desc" rows="2" placeholder="What this agent specialises in..."\n'
-        '      style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;resize:vertical"></textarea>\n'
-        '  </div>\n'
+    type_select = (
+        form_select("af-type", [
+            ("specialist",  "Specialist"),
+            ("team-leader", "Team leader"),
+            ("orchestrator","Orchestrator"),
+        ])
+        + '\n<p id="af-type-hint" style="font-size:10px;color:var(--text-faint);'
+        'margin-top:3px;font-family:var(--font-mono)">Focused expert — executes tasks, returns results.</p>'
+    )
 
-        # ── Base Templates ────────────────────────────────────────────────────
-        '  <div style="margin-bottom:14px">\n'
-        '    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">\n'
-        '      <label class="text-xs" style="color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Base Templates <span style="color:var(--text-faint)">(agents/agents/)</span></label>\n'
-        '      <button onclick="afAddTemplate()" class="btn" style="font-size:11px;padding:3px 10px">+ Add Template</button>\n'
-        '    </div>\n'
-        '    <div id="af-tpl-rows" style="display:flex;flex-direction:column;gap:6px">\n'
-        '      <div style="display:flex;align-items:center;gap:6px">\n'
-        '        <select id="af-tpl-0" style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)">\n'
-        '          <option value="">— none —</option>\n'
-        '        </select>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '  </div>\n'
+    def labeled_rows(label: str, row_id: str, onclick: str, btn_text: str, hint: str = "") -> str:
+        """Flex header row (label left, inline button right) + a collapsible rows container."""
+        return (
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">\n'
+            f'  {form_label(label, hint=hint)}\n'
+            f'  {btn(btn_text, onclick=onclick, extra_style="font-size:11px;padding:3px 10px")}\n'
+            '</div>\n'
+            f'<div id="{row_id}" style="display:flex;flex-direction:column;gap:6px">\n'
+            f'  <div style="display:flex;align-items:center;gap:6px">\n'
+            f'    <select id="{row_id}-0" style="flex:1;padding:6px 10px;'
+            f'background:var(--surface-2);border:1px solid var(--border);'
+            f'border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)">\n'
+            '      <option value="">— none —</option>\n'
+            '    </select>\n'
+            '  </div>\n'
+            '</div>'
+        )
 
-        # ── Skills ────────────────────────────────────────────────────────────
-        '  <div style="margin-bottom:14px">\n'
-        '    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">\n'
-        '      <label class="text-xs" style="color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Skills</label>\n'
-        '      <button onclick="afAddSkill()" class="btn" style="font-size:11px;padding:3px 10px">+ Add Skill</button>\n'
-        '    </div>\n'
-        '    <div id="af-skill-rows" style="display:flex;flex-direction:column;gap:6px">\n'
-        '      <div style="display:flex;align-items:center;gap:6px">\n'
-        '        <select id="af-skill-0" style="flex:1;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)">\n'
-        '          <option value="">— none —</option>\n'
-        '        </select>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '  </div>\n'
+    research_checks = (
+        '<div style="display:flex;flex-wrap:wrap;gap:8px">\n'
+        '  <label class="af-check"><input type="checkbox" id="af-r-mitre" value="mitre"> MITRE ATT&amp;CK</label>\n'
+        '  <label class="af-check"><input type="checkbox" id="af-r-cve" value="cve"> CVE database</label>\n'
+        '  <label class="af-check"><input type="checkbox" id="af-r-tools" value="tools"> Tool docs</label>\n'
+        '  <label class="af-check"><input type="checkbox" id="af-r-api" value="api"> API reference</label>\n'
+        '</div>'
+    )
 
-        # ── Tools + MCP ───────────────────────────────────────────────────────
-        '  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Tools</label>\n'
-        '      <div id="af-tools" style="display:flex;flex-wrap:wrap;gap:6px">\n'
-        '        <label class="af-check"><input type="checkbox" value="Read" checked> Read</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Write" checked> Write</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Edit" checked> Edit</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Bash" checked> Bash</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Glob" checked> Glob</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Grep" checked> Grep</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="WebSearch"> WebSearch</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="WebFetch"> WebFetch</label>\n'
-        '        <label class="af-check"><input type="checkbox" value="Task"> Task</label>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '    <div>\n'
-        '      <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">MCP Servers <span style="color:var(--text-faint)">(comma-sep)</span></label>\n'
-        '      <input id="af-mcp" type="text" value="cybersec" placeholder="cybersec, dystopian"\n'
-        '        style="width:100%;padding:7px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono)" />\n'
-        '    </div>\n'
-        '  </div>\n'
+    context_toggles = (
+        '<div style="display:flex;align-items:center;gap:24px">\n'
+        '  <label class="af-check" style="font-size:13px">'
+        '<input type="checkbox" id="af-project-ctx"> Include project context (.claude/)</label>\n'
+        '  <label class="af-check" style="font-size:13px">'
+        '<input type="checkbox" id="af-save-file" checked> Save to .claude/agents/</label>\n'
+        '</div>'
+    )
 
-        # ── Instructions ──────────────────────────────────────────────────────
-        '  <div style="margin-bottom:14px">\n'
-        '    <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Instructions <span style="color:var(--text-faint)">(markdown body)</span></label>\n'
-        '    <textarea id="af-instructions" rows="5" placeholder="## Role&#10;You are a specialist that..."\n'
-        '      style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
-        '  </div>\n'
-
-        # ── Research + context toggles ────────────────────────────────────────
-        '  <div style="margin-bottom:14px">\n'
-        '    <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Research Sections <span style="color:var(--text-faint)">(WebFetch on generate)</span></label>\n'
-        '    <div style="display:flex;flex-wrap:wrap;gap:8px">\n'
-        '      <label class="af-check"><input type="checkbox" id="af-r-mitre" value="mitre"> MITRE ATT&amp;CK</label>\n'
-        '      <label class="af-check"><input type="checkbox" id="af-r-cve" value="cve"> CVE Database</label>\n'
-        '      <label class="af-check"><input type="checkbox" id="af-r-tools" value="tools"> Tool Docs</label>\n'
-        '      <label class="af-check"><input type="checkbox" id="af-r-api" value="api"> API Reference</label>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '  <div style="margin-bottom:14px;display:flex;align-items:center;gap:24px">\n'
-        '    <label class="af-check" style="font-size:13px"><input type="checkbox" id="af-project-ctx"> Include project context (.claude/)</label>\n'
-        '    <label class="af-check" style="font-size:13px"><input type="checkbox" id="af-save-file" checked> Save to .claude/agents/</label>\n'
-        '  </div>\n'
-
-        # ── Extra instructions + Generate ─────────────────────────────────────
-        '  <div style="margin-bottom:8px">\n'
-        '    <label class="text-xs" style="color:var(--text-muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)">Extra Instructions <span style="color:var(--text-faint)">(appended to factory prompt)</span></label>\n'
-        '    <textarea id="af-extra" rows="3" placeholder="Focus on XYZ domain. Must include T1055 detection. Report format: ..."\n'
-        '      style="width:100%;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:12px;font-family:var(--font-mono);resize:vertical"></textarea>\n'
-        '  </div>\n'
-        '  <div style="display:flex;align-items:center;gap:12px;margin-top:8px">\n'
-        '    <button onclick="afGenerate()" class="btn btn-accent">&#x1f3ed; Generate Agent</button>\n'
-        '    <span id="af-status" style="font-size:11px;font-family:var(--font-mono);color:var(--text-muted)"></span>\n'
-        '  </div>\n'
-        '  <pre id="af-preview" style="display:none;margin-top:16px;padding:14px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;font-family:var(--font-mono);color:var(--text-primary);white-space:pre-wrap;max-height:400px;overflow-y:auto"></pre>\n'
-
-        "</div>\n"
+    return tab_panel(
+        "agent-factory",
+        "🏭 Agent Factory",
+        '<p class="text-xs mb-5" style="color:var(--text-muted)">Generate production-grade agent definitions '
+        'saved to <code>.claude/agents/</code>.</p>',
+        grid(
+            form_field("Agent type", type_select),
+            form_field("Name *",     form_input("af-name", placeholder="my-analyst",
+                                                extra_style="font-family:var(--font-mono)")),
+            form_field("Model",      form_select("af-model", _models)),
+            form_field("Max turns",  form_input("af-maxturns", type="number", value="30")),
+            template="1fr 1fr 1fr 110px",
+        ),
+        form_field("Description",
+                   form_textarea("af-desc", rows=2, placeholder="What this agent specialises in...")),
+        labeled_rows("Base templates", "af-tpl-rows", "afAddTemplate()", "+ Add template",
+                     hint="agents/agents/"),
+        labeled_rows("Skills", "af-skill-rows", "afAddSkill()", "+ Add skill"),
+        grid(
+            form_field("Tools", tools_widget),
+            form_field("MCP servers",
+                       form_input("af-mcp", value="cybersec", placeholder="cybersec, dystopian",
+                                  extra_style="font-family:var(--font-mono);font-size:12px"),
+                       hint="comma-separated"),
+        ),
+        form_field("Instructions",
+                   form_textarea("af-instructions", rows=5,
+                                 placeholder="## Role\nYou are a specialist that...", mono=True),
+                   hint="markdown body"),
+        form_field("Research sections", research_checks, hint="WebFetch on generate"),
+        context_toggles,
+        form_field("Extra instructions",
+                   form_textarea("af-extra", rows=3,
+                                 placeholder="Focus on XYZ domain. Must include T1055 detection. Report format: ...",
+                                 mono=True),
+                   hint="appended to factory prompt"),
+        action_bar(
+            btn("🏭 Generate Agent", onclick="afGenerate()", cls="btn btn-accent"),
+            status_span("af-status"),
+        ),
+        code_preview("af-preview", max_h="400px"),
     )
 
 
 def _workflows() -> str:
-    return (
-        '<div id="tab-workflows" class="card" style="display:none">\n'
-        '  <h3 class="text-lg font-semibold mb-4">&#x1f504; Workflow Builder</h3>\n'
-        '  <p class="text-xs text-gray-500 mb-4">Create multi-step agent pipelines. Steps run in dependency order; use <code>{{step_id}}</code> in prompts to reference prior results.</p>\n'
-
-        # ── Create Workflow ───────────────────────────────────────────────────
-        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">New Workflow</h4>\n'
-        '  <div class="mb-3">\n'
-        '    <label class="text-xs text-gray-400 uppercase tracking-wide block mb-1">Workflow Name</label>\n'
-        '    <input id="wf-name" type="text" placeholder="my-investigation"\n'
-        '      class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg focus:border-cyan-500 outline-none" style="width:300px">\n'
-        '  </div>\n'
-        '  <div id="wf-steps" class="space-y-3 mb-3"></div>\n'
-        '  <div class="flex items-center gap-3 mb-4">\n'
-        '    <button onclick="wfAddStep()"\n'
-        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">+ Add Step</button>\n'
-        '    <button onclick="wfExecute()"\n'
-        '      class="px-4 py-1.5 bg-green-700 hover:bg-green-600 text-sm rounded-lg font-semibold transition-colors">&#x25b6; Execute</button>\n'
-        '    <button onclick="wfClear()"\n'
-        '      class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-xs rounded-lg transition-colors">Clear</button>\n'
-        '    <span id="wf-status" class="text-xs"></span>\n'
-        '  </div>\n'
-
-        # ── Results ──────────────────────────────────────────────────────────
-        '  <h4 class="text-sm font-semibold text-cyan-400 uppercase tracking-wide mb-3">History</h4>\n'
-        '  <div id="wf-history" class="space-y-4"></div>\n'
-        "</div>\n"
+    return tab_panel(
+        "workflows",
+        "🔄 Workflow Builder",
+        '<p class="text-xs mb-4" style="color:var(--text-muted)">Create multi-step agent pipelines. '
+        'Steps run in dependency order; use <code>{{step_id}}</code> in prompts to reference prior results.</p>',
+        panel_section(
+            "New workflow",
+            form_field(
+                "Workflow name",
+                '<input id="wf-name" type="text" placeholder="my-investigation" '
+                'class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg '
+                'focus:border-cyan-500 outline-none" style="width:300px">',
+            ),
+            '<div id="wf-steps" class="space-y-3 mb-3"></div>',
+            action_bar(
+                btn("+ Add step", onclick="wfAddStep()",
+                    extra_style="padding:6px 12px;font-size:12px"),
+                btn("▶ Execute",  onclick="wfExecute()", cls="btn btn-accent"),
+                btn("Clear",      onclick="wfClear()",
+                    extra_style="padding:6px 12px;font-size:12px"),
+                status_span("wf-status"),
+            ),
+        ),
+        panel_section("History", '<div id="wf-history" class="space-y-4"></div>'),
     )
 
 
@@ -694,12 +642,16 @@ def _settings() -> str:
     project_badge = section_badge("📁 Project .claude/", "#6366f1")
 
     # ── project selector ────────────────────────────────────────────────────
-    project_selector = form_field(
-        "Active Project",
-        '<select id="settings-project-select" onchange="switchActiveProject(this.value)"'
-        ' style="width:100%;max-width:300px">'
-        '<option value="">None (Global only)</option>'
-        '</select>',
+    project_selector = (
+        '<div style="margin-bottom:16px">\n'
+        + form_field(
+            "Active project",
+            '<select id="settings-project-select" onchange="switchActiveProject(this.value)"'
+            ' style="width:100%;max-width:300px">'
+            '<option value="">None (Global only)</option>'
+            '</select>',
+        )
+        + '\n</div>'
     )
 
     # ── scope switcher buttons ────────────────────────────────────────────────
@@ -711,32 +663,7 @@ def _settings() -> str:
         + '</div>'
     )
 
-    # ── MCP installer form ────────────────────────────────────────────────────
-    mcp_installer = (
-        '<div class="mb-6">\n'
-        '  <div class="section-h3">Install New MCP Server</div>\n'
-        + info_box("Add a new MCP server to ~/.claude/settings.json. Restart Claude Code to activate.")
-        + grid(
-            form_field("Server Name", form_input("mcp-install-name", placeholder="e.g. my-mcp-server")),
-            form_field("Command",     form_input("mcp-install-cmd",  placeholder="e.g. uvx, npx, node")),
-            cols=2,
-        )
-        + '<div style="margin-bottom:12px">\n'
-        + form_field("Args (comma-separated)",
-                     form_input("mcp-install-args", placeholder="e.g. @modelcontextprotocol/server-filesystem, /tmp"))
-        + '</div>\n'
-        + '<div style="margin-bottom:12px">\n'
-        + form_field("Env Vars (KEY=VALUE, one per line)",
-                     form_textarea("mcp-install-env", rows=3, placeholder="API_KEY=xxx\nDEBUG=1", mono=True))
-        + '</div>\n'
-        + action_bar(
-            btn("+ Install MCP", onclick="installMcp()", cls="btn btn-accent"),
-            status_span("mcp-install-status"),
-        )
-        + '\n</div>'
-    )
-
-    # ── hooks manager ──────────────────────────────────────────────────────────
+    # ── MCP installer form (content only — panel_section wraps it) ────────────
     _hook_events = [
         ("PreToolUse", "PreToolUse"), ("PostToolUse", "PostToolUse"),
         ("Stop", "Stop"), ("SessionStart", "SessionStart"),
@@ -745,157 +672,148 @@ def _settings() -> str:
         ("PreCompact", "PreCompact"), ("PostCompact", "PostCompact"),
         ("Notification", "Notification"),
     ]
-    hooks_manager = (
-        '<div class="mb-6">\n'
-        '  <div class="section-h3">Hooks Manager</div>\n'
-        + info_box("Manage Claude Code hooks in ~/.claude/settings.json.")
-        + loading_slot("settings-global-hooks")
-        + divider(label="ADD NEW HOOK")
-        + '<div class="section-h4">Add New Hook</div>\n'
+    mcp_installer_content = (
+        grid(
+            form_field("Server name", form_input("mcp-install-name", placeholder="e.g. my-mcp-server")),
+            form_field("Command",     form_input("mcp-install-cmd",  placeholder="e.g. uvx, npx, node")),
+            cols=2,
+        )
+        + form_field("Args (comma-separated)",
+                     form_input("mcp-install-args", placeholder="e.g. @modelcontextprotocol/server-filesystem, /tmp"))
+        + '\n'
+        + form_field("Env vars (KEY=VALUE, one per line)",
+                     form_textarea("mcp-install-env", rows=3, placeholder="API_KEY=xxx\nDEBUG=1", mono=True))
+        + '\n'
+        + action_bar(
+            btn("+ Install MCP", onclick="installMcp()", cls="btn btn-accent"),
+            status_span("mcp-install-status"),
+        )
+    )
+
+    hooks_content = (
+        loading_slot("settings-global-hooks")
+        + '\n'
+        + divider(label="Add new hook")
+        + section_h4("Add New Hook")
         + grid(
-            form_field("Event",                   form_select("hook-add-event", _hook_events)),
+            form_field("Event",                    form_select("hook-add-event", _hook_events)),
             form_field("Matcher (regex, optional)", form_input("hook-add-matcher", placeholder=".*")),
             cols=2,
         )
-        + '<div style="margin-bottom:12px">\n'
         + form_field("Command", form_input("hook-add-cmd", placeholder="e.g. python3 /path/to/hook.py"))
-        + '</div>\n'
+        + '\n'
         + action_bar(
             btn("+ Add Hook", onclick="addHook()", cls="btn btn-accent"),
             status_span("hook-add-status"),
         )
-        + '\n</div>'
     )
+
+    notifications_content = (
+        '<label class="flex items-center gap-3 cursor-pointer">\n'
+        '  <input type="checkbox" id="settings-dbus-enable" class="toggle"'
+        ' onchange="toggleDbusNotifications(this.checked)" />\n'
+        '  <span class="text-sm">Enable desktop notifications</span>\n'
+        '</label>\n'
+        '<div id="dbus-status" class="text-xs mt-2 text-gray-500"></div>'
+    )
+
+    ro_label = ' <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(read-only)</span>'
 
     # ══ GLOBAL SCOPE PANE ══ ────────────────────────────────────────────────
     global_pane = (
         '<div id="settings-scope-global">\n'
         f'  <div style="margin-bottom:20px">{global_badge}</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">MCP Servers</div>\n'
-        + info_box("MCP servers in ~/.claude/settings.json. Toggle to enable/disable globally.")
-        + loading_slot("settings-global-mcps")
+        + panel_section("MCP servers", loading_slot("settings-global-mcps"),
+                        desc="MCP servers in ~/.claude/settings.json. Toggle to enable/disable globally.")
+        + '\n'
+        + panel_section("Install new MCP server", mcp_installer_content,
+                        desc="Add a new MCP server to ~/.claude/settings.json. Restart Claude Code to activate.")
+        + '\n'
+        + panel_section("Plugins", loading_slot("settings-plugins"),
+                        desc="Plugins installed in ~/.claude. Toggle writes to ~/.claude/settings.json.")
+        + '\n'
+        + panel_section("Desktop notifications", notifications_content,
+                        desc="Toggle to enable desktop notifications for task completion, findings, etc.")
+        + '\n'
+        + panel_section(f"Environment variables{ro_label}", loading_slot("settings-global-env"))
+        + '\n'
+        + panel_section("Summary", loading_slot("settings-global"))
+        + '\n'
+        + panel_section("Hooks manager", hooks_content,
+                        desc="Manage Claude Code hooks in ~/.claude/settings.json.")
         + '\n</div>\n'
-
-        + mcp_installer
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Plugins</div>\n'
-        + info_box("Plugins installed in ~/.claude. Toggle writes to ~/.claude/settings.json.")
-        + loading_slot("settings-plugins")
-        + '\n</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Desktop Notifications</div>\n'
-        + info_box("Toggle to enable desktop notifications for task completion, findings, etc.")
-        + '<label class="flex items-center gap-3 cursor-pointer">\n'
-        + '  <input type="checkbox" id="settings-dbus-enable" class="toggle"'
-        + ' onchange="toggleDbusNotifications(this.checked)" />\n'
-        + '  <span class="text-sm">Enable desktop notifications</span>\n'
-        + '</label>\n'
-        + '<div id="dbus-status" class="text-xs mt-2 text-gray-500"></div>\n'
-        + '</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Environment Variables'
-        + '  <span style="font-weight:400;font-size:11px;color:var(--text-muted)"> (read-only)</span></div>\n'
-        + loading_slot("settings-global-env")
-        + '\n</div>\n'
-
-        + '<div class="mb-4">\n'
-        + '  <div class="section-h3">Summary</div>\n'
-        + loading_slot("settings-global")
-        + '\n</div>\n'
-
-        + hooks_manager
-
-        + '</div>\n'
     )
 
     # ══ PROJECT SCOPE PANE ══ ───────────────────────────────────────────────
-    project_pane = (
-        '<div id="settings-scope-project" style="display:none">\n'
-        f'  <div style="margin-bottom:20px">{project_badge}</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Agent &amp; Proxy</div>\n'
-        + '<div id="settings-agent-form" class="space-y-3"></div>\n'
+    agent_proxy_content = (
+        '<div id="settings-agent-form" class="space-y-3"></div>\n'
         + action_bar(
             btn("Save", onclick="saveSettingsAgent()", cls="btn btn-accent"),
             status_span("settings-agent-status"),
             gap=3,
         )
-        + '\n</div>\n'
+    )
 
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">MCP Servers</div>\n'
-        + info_box("MCP servers from project mcp.json. Toggle stores state in .claude/settings.json.")
-        + loading_slot("settings-mcps")
-        + '\n</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Skill Domains</div>\n'
-        + info_box("Enable or disable skill domain libraries from .claude/skills/.")
-        + '<div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>\n'
-        + '</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Environment Variables'
-        + '  <span style="font-weight:400;font-size:11px;color:var(--text-muted)"> (read-only)</span></div>\n'
-        + loading_slot("settings-project-env")
-        + '\n</div>\n'
-
-        + '<div class="mb-4">\n'
-        + f'  {section_h4("Hooks")}'
-        + '  <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--text-muted)"> (read-only)</span>\n'
-        + '<div id="settings-hooks-table"></div>\n'
-        + '</div>\n'
-
-        + '<div class="mb-6">\n'
-        + '  <div class="section-h3">Custom Env Overrides</div>\n'
-        + '<div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
+    env_editor_content = (
+        '<div id="settings-env-rows" class="space-y-2 mb-3"></div>\n'
         + action_bar(
-            btn("+ Add Variable", onclick="settingsAddEnvRow()", cls="btn btn-ghost"),
-            btn("Save Env",       onclick="saveSettingsEnv()",   cls="btn btn-accent"),
+            btn("+ Add variable", onclick="settingsAddEnvRow()", cls="btn btn-ghost"),
+            btn("Save env",       onclick="saveSettingsEnv()",   cls="btn btn-accent"),
             status_span("settings-env-status"),
         )
-        + '\n</div>\n'
+    )
 
-        + '</div>\n'
+    project_pane = (
+        '<div id="settings-scope-project" style="display:none">\n'
+        f'  <div style="margin-bottom:20px">{project_badge}</div>\n'
+        + panel_section("Agent &amp; Proxy", agent_proxy_content)
+        + '\n'
+        + panel_section("MCP servers", loading_slot("settings-mcps"),
+                        desc="MCP servers from project mcp.json. Toggle stores state in .claude/settings.json.")
+        + '\n'
+        + panel_section("Skill domains",
+                        '<div id="settings-skills" class="toggle-grid toggles-loading">Loading…</div>',
+                        desc="Enable or disable skill domain libraries from .claude/skills/.")
+        + '\n'
+        + panel_section(f"Environment variables{ro_label}", loading_slot("settings-project-env"))
+        + '\n'
+        + panel_section(
+            f"Hooks{ro_label}",
+            '<div id="settings-hooks-table"></div>',
+            mb=4,
+        )
+        + '\n'
+        + panel_section("Custom env overrides", env_editor_content)
+        + '\n</div>\n'
     )
 
     # ══ LOCAL LLM ══ ────────────────────────────────────────────────────────
-    local_llm = (
-        divider()
-        + '<div class="section-h3">🖥️ Local LLM</div>\n'
-        + info_box("Connect to a local Ollama or LM Studio instance for offline AI.")
-        + '<div id="local-llm-providers" style="margin-bottom:12px">'
-        + '<span class="text-xs text-gray-500">Loading...</span></div>\n'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">\n'
-        + '  <select id="local-llm-model" style="flex:1;max-width:300px">'
-        + '<option value="">Select a local model...</option></select>\n'
+    local_llm_content = (
+        '<div id="local-llm-providers" style="margin-bottom:12px">'
+        '<span class="text-xs text-gray-500">Loading...</span></div>\n'
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">\n'
+        '  <select id="local-llm-model" style="flex:1;max-width:300px">'
+        '<option value="">Select a local model...</option></select>\n'
         + f'  {btn("Activate",   onclick="activateLocalLlm()",   cls="btn btn-accent", extra_style="font-size:12px")}\n'
         + f'  {btn("Deactivate", onclick="deactivateLocalLlm()", cls="btn btn-ghost",  extra_style="font-size:12px")}\n'
         + '</div>\n'
         + status_span("local-llm-status")
-        + '\n'
     )
 
-    return (
-        '<div id="tab-settings" class="card" style="display:none">\n'
-        '  <div class="panel-header">'
-        '<div class="panel-accent-bar"></div>'
-        '<span class="panel-title">&#x2699;&#xfe0f; Claude Settings</span>'
-        '</div>\n'
-        + '<div style="margin-bottom:16px">\n'
-        + project_selector
-        + '</div>\n'
-        + scope_bar + '\n'
-        + global_pane
-        + project_pane
-        + local_llm
-        + '</div>\n'
+    local_llm = (
+        divider()
+        + panel_section("🖥️ Local LLM", local_llm_content,
+                        desc="Connect to a local Ollama or LM Studio instance for offline AI.")
+    )
+
+    return tab_panel(
+        "settings",
+        "⚙️ Claude Settings",
+        project_selector,
+        scope_bar,
+        global_pane,
+        project_pane,
+        local_llm,
     )
 
 

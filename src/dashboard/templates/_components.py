@@ -7,7 +7,7 @@ _INPUT_BASE = (
     "border-radius:var(--radius);color:var(--text-primary);font-size:13px"
 )
 _LABEL_STYLE = (
-    "font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;"
+    "font-size:11px;font-weight:600;letter-spacing:.02em;"
     "color:var(--text-muted);display:block;margin-bottom:4px;font-family:var(--font-mono)"
 )
 
@@ -15,7 +15,7 @@ _LABEL_STYLE = (
 # ── Form helpers ───────────────────────────────────────────────────────────────
 
 def form_label(text: str, *, hint: str = "") -> str:
-    """Styled mono uppercase label with optional faint hint."""
+    """Styled mono label (real-case) with optional faint hint."""
     hint_html = (
         f' <span style="color:var(--text-faint);text-transform:none;font-weight:400">{hint}</span>'
         if hint else ""
@@ -203,12 +203,30 @@ def divider(*, label: str = "", margin: str = "20px 0 16px") -> str:
     return f'<hr style="border:none;border-top:1px solid var(--border);margin:{margin}">'
 
 
-def grid(*cells: str, cols: int = 2, gap: int = 3) -> str:
-    """Generic CSS grid wrapper."""
+def grid(*cells: str, cols: int = 2, gap: int = 3, template: str = "") -> str:
+    """Generic CSS grid wrapper. Pass template for custom column widths, e.g. '1fr 1fr 100px'."""
     inner = "\n".join(c for c in cells if c)
+    col_def = template if template else f"repeat({cols},1fr)"
     return (
-        f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);'
+        f'<div style="display:grid;grid-template-columns:{col_def};'
         f'gap:{gap * 4}px;margin-bottom:{gap * 4}px">\n{inner}\n</div>'
+    )
+
+
+def panel_section(title: str, *content: str, desc: str = "", mb: int = 6) -> str:
+    """Inner section block inside a tab panel.
+
+    Renders a section-h3 heading, an optional muted description paragraph,
+    then all *content* items stacked vertically inside a spaced wrapper div.
+    """
+    desc_html = f"  {info_box(desc)}\n" if desc else ""
+    inner = "\n".join(c for c in content if c)
+    return (
+        f'<div class="mb-{mb}">\n'
+        f'  <div class="section-h3">{title}</div>\n'
+        f'{desc_html}'
+        f'{inner}\n'
+        f'</div>'
     )
 
 
