@@ -29,9 +29,7 @@ from crypto.vault import Vault  # noqa: E402
 # ===================================================================
 # Default key directory — user-writable location
 # ===================================================================
-_DEFAULT_KEYS_DIR = str(
-    Path.home() / ".dystopian-crypto" / "keys"
-)
+_DEFAULT_KEYS_DIR = "/etc/dystopian/crypto/cert/private"
 
 
 # ===================================================================
@@ -115,20 +113,12 @@ def ssl_create_key(
     """Create an Ed25519 keypair — standalone or under a CA."""
     try:
         km = KeyManager(keys_dir=keys_dir)
-
-        if ca_name:
-            metadata = km.create_signing_keypair(
-                name=name,
-                ca_name=ca_name,
-                password_file=password_file,
-                overwrite=overwrite,
-            )
-        else:
-            metadata = km.create_ca_keypair(
-                name=name,
-                password_file=password_file,
-                overwrite=overwrite,
-            )
+        metadata = km.create_signing_keypair(
+            name=name,
+            ca_name=ca_name or "",
+            password_file=password_file,
+            overwrite=overwrite,
+        )
 
         click.secho("✓ Key created", fg="green")
         click.echo(json.dumps(metadata, indent=2))
@@ -192,7 +182,7 @@ def ssl_create_csr(
                 encryption_algorithm=serialization.NoEncryption(),
             )
             csr_key_enc = PasswordManager.encrypt_key(csr_key_pem, password_file)
-            csr_key_path = keys_path / f"{name}-csr-private.key"
+            csr_key_path = keys_path / f"key.{name}.csr.pem"
             csr_key_path.write_bytes(csr_key_enc)
             os.chmod(csr_key_path, 0o600)
             hash_algo: hashes.HashAlgorithm | None = hashes.SHA256()
@@ -231,6 +221,93 @@ def ssl_create_csr(
 
     except Exception as exc:
         click.secho(f"\u2717 Error: {exc}", fg="red", err=True)
+        raise SystemExit(1)
+
+
+@ssl.command("sign-csr")
+@click.option("--csr", "csr_path", required=True, type=click.Path(exists=True), help="Path to .csr file")
+@click.option("--ca", "ca_name", required=True, help="CA name whose keypair will sign the CSR")
+@click.option(
+    "--ca-pass", "ca_pass_file", required=True,
+    type=click.Path(exists=True),
+    help="Password file for the CA private key",
+)
+@click.option("--days", default=365, show_default=True, help="Certificate validity in days")
+@click.option(
+    "--out", "out_path", default=None,
+    help="Output cert path (default: cert.{name}.pem in --keys-dir)",
+)
+@click.option(
+    "--keys-dir", default=_DEFAULT_KEYS_DIR,
+    type=click.Path(), help="Key directory",
+)
+def ssl_sign_csr(
+    csr_path: str,
+    ca_name: str,
+    ca_pass_file: str,
+    days: int,
+    out_path: Optional[str],
+    keys_dir: str,
+) -> None:
+    """Sign a CSR with a CA keypair, producing a signed certificate."""
+    import datetime as dt
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.x509.oid import NameOID
+
+    try:
+        km = KeyManager(keys_dir=keys_dir)
+        keys_path = Path(keys_dir)
+
+        # Load CA private key (Ed25519).
+        ca_private = km.load_private_key(ca_name, ca_pass_file)
+
+        # Load CA cert (public key file used as issuer public key).
+        ca_cert_path = keys_path / f"ca-cert.{ca_name}.pem"
+        if not ca_cert_path.exists():
+            raise FileNotFoundError(f"CA cert not found: {ca_cert_path}")
+        ca_pub = serialization.load_pem_public_key(ca_cert_path.read_bytes())
+
+        # Load CSR.
+        csr = x509.load_pem_x509_csr(Path(csr_path).read_bytes())
+        if not csr.is_signature_valid:
+            raise ValueError("CSR signature is invalid")
+
+        # Derive output name from CSR file stem.
+        csr_stem = Path(csr_path).stem  # e.g. "myservice.csr" → "myservice"
+        cert_name = csr_stem.removesuffix(".csr") if csr_stem.endswith(".csr") else csr_stem
+        dest = Path(out_path) if out_path else keys_path / f"cert.{cert_name}.pem"
+
+        now = datetime.now(timezone.utc)
+        cert = (
+            x509.CertificateBuilder()
+            .subject_name(csr.subject)
+            .issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, ca_name)]))
+            .public_key(csr.public_key())
+            .serial_number(x509.random_serial_number())
+            .not_valid_before(now)
+            .not_valid_after(now + dt.timedelta(days=days))
+            .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
+            .sign(ca_private, None)  # Ed25519 uses None for hash algorithm
+        )
+
+        dest.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+        os.chmod(dest, 0o644)
+
+        metadata = {
+            "cert_path": str(dest),
+            "subject": csr.subject.rfc4514_string(),
+            "issuer": ca_name,
+            "valid_days": days,
+            "serial": str(cert.serial_number),
+            "not_before": cert.not_valid_before_utc.isoformat(),
+            "not_after": cert.not_valid_after_utc.isoformat(),
+        }
+        click.secho("✓ Certificate signed", fg="green")
+        click.echo(json.dumps(metadata, indent=2))
+
+    except Exception as exc:
+        click.secho(f"✗ Error: {exc}", fg="red", err=True)
         raise SystemExit(1)
 
 
@@ -288,19 +365,24 @@ def ssl_verify(name: str, keys_dir: str) -> None:
 @ssl.command("rotate")
 @click.option("--name", required=True, help="Key name to rotate")
 @click.option(
-    "--pass", "password_file", required=True,
+    "--old-pass", "old_password_file", required=True,
     type=click.Path(exists=True),
-    help="Password file",
+    help="Password file for the existing key",
+)
+@click.option(
+    "--new-pass", "new_password_file", required=True,
+    type=click.Path(exists=True),
+    help="Password file to encrypt the new key",
 )
 @click.option(
     "--keys-dir", default=_DEFAULT_KEYS_DIR,
     type=click.Path(), help="Key directory",
 )
-def ssl_rotate(name: str, password_file: str, keys_dir: str) -> None:
-    """Rotate a key (create new version, back up old)."""
+def ssl_rotate(name: str, old_password_file: str, new_password_file: str, keys_dir: str) -> None:
+    """Rotate a key: back up current as {name}.{index}.pem, generate fresh keypair."""
     try:
         km = KeyManager(keys_dir=keys_dir)
-        metadata = km.rotate_key(name, password_file)
+        metadata = km.rotate_key(name, old_password_file, new_password_file)
         click.secho("\u2713 Key rotated", fg="green")
         click.echo(json.dumps(metadata, indent=2))
     except Exception as exc:

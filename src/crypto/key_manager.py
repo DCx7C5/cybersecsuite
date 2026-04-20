@@ -101,7 +101,7 @@ class PasswordManager:
 class KeyManager:
     """Manage Ed25519 keys with password protection and metadata tracking."""
 
-    def __init__(self, keys_dir: str = "/etc/dystopian-crypto/keys"):
+    def __init__(self, keys_dir: str = "/etc/dystopian/crypto/cert/private"):
         """
         Initialize key manager.
 
@@ -131,13 +131,8 @@ class KeyManager:
         Returns:
             Metadata dict with key info
         """
-        private_key_path = self.keys_dir / f"{name}-private.key"
-        public_key_path = self.keys_dir / f"{name}-public.pem"
-
-        if private_key_path.exists() and not overwrite:
-            raise FileExistsError(
-                f"Key {name} already exists. Use overwrite=True to replace."
-            )
+        private_key_path = self.keys_dir / f"ca-key.{name}.pem"
+        public_key_path = self.keys_dir / f"ca-cert.{name}.pem"
 
         if not Path(password_file).exists():
             raise FileNotFoundError(f"Password file not found: {password_file}")
@@ -192,8 +187,8 @@ class KeyManager:
     def create_signing_keypair(
         self,
         name: str,
-        ca_name: str,
-        password_file: str,
+        ca_name: str = "",
+        password_file: str = "",
         overwrite: bool = False,
     ) -> Dict[str, Any]:
         """
@@ -208,11 +203,8 @@ class KeyManager:
         Returns:
             Metadata dict
         """
-        private_key_path = self.keys_dir / f"{name}-private.key"
-        public_key_path = self.keys_dir / f"{name}-public.pem"
-
-        if private_key_path.exists() and not overwrite:
-            raise FileExistsError(f"Key {name} already exists.")
+        private_key_path = self.keys_dir / f"key.{name}.pem"
+        public_key_path = self.keys_dir / f"cert.{name}.pem"
 
         # Generate Ed25519 keypair
         private_key = ed25519.Ed25519PrivateKey.generate()
@@ -297,36 +289,62 @@ class KeyManager:
         return keys
 
     def rotate_key(
-        self, name: str, password_file: str
+        self, name: str, old_password_file: str, new_password_file: str
     ) -> Dict[str, Any]:
         """
-        Rotate key (create new version).
+        Rotate key: back up current as ca-key.{name}.{index}.pem / key.{name}.{index}.pem
+        then generate a fresh keypair encrypted with the new password.
 
         Args:
-            name: Key name
-            password_file: Password file
+            name: Key name (base, without extension)
+            old_password_file: Password file for the existing key
+            new_password_file: Password file to encrypt the new key
 
         Returns:
-            New metadata
+            Metadata of the new key
         """
-        # Backup old key
         backup_dir = self.keys_dir / ".backups"
         backup_dir.mkdir(exist_ok=True)
-        timestamp = datetime.now(timezone.utc).isoformat()
-        backup_name = f"{name}_backup_{timestamp.replace(':', '-')}"
 
-        # Create new key
-        new_metadata = self.create_ca_keypair(
-            f"{name}_rotated_{timestamp}", password_file, overwrite=False
-        )
+        # Determine prefix from stored metadata (ca vs signing key).
+        try:
+            meta = self.get_metadata(name)
+            key_type = meta.get("type", "signing")
+        except Exception:
+            key_type = "signing"
 
-        # Update metadata with rotation info
-        rotation_info = {
-            "rotated_at": timestamp,
-            "previous_key": backup_name,
-            "rotation_reason": "key_rotation",
-        }
-        new_metadata.update(rotation_info)
+        if key_type == "ca":
+            priv_prefix = f"ca-key.{name}"
+            pub_prefix = f"ca-cert.{name}"
+        else:
+            priv_prefix = f"key.{name}"
+            pub_prefix = f"cert.{name}"
+
+        # Determine next backup index.
+        existing = list(backup_dir.glob(f"{priv_prefix}.*.pem"))
+        next_index = len(existing) + 1
+
+        current_private = self.keys_dir / f"{priv_prefix}.pem"
+        current_public  = self.keys_dir / f"{pub_prefix}.pem"
+
+        if current_private.exists():
+            import shutil
+            shutil.copy2(current_private, backup_dir / f"{priv_prefix}.{next_index}.pem")
+            os.chmod(backup_dir / f"{priv_prefix}.{next_index}.pem", 0o600)
+        if current_public.exists():
+            import shutil
+            shutil.copy2(current_public, backup_dir / f"{pub_prefix}.{next_index}.pem")
+            os.chmod(backup_dir / f"{pub_prefix}.{next_index}.pem", 0o644)
+
+        # Generate fresh keypair in place, encrypted with the new password.
+        new_metadata = self.create_ca_keypair(name, new_password_file, overwrite=True)
+        new_metadata["rotated_at"] = datetime.now(timezone.utc).isoformat()
+        new_metadata["previous_backup_index"] = next_index
+
+        # Persist updated metadata
+        metadata_file = self.metadata_dir / f"{name}.json"
+        metadata_file.write_text(json.dumps(new_metadata, indent=2))
+        os.chmod(metadata_file, 0o600)
 
         return new_metadata
 
