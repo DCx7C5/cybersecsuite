@@ -30,6 +30,7 @@ from db.models.api_account import ApiAccount
 
 _APP_START = time.monotonic()
 _LAST_REQUEST_TIME = _APP_START  # Track last dashboard request
+_PLUGIN_REGISTERED: dict[str, float] = {}  # Track plugin registrations by domain
 
 
 async def api_dashboard_activity(request: Request) -> JSONResponse:
@@ -44,6 +45,48 @@ async def api_dashboard_activity(request: Request) -> JSONResponse:
     active = idle < 5.0  # Consider active if request in last 5 seconds
     
     return JSONResponse({"active": active, "idle_seconds": idle})
+
+
+async def api_plugin_register(request: Request) -> JSONResponse:
+    """Plugin registers itself as active from browser.
+    
+    Called by plugin on startup to notify dashboard of its presence.
+    Returns: { "ok": bool, "dashboard_version": str }
+    """
+    global _PLUGIN_REGISTERED
+    now = time.monotonic()
+    
+    try:
+        body = await request.json()
+        domain = body.get("domain", "unknown")
+    except:
+        domain = "unknown"
+    
+    _PLUGIN_REGISTERED[domain] = now
+    return JSONResponse({"ok": True, "dashboard_version": "3.0", "registered_at": now})
+
+
+async def api_plugin_status(request: Request) -> JSONResponse:
+    """Check if any plugin is currently active in browser.
+    
+    Dashboard calls this on startup/periodically to detect plugin presence.
+    Returns: { "active": bool, "plugins": { domain: last_registered_time }, "uptime_seconds": float }
+    """
+    global _PLUGIN_REGISTERED
+    now = time.monotonic()
+    
+    # Consider plugins active if registered in last 30 seconds
+    active_plugins = {
+        domain: (now - ts) 
+        for domain, ts in _PLUGIN_REGISTERED.items() 
+        if (now - ts) < 30
+    }
+    
+    return JSONResponse({
+        "active": len(active_plugins) > 0,
+        "plugins": active_plugins,
+        "uptime_seconds": now - _APP_START,
+    })
 
 
 def _record_dashboard_activity():

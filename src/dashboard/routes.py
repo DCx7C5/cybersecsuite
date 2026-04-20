@@ -93,7 +93,7 @@ from dashboard.api.template_registry import (
 )
 from dashboard.api.sdk_tool import api_sdk_tool
 from dashboard.api.sdk_session import api_sdk_session_last, api_sdk_session_resume
-from dashboard.api.core import api_providers_hub, api_dashboard_activity, _record_dashboard_activity
+from dashboard.api.core import api_providers_hub, api_dashboard_activity, api_plugin_register, api_plugin_status, _record_dashboard_activity
 from dashboard.api.dbus import (
     api_dbus_notify,
     api_dbus_signal,
@@ -169,6 +169,8 @@ def create_dashboard_router() -> Router:
             Route("/api/usage", api_usage, methods=["GET"]),
             Route("/api/health", api_health, methods=["GET"]),
             Route("/api/activity", api_dashboard_activity, methods=["GET"]),
+            Route("/api/plugin/register", api_plugin_register, methods=["POST"]),
+            Route("/api/plugin/status", api_plugin_status, methods=["GET"]),
             Route("/api/crypto", api_crypto, methods=["GET"]),
             Route("/api/a2a", api_a2a, methods=["GET"]),
             Route("/api/investigations", api_investigations, methods=["GET"]),
