@@ -1,10 +1,19 @@
-# CyberSecSuite — Code Review & Error Analysis Report
+# CyberSecSuite — Development Plan & Governance
 
 **Date:** 2026-04-20  
-**Scope:** Complete `/src` directory (299 Python files)  
-**Status:** Critical issues found — remediation required
+**Scope:** Code Review (299 Python files) + Project Governance  
+**Status:** Critical issues identified + governance framework defined
 
 ---
+
+## 📋 TABLE OF CONTENTS
+
+1. **Code Review & Error Analysis** (Technical Issues)
+2. **Governance & Policy Framework** (Project Standards)
+
+---
+
+# SECTION 1: Code Review & Error Analysis
 
 ## 📊 Executive Summary
 
@@ -148,7 +157,7 @@
 
 ---
 
-## 📈 Remediation Timeline
+## 📈 Remediation Timeline (Code Review)
 
 ### Phase 1: Security (3 hours) — CRITICAL ⚠️
 1. Fix SQL injection (bootstrap.py:70)
@@ -173,26 +182,302 @@
 2. Metrics/telemetry
 3. Sentry integration
 
-**Total: 23.5 hours — 2-3 weeks**
+**Subtotal: 23.5 hours**
 
 ---
 
-## ✅ Verification Checklist
+## ✅ Code Review Verification Checklist
 
-- [ ] All SQL queries parameterized
-- [ ] All hashing uses BLAKE2b-256
+- [ ] All SQL queries parameterized (0 f-strings)
+- [ ] All hashing uses BLAKE2b-256 (0 SHA1)
 - [ ] All public functions typed (PEP 484/526)
 - [ ] No bare `Exception` catches
 - [ ] Database migrations initialized
 - [ ] Pydantic v2 ConfigDict everywhere
 - [ ] mypy --strict passes
 - [ ] Async operations use context managers
-- [ ] Database credentials required
+- [ ] Database credentials required (not empty)
 - [ ] N+1 patterns resolved
 - [ ] Pre-commit hooks configured
 
 ---
 
-**Status:** ⚠️ Ready for remediation  
-**Blocking:** Phase 1 + Phase 2 must complete before production deployment
-**Assigned to:** Python Developer Agent (cybersec-agent)
+# SECTION 2: Governance & Policy Framework
+
+## 🎯 Project Vision & Standards
+
+**Mission:** Secure, reproducible, and auditable distribution of AI agents, skills, and cybersecurity tools via GitHub-hosted marketplace with production-grade governance.
+
+**Core Principles:**
+- Dependency management: `uv` exclusively (no `pip install`)
+- Cryptography: BLAKE2b-256, Ed25519, Argon2id only
+- Type safety: PEP 484/526 compliance on all public APIs
+- SQL safety: Parameterized queries exclusively
+- Error handling: Specific exceptions, no bare `Exception`
+- Async discipline: Proper context managers, no blocking calls
+- Secrets: Never hardcoded, always environment variables
+
+---
+
+## 📦 Scope
+
+| Component | Purpose | Location |
+|-----------|---------|----------|
+| **Agents** | Sub-agent definitions with frontmatter | `/agents/*.md` |
+| **Skills** | Capability modules in hierarchy | `/skills/**` |
+| **Scripts** | Build automation, validation | `/scripts/` |
+| **CI/CD** | GitHub Actions workflows | `.github/workflows/` |
+| **Database** | PostgreSQL ORM models | `/src/db/models/` |
+| **Proxy** | AI proxy routing (60 providers) | `/src/ai_proxy/` |
+| **MCP** | Model Context Protocol servers | `/src/csmcp/` |
+| **A2A** | Agent-to-Agent protocol | `/src/a2a/` |
+
+---
+
+## 🔐 Security Classification
+
+### GREEN (Safe)
+- Informational content
+- Defensive tools
+- Documentation-only skills
+- No intrusive capabilities
+
+### YELLOW (Review Required)
+- Network scanning tools
+- Vulnerability assessment
+- Intrusive reconnaissance
+- **Requirements:**
+  - Disclaimer in SKILL.md
+  - Usage policy documentation
+  - Contributor authorization checklist
+
+### RED (Restricted)
+- Exploit generation
+- Payload delivery
+- Offensive automation
+- **Requirements:**
+  - Explicit `--authorized` CLI flag
+  - Runtime authorization confirmation
+  - Private/gated marketplace only
+  - Formal approval process
+
+---
+
+## 🛡️ Dependency Management Policy
+
+### ✅ REQUIRED: `uv` for all Python workflows
+```bash
+# Initialize virtual environment
+uv venv .venv --python python3
+source .venv/bin/activate
+
+# Add dependencies
+uv add pandas numpy cryptography
+
+# Add dev/test dependencies
+uv add --group test pytest pytest-asyncio
+
+# Manage via pyproject.toml with [dependency-groups]
+```
+
+### ❌ FORBIDDEN: `pip install`, `pip freeze`
+- Any `pip` references in code/docs is HIGH severity
+- CI enforces: validation script scans and fails on `pip` patterns
+- Exception: Policy documentation (plan.md, CONTRIBUTING.md) may show as negative examples
+
+### Enforcement
+- `scripts/validate.sh` pattern scanner
+- GitHub Actions `validate` job blocks merge
+- Pre-commit hooks check pyproject.toml
+
+---
+
+## 🔒 Cryptographic Standards Compliance
+
+### Mandatory Algorithms
+| Use Case | Algorithm | Parameters |
+|----------|-----------|-----------|
+| Hashing | BLAKE2b-256 | `digest_size=32` |
+| Signing | Ed25519 | Standard (no params) |
+| KDF | Argon2id | `memory_cost=262144, lanes=4, length=32, iterations=4` |
+| Encryption | AES-256-GCM | 256-bit key, random IV per message |
+| Salt Generation | `secrets.token_bytes()` | Always 32 bytes |
+
+### Forbidden Algorithms
+- ❌ MD5, SHA1, SHA256 for security-critical hashing
+- ❌ RSA for new code (use Ed25519)
+- ❌ Weak KDF parameters (< 262144 memory_cost)
+- ❌ Fixed salts or hardcoded IVs
+
+### Verification
+- Code review checks all crypto implementations
+- CRITICAL severity: Wrong algorithm used
+- Policy: CLAUDE.md conventions section
+
+---
+
+## 🚀 CI/CD & Automation
+
+### Current Workflows
+| Job | Trigger | Purpose |
+|-----|---------|---------|
+| `validate` | Push/PR | Schema & pattern validation |
+| `index` | Push to main | Auto-generate index.json |
+
+### Validation Checks
+1. Agent/skill frontmatter present & valid
+2. No forbidden patterns (`pip install`, hardcoded secrets)
+3. Required fields in YAML (name, description, model)
+4. All files pass linting
+
+### Enhancement Roadmap
+- [ ] Add CVE audit (`pip-audit`)
+- [ ] Add static code analysis (bandit, semgrep)
+- [ ] Add cryptographic pattern scanning
+- [ ] Add type checking (mypy --strict)
+- [ ] Add security scanning (detect secrets, injection)
+
+---
+
+## 🤝 Contribution Workflow
+
+### Step 1: Prepare
+```bash
+# Clone and setup
+git clone https://github.com/Dystopian/cybersecsuite.git
+cd cybersecsuite
+uv venv .venv --python python3
+source .venv/bin/activate
+uv add --all-groups
+```
+
+### Step 2: Develop
+```bash
+# Create branch
+git checkout -b feat/my-agent-name
+
+# Add agent/skill
+# ... create files ...
+
+# Validate locally
+bash scripts/validate.sh
+
+# Run tests
+uv run --group test pytest
+```
+
+### Step 3: Commit & Push
+```bash
+# Follow conventional commits
+git add -A
+git commit -m "feat(agents): add new-agent-name — description"
+git push origin feat/my-agent-name
+```
+
+### Step 4: Pull Request
+- Use PR template (auto-loaded from `.github/pull_request_template.md`)
+- Complete security checklist
+- Link to related issues
+
+### Approval Gates
+- **All PRs:** Must pass `validate` job
+- **Offensive content:** Requires security reviewer + authorization checkbox
+- **Security-critical:** Requires code review + architecture review
+
+---
+
+## 📄 Templates & Checklists
+
+### Agent Submission Checklist
+- [ ] Frontmatter complete (name, description, model, maxTurns)
+- [ ] README or usage documentation included
+- [ ] All code dependencies use `uv` (not `pip`)
+- [ ] No hardcoded secrets or defaults
+- [ ] Type hints on public methods
+- [ ] Follows cybersecsuite style guide
+
+### Skill Submission Checklist
+- [ ] SKILL.md frontmatter complete
+- [ ] Content organized in proper directory
+- [ ] Python/shell scripts use `uv` (not `pip`)
+- [ ] No hardcoded secrets
+- [ ] References/examples accurate
+- [ ] If offensive: author confirms authorized use
+
+### PR Checklist (Auto-Loaded)
+- [ ] Validation passes: `bash scripts/validate.sh`
+- [ ] No `pip install` references
+- [ ] No hardcoded credentials
+- [ ] Type hints and docstrings included
+- [ ] If security-sensitive: security review completed
+- [ ] Commit messages follow conventional commits
+
+---
+
+## 📈 Long-Term Roadmap
+
+| Phase | Goals | Timeline |
+|-------|-------|----------|
+| **Phase 1: Hardening** | Fix critical code issues, CI enforcement | Week 1-2 (NOW) |
+| **Phase 2: Security Scanning** | Automated static analysis, CVE audits | Week 3-4 |
+| **Phase 3: Publishing** | Versioned releases, curated feeds | Month 2 |
+| **Phase 4: Observability** | Usage telemetry, community metrics | Month 3 |
+
+---
+
+## ✅ Governance Verification Checklist
+
+### Policy Enforcement
+- [ ] All Python code uses `uv` (not `pip`)
+- [ ] All crypto uses BLAKE2b-256, Ed25519, Argon2id
+- [ ] All SQL queries parameterized (0 f-strings)
+- [ ] All public functions typed (PEP 484/526)
+- [ ] CI validates schemas and patterns
+- [ ] Branch protection: require passing jobs
+- [ ] CONTRIBUTING.md updated with policies
+
+### Community
+- [ ] Contributing guidelines clear
+- [ ] PR/issue templates in place
+- [ ] Code of Conduct defined
+- [ ] Security policy documented
+- [ ] Maintainer responsibilities assigned
+
+### Documentation
+- [ ] plan.md (this file) committed
+- [ ] CLAUDE.md conventions linked
+- [ ] README.md with quick start
+- [ ] CONTRIBUTING.md with workflow
+- [ ] docs/SECURITY.md with guidelines
+
+---
+
+## 🔗 Related Documents
+
+- **CLAUDE.md** — CyberSecSuite project overview
+- **CONTRIBUTING.md** — Contribution guidelines with policy reminders
+- **README.md** — Quick start and marketplace usage
+- **scripts/validate.sh** — Automated validation script
+- **.github/workflows/validate.yml** — CI configuration
+- **.github/pull_request_template.md** — PR template with checklists
+
+---
+
+## 📞 Contacts & Governance
+
+- **Repository Owner:** Dystopian
+- **Security Reviews:** cybersec-agent (A2A protocol)
+- **Python Development:** python-developer agent
+- **Marketplace Coordination:** GitHub Discussions
+
+---
+
+**Document Status:** ⚠️ ACTIVE — Two independent sections (Code Review + Governance)
+
+**Section 1 Status:** Ready for remediation (Phase 1-4)  
+**Blocking:** Phase 1 + Phase 2 must complete before production  
+**Assigned to:** python-developer agent (cybersec-agent)
+
+**Section 2 Status:** Governance framework active  
+**Enforcement:** CI validates policies automatically  
+**Review:** Quarterly (every 3 months)
