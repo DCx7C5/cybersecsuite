@@ -93,6 +93,8 @@ def _scan_teams() -> list[dict]:
 
 def _scan_skills(domain_filter: str = "", query: str = "") -> tuple[list[str], list[dict]]:
     """Scan SKILL.md files and return (domains, skills)."""
+    if not _SKILLS_DIR.exists():
+        return [], []
     # Derive domain from top-level subdirectory name
     domains: list[str] = sorted(d.name for d in _SKILLS_DIR.iterdir() if d.is_dir() and not d.name.startswith("."))
     skills = []

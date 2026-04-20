@@ -22,34 +22,13 @@ x-ai-keys: &ai-keys
   TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
   OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
 
-services:
-  cybersec-postgres:
-    build:
-      context: .docker/postgres
-      dockerfile: Dockerfile
-    image: cybersec-postgres
-    container_name: cybersec-postgres
-    <<: *common
-    environment:
-      <<: *db-env
-      POSTGRES_DB_PORT: 5432
-      POSTGRES_USER: ${CYBERSEC_DB_USER:-cybersec}
-      POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-change_me}
-      POSTGRES_DB: ${CYBERSEC_DB_NAME:-cybersec_forensics}
-      PGDATA: /var/lib/postgresql/data
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-      - pg_socket:/tmp
-    ports:
-      - "127.0.0.1:5432:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-      start_interval: 5s
+x-oo-env: &oo-env
+  OPENOBSERVE_HOST: ${OPENOBSERVE_HOST:-http://cybersec-openobserve:5080}
+  OPENOBSERVE_ORG: ${OPENOBSERVE_ORG:-default}
+  OPENOBSERVE_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
+  OPENOBSERVE_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
 
+services:
   cybersec-dashboard:
     build:
       context: .
@@ -63,18 +42,16 @@ services:
       cybersec-postgres:
         condition: service_healthy
     environment:
-      <<: [ *db-env, *ai-keys ]
+      <<: [ *db-env, *ai-keys, *oo-env ]
       # Unix socket: just the directory — asyncpg appends /.s.PGSQL.<port>
       CYBERSEC_DB_HOST: /tmp
       CYBERSEC_DB_PORT: 5432
       CYBERSEC_AUTO_CREATE_DB: "true"
-      OPENSEARCH_HOST: ${OPENSEARCH_HOST:-http://cybersec-opensearch:9200}
       # Settings toggle paths — mount project .claude/ + host ~/.claude as read-write
       GLOBAL_CLAUDE_DIR: /app/.claude-global
     ports:
-      - "127.0.0.1:8000:8000"
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:8433:8433"
+      - "8000:8000"
+      - "8443:8443"
     volumes:
       - pg_socket:/tmp                          # shared socket directory with postgres
       - ./.claude:/app/.claude:rw               # project .claude/ (skills, settings)
@@ -87,16 +64,42 @@ services:
       start_period: 15s
       start_interval: 5s
 
+  cybersec-postgres:
+    build:
+        context: .docker/postgres
+        dockerfile: Dockerfile
+    image: cybersec-postgres
+    container_name: cybersec-postgres
+    <<: *common
+    environment:
+      <<: *db-env
+      POSTGRES_DB_PORT: 5432
+      POSTGRES_USER: ${CYBERSEC_DB_USER:-cybersec}
+      POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-change_me}
+      POSTGRES_DB: ${CYBERSEC_DB_NAME:-cybersec_forensics}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_socket:/tmp
+    expose:
+      - "5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+      start_interval: 5s
 
   cybersec-redis:
     build:
-      context: .docker/redis
-      dockerfile: Dockerfile
+        context: .docker/redis
+        dockerfile: Dockerfile
     image: cybersec-redis
     container_name: cybersec-redis
     <<: *common
-    ports:
-      - "127.0.0.1:6379:6379"
+    expose:
+      - "6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -107,54 +110,47 @@ services:
       start_period: 5s
       start_interval: 3s
 
-  cybersec-opensearch:
-    image: opensearchproject/opensearch:2.17.1
-    container_name: cybersec-opensearch
+  cybersec-openobserve:
+    image: openobserve/openobserve:latest
+    container_name: cybersec-openobserve
     <<: *common
     environment:
-      - cluster.name=cybersec-cluster
-      - node.name=cybersec-node-1
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g          # ← increased (was 512m)
-      - plugins.security.disabled=true
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD:-cYb3rS3c!}
-      - cluster.routing.allocation.disk.threshold_enabled=false   # ← disables create-index block in dev
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    ports:
-      - "127.0.0.1:9200:9200"
+      <<: *oo-env
+      ZO_DATA_DIR: /data
+      ZO_ROOT_USER_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
+      ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
+    expose:
+      - "5080"
     volumes:
-      - os_data:/usr/share/opensearch/data
+      - oo_data:/data
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 45s
-      start_interval: 5s
+      test: ["NONE"]
 
-  cybersec-opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:2.17.1
-    container_name: cybersec-opensearch-dashboards
+
+  cybersec-wazuh:
+    image: wazuh/wazuh-manager:latest
+    container_name: cybersec-wazuh
+    profiles: [wazuh]
     <<: *common
-    depends_on:
-      cybersec-opensearch:
-        condition: service_healthy
     environment:
-      - OPENSEARCH_HOSTS=["http://cybersec-opensearch:9200"]
-      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
-    ports:
-      - "127.0.0.1:5601:5601"
+      WAZUH_API_USER: ${WAZUH_API_USER:-wazuh}
+      WAZUH_API_PASSWORD: ${WAZUH_API_PASSWORD:-Wazuh_API_Pass123!}
+    expose:
+      - "55000"
+    volumes:
+      - wazuh_data:/var/ossec/data
+      - wazuh_logs:/var/ossec/logs
+      - wazuh_etc:/var/ossec/etc
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsk https://localhost:55000/ || exit 1"]
+      start_period: 60s
 
 
 volumes:
   pg_data:
   pg_socket:
   redis_data:
-  os_data:
+  oo_data:
+  wazuh_data:
+  wazuh_logs:
+  wazuh_etc:
