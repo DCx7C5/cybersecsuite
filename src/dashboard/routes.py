@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from starlette.routing import Mount, Route, Router, WebSocketRoute
+from starlette.middleware import Middleware
 from starlette.staticfiles import StaticFiles
 
 from dashboard._handlers import (
@@ -158,6 +159,7 @@ def create_dashboard_router() -> Router:
         return RedirectResponse("/", status_code=308)
 
     router = Router(
+        middleware=[Middleware(ActivityTrackingMiddleware)],
         routes=[
             Mount("/static", app=StaticFiles(directory="src/dashboard/static"), name="static"),
             Route("/dashboard", redirect_to_root, methods=["GET"]),
@@ -305,5 +307,4 @@ def create_dashboard_router() -> Router:
             Route("/sse/agent-run/{task_id}", sse_agent_run, methods=["GET"]),
         ]
     )
-    router.add_middleware(ActivityTrackingMiddleware)
     return router

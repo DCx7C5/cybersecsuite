@@ -478,6 +478,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'flowgraph')      { initFlowgraph(); fgLoadAgents().catch(() => {}); }
     if (name === 'sdk-lab')        { initSdkPanel(); }
     if (name === 'providers-hub')  { loadProvidersHub().catch(() => {}); }
+    if (name === 'settings')       { loadSettings().catch(() => {}); }
+    if (name === 'settings-cybersecsuite') { loadSettingsToggles().catch(() => {}); }
     if (name === 'vault')          { loadVaultStatus().catch(() => {}); }
   };
+
+  if (savedTab === 'settings') {
+    loadSettings().catch(() => {});
+  }
+  if (savedTab === 'settings-cybersecsuite') {
+    loadSettingsToggles().catch(() => {});
+  }
 });

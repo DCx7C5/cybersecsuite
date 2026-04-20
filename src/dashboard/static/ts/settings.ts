@@ -46,9 +46,136 @@ interface GlobalSettings {
 }
 
 let _settingsData: SettingsData = {};
+let _settingsPanelsRendered = false;
+
+function _renderSettingsPanels(): void {
+  if (!_settingsPanelsRendered) {
+    const settingsContent = $('settings-content');
+    if (settingsContent && !document.getElementById('settings-agent-form')) {
+      settingsContent.innerHTML =
+        '<div class="space-y-6">' +
+        '<div class="flex items-center justify-between gap-3">' +
+        '<div>' +
+        '<div class="text-sm font-semibold text-gray-100">Claude SDK settings</div>' +
+        '<div class="text-xs text-gray-400">Editable values from .claude/settings.json</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2">' +
+        '<span class="text-xs text-gray-400">Project scope</span>' +
+        '<select id="settings-project-select" onchange="switchActiveProject(this.value)" class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg"></select>' +
+        '</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="flex items-center justify-between gap-3">' +
+        '<div class="text-sm font-semibold text-gray-100">Agent and proxy</div>' +
+        '<button class="btn btn-accent text-xs" onclick="saveSettingsAgent()">Save</button>' +
+        '</div>' +
+        '<div id="settings-agent-form" class="space-y-3"></div>' +
+        '<div id="settings-agent-status" class="text-xs font-mono"></div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="flex items-center justify-between gap-3">' +
+        '<div class="text-sm font-semibold text-gray-100">Environment</div>' +
+        '<div class="flex items-center gap-2">' +
+        '<button class="btn btn-ghost text-xs" onclick="settingsAddEnvRow()">Add row</button>' +
+        '<button class="btn btn-accent text-xs" onclick="saveSettingsEnv()">Save</button>' +
+        '</div>' +
+        '</div>' +
+        '<div id="settings-env-rows" class="space-y-2"></div>' +
+        '<div id="settings-env-status" class="text-xs font-mono"></div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Hooks</div>' +
+        '<div id="settings-hooks-table"></div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Local LLM</div>' +
+        '<div id="local-llm-status" class="text-xs text-gray-400 font-mono">Loading local LLM status...</div>' +
+        '<div id="local-llm-providers" class="text-xs font-mono text-gray-300">Loading local providers...</div>' +
+        '<div class="flex items-center gap-2">' +
+        '<select id="local-llm-model" class="px-3 py-1.5 text-sm bg-gray-900 border border-gray-700 rounded-lg flex-1"></select>' +
+        '<button class="btn btn-accent text-xs" onclick="activateLocalLlm()">Activate</button>' +
+        '<button class="btn btn-ghost text-xs" onclick="deactivateLocalLlm()">Use cloud</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    }
+
+    const cybersecContent = $('settings-cs-content');
+    if (cybersecContent && !document.getElementById('settings-global')) {
+      cybersecContent.innerHTML =
+        '<div class="space-y-6">' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Global summary</div>' +
+        '<div id="settings-global" class="toggles-loading text-xs font-mono text-gray-400">Loading global settings...</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Workspace MCP servers</div>' +
+        '<div id="settings-mcps" class="toggles-loading text-xs font-mono text-gray-400">Loading MCP servers...</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Global MCP servers</div>' +
+        '<div id="settings-global-mcps" class="toggles-loading text-xs font-mono text-gray-400">Loading global MCP servers...</div>' +
+        '<div class="grid grid-cols-1 gap-2 md:grid-cols-2">' +
+        '<input id="mcp-install-name" type="text" placeholder="name" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono">' +
+        '<input id="mcp-install-cmd" type="text" placeholder="command" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono">' +
+        '<input id="mcp-install-args" type="text" placeholder="args (comma-separated)" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono md:col-span-2">' +
+        '<textarea id="mcp-install-env" rows="3" placeholder="ENV=value" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono md:col-span-2"></textarea>' +
+        '</div>' +
+        '<div class="flex items-center gap-2">' +
+        '<button class="btn btn-accent text-xs" onclick="installMcp()">Install MCP</button>' +
+        '<div id="mcp-install-status" class="text-xs font-mono"></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Skill domains</div>' +
+        '<div id="settings-skills" class="toggles-loading text-xs font-mono text-gray-400">Loading skill domains...</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Plugins</div>' +
+        '<div id="settings-plugins" class="toggles-loading text-xs font-mono text-gray-400">Loading plugins...</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Environment scopes</div>' +
+        '<div class="flex items-center gap-2">' +
+        '<button id="scope-btn-global" class="btn btn-accent text-xs" onclick="switchSettingsScope(\'global\')">Global</button>' +
+        '<button id="scope-btn-project" class="btn btn-ghost text-xs" onclick="switchSettingsScope(\'project\')">Project</button>' +
+        '</div>' +
+        '<div id="settings-scope-global">' +
+        '<div id="settings-global-env" class="toggles-loading text-xs font-mono text-gray-400">Loading global env...</div>' +
+        '</div>' +
+        '<div id="settings-scope-project" style="display:none">' +
+        '<div id="settings-project-env" class="toggles-loading text-xs font-mono text-gray-400">Loading project env...</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-4">' +
+        '<div class="text-sm font-semibold text-gray-100">Hooks</div>' +
+        '<div id="settings-global-hooks" class="toggles-loading text-xs font-mono text-gray-400">Loading hooks...</div>' +
+        '<div class="grid grid-cols-1 gap-2 md:grid-cols-2">' +
+        '<select id="hook-add-event" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono">' +
+        '<option value="on_start">on_start</option>' +
+        '<option value="on_end">on_end</option>' +
+        '<option value="on_tool_call">on_tool_call</option>' +
+        '<option value="on_tool_result">on_tool_result</option>' +
+        '<option value="on_error">on_error</option>' +
+        '</select>' +
+        '<input id="hook-add-matcher" type="text" placeholder="matcher (optional)" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono">' +
+        '<input id="hook-add-cmd" type="text" placeholder="command" class="px-3 py-1.5 text-xs bg-gray-900 border border-gray-700 rounded-lg font-mono md:col-span-2">' +
+        '</div>' +
+        '<div class="flex items-center gap-2">' +
+        '<button class="btn btn-accent text-xs" onclick="addHook()">Add hook</button>' +
+        '<div id="hook-add-status" class="text-xs font-mono"></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    }
+
+    _settingsPanelsRendered = true;
+  }
+}
 
 export async function loadSettings(): Promise<void> {
   try {
+    _renderSettingsPanels();
     await loadSettingsProjects();
     const res = await fetch('/api/settings');
     _settingsData = await res.json();
@@ -291,6 +418,7 @@ export function switchSettingsScope(scope: string): void {
 
 export async function loadSettingsToggles(): Promise<void> {
   try {
+    _renderSettingsPanels();
     const [mcpRes, skillRes, pluginRes, globalRes, globalMcpRes, globalEnvRes, projectEnvRes] = await Promise.all([
       fetch('/api/settings/mcps')
         .then((r) => r.json())
