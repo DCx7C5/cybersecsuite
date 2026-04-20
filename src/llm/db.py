@@ -66,6 +66,19 @@ async def open_session(sid: str, repo_root: str = "", branch: str = "") -> None:
     log.info("llm_session opened sid=%s", sid)
 
 
+async def _ensure_session_exists(pool, sid: str) -> None:
+    """Ensure a session row exists before inserting llm_calls rows."""
+    await pool.execute(
+        """
+        INSERT INTO llm_sessions (sid, repo_root, branch, opened_at)
+        VALUES ($1, '', '', $2)
+        ON CONFLICT (sid) DO NOTHING
+        """,
+        sid,
+        datetime.now(timezone.utc),
+    )
+
+
 async def persist_call(
     *,
     sid: str,
@@ -83,6 +96,7 @@ async def persist_call(
 ) -> None:
     """Insert one llm_calls row. Intended to be called as a fire-and-forget task."""
     pool = await get_pool()
+    await _ensure_session_exists(pool, sid)
     await pool.execute(
         """
         INSERT INTO llm_calls

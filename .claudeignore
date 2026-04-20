@@ -93,3 +93,4 @@ coverage-report/
 !.claude/
 !hooks/
 !src/hooks/
+plan.md

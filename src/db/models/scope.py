@@ -37,7 +37,19 @@ class Application(Model):
 
 
 class Session(Model):
-    id = fields.IntField(primary_key=True)
+    """Forensic root session — UUID-keyed anchor for all forensic artefacts.
+
+    Every :class:`Finding`, :class:`IOC`, :class:`AuditLog`, :class:`Artifact`,
+    :class:`ComplianceCheck`, :class:`DefenseRecommendation`, :class:`Vulnerability`,
+    :class:`UserGuidance`, and :class:`ForensicSession` row is FK-linked to this
+    model.  Managed via Tortoise ORM through the ASGI stack.
+
+    Not to be confused with:
+    - :class:`db.models.llm_session.LlmSession` — per-worktree LLM cost tracker
+      (asyncpg-only, 12-char hex PK, no Tortoise ORM dependency)
+    - :class:`db.models.forensic.ForensicSession` — investigation phase bridge
+      between this ``Session`` and a :class:`ForensicProject`
+    """
     project = fields.ForeignKeyField("models.Project", related_name="sessions", on_delete=fields.CASCADE)
     session_id = fields.CharField(max_length=128, unique=True, db_index=True)
     sdk_session_id = fields.CharField(max_length=128, null=True, db_index=True)

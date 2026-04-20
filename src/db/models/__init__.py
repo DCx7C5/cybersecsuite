@@ -60,6 +60,8 @@ MODEL_MODULES: list[str] = [
     # LLM orchestration layer
     "db.models.llm_session",
     "db.models.llm_call",
+    # Intelligence feed sources
+    "db.models.intel_feed_source",
 ]
 
 from db.models.api_account import ApiAccount
@@ -69,6 +71,7 @@ from db.models.tool_registry import ToolRegistry, ToolToggleState, ToolToggleReg
 from db.models.settings import ScopedEntry, GlobalSettings
 from db.models.llm_session import LlmSession
 from db.models.llm_call import LlmCall
+from db.models.intel_feed_source import IntelFeedSource
 
 __all__ = [
     "MODEL_MODULES",
@@ -85,4 +88,5 @@ __all__ = [
     "GlobalSettings",
     "LlmSession",
     "LlmCall",
+    "IntelFeedSource",
 ]

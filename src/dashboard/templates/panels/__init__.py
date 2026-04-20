@@ -6,13 +6,12 @@ from .forensics import (
     _findings,
     _iocs,
     _yara,
-    _network,
     _intel,
     _audit,
     _compliance,
 )
 from .operations import _cases, _tasks, _pocs, _a2a
-from .data import _dbcounts, _opensearch, _explorer, _templates
+from .data import _opensearch, _explorer, _templates
 from .advanced import (
     _chat,
     _team_builder,
@@ -22,7 +21,7 @@ from .advanced import (
     _flowgraph,
     _sdk_lab,
 )
-from .settings import _settings, _settings_cybersecsuite, _crypto, _vault_widget
+from .settings import _settings, _settings_cybersecsuite, _crypto
 
 __all__ = [
     # Platform
@@ -42,7 +41,6 @@ __all__ = [
     "_findings",
     "_iocs",
     "_yara",
-    "_network",
     "_intel",
     "_audit",
     "_compliance",
@@ -52,7 +50,6 @@ __all__ = [
     "_pocs",
     "_a2a",
     # Data
-    "_dbcounts",
     "_opensearch",
     "_explorer",
     "_templates",
@@ -68,7 +65,6 @@ __all__ = [
     "_settings",
     "_settings_cybersecsuite",
     "_crypto",
-    "_vault_widget",
     "all_panels",
 ]
 
@@ -89,11 +85,9 @@ def all_panels() -> str:
         + _findings()
         + _iocs()
         + _yara()
-        + _network()
         + _intel()
         + _audit()
         + _compliance()
-        + _dbcounts()
         + _opensearch()
         + _explorer()
         + _cases()
@@ -107,7 +101,6 @@ def all_panels() -> str:
         + _workflows()
         + _settings()
         + _settings_cybersecsuite()
-        + _vault_widget()
         + _telemetry()
         + _providers_hub()
         + _templates()

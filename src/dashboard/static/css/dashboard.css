@@ -237,6 +237,66 @@ body {
   box-shadow: 0 0 12px var(--border-glow);
 }
 
+.btn-success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #10b981;
+}
+.btn-success:hover { background: rgba(16, 185, 129, 0.25); box-shadow: 0 0 10px rgba(16,185,129,0.3); }
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.btn-danger:hover { background: rgba(239, 68, 68, 0.25); box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+
+.btn-warning {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+.btn-warning:hover { background: rgba(245, 158, 11, 0.25); box-shadow: 0 0 10px rgba(245,158,11,0.3); }
+
+/* ── Toggle switch (used in Provider Hub) ── */
+.ph-toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ph-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.ph-toggle-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: background 0.2s, border-color 0.2s;
+}
+.ph-toggle-slider::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: left 0.2s, background 0.2s;
+}
+.ph-toggle input:checked + .ph-toggle-slider {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+}
+.ph-toggle input:checked + .ph-toggle-slider::before {
+  left: 21px;
+  background: #10b981;
+}
+
 #uptime {
   font-family: var(--font-mono);
   font-size: 10px;

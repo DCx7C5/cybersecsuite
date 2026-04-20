@@ -207,9 +207,29 @@ async def api_providers_hub(request: Request) -> JSONResponse:
 
     result = []
     for p in get_all_providers().values():
-        status = "available" if p.is_available else "no_credentials"
         if not p.enabled:
             status = "disabled"
+        elif p.auth_type == AuthType.BROWSER:
+            status = "browser_not_authenticated"
+        elif p.auth_type == AuthType.NONE:
+            # Local providers (Ollama, LM Studio) — probe HTTP endpoint
+            status = "no_model_loaded"
+            try:
+                async with httpx.AsyncClient(timeout=1.0) as client:
+                    resp = await client.get(f"{p.base_url.rstrip('/')}/models")
+                    if resp.status_code == 200:
+                        status = "available"
+            except Exception:
+                pass
+        elif p.is_available:
+            status = "available"
+        elif accounts_by_provider.get(p.id):
+            # DB account present (e.g. key added via AccountManager, not env var)
+            status = "available"
+        elif p.is_free:
+            status = "free_tier"
+        else:
+            status = "no_credentials"
 
         result.append({
             "id": p.id,

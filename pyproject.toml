@@ -58,6 +58,7 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = [
   "src/logger",
+  "src/llm",
   "src/a2a",
   "src/accounts",
   "src/agent",

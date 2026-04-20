@@ -1091,3 +1091,463 @@ Set a 30-day retention policy on `cybersecsuite-llm-*` streams in the OpenObserv
 6. **OTEL traces in Grafana** — expose OpenObserve OTLP data to Grafana Tempo for distributed trace UI, linking git worktree spans to upstream agent spans.
 
 7. **Conversation replay** — if `log_prompts=True` is explicitly set, store compressed message arrays in a separate `llm_conversations` table (ZSTD-compressed JSONB), enabling full session replay and debugging.
+
+---
+
+---
+
+# Dashboard UX & Platform Overhaul Sprint
+
+> **Sprint blueprint** — Full-stack UI/UX overhaul of the CyberSecSuite dashboard:
+> CRUD everywhere, provider intelligence, Intel Feed, sidebar reorder, DB deduplication.
+
+---
+
+## 1. Problem Statement
+
+The live dashboard has read-only views for most entities (Cases, Tasks, Findings, IOCs, Investigations, A2A, PoC, Prompts, Workflows, Templates), incomplete provider intelligence (NVIDIA credentials ignored, Grok/Ollama always green regardless of auth state), confusing sidebar structure, a broken vault path, and redundant DB tables. This sprint delivers a complete overhaul.
+
+---
+
+## 2. Scope
+
+### 2.1 CRUD Surfaces Needed
+| Tab | Current State | Target |
+|-----|--------------|--------|
+| Prompts | Read-only plugin lister | Full CRUD — create/edit/delete stored prompts in DB |
+| Workflows | In-memory only, empty UI | Persist to DB + CRUD UI (create, run, edit, delete) |
+| Cases | Read-only table | Modal CRUD (create, update status, close, delete) |
+| Tasks | Read-only table | Modal CRUD |
+| PoC | `simple_panel` loading text | CRUD + seed dropdown (CVE, GHDB, custom URL, manual) |
+| A2A | `simple_panel` loading text | Full CRUD (create task, view, cancel, delete) |
+| Investigations | `simple_panel` loading text | CRUD (open/close investigation, edit, delete) |
+| Findings | Table + heatmap, no forms | Modal CRUD |
+| IOCs | Table + breakdown, no forms | Modal CRUD |
+| Templates & Workflows | Stat counters + table | Full CRUD for templates; separate from Workflow tab |
+| Intel Feed | MITRE/CVE stats, no source mgmt | Add Intel Feed Sources CRUD + news/RSS source mgmt |
+
+### 2.2 Provider Hub Fixes
+- **NVIDIA** (and all `api_key` auth providers): credentials added via AccountManager (DB) are ignored by `is_available` which only checks `os.environ`. Fix: `api_providers_hub` must check `accounts_by_provider` — if a provider has an active account, treat it as `available`.
+- **Grok (x.com + grok.com)** (`auth_type=BROWSER`): currently always `available` because `is_available` returns `True` for `BROWSER` auth. Must only be green when a valid browser session/cookies exist for those domains.
+- **Ollama + LM Studio** (`auth_type=NONE`, `is_free=True`): currently always `available`. Must only be green when the local endpoint is reachable AND reports at least one loaded model (use existing `api_local_llm_status` logic).
+- **Free tier providers** (`is_free=True`, requires account): show as `free_tier` status (green-ish) only when a free account exists; otherwise show `no_account` (amber). Make it visually clear these are tiered.
+- **On/Off toggle**: replace `● On / ○ Off` text buttons with a styled CSS toggle switch.
+
+### 2.3 Navigation / Sidebar Overhaul
+- **Remove** `network` tab from forensics group.
+- **Remove** `dbcounts` tab from data group.
+- **Reorder sidebar**: Chat first, then AI PROXY group, then AGENTS group (Agent Factory, Crafter, Team Builder, Query, Chat, Workflows, Flowgraph, Prompts, SDK Lab), then remaining groups.
+- **SETTINGS**: keep as last collapsible dropdown; remove the "SETTINGS" group header label from sidebar rendering. Claude SDK and CyberSecSuite settings should have the same form layout/quality.
+- **Remove** the `<select id="settings-project-select">` project scope widget from both settings panels.
+- **Remove** vault widget (`_vault_widget`) from settings — remove entirely from nav + rendering.
+- **Memory Vault path**: fix `_VAULT_PATH` default from `./data/vault` → `~/.cybersecsuite/data/vault`.
+
+### 2.4 Intel Feed Sources
+- Create new DB model `IntelFeedSource` with fields: `id`, `name`, `url`, `feed_type` (rss/atom/json/html), `category` (cti/nvd/news/blog/gov), `is_active`, `last_fetched_at`, `description`, `created_at`, `updated_at`.
+- Bootstrap with ~20 pre-seeded URLs (CVE feeds, CISA alerts, threat intel blogs, etc.).
+- CRUD API + UI for managing sources.
+- Intel Feed panel: replace static MITRE/CVE stats with source management + recent articles view.
+
+### 2.5 DB Redundancy Audit
+
+#### `llm_sessions` vs `sessions` — Verdict: **NOT redundant, keep both as-is**
+
+After deep inspection of `src/db/models/llm_session.py`, `src/db/models/scope.py`, `src/db/models/forensic.py`, and `src/llm/db.py`, the full session hierarchy is:
+
+```
+Project  ─FK─►  Session (scope)  ─FK─►  ForensicSession  ─FK─►  ForensicFinding / IOC
+                                                                  (investigation scope)
+
+LlmSession (worktree SID)  ─FK─►  LlmCall
+(git worktree lifecycle / LLM cost tracker)
+```
+
+**`LlmSession`** (`table: llm_sessions`):
+- PK is a **12-char hex git worktree SID** (generated by `worktree-session-manager.py`)
+- Written via **raw asyncpg** in `src/llm/db.py` — intentionally bypasses Tortoise ORM so the CLI can call it outside the ASGI process
+- Tracks: `repo_root`, `branch`, `opened_at`, `closed_at`, token totals, cost totals
+- FK'd to by `LlmCall` (one row per Anthropic API call)
+- **Purpose**: git-worktree-scoped LLM cost/token observability
+
+**`Session`** (`table: sessions`):
+- PK is an auto-increment int; `session_id` is a UUID-128 string
+- Managed by the forensic/ASGI application, tied to a `Project`
+- FK'd to by: `AuditLog`, `Artifacts`, `Compliance`, `Defense`, `Vulnerability`, `UserGuidance`, `ForensicSession`
+- **Purpose**: forensic/operational scope anchor for all investigation data
+
+**`ForensicSession`** (`table: forensic_sessions`):
+- Bridges `Session` (via `scope_session` FK) and `ForensicProject`
+- Holds system context, phase, investigator, verdicts
+- **Purpose**: the actual investigation session with full system/case context
+
+**Why no FK correlation is needed**: the two systems (`LlmSession` and `Session`) are truly orthogonal — one is bound to a git worktree (which can span multiple forensic sessions), the other to a forensic investigation scoped by Project. Adding a FK from `Session` to `LlmSession` was proposed earlier; **this is dropped** — the SID mismatch (12-char hex vs UUID) and different lifecycle managers make it noise without benefit.
+
+**Action**: No schema changes needed. Just add clear docstrings to both models explaining their distinct purpose. Remove the `db-session-correlation` todo.
+
+#### Scope tables (`Project`, `Application`, `Session`, `ScopedEntry`)
+- All needed as FK roots. Keep as-is.
+- `Application` model is currently unused in the UI and has no FKs from other models — **mark as deprecated**, do not delete yet (migration risk).
+
+#### Other redundancy
+- `src/db/models/artifact.py` and `src/db/models/artifacts.py` — two files with similar names. Check if both export different models or one is a duplicate. Audit only; no deletion without confirmation.
+- Remove the project scope `<select>` from the dashboard UI (the `settings-project-select`) since project switching is unnecessary complexity.
+
+### 2.6 Button / Color System
+- Currently, all action buttons use `btn btn-primary` (blue). Introduce semantic color variants:
+  - `btn-primary` (blue) — main CTA (submit, save)
+  - `btn-success` (green) — create/confirm
+  - `btn-danger` (red) — delete/revoke
+  - `btn-warning` (amber) — disable/deactivate
+  - `btn-ghost` (neutral) — cancel/close/secondary
+- Apply consistently across all panels and modals.
+
+### 2.7 Routing Panel
+- Currently `simple_panel("routing", ...)` shows a loading spinner forever.
+- Replace with proper forms: strategy selector, combo editor, resilience profile, simulate route form, explain route form. Use Playwright to inspect current state first.
+
+---
+
+## 3. Files Affected — Full Detail
+
+### 3.1 Database Models
+
+#### `src/db/models/vault_source.py` *(NEW)*
+Create `IntelFeedSource` Tortoise model:
+```python
+class IntelFeedSource(Model):
+    id = IntField(pk=True)
+    name = CharField(max_length=255, unique=True)
+    url = CharField(max_length=1024)
+    feed_type = CharField(max_length=32, default="rss")   # rss|atom|json|html
+    category = CharField(max_length=64, default="cti")    # cti|nvd|news|blog|gov
+    is_active = BooleanField(default=True)
+    last_fetched_at = DatetimeField(null=True)
+    description = TextField(default="")
+    created_at = DatetimeField(auto_now_add=True)
+    updated_at = DatetimeField(auto_now=True)
+    class Meta:
+        table = "intel_feed_sources"
+```
+
+#### `src/db/models/__init__.py`
+Register `IntelFeedSource` in the model registry list.
+
+#### `src/db/models/llm_session.py`
+Add a docstring clarifying this is git-worktree scoped (not a forensic session). No schema change needed.
+
+#### `src/db/models/scope.py`
+Add optional `llm_sid` field to `Session` for correlation to `LlmSession`. Document `Application` as deprecated-pending-removal.
+
+#### `src/db/seeds/intel_feed_sources.py` *(NEW)*
+Seed script with ~20 pre-seeded sources:
+- CISA Known Exploited Vulnerabilities (`https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json`)
+- NVD CVE feed (`https://nvd.nist.gov/feeds/json/cve/1.1/`)
+- MITRE ATT&CK STIX (`https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json`)
+- Krebs on Security RSS
+- Schneier on Security RSS
+- The Hacker News RSS
+- BleepingComputer RSS
+- Threatpost RSS
+- SANS Internet Storm Center RSS
+- AlienVault OTX recent pulses API
+- Recorded Future free threat intel
+- MISP threat sharing feeds
+- CERT/CC vulnerability notes
+- US-CERT alerts
+- etc.
+
+### 3.2 AI Proxy — Provider Status
+
+#### `src/ai_proxy/providers/registry.py`
+**Change `is_available`**: Add a new optional callable hook `_availability_override: Callable[[ProviderConfig], bool | None] | None = None` that external code can set to inject runtime checks (local LLM reachability, browser session state). This keeps the registry pure while allowing overrides.
+
+#### `src/dashboard/api/core.py` — `api_providers_hub`
+This is the main fix surface:
+
+1. **NVIDIA / API-key providers with DB accounts**: After building `accounts_by_provider`, compute a corrected status:
+   ```python
+   # If provider has active DB accounts → treat as available regardless of env
+   has_active_account = any(a["active"] for a in accounts_by_provider.get(p.id, []))
+   if p.auth_type == AuthType.API_KEY and has_active_account:
+       status = "available"
+   ```
+
+2. **Ollama / LM Studio**: Call the internal `api_local_llm_status` logic inline (or cache it in a module-level dict refreshed every 30s). If endpoint reachable + models > 0 → `available`, else `no_model_loaded`.
+
+3. **Grok browser providers**: Check if a browser profile directory exists and contains cookies for `x.com` / `grok.com`. Use a lightweight cookie-jar parse:
+   ```python
+   # Check brave/chrome profile for x.com cookies
+   profile_dir = Path(p.browser_profile or "")
+   cookie_file = profile_dir / "Default" / "Cookies"
+   has_session = _check_browser_cookies(cookie_file, domain=".x.com")
+   status = "available" if has_session else "browser_not_authenticated"
+   ```
+   Add helper `_check_browser_cookies(cookie_file, domain)` that reads SQLite cookies DB.
+
+4. **Free tier providers** (`is_free=True`, `auth_type=NONE` but NOT local): return new status `"free_tier"` rather than `"available"`, so the UI can style them distinctly.
+
+5. Add new status value `"browser_not_authenticated"` and `"no_model_loaded"` for the frontend to handle.
+
+#### `src/ai_proxy/providers/_providers.py`
+No schema changes needed. Add `# local provider` comments to Ollama/LM Studio entries.
+
+### 3.3 Dashboard API Layer
+
+#### `src/dashboard/api/vault_status.py`
+Change default vault path:
+```python
+_DEFAULT_VAULT = Path.home() / ".cybersecsuite" / "data" / "vault"
+_VAULT_PATH = os.getenv("CYBERSEC_VAULT_PATH", str(_DEFAULT_VAULT))
+```
+
+#### `src/dashboard/api/cases.py` *(NEW or extend existing)*
+Check if cases CRUD API already exists in `forensic.py` or `tables.py`. If not, create:
+```
+GET  /api/cases          → list with pagination/filter
+POST /api/cases          → create
+GET  /api/cases/{id}     → get one
+PATCH /api/cases/{id}    → update (status, name, desc)
+DELETE /api/cases/{id}   → soft-delete
+```
+Uses `CaseIntake` model (`src/db/models/case_intake.py`).
+
+#### `src/dashboard/api/tasks.py` *(NEW)*
+Full CRUD for `A2ATask` model (`src/db/models/a2a_task.py`):
+```
+GET    /api/tasks
+POST   /api/tasks
+GET    /api/tasks/{id}
+PATCH  /api/tasks/{id}
+DELETE /api/tasks/{id}
+```
+
+#### `src/dashboard/api/pocs.py` *(NEW or extend)*
+CRUD for PoC (`src/db/models/poc.py`) + seed endpoint:
+```
+GET    /api/pocs
+POST   /api/pocs
+PATCH  /api/pocs/{id}
+DELETE /api/pocs/{id}
+POST   /api/pocs/seed     → body: {source: "cve"|"ghdb"|"url"|"manual", value: "..."}
+```
+
+#### `src/dashboard/api/a2a_crud.py` *(NEW)*
+CRUD for A2A tasks/agents that live in the DB (separate from in-flight A2A protocol tasks):
+```
+GET    /api/a2a/tasks
+POST   /api/a2a/tasks
+PATCH  /api/a2a/tasks/{id}
+DELETE /api/a2a/tasks/{id}
+```
+
+#### `src/dashboard/api/forensic.py`
+Extend with CRUD endpoints for Findings, IOCs, Investigations if not already present:
+```
+POST   /api/findings          → create
+PATCH  /api/findings/{id}     → update severity/status
+DELETE /api/findings/{id}     → soft-delete
+POST   /api/iocs              → create
+PATCH  /api/iocs/{id}
+DELETE /api/iocs/{id}
+POST   /api/investigations
+PATCH  /api/investigations/{id}
+DELETE /api/investigations/{id}
+```
+
+#### `src/dashboard/api/intel_feed.py` *(NEW)*
+CRUD for `IntelFeedSource`:
+```
+GET    /api/intel/sources
+POST   /api/intel/sources
+PATCH  /api/intel/sources/{id}
+DELETE /api/intel/sources/{id}
+POST   /api/intel/sources/bootstrap   → seed defaults
+POST   /api/intel/sources/{id}/fetch  → trigger fetch
+```
+
+#### `src/dashboard/api/prompts_crud.py` *(NEW)*
+Replace read-only `api_prompts` in `tables.py` with full CRUD. Store prompts in a new `Prompt` DB model (text, name, category, tags). For now can be file-backed JSON if DB model not yet created.
+```
+GET    /api/prompts
+POST   /api/prompts
+PATCH  /api/prompts/{id}
+DELETE /api/prompts/{id}
+```
+
+#### `src/dashboard/api/workflows.py`
+Add DB persistence: create `Workflow` DB model (or use SharedEntry). Add `POST /api/workflows` (persist), `PATCH /api/workflows/{id}`, `DELETE /api/workflows/{id}` on top of existing in-memory logic.
+
+#### `src/dashboard/api/template_registry.py`
+Extend with CRUD: `POST /api/templates`, `PATCH /api/templates/{id}`, `DELETE /api/templates/{id}`.
+
+#### `src/dashboard/api/settings.py`
+Remove logic that serves the `settings-project-select` data (no longer needed in UI).
+
+#### `src/dashboard/api/__init__.py`
+Register all new API handlers and route them in `routes.py`.
+
+#### `src/dashboard/routes.py`
+Add routes for all new CRUD endpoints.
+
+### 3.4 Dashboard Templates
+
+#### `src/dashboard/templates/_tabs.py`
+1. **Remove** `("network", "Network", ...)` entry from forensics group.
+2. **Remove** `("dbcounts", "DB Counts", ...)` entry from data group.
+3. **Remove** `("vault", "Memory Vault", ...)` from SETTINGS dropdown children.
+4. **Move** `("chat", "Chat", ...)` to be the very first entry in sidebar (before PLATFORM or as its own top group).
+5. **Rename** SETTINGS group: remove the group header label rendering entirely — keep the dropdown but suppress the `SETTINGS` section header.
+6. **Reorder groups**: `["chat-top", "proxy", "agents", "ops", "forensics", "data", "settings"]`.
+7. Update `_GROUPS` dict accordingly.
+
+#### `src/dashboard/templates/panels/settings.py`
+1. Remove `_vault_widget()` function and its registration.
+2. Remove `settings-project-select` HTML from both `_settings()` and `_settings_cybersecsuite()`.
+3. Make Claude SDK settings form and CyberSecSuite settings form use the same HTML component primitives (`form_field`, `form_input`, `form_select`). Both should use identical grid layout, label style, input style.
+4. Remove the "SETTINGS Header" `<h2>` if it exists as a static element in any panel.
+
+#### `src/dashboard/templates/panels/operations.py`
+Replace minimal `_cases()`, `_tasks()`, `_pocs()`, `_a2a()` with full CRUD panels:
+
+**`_cases()`**: Add create-case form section above the table (fields: name, severity, description, phase). Add per-row edit/delete action buttons column. Add modal for editing.
+
+**`_tasks()`**: Same pattern — create form, table with actions.
+
+**`_pocs()`**: Rebuild from `simple_panel` to `tab_panel` with: (a) create PoC form, (b) seed section with `<select>` for source type (CVE ID, GHDB dork, URL, manual entry), (c) table with actions.
+
+**`_a2a()`**: Rebuild from `simple_panel` to `tab_panel` with: create A2A task form (agent, prompt, params), task list table with status badges, cancel/delete actions.
+
+#### `src/dashboard/templates/panels/forensics.py`
+1. **Remove** `_network()` function entirely.
+2. Update `__all__` / imports in `panels/__init__.py`.
+3. **`_investigations()`**: Rebuild from `simple_panel` to CRUD panel with create form and table.
+4. **`_findings()`**: Add create-finding form section + per-row edit/delete buttons.
+5. **`_iocs()`**: Add create-IOC form section + per-row edit/delete buttons.
+6. **`_intel()`**: Replace MITRE/CVE stat cards with Intel Feed Sources management: source list table (URL, type, last fetch), add-source form, fetch-now buttons per source.
+
+#### `src/dashboard/templates/panels/data.py`
+1. **Remove** `_dbcounts()` function entirely.
+2. **`_templates()`**: Rename to reflect Templates-only (Workflows has its own tab). Add create-template form section + per-row edit/delete.
+3. Keep `_opensearch()` and `_explorer()` as-is (UI exists, data loading is a runtime concern).
+
+#### `src/dashboard/templates/panels/agents.py`
+1. **`_routing()`**: Replace `simple_panel` with proper form-based panel:
+   - Strategy selector (`<select>` with all 13 routing strategies)
+   - Resilience profile selector
+   - Active combo display
+   - Simulate-route form (model input + submit)
+   - Explain-route form
+   - No list view for combos (remove the combo list)
+2. **`_prompts()`**: Replace `simple_panel` with CRUD panel: create-prompt form (name, content, category), table with edit/delete.
+
+#### `src/dashboard/templates/panels/__init__.py`
+1. Remove `_network` from imports and panel assembly.
+2. Remove `_dbcounts` from imports and panel assembly.
+3. Remove `_vault_widget` from imports and panel assembly.
+4. Add new panel registrations as needed.
+
+#### `src/dashboard/templates/_components.py`
+Add `btn_toggle(id, checked, onchange)` component that renders a CSS toggle switch (not a button).
+
+### 3.5 TypeScript Frontend
+
+#### `src/dashboard/static/ts/providers_hub.ts`
+1. **Status color map**: Add new status values:
+   - `"browser_not_authenticated"` → amber (same as `no_credentials`)
+   - `"no_model_loaded"` → amber  
+   - `"free_tier"` → a distinct green-teal with a "FREE" badge
+   - Rename group labels: `"Available"` (green), `"No Credentials / Unconfigured"` (amber), `"Disabled"` (gray).
+2. **On/Off toggle**: Replace `btn btn-ghost` text buttons with CSS toggle switch component:
+   ```html
+   <label class="ph-toggle">
+     <input type="checkbox" checked onclick="...">
+     <span class="ph-toggle-slider"></span>
+   </label>
+   ```
+   Add CSS for `.ph-toggle` (pill-style toggle, green when on, gray when off).
+3. **Status re-computation after account add**: After `phSaveAccount()` success, reload hub data so NVIDIA etc. show green immediately.
+4. **Free tier badge**: For `status === "free_tier"`, show a small `FREE` chip next to the provider name, tooltip: "Free tier — account required for higher limits".
+
+#### `src/dashboard/static/ts/settings.ts`
+1. Remove all code that populates or reads `settings-project-select`.
+2. Ensure Claude and CCS settings forms use the same render helpers.
+
+#### `src/dashboard/static/ts/refresh.ts`
+1. Remove any periodic refresh calls for `dbcounts` endpoint.
+2. Remove any network panel data refresh.
+
+#### `src/dashboard/static/ts/sidebar.ts`
+1. Update group rendering to suppress the SETTINGS section header label.
+2. Handle the new `chat-top` special group (or just ensure chat appears first).
+
+#### `src/dashboard/static/ts/index.ts`
+1. Remove import/call for vault panel JS if any.
+2. Remove DB counts initialization.
+3. Remove network panel initialization.
+4. Wire new CRUD panels: cases, tasks, pocs, a2a, investigations, findings crud, iocs crud, intel sources.
+
+#### `src/dashboard/static/ts/routing.ts` *(NEW)*
+Full routing panel TypeScript:
+- `loadRoutingPanel()` — fetches `/api/routing/strategies`, `/api/routing/combos`, `/api/routing/resilience`
+- `renderStrategyForm()` — dropdown + submit
+- `renderSimulateForm()` — model + message + submit → show result
+- `renderExplainForm()` — combo ID input + submit → show explanation
+- Remove combo list rendering
+
+#### New TS files for CRUD panels (or add to existing files):
+- `src/dashboard/static/ts/cases.ts` — CRUD handlers for Cases
+- `src/dashboard/static/ts/tasks_crud.ts` — CRUD handlers for Tasks
+- `src/dashboard/static/ts/pocs.ts` — CRUD handlers for PoCs + seed
+- `src/dashboard/static/ts/a2a_crud.ts` — CRUD handlers for A2A
+- `src/dashboard/static/ts/intel_sources.ts` — CRUD handlers for Intel Feed Sources
+- `src/dashboard/static/ts/prompts_crud.ts` — CRUD handlers for Prompts
+
+### 3.6 CSS / Styles
+
+#### `src/dashboard/static/` CSS (inline or separate file)
+Add CSS:
+```css
+/* Toggle switch */
+.ph-toggle { position: relative; display: inline-block; width: 36px; height: 20px; }
+.ph-toggle input { opacity: 0; width: 0; height: 0; }
+.ph-toggle-slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0;
+  background: var(--border); border-radius: 20px; transition: .2s; }
+.ph-toggle input:checked + .ph-toggle-slider { background: var(--success); }
+.ph-toggle-slider:before { content: ""; position: absolute; height: 14px; width: 14px;
+  left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s; }
+.ph-toggle input:checked + .ph-toggle-slider:before { transform: translateX(16px); }
+
+/* Button color variants */
+.btn-success { background: var(--success); color: #000; }
+.btn-danger  { background: var(--red); color: #fff; }
+.btn-warning { background: var(--amber); color: #000; }
+```
+
+### 3.7 Build
+
+#### `src/dashboard/tsconfig.json`
+Ensure new `.ts` files are included in compilation (should auto-include via `include: ["static/ts/**/*"]`).
+
+---
+
+## 4. Migration Notes
+
+- `IntelFeedSource` requires a new Aerich migration: `uv run aerich migrate --name add_intel_feed_sources`.
+- `Session.llm_sid` optional FK needs migration too.
+- Seed script `intel_feed_sources.py` should be callable via `uv run python -m manage seed-intel-feeds`.
+
+---
+
+## 5. Testing Plan
+
+- Playwright smoke test: providers hub loads, NVIDIA shows green after account add, Grok shows amber when no browser session.
+- Playwright: toggle switch works (on/off).
+- API unit tests for all new CRUD endpoints (GET/POST/PATCH/DELETE).
+- DB migration test: `aerich migrate` completes cleanly.
+- Sidebar: network and dbcounts tabs absent; chat appears first.
+
+---
+
+## 6. Task Breakdown (SQL-tracked)
+
+See SQL `todos` table for per-task status tracking.

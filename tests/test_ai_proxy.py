@@ -147,12 +147,14 @@ class TestUsageTracker:
         tracker.record(UsageRecord(
             provider_id="anthropic",
             model_id="claude-sonnet",
+            worktree_sid="abc123def456",
             prompt_tokens=50,
             completion_tokens=25,
             total_tokens=75,
         ))
         recent = tracker.get_recent(limit=5)
         assert len(recent) >= 1
+        assert recent[0]["worktree_sid"] == "abc123def456"
 
     def test_reset(self, tracker):
         tracker.record(UsageRecord(

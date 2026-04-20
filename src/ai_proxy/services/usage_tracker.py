@@ -18,6 +18,7 @@ logger = logging.getLogger("ai_proxy.usage")
 class UsageRecord:
     provider_id: str
     model_id: str
+    worktree_sid: str | None = None
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -61,6 +62,7 @@ class UsageTracker:
         latency_ms: float,
         input_cost_per_1m: float = 0.0,
         output_cost_per_1m: float = 0.0,
+        worktree_sid: str | None = None,
         stream: bool = False,
         success: bool = True,
         error: str | None = None,
@@ -80,6 +82,7 @@ class UsageTracker:
         rec = UsageRecord(
             provider_id=provider_id,
             model_id=model_id,
+            worktree_sid=worktree_sid,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
             total_tokens=total,
@@ -123,6 +126,7 @@ class UsageTracker:
             {
                 "provider": r.provider_id,
                 "model": r.model_id,
+                "worktree_sid": r.worktree_sid,
                 "tokens": r.total_tokens,
                 "cost_usd": round(r.cost_usd, 6),
                 "latency_ms": round(r.latency_ms, 1),
@@ -140,4 +144,3 @@ class UsageTracker:
 
 # Global singleton
 usage_tracker = UsageTracker()
-

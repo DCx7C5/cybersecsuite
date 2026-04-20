@@ -3,7 +3,16 @@ from tortoise.models import Model
 
 
 class LlmSession(Model):
-    """One row per worktree session lifecycle."""
+    """One row per git-worktree lifecycle — tracks LLM API cost and token usage.
+
+    Distinct from :class:`db.models.scope.Session` (forensic root) and
+    :class:`db.models.forensic.ForensicSession` (investigation phase).
+
+    Written via raw asyncpg in ``src/llm/db.py`` so that CLI tooling can
+    record usage outside the ASGI/Tortoise ORM context (e.g., pre-commit hooks,
+    standalone scripts).  The ``sid`` is a 12-character hex string derived from
+    the git worktree identity, not a UUID.
+    """
 
     sid = fields.CharField(max_length=12, pk=True)
     repo_root = fields.CharField(max_length=512, default="")

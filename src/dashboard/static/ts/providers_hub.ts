@@ -52,10 +52,25 @@ function esc(s: string | null | undefined): string {
 
 function statusDot(status: string): string {
   const color =
-    status === 'available'      ? 'var(--success)' :
-    status === 'no_credentials' ? 'var(--amber)'   :
-                                  'var(--red)';
+    status === 'available'                ? 'var(--success)' :
+    status === 'free_tier'                ? 'var(--success)' :
+    status === 'no_credentials'           ? 'var(--amber)'   :
+    status === 'browser_not_authenticated'? 'var(--amber)'   :
+    status === 'no_model_loaded'          ? 'var(--amber)'   :
+                                            'var(--red)';
   return `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;flex-shrink:0"></span>`;
+}
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'available':                 return 'AVAILABLE';
+    case 'free_tier':                 return 'FREE TIER';
+    case 'no_credentials':            return 'NO CREDENTIALS';
+    case 'browser_not_authenticated': return 'BROWSER ONLY';
+    case 'no_model_loaded':           return 'NO MODEL LOADED';
+    case 'disabled':                  return 'DISABLED';
+    default:                          return status.toUpperCase();
+  }
 }
 
 function authBadge(authType: string): string {
@@ -121,12 +136,15 @@ function renderProviderDetail(p: PhProvider): string {
 function renderProviderRow(p: PhProvider): string {
   const truncUrl = p.base_url.length > 40 ? p.base_url.slice(0, 40) + '…' : p.base_url;
   const isEnabled = p.status !== 'disabled';
-  const toggleBtn =
-    `<button class="btn btn-ghost" id="ph-toggle-${esc(p.id)}" ` +
-    `style="font-size:11px;padding:3px 8px;min-width:62px;color:${isEnabled ? 'var(--success)' : 'var(--text-muted)'}" ` +
-    `onclick="event.stopPropagation();phSetProviderEnabled('${esc(p.id)}',${!isEnabled})" ` +
-    `title="${isEnabled ? 'Disable' : 'Enable'} provider">` +
-    `${isEnabled ? '● On' : '○ Off'}</button>`;
+  const toggleSwitch =
+    `<label class="ph-toggle" onclick="event.stopPropagation();phSetProviderEnabled('${esc(p.id)}',${!isEnabled})" title="${isEnabled ? 'Disable' : 'Enable'} provider">` +
+    `<input type="checkbox" ${isEnabled ? 'checked' : ''} readonly>` +
+    `<span class="ph-toggle-slider" id="ph-toggle-${esc(p.id)}"></span>` +
+    `</label>`;
+  const sLabel = `<span style="font-size:10px;font-family:var(--font-mono);color:${
+    p.status === 'available' || p.status === 'free_tier' ? 'var(--success)' :
+    p.status === 'disabled' ? 'var(--text-muted)' : 'var(--amber)'
+  };min-width:110px;text-align:right">${statusLabel(p.status)}</span>`;
   return (
     `<div class="ph-provider-row" data-provider="${esc(p.id)}" data-name="${esc(p.name.toLowerCase())}" style="border-bottom:1px solid var(--border)">` +
     `<div class="ph-row-summary" onclick="document.getElementById('ph-detail-${esc(p.id)}').style.display=document.getElementById('ph-detail-${esc(p.id)}').style.display==='none'?'':'none'" style="display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='var(--accent-glow)'" onmouseleave="this.style.background=''">` +
@@ -137,7 +155,8 @@ function renderProviderRow(p: PhProvider): string {
     `<span style="font-size:11px;color:var(--text-muted);min-width:60px;text-align:right;font-family:var(--font-mono)">${p.models_count} models</span>` +
     `<span style="flex:1;min-width:120px">${accountPills(p.accounts)}</span>` +
     `<span onclick="event.stopPropagation()">${addButtons(p)}</span>` +
-    `<span onclick="event.stopPropagation()">${toggleBtn}</span>` +
+    `<span onclick="event.stopPropagation()">${sLabel}</span>` +
+    `<span onclick="event.stopPropagation()">${toggleSwitch}</span>` +
     `<span style="font-size:10px;color:var(--text-muted);margin-left:4px">▾</span>` +
     `</div>` +
     `<div id="ph-detail-${esc(p.id)}" style="display:none;background:var(--surface)">${renderProviderDetail(p)}</div>` +
@@ -164,8 +183,8 @@ export async function loadProvidersHub(): Promise<void> {
     const data = await fetchApi('/api/providers/hub') as PhProvider[];
     _hubData = data;
 
-    const available      = data.filter((p) => p.status === 'available');
-    const noCredentials  = data.filter((p) => p.status === 'no_credentials');
+    const available      = data.filter((p) => p.status === 'available' || p.status === 'free_tier');
+    const noCredentials  = data.filter((p) => ['no_credentials', 'browser_not_authenticated', 'no_model_loaded'].includes(p.status));
     const disabled       = data.filter((p) => p.status === 'disabled');
 
     list.innerHTML =
@@ -289,8 +308,7 @@ export function phCloseModal(): void {
 }
 
 export async function phSetProviderEnabled(providerId: string, enabled: boolean): Promise<void> {
-  const btn = document.getElementById(`ph-toggle-${providerId}`) as HTMLButtonElement | null;
-  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  const slider = document.getElementById(`ph-toggle-${providerId}`) as HTMLElement | null;
 
   try {
     const resp = await fetch(`/api/providers/${encodeURIComponent(providerId)}`, {
@@ -301,12 +319,10 @@ export async function phSetProviderEnabled(providerId: string, enabled: boolean)
     if (!resp.ok) {
       const body = await resp.json() as Record<string, unknown>;
       console.error('provider toggle failed:', body['error'] ?? resp.statusText);
-      if (btn) { btn.disabled = false; btn.textContent = enabled ? '● On' : '○ Off'; }
       return;
     }
   } catch (err) {
     console.error('provider toggle error:', err);
-    if (btn) { btn.disabled = false; }
     return;
   }
 

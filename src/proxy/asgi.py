@@ -143,6 +143,14 @@ async def _on_startup() -> None:
     app.state.agent_stream_tasks: dict[str, asyncio.Task] = {}
     app.state.agent_stream_queues: dict[str, asyncio.Queue] = {}
 
+    try:
+        from llm.otel import setup_otel
+
+        setup_otel(service_name=os.environ.get("OTEL_SERVICE_NAME", "cybersecsuite-proxy"))
+        log.info("OTEL tracing configured")
+    except Exception as exc:
+        log.warning("OTEL unavailable — continuing without tracing export: %s", exc)
+
     # OpenObserve — non-fatal if unavailable
     try:
         from openobserve.streams import ensure_streams

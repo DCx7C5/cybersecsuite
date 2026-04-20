@@ -8,10 +8,6 @@ from .._components import (
 )
 
 
-def _dbcounts() -> str:
-    return simple_panel("dbcounts", "&#x1f4ca; Database Table Counts", "db-content", "Loading DB counts...")
-
-
 def _opensearch() -> str:
     return (
         '<div id="tab-opensearch" class="card" style="display:none">\n'

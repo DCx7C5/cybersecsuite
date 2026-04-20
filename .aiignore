@@ -3,4 +3,5 @@
 templates/
 !plan0.md
 !src/**
+!plan.md
 *OmniRoute*

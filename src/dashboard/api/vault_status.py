@@ -7,7 +7,10 @@ from pathlib import Path
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-_VAULT_PATH = os.getenv("CYBERSEC_VAULT_PATH", "./data/vault")
+_VAULT_PATH = os.getenv(
+    "CYBERSEC_VAULT_PATH",
+    str(Path.home() / ".cybersecsuite" / "data" / "vault"),
+)
 
 
 def _count_files(directory: Path, suffix: str = ".md") -> int:

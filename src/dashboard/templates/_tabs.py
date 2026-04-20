@@ -7,6 +7,8 @@
 #    "children": [(name, label, icon), ...]}
 
 _NAV: list = [
+    # CHAT — first entry in sidebar
+    ("chat",          "Chat",             "💬", "agents"),
     # PLATFORM
     ("health",        "Health",           "♡", "platform"),
     ("usage",         "Usage & Cost",     "◈", "platform"),
@@ -19,7 +21,6 @@ _NAV: list = [
     ("agent-crafter", "Agent Crafter",   "✎", "agents"),
     ("team-builder",  "Team Builder",     "⊟", "agents"),
     ("agent-query",   "Agent Query",      "⇒", "agents"),
-    ("chat",          "Chat",             "💬", "agents"),
     ("workflows",     "Workflows",        "⇌", "agents"),
     ("flowgraph",     "Flowgraph",        "⬡", "agents"),
     ("prompts",       "Prompts",          "⊘", "agents"),
@@ -34,16 +35,14 @@ _NAV: list = [
     ("findings",      "Findings",         "⊘", "forensics"),
     ("iocs",          "IOCs",             "◈", "forensics"),
     ("yara",          "YARA Rules",       "⊛", "forensics"),
-    ("network",       "Network",          "⊡", "forensics"),
     ("intel",         "Intel Feed",       "◎", "forensics"),
     ("audit",         "Audit Log",        "⊕", "forensics"),
     ("compliance",    "Compliance",       "⊗", "forensics"),
     # DATA
-    ("dbcounts",      "DB Counts",        "◉", "data"),
     ("opensearch",    "OpenObserve",       "⊘", "data"),
     ("explorer",      "Explorer",         "⊡", "data"),
     ("templates",    "Templates",         "◫", "data"),
-    # SETTINGS — collapsible dropdown
+    # SETTINGS — collapsible dropdown (no header label rendered)
     {
         "dropdown": True,
         "group": "settings",
@@ -53,7 +52,6 @@ _NAV: list = [
         "children": [
             ("settings",              "Claude",         "◈"),
             ("settings-cybersecsuite","CyberSecSuite",  "◉"),
-            ("vault",                 "Memory Vault",   "🧠"),
         ],
     },
 ]
@@ -65,7 +63,7 @@ _GROUPS = {
     "ops":        "OPERATIONS",
     "forensics":  "FORENSICS",
     "data":       "DATA",
-    "settings":   "SETTINGS",
+    "settings":   None,  # no visible header for settings dropdown
 }
 
 # Inline CSS injected once inside <nav> — JS moved to sidebar.ts
@@ -107,7 +105,9 @@ def tab_bar() -> str:
             group = entry["group"]
             if group != current_group:
                 current_group = group
-                lines.append(f'  <div class="nav-group-label">{_GROUPS[group]}</div>')
+                label = _GROUPS[group]
+                if label:
+                    lines.append(f'  <div class="nav-group-label">{label}</div>')
             did = entry["id"]
             lines.append(
                 f'  <div class="nav-dropdown">\n'
@@ -130,7 +130,9 @@ def tab_bar() -> str:
             name, label, icon, group = entry
             if group != current_group:
                 current_group = group
-                lines.append(f'  <div class="nav-group-label">{_GROUPS[group]}</div>')
+                grp_label = _GROUPS[group]
+                if grp_label:
+                    lines.append(f'  <div class="nav-group-label">{grp_label}</div>')
             lines.append(
                 f'  <div class="tab" onclick="showTab(\'{name}\')" id="nav-{name}">'
                 f'<span class="tab-icon">{icon}</span>{label}</div>'
@@ -156,7 +158,9 @@ def topbar_nav_menu() -> str:
             group = entry["group"]
             if group != current_group:
                 current_group = group
-                lines.append(f'    <div class="topbar-nav-group">{_GROUPS[group]}</div>')
+                grp_label = _GROUPS[group]
+                if grp_label:
+                    lines.append(f'    <div class="topbar-nav-group">{grp_label}</div>')
             for name, label, icon in entry["children"]:
                 lines.append(
                     f'    <button class="topbar-nav-item" onclick="showTab(\'{name}\'); closeTopbarNav()">'
@@ -166,7 +170,9 @@ def topbar_nav_menu() -> str:
             name, label, icon, group = entry
             if group != current_group:
                 current_group = group
-                lines.append(f'    <div class="topbar-nav-group">{_GROUPS[group]}</div>')
+                grp_label = _GROUPS[group]
+                if grp_label:
+                    lines.append(f'    <div class="topbar-nav-group">{grp_label}</div>')
             lines.append(
                 f'    <button class="topbar-nav-item" onclick="showTab(\'{name}\'); closeTopbarNav()">'
                 f'<span class="tab-icon">{icon}</span>{label}</button>'

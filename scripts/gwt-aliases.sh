@@ -20,14 +20,14 @@ _gwt_manager() {
 # Create a new worktree session. Exports GWT_SID on success.
 # Optionally accepts a --sid flag to specify an exact session ID.
 gwt-create() {
-  local branch="${1:-HEAD}"
+  local branch="HEAD"
   local extra_args=()
   local sid
 
-  # Support: gwt-create --sid abc123def456 feature/foo
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --sid) extra_args+=(--sid "$2"); shift 2 ;;
+      --with-llm) extra_args+=(--with-llm); shift ;;
       *)     branch="$1"; shift ;;
     esac
   done
@@ -44,9 +44,25 @@ gwt-create() {
 # ─── gwt-teardown [sid] ────────────────────────────────────────────────────
 # Remove a worktree session. Uses GWT_SID if no argument given.
 gwt-teardown() {
-  local sid="${1:-${GWT_SID:-}}"
-  local force_flag=""
-  [[ "${2:-}" == "--force" ]] && force_flag="--force"
+  local sid=""
+  local extra_args=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --force|--with-llm) extra_args+=("$1"); shift ;;
+      *)
+        if [ -z "$sid" ]; then
+          sid="$1"
+          shift
+        else
+          echo "[gwt] ERROR: Unexpected argument: $1" >&2
+          return 1
+        fi
+        ;;
+    esac
+  done
+
+  sid="${sid:-${GWT_SID:-}}"
 
   if [ -z "$sid" ]; then
     echo "[gwt] ERROR: No session ID. Pass one or set GWT_SID." >&2
@@ -56,7 +72,7 @@ gwt-teardown() {
   local manager
   manager="$(_gwt_manager)" || return 1
 
-  python3 "$manager" teardown "$sid" $force_flag || return 1
+  python3 "$manager" teardown "$sid" "${extra_args[@]}" || return 1
 
   if [ "${GWT_SID:-}" = "$sid" ]; then
     unset GWT_SID

@@ -500,6 +500,8 @@ def cmd_create(args: argparse.Namespace) -> int:
             sid, args.branch, repo_root, template_dir,
             new_branch=not args.no_new_branch,
         )
+        if args.with_llm:
+            _maybe_open_llm_session(sid, str(repo_root), args.branch)
         print(sid)  # stdout only: consumed by shell aliases via $()
         log.info("Worktree ready at %s", path)
         return 0
@@ -511,6 +513,8 @@ def cmd_create(args: argparse.Namespace) -> int:
 def cmd_teardown(args: argparse.Namespace) -> int:
     try:
         teardown_worktree(args.sid, force=args.force)
+        if args.with_llm:
+            _maybe_close_llm_session(args.sid)
         return 0
     except Exception as exc:
         log.error("%s", exc)
@@ -598,6 +602,30 @@ def _require_llm():
             "Run:  uv sync\n"
             "Ensure PYTHONPATH includes src/ or run from the project root."
         ) from exc
+
+
+def _maybe_open_llm_session(sid: str, repo_root: str, branch: str) -> None:
+    """Best-effort LLM session open used by create --with-llm."""
+    try:
+        open_session, _, _, run_sync = _require_llm()
+        run_sync(open_session(sid, repo_root, branch))
+        log.info("Opened LLM session for %s", sid)
+    except SystemExit as exc:
+        log.warning("Skipping LLM session open: %s", exc)
+    except Exception as exc:
+        log.warning("LLM session open failed for %s: %s", sid, exc)
+
+
+def _maybe_close_llm_session(sid: str) -> None:
+    """Best-effort LLM session close used by teardown --with-llm."""
+    try:
+        _, close_session, _, run_sync = _require_llm()
+        run_sync(close_session(sid))
+        log.info("Closed LLM session for %s", sid)
+    except SystemExit as exc:
+        log.warning("Skipping LLM session close: %s", exc)
+    except Exception as exc:
+        log.warning("LLM session close failed for %s: %s", sid, exc)
 
 
 def cmd_llm_session_open(args: argparse.Namespace) -> int:
@@ -701,12 +729,16 @@ def build_parser() -> argparse.ArgumentParser:
                           help="Check out the branch directly instead of creating a new wt-<sid> branch")
     p_create.add_argument("--hooks-template", default=None, metavar="DIR",
                           help="Directory containing *.tpl hook templates")
+    p_create.add_argument("--with-llm", action="store_true",
+                          help="Best-effort llm-session-open after worktree creation")
     p_create.set_defaults(func=cmd_create)
 
     # teardown
     p_td = sub.add_parser("teardown", help="Remove a worktree session")
     p_td.add_argument("sid", help="12-char hex session ID")
     p_td.add_argument("--force", action="store_true", help="Remove even if there are uncommitted changes")
+    p_td.add_argument("--with-llm", action="store_true",
+                      help="Best-effort llm-session-close after worktree teardown")
     p_td.set_defaults(func=cmd_teardown)
 
     # list

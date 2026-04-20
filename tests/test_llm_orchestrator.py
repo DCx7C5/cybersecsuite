@@ -300,6 +300,34 @@ class TestDbHelpers:
         result = run_sync(_return42())
         assert result == 42
 
+    @pytest.mark.asyncio
+    async def test_persist_call_bootstraps_missing_session(self):
+        import llm.db as db_mod
+
+        calls = []
+
+        class FakePool:
+            async def execute(self, query, *args):
+                calls.append((query, args))
+                return "OK"
+
+        with patch.object(db_mod, "get_pool", AsyncMock(return_value=FakePool())):
+            await db_mod.persist_call(
+                sid="global",
+                model="claude-haiku-4-5",
+                input_tokens=1,
+                output_tokens=2,
+                cost_usd=Decimal("0.000001"),
+                latency_ms=12.0,
+                stream=False,
+                success=True,
+            )
+
+        assert len(calls) == 2
+        assert "INSERT INTO llm_sessions" in calls[0][0]
+        assert calls[0][1][0] == "global"
+        assert "INSERT INTO llm_calls" in calls[1][0]
+
 
 # ===========================================================================
 # 6. DB integration tests (require Postgres)
@@ -421,6 +449,20 @@ class TestWSMCli:
         parser = wsm.build_parser()
         args = parser.parse_args(["llm-cost", "aabbccddeeff"])
         assert args.command == "llm-cost"
+
+    def test_create_parser_accepts_with_llm(self):
+        wsm = self._load_wsm()
+        parser = wsm.build_parser()
+        args = parser.parse_args(["create", "--with-llm"])
+        assert args.command == "create"
+        assert args.with_llm is True
+
+    def test_teardown_parser_accepts_with_llm(self):
+        wsm = self._load_wsm()
+        parser = wsm.build_parser()
+        args = parser.parse_args(["teardown", "aabbccddeeff", "--with-llm"])
+        assert args.command == "teardown"
+        assert args.with_llm is True
 
     def test_llm_session_open_invalid_sid(self, capsys):
         wsm = self._load_wsm()
