@@ -36,7 +36,7 @@
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src",
         "DYSTOPIAN_KEYS_DIR": "/etc/dystopian/crypto/cert/private",
-        "DYSTOPIAN_VAULT_PASSWORD_FILE": "${HOME}/.dystopian-vault-password"
+        "DYSTOPIAN_VAULT_PASSWORD_FILE": "/home/daen/.dystopian-vault-password"
       },
       "cwd": "${workspaceFolder}"
     },
