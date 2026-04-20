@@ -25,6 +25,9 @@ MODEL_MODULES: list[str] = [
     # Accounts + API keys
     "db.models.api_account",
     "db.models.provider",
+    "db.models.provider_model",
+    "db.models.tool_registry",
+    # Tool seeds is not a model module — loaded separately
     # Investigation + forensic
     "db.models.investigation",
     "db.models.forensic",
@@ -48,8 +51,6 @@ MODEL_MODULES: list[str] = [
     "db.models.artifacts",
     # A2A
     "db.models.a2a_task",
-    # Browser forensics
-    "db.models.browser_forensic",
     # Phase 0 — Case Intake
     "db.models.case_intake",
     # API / system
@@ -59,16 +60,22 @@ MODEL_MODULES: list[str] = [
 ]
 
 from db.models.api_account import ApiAccount
-from db.models.browser_forensic import BrowserForensicFinding
 from db.models.provider import Provider, ProviderAuthMethod
+from db.models.provider_model import ProviderModel, AccountModel
+from db.models.tool_registry import ToolRegistry, ToolToggleState, ToolToggleRegistry, AccountToolAccess
 from db.models.settings import ScopedEntry, GlobalSettings
 
 __all__ = [
     "MODEL_MODULES",
     "ApiAccount",
-    "BrowserForensicFinding",
     "Provider",
     "ProviderAuthMethod",
+    "ProviderModel",
+    "AccountModel",
+    "ToolRegistry",
+    "ToolToggleState",
+    "ToolToggleRegistry",
+    "AccountToolAccess",
     "ScopedEntry",
     "GlobalSettings",
 ]

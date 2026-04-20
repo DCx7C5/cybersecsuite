@@ -188,7 +188,7 @@ async def status_command():
 
 
 async def seed_all_command():
-    """Seed all fixture-based intel tables (NIST CSF, NIST AI RMF, MITRE, CWE, CAPEC, PoC)."""
+    """Seed all fixture-based intel tables (NIST CSF, NIST AI RMF, MITRE, CWE, CAPEC, PoC) + tool registry."""
     from db.bootstrap import init_tortoise_async
     from db.models.seeds import (
         seed_nist_csf,
@@ -200,6 +200,7 @@ async def seed_all_command():
         seed_capec,
         seed_poc,
     )
+    from db.models.tool_seeds import seed_tool_registry, seed_provider_models
 
     await init_tortoise_async(create_db=True)
     seeds = [
@@ -216,6 +217,21 @@ async def seed_all_command():
         print(f"→ Seeding {label}...")
         r = await fn()
         print(f"  ✅ {label}: {r['created']} created, {r['skipped']} skipped ({r['total']} total)")
+
+    print("→ Seeding Tool Registry...")
+    r = await seed_tool_registry()
+    print(f"  ✅ Tool Registry: {r['created']} created, {r['updated']} updated ({r['total']} total)")
+    if r.get("errors"):
+        for e in r["errors"]:
+            print(f"  ⚠️  {e}")
+
+    print("→ Seeding Provider Models...")
+    r = await seed_provider_models()
+    print(f"  ✅ Provider Models: {r['created']} created, {r['updated']} updated ({r['total']} total)")
+    if r.get("errors"):
+        for e in r["errors"][:5]:
+            print(f"  ⚠️  {e}")
+
     print("✅ All fixture seeds complete.")
 
 
