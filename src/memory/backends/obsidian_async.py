@@ -6,12 +6,12 @@ Uses anyio for non-blocking file I/O, suitable for ASGI proxy and MCP server.
 """
 from __future__ import annotations
 
-import os
 import shutil
 import time
 from pathlib import Path
 
 from anyio import Path as AsyncPath
+from anyio.to_thread import run_sync
 
 from anthropic.lib.tools._beta_builtin_memory_tool import (
     BetaAsyncAbstractMemoryTool,
@@ -82,7 +82,7 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         sync_vault = self.vault_path
         resolved = full.resolve()
         resolved_root = sync_vault.resolve()
-        if resolved != resolved_root and not str(resolved).startswith(str(resolved_root) + os.sep):
+        if resolved != resolved_root and not resolved.is_relative_to(resolved_root):
             raise ToolError(f"Path {memory_path} would escape vault directory")
 
         await _async_validate_no_symlink_escape(
@@ -165,8 +165,7 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         full = await self._resolve(command.path)
         await self._ensure_parent(full)
 
-        sync_full = Path(str(full))
-        if sync_full.exists() and sync_full.is_dir():
+        if await full.exists() and await full.is_dir():
             raise ToolError(f"A directory exists at {command.path}.")
 
         content = command.file_text or ""
@@ -195,7 +194,8 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         if count > 1:
             raise ToolError("Multiple occurrences of old_str — make it unique.")
 
-        new_content = content.replace(command.old_str, command.new_str, 1)
+        new_str = command.new_str if command.new_str is not None else ""
+        new_content = content.replace(command.old_str, new_str, 1)
         await _async_atomic_write_file(full, new_content)
         return f"Replaced in {command.path}"
 
@@ -229,12 +229,11 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         if command.path in ("/memories", "/memories/"):
             raise ToolError("Cannot delete /memories root.")
 
-        sync_full = Path(str(full))
         try:
-            if sync_full.is_file():
-                sync_full.unlink()
-            elif sync_full.is_dir():
-                shutil.rmtree(sync_full)
+            if await full.is_file():
+                await full.unlink()
+            elif await full.is_dir():
+                await run_sync(shutil.rmtree, Path(str(full)))
             else:
                 raise ToolError(f"Path {command.path} does not exist.")
         except FileNotFoundError as err:
@@ -250,14 +249,14 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         old = await self._resolve(command.old_path)
         new = await self._resolve(command.new_path)
 
-        sync_new = Path(str(new))
-        if sync_new.exists():
+        if await new.exists():
             raise ToolError(f"Destination {command.new_path} already exists.")
 
         await self._ensure_parent(new)
         sync_old = Path(str(old))
+        sync_new = Path(str(new))
         try:
-            sync_old.rename(sync_new)
+            await run_sync(sync_old.rename, sync_new)
         except FileNotFoundError as err:
             raise ToolError(f"Path {command.old_path} not found.") from err
 
@@ -267,8 +266,8 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
 
     @override
     async def clear_all_memory(self) -> str:
-        sync_root = Path(str(self.memory_root))
-        if sync_root.exists():
-            shutil.rmtree(sync_root)
-        sync_root.mkdir(parents=True, exist_ok=True, mode=_DIR_CREATE_MODE)
+        mem = AsyncPath(str(self.memory_root))
+        if await mem.exists():
+            await run_sync(shutil.rmtree, Path(str(self.memory_root)))
+        await mem.mkdir(parents=True, exist_ok=True, mode=_DIR_CREATE_MODE)
         return "Memory cleared (wiki/ preserved)"
