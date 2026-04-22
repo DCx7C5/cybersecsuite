@@ -21,6 +21,7 @@ x-ai-keys: &ai-keys
   XAI_API_KEY: ${XAI_API_KEY:-}
   TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
   OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+  NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
 
 x-oo-env: &oo-env
   OPENOBSERVE_HOST: ${OPENOBSERVE_HOST:-http://cybersec-openobserve:5080}
@@ -34,6 +35,8 @@ x-crypto-env: &crypto-env
 
 services:
   cybersec-dashboard:
+    profiles:
+      - default
     build:
       context: .
       dockerfile: .docker/dashboard/Dockerfile
@@ -71,9 +74,11 @@ services:
       start_interval: 5s
 
   cybersec-postgres:
+    profiles:
+      - default
     build:
-        context: .docker/postgres
-        dockerfile: Dockerfile
+      context: .docker/postgres
+      dockerfile: Dockerfile
     image: cybersec-postgres
     container_name: cybersec-postgres
     <<: *common
@@ -87,8 +92,8 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - pg_socket:/tmp
-    expose:
-      - "5432"
+    ports:
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 30s
@@ -98,6 +103,8 @@ services:
       start_interval: 5s
 
   cybersec-redis:
+    profiles:
+      - default
     build:
         context: .docker/redis
         dockerfile: Dockerfile
@@ -116,48 +123,14 @@ services:
       start_period: 5s
       start_interval: 3s
 
-  cybersec-openobserve:
-    image: openobserve/openobserve:latest
-    container_name: cybersec-openobserve
-    <<: *common
-    environment:
-      <<: *oo-env
-      ZO_DATA_DIR: /data
-      ZO_ROOT_USER_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
-      ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
-    expose:
-      - "5080"
-    volumes:
-      - oo_data:/data
-    healthcheck:
-      test: ["NONE"]
-
-
-  cybersec-wazuh:
-    image: wazuh/wazuh-manager:latest
-    container_name: cybersec-wazuh
-    profiles: [wazuh]
-    <<: *common
-    environment:
-      WAZUH_API_USER: ${WAZUH_API_USER:-wazuh}
-      WAZUH_API_PASSWORD: ${WAZUH_API_PASSWORD:-Wazuh_API_Pass123!}
-    expose:
-      - "55000"
-    volumes:
-      - wazuh_data:/var/ossec/data
-      - wazuh_logs:/var/ossec/logs
-      - wazuh_etc:/var/ossec/etc
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsk https://localhost:55000/ || exit 1"]
-      start_period: 60s
-
   cybersec-ollama:
     image: ollama/ollama:latest
     container_name: cybersec-ollama
-    profiles: [local-llm]
+    profiles:
+      - default
     <<: *common
     environment:
-      OLLAMA_HOST: 0.0.0.0
+      OLLAMA_HOST: 127.0.0.1
     ports:
       - "11434:11434"
     volumes:
@@ -176,6 +149,69 @@ services:
       retries: 3
       start_period: 15s
 
+  cybersec-openobserve:
+    profiles:
+      - default
+    image: openobserve/openobserve:latest
+    container_name: cybersec-openobserve
+    <<: *common
+    environment:
+      <<: *oo-env
+      ZO_DATA_DIR: /data
+      ZO_ROOT_USER_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
+      ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
+    expose:
+      - "5080"
+    volumes:
+      - oo_data:/data
+    healthcheck:
+      test: ["NONE"]
+
+  cybersec-wazuh:
+    image: wazuh/wazuh-manager:latest
+    container_name: cybersec-wazuh
+    profiles:
+      - wazuh
+    <<: *common
+    environment:
+      WAZUH_API_USER: ${WAZUH_API_USER:-wazuh}
+      WAZUH_API_PASSWORD: ${WAZUH_API_PASSWORD:-Wazuh_API_Pass123!}
+    expose:
+      - "55000"
+    volumes:
+      - wazuh_data:/var/ossec/data
+      - wazuh_logs:/var/ossec/logs
+      - wazuh_etc:/var/ossec/etc
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsk https://localhost:55000/ || exit 1"]
+      start_period: 60s
+
+  cybersec-opensearch:
+    image: wazuh/opensearch:latest
+    container_name: cybersec-opensearch
+    profiles:
+      - wazuh
+    <<: *common
+    environment:
+      cluster.name: wazuh-cluster
+      node.name: wazuh-node
+      discovery.type: single-node
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    expose:
+      - "9200"
+      - "9300"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:9200/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
 
 volumes:
   pg_data:
@@ -183,6 +219,9 @@ volumes:
   redis_data:
   oo_data:
   ollama_data:
+  openobserve_data:
+  openobserve_logs:
+  openobserve_etc:
   wazuh_data:
   wazuh_logs:
   wazuh_etc:
