@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Agent for testing CORS misconfiguration vulnerabilities during authorized assessments."""
 
-import os
-import requests
-import json
 import argparse
-import urllib3
+import json
+import os
 from datetime import datetime
 from urllib.parse import urlparse
+
+import requests
+import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -40,7 +41,7 @@ def test_origin_reflection(url, origins, cookies=None):
         try:
             headers = {"Origin": origin}
             resp = requests.get(url, headers=headers, cookies=cookies,
-                                timeout=10, verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+                                timeout=10, verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
             acao = resp.headers.get("Access-Control-Allow-Origin", "")
             acac = resp.headers.get("Access-Control-Allow-Credentials", "")
             if acao and acao != "":
@@ -73,9 +74,9 @@ def test_preflight(url, origin="https://evil.com"):
                 "Access-Control-Request-Method": method,
                 "Access-Control-Request-Headers": "Authorization, Content-Type",
             }
-            resp = requests.options(url, headers=headers, timeout=10, verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+            resp = requests.options(url, headers=headers, timeout=10, verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
             acam = resp.headers.get("Access-Control-Allow-Methods", "")
-            acah = resp.headers.get("Access-Control-Allow-Headers", "")
+            resp.headers.get("Access-Control-Allow-Headers", "")
             max_age = resp.headers.get("Access-Control-Max-Age", "")
             if method in acam:
                 print(f"  [+] {method} allowed in preflight")
@@ -95,14 +96,14 @@ def test_wildcard_with_credentials(url):
     print(f"\n[*] Testing wildcard + credentials on {url}")
     try:
         resp = requests.get(url, headers={"Origin": "https://any.com"},
-                            timeout=10, verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+                            timeout=10, verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         acao = resp.headers.get("Access-Control-Allow-Origin", "")
         acac = resp.headers.get("Access-Control-Allow-Credentials", "")
         if acao == "*" and acac.lower() == "true":
-            print(f"  [!] CRITICAL: Wildcard (*) with credentials=true")
+            print("  [!] CRITICAL: Wildcard (*) with credentials=true")
             return [{"url": url, "issue": "wildcard_with_credentials", "severity": "CRITICAL"}]
         elif acao == "*":
-            print(f"  [+] Wildcard (*) without credentials (acceptable for public APIs)")
+            print("  [+] Wildcard (*) without credentials (acceptable for public APIs)")
     except requests.RequestException:
         pass
     return []
@@ -113,7 +114,7 @@ def test_null_origin(url, cookies=None):
     print(f"\n[*] Testing null origin on {url}")
     try:
         resp = requests.get(url, headers={"Origin": "null"}, cookies=cookies,
-                            timeout=10, verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+                            timeout=10, verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         acao = resp.headers.get("Access-Control-Allow-Origin", "")
         acac = resp.headers.get("Access-Control-Allow-Credentials", "")
         if acao == "null":
@@ -123,7 +124,7 @@ def test_null_origin(url, cookies=None):
             return [{"url": url, "issue": "null_origin_accepted",
                       "credentials": creds, "severity": severity}]
         else:
-            print(f"  [+] Null origin not reflected")
+            print("  [+] Null origin not reflected")
     except requests.RequestException:
         pass
     return []
@@ -140,7 +141,7 @@ def test_internal_origins(url, cookies=None):
     for origin in internal:
         try:
             resp = requests.get(url, headers={"Origin": origin}, cookies=cookies,
-                                timeout=10, verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+                                timeout=10, verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true")  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
             acao = resp.headers.get("Access-Control-Allow-Origin", "")
             if acao == origin:
                 findings.append({"url": url, "origin": origin, "severity": "MEDIUM"})
@@ -153,8 +154,6 @@ def test_internal_origins(url, cookies=None):
 def scan_endpoints(base_url, endpoints, token=None):
     """Scan multiple endpoints for CORS issues."""
     all_findings = []
-    cookies = None
-    headers_auth = {"Authorization": f"Bearer {token}"} if token else {}
     domain = urlparse(base_url).netloc
     dynamic_origins = build_dynamic_origins(domain)
     test_origins = EVIL_ORIGINS + dynamic_origins
@@ -196,7 +195,7 @@ def main():
     parser.add_argument("-o", "--output", default="cors_report.json")
     args = parser.parse_args()
 
-    print(f"[*] CORS Misconfiguration Assessment")
+    print("[*] CORS Misconfiguration Assessment")
     print(f"[*] Target: {args.base_url}")
     findings = scan_endpoints(args.base_url, args.endpoints, args.token)
     generate_report(findings, args.output)

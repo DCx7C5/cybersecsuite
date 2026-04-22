@@ -9,10 +9,7 @@ import sys
 from datetime import datetime
 
 try:
-    from scapy.all import (
-        Ether, Dot1Q, IP, ICMP, sendp, sniff, get_if_hwaddr,
-        conf, LLC, SNAP, Raw
-    )
+    from scapy.all import ICMP, IP, LLC, SNAP, Dot1Q, Ether, Raw, get_if_hwaddr, sendp, sniff
 except ImportError:
     print("Install: pip install scapy")
     sys.exit(1)

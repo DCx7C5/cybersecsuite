@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Active Directory tiered administration model audit agent using ldap3."""
 
+import argparse
 import json
 import sys
-import argparse
 from datetime import datetime
 
 try:
-    import ldap3
-    from ldap3 import Server, Connection, ALL, NTLM
+    from ldap3 import ALL, NTLM, Connection, Server
 except ImportError:
     print("Install: pip install ldap3")
     sys.exit(1)
@@ -98,7 +97,7 @@ def run_audit(server_ip, domain, username, password):
     base_dn = ",".join([f"DC={p}" for p in domain.split(".")])
 
     print(f"\n{'='*60}")
-    print(f"  AD TIERED ADMINISTRATION MODEL AUDIT")
+    print("  AD TIERED ADMINISTRATION MODEL AUDIT")
     print(f"  Domain: {domain}")
     print(f"  Generated: {datetime.utcnow().isoformat()} UTC")
     print(f"{'='*60}\n")
@@ -117,7 +116,7 @@ def run_audit(server_ip, domain, username, password):
         print(f"  [{v['severity']}] {v['account']}: {v['violation']}")
 
     paw = check_paw_compliance(conn, base_dn)
-    print(f"\n--- PAW COMPLIANCE ---")
+    print("\n--- PAW COMPLIANCE ---")
     print(f"  PAWs found: {paw['paw_count']}")
     print(f"  Compliant: {paw['compliant']}")
 

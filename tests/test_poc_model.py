@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import sys
+
 import pytest
 from tortoise.context import TortoiseContext
 
 from db.models.enums import PocStatus, Severity
-
 
 # ── Tortoise in-memory SQLite fixture ────────────────────────────────────────
 
@@ -49,8 +50,6 @@ class TestPocStatusEnum:
         members = {m.value for m in PocStatus}
         assert members == {"unverified", "verified", "weaponized", "patched", "disputed"}
 
-
-import sys
 
 _SKIP_TORTOISE = pytest.mark.skipif(
     sys.version_info >= (3, 14),
@@ -144,8 +143,8 @@ class TestProofOfConceptModel:
         await poc.delete()
 
     async def test_fk_to_cveintel(self, tortoise_ctx):
-        from db.models.poc import ProofOfConcept
         from db.models.cve import CVEIntel
+        from db.models.poc import ProofOfConcept
 
         cve = await CVEIntel.create(
             cve_id="CVE-2021-99999",

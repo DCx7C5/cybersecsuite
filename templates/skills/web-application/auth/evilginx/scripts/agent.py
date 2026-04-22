@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Agent for performing initial access simulation with Evilginx3 phishlet analysis — educational/authorized pentest use."""
 
-import json
 import argparse
-import subprocess
+import json
 import re
+import subprocess
 from pathlib import Path
 
 
@@ -83,9 +83,7 @@ def list_phishlets(phishlet_dir):
     p = Path(phishlet_dir)
     if not p.is_dir():
         return {"error": f"Directory not found: {phishlet_dir}"}
-    phishlets = []
-    for f in sorted(p.glob("*.yaml")) + sorted(p.glob("*.yml")):
-        phishlets.append({"name": f.stem, "path": str(f), "size": f.stat().st_size})
+    phishlets = [{"name": f.stem, "path": str(f), "size": f.stat().st_size} for f in sorted(p.glob("*.yaml")) + sorted(p.glob("*.yml"))]
     return {"directory": phishlet_dir, "count": len(phishlets), "phishlets": phishlets}
 
 
@@ -109,13 +107,12 @@ def generate_detection_rules(phishlet_path):
         })
     auth_tokens = config.get("auth_tokens", [])
     for token in auth_tokens:
-        for key in token.get("keys", []):
-            rules.append({
+        rules.extend({
                 "type": "cookie_monitor",
                 "description": f"Monitor for session token relay of {key}",
                 "cookie_name": key,
                 "domain": token.get("domain", ""),
-            })
+            } for key in token.get("keys", []))
     rules.append({
         "type": "network_signature",
         "description": "Detect reverse proxy header anomalies",
@@ -138,8 +135,8 @@ def main():
     sub = parser.add_subparsers(dest="command")
     p = sub.add_parser("parse", help="Parse phishlet YAML")
     p.add_argument("--phishlet", required=True)
-    l = sub.add_parser("logs", help="Analyze session logs")
-    l.add_argument("--file", required=True)
+    logs_parser = sub.add_parser("logs", help="Analyze session logs")
+    logs_parser.add_argument("--file", required=True)
     sub.add_parser("check", help="Check Evilginx installation")
     ls = sub.add_parser("list", help="List available phishlets")
     ls.add_argument("--dir", required=True)

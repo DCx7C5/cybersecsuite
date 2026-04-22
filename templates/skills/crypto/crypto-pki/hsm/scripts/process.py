@@ -21,15 +21,14 @@ Usage:
     python process.py encrypt --token MyToken --pin 1234 --key-label my-aes-key --input data.txt
 """
 
-import os
-import sys
-import json
 import argparse
+import json
 import logging
-import subprocess
+import os
 import platform
+import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, List, Optional
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ SOFTHSM_PATHS = {
 }
 
 
-def find_softhsm_lib() -> Optional[str]:
+def find_softhsm_lib() -> str | None:
     """Find the SoftHSM2 library path."""
     system = platform.system().lower()
     if system == "windows":
@@ -73,7 +72,7 @@ def find_softhsm_lib() -> Optional[str]:
     return None
 
 
-def init_token_via_cli(label: str, pin: str, so_pin: str) -> Dict:
+def init_token_via_cli(label: str, pin: str, so_pin: str) -> dict:
     """Initialize a SoftHSM2 token using command-line tool."""
     try:
         result = subprocess.run(
@@ -100,16 +99,14 @@ def init_token_via_cli(label: str, pin: str, so_pin: str) -> Dict:
         return {"status": "error", "message": str(e)}
 
 
-def pkcs11_operations_demo(token_label: str, pin: str, lib_path: str) -> Dict:
+def pkcs11_operations_demo(token_label: str, pin: str, lib_path: str) -> dict:
     """
     Demonstrate PKCS#11 operations using python-pkcs11.
     This requires the python-pkcs11 package and SoftHSM2.
     """
     try:
         import pkcs11
-        from pkcs11 import KeyType, Attribute, ObjectClass, Mechanism
-        from pkcs11.util.rsa import encode_rsa_public_key
-        from pkcs11.util.ec import encode_named_curve_parameters
+        from pkcs11 import Attribute, KeyType, Mechanism, ObjectClass
     except ImportError:
         return {
             "status": "error",
@@ -127,7 +124,7 @@ def pkcs11_operations_demo(token_label: str, pin: str, lib_path: str) -> Dict:
     with token.open(user_pin=pin, rw=True) as session:
         # Generate AES-256 key
         try:
-            aes_key = session.generate_key(
+            session.generate_key(
                 KeyType.AES, 256,
                 label="demo-aes-256",
                 store=True,
@@ -148,7 +145,7 @@ def pkcs11_operations_demo(token_label: str, pin: str, lib_path: str) -> Dict:
 
         # Generate RSA-2048 key pair
         try:
-            pub_key, priv_key = session.generate_keypair(
+            _pub_key, _priv_key = session.generate_keypair(
                 KeyType.RSA, 2048,
                 label="demo-rsa-2048",
                 store=True,
@@ -209,7 +206,7 @@ def pkcs11_operations_demo(token_label: str, pin: str, lib_path: str) -> Dict:
                 Attribute.CLASS: ObjectClass.PUBLIC_KEY,
                 Attribute.LABEL: "demo-rsa-2048",
             }):
-                valid = key.verify(data, signature, mechanism=Mechanism.SHA256_RSA_PKCS)
+                key.verify(data, signature, mechanism=Mechanism.SHA256_RSA_PKCS)
                 results["operations"].append({
                     "operation": "rsa_verify",
                     "status": "success",
@@ -240,7 +237,7 @@ def pkcs11_operations_demo(token_label: str, pin: str, lib_path: str) -> Dict:
     return results
 
 
-def list_tokens(lib_path: str) -> Dict:
+def list_tokens(lib_path: str) -> dict:
     """List all available PKCS#11 tokens."""
     try:
         import pkcs11
@@ -260,9 +257,9 @@ def list_tokens(lib_path: str) -> Dict:
         return {"status": "error", "message": str(e)}
 
 
-def generate_hsm_config() -> Dict:
+def generate_hsm_config() -> dict:
     """Generate HSM configuration plugins for different providers."""
-    configs = {
+    return {
         "softhsm2": {
             "description": "SoftHSM2 (Development/Testing)",
             "install": {
@@ -298,7 +295,6 @@ def generate_hsm_config() -> Dict:
             "pkcs11_lib": "/usr/safenet/lunaclient/lib/libCryptoki2_64.so",
         },
     }
-    return configs
 
 
 def main():

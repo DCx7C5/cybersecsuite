@@ -6,11 +6,11 @@ validates CA deployment on endpoints, checks TLS version enforcement,
 audits decryption exemption lists, and monitors inspection health.
 """
 
-import ssl
-import socket
 import json
-import sys
+import socket
+import ssl
 import subprocess
+import sys
 from datetime import datetime
 
 
@@ -33,7 +33,7 @@ class TLSInspectionAgent:
                 s.connect((hostname, port))
                 cert = s.getpeercert(binary_form=False)
                 if not cert:
-                    der = s.getpeercert(binary_form=True)
+                    s.getpeercert(binary_form=True)
                     return {"hostname": hostname, "inspection": "unknown",
                             "note": "Could not parse certificate"}
 
@@ -55,7 +55,7 @@ class TLSInspectionAgent:
             self.results.append(result)
             return result
 
-        except (socket.error, ssl.SSLError, OSError) as exc:
+        except (ssl.SSLError, OSError) as exc:
             result = {"hostname": hostname, "error": str(exc)}
             self.results.append(result)
             return result
@@ -84,7 +84,7 @@ class TLSInspectionAgent:
                     s.settimeout(5)
                     s.connect((hostname, port))
                     results.append({"version": name, "status": "accepted"})
-            except (ssl.SSLError, socket.error):
+            except (OSError, ssl.SSLError):
                 results.append({"version": name, "status": "rejected"})
         return results
 

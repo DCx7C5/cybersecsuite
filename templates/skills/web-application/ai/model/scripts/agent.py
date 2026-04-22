@@ -15,9 +15,8 @@ import logging
 import re
 import sys
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Optional
 
 logging.basicConfig(
     level=logging.INFO,
@@ -126,7 +125,7 @@ class HeuristicScorer:
 
         # Feature 5: Line count anomaly (many short lines suggest structured injection)
         lines = text.strip().split("\n")
-        if len(lines) > 5 and sum(len(l) for l in lines) / max(len(lines), 1) < 40:
+        if len(lines) > 5 and sum(len(ln) for ln in lines) / max(len(lines), 1) < 40:
             features["line_structure_anomaly"] = 0.6
         else:
             features["line_structure_anomaly"] = 0.0
@@ -137,7 +136,7 @@ class HeuristicScorer:
 
         # Feature 7: Repetition score
         if word_count >= 4:
-            unique_ratio = len(set(w.lower() for w in words)) / word_count
+            unique_ratio = len({w.lower() for w in words}) / word_count
             features["repetition_score"] = max(0.0, 1.0 - unique_ratio) if unique_ratio < 0.4 else 0.0
         else:
             features["repetition_score"] = 0.0
@@ -216,7 +215,7 @@ class PromptInjectionDetector:
         self.threshold = threshold
         self.regex_detector = RegexDetector()
         self.heuristic_scorer = HeuristicScorer()
-        self.classifier: Optional[ClassifierDetector] = None
+        self.classifier: ClassifierDetector | None = None
         if mode == "full":
             self.classifier = ClassifierDetector(threshold=threshold, device=device)
 

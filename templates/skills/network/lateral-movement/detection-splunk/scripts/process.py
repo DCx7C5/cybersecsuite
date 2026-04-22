@@ -5,10 +5,10 @@ Analyzes Windows authentication logs to detect lateral movement patterns
 including RDP, SMB, WinRM, PsExec, and WMI-based movement.
 """
 
-import json
-import csv
 import argparse
+import csv
 import datetime
+import json
 import re
 from collections import defaultdict
 from pathlib import Path
@@ -65,7 +65,7 @@ def normalize_event(event: dict) -> dict:
     normalized = {}
     for target, sources in field_map.items():
         for src in sources:
-            if src in event and event[src]:
+            if event.get(src):
                 normalized[target] = str(event[src]).strip()
                 break
         if target not in normalized:
@@ -215,7 +215,6 @@ def analyze_velocity(findings: list[dict], window_minutes: int = 10, threshold: 
     for account, events in account_events.items():
         events.sort(key=lambda x: x.get("timestamp", ""))
         unique_dests = set()
-        window_start = 0
 
         for i, event in enumerate(events):
             unique_dests.add(event.get("dest_host", ""))
@@ -287,16 +286,14 @@ def run_hunt(input_path: str, output_dir: str) -> None:
         }, f, indent=2)
 
     with open(output_path / "hunt_report.md", "w", encoding="utf-8") as f:
-        f.write(f"# Lateral Movement Hunt Report\n\n")
+        f.write("# Lateral Movement Hunt Report\n\n")
         f.write(f"**Date**: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"**Events**: {len(events)} | **Findings**: {len(findings)}\n\n")
         f.write("## Movement Graph\n\n")
         for src, dests in graph.items():
-            for dst, connections in dests.items():
-                f.write(f"- `{src}` -> `{dst}` ({len(connections)} connections)\n")
+            f.writelines(f"- `{src}` -> `{dst}` ({len(connections)} connections)\n" for dst, connections in dests.items())
         f.write("\n## Velocity Anomalies\n\n")
-        for alert in velocity_alerts:
-            f.write(f"- **{alert['account']}**: {alert['unique_destinations']} hosts in short window\n")
+        f.writelines(f"- **{alert['account']}**: {alert['unique_destinations']} hosts in short window\n" for alert in velocity_alerts)
 
     print(f"[+] {len(findings)} findings, {len(graph)} source nodes in movement graph")
 

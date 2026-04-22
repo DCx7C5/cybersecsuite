@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Pass-the-Hash Detection - Analyzes authentication logs for NTLM-based lateral movement patterns."""
 
-import json, csv, argparse, datetime, re
+import argparse
+import csv
+import datetime
+import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -20,15 +23,20 @@ def parse_logs(path):
 
 def detect_pth(event):
     eid = str(event.get("EventCode", event.get("EventID", "")))
-    if eid != "4624": return None
+    if eid != "4624":
+        return None
     logon_type = str(event.get("Logon_Type", event.get("LogonType", "")))
-    if logon_type != "3": return None
+    if logon_type != "3":
+        return None
     auth_pkg = event.get("Authentication_Package", event.get("AuthenticationPackageName", "")).lower()
-    if "ntlm" not in auth_pkg: return None
+    if "ntlm" not in auth_pkg:
+        return None
     account = event.get("Account_Name", event.get("TargetUserName", "")).lower()
-    if account in SYSTEM_ACCOUNTS or account.endswith("$"): return None
+    if account in SYSTEM_ACCOUNTS or account.endswith("$"):
+        return None
     src_ip = event.get("Source_Network_Address", event.get("IpAddress", ""))
-    if not src_ip or src_ip in ("-", "::1", "127.0.0.1"): return None
+    if not src_ip or src_ip in ("-", "::1", "127.0.0.1"):
+        return None
     return {
         "technique": "T1550.002",
         "account": event.get("Account_Name", event.get("TargetUserName", "")),
@@ -71,15 +79,20 @@ def run_hunt(input_path, output_dir):
 def main():
     p = argparse.ArgumentParser(description="Pass-the-Hash Detection")
     sp = p.add_subparsers(dest="cmd")
-    h = sp.add_parser("hunt"); h.add_argument("--input", "-i", required=True); h.add_argument("--output", "-o", default="./pth_output")
+    h = sp.add_parser("hunt")
+    h.add_argument("--input", "-i", required=True)
+    h.add_argument("--output", "-o", default="./pth_output")
     sp.add_parser("queries")
     args = p.parse_args()
-    if args.cmd == "hunt": run_hunt(args.input, args.output)
+    if args.cmd == "hunt":
+        run_hunt(args.input, args.output)
     elif args.cmd == "queries":
         print("=== Splunk PtH Query ===")
         print('''index=wineventlog EventCode=4624 Logon_Type=3 Authentication_Package=NTLM
 | stats count dc(Computer) as targets by Account_Name Source_Network_Address
 | where targets > 3 | sort -targets''')
-    else: p.print_help()
+    else:
+        p.print_help()
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()

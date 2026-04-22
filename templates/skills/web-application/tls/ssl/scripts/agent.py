@@ -4,9 +4,9 @@
 # It is the end user's responsibility to obey all applicable local, state and federal laws.
 """SSL stripping assessment agent using subprocess wrappers for bettercap and curl."""
 
-import subprocess
-import re
 import json
+import re
+import subprocess
 import sys
 
 
@@ -89,13 +89,12 @@ def check_security_headers(url):
         capture_output=True, text=True, timeout=15
     )
     headers_text = result.stdout.lower()
-    checks = {
+    return {
         "content-security-policy": "content-security-policy:" in headers_text,
         "x-content-type-options": "x-content-type-options:" in headers_text,
         "x-frame-options": "x-frame-options:" in headers_text,
         "upgrade-insecure-requests": "upgrade-insecure-requests" in headers_text,
     }
-    return checks
 
 
 def run_assessment(targets):
@@ -110,7 +109,7 @@ def run_assessment(targets):
         entry["redirect"] = check_redirect_chain(http_url)
         entry["mixed_content"] = check_mixed_content(https_url)
         entry["security_headers"] = check_security_headers(https_url)
-        vulnerable = (
+        (
             not entry["hsts"]["hsts_present"]
             or not entry["preload"]["preloaded"]
             or entry["mixed_content"]["mixed_content_found"]

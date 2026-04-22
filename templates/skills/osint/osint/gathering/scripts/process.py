@@ -27,17 +27,14 @@ import socket
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
-from urllib.parse import urlparse
 
 try:
     import dns.resolver
     import requests
-    from bs4 import BeautifulSoup
     from rich.console import Console
-    from rich.table import Table
     from rich.panel import Panel
     from rich.progress import Progress, SpinnerColumn, TextColumn
+    from rich.table import Table
 except ImportError:
     print("[!] Missing dependencies. Install with:")
     print("    pip install requests dnspython beautifulsoup4 rich")
@@ -115,7 +112,7 @@ def perform_whois_lookup(domain: str) -> dict:
     try:
         import whois as python_whois
         w = python_whois.whois(domain)
-        result = {
+        return {
             "domain_name": str(w.domain_name) if w.domain_name else "N/A",
             "registrar": str(w.registrar) if w.registrar else "N/A",
             "creation_date": str(w.creation_date) if w.creation_date else "N/A",
@@ -125,7 +122,6 @@ def perform_whois_lookup(domain: str) -> dict:
             "registrant_country": str(w.country) if w.country else "N/A",
             "emails": w.emails if w.emails else [],
         }
-        return result
     except Exception as e:
         console.print(f"[yellow][!] WHOIS lookup failed: {e}[/yellow]")
         return {}
@@ -277,7 +273,7 @@ def fingerprint_web_technologies(domain: str) -> dict:
 
 def generate_google_dorks(domain: str) -> list[str]:
     """Generate Google dorking queries for the target domain."""
-    dorks = [
+    return [
         # Sensitive files
         f'site:{domain} filetype:pdf',
         f'site:{domain} filetype:xlsx',
@@ -327,7 +323,6 @@ def generate_google_dorks(domain: str) -> list[str]:
         f'site:blob.core.windows.net "{domain.split(".")[0]}"',
         f'site:storage.googleapis.com "{domain.split(".")[0]}"',
     ]
-    return dorks
 
 
 def check_security_txt(domain: str) -> dict | None:
@@ -450,7 +445,7 @@ def generate_report(domain: str, results: dict, output_dir: Path):
         for path in robots_txt.get("disallowed_paths", []):
             report += f"- `{path}`\n"
 
-    report += f"""
+    report += """
 ---
 
 ## 7. Recommendations for Attack Planning

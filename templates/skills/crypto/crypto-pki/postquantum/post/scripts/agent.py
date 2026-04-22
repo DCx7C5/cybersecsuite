@@ -8,22 +8,18 @@ ML-DSA algorithm functionality, and generates prioritized migration roadmaps
 per NIST FIPS 203/204/205 standards.
 """
 
-import os
-import sys
-import json
-import ssl
-import socket
-import struct
 import argparse
+import json
 import logging
-import subprocess
-import hashlib
+import os
 import re
-from datetime import datetime, timezone
-from pathlib import Path
+import socket
+import ssl
+import subprocess
+import sys
 from collections import defaultdict
-
-import requests
+from datetime import UTC, datetime
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -189,7 +185,7 @@ def scan_tls_endpoint(host, port=443, timeout=10):
     result = {
         "host": host,
         "port": port,
-        "scan_time": datetime.now(timezone.utc).isoformat(),
+        "scan_time": datetime.now(UTC).isoformat(),
         "tls_version": None,
         "cipher_suite": None,
         "key_exchange": None,
@@ -231,7 +227,7 @@ def scan_tls_endpoint(host, port=443, timeout=10):
     except ssl.SSLError as e:
         result["error"] = f"SSL error: {e}"
         logger.warning("SSL error scanning %s:%d: %s", host, port, e)
-    except socket.timeout:
+    except TimeoutError:
         result["error"] = "Connection timed out"
         logger.warning("Timeout scanning %s:%d", host, port)
     except socket.gaierror as e:
@@ -485,7 +481,7 @@ def assess_crypto_agility(scan_results):
         Crypto-agility assessment report
     """
     assessment = {
-        "assessment_time": datetime.now(timezone.utc).isoformat(),
+        "assessment_time": datetime.now(UTC).isoformat(),
         "total_endpoints": len(scan_results),
         "quantum_vulnerable_endpoints": 0,
         "tls13_ready": 0,
@@ -637,7 +633,7 @@ def test_hybrid_tls_support(host, port=443):
     result = {
         "host": host,
         "port": port,
-        "test_time": datetime.now(timezone.utc).isoformat(),
+        "test_time": datetime.now(UTC).isoformat(),
         "openssl_version": "",
         "hybrid_groups_tested": [],
         "pqc_supported": False,
@@ -742,15 +738,13 @@ def test_mlkem_support():
         Dict with ML-KEM validation results for each security level
     """
     results = {
-        "test_time": datetime.now(timezone.utc).isoformat(),
+        "test_time": datetime.now(UTC).isoformat(),
         "library": None,
         "levels": {},
     }
 
     # Try Python mlkem library first
     try:
-        from mlkem.ml_kem import ML_KEM
-
         results["library"] = "mlkem (Python)"
 
         for level_name, params in MLKEM_PARAMS.items():
@@ -794,8 +788,9 @@ def _test_mlkem_python(level_name, params):
     }
 
     try:
-        from mlkem.ml_kem import ML_KEM
         import time
+
+        from mlkem.ml_kem import ML_KEM
 
         # Map level name to ML_KEM parameter
         param_map = {
@@ -865,7 +860,7 @@ def _test_mlkem_openssl(level_name, params):
 
     try:
         # Test key generation with openssl
-        proc = subprocess.run(
+        subprocess.run(
             ["openssl", "pkey", "-algorithm", algo, "-text", "-noout"],
             input=b"",
             capture_output=True,
@@ -910,7 +905,7 @@ def test_mldsa_support():
         Dict with ML-DSA validation results
     """
     results = {
-        "test_time": datetime.now(timezone.utc).isoformat(),
+        "test_time": datetime.now(UTC).isoformat(),
         "library": None,
         "levels": {},
     }
@@ -1043,7 +1038,7 @@ def generate_migration_roadmap(scan_results, agility_assessment=None):
         Migration roadmap with phased recommendations
     """
     roadmap = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "nist_timeline": NIST_MIGRATION_DEADLINES,
         "executive_summary": "",
         "phases": [],
@@ -1243,7 +1238,7 @@ def check_openssl_pqc_support():
         Dict with OpenSSL version, provider status, and PQC algorithm availability
     """
     result = {
-        "check_time": datetime.now(timezone.utc).isoformat(),
+        "check_time": datetime.now(UTC).isoformat(),
         "openssl_version": "",
         "providers": [],
         "pqc_kem_algorithms": [],
@@ -1323,7 +1318,7 @@ def generate_oqs_provider_config():
     Returns the configuration text for enabling PQC algorithms via
     the Open Quantum Safe provider in OpenSSL 3.x.
     """
-    config = """# OpenSSL configuration for oqs-provider (Post-Quantum Cryptography)
+    return """# OpenSSL configuration for oqs-provider (Post-Quantum Cryptography)
 # Place at /etc/ssl/openssl-oqs.cnf
 # Set OPENSSL_CONF=/etc/ssl/openssl-oqs.cnf before running OpenSSL/nginx/Apache
 
@@ -1355,7 +1350,6 @@ Groups = x25519_mlkem768:X25519:P-256:P-384
 # Minimum TLS version (1.3 required for PQC key exchange)
 MinProtocol = TLSv1.2
 """
-    return config
 
 
 # ---------------------------------------------------------------------------
@@ -1408,7 +1402,7 @@ Examples:
 
     report = {
         "agent": "pqc-migration-assessment",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "action": args.action,
         "nist_standards": {
             "FIPS_203": "ML-KEM (CRYSTALS-Kyber) -- Key Encapsulation",
@@ -1498,7 +1492,7 @@ Examples:
     if args.action in ("test_mldsa", "full_assessment"):
         mldsa_result = test_mldsa_support()
         report["mldsa_validation"] = mldsa_result
-        print(f"[+] ML-DSA (FIPS 204) validation:")
+        print("[+] ML-DSA (FIPS 204) validation:")
         for level, result in mldsa_result.get("levels", {}).items():
             status = "PASS" if result.get("supported") else "FAIL"
             err = result.get("error", "")
@@ -1508,7 +1502,7 @@ Examples:
     if args.action in ("check_openssl", "full_assessment"):
         ossl = check_openssl_pqc_support()
         report["openssl_pqc"] = ossl
-        print(f"[+] OpenSSL PQC support check:")
+        print("[+] OpenSSL PQC support check:")
         print(f"    Version: {ossl.get('openssl_version', 'unknown')}")
         print(f"    PQC ready: {ossl.get('pqc_ready', False)}")
         if ossl.get("pqc_kem_algorithms"):
@@ -1541,7 +1535,7 @@ Examples:
         if scan_results:
             roadmap = generate_migration_roadmap(scan_results, agility)
             report["migration_roadmap"] = roadmap
-            print(f"\n[+] Migration Roadmap")
+            print("\n[+] Migration Roadmap")
             print(f"    {roadmap['executive_summary']}")
             print(f"\n    NIST Timeline: deprecation by {NIST_MIGRATION_DEADLINES['deprecation']}, "
                   f"removal by {NIST_MIGRATION_DEADLINES['disallowed']}")
@@ -1550,7 +1544,7 @@ Examples:
                 for action in phase["actions"]:
                     print(f"      [{action['priority']}] {action['action']}")
             if roadmap["quick_wins"]:
-                print(f"\n    Quick Wins:")
+                print("\n    Quick Wins:")
                 for qw in roadmap["quick_wins"]:
                     print(f"      - {qw['action']}")
         else:

@@ -68,7 +68,7 @@ def detect_port_scan(connections, threshold=20):
         src = conn.get("id.orig_h", "")
         dst = conn.get("id.resp_h", "")
         port = conn.get("id.resp_p", "")
-        state = conn.get("conn_state", "")
+        conn.get("conn_state", "")
 
         src_dst_ports[f"{src}->{dst}"].add(port)
         src_dst_count[f"{src}->{dst}"] += 1
@@ -123,16 +123,14 @@ def analyze_ids_alerts(alerts):
         dst = alert.get("dest_ip", "")
         severity = alert.get("alert", {}).get("severity", 3)
 
-        for pattern in NMAP_SIGNATURES:
-            if re.search(pattern, sig, re.IGNORECASE):
-                findings.append({
+        findings.extend({
                     "type": "scanner_detected",
                     "tool": pattern.replace("\\s+", " "),
                     "source": src, "destination": dst,
                     "signature": sig,
                     "severity": "HIGH",
                     "mitre": "T1046",
-                })
+                } for pattern in NMAP_SIGNATURES if re.search(pattern, sig, re.IGNORECASE))
 
         if "scan" in category.lower() or "scan" in sig.lower():
             findings.append({

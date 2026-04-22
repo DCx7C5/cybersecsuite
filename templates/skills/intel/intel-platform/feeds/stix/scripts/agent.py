@@ -6,23 +6,21 @@ feeds in STIX format. Extracts indicators of compromise (IOCs), threat actors,
 malware families, and attack patterns from STIX bundles.
 """
 import argparse
+import importlib.util
 import json
-import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 try:
-    from taxii2client.v20 import Server as Server20, Collection as Collection20
-    from taxii2client.v21 import Server as Server21, Collection as Collection21
+    from taxii2client.v20 import Collection as Collection20
+    from taxii2client.v20 import Server as Server20
+    from taxii2client.v21 import Collection as Collection21
+    from taxii2client.v21 import Server as Server21
     HAS_TAXII_CLIENT = True
 except ImportError:
     HAS_TAXII_CLIENT = False
 
-try:
-    from stix2 import parse as stix_parse
-    HAS_STIX2 = True
-except ImportError:
-    HAS_STIX2 = False
+HAS_STIX2 = importlib.util.find_spec("stix2") is not None
 
 try:
     import requests
@@ -125,10 +123,7 @@ def extract_indicators(stix_objects):
 
 def extract_threat_actors(stix_objects):
     """Extract threat actor information from STIX objects."""
-    actors = []
-    for obj in stix_objects:
-        if obj.get("type") == "threat-actor":
-            actors.append({
+    return [{
                 "type": "threat-actor",
                 "id": obj.get("id", ""),
                 "name": obj.get("name", ""),
@@ -139,16 +134,12 @@ def extract_threat_actors(stix_objects):
                 "sophistication": obj.get("sophistication", ""),
                 "resource_level": obj.get("resource_level", ""),
                 "primary_motivation": obj.get("primary_motivation", ""),
-            })
-    return actors
+            } for obj in stix_objects if obj.get("type") == "threat-actor"]
 
 
 def extract_malware(stix_objects):
     """Extract malware family info from STIX objects."""
-    malware = []
-    for obj in stix_objects:
-        if obj.get("type") == "malware":
-            malware.append({
+    return [{
                 "type": "malware",
                 "id": obj.get("id", ""),
                 "name": obj.get("name", ""),
@@ -157,8 +148,7 @@ def extract_malware(stix_objects):
                 "is_family": obj.get("is_family", False),
                 "aliases": obj.get("aliases", []),
                 "capabilities": obj.get("capabilities", []),
-            })
-    return malware
+            } for obj in stix_objects if obj.get("type") == "malware"]
 
 
 def extract_attack_patterns(stix_objects):
@@ -195,10 +185,10 @@ def summarize_stix_objects(stix_objects):
 def format_summary(type_counts, indicators, actors, malware, attack_patterns):
     """Print human-readable summary."""
     print(f"\n{'='*60}")
-    print(f"  STIX/TAXII Feed Intelligence Report")
+    print("  STIX/TAXII Feed Intelligence Report")
     print(f"{'='*60}")
 
-    print(f"\n  Object Type Distribution:")
+    print("\n  Object Type Distribution:")
     for obj_type, count in sorted(type_counts.items(), key=lambda x: -x[1]):
         print(f"    {obj_type:30s}: {count}")
 
@@ -252,7 +242,7 @@ def main():
 
     if args.discover_only:
         report = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "tool": "STIX/TAXII Client",
             "server": args.server,
             "collections": collections,
@@ -297,7 +287,7 @@ def main():
     format_summary(type_counts, indicators, actors, malware_items, attack_patterns)
 
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "tool": "STIX/TAXII Client",
         "server": args.server,
         "taxii_version": args.version,

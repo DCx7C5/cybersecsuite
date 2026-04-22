@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Fluentd/Fluent Bit log forwarding configuration generator and tester."""
 
-import json
 import argparse
+import json
 import socket
 import time
 from datetime import datetime
 
 try:
-    from fluent import sender, event
+    from fluent import sender
     HAS_FLUENT = True
 except ImportError:
     HAS_FLUENT = False
@@ -25,9 +25,7 @@ def generate_fluentbit_config(inputs, output_host="127.0.0.1", output_port=24224
         "tcp": "[INPUT]\n    Name         tcp\n    Tag          tcp.*\n    Listen       0.0.0.0\n    Port         5170\n    Format       json\n",
     }
 
-    for inp in inputs:
-        if inp in input_configs:
-            sections.append(input_configs[inp])
+    sections.extend(input_configs[inp] for inp in inputs if inp in input_configs)
 
     sections.append(
         "[FILTER]\n"
@@ -127,9 +125,7 @@ def generate_fluentd_config(outputs, bind_port=24224):
         ),
     }
 
-    for out in outputs:
-        if out in output_configs:
-            sections.append(output_configs[out])
+    sections.extend(output_configs[out] for out in outputs if out in output_configs)
 
     return "\n".join(sections)
 

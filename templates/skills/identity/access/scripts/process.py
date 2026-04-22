@@ -12,7 +12,7 @@ Requirements:
 import json
 import logging
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 try:
     import requests
@@ -57,7 +57,7 @@ class SaviyntCampaignManager:
     def create_campaign(self, name, campaign_type, certifier_type,
                          due_days=14, scope=None):
         """Create a new certification campaign."""
-        due_date = (datetime.now(timezone.utc) + timedelta(days=due_days)).strftime(
+        due_date = (datetime.now(UTC) + timedelta(days=due_days)).strftime(
             "%Y-%m-%d"
         )
         payload = {
@@ -131,15 +131,15 @@ class SaviyntCampaignManager:
         status = self.get_campaign_status(campaign_id)
         items = self.get_certification_items(campaign_id)
 
-        certified_items = [i for i in items if i.get("decision") == "Certify"]
-        revoked_items = [i for i in items if i.get("decision") == "Revoke"]
+        [i for i in items if i.get("decision") == "Certify"]
+        [i for i in items if i.get("decision") == "Revoke"]
         pending_items = [i for i in items if not i.get("decision")]
 
         report = {
             "report_title": "Access Recertification Compliance Report",
             "campaign_name": status.get("name"),
             "campaign_id": campaign_id,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "metrics": {
                 "total_items_reviewed": status["total_items"],
                 "certified": status["certified"],
@@ -196,7 +196,7 @@ class RecertificationScheduler:
 
     def get_due_campaigns(self):
         """Check which campaigns are due to run."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         due = []
         for schedule in self.schedules:
             if schedule["last_run"] is None:
@@ -212,7 +212,7 @@ class RecertificationScheduler:
         with open(output_path, "w") as f:
             json.dump({
                 "schedules": self.schedules,
-                "exported_at": datetime.now(timezone.utc).isoformat(),
+                "exported_at": datetime.now(UTC).isoformat(),
             }, f, indent=2, default=str)
         logger.info(f"Schedule exported to {output_path}")
 

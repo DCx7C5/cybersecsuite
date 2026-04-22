@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Suricata IPS Agent - manages rules, analyzes alerts, and tunes Suricata intrusion prevention."""
 
-import json
 import argparse
+import json
 import logging
 import os
 import subprocess
@@ -91,7 +91,7 @@ def detect_attack_patterns(alerts):
     patterns = []
     for (src, dst), pair_alerts in src_dest_pairs.items():
         if len(pair_alerts) >= 20:
-            sigs = list(set(a["signature_id"] for a in pair_alerts))
+            sigs = list({a["signature_id"] for a in pair_alerts})
             patterns.append({
                 "source": src, "target": dst,
                 "alert_count": len(pair_alerts),
@@ -106,7 +106,7 @@ def check_suricata_status():
     """Check Suricata service status and configuration."""
     status_cmd = subprocess.run(["systemctl", "is-active", "suricata"], capture_output=True, text=True, timeout=120)
     rule_count_cmd = subprocess.run(["suricata", "--build-info"], capture_output=True, text=True, timeout=120)
-    stats_cmd = subprocess.run(["suricatasc", "-c", "dump-counters"], capture_output=True, text=True, timeout=120)
+    subprocess.run(["suricatasc", "-c", "dump-counters"], capture_output=True, text=True, timeout=120)
     return {
         "service_active": status_cmd.stdout.strip() == "active",
         "build_info": rule_count_cmd.stdout[:200] if rule_count_cmd.returncode == 0 else "unavailable",
@@ -118,7 +118,7 @@ def generate_report(alerts, status):
     noisy = identify_noisy_rules(alerts)
     patterns = detect_attack_patterns(alerts)
     dropped = sum(1 for a in alerts if a["action"] == "blocked")
-    report = {
+    return {
         "timestamp": datetime.utcnow().isoformat(),
         "suricata_status": status,
         "total_alerts": len(alerts),
@@ -128,7 +128,6 @@ def generate_report(alerts, status):
         "noisy_rules_for_tuning": noisy[:10],
         "attack_patterns_detected": patterns[:10],
     }
-    return report
 
 
 def main():

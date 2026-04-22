@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """NERC CIP Compliance Agent - audits critical infrastructure against NERC CIP standards."""
 
-import json
 import argparse
+import json
 import logging
 import subprocess
 from datetime import datetime
@@ -68,13 +68,13 @@ def check_system_hardening():
     findings = []
     svc_cmd = ["systemctl", "list-units", "--type=service", "--state=running", "--no-pager"]
     result = subprocess.run(svc_cmd, capture_output=True, text=True, timeout=120)
-    service_count = len([l for l in result.stdout.split("\n") if ".service" in l])
+    service_count = len([ln for ln in result.stdout.split("\n") if ".service" in ln])
     if service_count > 50:
         findings.append({"control": "CIP-007-R1", "issue": f"{service_count} running services (minimize unused)",
                         "severity": "medium"})
     patch_cmd = ["apt", "list", "--upgradable"] if subprocess.run(["which", "apt"], capture_output=True, timeout=120).returncode == 0 else ["yum", "check-update"]
     result = subprocess.run(patch_cmd, capture_output=True, text=True, timeout=120)
-    pending = len([l for l in result.stdout.split("\n") if l.strip() and not l.startswith("Listing")])
+    pending = len([ln for ln in result.stdout.split("\n") if ln.strip() and not ln.startswith("Listing")])
     if pending > 0:
         findings.append({"control": "CIP-007-R2", "issue": f"{pending} pending security patches",
                         "severity": "high"})
@@ -109,7 +109,7 @@ def generate_report(compliance, esp_findings, hardening_findings):
     total_checks = sum(r["total"] for r in compliance.values())
     total_passed = sum(r["passed"] for r in compliance.values())
     all_findings = esp_findings + hardening_findings
-    report = {
+    return {
         "timestamp": datetime.utcnow().isoformat(),
         "framework": "NERC CIP v6/v7",
         "overall_compliance_rate": round(total_passed / max(total_checks, 1) * 100, 1),
@@ -119,7 +119,6 @@ def generate_report(compliance, esp_findings, hardening_findings):
         "technical_findings": all_findings,
         "high_severity_findings": len([f for f in all_findings if f.get("severity") == "high"]),
     }
-    return report
 
 
 def main():

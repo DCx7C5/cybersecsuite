@@ -7,17 +7,17 @@ revocation status, and maintains a certificate inventory.
 """
 
 import json
-import sys
-import ssl
 import socket
+import ssl
+import sys
 from datetime import datetime
 from pathlib import Path
 
 try:
     from cryptography import x509
-    from cryptography.x509.oid import NameOID
     from cryptography.hazmat.primitives import hashes, serialization
     from cryptography.hazmat.primitives.asymmetric import ec, rsa
+    from cryptography.x509.oid import NameOID
     HAS_CRYPTO = True
 except ImportError:
     HAS_CRYPTO = False
@@ -77,7 +77,7 @@ class CertLifecycleAgent:
             with ctx.wrap_socket(socket.socket(), server_hostname=hostname) as s:
                 s.settimeout(10)
                 s.connect((hostname, port))
-                der = s.getpeercert(binary_form=True)
+                s.getpeercert(binary_form=True)
                 pem_info = s.getpeercert()
 
             not_after = datetime.strptime(
@@ -107,7 +107,7 @@ class CertLifecycleAgent:
             self.inventory.append(entry)
             return entry
 
-        except (socket.error, ssl.SSLError, OSError) as exc:
+        except (ssl.SSLError, OSError) as exc:
             return {"hostname": hostname, "error": str(exc)}
 
     def scan_hosts(self, hostnames, port=443):

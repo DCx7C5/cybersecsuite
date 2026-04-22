@@ -16,24 +16,19 @@ import os
 import secrets
 import sqlite3
 import sys
-import time
-from base64 import urlsafe_b64decode, urlsafe_b64encode
-from datetime import datetime, timezone
-from pathlib import Path
-
-from flask import Flask, abort, jsonify, redirect, request, session, render_template_string
+from base64 import urlsafe_b64encode
+from datetime import UTC, datetime
 
 from fido2.server import Fido2Server
 from fido2.webauthn import (
     AttestationConveyancePreference,
-    AuthenticatorAttachment,
-    AuthenticatorSelectionCriteria,
     PublicKeyCredentialDescriptor,
     PublicKeyCredentialRpEntity,
     PublicKeyCredentialUserEntity,
     ResidentKeyRequirement,
     UserVerificationRequirement,
 )
+from flask import Flask, abort, jsonify, render_template_string, request, session
 
 logging.basicConfig(
     level=logging.INFO,
@@ -180,9 +175,9 @@ def store_credential(
     credential_id: bytes,
     public_key: bytes,
     sign_count: int,
-    aaguid: str = None,
-    label: str = None,
-    transports: list[str] = None,
+    aaguid: str | None = None,
+    label: str | None = None,
+    transports: list[str] | None = None,
     is_discoverable: bool = False,
 ) -> int:
     """Store a new WebAuthn credential in the database."""
@@ -216,9 +211,7 @@ def get_user_credentials(conn: sqlite3.Connection, user_id: int) -> list[dict]:
            WHERE user_id = ? AND is_revoked = 0""",
         (user_id,),
     ).fetchall()
-    creds = []
-    for row in rows:
-        creds.append({
+    return [{
             "db_id": row[0],
             "credential_id": row[1],
             "public_key": row[2],
@@ -229,8 +222,7 @@ def get_user_credentials(conn: sqlite3.Connection, user_id: int) -> list[dict]:
             "created_at": row[7],
             "last_used": row[8],
             "is_discoverable": bool(row[9]),
-        })
-    return creds
+        } for row in rows]
 
 
 def get_all_credentials(conn: sqlite3.Connection) -> list[dict]:
@@ -315,10 +307,10 @@ def log_auth_event(
     user_id: int,
     event_type: str,
     success: bool,
-    credential_id: bytes = None,
-    ip_address: str = None,
-    user_agent: str = None,
-    details: str = None,
+    credential_id: bytes | None = None,
+    ip_address: str | None = None,
+    user_agent: str | None = None,
+    details: str | None = None,
 ):
     """Log an authentication event for auditing."""
     conn.execute(
@@ -543,7 +535,7 @@ def create_app(
     server = Fido2Server(rp)
     conn = init_database(db_path)
 
-    attestation_pref = {
+    {
         "none": AttestationConveyancePreference.NONE,
         "indirect": AttestationConveyancePreference.INDIRECT,
         "direct": AttestationConveyancePreference.DIRECT,
@@ -577,7 +569,7 @@ def create_app(
 
         # Get existing credentials to exclude
         existing_creds = get_user_credentials(conn, user["id"])
-        exclude_list = build_credential_descriptors(existing_creds)
+        build_credential_descriptors(existing_creds)
 
         resident_req = (
             ResidentKeyRequirement.REQUIRED if resident_key
@@ -637,7 +629,7 @@ def create_app(
             public_key=cred_data.public_key,
             sign_count=auth_data.sign_count if hasattr(auth_data, "sign_count") else 0,
             aaguid=aaguid_hex,
-            label=data.get("label", f"Key registered {datetime.now(timezone.utc).strftime('%Y-%m-%d')}"),
+            label=data.get("label", f"Key registered {datetime.now(UTC).strftime('%Y-%m-%d')}"),
             is_discoverable=is_resident,
         )
 

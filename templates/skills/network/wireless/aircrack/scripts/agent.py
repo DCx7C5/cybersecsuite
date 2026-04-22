@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """WiFi password cracking assessment agent using aircrack-ng subprocess wrappers."""
 
-import subprocess
-import sys
 import os
 import re
-import time
 import signal
+import subprocess
+import sys
+import time
 from datetime import datetime
 
 
@@ -28,8 +28,7 @@ def list_interfaces():
         ["iw", "dev"], capture_output=True, text=True,
         timeout=120,
     )
-    interfaces = re.findall(r"Interface\s+(\S+)", result.stdout)
-    return interfaces
+    return re.findall(r"Interface\s+(\S+)", result.stdout)
 
 
 def enable_monitor_mode(iface="wlan0"):
@@ -159,7 +158,7 @@ def crack_with_hashcat(hash_file, wordlist="/usr/share/wordlists/rockyou.txt",
     if not os.path.exists(wordlist):
         return {"error": f"Wordlist not found: {wordlist}"}
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["hashcat", "-m", str(hash_mode), hash_file, wordlist,
              "--force", "-o", "/tmp/hashcat_cracked.txt"],
             capture_output=True, text=True, timeout=7200
@@ -192,12 +191,12 @@ def print_report(networks, handshake, crack_result):
     print(f"  File: {handshake.get('capture_file')}")
     if crack_result:
         if crack_result.get("cracked"):
-            print(f"\nPassword Cracked: YES")
+            print("\nPassword Cracked: YES")
             print(f"  Key: {crack_result.get('key', crack_result.get('result', 'N/A'))}")
             print(f"  Tool: {crack_result['tool']}")
-            print(f"  Risk: CRITICAL - Weak passphrase")
+            print("  Risk: CRITICAL - Weak passphrase")
         else:
-            print(f"\nPassword Cracked: NO (passphrase resists dictionary attack)")
+            print("\nPassword Cracked: NO (passphrase resists dictionary attack)")
 
 
 if __name__ == "__main__":

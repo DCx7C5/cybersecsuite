@@ -9,10 +9,9 @@ Requirements:
     pip install ldap3 boto3 msal requests pandas openpyxl
 """
 
-import json
 import csv
-import sys
-from datetime import datetime, timedelta, timezone
+import json
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 try:
@@ -131,7 +130,7 @@ class PrivilegedAccountDiscovery:
 
                 if is_admin:
                     try:
-                        last_used = iam.get_user(UserName=username)
+                        iam.get_user(UserName=username)
                         password_last_used = user.get("PasswordLastUsed", "Never")
                     except Exception:
                         password_last_used = "Unknown"
@@ -231,7 +230,7 @@ class AccessReviewTracker:
 
     def identify_dormant_accounts(self, days_threshold=90):
         """Find accounts not used within the threshold period."""
-        cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
+        cutoff = datetime.now(UTC) - timedelta(days=days_threshold)
         dormant = []
 
         for account in self.accounts:
@@ -240,7 +239,7 @@ class AccessReviewTracker:
                 dormant.append(account)
                 continue
             try:
-                logon_date = datetime.fromisoformat(last_logon.replace("Z", "+00:00"))
+                logon_date = datetime.fromisoformat(last_logon)
                 if logon_date < cutoff:
                     dormant.append(account)
             except (ValueError, TypeError):
@@ -255,7 +254,7 @@ class AccessReviewTracker:
 
         report = {
             "report_title": "Privileged Account Access Review - Compliance Report",
-            "generated_date": datetime.now(timezone.utc).isoformat(),
+            "generated_date": datetime.now(UTC).isoformat(),
             "review_period": "Quarterly",
             "metrics": status,
             "dormant_accounts": len(dormant),

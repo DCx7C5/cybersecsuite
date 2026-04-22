@@ -55,7 +55,7 @@ def parse_zeek_conn_log(log_path):
         smb_count = info["ports"].get("445", 0) + info["ports"].get("139", 0)
         rdp_count = info["ports"].get("3389", 0)
         winrm_count = info["ports"].get("5985", 0) + info["ports"].get("5986", 0)
-        psexec_count = info["ports"].get("445", 0)
+        info["ports"].get("445", 0)
 
         if smb_count > 0 or rdp_count > 0 or winrm_count > 0:
             src, dst = pair.split("->")
@@ -161,7 +161,7 @@ def detect_pass_the_hash_pattern(events):
         by_source[src].append(e)
 
     for src, src_events in by_source.items():
-        unique_dests = set(e.get("destination", e.get("dest_ip", "")) for e in src_events)
+        unique_dests = {e.get("destination", e.get("dest_ip", "")) for e in src_events}
         if len(unique_dests) > 5:
             alerts.append({
                 "type": "PASS_THE_HASH_CANDIDATE",

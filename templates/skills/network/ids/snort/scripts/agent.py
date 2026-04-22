@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """Snort IDS configuration and rule management agent."""
 
-import subprocess
 import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
 
 SNORT_BIN = os.environ.get("SNORT_BIN", "/usr/local/bin/snort")
 SNORT_CONF = os.environ.get("SNORT_CONF", "/usr/local/etc/snort/snort.lua")
 RULES_DIR = os.environ.get("SNORT_RULES_DIR", "/usr/local/etc/snort/rules")
 LOG_DIR = os.environ.get("SNORT_LOG_DIR", "/var/log/snort")
-DAQ_DIR = os.environ.get("SNORT_DAQ_DIR", DAQ_DIR)
+DAQ_DIR = os.environ.get("SNORT_DAQ_DIR", "/usr/local/lib/daq")
 
 
 def check_snort_installed():
@@ -174,14 +173,13 @@ def count_rules(rules_path=None):
 
 def generate_report():
     """Generate a Snort IDS deployment status report."""
-    report = {
+    return {
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "snort": check_snort_installed(),
         "config_valid": validate_configuration(),
         "rule_counts": count_rules(),
         "alert_stats": parse_alert_fast(),
     }
-    return report
 
 
 if __name__ == "__main__":

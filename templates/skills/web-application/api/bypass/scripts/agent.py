@@ -2,9 +2,9 @@
 # For authorized testing only
 """API rate limiting bypass testing agent."""
 
+import argparse
 import json
 import sys
-import argparse
 from datetime import datetime
 
 try:
@@ -62,7 +62,7 @@ def test_header_bypass(url, auth_header=None, request_count=30):
         try:
             resp = requests.get(url, headers=base_headers, timeout=5)
             if resp.status_code == 429:
-                baseline_hit = i + 1
+                i + 1
                 break
         except Exception:
             pass
@@ -76,7 +76,7 @@ def test_header_bypass(url, auth_header=None, request_count=30):
 
     for bypass in BYPASS_HEADERS:
         test_headers = {**base_headers, **bypass}
-        header_name = list(bypass.keys())[0]
+        header_name = next(iter(bypass.keys()))
         success_count = 0
         for i in range(10):
             bypass[header_name] = f"10.{i}.{i}.{i}"
@@ -171,9 +171,9 @@ def test_path_bypass(url, auth_header=None):
 
 def test_encoding_bypass(url, auth_header=None):
     """Test rate limit bypass via parameter encoding variations."""
-    from urllib.parse import urlparse, parse_qs
+    from urllib.parse import parse_qs, urlparse
     parsed = urlparse(url)
-    params = parse_qs(parsed.query)
+    parse_qs(parsed.query)
     findings = []
     headers = {"User-Agent": "RateLimit-Tester/1.0"}
     if auth_header:
@@ -198,7 +198,7 @@ def test_encoding_bypass(url, auth_header=None):
 def run_audit(args):
     """Execute API rate limiting bypass audit."""
     print(f"\n{'='*60}")
-    print(f"  API RATE LIMITING BYPASS TESTING")
+    print("  API RATE LIMITING BYPASS TESTING")
     print(f"  Generated: {datetime.utcnow().isoformat()} UTC")
     print(f"{'='*60}\n")
 
@@ -207,7 +207,7 @@ def run_audit(args):
 
     detection = detect_rate_limit_headers(args.url, args.auth)
     report["rate_limit_detection"] = detection
-    print(f"--- RATE LIMIT DETECTION ---")
+    print("--- RATE LIMIT DETECTION ---")
     print(f"  URL: {detection.get('url','')}")
     print(f"  Has Rate Limiting: {detection.get('has_rate_limiting', False)}")
     for k, v in detection.get("rate_limit_headers", {}).items():

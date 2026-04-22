@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Duo MFA configuration and audit agent using Duo Admin API."""
 
+import argparse
+import email.utils
+import hashlib
+import hmac
 import json
 import sys
-import argparse
-import hmac
-import hashlib
-import email.utils
 import urllib.parse
 from datetime import datetime
 
@@ -85,13 +85,13 @@ def audit_mfa_coverage(users_data):
 def analyze_auth_logs(logs_data):
     """Analyze authentication logs for anomalies."""
     logs = logs_data.get("response", {}).get("authlogs", [])
-    denied = [l for l in logs if l.get("result") == "denied"]
-    fraud = [l for l in logs if l.get("result") == "fraud"]
+    denied = [log for log in logs if log.get("result") == "denied"]
+    fraud = [log for log in logs if log.get("result") == "fraud"]
     return {
         "total_authentications": len(logs),
         "denied": len(denied),
         "fraud_reported": len(fraud),
-        "top_denied_users": list(set(l.get("user", {}).get("name", "") for l in denied[:10])),
+        "top_denied_users": list({log.get("user", {}).get("name", "") for log in denied[:10]}),
     }
 
 
@@ -99,20 +99,20 @@ def run_audit(ikey, skey, host):
     """Execute Duo MFA audit."""
     client = DuoAdminClient(ikey, skey, host)
     print(f"\n{'='*60}")
-    print(f"  DUO MFA CONFIGURATION AUDIT")
+    print("  DUO MFA CONFIGURATION AUDIT")
     print(f"  Host: {host}")
     print(f"  Generated: {datetime.utcnow().isoformat()} UTC")
     print(f"{'='*60}\n")
 
     summary = client.get_info_summary()
     info = summary.get("response", {})
-    print(f"--- ACCOUNT SUMMARY ---")
+    print("--- ACCOUNT SUMMARY ---")
     print(f"  Users: {info.get('user_count', 0)}")
     print(f"  Integrations: {info.get('integration_count', 0)}")
 
     users = client.list_users()
     coverage = audit_mfa_coverage(users)
-    print(f"\n--- MFA COVERAGE ---")
+    print("\n--- MFA COVERAGE ---")
     print(f"  Enrollment rate: {coverage['enrollment_rate']}%")
     print(f"  Bypass mode: {coverage['bypass_mode']}")
     print(f"  No device: {len(coverage['no_device'])}")

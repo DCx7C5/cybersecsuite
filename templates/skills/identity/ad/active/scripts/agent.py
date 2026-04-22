@@ -5,8 +5,7 @@ import argparse
 import json
 import struct
 
-from ldap3 import Server, Connection, ALL, NTLM, SUBTREE
-
+from ldap3 import ALL, NTLM, SUBTREE, Connection, Server
 
 DANGEROUS_MASKS = {
     "GenericAll": 0x10000000,
@@ -91,45 +90,44 @@ def parse_acl(descriptor_bytes: bytes) -> list:
     aces = []
     if len(descriptor_bytes) < 20:
         return aces
-    revision = descriptor_bytes[0]
-    control = struct.unpack("<H", descriptor_bytes[2:4])[0]
+    descriptor_bytes[0]
+    struct.unpack("<H", descriptor_bytes[2:4])[0]
     dacl_offset = struct.unpack("<I", descriptor_bytes[16:20])[0]
     if dacl_offset == 0 or dacl_offset >= len(descriptor_bytes):
         return aces
     dacl = descriptor_bytes[dacl_offset:]
     if len(dacl) < 8:
         return aces
-    acl_size = struct.unpack("<H", dacl[2:4])[0]
+    struct.unpack("<H", dacl[2:4])[0]
     ace_count = struct.unpack("<H", dacl[4:6])[0]
     offset = 8
     for _ in range(ace_count):
         if offset + 4 > len(dacl):
             break
         ace_type = dacl[offset]
-        ace_flags = dacl[offset + 1]
+        dacl[offset + 1]
         ace_size = struct.unpack("<H", dacl[offset + 2:offset + 4])[0]
         if ace_size < 4 or offset + ace_size > len(dacl):
             break
-        if ace_type in (0x00, 0x05):
-            if offset + 8 <= len(dacl):
-                access_mask = struct.unpack("<I", dacl[offset + 4:offset + 8])[0]
-                sid_offset = offset + 8
-                if ace_type == 0x05:
-                    sid_offset = offset + 8 + 32
-                if sid_offset < offset + ace_size:
-                    sid_bytes = dacl[sid_offset:offset + ace_size]
-                    sid_str = parse_sid(sid_bytes)
-                    matched_perms = []
-                    for perm_name, mask_val in DANGEROUS_MASKS.items():
-                        if access_mask & mask_val:
-                            matched_perms.append(perm_name)
-                    if matched_perms:
-                        aces.append({
-                            "ace_type": "ACCESS_ALLOWED" if ace_type in (0x00, 0x05) else "OTHER",
-                            "access_mask": f"0x{access_mask:08x}",
-                            "trustee_sid": sid_str,
-                            "permissions": matched_perms,
-                        })
+        if ace_type in (0x00, 0x05) and offset + 8 <= len(dacl):
+            access_mask = struct.unpack("<I", dacl[offset + 4:offset + 8])[0]
+            sid_offset = offset + 8
+            if ace_type == 0x05:
+                sid_offset = offset + 8 + 32
+            if sid_offset < offset + ace_size:
+                sid_bytes = dacl[sid_offset:offset + ace_size]
+                sid_str = parse_sid(sid_bytes)
+                matched_perms = []
+                for perm_name, mask_val in DANGEROUS_MASKS.items():
+                    if access_mask & mask_val:
+                        matched_perms.append(perm_name)
+                if matched_perms:
+                    aces.append({
+                        "ace_type": "ACCESS_ALLOWED" if ace_type in (0x00, 0x05) else "OTHER",
+                        "access_mask": f"0x{access_mask:08x}",
+                        "trustee_sid": sid_str,
+                        "permissions": matched_perms,
+                    })
         offset += ace_size
     return aces
 

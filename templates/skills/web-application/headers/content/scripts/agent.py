@@ -11,9 +11,8 @@ written permission to test.
 """
 import argparse
 import json
-import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 try:
     import requests
@@ -182,15 +181,13 @@ def analyze_csp(directives, csp_string):
         # Known bypass CDNs
         bypass_cdns = ["cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com",
                        "ajax.googleapis.com", "raw.githubusercontent.com"]
-        for cdn in bypass_cdns:
-            if cdn in values_str:
-                findings.append({
+        findings.extend({
                     "check": f"Bypassable CDN in {directive}",
                     "severity": "HIGH",
                     "status": "FAIL",
                     "description": f"{cdn} in {directive} can host arbitrary scripts",
                     "bypass": f"Upload/find malicious script on {cdn}",
-                })
+                } for cdn in bypass_cdns if cdn in values_str)
 
         # http: in HTTPS context
         if any(v.startswith("http:") for v in values):
@@ -207,7 +204,7 @@ def analyze_csp(directives, csp_string):
 def format_summary(url, directives, findings, csp_string):
     """Print analysis summary."""
     print(f"\n{'='*60}")
-    print(f"  CSP Analysis Report")
+    print("  CSP Analysis Report")
     print(f"{'='*60}")
     print(f"  URL           : {url}")
     print(f"  Directives    : {len(directives)}")
@@ -218,19 +215,19 @@ def format_summary(url, directives, findings, csp_string):
         sev = f.get("severity", "INFO")
         severity_counts[sev] = severity_counts.get(sev, 0) + 1
 
-    print(f"\n  By Severity:")
+    print("\n  By Severity:")
     for sev in ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]:
         count = severity_counts.get(sev, 0)
         if count > 0:
             print(f"    {sev:10s}: {count}")
 
     if directives:
-        print(f"\n  Parsed Directives:")
+        print("\n  Parsed Directives:")
         for d, v in directives.items():
             print(f"    {d:20s}: {' '.join(v)[:60]}")
 
     if findings:
-        print(f"\n  Security Issues:")
+        print("\n  Security Issues:")
         for f in findings:
             if f["severity"] in ("CRITICAL", "HIGH"):
                 bypass = f" | Bypass: {f['bypass']}" if f.get("bypass") else ""
@@ -254,7 +251,6 @@ def main():
     if args.csp_string:
         csp_string = args.csp_string
         csp_ro = ""
-        status_code = 0
     else:
         headers = {}
         if args.header:
@@ -267,13 +263,13 @@ def main():
                 if "=" in pair:
                     k, v = pair.strip().split("=", 1)
                     cookies[k] = v
-        csp_string, csp_ro, status_code = fetch_csp(args.url, headers or None, cookies or None)
+        csp_string, csp_ro, _status_code = fetch_csp(args.url, headers or None, cookies or None)
 
     directives = parse_csp(csp_string)
     findings = analyze_csp(directives, csp_string)
 
     if csp_ro:
-        ro_directives = parse_csp(csp_ro)
+        parse_csp(csp_ro)
         findings.append({
             "check": "CSP-Report-Only mode",
             "severity": "MEDIUM",
@@ -284,7 +280,7 @@ def main():
     severity_counts = format_summary(args.url, directives, findings, csp_string)
 
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "tool": "CSP Analyzer",
         "url": args.url,
         "csp_header": csp_string,

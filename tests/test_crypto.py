@@ -3,10 +3,9 @@
 import pytest
 
 try:
-    from crypto.key_manager import KeyManager, PasswordManager
-    from crypto.artifact_manager import ArtifactManager
-    from crypto.vault import Vault
     from crypto.config import get_settings
+    from crypto.key_manager import KeyManager, PasswordManager
+    from crypto.vault import Vault
 
     CRYPTO_AVAILABLE = True
 except ImportError as e:

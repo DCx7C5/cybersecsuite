@@ -7,7 +7,6 @@ import asyncio
 import json
 import logging
 import sys
-from typing import List, Optional
 
 try:
     import websockets
@@ -23,7 +22,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def discover_ws_endpoints(base_url: str) -> List[dict]:
+def discover_ws_endpoints(base_url: str) -> list[dict]:
     """Probe common WebSocket endpoint paths."""
     paths = ["/ws", "/websocket", "/socket", "/socket.io/?EIO=4&transport=polling",
              "/signalr/negotiate", "/chat", "/notifications", "/live", "/api/ws"]
@@ -73,13 +72,13 @@ def test_origin_validation(ws_url: str, cookie: str = "") -> dict:
 async def test_no_auth_connect(ws_url: str) -> dict:
     """Test if WebSocket connection succeeds without authentication."""
     try:
-        async with websockets.connect(ws_url, open_timeout=5) as ws:
+        async with websockets.connect(ws_url, open_timeout=5):
             return {"test": "no_auth", "connected": True, "risk": "HIGH"}
     except Exception as exc:
         return {"test": "no_auth", "connected": False, "error": str(exc)}
 
 
-async def test_message_injection(ws_url: str, cookie: str = "") -> List[dict]:
+async def test_message_injection(ws_url: str, cookie: str = "") -> list[dict]:
     """Test WebSocket messages for injection vulnerabilities."""
     injection_payloads = [
         {"action": "search", "query": "' OR 1=1--"},
@@ -106,7 +105,7 @@ async def test_message_injection(ws_url: str, cookie: str = "") -> List[dict]:
                         "suspicious": any(kw in response.lower() for kw in
                                           ["error", "sql", "root:", "uid=", "49"]),
                     })
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     results.append({"payload": payload, "response": "TIMEOUT"})
     except Exception as exc:
         results.append({"error": str(exc)})
@@ -115,7 +114,7 @@ async def test_message_injection(ws_url: str, cookie: str = "") -> List[dict]:
 
 
 async def test_idor_channels(ws_url: str, cookie: str = "",
-                              channel_ids: Optional[List[int]] = None) -> List[dict]:
+                              channel_ids: list[int] | None = None) -> list[dict]:
     """Test for IDOR by subscribing to other users' channels."""
     ids = channel_ids or list(range(1, 6))
     results = []
@@ -128,7 +127,7 @@ async def test_idor_channels(ws_url: str, cookie: str = "",
                 try:
                     resp = await asyncio.wait_for(ws.recv(), timeout=5)
                     results.append({"channel_id": cid, "response": resp[:200], "accessible": "error" not in resp.lower()})
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     results.append({"channel_id": cid, "response": "TIMEOUT"})
     except Exception as exc:
         results.append({"error": str(exc)})

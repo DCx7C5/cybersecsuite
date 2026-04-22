@@ -91,6 +91,31 @@ async def _fn(args: dict[str, Any]) -> dict:
 - `src/openobserve/` — OO client, writer, streams registry
 - `docs/scope-model.md` and `docs/database.md` — read these first
 
+
+## Additional Python and TypeScript Rules
+- Every new or edited python file has to be linted with `ruff` and pass with zero errors; run `uv run ruff check <file>` to verify
+- Every new or edited TypeScript file has to be linted with `eslint` and pass with zero errors; run `uv run eslint <file>` to verify
+- All Python code must be type-annotated and pass `mypy` with zero errors
+- All TypeScript code must pass `tsc` with zero errors
+- Use `uv` for all Python package management and script execution; do not use `pip` or `poetry` directly
+- All MCP tools must follow the SDK pattern and be registered in `src/csmcp/cybersec/__init__.py`
+- All database interactions must be async and use Tortoise ORM; do not use synchronous DB calls
+- All LLM calls must be routed through the AI proxy and logged to OpenObserve with the `_oo_index()` helper
+- All new OpenObserve streams must be registered in `src/openobserve/streams.py` and follow the naming convention `cybersecsuite-<base>-YYYY.MM.DD`
+- All new agents must follow the frontmatter schema and be added to the routing logic in `src/ai_proxy/routing/combo.py` if necessary
+- All new API endpoints must be added to the ASGI server in `src/proxy/asgi.py` and follow the existing patterns for request handling and OpenObserve logging
+- All new features must include appropriate unit tests and integration tests, and be documented in the relevant sections of the documentation (e.g., new MCP tools in `tools.md`, new agents in `reference.md`, etc.)
+- We never under any circumstances use `Any` in type annotations without a very good reason (Python & TypeScript) — prefer more specific types; or `TypedDict` for structured data; or `Protocol` for interfaces; or `TypeVar` for generics.
+- All code must be well-documented with docstrings and comments where necessary, following the existing style in the codebase.
+- Never use `Exception` or catch broad exceptions without re-raising or logging the error details; always use specific exception types and include error handling logic that provides useful feedback for debugging.
+- Check Python for PEP 8 compliance and TypeScript for best practices; avoid antipatterns and ensure code readability and maintainability.
+- Imports should be organized with standard library imports first, followed by third-party imports, and then local application imports, each separated by a blank line.
+- Python files must be linted with `flake8` and TypeScript files must be linted with `eslint` to maintain code quality and consistency across the codebase.
 ---
+
+## Documentation and Changelog
+- All new features, changes, and fixes must be documented in the `docs/` directory with clear explanations, usage instructions, and examples where applicable.
+- The changelog must be updated after every task list, following the format in `docs/changelog/` and including all relevant details about new features, bug fixes, and any breaking changes.
+
 
 **This is the only instructions file you need.**

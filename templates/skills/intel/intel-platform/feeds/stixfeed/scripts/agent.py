@@ -2,12 +2,13 @@
 """STIX/TAXII threat intelligence feed processor using taxii2-client and stix2."""
 
 import json
+import os
 import sys
 
 try:
-    from taxii2client.v21 import Server, Collection, as_pages
-    from stix2 import parse as stix_parse, Malware
+    from stix2 import parse as stix_parse
     from stix2.exceptions import InvalidValueError
+    from taxii2client.v21 import Server, as_pages
 except ImportError:
     print("Install: pip install taxii2-client stix2")
     sys.exit(1)
@@ -22,15 +23,13 @@ def discover_server(taxii_url, user=None, password=None):
     server = Server(taxii_url, **kwargs)
     roots = []
     for api_root in server.api_roots:
-        collections = []
-        for coll in api_root.collections:
-            collections.append({
+        collections = [{
                 "id": coll.id,
                 "title": coll.title,
                 "can_read": coll.can_read,
                 "can_write": coll.can_write,
                 "media_types": getattr(coll, "media_types", []),
-            })
+            } for coll in api_root.collections]
         roots.append({
             "title": api_root.title,
             "url": api_root.url,
@@ -193,7 +192,7 @@ def print_report(parsed, iocs):
     print(f"Campaigns:       {len(cats['campaigns'])}")
     print(f"Relationships:   {len(cats['relationships'])}")
     print(f"Parse Errors:    {len(parsed['parse_errors'])}")
-    print(f"\nExtracted IOCs:")
+    print("\nExtracted IOCs:")
     for ioc_type, values in iocs.items():
         if values:
             print(f"  {ioc_type}: {len(values)}")
@@ -203,8 +202,6 @@ def print_report(parsed, iocs):
 
 if __name__ == "__main__":
     taxii_url = sys.argv[1] if len(sys.argv) > 1 else "https://cti.example.com/taxii/"
-    user = os.environ.get("TAXII_USER") if "os" in dir() else None
-    import os
     user = os.environ.get("TAXII_USER")
     password = os.environ.get("TAXII_PASSWORD")
     print(f"Discovering TAXII server: {taxii_url}")

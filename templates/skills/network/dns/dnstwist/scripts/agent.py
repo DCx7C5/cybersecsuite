@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """Typosquatting domain detection agent using dnstwist concepts."""
 
-import os, sys, json, socket
-from datetime import datetime
+import importlib.util
+import json
+import socket
+import sys
 
-try:
-    import dnstwist as dnstwist_lib
-    HAS_DNSTWIST = True
-except ImportError:
-    HAS_DNSTWIST = False
+HAS_DNSTWIST = importlib.util.find_spec("dnstwist") is not None
 
 KEYBOARD_NEIGHBORS = {
     'q': 'wa', 'w': 'qeas', 'e': 'wrds', 'r': 'etfd', 't': 'rygf',
@@ -45,7 +43,7 @@ def generate_permutations(domain):
 def resolve_domain(domain):
     try:
         ips = socket.getaddrinfo(domain, None, socket.AF_INET)
-        return list(set(ip[4][0] for ip in ips))
+        return list({ip[4][0] for ip in ips})
     except socket.gaierror:
         return []
 

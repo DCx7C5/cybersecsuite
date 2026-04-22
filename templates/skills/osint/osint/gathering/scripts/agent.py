@@ -4,8 +4,8 @@
 # It is the end user's responsibility to obey all applicable local, state and federal laws.
 """Agent for performing open source intelligence (OSINT) gathering."""
 
-import json
 import argparse
+import json
 import re
 
 try:
@@ -75,8 +75,7 @@ def email_harvest(domain):
                 emails.add(email.get("value", ""))
     except Exception:
         pass
-    pattern = re.compile(rf"[a-zA-Z0-9._%+-]+@{re.escape(domain)}", re.I)
-    search_urls = [f"https://www.google.com/search?q=%22%40{domain}%22&num=20"]
+    re.compile(rf"[a-zA-Z0-9._%+-]+@{re.escape(domain)}", re.IGNORECASE)
     return {
         "domain": domain,
         "emails_found": list(emails)[:20],

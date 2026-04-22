@@ -6,16 +6,13 @@ token replay from unusual IPs, and anomalous scope requests.
 """
 
 import argparse
+import collections
+import datetime
+import importlib.util
 import json
 import math
-import datetime
-import collections
 
-try:
-    import requests
-    HAS_REQUESTS = True
-except ImportError:
-    HAS_REQUESTS = False
+HAS_REQUESTS = importlib.util.find_spec("requests") is not None
 
 
 EARTH_RADIUS_KM = 6371
@@ -45,8 +42,8 @@ def detect_impossible_travel(sign_ins, max_speed_kmh=900):
                 continue
             dist = haversine(prev["lat"], prev["lon"], curr["lat"], curr["lon"])
             try:
-                t1 = datetime.datetime.fromisoformat(prev["timestamp"].replace("Z", "+00:00"))
-                t2 = datetime.datetime.fromisoformat(curr["timestamp"].replace("Z", "+00:00"))
+                t1 = datetime.datetime.fromisoformat(prev["timestamp"])
+                t2 = datetime.datetime.fromisoformat(curr["timestamp"])
                 hours = max((t2 - t1).total_seconds() / 3600, 0.001)
             except (ValueError, KeyError):
                 continue
@@ -77,14 +74,14 @@ def detect_token_replay(sign_ins):
         window = []
         for event in sorted_events:
             try:
-                ts = datetime.datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00"))
+                ts = datetime.datetime.fromisoformat(event["timestamp"])
             except (ValueError, KeyError):
                 continue
             window = [e for e in window
                       if (ts - datetime.datetime.fromisoformat(
-                          e["timestamp"].replace("Z", "+00:00"))).total_seconds() < 300]
+                          e["timestamp"])).total_seconds() < 300]
             window.append(event)
-            unique_ips = set(e.get("ip") for e in window if e.get("ip"))
+            unique_ips = {e.get("ip") for e in window if e.get("ip")}
             if len(unique_ips) >= 3:
                 alerts.append({
                     "type": "token_replay",

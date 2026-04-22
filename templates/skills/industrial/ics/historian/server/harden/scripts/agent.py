@@ -9,9 +9,8 @@ process historian servers (OSIsoft PI, AVEVA, Honeywell PHD).
 import json
 import socket
 import sys
-from pathlib import Path
 from datetime import datetime
-
+from pathlib import Path
 
 HISTORIAN_PORTS = {
     5450: ("PI Data Archive", "PI SDK/API connections"),
@@ -56,7 +55,7 @@ class HistorianSecurityAgent:
                         "port": port, "service": service, "description": desc,
                         "unnecessary": port in UNNECESSARY_PORTS,
                     })
-            except (socket.error, OSError):
+            except OSError:
                 pass
 
         for svc in exposed:
@@ -174,9 +173,9 @@ class HistorianSecurityAgent:
 
     def generate_report(self):
         exposed = self.check_network_exposure()
-        auth = self.check_authentication()
-        integrity = self.check_data_integrity()
-        dmz = self.check_dmz_architecture()
+        self.check_authentication()
+        self.check_data_integrity()
+        self.check_dmz_architecture()
 
         severity_counts = {}
         for f in self.findings:

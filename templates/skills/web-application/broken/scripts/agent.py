@@ -7,8 +7,8 @@
 import argparse
 import json
 import re
-from datetime import datetime, timezone
-from urllib.parse import urlparse, urljoin
+from datetime import UTC, datetime
+from urllib.parse import urljoin, urlparse
 
 try:
     import requests
@@ -100,7 +100,7 @@ def scan_website(target_url):
     except requests.RequestException:
         return findings
 
-    external_links = [l for l in links if urlparse(l).netloc != urlparse(target_url).netloc]
+    external_links = [lnk for lnk in links if urlparse(lnk).netloc != urlparse(target_url).netloc]
     print(f"[*] Found {len(external_links)} external links")
 
     for link in external_links:
@@ -124,7 +124,7 @@ def main():
     findings = scan_website(args.url)
 
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "target": args.url,
         "hijackable_links": findings,
         "count": len(findings),

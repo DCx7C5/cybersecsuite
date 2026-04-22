@@ -6,11 +6,11 @@ track privileged access, detect anomalies, and generate audit reports.
 """
 
 import argparse
+import collections
+import datetime
 import json
 import re
 import sys
-import datetime
-import collections
 
 try:
     import subprocess
@@ -104,22 +104,18 @@ def parse_rdp_events_windows():
 
 def check_command_policy(command):
     """Check if a command violates session policy."""
-    violations = []
-    for pattern in SESSION_POLICIES["restricted_commands"]:
-        if re.search(pattern, command, re.IGNORECASE):
-            violations.append({
+    return [{
                 "pattern": pattern,
                 "command": command[:100],
                 "action": "alert_and_log",
-            })
-    return violations
+            } for pattern in SESSION_POLICIES["restricted_commands"] if re.search(pattern, command, re.IGNORECASE)]
 
 
 def detect_session_anomalies(sessions):
     """Detect anomalous session patterns."""
     anomalies = []
     ip_counts = collections.Counter(s.get("source_ip") for s in sessions)
-    user_counts = collections.Counter(s.get("username") for s in sessions)
+    collections.Counter(s.get("username") for s in sessions)
 
     for ip, count in ip_counts.items():
         if count > 20:
@@ -142,13 +138,12 @@ def detect_session_anomalies(sessions):
             })
 
     priv_sessions = [s for s in sessions if s.get("privileged")]
-    for ps in priv_sessions:
-        anomalies.append({
+    anomalies.extend({
             "type": "privileged_session",
             "username": ps.get("username"),
             "source_ip": ps.get("source_ip"),
             "severity": "MEDIUM",
-        })
+        } for ps in priv_sessions)
 
     return anomalies
 
@@ -159,8 +154,8 @@ def generate_audit_report(sessions, anomalies):
     privileged = sum(1 for s in sessions if s.get("privileged"))
     accepted = sum(1 for s in sessions if s.get("status") == "accepted")
     failed = sum(1 for s in sessions if s.get("status") == "failed")
-    unique_users = len(set(s.get("username") for s in sessions))
-    unique_ips = len(set(s.get("source_ip") for s in sessions))
+    unique_users = len({s.get("username") for s in sessions})
+    unique_ips = len({s.get("source_ip") for s in sessions})
 
     return {
         "report_time": datetime.datetime.utcnow().isoformat() + "Z",

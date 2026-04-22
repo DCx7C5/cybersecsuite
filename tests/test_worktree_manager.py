@@ -12,12 +12,10 @@ from __future__ import annotations
 import os
 import re
 import shutil
-import stat
 import subprocess
 import sys
 import tempfile
 import threading
-import time
 import unittest
 from pathlib import Path
 

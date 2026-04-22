@@ -7,14 +7,15 @@ import json
 import logging
 import sys
 from datetime import datetime
-from typing import List
 
 try:
     from scapy.all import (
-        sniff, sendp, sr, get_if_hwaddr, get_if_addr6, conf,
-        Ether, IPv6, ICMPv6ND_RA, ICMPv6ND_NA, ICMPv6ND_NS,
-        ICMPv6NDOptSrcLLAddr, ICMPv6NDOptPrefixInfo, ICMPv6NDOptRDNSS,
-        ICMPv6NDOptDstLLAddr,
+        ICMPv6ND_RA,
+        ICMPv6NDOptPrefixInfo,
+        ICMPv6NDOptRDNSS,
+        IPv6,
+        sniff,
+        sr,
     )
     from scapy.layers.inet6 import ICMPv6EchoRequest
 except ImportError:
@@ -24,7 +25,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def discover_ipv6_hosts(interface: str, timeout: int = 5) -> List[dict]:
+def discover_ipv6_hosts(interface: str, timeout: int = 5) -> list[dict]:
     """Discover IPv6 hosts by sending ICMPv6 Echo to all-nodes multicast."""
     target = "ff02::1"
     pkt = IPv6(dst=target) / ICMPv6EchoRequest()
@@ -45,7 +46,7 @@ def discover_ipv6_hosts(interface: str, timeout: int = 5) -> List[dict]:
     return replies
 
 
-def capture_router_advertisements(interface: str, timeout: int = 10) -> List[dict]:
+def capture_router_advertisements(interface: str, timeout: int = 10) -> list[dict]:
     """Capture and analyze Router Advertisement packets on the network."""
     logger.info("Capturing Router Advertisements on %s for %ds", interface, timeout)
     ras = []
@@ -77,7 +78,7 @@ def capture_router_advertisements(interface: str, timeout: int = 10) -> List[dic
     return ras
 
 
-def detect_rogue_ra(ras: List[dict], known_routers: List[str]) -> List[dict]:
+def detect_rogue_ra(ras: list[dict], known_routers: list[str]) -> list[dict]:
     """Identify rogue Router Advertisements from unknown sources."""
     rogues = []
     for ra in ras:
@@ -102,9 +103,9 @@ def check_ipv6_firewall() -> dict:
             ["ip6tables", "-L", "-n", "--line-numbers"],
             capture_output=True, text=True, timeout=5,
         )
-        lines = [l.strip() for l in output.stdout.strip().split("\n") if l.strip()]
+        lines = [ln.strip() for ln in output.stdout.strip().split("\n") if ln.strip()]
         result["ip6tables_present"] = True
-        result["rules_count"] = len([l for l in lines if l and not l.startswith("Chain") and not l.startswith("num")])
+        result["rules_count"] = len([ln for ln in lines if ln and not ln.startswith("Chain") and not ln.startswith("num")])
         result["rules"] = lines[:20]
     except (FileNotFoundError, subprocess.TimeoutExpired):
         logger.warning("ip6tables not available")
@@ -129,7 +130,7 @@ def check_tunnel_protocols(interface: str, timeout: int = 5) -> dict:
     return tunnels
 
 
-def generate_assessment(interface: str, known_routers: List[str]) -> dict:
+def generate_assessment(interface: str, known_routers: list[str]) -> dict:
     """Run complete IPv6 security assessment."""
     hosts = discover_ipv6_hosts(interface, timeout=5)
     ras = capture_router_advertisements(interface, timeout=10)

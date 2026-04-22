@@ -11,17 +11,15 @@ Usage:
 """
 
 import argparse
-import csv
 import json
 import sys
 from collections import defaultdict
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from ipaddress import ip_address, ip_network
-from typing import Optional
 
 try:
-    from scapy.all import rdpcap, sniff, IP, TCP, UDP, Ether, ARP
+    from scapy.all import IP, TCP, UDP, Ether, rdpcap, sniff
 except ImportError:
     print("[ERROR] scapy is required: pip install scapy")
     sys.exit(1)
@@ -158,13 +156,13 @@ class OTNetworkDiscovery:
             self.assets[ip_addr].last_seen = timestamp
 
         # Extract port information
-        dst_port = src_port = None
+        dst_port = None
         if pkt.haslayer(TCP):
             dst_port = pkt[TCP].dport
-            src_port = pkt[TCP].sport
+            pkt[TCP].sport
         elif pkt.haslayer(UDP):
             dst_port = pkt[UDP].dport
-            src_port = pkt[UDP].sport
+            pkt[UDP].sport
 
         # Identify OT protocols
         if dst_port in OT_PROTOCOLS:
@@ -286,7 +284,7 @@ class OTNetworkDiscovery:
 
         # Finding: Unauthenticated Modbus write operations
         if self.modbus_writes:
-            unique_targets = set(w["dst"] for w in self.modbus_writes)
+            unique_targets = {w["dst"] for w in self.modbus_writes}
             self.findings.append(Finding(
                 finding_id=f"OT-{finding_counter:03d}",
                 severity="critical",
@@ -368,14 +366,14 @@ class OTNetworkDiscovery:
         for level in sorted(level_counts.keys()):
             print(f"  {level}: {level_counts[level]} devices")
 
-        print(f"\nProtocol Distribution:")
+        print("\nProtocol Distribution:")
         for proto, count in sorted(self.protocol_stats.items(), key=lambda x: -x[1]):
             print(f"  {proto}: {count} packets")
 
         print(f"\nCross-Zone Flows: {len(self.cross_zone_flows)}")
         print(f"Modbus Write Operations: {len(self.modbus_writes)}")
 
-        print(f"\nFindings:")
+        print("\nFindings:")
         severity_counts = defaultdict(int)
         for f in self.findings:
             severity_counts[f.severity] += 1
@@ -384,7 +382,7 @@ class OTNetworkDiscovery:
                 print(f"  {sev.upper()}: {severity_counts[sev]}")
 
         if self.findings:
-            print(f"\nTop Findings:")
+            print("\nTop Findings:")
             for f in self.findings[:10]:
                 print(f"  [{f.finding_id}] [{f.severity.upper()}] {f.title}")
 

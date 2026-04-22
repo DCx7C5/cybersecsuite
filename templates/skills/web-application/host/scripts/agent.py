@@ -11,8 +11,8 @@ Host header and alternative host header manipulation.
 
 import json
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 try:
     import requests
@@ -87,18 +87,17 @@ class HostHeaderInjectionAgent:
         for headers in payloads:
             resp = self._request("POST", reset_path, headers=headers,
                                  data={"email": email})
-            if resp and resp.status_code in (200, 302):
-                if evil_host in resp.text:
-                    results.append({
-                        "headers": headers,
-                        "status": resp.status_code,
-                        "poisoned": True,
-                    })
-                    self.findings.append({
-                        "severity": "critical",
-                        "type": "Password Reset Poisoning",
-                        "detail": f"Reset link points to {evil_host}",
-                    })
+            if resp and resp.status_code in (200, 302) and evil_host in resp.text:
+                results.append({
+                    "headers": headers,
+                    "status": resp.status_code,
+                    "poisoned": True,
+                })
+                self.findings.append({
+                    "severity": "critical",
+                    "type": "Password Reset Poisoning",
+                    "detail": f"Reset link points to {evil_host}",
+                })
         return results
 
     def test_cache_poisoning(self, path="/"):
@@ -107,7 +106,7 @@ class HostHeaderInjectionAgent:
         cache_buster = f"?cb={random.randint(100000, 999999)}"
         evil_host = "evil.attacker.com"
 
-        resp1 = self._request("GET", f"{path}{cache_buster}",
+        self._request("GET", f"{path}{cache_buster}",
                                headers={"X-Forwarded-Host": evil_host})
         resp2 = self._request("GET", f"{path}{cache_buster}")
 

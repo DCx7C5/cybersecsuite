@@ -14,9 +14,7 @@ import json
 import logging
 import secrets
 import string
-import sys
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("credential_rotation")
@@ -62,7 +60,7 @@ class CredentialRotator:
         try:
             new_key = iam.create_access_key(UserName=iam_username)
             new_key_id = new_key["AccessKey"]["AccessKeyId"]
-            new_secret = new_key["AccessKey"]["SecretAccessKey"]
+            new_key["AccessKey"]["SecretAccessKey"]
 
             existing_keys = iam.list_access_keys(UserName=iam_username)
             old_keys_deactivated = []
@@ -81,7 +79,7 @@ class CredentialRotator:
                 "account": iam_username,
                 "new_key_id": new_key_id,
                 "old_keys_deactivated": old_keys_deactivated,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             self.rotation_log.append(result)
             logger.info(f"AWS key rotated for {iam_username}: {new_key_id}")
@@ -93,7 +91,7 @@ class CredentialRotator:
                 "platform": "AWS IAM",
                 "account": iam_username,
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             self.rotation_log.append(result)
             logger.error(f"AWS key rotation failed for {iam_username}: {e}")
@@ -131,7 +129,7 @@ class CredentialRotator:
                 "account": service_account_email,
                 "new_key_name": new_key.name,
                 "old_keys_deleted": old_keys_deleted,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             self.rotation_log.append(result)
             logger.info(f"GCP key rotated for {service_account_email}")
@@ -143,7 +141,7 @@ class CredentialRotator:
                 "platform": "GCP",
                 "account": service_account_email,
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             self.rotation_log.append(result)
             logger.error(f"GCP key rotation failed: {e}")
@@ -179,7 +177,7 @@ class CredentialRotator:
                 )
                 cur = conn.cursor()
                 cur.execute(
-                    f"ALTER USER %s@'%%' IDENTIFIED BY %s;",
+                    "ALTER USER %s@'%%' IDENTIFIED BY %s;",
                     (target_user, new_password)
                 )
                 cur.execute("FLUSH PRIVILEGES;")
@@ -194,7 +192,7 @@ class CredentialRotator:
                 "platform": f"Database ({db_type})",
                 "account": target_user,
                 "host": host,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             self.rotation_log.append(result)
             logger.info(f"Database password rotated for {target_user}@{host}")
@@ -206,7 +204,7 @@ class CredentialRotator:
                 "platform": f"Database ({db_type})",
                 "account": target_user,
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             self.rotation_log.append(result)
             logger.error(f"Database rotation failed for {target_user}: {e}")
@@ -238,7 +236,7 @@ class CredentialRotator:
     def export_rotation_log(self, output_path):
         """Export rotation audit log to JSON."""
         log_data = {
-            "export_date": datetime.now(timezone.utc).isoformat(),
+            "export_date": datetime.now(UTC).isoformat(),
             "total_rotations": len(self.rotation_log),
             "successful": sum(1 for r in self.rotation_log if r.get("success")),
             "failed": sum(1 for r in self.rotation_log if not r.get("success")),

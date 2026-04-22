@@ -14,11 +14,10 @@ from pathlib import Path
 
 try:
     from sslyze import (
-        Scanner,
-        ServerScanRequest,
-        ServerNetworkLocation,
-        ScanCommand,
         ScanCommandAttemptStatusEnum,
+        Scanner,
+        ServerNetworkLocation,
+        ServerScanRequest,
     )
 except ImportError:
     Scanner = None
@@ -78,12 +77,11 @@ class SSLTLSAssessmentAgent:
                             "severity": "critical", "type": "Deprecated Protocol",
                             "detail": f"{proto_name} enabled with {len(accepted)} cipher suites",
                         })
-                elif proto_name in ("TLS 1.0", "TLS 1.1"):
-                    if accepted:
-                        self.findings.append({
-                            "severity": "high", "type": "Legacy Protocol",
-                            "detail": f"{proto_name} still enabled",
-                        })
+                elif proto_name in ("TLS 1.0", "TLS 1.1") and accepted:
+                    self.findings.append({
+                        "severity": "high", "type": "Legacy Protocol",
+                        "detail": f"{proto_name} still enabled",
+                    })
 
                 for cipher_name in accepted:
                     if any(weak in cipher_name for weak in WEAK_CIPHERS_KEYWORDS):

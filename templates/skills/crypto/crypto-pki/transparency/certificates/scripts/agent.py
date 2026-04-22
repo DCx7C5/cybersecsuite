@@ -55,10 +55,10 @@ def find_lookalike_domains(target_domain, ct_results):
                 })
     seen = set()
     unique = []
-    for l in sorted(lookalikes, key=lambda x: -x["similarity"]):
-        if l["domain"] not in seen:
-            seen.add(l["domain"])
-            unique.append(l)
+    for entry in sorted(lookalikes, key=lambda x: -x["similarity"]):
+        if entry["domain"] not in seen:
+            seen.add(entry["domain"])
+            unique.append(entry)
     return unique
 
 
@@ -195,14 +195,14 @@ if __name__ == "__main__":
     report = generate_report(domain, results)
 
     print(f"\n--- Lookalike Domains ({len(report['lookalike_domains'])}) ---")
-    for l in report["lookalike_domains"][:10]:
-        print(f"  [{l['similarity']:.3f}] {l['domain']} (issuer: {l['issuer'][:40]})")
+    for entry in report["lookalike_domains"][:10]:
+        print(f"  [{entry['similarity']:.3f}] {entry['domain']} (issuer: {entry['issuer'][:40]})")
 
     print(f"\n--- Homoglyph Domains ({len(report['homoglyph_domains'])}) ---")
     for h in report["homoglyph_domains"][:10]:
         print(f"  [diff={h['char_differences']}] {h['domain']}")
 
-    print(f"\n--- Issuer Analysis ---")
+    print("\n--- Issuer Analysis ---")
     for issuer, count in sorted(report["issuer_analysis"]["issuers"].items(),
                                  key=lambda x: -x[1])[:5]:
         print(f"  {count:4d} | {issuer[:60]}")

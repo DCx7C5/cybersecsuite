@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Agent for performing hash cracking with hashcat — hash identification, attack management, and result analysis."""
 
-import json
 import argparse
-import subprocess
 import hashlib
+import json
 import re
+import subprocess
 from collections import Counter
 from pathlib import Path
-
 
 HASH_PATTERNS = {
     "MD5": (r"^[a-f0-9]{32}$", 0),
@@ -104,8 +103,8 @@ def parse_hashcat_status(potfile):
     passwords = [c["plain"] for c in cracked]
     length_dist = {}
     for p in passwords:
-        l = len(p)
-        bucket = f"{l}" if l <= 8 else "9-12" if l <= 12 else "13+"
+        pwd_len = len(p)
+        bucket = f"{pwd_len}" if pwd_len <= 8 else "9-12" if pwd_len <= 12 else "13+"
         length_dist[bucket] = length_dist.get(bucket, 0) + 1
     charset = {"lowercase_only": 0, "uppercase_mixed": 0, "with_digits": 0, "with_special": 0}
     for p in passwords:

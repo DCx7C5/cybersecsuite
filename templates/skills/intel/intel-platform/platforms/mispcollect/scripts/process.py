@@ -19,15 +19,13 @@ Usage:
 """
 
 import argparse
-import json
 import csv
+import json
 import sys
-import os
 from datetime import datetime, timedelta
-from typing import Optional
 
 try:
-    from pymisp import PyMISP, MISPEvent, MISPAttribute
+    from pymisp import PyMISP
 except ImportError:
     print("ERROR: pymisp not installed. Run: pip install pymisp")
     sys.exit(1)
@@ -97,7 +95,7 @@ class MISPCollector:
         return result
 
     def collect_recent_iocs(self, days: int = 7,
-                            ioc_types: Optional[list] = None) -> list:
+                            ioc_types: list | None = None) -> list:
         """Collect IOCs from recent events."""
         if ioc_types is None:
             ioc_types = [
@@ -190,8 +188,8 @@ class MISPCollector:
         print(f"[+] Filtered {self.stats['warninglist_filtered']} IOCs via warninglists")
         return filtered
 
-    def export_stix2(self, event_ids: Optional[list] = None,
-                     tags: Optional[list] = None) -> dict:
+    def export_stix2(self, event_ids: list | None = None,
+                     tags: list | None = None) -> dict:
         """Export events as STIX 2.1 bundles."""
         search_params = {
             "controller": "events",
@@ -208,7 +206,7 @@ class MISPCollector:
             stix_bundle.get("objects", []) if isinstance(stix_bundle, dict) else []
         )
 
-        print(f"[+] Exported STIX 2.1 bundle")
+        print("[+] Exported STIX 2.1 bundle")
         return stix_bundle
 
     def export_csv(self, iocs: list, output_path: str) -> str:
@@ -240,7 +238,7 @@ class MISPCollector:
             date_from=(datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d"),
         )
 
-        print(f"[+] Generated Suricata rules")
+        print("[+] Generated Suricata rules")
         return rules
 
     def get_correlation_summary(self, event_id: int) -> dict:

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Agent for performing power grid cybersecurity assessment based on NERC CIP standards."""
 
-import json
 import argparse
 import csv
-
+import json
 
 NERC_CIP_STANDARDS = {
     "CIP-002": {"title": "BES Cyber System Categorization", "checks": [
@@ -129,7 +128,7 @@ def assess_esp_security(firewall_csv):
     for rule in rules:
         action = rule.get("action", "").lower()
         src = rule.get("source", rule.get("src", ""))
-        dst = rule.get("destination", rule.get("dst", ""))
+        rule.get("destination", rule.get("dst", ""))
         if action == "allow" and src.lower() in ("any", "0.0.0.0/0"):
             findings.append({"rule": rule.get("id", rule.get("name", "")), "issue": "ALLOW_FROM_ANY", "severity": "CRITICAL"})
         if action == "allow" and rule.get("protocol", "").lower() in ("any", "all"):

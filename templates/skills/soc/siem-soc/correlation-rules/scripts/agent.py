@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """SIEM Correlation Rules Agent - Builds and deploys multi-event APT detection rules via Splunk and Sigma."""
 
+import argparse
 import json
+import logging
 import os
 import time
-import logging
-import argparse
 from datetime import datetime
 
-import yaml
 import requests
+import yaml
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ def authenticate_splunk(base_url, username, password):
     resp = requests.post(
         f"{base_url}/services/auth/login",
         data={"username": username, "password": password},
-        verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+        verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         timeout=30,
     )
     resp.raise_for_status()
@@ -115,7 +115,7 @@ def deploy_correlation_search(base_url, headers, rule):
         f"{base_url}/services/saved/searches",
         headers=headers,
         data=search_payload,
-        verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+        verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         timeout=30,
     )
     if resp.status_code in (200, 201):
@@ -150,7 +150,7 @@ def audit_existing_searches(base_url, headers):
         f"{base_url}/services/saved/searches",
         headers=headers,
         params={"output_mode": "json", "count": 0},
-        verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+        verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         timeout=30,
     )
     if resp.status_code != 200:
@@ -175,7 +175,7 @@ def run_test_search(base_url, headers, spl, earliest="-24h"):
         f"{base_url}/services/search/jobs",
         headers=headers,
         data={"search": f"search {spl}", "earliest_time": earliest, "output_mode": "json"},
-        verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+        verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         timeout=30,
     )
     resp.raise_for_status()
@@ -184,7 +184,7 @@ def run_test_search(base_url, headers, spl, earliest="-24h"):
         status = requests.get(
             f"{base_url}/services/search/jobs/{sid}",
             headers=headers, params={"output_mode": "json"},
-            verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+            verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
             timeout=30,
         ).json()
         if status["entry"][0]["content"]["isDone"]:
@@ -193,7 +193,7 @@ def run_test_search(base_url, headers, spl, earliest="-24h"):
     results = requests.get(
         f"{base_url}/services/search/jobs/{sid}/results",
         headers=headers, params={"output_mode": "json", "count": 50},
-        verify=not os.environ.get("SKIP_TLS_VERIFY", "").lower() == "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
+        verify=os.environ.get("SKIP_TLS_VERIFY", "").lower() != "true",  # Set SKIP_TLS_VERIFY=true for self-signed certs in lab environments
         timeout=30,
     ).json()
     return results.get("results", [])
@@ -227,9 +227,7 @@ def main():
     test_results = []
 
     if args.deploy:
-        for rule in LATERAL_MOVEMENT_RULES:
-            if deploy_correlation_search(args.splunk_url, headers, rule):
-                deployed.append(rule["name"])
+        deployed.extend(rule["name"] for rule in LATERAL_MOVEMENT_RULES if deploy_correlation_search(args.splunk_url, headers, rule))
 
     if args.test:
         for rule in LATERAL_MOVEMENT_RULES:
@@ -238,7 +236,6 @@ def main():
             logger.info("Rule '%s': %d hits", rule["name"], len(hits))
 
     if args.sigma_export:
-        import os
         os.makedirs(args.sigma_export, exist_ok=True)
         for rule in LATERAL_MOVEMENT_RULES:
             sigma_yaml = generate_sigma_rule(rule)

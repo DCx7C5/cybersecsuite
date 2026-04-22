@@ -101,7 +101,7 @@ class TestAgentRegistry:
         return AgentRegistry()
 
     def _make_card(self, name: str, skills=None):
-        from a2a.models import AgentCard, AgentCapabilities, AgentAuthentication, AgentSkill
+        from a2a.models import AgentCard, AgentCapabilities, AgentAuthentication
         return AgentCard(
             name=name,
             description=f"{name} agent",

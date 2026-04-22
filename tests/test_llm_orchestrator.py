@@ -9,7 +9,6 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
-import types
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -28,7 +27,7 @@ class TestPricing:
     """Unit tests for src/llm/pricing.py"""
 
     def setup_method(self):
-        from llm.pricing import cost_usd, known_models, PRICING_LAST_UPDATED
+        from llm.pricing import PRICING_LAST_UPDATED, cost_usd, known_models
         self.cost_usd = cost_usd
         self.known_models = known_models
         self.PRICING_LAST_UPDATED = PRICING_LAST_UPDATED
@@ -55,11 +54,11 @@ class TestPricing:
         assert cost == Decimal("3.00")
 
     def test_zero_tokens_zero_cost(self):
-        assert self.cost_usd("claude-haiku-4-5", 0, 0) == Decimal("0")
+        assert self.cost_usd("claude-haiku-4-5", 0, 0) == Decimal(0)
 
     def test_small_token_count(self):
         cost = self.cost_usd("claude-sonnet-4-5", 100, 100)
-        assert cost > Decimal("0")
+        assert cost > Decimal(0)
         assert cost < Decimal("0.01")
 
     def test_known_models_list_non_empty(self):
@@ -128,8 +127,7 @@ class TestAsyncLLMClient:
 
     def _make_client(self, sid="testsid00000", **kwargs):
         from llm.client import AsyncLLMClient
-        client = AsyncLLMClient(model="claude-haiku-4-5", sid=sid, **kwargs)
-        return client
+        return AsyncLLMClient(model="claude-haiku-4-5", sid=sid, **kwargs)
 
     def _fake_usage(self, input_tok=10, output_tok=20):
         u = MagicMock()
@@ -148,7 +146,7 @@ class TestAsyncLLMClient:
     def test_init_base_url_from_env(self, monkeypatch):
         monkeypatch.setenv("ANTHROPIC_BASE_URL", "http://localhost:8000/v1")
         from llm.client import AsyncLLMClient
-        client = AsyncLLMClient.__new__(AsyncLLMClient)
+        AsyncLLMClient.__new__(AsyncLLMClient)
         # Just verify the env var logic without calling full init
         base = os.environ.get("ANTHROPIC_BASE_URL")
         assert base == "http://localhost:8000/v1"
@@ -156,7 +154,7 @@ class TestAsyncLLMClient:
     def test_cost_computed_correctly(self):
         from llm.pricing import cost_usd
         cost = cost_usd("claude-haiku-4-5", 10, 20, 0, 0)
-        expected = (Decimal("0.80") * 10 + Decimal("4.00") * 20) / Decimal("1_000_000")
+        expected = (Decimal("0.80") * 10 + Decimal("4.00") * 20) / Decimal(1_000_000)
         assert cost == expected
 
     @pytest.mark.asyncio
@@ -180,7 +178,7 @@ class TestAsyncLLMClient:
             persist_calls.append(kwargs)
 
         client = self._make_client(db_persist_fn=fake_persist)
-        await client._bg_persist(5, 5, 0, 0, Decimal("0"), 10.0, True, "timeout error")
+        await client._bg_persist(5, 5, 0, 0, Decimal(0), 10.0, True, "timeout error")
         assert persist_calls[0]["success"] is False
         assert persist_calls[0]["error"] == "timeout error"
 
@@ -188,7 +186,7 @@ class TestAsyncLLMClient:
     async def test_bg_persist_no_fn_does_nothing(self):
         client = self._make_client()
         # Should not raise
-        await client._bg_persist(0, 0, 0, 0, Decimal("0"), 0.0, False, None)
+        await client._bg_persist(0, 0, 0, 0, Decimal(0), 0.0, False, None)
 
     @pytest.mark.asyncio
     async def test_bg_persist_calls_oo_index(self):
@@ -214,7 +212,7 @@ class TestAsyncLLMClient:
 
         client = self._make_client(db_persist_fn=bad_persist)
         # Must not raise
-        await client._bg_persist(1, 1, 0, 0, Decimal("0"), 1.0, True, None)
+        await client._bg_persist(1, 1, 0, 0, Decimal(0), 1.0, True, None)
 
 
 # ===========================================================================
@@ -238,8 +236,8 @@ class TestLLMOrchestrator:
     def test_get_orchestrator_singleton(self, monkeypatch):
         monkeypatch.delenv("GWT_SID", raising=False)
         monkeypatch.delenv("CYBERSEC_SESSION_ID", raising=False)
-        from llm.orchestrator import get_orchestrator
         import llm.orchestrator as mod
+        from llm.orchestrator import get_orchestrator
         mod._instance = None
         a = get_orchestrator()
         b = get_orchestrator()
@@ -272,7 +270,6 @@ class TestDbHelpers:
     def test_dsn_from_env(self, monkeypatch):
         monkeypatch.setenv("CYBERSEC_DB_DSN", "postgresql://user:pw@host/db")
         # Import fresh to pick up env var
-        import importlib
         import llm.db as db_mod
         dsn = db_mod._dsn()
         assert dsn == "postgresql://user:pw@host/db"
@@ -359,8 +356,7 @@ _SKIP_DB = pytest.mark.skipif(
 @_SKIP_DB
 async def test_db_open_and_close_session():
     """Integration: open → close session round-trip."""
-    import asyncpg
-    from llm.db import open_session, close_session, get_pool
+    from llm.db import close_session, get_pool, open_session
 
     sid = "aabbccddeeff"
     # Clean up any leftover
@@ -387,7 +383,7 @@ async def test_db_open_and_close_session():
 @_SKIP_DB
 async def test_db_persist_call():
     """Integration: persist_call inserts a row."""
-    from llm.db import open_session, persist_call, cost_report, get_pool
+    from llm.db import cost_report, get_pool, open_session, persist_call
 
     sid = "112233445566"
     pool = await get_pool()

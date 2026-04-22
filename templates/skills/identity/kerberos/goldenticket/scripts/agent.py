@@ -43,7 +43,6 @@ def parse_kerberos_events(filepath):
         return {"error": "python-evtx not installed: pip install python-evtx"}
 
     tgt_requests = {}
-    tgs_requests = []
     findings = []
 
     with evtx.Evtx(filepath) as log:
@@ -58,10 +57,10 @@ def parse_kerberos_events(filepath):
 
             if event_id == 4768:
                 user = re.search(r'<Data Name="TargetUserName">([^<]+)', xml)
-                domain = re.search(r'<Data Name="TargetDomainName">([^<]+)', xml)
+                re.search(r'<Data Name="TargetDomainName">([^<]+)', xml)
                 ticket_enc = re.search(r'<Data Name="TicketEncryptionType">([^<]+)', xml)
-                client_addr = re.search(r'<Data Name="IpAddress">([^<]+)', xml)
-                status = re.search(r'<Data Name="Status">([^<]+)', xml)
+                re.search(r'<Data Name="IpAddress">([^<]+)', xml)
+                re.search(r'<Data Name="Status">([^<]+)', xml)
 
                 username = user.group(1) if user else ""
                 enc_type = ticket_enc.group(1) if ticket_enc else ""
@@ -82,7 +81,7 @@ def parse_kerberos_events(filepath):
                 user = re.search(r'<Data Name="TargetUserName">([^<]+)', xml)
                 service = re.search(r'<Data Name="ServiceName">([^<]+)', xml)
                 ticket_enc = re.search(r'<Data Name="TicketEncryptionType">([^<]+)', xml)
-                client_addr = re.search(r'<Data Name="IpAddress">([^<]+)', xml)
+                re.search(r'<Data Name="IpAddress">([^<]+)', xml)
 
                 username = user.group(1) if user else ""
                 base_user = username.split("@")[0].lower() if "@" in username else username.lower()

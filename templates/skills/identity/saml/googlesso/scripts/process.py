@@ -11,16 +11,14 @@ Requirements:
 """
 
 import base64
-import json
 import sys
 import zlib
-from datetime import datetime, timezone
-from urllib.parse import urlencode, parse_qs, urlparse
+from datetime import UTC, datetime
+from urllib.parse import urlencode
 
 try:
     import requests
     from cryptography import x509
-    from cryptography.hazmat.primitives import serialization
 except ImportError:
     print("[ERROR] Required: pip install requests cryptography")
     sys.exit(1)
@@ -96,7 +94,7 @@ class GoogleWorkspaceSSOValidator:
                 )
 
             cert = x509.load_pem_x509_certificate(cert_pem.encode())
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
 
             return {
                 "valid": True,
@@ -190,7 +188,7 @@ class GoogleWorkspaceSSOValidator:
     def generate_saml_authn_request(self, idp_sso_url):
         """Generate a SAML AuthnRequest for testing SP-initiated SSO."""
         request_id = f"_google_workspace_test_{int(datetime.now().timestamp())}"
-        issue_instant = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        issue_instant = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         authn_request = f"""<samlp:AuthnRequest
     xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"

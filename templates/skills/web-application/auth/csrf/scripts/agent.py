@@ -12,7 +12,7 @@ WARNING: Only use with explicit written authorization for the target application
 
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from urllib.parse import urlparse
 
 import requests
@@ -60,7 +60,7 @@ def analyze_csrf_protections(url: str, session: requests.Session = None) -> dict
         result["protections"].append("CSRF token in meta tag")
         result["vulnerable"] = False
 
-    for cookie_name, cookie_value in resp.cookies.items():
+    for cookie_name in resp.cookies:
         cookie_header = resp.headers.get("Set-Cookie", "")
         samesite = "none"
         if "samesite=strict" in cookie_header.lower():
@@ -164,7 +164,7 @@ def test_csrf_token_validation(url: str, session: requests.Session) -> dict:
     )
 
     if token_match:
-        original_token = token_match.group(1)
+        token_match.group(1)
 
         test_resp = session.post(url, data={"csrf_token": ""}, timeout=15)
         bypass_results.append({
@@ -195,7 +195,7 @@ def generate_report(analysis: list[dict], forms: list[dict], bypass: list[dict])
     lines = [
         "CSRF ATTACK SIMULATION REPORT — AUTHORIZED TESTING ONLY",
         "=" * 60,
-        f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+        f"Date: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}",
         "",
         f"Endpoints Analyzed: {len(analysis)}",
         f"State-Changing Forms: {len(forms)}",
@@ -208,8 +208,7 @@ def generate_report(analysis: list[dict], forms: list[dict], bypass: list[dict])
     for a in analysis:
         status = "VULNERABLE" if a.get("vulnerable") else "PROTECTED"
         lines.append(f"  [{status}] {a.get('url', 'N/A')}")
-        for prot in a.get("protections", []):
-            lines.append(f"    Protection: {prot}")
+        lines.extend(f"    Protection: {prot}" for prot in a.get("protections", []))
 
     if forms:
         lines.extend(["", "STATE-CHANGING FORMS:"])

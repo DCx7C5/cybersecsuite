@@ -15,22 +15,18 @@ Usage:
     python process.py check-ciphers --host example.com
 """
 
-import os
-import ssl
-import sys
-import json
-import socket
 import argparse
-import logging
-import subprocess
 import datetime
+import json
+import logging
+import socket
+import ssl
 from pathlib import Path
-from typing import Optional, Dict, List
 
 from cryptography import x509
-from cryptography.x509.oid import NameOID, ExtensionOID
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
+from cryptography.x509.oid import NameOID
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -51,7 +47,7 @@ RECOMMENDED_TLS_12_CIPHERS = [
 ]
 
 
-def test_tls_connection(host: str, port: int = 443, timeout: int = 10) -> Dict:
+def test_tls_connection(host: str, port: int = 443, timeout: int = 10) -> dict:
     """Test TLS connection to a server and report protocol details."""
     results = {
         "host": host,
@@ -139,7 +135,7 @@ def test_tls_connection(host: str, port: int = 443, timeout: int = 10) -> Dict:
     return results
 
 
-def check_cipher_suites(host: str, port: int = 443, timeout: int = 10) -> Dict:
+def check_cipher_suites(host: str, port: int = 443, timeout: int = 10) -> dict:
     """Check which cipher suites a server supports."""
     results = {"host": host, "port": port, "supported_ciphers": [], "weak_ciphers": []}
 
@@ -173,7 +169,7 @@ def check_cipher_suites(host: str, port: int = 443, timeout: int = 10) -> Dict:
 
 def generate_self_signed_cert(
     domain: str, output_dir: str, key_type: str = "ecdsa"
-) -> Dict:
+) -> dict:
     """Generate a self-signed TLS certificate for testing."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -252,7 +248,7 @@ def generate_nginx_config(
 
     tls12_ciphers = ":".join(RECOMMENDED_TLS_12_CIPHERS)
 
-    config = f"""# TLS 1.3 Optimized nginx Configuration
+    return f"""# TLS 1.3 Optimized nginx Configuration
 # Generated for: {domain}
 # Mozilla SSL Configuration Generator: Modern profile
 
@@ -310,20 +306,18 @@ server {{
     return 301 https://$server_name$request_uri;
 }}
 """
-    return config
 
 
 def generate_apache_config(
     domain: str, cert_path: str, key_path: str, enable_tls12: bool = True
 ) -> str:
     """Generate Apache TLS 1.3 configuration."""
-    tls_protocols = "TLSv1.3"
     if enable_tls12:
-        tls_protocols = "TLSv1.2 TLSv1.3"
+        pass
 
     tls12_ciphers = ":".join(RECOMMENDED_TLS_12_CIPHERS)
 
-    config = f"""# TLS 1.3 Optimized Apache Configuration
+    return f"""# TLS 1.3 Optimized Apache Configuration
 # Generated for: {domain}
 
 <VirtualHost *:443>
@@ -335,7 +329,7 @@ def generate_apache_config(
     SSLCertificateKeyFile {key_path}
 
     # Protocol versions
-    SSLProtocol all -{" -".join(["SSLv3", "TLSv1", "TLSv1.1"])}
+    SSLProtocol all -{"SSLv3 -TLSv1 -TLSv1.1"}
     {"" if enable_tls12 else "SSLProtocol TLSv1.3"}
 
     # Cipher suites
@@ -358,7 +352,6 @@ def generate_apache_config(
     Redirect permanent / https://{domain}/
 </VirtualHost>
 """
-    return config
 
 
 def main():

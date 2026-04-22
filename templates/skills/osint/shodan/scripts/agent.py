@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Agent for performing IP reputation analysis using the Shodan API."""
 
-import json
 import argparse
+import json
 from datetime import datetime
 
 try:
@@ -99,8 +99,8 @@ def main():
     parser.add_argument("--shodan-key", required=True, help="Shodan API key")
     parser.add_argument("--abuseipdb-key", help="AbuseIPDB API key")
     sub = parser.add_subparsers(dest="command")
-    l = sub.add_parser("lookup", help="Look up single IP")
-    l.add_argument("--ip", required=True)
+    lookup_parser = sub.add_parser("lookup", help="Look up single IP")
+    lookup_parser.add_argument("--ip", required=True)
     b = sub.add_parser("bulk", help="Analyze multiple IPs")
     b.add_argument("--ips", nargs="+", required=True)
     args = parser.parse_args()

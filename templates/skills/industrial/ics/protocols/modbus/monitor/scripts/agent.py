@@ -2,13 +2,12 @@
 # For authorized OT/ICS security monitoring only
 """Modbus TCP Traffic Anomaly Detector - Monitors SCADA networks for suspicious Modbus activity."""
 
+import argparse
 import json
 import logging
-import argparse
 import struct
-import time
-from datetime import datetime, timezone
 from collections import defaultdict
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -83,7 +82,7 @@ def parse_modbus_pdu(data):
         elif fc == 16 and len(pdu) >= 7:
             result["start_address"] = struct.unpack(">H", pdu[1:3])[0]
             result["quantity"] = struct.unpack(">H", pdu[3:5])[0]
-            byte_count = pdu[5]
+            pdu[5]
             values = []
             for i in range(result["quantity"]):
                 offset = 6 + i * 2
@@ -487,8 +486,8 @@ class ModbusAnomalyDetector:
         sorted_alerts = sorted(
             self.alerts, key=lambda a: severity_order.get(a.get("severity", "LOW"), 99)
         )
-        report = {
-            "report_generated": datetime.now(timezone.utc).isoformat(),
+        return {
+            "report_generated": datetime.now(UTC).isoformat(),
             "total_anomalies": len(sorted_alerts),
             "severity_summary": {
                 "CRITICAL": sum(1 for a in sorted_alerts if a["severity"] == "CRITICAL"),
@@ -498,13 +497,12 @@ class ModbusAnomalyDetector:
             },
             "alerts": sorted_alerts,
         }
-        return report
 
 
 def analyze_pcap(pcap_file, detector):
     """Analyze a pcap file for Modbus TCP anomalies using Scapy."""
     try:
-        from scapy.all import rdpcap, TCP, IP
+        from scapy.all import IP, TCP, rdpcap
     except ImportError:
         logger.error("Scapy is required for pcap analysis: pip install scapy")
         return
@@ -518,7 +516,7 @@ def analyze_pcap(pcap_file, detector):
             continue
         tcp = pkt[TCP]
         ip = pkt[IP]
-        if tcp.dport != MODBUS_PORT and tcp.sport != MODBUS_PORT:
+        if MODBUS_PORT not in (tcp.dport, tcp.sport):
             continue
         payload = bytes(tcp.payload)
         if len(payload) < MBAP_HEADER_SIZE + 1:
@@ -541,7 +539,7 @@ def analyze_pcap(pcap_file, detector):
 def live_capture(interface, detector, duration=0):
     """Capture and analyze Modbus TCP traffic in real-time using Scapy."""
     try:
-        from scapy.all import sniff, TCP, IP
+        from scapy.all import IP, TCP, sniff
     except ImportError:
         logger.error("Scapy is required for live capture: pip install scapy")
         return

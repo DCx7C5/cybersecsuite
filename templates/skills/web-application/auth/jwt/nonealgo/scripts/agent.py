@@ -4,11 +4,11 @@
 # It is the end user's responsibility to obey all applicable local, state and federal laws.
 """Agent for performing JWT 'none' algorithm attack testing."""
 
-import json
 import argparse
 import base64
-import hmac
 import hashlib
+import hmac
+import json
 from datetime import datetime
 
 
@@ -44,7 +44,7 @@ def decode_jwt(token):
 def forge_none_token(token, modify_claims=None):
     """Forge a JWT with 'none' algorithm (removes signature)."""
     parts = token.split(".")
-    payload = json.loads(b64url_decode(parts[0]))
+    json.loads(b64url_decode(parts[0]))
     claims = json.loads(b64url_decode(parts[1]))
     if modify_claims:
         claims.update(modify_claims)

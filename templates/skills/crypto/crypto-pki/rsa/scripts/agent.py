@@ -10,13 +10,12 @@ import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 try:
-    from cryptography.hazmat.primitives import hashes, serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa, padding
     from cryptography.hazmat.backends import default_backend
-    from cryptography.x509 import load_pem_x509_certificate
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
     HAS_CRYPTO = True
 except ImportError:
     HAS_CRYPTO = False
@@ -142,7 +141,7 @@ def scan_directory_for_keys(directory, recursive=True):
                         header = f.read(64)
                     if any(marker in header for marker in key_markers):
                         is_key = True
-                except (IOError, PermissionError):
+                except (OSError, PermissionError):
                     pass
             if is_key:
                 findings = audit_key_file(full_path)
@@ -155,7 +154,7 @@ def scan_directory_for_keys(directory, recursive=True):
 def format_summary(results, action):
     """Print a human-readable summary."""
     print(f"\n{'='*60}")
-    print(f"  RSA Key Management Report")
+    print("  RSA Key Management Report")
     print(f"{'='*60}")
     print(f"  Action    : {action}")
     if action == "audit" and isinstance(results, list):
@@ -210,7 +209,7 @@ def main():
         result = {"action": "audit", "keys_audited": results}
 
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "tool": "RSA Key Manager",
         "result": result,
     }

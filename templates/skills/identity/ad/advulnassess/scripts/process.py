@@ -6,14 +6,10 @@ AD security assessment reports with prioritized remediation actions.
 """
 
 import argparse
-import csv
 import json
-import re
 import sys
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
-from pathlib import Path
-
+from datetime import UTC, datetime
 
 RISK_WEIGHTS = {
     "kerberoastable_admin": 10,
@@ -64,10 +60,9 @@ def parse_bloodhound_json(json_path):
 
     if isinstance(data, dict):
         nodes = data.get("nodes", [])
-        edges = data.get("edges", [])
+        data.get("edges", [])
     elif isinstance(data, list):
         nodes = data
-        edges = []
     else:
         return findings
 
@@ -149,7 +144,7 @@ def consolidate_findings(pingcastle_findings, bloodhound_findings):
 def generate_report(findings, output_path):
     """Generate consolidated AD assessment report."""
     report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "total_findings": len(findings),
         "critical": len([f for f in findings if f.get("risk_weight", 0) >= 9]),
         "high": len([f for f in findings if 7 <= f.get("risk_weight", 0) < 9]),

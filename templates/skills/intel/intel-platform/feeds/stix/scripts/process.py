@@ -19,22 +19,20 @@ Usage:
 """
 
 import argparse
-import json
 import csv
-import sys
+import json
 import re
-from datetime import datetime, timedelta
+import sys
 from collections import defaultdict
-from typing import Optional
 
 try:
-    from taxii2client.v21 import Server, Collection, as_pages
+    from taxii2client.v21 import Collection, Server, as_pages
 except ImportError:
     print("ERROR: taxii2-client not installed. Run: pip install taxii2-client")
     sys.exit(1)
 
 try:
-    from stix2 import parse, MemoryStore, Filter
+    from stix2 import Filter, MemoryStore
 except ImportError:
     print("ERROR: stix2 not installed. Run: pip install stix2")
     sys.exit(1)
@@ -83,7 +81,7 @@ class STIXTAXIIIntegrator:
         return discovery
 
     def poll_collection(self, collection_url: str,
-                        added_after: Optional[str] = None,
+                        added_after: str | None = None,
                         max_objects: int = 1000) -> list:
         """Poll a TAXII collection for STIX objects."""
         collection = Collection(
@@ -150,7 +148,6 @@ class STIXTAXIIIntegrator:
 
     def _parse_stix_pattern(self, pattern: str) -> list:
         """Parse STIX pattern to extract observable values."""
-        observables = []
 
         # Match common STIX patterns
         ip_pattern = re.compile(
@@ -169,23 +166,18 @@ class STIXTAXIIIntegrator:
             r"email-addr:value\s*=\s*'([^']+)'"
         )
 
-        for match in ip_pattern.finditer(pattern):
-            observables.append({"type": "ip", "value": match.group(1)})
+        observables = [{"type": "ip", "value": match.group(1)} for match in ip_pattern.finditer(pattern)]
 
-        for match in domain_pattern.finditer(pattern):
-            observables.append({"type": "domain", "value": match.group(1)})
+        observables.extend({"type": "domain", "value": match.group(1)} for match in domain_pattern.finditer(pattern))
 
-        for match in url_pattern.finditer(pattern):
-            observables.append({"type": "url", "value": match.group(1)})
+        observables.extend({"type": "url", "value": match.group(1)} for match in url_pattern.finditer(pattern))
 
-        for match in hash_pattern.finditer(pattern):
-            observables.append({
+        observables.extend({
                 "type": f"hash-{match.group(1).lower()}",
                 "value": match.group(2),
-            })
+            } for match in hash_pattern.finditer(pattern))
 
-        for match in email_pattern.finditer(pattern):
-            observables.append({"type": "email", "value": match.group(1)})
+        observables.extend({"type": "email", "value": match.group(1)} for match in email_pattern.finditer(pattern))
 
         return observables
 
@@ -217,8 +209,7 @@ class STIXTAXIIIntegrator:
         """Export parsed IOCs to CSV."""
         rows = []
         for ind in indicators:
-            for obs in ind.get("parsed_observables", []):
-                rows.append({
+            rows.extend({
                     "indicator_id": ind["id"],
                     "indicator_name": ind["name"],
                     "observable_type": obs["type"],
@@ -226,7 +217,7 @@ class STIXTAXIIIntegrator:
                     "confidence": ind["confidence"],
                     "valid_from": ind["valid_from"],
                     "valid_until": ind["valid_until"],
-                })
+                } for obs in ind.get("parsed_observables", []))
 
         if rows:
             with open(output_path, "w", newline="", encoding="utf-8") as f:

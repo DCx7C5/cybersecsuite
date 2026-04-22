@@ -15,20 +15,19 @@ Usage:
     python process.py encrypt-dir --input ./sensitive/ --output ./encrypted/ --password "MySecurePass"
 """
 
-import os
-import sys
-import json
-import struct
-import hashlib
 import argparse
+import hashlib
+import json
 import logging
+import os
+import struct
+import sys
 from pathlib import Path
-from typing import Optional, Tuple
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -212,7 +211,7 @@ def encrypt_directory(input_dir: str, output_dir: str, password: str) -> dict:
             total_original += result["original_size"]
             total_encrypted += result["encrypted_size"]
 
-    manifest_path = output_path / "manifest.json"
+    output_path / "manifest.json"
     manifest_encrypted = encrypt_bytes(json.dumps(manifest, indent=2).encode(), password)
     (output_path / "manifest.json.enc").write_bytes(manifest_encrypted)
 

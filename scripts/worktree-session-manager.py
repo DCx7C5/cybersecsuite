@@ -18,15 +18,12 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import re
-import shutil
 import stat
 import subprocess
 import sys
 import uuid
 from pathlib import Path
-from typing import Optional
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -67,7 +64,7 @@ def validate_sid(sid: str) -> None:
 # Git / repo helpers
 # ---------------------------------------------------------------------------
 
-def _run(cmd: list[str], cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess:
+def _run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess:
     """Run a subprocess, log failures, and optionally raise on non-zero exit."""
     log.debug("$ %s", " ".join(cmd))
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
@@ -91,7 +88,7 @@ def get_repo_root() -> Path:
     return git_common.parent.resolve()
 
 
-def get_worktree_root(sid: str, repo_root: Optional[Path] = None) -> Path:
+def get_worktree_root(sid: str, repo_root: Path | None = None) -> Path:
     """Return the expected absolute path for worktree-<sid> (sibling of repo root)."""
     if repo_root is None:
         repo_root = get_repo_root()
@@ -130,7 +127,7 @@ def enable_worktree_config(repo_root: Path) -> None:
     raise RuntimeError(f"Failed to set extensions.worktreeConfig after retries: {r.stderr.strip()}")
 
 
-def worktree_exists(sid: str, repo_root: Optional[Path] = None) -> bool:
+def worktree_exists(sid: str, repo_root: Path | None = None) -> bool:
     """Return True if git knows about a worktree named worktree-<sid>."""
     if repo_root is None:
         repo_root = get_repo_root()
@@ -144,7 +141,7 @@ def worktree_exists(sid: str, repo_root: Optional[Path] = None) -> bool:
     return False
 
 
-def list_worktrees(repo_root: Optional[Path] = None) -> list[dict]:
+def list_worktrees(repo_root: Path | None = None) -> list[dict]:
     """
     Return a list of dicts describing each registered worktree.
     Keys: name, sid, path, branch, HEAD, locked.
@@ -215,7 +212,7 @@ def resolve_worktree_git_hooks_dir(worktree_path: Path) -> Path:
 def install_hooks(
     sid: str,
     worktree_path: Path,
-    template_dir: Optional[Path] = None,
+    template_dir: Path | None = None,
 ) -> None:
     """
     Install hook templates into the worktree's private hooks directory.
@@ -247,7 +244,7 @@ def install_hooks(
         tmp.write_text(content)
 
         # Lint bash scripts
-        if content.startswith("#!/usr/bin/env bash") or content.startswith("#!/bin/bash"):
+        if content.startswith(("#!/usr/bin/env bash", "#!/bin/bash")):
             lint = subprocess.run(["bash", "-n", str(tmp)], capture_output=True, text=True)
             if lint.returncode != 0:
                 tmp.unlink(missing_ok=True)
@@ -332,8 +329,8 @@ def write_marker_file(worktree_path: Path, sid: str) -> None:
 def create_worktree(
     sid: str,
     branch: str,
-    repo_root: Optional[Path] = None,
-    hooks_template_dir: Optional[Path] = None,
+    repo_root: Path | None = None,
+    hooks_template_dir: Path | None = None,
     new_branch: bool = True,
 ) -> Path:
     """
@@ -392,7 +389,7 @@ def create_worktree(
 
 def teardown_worktree(
     sid: str,
-    repo_root: Optional[Path] = None,
+    repo_root: Path | None = None,
     force: bool = False,
     delete_branch: bool = True,
 ) -> None:
@@ -457,7 +454,7 @@ def teardown_worktree(
         log.debug("Removed stale marker file %s", stale_marker)
 
 
-def get_current_worktree_sid(cwd: Optional[Path] = None) -> Optional[str]:
+def get_current_worktree_sid(cwd: Path | None = None) -> str | None:
     """
     Read .worktree-session from cwd (default: current directory).
     Returns the SID string or None if not in a managed worktree.
@@ -588,13 +585,12 @@ def _require_llm():
     """Lazy-import LLM DB helpers; print helpful error if unavailable."""
     try:
         import sys
-        import os
         # Ensure src/ is on the path when running the script directly
         _script_dir = Path(__file__).parent
         _src = str(_script_dir / "src")
         if _src not in sys.path:
             sys.path.insert(0, _src)
-        from llm.db import open_session, close_session, cost_report, run_sync
+        from llm.db import close_session, cost_report, open_session, run_sync
         return open_session, close_session, cost_report, run_sync
     except ImportError as exc:
         raise SystemExit(

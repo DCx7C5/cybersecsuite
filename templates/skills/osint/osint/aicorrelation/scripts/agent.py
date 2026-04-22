@@ -12,10 +12,8 @@ import csv
 import json
 import os
 import re
-import sys
 from collections import defaultdict
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 
 try:
     import requests
@@ -54,14 +52,14 @@ def load_sherlock_results(filepath):
                         "platform": row.get("name", row.get("platform", "")),
                         "url": row.get("url_user", row.get("url", "")),
                         "username": row.get("username", ""),
-                        "collected_at": datetime.now(timezone.utc).isoformat(),
+                        "collected_at": datetime.now(UTC).isoformat(),
                     })
     except (csv.Error, KeyError):
         # Try line-by-line format (Sherlock text output)
         with open(filepath, "r", errors="replace") as f:
             for line in f:
                 line = line.strip()
-                if line.startswith("[+]") or line.startswith("http"):
+                if line.startswith(("[+]", "http")):
                     url_match = re.search(r'(https?://\S+)', line)
                     if url_match:
                         url = url_match.group(1)
@@ -71,7 +69,7 @@ def load_sherlock_results(filepath):
                             "type": "social_profile",
                             "platform": platform,
                             "url": url,
-                            "collected_at": datetime.now(timezone.utc).isoformat(),
+                            "collected_at": datetime.now(UTC).isoformat(),
                         })
     return findings
 
@@ -88,27 +86,24 @@ def load_harvester_results(filepath):
     except (json.JSONDecodeError, ValueError):
         return findings
 
-    for email in data.get("emails", []):
-        findings.append({
+    findings.extend({
             "source": "theHarvester",
             "type": "email",
             "value": email,
-            "collected_at": datetime.now(timezone.utc).isoformat(),
-        })
-    for host in data.get("hosts", []):
-        findings.append({
+            "collected_at": datetime.now(UTC).isoformat(),
+        } for email in data.get("emails", []))
+    findings.extend({
             "source": "theHarvester",
             "type": "hostname",
             "value": host,
-            "collected_at": datetime.now(timezone.utc).isoformat(),
-        })
-    for ip in data.get("ips", []):
-        findings.append({
+            "collected_at": datetime.now(UTC).isoformat(),
+        } for host in data.get("hosts", []))
+    findings.extend({
             "source": "theHarvester",
             "type": "ip_address",
             "value": ip,
-            "collected_at": datetime.now(timezone.utc).isoformat(),
-        })
+            "collected_at": datetime.now(UTC).isoformat(),
+        } for ip in data.get("ips", []))
     return findings
 
 
@@ -125,14 +120,13 @@ def load_spiderfoot_results(filepath):
         return findings
 
     items = data if isinstance(data, list) else data.get("results", [])
-    for item in items:
-        findings.append({
+    findings.extend({
             "source": "spiderfoot",
             "type": item.get("type", "unknown"),
             "value": item.get("data", item.get("value", "")),
             "module": item.get("module", ""),
-            "collected_at": datetime.now(timezone.utc).isoformat(),
-        })
+            "collected_at": datetime.now(UTC).isoformat(),
+        } for item in items)
     return findings
 
 
@@ -149,15 +143,14 @@ def load_breach_results(filepath):
         return findings
 
     breaches = data if isinstance(data, list) else [data]
-    for breach in breaches:
-        findings.append({
+    findings.extend({
             "source": "breach_database",
             "type": "breach_exposure",
             "breach_name": breach.get("Name", breach.get("name", "")),
             "breach_date": breach.get("BreachDate", breach.get("date", "")),
             "data_classes": breach.get("DataClasses", breach.get("data_types", [])),
-            "collected_at": datetime.now(timezone.utc).isoformat(),
-        })
+            "collected_at": datetime.now(UTC).isoformat(),
+        } for breach in breaches)
     return findings
 
 
@@ -238,7 +231,7 @@ def correlate_findings(findings):
     for f in findings:
         username = f.get("username", "").lower()
         email = f.get("value", "").lower() if f.get("type") == "email" else ""
-        url = f.get("url", "")
+        f.get("url", "")
 
         if username:
             source_map[f"user:{username}"].append(f)
@@ -256,9 +249,9 @@ def correlate_findings(findings):
             continue
         processed.add(key)
 
-        sources_seen = set(f.get("source", "") for f in group_findings)
+        sources_seen = {f.get("source", "") for f in group_findings}
         platforms = [f.get("platform", "") for f in group_findings if f.get("platform")]
-        urls = [f.get("url", "") for f in group_findings if f.get("url")]
+        [f.get("url", "") for f in group_findings if f.get("url")]
 
         # Calculate confidence based on cross-source corroboration
         confidence = 0.5
@@ -309,13 +302,13 @@ def correlate_findings(findings):
 
 def generate_report(findings, entities, target="unknown"):
     """Generate structured OSINT correlation report."""
-    sources_used = sorted(set(f.get("source", "") for f in findings))
+    sources_used = sorted({f.get("source", "") for f in findings})
     identifier_summary = extract_identifiers(findings)
 
-    report = {
+    return {
         "meta": {
             "target": target,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "sources_used": sources_used,
             "total_findings": len(findings),
             "total_entities": len(entities),
@@ -328,7 +321,6 @@ def generate_report(findings, entities, target="unknown"):
             "low_risk": sum(1 for e in entities if e.get("risk_level") == "low"),
         },
     }
-    return report
 
 
 def generate_markdown_report(report, output_path):
@@ -343,7 +335,7 @@ def generate_markdown_report(report, output_path):
 
     risk = report.get("risk_summary", {})
     md += "## Risk Summary\n\n"
-    md += f"| Risk Level | Count |\n|-----------|-------|\n"
+    md += "| Risk Level | Count |\n|-----------|-------|\n"
     md += f"| High | {risk.get('high_risk', 0)} |\n"
     md += f"| Medium | {risk.get('medium_risk', 0)} |\n"
     md += f"| Low | {risk.get('low_risk', 0)} |\n\n"

@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """Agent for JWT signing, verification, and security auditing."""
 
-import json
 import argparse
 import base64
-import hmac
 import hashlib
+import hmac
+import json
 import time
 from datetime import datetime
 
 try:
-    from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.asymmetric import padding
+    from cryptography.hazmat.primitives.asymmetric import rsa
     HAS_CRYPTO = True
 except ImportError:
     HAS_CRYPTO = False
@@ -114,10 +113,8 @@ def audit_jwt_security(token):
         findings.append({"issue": "No JWT ID (jti) - replay attack risk", "severity": "MEDIUM"})
 
     sensitive_keys = ["password", "secret", "ssn", "credit_card", "api_key"]
-    for key in payload:
-        if any(s in key.lower() for s in sensitive_keys):
-            findings.append({"issue": f"Sensitive data in claim: {key}",
-                             "severity": "HIGH"})
+    findings.extend({"issue": f"Sensitive data in claim: {key}",
+                             "severity": "HIGH"} for key in payload if any(s in key.lower() for s in sensitive_keys))
 
     return findings
 

@@ -3,9 +3,9 @@
 """Active Directory attack simulation agent using Impacket and ldap3."""
 
 import argparse
-import sys
 import json
 import logging
+import sys
 from datetime import datetime
 
 try:
@@ -14,8 +14,7 @@ except ImportError:
     sys.exit("impacket is required: pip install impacket")
 
 try:
-    import ldap3
-    from ldap3 import Server, Connection, ALL, SUBTREE
+    from ldap3 import ALL, SUBTREE, Connection, Server
 except ImportError:
     sys.exit("ldap3 is required: pip install ldap3")
 

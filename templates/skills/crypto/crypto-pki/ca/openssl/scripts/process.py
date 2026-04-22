@@ -15,20 +15,17 @@ Usage:
     python process.py generate-crl --ca-dir ./pki
 """
 
-import os
-import sys
-import json
 import argparse
-import logging
 import datetime
+import json
+import logging
 from pathlib import Path
-from typing import Dict, Optional, List
 
 from cryptography import x509
-from cryptography.x509.oid import NameOID, ExtensionOID
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, ec
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec, rsa
+from cryptography.x509.oid import NameOID
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -43,7 +40,7 @@ def generate_key(key_type: str = "rsa", key_size: int = 4096):
     )
 
 
-def save_key(key, path: Path, passphrase: Optional[str] = None):
+def save_key(key, path: Path, passphrase: str | None = None):
     """Save a private key to PEM file."""
     if passphrase:
         enc = serialization.BestAvailableEncryption(passphrase.encode())
@@ -66,7 +63,7 @@ def build_root_ca(
     organization: str,
     country: str = "US",
     validity_years: int = 20,
-) -> Dict:
+) -> dict:
     """Build a Root CA with self-signed certificate."""
     ca_dir = output_dir / "root-ca"
     ca_dir.mkdir(parents=True, exist_ok=True)
@@ -132,7 +129,7 @@ def build_intermediate_ca(
     organization: str,
     country: str = "US",
     validity_years: int = 10,
-) -> Dict:
+) -> dict:
     """Build an Intermediate CA signed by the Root CA."""
     root_dir = output_dir / "root-ca"
     int_dir = output_dir / "intermediate-ca"
@@ -214,8 +211,8 @@ def issue_certificate(
     domain: str,
     cert_type: str = "server",
     validity_days: int = 365,
-    san_domains: Optional[List[str]] = None,
-) -> Dict:
+    san_domains: list[str] | None = None,
+) -> dict:
     """Issue a certificate from the Intermediate CA."""
     int_dir = ca_dir / "intermediate-ca"
 
@@ -239,8 +236,7 @@ def issue_certificate(
 
     san_list = [x509.DNSName(domain)]
     if san_domains:
-        for d in san_domains:
-            san_list.append(x509.DNSName(d))
+        san_list.extend(x509.DNSName(d) for d in san_domains)
 
     if cert_type == "server":
         eku = x509.ExtendedKeyUsage([x509.oid.ExtendedKeyUsageOID.SERVER_AUTH])
@@ -310,19 +306,11 @@ def issue_certificate(
     }
 
 
-def revoke_certificate(ca_dir: Path, serial: int, reason: str = "unspecified") -> Dict:
+def revoke_certificate(ca_dir: Path, serial: int, reason: str = "unspecified") -> dict:
     """Revoke a certificate by serial number."""
     int_dir = ca_dir / "intermediate-ca"
     index_data = json.loads((int_dir / "index.json").read_text())
 
-    reason_map = {
-        "unspecified": x509.ReasonFlags.unspecified,
-        "key_compromise": x509.ReasonFlags.key_compromise,
-        "ca_compromise": x509.ReasonFlags.ca_compromise,
-        "affiliation_changed": x509.ReasonFlags.affiliation_changed,
-        "superseded": x509.ReasonFlags.superseded,
-        "cessation_of_operation": x509.ReasonFlags.cessation_of_operation,
-    }
 
     found = False
     for cert_entry in index_data["certificates"]:
@@ -351,7 +339,7 @@ def revoke_certificate(ca_dir: Path, serial: int, reason: str = "unspecified") -
     return {"serial": serial, "status": "revoked", "reason": reason}
 
 
-def generate_crl(ca_dir: Path, validity_days: int = 30) -> Dict:
+def generate_crl(ca_dir: Path, validity_days: int = 30) -> dict:
     """Generate a Certificate Revocation List."""
     int_dir = ca_dir / "intermediate-ca"
 

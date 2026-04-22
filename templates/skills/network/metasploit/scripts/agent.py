@@ -7,11 +7,9 @@ import json
 import logging
 import sys
 from datetime import datetime
-from typing import List
 
 try:
     from impacket.smbconnection import SMBConnection
-    from impacket import smbconnection
 except ImportError:
     sys.exit("impacket is required: pip install impacket")
 
@@ -28,7 +26,7 @@ def check_smb_port(target: str, port: int = 445, timeout: int = 5) -> bool:
         s.connect((target, port))
         s.close()
         return True
-    except (socket.timeout, ConnectionRefusedError, OSError):
+    except (TimeoutError, ConnectionRefusedError, OSError):
         return False
 
 
@@ -86,8 +84,8 @@ def enumerate_smb(target: str, username: str = "", password: str = "",
     return result
 
 
-def scan_network(targets: List[str], username: str = "", password: str = "",
-                  domain: str = "") -> List[dict]:
+def scan_network(targets: list[str], username: str = "", password: str = "",
+                  domain: str = "") -> list[dict]:
     """Scan multiple targets for SMB services."""
     results = []
     for target in targets:
@@ -97,19 +95,19 @@ def scan_network(targets: List[str], username: str = "", password: str = "",
     return results
 
 
-def find_relay_targets(results: List[dict]) -> List[str]:
+def find_relay_targets(results: list[dict]) -> list[str]:
     """Identify hosts where SMB signing is not required (relay targets)."""
     targets = [r["target"] for r in results if not r.get("signing_required", True) and r["port_open"]]
     logger.info("Found %d SMB relay targets (signing disabled)", len(targets))
     return targets
 
 
-def check_null_sessions(results: List[dict]) -> List[str]:
+def check_null_sessions(results: list[dict]) -> list[str]:
     """Identify hosts accepting null SMB sessions."""
     return [r["target"] for r in results if r.get("null_session")]
 
 
-def generate_report(results: List[dict]) -> dict:
+def generate_report(results: list[dict]) -> dict:
     """Generate SMB vulnerability assessment report."""
     smb_hosts = [r for r in results if r["port_open"]]
     relay_targets = find_relay_targets(results)
@@ -127,8 +125,7 @@ def generate_report(results: List[dict]) -> dict:
 
     all_shares = []
     for r in smb_hosts:
-        for s in r.get("shares", []):
-            all_shares.append({"host": r["target"], "share": s["name"]})
+        all_shares.extend({"host": r["target"], "share": s["name"]} for s in r.get("shares", []))
 
     return {
         "assessment_date": datetime.utcnow().isoformat(),
@@ -141,7 +138,7 @@ def generate_report(results: List[dict]) -> dict:
     }
 
 
-def expand_cidr(cidr: str) -> List[str]:
+def expand_cidr(cidr: str) -> list[str]:
     """Expand a CIDR range to individual IPs (supports /24 and smaller)."""
     import ipaddress
     try:

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Agent for auditing and configuring Tofino ICS firewall rules."""
 
-import json
 import argparse
-from datetime import datetime
+import json
 from collections import Counter
-
+from datetime import datetime
 
 OT_PROTOCOLS = {
     "modbus": {"port": 502, "layer": "TCP", "dpi": True},
@@ -40,7 +39,7 @@ def audit_firewall_rules(rules_path):
         src = rule.get("source", rule.get("src", "any"))
         dst = rule.get("destination", rule.get("dst", "any"))
         protocol = rule.get("protocol", "").lower()
-        port = rule.get("port", rule.get("dst_port", "any"))
+        rule.get("port", rule.get("dst_port", "any"))
 
         if src == "any" and dst == "any" and action == "allow":
             findings.append({
@@ -142,8 +141,7 @@ def generate_zone_rules(zone_config):
             proto_info = OT_PROTOCOLS.get(proto, {})
             port = proto_info.get("port", "any")
             for hmi in hmi_ips:
-                for plc in plc_ips:
-                    rules.append({
+                rules.extend({
                         "zone": zone_name,
                         "action": "allow",
                         "source": hmi,
@@ -152,11 +150,10 @@ def generate_zone_rules(zone_config):
                         "port": port,
                         "dpi_enabled": proto_info.get("dpi", False),
                         "logging": True,
-                    })
+                    } for plc in plc_ips)
             if proto == "modbus":
                 for eng in eng_ips:
-                    for plc in plc_ips:
-                        rules.append({
+                    rules.extend({
                             "zone": zone_name,
                             "action": "allow",
                             "source": eng,
@@ -167,7 +164,7 @@ def generate_zone_rules(zone_config):
                             "allowed_functions": [1, 2, 3, 4],
                             "logging": True,
                             "comment": "Read-only Modbus for engineering",
-                        })
+                        } for plc in plc_ips)
 
     rules.append({"action": "deny", "source": "any", "destination": "any",
                   "protocol": "any", "logging": True, "comment": "Default deny-all"})

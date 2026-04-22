@@ -6,15 +6,12 @@ Automates gap analysis, risk assessment tracking, Statement of Applicability
 management, and audit readiness checks for ISO/IEC 27001:2022 implementation.
 """
 
-import json
 import csv
-import os
-import sys
+import json
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
-from typing import Optional
-from pathlib import Path
-from dataclasses import dataclass, field, asdict
 from enum import Enum
+from pathlib import Path
 
 
 class ControlCategory(Enum):
@@ -268,7 +265,7 @@ class ISO27001ComplianceManager:
             json.dump(results, f, indent=2)
 
         print(f"\nTotal Controls Assessed: {results['total_controls']}")
-        print(f"\nCategory Breakdown:")
+        print("\nCategory Breakdown:")
         for cat, data in results["categories"].items():
             print(f"  {cat}: {data['total']} controls")
         print(f"\nNew 2022 Controls: {results['summary']['new_2022_controls']}")
@@ -303,14 +300,14 @@ class ISO27001ComplianceManager:
             risk_summary.setdefault(entry.risk_level, 0)
             risk_summary[entry.risk_level] += 1
 
-        print(f"\n  Risk Summary:")
+        print("\n  Risk Summary:")
         for level, count in sorted(risk_summary.items()):
             print(f"    {level}: {count}")
         print(f"\n  Risk Register saved to: {register_path}")
 
         return self.risk_register
 
-    def generate_soa(self, control_assessments: Optional[dict] = None) -> list[SoAEntry]:
+    def generate_soa(self, control_assessments: dict | None = None) -> list[SoAEntry]:
         """Generate Statement of Applicability for all 93 controls."""
         print("\n" + "=" * 70)
         print("STATEMENT OF APPLICABILITY (SoA)")
@@ -452,11 +449,11 @@ class ISO27001ComplianceManager:
                 print(f"    {icon} {item}")
 
         if readiness_pct < 80:
-            print(f"\n  WARNING: Readiness below 80%. Address gaps before scheduling Stage 1 audit.")
+            print("\n  WARNING: Readiness below 80%. Address gaps before scheduling Stage 1 audit.")
         elif readiness_pct < 100:
-            print(f"\n  NOTICE: Some items pending. Complete before Stage 2 audit.")
+            print("\n  NOTICE: Some items pending. Complete before Stage 2 audit.")
         else:
-            print(f"\n  READY: All checks passed. Proceed with certification audit.")
+            print("\n  READY: All checks passed. Proceed with certification audit.")
 
         # Save readiness report
         report = {
@@ -493,7 +490,7 @@ class ISO27001ComplianceManager:
             type_counts.setdefault(f.finding_type, 0)
             type_counts[f.finding_type] += 1
 
-        print(f"\n  Finding Summary:")
+        print("\n  Finding Summary:")
         for ftype, count in type_counts.items():
             print(f"    {ftype}: {count}")
 
@@ -561,19 +558,19 @@ class ISO27001ComplianceManager:
             f"{(implemented / applicable * 100):.1f}%" if applicable > 0 else "N/A"
         )
 
-        print(f"\n  Risk Register:")
+        print("\n  Risk Register:")
         print(f"    Total Risks: {dashboard['risk_register']['total_risks']}")
         print(f"    Open Risks: {dashboard['risk_register']['open_risks']}")
         for level, count in dashboard["risk_register"]["by_level"].items():
             print(f"    {level}: {count}")
 
-        print(f"\n  Statement of Applicability:")
+        print("\n  Statement of Applicability:")
         print(f"    Total Controls: {dashboard['soa']['total_controls']}")
         print(f"    Applicable: {dashboard['soa']['applicable']}")
         print(f"    Fully Implemented: {dashboard['soa']['fully_implemented']}")
         print(f"    Compliance Rate: {dashboard['soa']['compliance_rate']}")
 
-        print(f"\n  Audit Findings:")
+        print("\n  Audit Findings:")
         print(f"    Total: {dashboard['audit_findings']['total']}")
         print(f"    Open: {dashboard['audit_findings']['open']}")
         print(f"    Major NCRs: {dashboard['audit_findings']['major_ncrs']}")
@@ -592,7 +589,7 @@ def main():
     manager = ISO27001ComplianceManager()
 
     # Phase 1: Gap Analysis
-    gap_results = manager.perform_gap_analysis()
+    manager.perform_gap_analysis()
 
     # Phase 2: Risk Register with sample risks
     sample_risks = [
@@ -663,13 +660,13 @@ def main():
         },
     ]
 
-    risk_register = manager.create_risk_register(sample_risks)
+    manager.create_risk_register(sample_risks)
 
     # Phase 3: Statement of Applicability
-    soa = manager.generate_soa()
+    manager.generate_soa()
 
     # Phase 4: Audit Readiness Check
-    readiness = manager.check_audit_readiness()
+    manager.check_audit_readiness()
 
     # Phase 5: Sample Audit Findings
     sample_findings = [
@@ -697,10 +694,10 @@ def main():
         },
     ]
 
-    findings = manager.track_audit_findings(sample_findings)
+    manager.track_audit_findings(sample_findings)
 
     # Phase 6: Compliance Dashboard
-    dashboard = manager.generate_compliance_dashboard()
+    manager.generate_compliance_dashboard()
 
     print("\n" + "=" * 70)
     print("ISO 27001 COMPLIANCE ASSESSMENT COMPLETE")
