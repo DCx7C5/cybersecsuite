@@ -22,7 +22,7 @@ import shutil
 import time
 from pathlib import Path
 
-from anthropic.lib.tools._beta_builtin_memory_tool import (
+from anthropic.lib.tools._beta_builtin_memory_tool import (  # type: ignore[attr-defined]
     BetaAbstractMemoryTool,
     _DIR_CREATE_MODE,
     _atomic_write_file,

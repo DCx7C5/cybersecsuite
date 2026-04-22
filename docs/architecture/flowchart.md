@@ -401,25 +401,25 @@ MAKEFILE --> MANAGE
 
 ## Layer Index
 
-| # | Layer | Package(s) | Key responsibility |
-|---|-------|------------|--------------------|
-| 0 | External Clients | browser-plugin, agent_ts, external | Entry points |
-| 1 | ASGI Entry | proxy/asgi.py | Route demultiplexing :8000 |
-| 2 | AI Proxy | ai_proxy/ | 13 strategies, 60 providers, format translation |
-| 3 | A2A Protocol | a2a/ | Agent-to-agent task protocol |
-| 4 | Claude Agent SDK | claude_agent_sdk (ext) | Multi-turn query engine, 33 agent defs |
-| 5 | Agent Runner | agent/ | SDK wrapper, SSE streaming, session linking |
-| 6 | MCP Server | csmcp/ | 56 cybersec + 5 crypto tools via stdio/in-process |
-| 7 | Hooks | hooks/, agent_ts/hooks/, .claude/hooks/ | Pre/post-tool audit, IPC bridge |
-| 8 | Dashboard | dashboard/, ts_api/, frontend/ | 40+ REST, SSE, React SPA, Node API |
-| 9 | SDK / Scope | cybersecsuite/, template_engine/ | 4-scope context merge, Jinja2, session I/O |
-| 10 | LLM Client | llm/ | Anthropic SDK, session lifecycle, pricing, OTEL |
-| 11 | Cryptography | crypto/ | RSA-2048, key vault, artifact signing |
-| 12 | Memory | memory/ | Obsidian vault, Canvas gen, hot cache |
-| 13 | Telemetry | telemetry/ | Ring buffer, p50/p95/p99, Starlette middleware |
-| 14 | Database | db/ | 41 ORM models, intel seeding, OO write path |
-| 15 | Accounts | accounts/ | Provider account CRUD + sync |
-| 16 | Marketplace | marketplace/ | Plugin registry |
-| 17 | Startup | startup/ | First-run init, sentinel |
-| 18 | Infrastructure | docker-compose.yml | PostgreSQL, Redis, OpenObserve, OpenSearch |
-| 19 | Scripts & Tooling | scripts/, Makefile, src/manage.py | CLI, worktree manager, skill fixer |
+| #  | Layer             | Package(s)                              | Key responsibility                                |
+|----|-------------------|-----------------------------------------|---------------------------------------------------|
+| 0  | External Clients  | browser-plugin, agent_ts, external      | Entry points                                      |
+| 1  | ASGI Entry        | proxy/asgi.py                           | Route demultiplexing :8000                        |
+| 2  | AI Proxy          | ai_proxy/                               | 13 strategies, 60 providers, format translation   |
+| 3  | A2A Protocol      | a2a/                                    | Agent-to-agent task protocol                      |
+| 4  | Claude Agent SDK  | claude_agent_sdk (ext)                  | Multi-turn query engine, 33 agent defs            |
+| 5  | Agent Runner      | agent/                                  | SDK wrapper, SSE streaming, session linking       |
+| 6  | MCP Server        | csmcp/                                  | 56 cybersec + 5 crypto tools via stdio/in-process |
+| 7  | Hooks             | hooks/, agent_ts/hooks/, .claude/hooks/ | Pre/post-tool audit, IPC bridge                   |
+| 8  | Dashboard         | dashboard/, ts_api/, frontend/          | 40+ REST, SSE, React SPA, Node API                |
+| 9  | SDK / Scope       | cybersecsuite/, template_engine/        | 4-scope context merge, Jinja2, session I/O        |
+| 10 | LLM Client        | llm/                                    | Anthropic SDK, session lifecycle, pricing, OTEL   |
+| 11 | Cryptography      | crypto/                                 | RSA-2048, key vault, artifact signing             |
+| 12 | Memory            | memory/                                 | Obsidian vault, Canvas gen, hot cache             |
+| 13 | Telemetry         | telemetry/                              | Ring buffer, p50/p95/p99, Starlette middleware    |
+| 14 | Database          | db/                                     | 41 ORM models, intel seeding, OO write path       |
+| 15 | Accounts          | accounts/                               | Provider account CRUD + sync                      |
+| 16 | Marketplace       | marketplace/                            | Plugin registry                                   |
+| 17 | Startup           | startup/                                | First-run init, sentinel                          |
+| 18 | Infrastructure    | docker-compose.yml                      | PostgreSQL, Redis, OpenObserve, OpenSearch        |
+| 19 | Scripts & Tooling | scripts/, Makefile, src/manage.py       | CLI, worktree manager, skill fixer                |

@@ -13,7 +13,7 @@ from pathlib import Path
 from anyio import Path as AsyncPath
 from anyio.to_thread import run_sync
 
-from anthropic.lib.tools._beta_builtin_memory_tool import (
+from anthropic.lib.tools._beta_builtin_memory_tool import (  # type: ignore[attr-defined]
     BetaAsyncAbstractMemoryTool,
     _DIR_CREATE_MODE,
     _async_atomic_write_file,

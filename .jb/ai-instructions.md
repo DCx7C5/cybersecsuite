@@ -93,9 +93,9 @@ async def _fn(args: dict[str, Any]) -> dict:
 
 
 ## Additional Python and TypeScript Rules
-- Every new or edited python file has to be linted with `ruff` and pass with zero errors; run `uv run ruff check <file>` to verify
+- Every new or edited Python file has to be linted with `ruff` and pass with zero errors; run `uv run ruff check <file>` to verify
 - Every new or edited TypeScript file has to be linted with `eslint` and pass with zero errors; run `uv run eslint <file>` to verify
-- All Python code must be type-annotated and pass `mypy` with zero errors
+- All non exit Python Exceptions should use `Exception(BaseException)` pattern and include detailed error messages; avoid bare `except:` blocks and never use `except Exception:` without re-raising or logging the error details
 - All TypeScript code must pass `tsc` with zero errors
 - Use `uv` for all Python package management and script execution; do not use `pip` or `poetry` directly
 - All MCP tools must follow the SDK pattern and be registered in `src/csmcp/cybersec/__init__.py`
