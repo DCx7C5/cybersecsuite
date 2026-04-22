@@ -60,7 +60,7 @@ make install
 make ccs-first-setup
 ```
 
-Idempotent. Creates `~/.cybersecsuite/{sessions,templates,cache,logs}` (mode `700`), patches `~/.claude/settings.json`, runs `schema` + `seed`, writes `.ccs-initialized` sentinel.
+Idempotent. Creates `~/.cybersecsuite/{sessions,templates,cache,logs}` (mode `700`), patches `~/.claude/settings.json`, runs `schema` + `seed`, writes `.css-initialized` sentinel.
 
 After this, `make serve` and `make docker-up` skip bootstrap automatically.
 

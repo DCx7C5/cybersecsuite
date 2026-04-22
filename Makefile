@@ -62,7 +62,7 @@ machine:  ## Seed local machine hardware inventory
 # ── Run ───────────────────────────────────────────────────────────────────────
 
 .PHONY: serve
-serve: .ccs-initialized  ## Start the ASGI server (A2A + AI proxy at /v1/)
+serve: .css-initialized  ## Start the ASGI server (A2A + AI proxy at /v1/)
 	$(UV) run uvicorn proxy.asgi:app \
 		--host $(UVICORN_HOST) \
 		--port $(UVICORN_PORT) \
@@ -86,7 +86,7 @@ proxy-chat:  ## Chat via CLI (usage: make proxy-chat PROMPT="hello")
 	$(UV) run python -m ai_proxy.cli chat "$(PROMPT)" -v
 
 .PHONY: docker-up
-docker-up: .ccs-initialized  ## Start all services (DB + app) via Docker Compose
+docker-up: .css-initialized  ## Start all services (DB + app) via Docker Compose
 	docker compose up -d
 
 .PHONY: docker-down
@@ -104,7 +104,7 @@ shell:  ## Interactive Python shell with all models loaded
 # ── Testing ───────────────────────────────────────────────────────────────────
 
 .PHONY: test
-test: .ccs-initialized  ## Run all tests
+test: .css-initialized  ## Run all tests
 	$(UV) run --group test pytest
 
 .PHONY: test-cov
@@ -164,13 +164,15 @@ fmt:  ## Auto-format with ruff
 
 # ── First-time setup ──────────────────────────────────────────────────────────
 
-.ccs-initialized:
+.css-initialized:
 	@$(MAKE) --no-print-directory ccs-first-setup
-	@touch .ccs-initialized
+	@touch .css-initialized
 
 .PHONY: ccs-first-setup
-ccs-first-setup:  ## One-time Claude + DB setup (auto-triggered on first make run)
-	@echo "==> [1/4] Patching ~/.claude/settings.json..."
+ccs-first-setup:  ## One-time app + DB setup (auto-triggered on first make run)
+	@echo "==> [1/4] Installing app home (CYBERSECSUITE_HOME=~/.cybersecsuite)..."
+	$(UV) run --no-project python src/manage.py install
+	@echo "==> [2/4] Patching ~/.claude/settings.json..."
 	@python3 -c "\
 import json, pathlib; \
 p = pathlib.Path.home() / '.claude' / 'settings.json'; \
@@ -180,15 +182,11 @@ env.setdefault('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS', '1'); \
 p.parent.mkdir(parents=True, exist_ok=True); \
 p.write_text(json.dumps(d, indent=2) + '\n'); \
 print('  OK: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS set')"
-	@echo "==> [2/4] Creating ~/.cybersecsuite/..."
-	@mkdir -p ~/.cybersecsuite/{sessions,templates,cache,logs}
-	@chmod 700 ~/.cybersecsuite
-	@echo "  OK: ~/.cybersecsuite/"
 	@echo "==> [3/4] DB schema..."
 	$(UV) run --no-project python src/manage.py schema
 	@echo "==> [4/4] DB seed..."
 	$(UV) run --no-project python src/manage.py seed
-	@touch .ccs-initialized
+	@touch .css-initialized
 	@echo ""
 	@echo "✅ ccs-first-setup complete. Run 'make serve' to start."
 

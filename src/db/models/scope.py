@@ -75,7 +75,7 @@ class ScopedEntry(Model):
 
     5-level scope columns (T045 / scope_v2):
         runtime_id    — container/pod runtime identity
-        worktree_path — absolute path to .ccs/<runtime-id>/worktree-<SID>/
+        worktree_path — absolute path to .css/<runtime-id>/worktree-<SID>/
         scope_level   — one of: global, app, project, runtime, session
     """
     project = fields.ForeignKeyField("models.Project", related_name=False, null=True, on_delete=fields.CASCADE, db_index=True)

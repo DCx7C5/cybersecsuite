@@ -2,7 +2,7 @@
 
 Adds three columns to every table that inherits ScopedEntry:
     runtime_id    VARCHAR(64)  NULL  — container/pod runtime identity
-    worktree_path VARCHAR(1024) NULL — absolute path to .ccs/<runtime-id>/worktree-<SID>/
+    worktree_path VARCHAR(1024) NULL — absolute path to .css/<runtime-id>/worktree-<SID>/
     scope_level   VARCHAR(16)  NULL  DEFAULT 'session' — one of: global, app, project, runtime, session
 
 Idempotent: uses ADD COLUMN IF NOT EXISTS so it can be re-run safely.

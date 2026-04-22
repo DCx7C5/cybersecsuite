@@ -122,7 +122,7 @@ dump.rdb
 mcps/brave_stealth_profile/
 /plan.md
 /plan0.md
-.ccs-initialized
+.css-initialized
 
 # TypeScript compiled output
 src/dashboard/static/js/

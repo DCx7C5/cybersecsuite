@@ -63,15 +63,15 @@ CYBERSEC_REDIS_URL=redis://cybersec-redis:6379/0
 
 **Important:** 
 - Global and App scopes exist after installation.
-- **Project, Runtime, and Session scopes only exist after installation** and are always located in the **present working directory** (`.ccs/` folder in the current project root).
+- **Project, Runtime, and Session scopes only exist after installation** and are always located in the **present working directory** (`.css/` folder in the current project root).
 
 | Scope       | Path                                                         | Purpose                     |
 |-------------|--------------------------------------------------------------|-----------------------------|
 | **Global**  | `~/.claude/`                                                 | IDE config only             |
 | **App**     | `~/.cybersecsuite/`                                          | Vault + Obsidian memory     |
-| **Project** | `.ccs/` (in present working dir after install)               | Project-specific overrides  |
-| **Runtime** | `.ccs/<runtime-id>/` (in present working dir)                | Container/pod isolation     |
-| **Session** | `.ccs/<runtime-id>/worktree-<SID>/` (in present working dir) | Ephemeral per-session state |
+| **Project** | `.css/` (in present working dir after install)               | Project-specific overrides  |
+| **Runtime** | `.css/<runtime-id>/` (in present working dir)                | Container/pod isolation     |
+| **Session** | `.css/<runtime-id>/worktree-<SID>/` (in present working dir) | Ephemeral per-session state |
 
 **Rule:** Add `runtime_id`, `worktree_path`, `scope_level` to every `ScopedEntry` model.
 

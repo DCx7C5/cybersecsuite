@@ -8,7 +8,7 @@ import { repoRootFromHere, sendEvent } from "../ipc";
  */
 export async function onCcsFirstSetup(payload: unknown): Promise<void> {
   const root = repoRootFromHere();
-  const sentinel = path.join(root, ".ccs-initialized");
+  const sentinel = path.join(root, ".css-initialized");
   if (fs.existsSync(sentinel)) {
     sendEvent("SetupSkipped", { reason: "sentinel_exists", sentinel });
     return;
