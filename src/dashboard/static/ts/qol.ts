@@ -56,7 +56,7 @@ function _renderToggles(settings: QolSettings): void {
     ['TOOL_CALLS_ONLY', 'Tool Calls Only', 'Respond exclusively with tool calls.'],
   ];
   container.innerHTML = allToggles.map(([key, label, desc]) => {
-    const active = settings.toggles.includes(key);
+    const active = settings.active_toggles.includes(key);
     return `<label style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer">
       <input type="checkbox" ${active ? 'checked' : ''} data-toggle="${key}"
         onchange="qolToggle('${key}', this.checked)"
