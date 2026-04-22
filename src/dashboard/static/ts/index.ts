@@ -126,6 +126,7 @@ import {
   vaultChatSend,
 } from './vault.js';
 import { loadRouting, routingSetStrategy, routingSetResilience, routingSimulate } from './routing.js';
+import { loadQolControls, qolToggle, qolApplyPreset, qolReset } from './qol.js';
 import {
   loadCases, caseCreate, caseSave, caseDelete, caseEdit,
   loadTasks, taskCreate, taskSave, taskDelete, taskEdit,
@@ -296,6 +297,11 @@ declare global {
     routingSetStrategy: typeof routingSetStrategy;
     routingSetResilience: typeof routingSetResilience;
     routingSimulate: typeof routingSimulate;
+    // qol controls
+    loadQolControls: typeof loadQolControls;
+    qolToggle: typeof qolToggle;
+    qolApplyPreset: typeof qolApplyPreset;
+    qolReset: typeof qolReset;
     // crud ops
     loadCases: typeof loadCases; caseCreate: typeof caseCreate; caseSave: typeof caseSave; caseDelete: typeof caseDelete; caseEdit: typeof caseEdit; filterCases: typeof filterCases;
     loadTasks: typeof loadTasks; taskCreate: typeof taskCreate; taskSave: typeof taskSave; taskDelete: typeof taskDelete; taskEdit: typeof taskEdit; filterTasks: typeof filterTasks;
@@ -433,6 +439,12 @@ window.routingSetStrategy = routingSetStrategy;
 window.routingSetResilience = routingSetResilience;
 window.routingSimulate = routingSimulate;
 
+// QoL Controls
+window.loadQolControls = loadQolControls;
+window.qolToggle = qolToggle;
+window.qolApplyPreset = qolApplyPreset;
+window.qolReset = qolReset;
+
 // CRUD ops
 window.loadCases = loadCases; window.caseCreate = caseCreate; window.caseSave = caseSave; window.caseDelete = caseDelete; window.caseEdit = caseEdit; window.filterCases = filterCases;
 window.loadTasks = loadTasks; window.taskCreate = taskCreate; window.taskSave = taskSave; window.taskDelete = taskDelete; window.taskEdit = taskEdit; window.filterTasks = filterTasks;
@@ -532,6 +544,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (name === 'settings-cybersecsuite') { loadSettingsToggles().catch(() => {}); }
     if (name === 'vault')          { loadVaultStatus().catch(() => {}); }
     if (name === 'routing')        { loadRouting().catch(() => {}); }
+    if (name === 'qol-controls')   { loadQolControls().catch(() => {}); }
     if (name === 'cases')          { loadCases().catch(() => {}); }
     if (name === 'tasks')          { loadTasks().catch(() => {}); }
     if (name === 'pocs')           { loadPocs().catch(() => {}); }

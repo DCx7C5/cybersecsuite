@@ -16,6 +16,7 @@ _NAV: list = [
     ("providers-hub", "Provider Hub",     "⊞", "platform"),
     # AI PROXY
     ("routing",       "Routing",          "⇄", "proxy"),
+    ("qol-controls",  "QoL Controls",     "⊘", "proxy"),
     # AGENTS
     ("agent-factory", "Agent Factory",    "⊞", "agents"),
     ("agent-crafter", "Agent Crafter",   "✎", "agents"),
