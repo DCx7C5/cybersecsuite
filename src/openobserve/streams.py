@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from openobserve.client import get_client, OPENOBSERVE_ORG
 
-STREAMS = ["telemetry", "audit", "api-usage"]
+STREAMS = ["telemetry", "audit", "api-usage", "llm-calls", "intel-update-log"]
 
 
 async def ensure_streams() -> dict[str, bool]:

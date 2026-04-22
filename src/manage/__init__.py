@@ -32,7 +32,10 @@ from ._commands import (
     check_command,
     migrate_audit_command,
     migrate_api_usage_command,
+    migrate_llm_calls_command,
+    migrate_intel_update_log_command,
     build_skill_index_command,
+    install_command,
 )
 
 
@@ -96,10 +99,16 @@ def show_usage():
     print("             Validates FK targets, table names, related_names,")
     print("             fixture coverage, and config cross-references")
     print()
-    print("OpenSearch Migrations (fast-forward):")
-    print("  migrate-audit     - Copy audit_logs PG → OpenSearch, then drop PG table")
-    print("  migrate-api-usage - Copy api_usage_log PG → OpenSearch, then drop PG table")
+    print("OpenObserve Migrations (fast-forward PG → OO, then drop PG table):")
+    print("  migrate-audit            - Copy audit_logs → OO stream 'audit'")
+    print("  migrate-api-usage        - Copy api_usage_log → OO stream 'api-usage'")
+    print("  migrate-llm-calls        - Copy llm_calls → OO stream 'llm-calls'")
+    print("  migrate-intel-update-log - Copy intel_update_log_entries → OO stream 'intel-update-log'")
     print("  build-skill-index - Build merged skill index JSON for global/app/project scopes")
+    print()
+    print("App install:")
+    print("  install  - Create ~/.cybersecsuite/ directory structure (idempotent)")
+    print("             Set CYBERSECSUITE_HOME to override the default path")
 
 
 async def main():
@@ -133,7 +142,10 @@ async def main():
         "team-task": team_task_command,
         "migrate-audit": migrate_audit_command,
         "migrate-api-usage": migrate_api_usage_command,
+        "migrate-llm-calls": migrate_llm_calls_command,
+        "migrate-intel-update-log": migrate_intel_update_log_command,
         "build-skill-index": build_skill_index_command,
+        "install": install_command,
     }
 
     if command not in async_commands:

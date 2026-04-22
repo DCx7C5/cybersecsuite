@@ -789,8 +789,8 @@ def check_command() -> None:
 async def migrate_audit_command() -> None:
     """Fast-forward AuditLog rows from PostgreSQL → OpenObserve, then drop PG table."""
     from db.bootstrap import init_tortoise_async
-    from openobserve.client import get_client
-    from openobserve.streams import ensure_streams, stream_name
+    from openobserve.client import get_client, OPENOBSERVE_ORG
+    from openobserve.streams import ensure_streams
 
     print("→ Initialising DB...")
     await init_tortoise_async()
@@ -802,9 +802,10 @@ async def migrate_audit_command() -> None:
     from tortoise import connections
 
     total = await AuditLog.all().count()
-    print(f"→ Migrating {total} AuditLog rows to OpenSearch...")
+    print(f"→ Migrating {total} AuditLog rows to OpenObserve...")
 
     client = get_client()
+    org = OPENOBSERVE_ORG
     batch_size = 500
     migrated = 0
     offset = 0
@@ -813,11 +814,9 @@ async def migrate_audit_command() -> None:
         rows = await AuditLog.all().order_by("id").offset(offset).limit(batch_size)
         if not rows:
             break
-        index = daily_index("audit")
-        actions: list = []
+        docs = []
         for r in rows:
-            actions.append({"index": {"_index": index}})
-            actions.append({
+            docs.append({
                 "@timestamp": r.created_at.isoformat() if r.created_at else None,
                 "action": str(r.action.value) if hasattr(r.action, "value") else str(r.action),
                 "entity_type": r.entity_type or "",
@@ -827,22 +826,12 @@ async def migrate_audit_command() -> None:
                 "ip_address": r.ip_address or None,
                 "detail": r.entity_repr or "",
             })
-        await client.bulk(body=actions, refresh=False)
+        await client.post(f"/api/{org}/audit/_json", json=docs)
         migrated += len(rows)
         offset += batch_size
         print(f"  {migrated}/{total}...", end="\r")
 
-    print(f"\n✅ Migrated {migrated} rows")
-
-    # Verify count in OpenSearch
-    await client.indices.refresh(index=f"cybersecsuite-audit-*")
-    resp = await client.count(index=f"cybersecsuite-audit-*")
-    os_count = resp.get("count", 0)
-    print(f"→ OpenSearch count: {os_count}")
-
-    if os_count < migrated:
-        print(f"⚠  Count mismatch ({os_count} < {migrated}) — NOT dropping PG table")
-        return
+    print(f"\n✅ Migrated {migrated} rows to OpenObserve stream 'audit'")
 
     confirm = input("Drop PG table `audit_logs`? [yes/NO] ").strip().lower()
     if confirm != "yes":
@@ -857,8 +846,8 @@ async def migrate_audit_command() -> None:
 async def migrate_api_usage_command() -> None:
     """Fast-forward ApiUsageLog rows from PostgreSQL → OpenObserve, then drop PG table."""
     from db.bootstrap import init_tortoise_async
-    from openobserve.client import get_client
-    from openobserve.streams import ensure_streams, stream_name
+    from openobserve.client import get_client, OPENOBSERVE_ORG
+    from openobserve.streams import ensure_streams
 
     print("→ Initialising DB...")
     await init_tortoise_async()
@@ -870,9 +859,10 @@ async def migrate_api_usage_command() -> None:
     from tortoise import connections
 
     total = await ApiUsageLog.all().count()
-    print(f"→ Migrating {total} ApiUsageLog rows to OpenSearch...")
+    print(f"→ Migrating {total} ApiUsageLog rows to OpenObserve...")
 
     client = get_client()
+    org = OPENOBSERVE_ORG
     batch_size = 500
     migrated = 0
     offset = 0
@@ -881,36 +871,25 @@ async def migrate_api_usage_command() -> None:
         rows = await ApiUsageLog.all().order_by("timestamp").offset(offset).limit(batch_size)
         if not rows:
             break
-        index = daily_index("api-usage")
-        actions: list = []
+        docs = []
         for r in rows:
             prov = r.provider.value if hasattr(r.provider, "value") else str(r.provider)
-            actions.append({"index": {"_index": index}})
-            actions.append({
+            docs.append({
                 "@timestamp": r.timestamp.isoformat() if r.timestamp else None,
                 "provider": prov,
                 "model": r.model or "",
                 "tokens_in": r.input_tokens or 0,
                 "tokens_out": r.output_tokens or 0,
                 "cost_usd": float(r.cost_estimate or 0),
-                "duration_ms": None,
-                "strategy": None,
+                "session_id": r.session_id or None,
+                "request_id": r.request_id or None,
             })
-        await client.bulk(body=actions, refresh=False)
+        await client.post(f"/api/{org}/api-usage/_json", json=docs)
         migrated += len(rows)
         offset += batch_size
         print(f"  {migrated}/{total}...", end="\r")
 
-    print(f"\n✅ Migrated {migrated} rows")
-
-    await client.indices.refresh(index=f"cybersecsuite-api-usage-*")
-    resp = await client.count(index=f"cybersecsuite-api-usage-*")
-    os_count = resp.get("count", 0)
-    print(f"→ OpenSearch count: {os_count}")
-
-    if os_count < migrated:
-        print(f"⚠  Count mismatch ({os_count} < {migrated}) — NOT dropping PG table")
-        return
+    print(f"\n✅ Migrated {migrated} rows to OpenObserve stream 'api-usage'")
 
     confirm = input("Drop PG table `api_usage_log`? [yes/NO] ").strip().lower()
     if confirm != "yes":
@@ -921,3 +900,173 @@ async def migrate_api_usage_command() -> None:
     await conn.execute_script("DROP TABLE IF EXISTS api_usage_log CASCADE;")
     print("✅ PG table `api_usage_log` dropped")
 
+
+async def migrate_llm_calls_command() -> None:
+    """Fast-forward LlmCall rows from PostgreSQL → OpenObserve, then drop PG table."""
+    from db.bootstrap import init_tortoise_async
+    from openobserve.client import get_client, OPENOBSERVE_ORG
+    from openobserve.streams import ensure_streams
+
+    print("→ Initialising DB...")
+    await init_tortoise_async()
+
+    print("→ Ensuring OpenObserve streams...")
+    await ensure_streams()
+
+    from db.models.llm_call import LlmCall
+    from tortoise import connections
+
+    total = await LlmCall.all().count()
+    print(f"→ Migrating {total} LlmCall rows to OpenObserve...")
+
+    client = get_client()
+    org = OPENOBSERVE_ORG
+    batch_size = 500
+    migrated = 0
+    offset = 0
+
+    while True:
+        rows = await LlmCall.all().order_by("called_at").offset(offset).limit(batch_size)
+        if not rows:
+            break
+        docs = []
+        for r in rows:
+            docs.append({
+                "@timestamp": r.called_at.isoformat() if r.called_at else None,
+                "worktree_sid": r.sid or "",
+                "model": r.model or "",
+                "input_tokens": r.input_tokens or 0,
+                "output_tokens": r.output_tokens or 0,
+                "cache_read_tokens": r.cache_read_tokens or 0,
+                "cache_write_tokens": r.cache_write_tokens or 0,
+                "cost_usd": float(r.cost_usd or 0),
+                "latency_ms": r.latency_ms or 0,
+                "stream": r.stream,
+                "success": r.success,
+                "error": r.error or None,
+                "request_id": r.request_id or None,
+            })
+        await client.post(f"/api/{org}/llm-calls/_json", json=docs)
+        migrated += len(rows)
+        offset += batch_size
+        print(f"  {migrated}/{total}...", end="\r")
+
+    print(f"\n✅ Migrated {migrated} rows to OpenObserve stream 'llm-calls'")
+
+    confirm = input("Drop PG table `llm_calls`? [yes/NO] ").strip().lower()
+    if confirm != "yes":
+        print("Aborted. PG table NOT dropped.")
+        return
+
+    conn = connections.get("default")
+    await conn.execute_script("DROP TABLE IF EXISTS llm_calls CASCADE;")
+    print("✅ PG table `llm_calls` dropped")
+
+
+async def migrate_intel_update_log_command() -> None:
+    """Fast-forward IntelligenceUpdateLogEntry rows from PostgreSQL → OpenObserve, then drop PG table."""
+    from db.bootstrap import init_tortoise_async
+    from openobserve.client import get_client, OPENOBSERVE_ORG
+    from openobserve.streams import ensure_streams
+
+    print("→ Initialising DB...")
+    await init_tortoise_async()
+
+    print("→ Ensuring OpenObserve streams...")
+    await ensure_streams()
+
+    from db.models.update_log_entry import IntelligenceUpdateLogEntry
+    from tortoise import connections
+
+    total = await IntelligenceUpdateLogEntry.all().count()
+    print(f"→ Migrating {total} IntelligenceUpdateLogEntry rows to OpenObserve...")
+
+    client = get_client()
+    org = OPENOBSERVE_ORG
+    batch_size = 500
+    migrated = 0
+    offset = 0
+
+    while True:
+        rows = await IntelligenceUpdateLogEntry.all().order_by("logged_at").offset(offset).limit(batch_size)
+        if not rows:
+            break
+        docs = []
+        for r in rows:
+            docs.append({
+                "@timestamp": r.logged_at.isoformat() if r.logged_at else None,
+                "run_id": r.run_id or "",
+                "category": r.category or "",
+                "status": r.status or "",
+                "message": r.message or "",
+                "line_number": r.line_number,
+                "source_file": r.source_file or "",
+            })
+        await client.post(f"/api/{org}/intel-update-log/_json", json=docs)
+        migrated += len(rows)
+        offset += batch_size
+        print(f"  {migrated}/{total}...", end="\r")
+
+    print(f"\n✅ Migrated {migrated} rows to OpenObserve stream 'intel-update-log'")
+
+    confirm = input("Drop PG table `intel_update_log_entries`? [yes/NO] ").strip().lower()
+    if confirm != "yes":
+        print("Aborted. PG table NOT dropped.")
+        return
+
+    conn = connections.get("default")
+    await conn.execute_script("DROP TABLE IF EXISTS intel_update_log_entries CASCADE;")
+    print("✅ PG table `intel_update_log_entries` dropped")
+
+
+async def install_command() -> None:
+    """
+    Create the app-scope home directory structure under CYBERSECSUITE_HOME
+    (default ~/.cybersecsuite). Safe to re-run (idempotent).
+    """
+    import os
+    from datetime import datetime, timezone
+
+    app_home = Path(
+        os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))
+    ).expanduser().resolve()
+
+    dirs = [
+        app_home,
+        app_home / "sessions",
+        app_home / "memory" / "system",
+        app_home / "memory" / "project",
+        app_home / "memory" / "session",
+        app_home / "vault",
+        app_home / "vault" / "memories",
+        app_home / "vault" / "wiki",
+        app_home / "cache",
+        app_home / "logs",
+        app_home / "data" / "projects",
+        app_home / "data" / "workspaces",
+        app_home / "skills",
+        app_home / "providers",
+    ]
+
+    created = []
+    for d in dirs:
+        if not d.exists():
+            d.mkdir(parents=True, exist_ok=True)
+            d.chmod(0o700)
+            created.append(str(d))
+
+    marker = app_home / ".cybersecsuite"
+    if not marker.exists():
+        marker.write_text(json.dumps({
+            "version": "1.0",
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "app_home": str(app_home),
+        }, indent=2))
+
+    print(f"✅ App home: {app_home}")
+    if created:
+        for d in created:
+            print(f"   created: {d}")
+    else:
+        print("   (all directories already exist)")
+    print(f"\nSet CYBERSECSUITE_HOME={app_home} to override the default.")
