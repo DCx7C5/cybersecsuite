@@ -18,6 +18,8 @@ dependencies = [
     "httpx[http2]>=0.28",
     # Data validation
     "pydantic>=2.10",
+    # Type hints (used in memory backends)
+    "typing_extensions>=4.12; python_version < '3.13'",
     # Agent loader
     "pyyaml>=6.0",
     # Cryptography
