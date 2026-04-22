@@ -46,14 +46,14 @@ function _renderToggles(settings: QolSettings): void {
   const container = _$('qol-toggles');
   if (!container) return;
   const allToggles = [
-    ['NO_CHAT',         'No Chat',         'Suppress conversational filler and commentary.'],
-    ['NO_THINKING',     'No Thinking',     'Disable visible reasoning / <thinking> blocks.'],
-    ['FILE_ONLY',       'File Only',       'Output ONLY file content — nothing else may appear.'],
-    ['MINIMAL_OUTPUT',  'Minimal Output',  'Keep responses as short as possible.'],
-    ['NO_EXPLANATIONS', 'No Explanations', 'Skip explanations; go straight to results.'],
-    ['CODE_ONLY',       'Code Only',       'Return code only — no prose or markdown wrapper.'],
-    ['STRUCTURED_ONLY', 'Structured Only', 'Output structured data (JSON/YAML/tables) only.'],
-    ['TOOL_CALLS_ONLY', 'Tool Calls Only', 'Respond exclusively with tool calls.'],
+    ['no_thinking',      'No Thinking',      'Suppress reasoning / <thinking> blocks.'],
+    ['no_chat',          'No Chat',          'Suppress conversational filler and commentary.'],
+    ['minimal',          'Minimal Output',   'Absolute minimum output — direct answers only.'],
+    ['file_only',        'File Only',        'Output ONLY file content — NOTHING ELSE MAY APPEAR.'],
+    ['no_markdown',      'No Markdown',      'Return plain text; no Markdown, headers, or bullets.'],
+    ['structured_only',  'Structured Only',  'Output structured data (JSON/YAML/tables) only.'],
+    ['redact_secrets',   'Redact Secrets',   'Auto-redact API keys, passwords, and tokens.'],
+    ['append_audit_trail', 'Audit Trail',    'Append a compact audit entry to every response.'],
   ];
   container.innerHTML = allToggles.map(([key, label, desc]) => {
     const active = settings.active_toggles.includes(key);

@@ -17,7 +17,6 @@ Referenz:
 """
 from __future__ import annotations
 
-import functools
 import hashlib
 import json
 import logging
@@ -86,10 +85,27 @@ class QoLManager:
         # Cache: frozenset[QoLToggle] → (fragment_str, timestamp)
         self._fragment_cache: dict[frozenset, tuple[str, float]] = {}
 
+        # ── Env-var defaults (T021) ──────────────────────────────────────────
+        self._default_scope: str = os.environ.get("QOL_DEFAULT_SCOPE", "session")
+        self._max_tokens: int = int(os.environ.get("QOL_MAX_TOKENS", "100"))
+        raw_defaults = os.environ.get("QOL_DEFAULT_TOGGLES", "")
+        self._default_toggles: frozenset[QoLToggle] = frozenset(
+            t
+            for v in (s.strip() for s in raw_defaults.split(","))
+            if v
+            for t in [
+                next(
+                    (e for e in QoLToggle if e.value == v),
+                    None,  # type: ignore[arg-type]
+                )
+            ]
+            if t is not None
+        )
+
     # ── Paths ────────────────────────────────────────────────────────────────
 
     @property
-    def base_dir(self) -> Path:
+    def base_dir(self) -> Path | None:
         if self._base_dir is None:
             self._base_dir = _get_base_dir()
         return self._base_dir
@@ -105,11 +121,11 @@ class QoLManager:
     # ── Settings persistence ─────────────────────────────────────────────────
 
     def load_settings(self, scope: str = "session") -> QoLSettings:
-        """Load QoLSettings for *scope* from disk, falling back to empty defaults."""
+        """Load QoLSettings for *scope* from disk, falling back to env-var defaults."""
         data = _load_json(self._settings_path)
         scope_data = data.get(scope, {})
         if not scope_data:
-            return QoLSettings(scope=scope)
+            return QoLSettings(scope=scope, enabled_toggles=set(self._default_toggles))
         return QoLSettings.from_dict({**scope_data, "scope": scope})
 
     def save_settings(self, settings: QoLSettings) -> None:
@@ -210,13 +226,27 @@ class QoLManager:
             import asyncio
             from telemetry import record_event
             tok = _estimate_tokens(fragment)
+            if tok > self._max_tokens:
+                logger.warning(
+                    "qol.injection token budget exceeded: %d > %d (scope=%s)",
+                    tok,
+                    self._max_tokens,
+                    scope,
+                )
+            toggle_names = ",".join(sorted(t.value for t in settings.enabled_toggles))
             loop = asyncio.get_event_loop()
             if loop.is_running():
                 loop.create_task(
                     record_event(
                         "qol.injection",
                         float(tok),
-                        labels={"scope": scope, "toggles": str(len(settings.enabled_toggles))},
+                        labels={
+                            "scope": scope,
+                            "toggle_count": str(len(settings.enabled_toggles)),
+                            "toggle_names": toggle_names,
+                            "session_id": session_id or "",
+                            "over_budget": str(tok > self._max_tokens).lower(),
+                        },
                     )
                 )
         except Exception:
@@ -260,7 +290,7 @@ class QoLManager:
 _manager: QoLManager | None = None
 
 
-def get_manager() -> QoLManager:
+def get_manager() -> QoLManager | None:
     global _manager
     if _manager is None:
         _manager = QoLManager()
