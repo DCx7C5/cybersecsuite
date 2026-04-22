@@ -106,8 +106,8 @@ services:
     profiles:
       - default
     build:
-        context: .docker/redis
-        dockerfile: Dockerfile
+      context: .docker/redis
+      dockerfile: Dockerfile
     image: cybersec-redis
     container_name: cybersec-redis
     <<: *common
@@ -160,8 +160,8 @@ services:
       ZO_DATA_DIR: /data
       ZO_ROOT_USER_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
       ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
-    expose:
-      - "5080"
+    ports:
+      - "${OPENOBSERVE_PORT:-5080}:5080"
     volumes:
       - oo_data:/data
     healthcheck:

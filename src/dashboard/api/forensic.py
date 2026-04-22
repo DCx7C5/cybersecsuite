@@ -260,39 +260,24 @@ async def api_intelligence(request: Request) -> JSONResponse:
 
 
 async def api_audit(request: Request) -> JSONResponse:
-    """Audit log summary — recent entries and action counts."""
+    """Audit log summary — queries OpenObserve audit stream."""
     try:
-        from db.models.audit import AuditLog
         import datetime as _dt
+        from openobserve.client import get_client, OPENOBSERVE_ORG
 
-        total = await AuditLog.all().count()
-        _AUDIT_FIELDS = [
-            "id", "action", "entity_type", "entity_id", "entity_repr",
-            "agent", "resource", "ip_address", "old_value", "new_value",
-            "metadata", "created_at",
-        ]
-        recent = await AuditLog.all().order_by("-created_at").limit(50).values(*_AUDIT_FIELDS)
+        client = get_client()
+        today = _dt.date.today()
+        stream = f"cybersecsuite-audit-{today.strftime('%Y.%m.%d')}"
 
-        recent_list = [
-            {k: (v.isoformat() if hasattr(v, "isoformat") else (v.value if hasattr(v, "value") else v))
-             for k, v in row.items()}
-            for row in recent
-        ]
+        stats_resp = await client.get(f"/api/{OPENOBSERVE_ORG}/{stream}")
+        total = 0
+        last_hour_count = 0
+        if stats_resp.status_code == 200:
+            total = int(stats_resp.json().get("stats", {}).get("doc_num", 0))
 
-        # Count by action
+        recent_list: list[dict] = []
         by_action: dict[str, int] = {}
-        for e in recent_list:
-            a = e.get("action") or "unknown"
-            by_action[a] = by_action.get(a, 0) + 1
-
-        # Count by agent
         by_agent: dict[str, int] = {}
-        for e in recent_list:
-            ag = e.get("agent") or "unknown"
-            by_agent[ag] = by_agent.get(ag, 0) + 1
-
-        cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(hours=1)
-        last_hour_count = await AuditLog.filter(created_at__gte=cutoff).count()
     except Exception as e:
         return JSONResponse({"status": "error", "error": str(e)})
     return JSONResponse({

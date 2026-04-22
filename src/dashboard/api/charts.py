@@ -60,15 +60,17 @@ async def _provider_share() -> JSONResponse:
 async def _token_trend(days: int) -> JSONResponse:
     labels = _day_labels(days)
     try:
-        from db.models.api_usage_log import ApiUsageLog
+        from openobserve.client import get_client, OPENOBSERVE_ORG
+        client = get_client()
         data: list[int] = []
         for i in range(days):
             start = _days_ago(days - i)
-            end = start + datetime.timedelta(days=1)
-            total = await ApiUsageLog.filter(
-                created_at__gte=start, created_at__lt=end
-            ).count()
-            data.append(total)
+            stream = f"cybersecsuite-api-usage-{start.strftime('%Y.%m.%d')}"
+            resp = await client.get(f"/api/{OPENOBSERVE_ORG}/{stream}")
+            if resp.status_code == 200:
+                data.append(int(resp.json().get("stats", {}).get("doc_num", 0)))
+            else:
+                data.append(0)
     except Exception:
         data = [0] * days
     return JSONResponse({"labels": labels, "datasets": [{"label": "Requests", "data": data}]})

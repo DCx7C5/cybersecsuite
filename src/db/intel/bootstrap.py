@@ -29,7 +29,6 @@ from db.models.references import (
 )
 from db.models.threat_intel import ForensicMITRETechnique
 from db.models.threat_profile_entry import ThreatProfileEntry
-from db.models.update_log_entry import IntelligenceUpdateLogEntry
 
 from db.intel._utils import (
     _DEFAULT_INTEL_DIR,
@@ -1403,24 +1402,25 @@ async def bootstrap_update_log_async(force: bool = False) -> dict[str, Any]:
         return stats.as_dict()
 
     lines = source_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-    parsed_entries: list[IntelligenceUpdateLogEntry] = []
-    await IntelligenceUpdateLogEntry.filter(source_file=_relative_source(source_path)).delete()
+    parsed_entries: list[dict] = []
     for index, line in enumerate(lines, start=1):
         match = _UPDATE_LOG_PATTERN.match(line.strip())
         if not match:
             continue
-        parsed_entries.append(
-            IntelligenceUpdateLogEntry(
-                run_id=match.group("run_id").strip(),
-                category=match.group("category").strip(),
-                status=match.group("status").strip(),
-                message=match.group("message").strip(),
-                line_number=index,
-                source_file=_relative_source(source_path),
-            )
-        )
+        parsed_entries.append({
+            "run_id": match.group("run_id").strip(),
+            "category": match.group("category").strip(),
+            "status": match.group("status").strip(),
+            "message": match.group("message").strip(),
+            "line_number": index,
+            "source_file": _relative_source(source_path),
+        })
     if parsed_entries:
-        await IntelligenceUpdateLogEntry.bulk_create(parsed_entries, batch_size=500)
+        try:
+            from openobserve.writer import bulk_index
+            await bulk_index("intel-update-log", parsed_entries)
+        except Exception:
+            pass
     stats.processed = len(lines)
     stats.inserted = len(parsed_entries)
     await _store_snapshot(

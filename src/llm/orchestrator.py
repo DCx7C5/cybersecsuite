@@ -61,7 +61,6 @@ class LLMOrchestrator:
 
     def _make_client(self, model: str | None = None):
         from llm.client import AsyncLLMClient
-        from llm.db import persist_call
 
         oo_index = None
         try:
@@ -74,7 +73,6 @@ class LLMOrchestrator:
             model=model or self._model,
             sid=self.sid,
             log_prompts=self._log_prompts,
-            db_persist_fn=persist_call,
             oo_index_fn=oo_index,
         )
 

@@ -41,7 +41,6 @@ MODEL_MODULES: list[str] = [
     "db.models.compliance",
     "db.models.nist_csf",
     "db.models.nist_ai_rmf",
-    "db.models.audit",
     "db.models.vulnerability",
     "db.models.defense",
     "db.models.layers",
@@ -54,12 +53,9 @@ MODEL_MODULES: list[str] = [
     # Phase 0 — Case Intake
     "db.models.case_intake",
     # API / system
-    "db.models.api_usage_log",
-    "db.models.update_log_entry",
     "db.models.user_guidance",
     # LLM orchestration layer
     "db.models.llm_session",
-    "db.models.llm_call",
     # Intelligence feed sources
     "db.models.intel_feed_source",
     # Prompts
@@ -72,7 +68,6 @@ from db.models.provider_model import ProviderModel, AccountModel
 from db.models.tool_registry import ToolRegistry, ToolToggleState, ToolToggleRegistry, AccountToolAccess
 from db.models.settings import ScopedEntry, GlobalSettings
 from db.models.llm_session import LlmSession
-from db.models.llm_call import LlmCall
 from db.models.intel_feed_source import IntelFeedSource
 from db.models.prompt import Prompt
 
@@ -90,7 +85,6 @@ __all__ = [
     "ScopedEntry",
     "GlobalSettings",
     "LlmSession",
-    "LlmCall",
     "IntelFeedSource",
     "Prompt",
 ]

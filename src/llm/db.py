@@ -122,57 +122,30 @@ async def persist_call(
 
 
 async def close_session(sid: str) -> dict[str, Any]:
-    """Set closed_at, aggregate totals. Returns summary dict."""
+    """Set closed_at on the session. Returns summary dict (totals from OO, not PG)."""
     pool = await get_pool()
     row = await pool.fetchrow(
         """
-        UPDATE llm_sessions SET
-            closed_at           = $2,
-            total_input_tokens  = (SELECT COALESCE(SUM(input_tokens),  0) FROM llm_calls WHERE sid=$1),
-            total_output_tokens = (SELECT COALESCE(SUM(output_tokens), 0) FROM llm_calls WHERE sid=$1),
-            total_cost_usd      = (SELECT COALESCE(SUM(cost_usd),      0) FROM llm_calls WHERE sid=$1),
-            total_calls         = (SELECT COUNT(*)                        FROM llm_calls WHERE sid=$1)
+        UPDATE llm_sessions SET closed_at = $2
         WHERE sid = $1
         RETURNING sid, total_input_tokens, total_output_tokens, total_cost_usd, total_calls
         """,
         sid,
         datetime.now(timezone.utc),
     )
-    # Refresh materialized view (best-effort)
-    try:
-        await pool.execute(
-            "REFRESH MATERIALIZED VIEW CONCURRENTLY llm_cost_by_model"
-        )
-    except Exception:
-        pass
     return dict(row) if row else {}
 
 
 async def cost_report(sid: str) -> dict[str, Any]:
-    """Return per-model cost breakdown for a session."""
+    """Return session metadata. Per-model breakdown is now in OpenObserve (llm-calls stream)."""
     pool = await get_pool()
-    rows = await pool.fetch(
-        """
-        SELECT
-            model,
-            COUNT(*)           AS calls,
-            SUM(input_tokens)  AS input_tokens,
-            SUM(output_tokens) AS output_tokens,
-            SUM(cost_usd)      AS cost_usd
-        FROM llm_calls
-        WHERE sid = $1
-        GROUP BY model
-        ORDER BY cost_usd DESC
-        """,
-        sid,
-    )
     session = await pool.fetchrow(
         "SELECT * FROM llm_sessions WHERE sid=$1", sid
     )
     return {
         "sid": sid,
         "session": dict(session) if session else {},
-        "by_model": [dict(r) for r in rows],
+        "by_model": [],
     }
 
 
