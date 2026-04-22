@@ -13,7 +13,7 @@ LABEL maintainer="cybersec" \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 RUN apt-get update -qq \
     && apt-get install -y --no-install-recommends curl libpq5 git \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/libs/apt/lists/*
 
 WORKDIR /app
 

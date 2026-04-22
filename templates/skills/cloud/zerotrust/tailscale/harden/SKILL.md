@@ -111,10 +111,10 @@ services:
     hostname: my-service
     environment:
       - TS_AUTHKEY=tskey-auth-xxxxx  # Pre-auth key
-      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_STATE_DIR=/var/libs/tailscale
       - TS_EXTRA_ARGS=--advertise-tags=tag:container
     volumes:
-      - tailscale-state:/var/lib/tailscale
+      - tailscale-state:/var/libs/tailscale
       - /dev/net/tun:/dev/net/tun
     cap_add:
       - net_admin
@@ -319,7 +319,7 @@ sudo headscale generate config > /etc/headscale/config.yaml
 #   listen_addr: 0.0.0.0:8080
 #   private_key_path: /etc/headscale/private.key
 #   db_type: sqlite3
-#   db_path: /var/lib/headscale/db.sqlite
+#   db_path: /var/libs/headscale/db.sqlite
 
 # Start Headscale
 sudo headscale serve

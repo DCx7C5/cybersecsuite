@@ -1,4 +1,8 @@
-"""QoL Output Controls — dashboard REST endpoints.
+"""QoL Output Controls — dashboard REST endpoints (Starlette).
+
+This module provides low-level Starlette request handlers for QoL settings.
+These are called from dashboard routing layer to provide simple endpoint
+implementations without FastAPI overhead.
 
 Routes:
     GET  /api/qol                  → current settings for a scope
@@ -7,10 +11,54 @@ Routes:
     GET  /api/qol/presets          → list all presets
     POST /api/qol/presets/{name}   → save current settings as preset
 
+Handlers:
+    api_qol_get(request)           — GET /api/qol?scope=session
+    api_qol_post(request)          — POST /api/qol with JSON body
+    api_qol_delete(request)        — DELETE /api/qol?scope=session
+    api_qol_presets_get(request)   — GET /api/qol/presets
+    api_qol_preset_save(request)   — POST /api/qol/presets/{name}
+
+Request/response format:
+    GET /api/qol?scope=session
+    → {"scope": "session", "active_toggles": [...], ...}
+
+    POST /api/qol
+    Request: {"scope": "session", "preset": "silent", "enable": [...], "disable": [...]}
+    Response: {"ok": true, "scope": "session", ...}
+
+    DELETE /api/qol?scope=session
+    → {"ok": true, "scope": "session", "active_toggles": []}
+
+    GET /api/qol/presets
+    → {"presets": {"silent": {...}, "code-only": {...}, ...}, "count": 6}
+
+    POST /api/qol/presets/{name}
+    Request: {"scope": "session"}
+    Response: {"ok": true, "name": "my-preset", ...}
+
+Error responses:
+    - Invalid scope: 400 {"error": "Invalid scope: 'xyz'"}
+    - Unknown toggle: 400 {"error": "Unknown toggle: 'invalid'"}
+    - Unknown preset: 404 {"error": "Preset 'missing' not found", "available": [...]}
+    - JSON parse error: 400 {"error": "Invalid JSON body"}
+    - Server error: 500 {"error": "..."}
+
+Integration:
+    - Uses get_manager() from ai_proxy.qol_controls.manager
+    - Lazy-loads manager on first request (lazy singleton pattern)
+    - Validates scope against whitelist: session, project, global
+    - Never raises; always returns JSONResponse with appropriate status
+
 Referenz:
-    plan.md T008 — Phase 1 QoL Core
+    plan.md T008 — Phase 1 QoL Core (dashboard endpoints)
+    plan.md T010 — Testing & Compliance (expanded tests)
     src/ai_proxy/qol_controls/manager.py — QoLManager
-    src/dashboard/api/settings_toggles.py — route pattern
+    src/dashboard/api/settings_toggles.py — route pattern reference
+
+Status: production (Phase 1 complete)
+Version: 1.0
+Last modified: 2026-04-26 06:00:00Z
+Author: python-developer
 """
 from __future__ import annotations
 

@@ -1,15 +1,42 @@
 """QoL Output Controls — Pydantic v2 models.
 
-QoLToggle   — individual boolean switch
+QoLToggle   — individual boolean switch (8 values)
 QoLSettings — aggregated per-scope configuration persisted to ~/.cybersecsuite/data/qol.json
 
 Storage layout (JSON, no DB):
     {base_dir}/qol.json  — active settings per scope
     {base_dir}/qol_presets.json  — named preset bundles
 
+This module defines the core data structures for QoL (Quality of Life) output
+control toggles. All toggles are mutually independent except for the
+dangerous combinations defined in _DANGEROUS_COMBOS.
+
 Referenz:
     plan.md T002 — Phase 1 QoL Core
+    plan.md T010 — Testing & Compliance (expanded tests)
     src/csmcp/cybersec/helpers.py — scope helpers reused here
+    src/ai_proxy/qol_controls/manager.py — QoLManager (consumer)
+    src/ai_proxy/qol_controls/prompts.py — fragment definitions
+
+Toggles (8 total):
+    1. no_thinking — suppress reasoning/thinking blocks
+    2. no_chat — suppress conversational filler
+    3. minimal — one-liners and direct answers only
+    4. file_only — output only code/files, NOTHING ELSE MAY APPEAR
+    5. no_markdown — plain text, no Markdown
+    6. structured_only — JSON/YAML/table only, no prose
+    7. redact_secrets — auto-redact API keys, passwords, tokens
+    8. append_audit_trail — append audit entry to response
+
+Dangerous combinations (validated by validate_toggle_combo):
+    - file_only + append_audit_trail (contradictory: file vs append)
+    - file_only + structured_only (contradictory: file vs structured)
+    - minimal + append_audit_trail (contradictory: minimal vs append)
+
+Status: production (Phase 1 complete, Phase 1B observability in progress)
+Version: 1.0
+Last modified: 2026-04-26 06:00:00Z
+Author: python-developer
 """
 from __future__ import annotations
 

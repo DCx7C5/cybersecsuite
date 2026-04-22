@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import type { InputHTMLAttributes } from 'react'
-import { cn } from '@/lib/cn'
+import { cn } from '@/libs/cn.ts'
 
 const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { label?: string }>(
   ({ label, className, style, ...rest }, ref) => (

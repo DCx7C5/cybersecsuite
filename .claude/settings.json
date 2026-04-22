@@ -84,6 +84,99 @@
     "require_password_file": true,
     "audit_logging": true
   },
+  "qol": {
+    "enabled": true,
+    "default_scope": "session",
+    "max_injection_tokens": 100,
+    "cache_ttl_seconds": 300,
+    "toggles": {
+      "no_thinking": {
+        "name": "no_thinking",
+        "description": "Suppress reasoning/thinking blocks",
+        "category": "output_suppression",
+        "risky": false
+      },
+      "no_chat": {
+        "name": "no_chat",
+        "description": "Suppress conversational filler",
+        "category": "output_suppression",
+        "risky": false
+      },
+      "minimal": {
+        "name": "minimal",
+        "description": "Absolute minimum output — one-liners only",
+        "category": "output_suppression",
+        "risky": false
+      },
+      "file_only": {
+        "name": "file_only",
+        "description": "Only produce file/code output",
+        "category": "output_suppression",
+        "risky": true,
+        "incompatible_with": ["append_audit_trail", "structured_only"]
+      },
+      "no_markdown": {
+        "name": "no_markdown",
+        "description": "Plain text output, no Markdown formatting",
+        "category": "format_controls",
+        "risky": false
+      },
+      "structured_only": {
+        "name": "structured_only",
+        "description": "Structured data output only (JSON/YAML/table)",
+        "category": "format_controls",
+        "risky": false,
+        "incompatible_with": ["file_only"]
+      },
+      "redact_secrets": {
+        "name": "redact_secrets",
+        "description": "Auto-redact API keys, passwords, tokens",
+        "category": "security_audit",
+        "risky": false
+      },
+      "append_audit_trail": {
+        "name": "append_audit_trail",
+        "description": "Append audit trail (timestamp + model + hash) to output",
+        "category": "security_audit",
+        "risky": false,
+        "incompatible_with": ["file_only", "minimal"]
+      }
+    },
+    "presets": {
+      "silent": {
+        "name": "silent",
+        "description": "Minimal output mode: suppress thinking, chat, and minimize response",
+        "toggles": ["no_thinking", "no_chat", "minimal"],
+        "source": "builtin"
+      },
+      "code-only": {
+        "name": "code-only",
+        "description": "File output only: code/files only, no chat or thinking",
+        "toggles": ["file_only", "no_thinking", "no_chat"],
+        "source": "builtin"
+      },
+      "structured": {
+        "name": "structured",
+        "description": "Structured data mode: JSON/YAML/table output with no reasoning",
+        "toggles": ["structured_only", "no_thinking"],
+        "source": "builtin"
+      },
+      "audit": {
+        "name": "audit",
+        "description": "Audit mode: redact secrets and append audit trail",
+        "toggles": ["append_audit_trail", "redact_secrets"],
+        "source": "builtin"
+      },
+      "plain-text": {
+        "name": "plain-text",
+        "description": "Plain text mode: no Markdown formatting or thinking",
+        "toggles": ["no_markdown", "no_thinking"],
+        "source": "builtin"
+      }
+    },
+    "scope_cascade": true,
+    "agent_preset_override": true
+  },
   "hooks_dir": "src/hooks/",
   "hooks": {
     "Setup": [

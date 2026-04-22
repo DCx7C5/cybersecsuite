@@ -118,7 +118,7 @@ chmod +x container-diff-linux-amd64
 ### Step 3: Examine Docker Host Artifacts
 
 ```bash
-# Docker data directory (default: /var/lib/docker/)
+# Docker data directory (default: /var/libs/docker/)
 DOCKER_ROOT="/mnt/evidence/var/lib/docker"
 
 # Examine overlay2 filesystem layers
@@ -127,7 +127,7 @@ ls -la $DOCKER_ROOT/overlay2/
 # Find the container's merged filesystem
 CONTAINER_HASH=$(docker inspect $CONTAINER_ID --format '{{.GraphDriver.Data.MergedDir}}' 2>/dev/null)
 # Or manually from forensic image:
-# Look in /var/lib/docker/containers/<container_id>/config.v2.json
+# Look in /var/libs/docker/containers/<container_id>/config.v2.json
 
 # Analyze container configuration files
 cat $DOCKER_ROOT/containers/$CONTAINER_ID/config.v2.json | python3 -m json.tool \

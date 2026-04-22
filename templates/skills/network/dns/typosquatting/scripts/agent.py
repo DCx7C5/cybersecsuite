@@ -103,7 +103,7 @@ def generate_typosquat_candidates(name):
         candidates.add(lower_name.replace("-", "--"))
 
     # Common prefix/suffix combosquatting
-    for affix in ["python-", "py-", "-python", "-py", "-lib", "-sdk", "2", "3"]:
+    for affix in ["python-", "py-", "-python", "-py", "-libs", "-sdk", "2", "3"]:
         if affix.startswith("-"):
             candidates.add(lower_name + affix)
         else:

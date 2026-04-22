@@ -20,6 +20,14 @@ export const useUIStore = create<UIState>()(
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setTheme: (theme) => set({ theme }),
     }),
-    { name: 'cybersecsuite-ui' }
+    {
+      name: 'cybersecsuite-ui',
+      skipHydration: false,
+      partialize: (state) => ({
+        activeTab: state.activeTab,
+        sidebarCollapsed: state.sidebarCollapsed,
+        theme: state.theme,
+      }),
+    }
   )
 )

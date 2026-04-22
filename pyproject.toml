@@ -9,6 +9,7 @@ dependencies = [
     # MCP server
     "fastmcp>=2.0",
     # ASGI
+    "fastapi>=0.115",
     "starlette>=0.46",
     "uvicorn[standard]>=0.34",
     # Database
@@ -98,7 +99,6 @@ test = [
 ]
 browser = [
     "playwright>=1.49",
-    "playwright-stealth>=1.0",
 ]
 
 [tool.pytest.ini_options]

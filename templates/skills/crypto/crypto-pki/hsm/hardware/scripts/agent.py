@@ -179,7 +179,7 @@ def full_audit(lib, token_label, pin):
 
 def main():
     parser = argparse.ArgumentParser(description="HSM PKCS#11 Integration Agent")
-    parser.add_argument("--lib", required=True, help="Path to PKCS#11 shared library")
+    parser.add_argument("--libs", required=True, help="Path to PKCS#11 shared library")
     parser.add_argument("--token", required=True, help="Token label")
     parser.add_argument("--pin", required=True, help="User PIN")
     sub = parser.add_subparsers(dest="command")

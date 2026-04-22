@@ -143,6 +143,79 @@ Returns `{"task_id": "uuid"}`. Read events via `GET /sse/agent-run/{task_id}`.
 |--------|------------------------|-------------------------------------------|
 | GET    | `/api/startup/status`  | Startup status, first-run flag, marketplace |
 
+### QoL Output Controls
+
+| Method | Path                     | Description                                |
+|--------|--------------------------|---------------------------------------------|
+| GET    | `/api/qol`               | Get current QoL settings (active scope)     |
+| POST   | `/api/qol`               | Update QoL settings (toggles, preset, scope)|
+| DELETE | `/api/qol`               | Reset QoL to defaults                       |
+| GET    | `/api/qol/presets`       | List builtin presets                        |
+| POST   | `/api/qol/presets/{name}`| Apply builtin preset (e.g., `audit`, `silent`) |
+
+**`GET /api/qol` response:**
+```json
+{
+  "scope": "session",
+  "scope_id": "sess-abc123",
+  "enabled_toggles": ["REASONING_SILENT"],
+  "preset": "silent",
+  "token_estimate": 50
+}
+```
+
+**`POST /api/qol` body:**
+```json
+{
+  "scope": "session",
+  "enabled_toggles": ["CODE_ONLY", "REASONING_SILENT"],
+  "preset": "code-only"
+}
+```
+
+**`GET /api/qol/presets` response:**
+```json
+{
+  "presets": {
+    "silent": {
+      "name": "silent",
+      "description": "Minimal chatter, quick answers",
+      "toggles": ["REASONING_SILENT", "STEP_BY_STEP_SILENT"],
+      "token_estimate": 45
+    },
+    "code-only": {
+      "name": "code-only",
+      "description": "Pure code output for automation",
+      "toggles": ["CODE_ONLY", "REASONING_SILENT"],
+      "token_estimate": 30
+    },
+    "audit": {
+      "name": "audit",
+      "description": "Forensic compliance logging",
+      "toggles": ["AUDIT_MODE", "PLAIN_TEXT_ONLY"],
+      "token_estimate": 55
+    },
+    "structured": {
+      "name": "structured",
+      "description": "Machine-parseable with provenance",
+      "toggles": ["JSON_STRUCTURED", "AUDIT_MODE"],
+      "token_estimate": 65
+    },
+    "plain-text": {
+      "name": "plain-text",
+      "description": "Clean plain text output",
+      "toggles": ["PLAIN_TEXT_ONLY", "NO_CITATIONS"],
+      "token_estimate": 40
+    }
+  }
+}
+```
+
+**Error codes:**
+- `400` — Invalid toggle name or incompatible preset
+- `403` — Permission denied (scope mismatch)
+- `409` — Conflicting toggle combination (e.g., `CODE_ONLY` + `PLAIN_TEXT_ONLY`)
+
 ---
 
 ## Dashboard SSE Streams (`/sse/*`)

@@ -186,7 +186,7 @@ activate = 1
 
 [oqsprovider_sect]
 activate = 1
-module = /usr/lib/oqs-provider/oqsprovider.so
+module = /usr/libs/oqs-provider/oqsprovider.so
 
 # Test hybrid TLS
 OPENSSL_CONF=/etc/ssl/openssl-oqs.cnf \

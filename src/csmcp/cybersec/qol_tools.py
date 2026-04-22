@@ -1,18 +1,58 @@
 """QoL Output Controls — MCP tool definitions.
 
-5 tools:
-    qol_get          — get current QoL settings for a scope
-    qol_set          — enable/disable one or more toggles
-    qol_reset        — reset all toggles for a scope
-    qol_presets      — list available presets (builtin + user-defined)
-    qol_agent_preset — bind/get/clear a per-agent QoL preset (T018)
+This module defines 5 MCP tools for QoL settings management:
+
+1. qol_get(scope)
+   Get current QoL settings for a scope. Returns active toggles, preset name,
+   token estimate, and a fragment preview. Used for diagnostics and UI updates.
+
+2. qol_set(scope, enable, disable, preset)
+   Enable/disable toggles for a scope, optionally loading a named preset first,
+   then applying enable/disable overrides. Validates combo before saving.
+
+3. qol_reset(scope)
+   Reset all toggles for a scope to factory defaults. Idempotent.
+
+4. qol_presets(action, name, scope)
+   List all available presets (builtin + user-defined), or save current
+   settings as a new preset, or delete a user-defined preset.
+
+5. qol_agent_preset(agent_name, preset_name, action)
+   Bind/get/clear a per-agent QoL preset. When an agent's preset is bound,
+   that preset is automatically used for all requests from that agent,
+   overriding scope settings (T018).
+
+Tool arguments use enums for validation:
+    _TOGGLE_VALUES = 8 values (no_thinking, no_chat, etc.)
+    _SCOPE_VALUES = 3 values (session, project, global)
+    _PRESET_ACTIONS = 3 values (list, save, delete)
+    _AGENT_ACTIONS = 3 values (get, set, clear)
+
+All tools return structured JSON with:
+    - success: boolean (implicit: result dict means success)
+    - error: string (if operation failed)
+    - result: operation-specific data (toggles, presets, etc.)
+
+Error handling (T020):
+    - Invalid scope: returns "Invalid scope X. Must be one of: ..."
+    - Unknown toggle: returns "Unknown toggle Y"
+    - Unknown preset: returns "Preset Z not found" + available list
+    - Dangerous combo: returns "Contradictory toggle combination..."
+    - File errors: gracefully handled, logged, but don't break routing
 
 Referenz:
-    plan.md T006 — Phase 1 QoL Core
-    plan.md T018 — Per-Agent QoL Presets
+    plan.md T006 — Phase 1 QoL Core (MCP tools)
+    plan.md T010 — Testing & Compliance (expanded tests)
+    plan.md T018 — Per-agent QoL presets
     src/ai_proxy/qol_controls/models.py   — QoLToggle, QoLSettings, BUILTIN_PRESETS
     src/ai_proxy/qol_controls/manager.py  — QoLManager
-    src/csmcp/cybersec/tool_toggles.py    — design pattern
+    src/csmcp/cybersec/tool_toggles.py    — design pattern reference
+    src/csmcp/_sdk_compat.py              — @tool decorator
+
+Status: production (Phase 1 complete)
+Version: 1.0
+Last modified: 2026-04-26 06:00:00Z
+Author: python-developer
 """
 from __future__ import annotations
 

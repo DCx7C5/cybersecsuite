@@ -208,7 +208,7 @@ spec:
 
 ### 4.2.1 - Ensure --anonymous-auth is set to false on kubelet
 ```yaml
-# /var/lib/kubelet/config.yaml
+# /var/libs/kubelet/config.yaml
 authentication:
   anonymous:
     enabled: false

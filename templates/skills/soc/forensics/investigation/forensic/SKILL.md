@@ -141,8 +141,8 @@ stat /etc/passwd /etc/shadow /etc/crontab \
   grep -E "(File:|Modify:|Change:|Access:)"
 
 # Files modified after package install timestamps (potential tampering)
-LATEST_PKG=$(stat -c "%Y" /var/lib/pacman/local/*/desc 2>/dev/null | sort -rn | head -1)
-find /bin /sbin /usr/bin /usr/lib -newer /tmp/pkg_marker \
+LATEST_PKG=$(stat -c "%Y" /var/libs/pacman/local/*/desc 2>/dev/null | sort -rn | head -1)
+find /bin /sbin /usr/bin /usr/libs -newer /tmp/pkg_marker \
   -type f 2>/dev/null | head -20
 ```
 

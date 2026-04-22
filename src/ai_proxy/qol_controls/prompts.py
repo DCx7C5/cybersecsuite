@@ -1,17 +1,48 @@
 """QoL Output Controls — prompt fragment library.
 
-8 strong server-side fragments injected as a hidden system-level directive.
-All fragments must be terse (< 15 tokens each) and authoritative.
+This module defines the 8 server-side prompt fragments that are injected
+as hidden system-level directives into every request when QoL toggles are active.
+
+Each fragment is terse (< 15 tokens) and authoritative. Fragments are combined
+using space separators and wrapped in [OUTPUT-CONTROLS] envelope markers.
+
+All fragments are deterministic: toggles are sorted by enum value before
+combining, ensuring consistent cache keys and reproducible output.
 
 Design rules:
     - Never expose toggle *names* in the injection — only the directive.
     - "file_only" fragment MUST contain "NOTHING ELSE MAY APPEAR" (plan.md Warning 3).
     - All fragments start with a capital letter and end with a period.
     - Combined injection is cache-keyed by frozenset(active_toggles).
+    - Maximum combined token estimate: ~55 tokens for all-enabled state.
+    - Empty toggle set produces empty string (zero overhead).
+
+Fragment map (8 fragments):
+    NO_THINKING      → suppress reasoning/thinking blocks
+    NO_CHAT          → suppress conversational filler
+    MINIMAL          → one-liners and direct values
+    FILE_ONLY        → output ONLY requested file/code (with mandatory phrase)
+    NO_MARKDOWN      → plain text output
+    STRUCTURED_ONLY  → JSON/YAML/table only
+    REDACT_SECRETS   → redact API keys/passwords/tokens
+    APPEND_AUDIT_TRAIL → append audit entry at end
+
+Cache strategy:
+    - Cache key: frozenset of active QoLToggle enums
+    - TTL: 300 seconds (configurable via _CACHE_TTL_SECONDS in manager.py)
+    - Hit rate: high (typical user session activates same toggles repeatedly)
+    - Memory overhead: negligible (8 possible unique keys × ~200 bytes avg)
 
 Referenz:
-    plan.md T003 — Phase 1 QoL Core
+    plan.md T003 — Phase 1 QoL Core (prompts)
+    plan.md T010 — Testing & Compliance (expanded tests)
     src/ai_proxy/qol_controls/models.py — QoLToggle enum
+    src/ai_proxy/qol_controls/manager.py — build_injection() caller + caching
+
+Status: production (Phase 1 complete)
+Version: 1.0
+Last modified: 2026-04-26 06:00:00Z
+Author: python-developer
 """
 from __future__ import annotations
 

@@ -55,15 +55,12 @@ services:
       CYBERSEC_DB_PORT: 5432
       CYBERSEC_AUTO_CREATE_DB: "true"
       CYBERSEC_REDIS_URL: "redis://cybersec-redis:6379/0"
-      # Settings toggle paths — mount project .claude/ + host ~/.claude as read-write
-      GLOBAL_CLAUDE_DIR: ~/.claude
     ports:
-      - "8000:8000"
-      - "8765:8000"
-      - "8443:8443"
+      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8765:8000"
+      - "127.0.0.1:8443:8443"
     volumes:
       - pg_socket:/tmp                          # shared socket directory with postgres
-      - ./.claude:/app/.claude:rw               # project .claude/ (skills, settings)
       - ${HOME}/.claude:/app/.claude-global:rw  # host ~/.claude (global settings, plugins)
     healthcheck:
       test: [ "CMD", "curl", "-fs", "http://localhost:8000/health" ]   # liveness only
@@ -88,12 +85,12 @@ services:
       POSTGRES_USER: ${CYBERSEC_DB_USER:-cybersec}
       POSTGRES_PASSWORD: ${CYBERSEC_DB_PASSWORD:-change_me}
       POSTGRES_DB: ${CYBERSEC_DB_NAME:-cybersec_forensics}
-      PGDATA: /var/lib/postgresql/data
+      PGDATA: /var/libs/postgresql/data
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data:/var/libs/postgresql/data
       - pg_socket:/tmp
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: [ "CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 30s
@@ -111,8 +108,8 @@ services:
     image: cybersec-redis
     container_name: cybersec-redis
     <<: *common
-    expose:
-      - "6379"
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -129,12 +126,15 @@ services:
     profiles:
       - default
     <<: *common
+    entrypoint: /docker-entrypoint.sh
     environment:
-      OLLAMA_HOST: 127.0.0.1
+      OLLAMA_HOST: 0.0.0.0
     ports:
-      - "11434:11434"
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
     volumes:
       - ollama_data:/root/.ollama
+      - ./.docker/ollama/entrypoint.sh:/docker-entrypoint.sh:ro
+      - ./.docker/ollama/Modelfile:/modelfile/Modelfile:ro
     deploy:
       resources:
         reservations:
@@ -155,18 +155,27 @@ services:
     image: openobserve/openobserve:latest
     container_name: cybersec-openobserve
     <<: *common
+    restart: unless-stopped
     environment:
       <<: *oo-env
       ZO_DATA_DIR: /data
       ZO_ROOT_USER_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
       ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
+      ZO_HTTP_PORT: 5080
     ports:
-      - "${OPENOBSERVE_PORT:-5080}:5080"
+      - "127.0.0.1:${OPENOBSERVE_PORT:-5080}:5080"
     volumes:
       - oo_data:/data
     healthcheck:
-      test: ["NONE"]
+      test: [ "CMD", "curl", "-f", "http://localhost:5080/healthz" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
+  #
+  # Wazuh requires privileged mode for certain operations, so we set it up as a separate profile to avoid granting unnecessary privileges to other services.
+  #
   cybersec-wazuh:
     image: wazuh/wazuh-manager:latest
     container_name: cybersec-wazuh

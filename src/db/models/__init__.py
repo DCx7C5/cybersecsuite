@@ -60,6 +60,10 @@ MODEL_MODULES: list[str] = [
     "db.models.intel_feed_source",
     # Prompts
     "db.models.prompt",
+    # Phase 0 — AI Provider State Management
+    "db.models.ai_provider_state",
+    "db.models.ai_provider_events",
+    "db.models.worker_context",
 ]
 
 from db.models.api_account import ApiAccount  # noqa: E402
@@ -70,6 +74,9 @@ from db.models.settings import ScopedEntry, GlobalSettings  # noqa: E402
 from db.models.llm_session import LlmSession  # noqa: E402
 from db.models.intel_feed_source import IntelFeedSource  # noqa: E402
 from db.models.prompt import Prompt  # noqa: E402
+from db.models.ai_provider_state import AIProviderState  # noqa: E402
+from db.models.ai_provider_events import AIProviderEvent  # noqa: E402
+from db.models.worker_context import WorkerContext  # noqa: E402
 
 __all__ = [
     "MODEL_MODULES",
@@ -87,4 +94,7 @@ __all__ = [
     "LlmSession",
     "IntelFeedSource",
     "Prompt",
+    "AIProviderState",
+    "AIProviderEvent",
+    "WorkerContext",
 ]

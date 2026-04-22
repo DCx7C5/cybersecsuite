@@ -154,10 +154,109 @@ Keys stored at `DYSTOPIAN_KEYS_DIR` (default: `/etc/dystopian/crypto/cert/privat
 
 ---
 
+## QoL Output Controls
+
+QoL (Quality of Life) is a server-side **prompt injection system** that modifies AI behavior without code changes.
+
+### Architecture
+
+```
+User request
+       │
+       ▼
+┌──────────────────────────┐
+│  QoL Manager (singleton) │
+│                          │
+│  1. Load scope settings  │
+│  2. Build injection      │
+│  3. Prepend to prompt    │
+│  4. Log injection event  │
+└────────────┬─────────────┘
+             │
+       ┌─────┴─────────────────────────────────────┐
+       │    8 Toggles (silent, code, audit, etc.)  │
+       │    5 Presets (silent, code-only, audit)   │
+       │    Scope: global, project, session        │
+       └─────────────────────────────────────────┘
+             │
+       ┌─────┴──────────────────────────────────────────────┐
+       │        AI Proxy (routing/combo.py)                 │
+       │                                                    │
+       │  _qol_inject() called after strategy resolution   │
+       │  Injects before provider dispatch                  │
+       └─────────────────────────────────────────────────────┘
+             │
+       ┌─────┴─────────────────────────┐
+       │    Provider (Anthropic, etc.)  │
+       │    Model receives modified     │
+       │    prompt with injection block │
+       └────────────────────────────────┘
+```
+
+### Components
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| **QoL Manager** | `src/ai_proxy/qol_controls/manager.py` | Singleton for loading, building, and injecting settings |
+| **Models** | `src/ai_proxy/qol_controls/models.py` | `QoLToggle` enum, `QoLSettings` Pydantic model, presets |
+| **Prompts** | `src/ai_proxy/qol_controls/prompts.py` | 8 cached prompt fragments for each toggle |
+| **Injection Hook** | `src/ai_proxy/routing/combo.py:_qol_inject()` | Called in routing pipeline before provider dispatch |
+| **REST API** | `src/dashboard/api/qol.py` | 5 endpoints for managing QoL settings |
+| **MCP Tools** | `src/csmcp/cybersec/qol_tools.py` | 4 tools: `qol_get`, `qol_set`, `qol_reset`, `qol_presets` |
+
+### Scope Hierarchy (Highest → Lowest Priority)
+
+1. **Request-level** — HTTP header or A2A parameter (one-off override)
+2. **Session-level** — `~/.cybersecsuite/<project_id>/sessions/<session_id>/qol.json`
+3. **Project-level** — `~/.cybersecsuite/<project_id>/qol.json`
+4. **Global** — `~/.cybersecsuite/qol_global.json`
+
+### Toggles
+
+| Toggle | Effect | Use Case |
+|--------|--------|----------|
+| `REASONING_SILENT` | Remove `<thinking>` blocks | Cost reduction (30% savings) |
+| `CODE_ONLY` | Output only code artifacts | Automation/CI-CD |
+| `JSON_STRUCTURED` | Wrap response in JSON | API integration |
+| `FILE_ONLY` | Single artifact output | Deployment automation |
+| `STEP_BY_STEP_SILENT` | Hide enumerated reasoning | Concise answers |
+| `PLAIN_TEXT_ONLY` | No markdown/code blocks | Log compatibility |
+| `NO_CITATIONS` | Strip source references | Clean output |
+| `AUDIT_MODE` | Add provenance metadata | Compliance/forensics |
+
+### Telemetry
+
+Every QoL injection is logged:
+- Event: `qol.injection` (model, toggles, token estimate)
+- Event: `qol.settings_changed` (scope, old/new settings, audit trail)
+- Observable at `/sse/telemetry` and OpenObserve
+
+### Example: Cost-Optimized Routing
+
+```python
+# User applies "silent" preset
+qol_manager.set_settings(
+    scope="project",
+    preset="silent",  # → [REASONING_SILENT, STEP_BY_STEP_SILENT]
+)
+
+# Every subsequent request:
+# 1. QoL Manager loads settings
+# 2. Builds injection: "Think quietly. Output direct answers only."
+# 3. Prepends to system message
+# 4. Provider receives modified prompt
+# 5. Model returns concise answer (30% fewer tokens)
+# 6. Telemetry: "qol.injection" event recorded
+```
+
+---
+
 ## Related Docs
 
 - [module-map.md](module-map.md) — file-by-file breakdown
 - [data-flow.md](data-flow.md) — request flow examples and integration points
+- [../features/qol.md](../features/qol.md) — QoL user guide (toggles, presets, examples)
+- [../api/http-endpoints.md](../api/http-endpoints.md#qol-output-controls) — QoL REST endpoints
 - [../configuration/env-vars.md](../configuration/env-vars.md) — all environment variables
-- [../mcp/overview.md](../mcp/overview.md) — MCP tool servers
+- [../mcp/overview.md](../mcp/overview.md) — MCP tool servers (including qol_tools)
 - [../agents/reference.md](../agents/reference.md) — agent roster

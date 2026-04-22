@@ -49,6 +49,8 @@ from ai_proxy.api.skills import (
     get_skill_version,
 )
 from ai_proxy.api.models import list_models_live, get_model_live
+from ai_proxy.health import check_ollama_health, check_lmstudio_health
+from ai_proxy.worker_monitor import api_worker_metrics, api_worker_health
 
 logger = logging.getLogger("ai_proxy.routes")
 
@@ -305,6 +307,52 @@ async def count_tokens(request: Request) -> JSONResponse:
     })
 
 
+# ── /health/ollama ──────────────────────────────────────────────────────────
+
+async def health_ollama(request: Request) -> JSONResponse:
+    """
+    Check Ollama daemon health and GPU info.
+
+    Returns: {"healthy": bool, "models": [...], "gpu_info": {...}}
+    """
+    base_url = request.query_params.get("base_url", "http://localhost:11434")
+    health = await check_ollama_health(base_url=base_url)
+    status_code = 200 if health.healthy else 503
+    return JSONResponse(health.to_dict(), status_code=status_code)
+
+
+async def health_lmstudio(request: Request) -> JSONResponse:
+    """
+    Check LM Studio daemon health.
+
+    Returns: {"healthy": bool, "models": [...]}
+    """
+    base_url = request.query_params.get("base_url", "http://localhost:1234")
+    health = await check_lmstudio_health(base_url=base_url)
+    status_code = 200 if health["healthy"] else 503
+    return JSONResponse(health, status_code=status_code)
+
+
+# ── /metrics/workers ────────────────────────────────────────────────────────
+
+async def metrics_workers(request: Request) -> JSONResponse:
+    """
+    Get background worker metrics (latency, queue depth, VRAM, errors).
+
+    Returns: WorkerMonitorMetrics with per-worker details
+    """
+    return await api_worker_metrics(request)
+
+
+async def health_workers(request: Request) -> JSONResponse:
+    """
+    Quick health check for all workers.
+
+    Returns: {"status": "healthy"|"degraded", "worker_count": N, "errors": N}
+    """
+    return await api_worker_health(request)
+
+
 # ── Router ───────────────────────────────────────────────────────────────────
 
 def create_proxy_router() -> Router:
@@ -316,6 +364,12 @@ def create_proxy_router() -> Router:
         Route("/usage", usage_summary, methods=["GET"]),
         Route("/cost", cost_report, methods=["GET"]),
         Route("/tokens/count", count_tokens, methods=["POST"]),
+        # Health checks
+        Route("/health/ollama", health_ollama, methods=["GET"]),
+        Route("/health/lmstudio", health_lmstudio, methods=["GET"]),
+        # Worker metrics
+        Route("/metrics/workers", metrics_workers, methods=["GET"]),
+        Route("/health/workers", health_workers, methods=["GET"]),
         # Message Batches (Anthropic-native, 50% cost discount for async workloads)
         Route("/messages/batches", list_batches, methods=["GET"]),
         Route("/messages/batches", create_batch, methods=["POST"]),

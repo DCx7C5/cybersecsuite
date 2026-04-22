@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -16,13 +16,14 @@ interface HookSettings { hooks?: string[] }
 
 function ApiTab() {
   const { data, isLoading } = useApiQuery<ApiSettings>(['settings-api'], '/api/settings')
-  const [form, setForm] = useState<ApiSettings>({})
+  const [form, setForm] = useState<ApiSettings>(() => data ?? {})
   const qc = useQueryClient()
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (data) setForm(data) }, [data])
-  const save = async () => {
+  const save = useCallback(async () => {
     await fetchApi('/api/settings', { method: 'PATCH', body: JSON.stringify(form) })
     await qc.invalidateQueries({ queryKey: ['settings-api'] })
-  }
+  }, [form, qc])
   if (isLoading) return <Spinner />
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -41,13 +42,14 @@ function ApiTab() {
 
 function McpTab() {
   const { data, isLoading } = useApiQuery<McpSettings>(['settings-mcps'], '/api/settings/mcps')
-  const [local, setLocal] = useState<Record<string, boolean>>({})
+  const [local, setLocal] = useState<Record<string, boolean>>(() => data?.mcps ?? {})
   const qc = useQueryClient()
-  useEffect(() => { if (data?.mcps) setLocal(data.mcps) }, [data])
-  const save = async () => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (data?.mcps) setLocal(data.mcps) }, [data?.mcps])
+  const save = useCallback(async () => {
     await fetchApi('/api/settings/mcps', { method: 'PATCH', body: JSON.stringify({ mcps: local }) })
     await qc.invalidateQueries({ queryKey: ['settings-mcps'] })
-  }
+  }, [local, qc])
   if (isLoading) return <Spinner />
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -67,13 +69,14 @@ function McpTab() {
 
 function SkillsTab() {
   const { data, isLoading } = useApiQuery<SkillSettings>(['settings-skills'], '/api/settings/skills')
-  const [local, setLocal] = useState<Record<string, boolean>>({})
+  const [local, setLocal] = useState<Record<string, boolean>>(() => data?.skills ?? {})
   const qc = useQueryClient()
-  useEffect(() => { if (data?.skills) setLocal(data.skills) }, [data])
-  const save = async () => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (data?.skills) setLocal(data.skills) }, [data?.skills])
+  const save = useCallback(async () => {
     await fetchApi('/api/settings/skills', { method: 'PATCH', body: JSON.stringify({ skills: local }) })
     await qc.invalidateQueries({ queryKey: ['settings-skills'] })
-  }
+  }, [local, qc])
   if (isLoading) return <Spinner />
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -93,14 +96,15 @@ function SkillsTab() {
 
 function HooksTab() {
   const { data, isLoading } = useApiQuery<HookSettings>(['settings-hooks'], '/api/settings/hooks')
-  const [hooks, setHooks] = useState<string[]>([])
+  const [hooks, setHooks] = useState<string[]>(() => data?.hooks ?? [])
   const [newHook, setNewHook] = useState('')
   const qc = useQueryClient()
-  useEffect(() => { if (data?.hooks) setHooks(data.hooks) }, [data])
-  const save = async () => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (data?.hooks) setHooks(data.hooks) }, [data?.hooks])
+  const save = useCallback(async () => {
     await fetchApi('/api/settings/hooks', { method: 'PATCH', body: JSON.stringify({ hooks }) })
     await qc.invalidateQueries({ queryKey: ['settings-hooks'] })
-  }
+  }, [hooks, qc])
   if (isLoading) return <Spinner />
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

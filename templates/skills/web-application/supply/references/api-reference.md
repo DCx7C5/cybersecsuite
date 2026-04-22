@@ -98,7 +98,7 @@ pypi-scan --package numpy --edit-distance 2
 
 ```json
 [
-  {"name": "my-internal-lib", "version": "1.2.0"},
+  {"name": "my-internal-libs", "version": "1.2.0"},
   {"name": "company-utils", "version": "0.5.3"},
   {"name": "private-auth-sdk", "version": "2.1.0"}
 ]

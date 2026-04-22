@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClient } from './lib/queryClient'
+import { queryClient } from './libs/queryClient'
 import { useUIStore } from './store/uiStore'
 import Sidebar from './components/layout/Sidebar'
 import Topbar from './components/layout/Topbar'

@@ -55,12 +55,12 @@ capec: []
 systemctl list-unit-files --type=service --state=enabled 2>/dev/null | sort
 
 # Recently modified service files
-find /etc/systemd/system /usr/lib/systemd/system \
+find /etc/systemd/system /usr/libs/systemd/system \
   -name "*.service" -newer /tmp/baseline_marker 2>/dev/null | head -20
 
 # Service files with suspicious ExecStart patterns
 grep -r "ExecStart\|ExecStartPre" \
-  /etc/systemd/system/*.service /usr/lib/systemd/system/*.service 2>/dev/null | \
+  /etc/systemd/system/*.service /usr/libs/systemd/system/*.service 2>/dev/null | \
   grep -iE "(\bbash\b|\bsh\b|python|perl|ruby|nc\b|ncat|curl|wget|/tmp/|/dev/shm/)" | head -20
 
 # All active timers
@@ -128,7 +128,7 @@ ls /etc/xdg/autostart/ ~/.config/autostart/ 2>/dev/null | \
 ### PAM & SSH Persistence
 ```bash
 # PAM module list (look for unknown modules)
-find /lib*/security /usr/lib*/security -name "*.so" 2>/dev/null | sort
+find /libs*/security /usr/libs*/security -name "*.so" 2>/dev/null | sort
 
 # PAM configuration — custom modules
 grep -r "pam_" /etc/pam.d/ 2>/dev/null | \
@@ -166,13 +166,13 @@ for pkg in $(pacman -Qq 2>/dev/null | head -50); do
 done | head -20
 
 # dpkg/apt triggers (Debian)
-ls /var/lib/dpkg/triggers/ 2>/dev/null | head -10
+ls /var/libs/dpkg/triggers/ 2>/dev/null | head -10
 ```
 
 ### udev Rules
 ```bash
 # All udev rules — look for RUN+= commands
-grep -r "RUN+=" /etc/udev/rules.d/ /usr/lib/udev/rules.d/ 2>/dev/null | \
+grep -r "RUN+=" /etc/udev/rules.d/ /usr/libs/udev/rules.d/ 2>/dev/null | \
   grep -v "^Binary" | head -20
 
 # Recently added udev rules
@@ -180,7 +180,7 @@ find /etc/udev/rules.d/ -newer /tmp/baseline_marker 2>/dev/null | head -10
 
 # Suspicious udev rules (shell execution on device insertion)
 grep -r "RUN+=.*bash\|RUN+=.*sh\|RUN+=.*python\|RUN+=.*curl\|RUN+=.*wget\|RUN+=.*nc" \
-  /etc/udev/rules.d/ /usr/lib/udev/rules.d/ 2>/dev/null | head -10
+  /etc/udev/rules.d/ /usr/libs/udev/rules.d/ 2>/dev/null | head -10
 ```
 
 ### Kernel-Level Persistence
@@ -192,7 +192,7 @@ diff ./cybersec-shared/baselines/kernel.md /tmp/modules_live.txt 2>/dev/null | h
 # Auto-loaded modules (kernel module parameters)
 ls /etc/modules-load.d/ 2>/dev/null
 cat /etc/modules 2>/dev/null | grep -v "^#\|^$"
-find /usr/lib/modules-load.d/ -name "*.conf" 2>/dev/null | xargs cat 2>/dev/null
+find /usr/libs/modules-load.d/ -name "*.conf" 2>/dev/null | xargs cat 2>/dev/null
 
 # eBPF pinned programs (persistent eBPF)
 find /sys/fs/bpf -type f 2>/dev/null | head -20

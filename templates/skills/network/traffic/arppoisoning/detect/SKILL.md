@@ -91,14 +91,14 @@ sudo apt-get install -y arpwatch
 # Configure ARPWatch
 sudo vi /etc/default/arpwatch
 # INTERFACES="eth0"
-# ARGS="-N -p -i eth0 -f /var/lib/arpwatch/arp.dat"
+# ARGS="-N -p -i eth0 -f /var/libs/arpwatch/arp.dat"
 
 # Start monitoring
 sudo systemctl enable arpwatch
 sudo systemctl start arpwatch
 
 # View current ARP database
-cat /var/lib/arpwatch/arp.dat
+cat /var/libs/arpwatch/arp.dat
 
 # Monitor logs for changes
 tail -f /var/log/syslog | grep arpwatch

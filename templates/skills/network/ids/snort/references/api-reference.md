@@ -4,10 +4,10 @@
 
 ```bash
 # Validate configuration
-snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq -T
+snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq -T
 
 # Run IDS mode on interface
-snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq -i eth1 -l /var/log/snort -D
+snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq -i eth1 -l /var/log/snort -D
 
 # Analyze PCAP file
 snort -c /usr/local/etc/snort/snort.lua -r capture.pcap -l /var/log/snort/test/ -A fast
@@ -16,7 +16,7 @@ snort -c /usr/local/etc/snort/snort.lua -r capture.pcap -l /var/log/snort/test/ 
 snort -V
 
 # Dump parsed rules count
-snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq -T 2>&1 | grep "rules loaded"
+snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq -T 2>&1 | grep "rules loaded"
 ```
 
 ## Snort Rule Syntax

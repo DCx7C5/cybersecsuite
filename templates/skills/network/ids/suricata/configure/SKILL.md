@@ -98,7 +98,7 @@ vars:
     SMTP_SERVERS: "$HOME_NET"
 
 # Default rule path
-default-rule-path: /var/lib/suricata/rules
+default-rule-path: /var/libs/suricata/rules
 rule-files:
   - suricata.rules
 
@@ -220,7 +220,7 @@ sudo suricata-update
 
 # Check rule statistics
 sudo suricata-update list-sources --enabled
-wc -l /var/lib/suricata/rules/suricata.rules
+wc -l /var/libs/suricata/rules/suricata.rules
 
 # Disable noisy rules
 sudo tee /etc/suricata/disable.conf << 'EOF'

@@ -17,7 +17,7 @@ python scripts/agent.py --sign build/app.tar.gz --private-key /keys/signing_key.
 
 # Verify artifacts
 python scripts/agent.py \
-  --artifacts build/app.tar.gz build/lib.so \
+  --artifacts build/app.tar.gz build/libs.so \
   --public-key /keys/signing_key.pub \
   --output-dir /reports/
 ```

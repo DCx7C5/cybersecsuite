@@ -1338,7 +1338,7 @@ activate = 1
 [oqsprovider_sect]
 activate = 1
 # Adjust path to match your oqs-provider installation
-module = /usr/lib/oqs-provider/oqsprovider.so
+module = /usr/libs/oqs-provider/oqsprovider.so
 
 [ssl_sect]
 system_default = system_default_sect

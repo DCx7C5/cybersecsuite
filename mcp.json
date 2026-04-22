@@ -2,7 +2,7 @@
   "mcpServers": {
     "cybersec": {
       "name": "CyberSecSuite",
-      "description": "Main forensics SDK — 87 tools: findings, IOCs, cases, MITRE, intel, cache, AI proxy, crypto (Ed25519/Argon2id), memory, canvas, vault, agents, QoL output controls (stdio)",
+      "description": "Main forensics SDK — 92 tools: findings, IOCs, cases, MITRE, intel, cache, AI proxy, crypto (Ed25519/Argon2id), memory, canvas, vault, agents, QoL output controls (stdio)",
       "command": "uv",
       "args": [
         "--directory",
@@ -21,7 +21,92 @@
         "DYSTOPIAN_KEYS_DIR": "/etc/dystopian/crypto/cert/private",
         "DYSTOPIAN_VAULT_PASSWORD_FILE": "/etc/dystopian/crypto/cert/private/.vault-password"
       },
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "tools": {
+        "qol_get": {
+          "name": "qol_get",
+          "description": "Get current QoL output-control settings for a scope (session/project/global)",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "type": "string",
+                "enum": ["session", "project", "global"],
+                "default": "session",
+                "description": "Settings scope"
+              }
+            }
+          }
+        },
+        "qol_set": {
+          "name": "qol_set",
+          "description": "Enable or disable QoL toggles for a scope",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "type": "string",
+                "enum": ["session", "project", "global"],
+                "default": "session"
+              },
+              "enable": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Toggle names to enable"
+              },
+              "disable": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Toggle names to disable"
+              },
+              "preset": {
+                "type": "string",
+                "description": "Optional preset name (overrides enable/disable)"
+              }
+            }
+          }
+        },
+        "qol_reset": {
+          "name": "qol_reset",
+          "description": "Reset QoL settings to defaults for a scope",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "type": "string",
+                "enum": ["session", "project", "global"],
+                "default": "session"
+              }
+            }
+          }
+        },
+        "qol_presets": {
+          "name": "qol_presets",
+          "description": "List all available QoL presets (builtin + user-defined)",
+          "inputSchema": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "qol_agent_preset": {
+          "name": "qol_agent_preset",
+          "description": "Bind or unbind a QoL preset for a specific agent",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "agent_name": {
+                "type": "string",
+                "description": "Agent identifier"
+              },
+              "preset_name": {
+                "type": "string",
+                "description": "Preset name to bind (null to unbind)"
+              }
+            },
+            "required": ["agent_name"]
+          }
+        }
+      }
     },
     "kerneldev": {
       "name": "KernelDev MCP",

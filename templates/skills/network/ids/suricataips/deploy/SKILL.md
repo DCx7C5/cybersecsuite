@@ -198,7 +198,7 @@ outputs:
       interval: 30
 
 # Rule files
-default-rule-path: /var/lib/suricata/rules
+default-rule-path: /var/libs/suricata/rules
 rule-files:
   - suricata.rules
 ```

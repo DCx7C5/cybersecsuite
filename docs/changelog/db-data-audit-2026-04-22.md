@@ -4,11 +4,11 @@
 
 `data/fixtures/` contained two files identical to `src/db/fixtures/`:
 
-| File | Action |
-|------|--------|
+| File                             | Action                                                          |
+|----------------------------------|-----------------------------------------------------------------|
 | `data/fixtures/nist_ai_rmf.json` | Deleted (exact duplicate of `src/db/fixtures/nist_ai_rmf.json`) |
-| `data/fixtures/nist_csf_2.json` | Deleted (exact duplicate of `src/db/fixtures/nist_csf_2.json`) |
-| `data/fixtures/` directory | Removed (empty after deletions) |
+| `data/fixtures/nist_csf_2.json`  | Deleted (exact duplicate of `src/db/fixtures/nist_csf_2.json`)  |
+| `data/fixtures/` directory       | Removed (empty after deletions)                                 |
 
 Canonical seed fixtures live in `src/db/fixtures/` (tracked by git).
 `data/` is gitignored and used only for runtime caches (downloaded full datasets).
@@ -26,8 +26,3 @@ Fixed all 6 docstrings to say `src/db/fixtures/`.
 Affected functions: `seed_mitre_techniques`, `seed_mitre_actors`, `seed_mitre_software`,
 `seed_cwe`, `seed_capec`, `seed_cve`.
 
-## JetBrains AI context file added
-
-Created `.jb/ai-instructions.md` — single AI context file compatible with all major
-JetBrains AI plugins (AI Assistant, GitHub Copilot for JetBrains, etc.).
-Contains stack, conventions, directory map, env vars, scope hierarchy.

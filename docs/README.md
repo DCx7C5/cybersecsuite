@@ -16,6 +16,14 @@ Full documentation index for CyberSecSuite — a full-stack cybersecurity forens
 
 ---
 
+## Features
+
+| Document                                                   | Description                                                     |
+|------------------------------------------------------------|-----------------------------------------------------------------|
+| [`features/qol.md`](features/qol.md)                       | QoL output controls: toggles, presets, scope hierarchy          |
+
+---
+
 ## Configuration
 
 | Document                                                       | Description                                            |
@@ -26,11 +34,11 @@ Full documentation index for CyberSecSuite — a full-stack cybersecurity forens
 
 ---
 
-## MCP Tools (83)
+## MCP Tools (87)
 
 | Document                                           | Description                                    |
 |----------------------------------------------------|------------------------------------------------|
-| [`mcp/overview.md`](mcp/overview.md)               | All 83 tools in cybersec server                |
+| [`mcp/overview.md`](mcp/overview.md)               | All 87 tools in cybersec server                |
 | [`mcp/dystopian-tools.md`](mcp/dystopian-tools.md) | 5 crypto tools: Ed25519, Argon2id, AES-256-GCM |
 | 
 ---
@@ -91,11 +99,12 @@ Full documentation index for CyberSecSuite — a full-stack cybersecurity forens
 
 | Item               | Value                                      |
 |--------------------|--------------------------------------------|
-| MCP tools          | 83 (single cybersec server)                |
+| MCP tools          | 87 (83 cybersec + 4 QoL tools)             |
 | Active agents      | 18 files (33 in spec)                      |
 | DB models          | 44+ Tortoise ORM models                    |
 | AI providers       | 9 (60+ models)                             |
 | Routing strategies | 13                                         |
+| QoL toggles        | 8 (with 5 builtin presets)                 |
 | HTTP port          | 8000                                       |
 | TLS port           | 8443                                       |
 | Alt HTTP port      | 8765                                       |

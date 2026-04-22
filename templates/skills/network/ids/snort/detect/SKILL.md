@@ -290,14 +290,14 @@ EOF
 
 ```bash
 # Validate configuration
-snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq -T
+snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq -T
 
 # Run Snort in IDS mode on the capture interface
-sudo snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq \
+sudo snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq \
   -i eth1 -l /var/log/snort -D
 
 # Test rules against a PCAP file
-snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq \
+snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq \
   -r test_traffic.pcap -l /var/log/snort/test/ -A fast
 
 # Create systemd service for production deployment
@@ -338,7 +338,7 @@ suppress gen_id 1, sig_id 2100366, track by_dst, ip 10.10.5.0/24
 EOF
 
 # Verify rule count and performance
-snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/lib/daq -T 2>&1 | grep -i "rules loaded"
+snort -c /usr/local/etc/snort/snort.lua --daq-dir /usr/local/libs/daq -T 2>&1 | grep -i "rules loaded"
 ```
 
 ## Key Concepts

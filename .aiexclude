@@ -11,6 +11,7 @@ __pycache__/
 
 # Virtual environments & dependencies
 .venv/
+!.venv/bin/
 node_modules/
 *.egg-info/
 
@@ -43,7 +44,7 @@ logs/
 *.log
 tmp/
 temp/
-
+!**data/
 # Test artefacts
 htmlcov/
 coverage.xml

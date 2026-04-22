@@ -1,4 +1,4 @@
-"""Memory-enhanced chat endpoint — uses BetaAsyncObsidianMemoryTool via tool_runner."""
+"""Memory-enhanced chat endpoint — uses official BetaLocalFilesystemMemoryTool from Anthropic SDK."""
 from __future__ import annotations
 
 import json
@@ -33,16 +33,13 @@ def _get_client() -> tuple[anthropic.AsyncAnthropic | None, str | None]:
 
 
 def _make_tool(vault_path: str) -> object:
+    """Create official BetaLocalFilesystemMemoryTool from Anthropic SDK."""
     try:
-        from memory.backends.obsidian_async import BetaAsyncObsidianMemoryTool
-        return BetaAsyncObsidianMemoryTool(vault_path=vault_path)
-    except ImportError:
-        logger.warning("obsidian_async not available; falling back to builtin memory tool")
-        try:
-            from anthropic.lib.tools._beta_builtin_memory_tool import BetaAsyncBuiltinMemoryTool  # type: ignore[attr-defined]
-            return BetaAsyncBuiltinMemoryTool()
-        except ImportError:
-            return None
+        from anthropic.tools import BetaLocalFilesystemMemoryTool
+        return BetaLocalFilesystemMemoryTool(vault_path=vault_path)
+    except ImportError as e:
+        logger.error(f"Failed to import BetaLocalFilesystemMemoryTool: {e}")
+        return None
 
 
 async def api_memory_chat(request: Request) -> JSONResponse | StreamingResponse:

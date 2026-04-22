@@ -255,7 +255,7 @@ find /mnt/evidence/ -name ".*" -not -path "*/\." -type f 2>/dev/null | \
    head -100 > /cases/case-2024-001/linux/analysis/hidden_files.txt
 
 # Check kernel modules
-ls -la /mnt/evidence/lib/modules/$(ls /mnt/evidence/lib/modules/ | head -1)/extra/ 2>/dev/null \
+ls -la /mnt/evidence/libs/modules/$(ls /mnt/evidence/libs/modules/ | head -1)/extra/ 2>/dev/null \
    > /cases/case-2024-001/linux/analysis/extra_modules.txt
 
 # Check for modified PAM configuration (authentication backdoors)

@@ -36,13 +36,13 @@ logger = logging.getLogger(__name__)
 # Common SoftHSM2 library paths
 SOFTHSM_PATHS = {
     "linux": [
-        "/usr/lib/softhsm/libsofthsm2.so",
-        "/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so",
-        "/usr/local/lib/softhsm/libsofthsm2.so",
+        "/usr/libs/softhsm/libsofthsm2.so",
+        "/usr/libs/x86_64-linux-gnu/softhsm/libsofthsm2.so",
+        "/usr/local/libs/softhsm/libsofthsm2.so",
     ],
     "darwin": [
-        "/usr/local/lib/softhsm/libsofthsm2.so",
-        "/opt/homebrew/lib/softhsm/libsofthsm2.so",
+        "/usr/local/libs/softhsm/libsofthsm2.so",
+        "/opt/homebrew/libs/softhsm/libsofthsm2.so",
     ],
     "win32": [
         r"C:\SoftHSM2\lib\softhsm2-x64.dll",
@@ -268,7 +268,7 @@ def generate_hsm_config() -> dict:
                 "windows": "Download from https://github.com/disig/SoftHSM2-for-Windows",
             },
             "config_file": "softhsm2.conf",
-            "config_content": "directories.tokendir = /var/lib/softhsm/tokens/\nobjectstore.backend = file\nlog.level = INFO\n",
+            "config_content": "directories.tokendir = /var/libs/softhsm/tokens/\nobjectstore.backend = file\nlog.level = INFO\n",
             "init_command": "softhsm2-util --init-token --free --label MyToken --pin 1234 --so-pin 5678",
         },
         "aws_cloudhsm": {
@@ -280,7 +280,7 @@ def generate_hsm_config() -> dict:
                 "Activate the cluster with crypto officer credentials",
                 "Install PKCS#11 library from AWS",
             ],
-            "pkcs11_lib": "/opt/cloudhsm/lib/libcloudhsm_pkcs11.so",
+            "pkcs11_lib": "/opt/cloudhsm/libs/libcloudhsm_pkcs11.so",
             "config_file": "/opt/cloudhsm/etc/cloudhsm_client.cfg",
         },
         "azure_dedicated_hsm": {
@@ -292,7 +292,7 @@ def generate_hsm_config() -> dict:
                 "Register client with HSM",
                 "Create partition for application",
             ],
-            "pkcs11_lib": "/usr/safenet/lunaclient/lib/libCryptoki2_64.so",
+            "pkcs11_lib": "/usr/safenet/lunaclient/libs/libCryptoki2_64.so",
         },
     }
 
@@ -309,10 +309,10 @@ def main():
     demo = subparsers.add_parser("demo", help="Run PKCS#11 operations demo")
     demo.add_argument("--token", required=True, help="Token label")
     demo.add_argument("--pin", required=True, help="User PIN")
-    demo.add_argument("--lib", help="PKCS#11 library path")
+    demo.add_argument("--libs", help="PKCS#11 library path")
 
     lst = subparsers.add_parser("list-tokens", help="List PKCS#11 tokens")
-    lst.add_argument("--lib", help="PKCS#11 library path")
+    lst.add_argument("--libs", help="PKCS#11 library path")
 
     subparsers.add_parser("config-plugins", help="Show HSM configuration plugins")
 
@@ -326,7 +326,7 @@ def main():
         if not lib_path:
             print(json.dumps({
                 "status": "error",
-                "message": "SoftHSM2 library not found. Set SOFTHSM2_LIB env var or use --lib.",
+                "message": "SoftHSM2 library not found. Set SOFTHSM2_LIB env var or use --libs.",
             }, indent=2))
             sys.exit(1)
         result = pkcs11_operations_demo(args.token, args.pin, lib_path)

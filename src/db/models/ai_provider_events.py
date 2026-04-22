@@ -1,0 +1,155 @@
+"""
+AI Provider Events — Immutable audit trail of provider state changes per session.
+
+Captures all provider-related events in chronological order:
+- PROVIDER_CHANGED: Active provider switched
+- FALLBACK_TRIGGERED: Fallback to alternative provider due to failure
+- ERROR_RECORDED: Error occurred with current provider
+- HEALTH_CHECK: Health status update
+- RATE_LIMIT: Rate limit hit
+- TIMEOUT: Request timeout
+
+This is an append-only event log (no updates) that enables full audit trail
+and provider history analysis per session.
+"""
+from tortoise import fields
+from tortoise.models import Model
+
+
+class AIProviderEvent(Model):
+    """
+    Immutable audit trail of provider events per session.
+
+    Each row represents a single provider-related event in chronological order.
+    Events are never updated or deleted (append-only log).
+
+    Event types:
+    - PROVIDER_CHANGED: Active provider switched
+    - FALLBACK_TRIGGERED: Switched to fallback provider
+    - ERROR_RECORDED: Error occurred
+    - HEALTH_CHECK: Health status check
+    - RATE_LIMIT: Rate limit encountered
+    - TIMEOUT: Request timeout
+    - SUCCESS: Successful request
+    """
+
+    id = fields.BigIntField(primary_key=True)
+
+    # Session and provider references
+    session = fields.ForeignKeyField(
+        "models.Session",
+        related_name="ai_provider_events",
+        on_delete=fields.CASCADE,
+        db_index=True,
+        description="Session this event belongs to"
+    )
+
+    # Event details
+    event_type = fields.CharField(
+        max_length=32,
+        choices=[
+            ("PROVIDER_CHANGED", "PROVIDER_CHANGED"),
+            ("FALLBACK_TRIGGERED", "FALLBACK_TRIGGERED"),
+            ("ERROR_RECORDED", "ERROR_RECORDED"),
+            ("HEALTH_CHECK", "HEALTH_CHECK"),
+            ("RATE_LIMIT", "RATE_LIMIT"),
+            ("TIMEOUT", "TIMEOUT"),
+            ("SUCCESS", "SUCCESS"),
+        ],
+        db_index=True,
+        description="Type of event"
+    )
+
+    # Provider references
+    old_provider = fields.ForeignKeyField(
+        "models.Provider",
+        related_name="events_old",
+        on_delete=fields.SET_NULL,
+        null=True,
+        description="Previous provider (for PROVIDER_CHANGED and FALLBACK_TRIGGERED)"
+    )
+    new_provider = fields.ForeignKeyField(
+        "models.Provider",
+        related_name="events_new",
+        on_delete=fields.SET_NULL,
+        null=True,
+        description="New provider (for PROVIDER_CHANGED and FALLBACK_TRIGGERED)"
+    )
+
+    # Event context
+    reason = fields.CharField(
+        max_length=256,
+        default="",
+        description="Reason for the event (e.g., 'health_check_failed', 'rate_limit_exceeded')"
+    )
+    error_message = fields.TextField(
+        default="",
+        description="Error message if event_type is ERROR_RECORDED"
+    )
+
+    # Performance context
+    response_time_ms = fields.IntField(
+        null=True,
+        description="Response time in milliseconds for this request"
+    )
+    status_code = fields.IntField(
+        null=True,
+        description="HTTP status code if applicable"
+    )
+
+    # Token context
+    input_tokens = fields.IntField(
+        default=0,
+        description="Input tokens used in this request"
+    )
+    output_tokens = fields.IntField(
+        default=0,
+        description="Output tokens generated in this request"
+    )
+
+    # Health context
+    health_status_before = fields.CharField(
+        max_length=16,
+        null=True,
+        description="Health status before event"
+    )
+    health_status_after = fields.CharField(
+        max_length=16,
+        null=True,
+        description="Health status after event"
+    )
+
+    # Metadata
+    metadata = fields.JSONField(
+        default=dict,
+        description="Additional event context (e.g., retry count, fallback chain)"
+    )
+
+    # Timestamp (append-only, never updated)
+    created_at = fields.DatetimeField(
+        auto_now_add=True,
+        db_index=True,
+        description="Event timestamp (immutable)"
+    )
+
+    class Meta:
+        table = "ai_provider_events"
+        # Composite index for session + timestamp queries (most common)
+        indexes = [
+            ("session", "-created_at"),  # DESC ordering for recent events
+            ("session", "event_type"),
+            ("event_type", "-created_at"),
+        ]
+        # Append-only: prevent accidental updates
+        # (enforced at application layer, not DB)
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        """String representation of provider event."""
+        return (
+            f"AIProviderEvent("
+            f"session={self.session_id}, "
+            f"type={self.event_type}, "
+            f"reason={self.reason}"
+            f")"
+        )
