@@ -1,14 +1,16 @@
 /**
- * content.js — CyberSecSuite Agent v3.0 content script
+ * content.js — CyberSecSuite Agent v4.0 content script
  *
  * Runs on every page (document_start). Core features activate only if
  * the current domain is in the configured activeDomains list.
  *
  * Features:
  *  1. XHR + fetch interception — captures API request/response bodies
- *  2. Form detection — finds AI chat input elements using heuristics
- *  3. Human typing simulation — realistic keydown/input/keyup sequences
- *  4. Streaming injection — fetches from /api/proxy/memory-chat using Anthropic SDK
+ *  2. Form detection — shadow DOM traversal + multi-candidate scoring (T023)
+ *  3. Idle detection — keystroke + mouse tracking (T024)
+ *  4. Human typing simulation — realistic keydown/input/keyup sequences
+ *  5. Streaming injection — fetches from /api/proxy/memory-chat
+ *  6. Response relay — relays captured AI responses to dashboard (T027)
  */
 
 (() => {
@@ -20,6 +22,19 @@
   let cfg = null;              // loaded from background on activation
   const ajaxLog = [];          // captured AJAX events (last 50)
   let streamAbort = null;      // AbortController for active stream
+
+  // ── T024: Idle detection ───────────────────────────────────────────────────
+
+  let _lastActivity = Date.now();
+
+  function _resetActivity() { _lastActivity = Date.now(); }
+
+  function getIdleSeconds() { return Math.floor((Date.now() - _lastActivity) / 1000); }
+
+  document.addEventListener('keydown', _resetActivity, { passive: true, capture: true });
+  document.addEventListener('mousemove', _resetActivity, { passive: true, capture: true });
+  document.addEventListener('mousedown', _resetActivity, { passive: true, capture: true });
+  document.addEventListener('touchstart', _resetActivity, { passive: true, capture: true });
 
   // ── Activation check ───────────────────────────────────────────────────────
 

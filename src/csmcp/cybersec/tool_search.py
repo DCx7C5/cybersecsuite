@@ -141,11 +141,7 @@ async def describe_tool(args: dict[str, Any]) -> JsonDict:
 
     try:
         from csmcp.cybersec import _ALL_CYBERSEC_TOOLS
-        try:
-            from csmcp.dystopian import ALL_TOOLS as _DYSTOPIAN_TOOLS
-            all_tools = list(_ALL_CYBERSEC_TOOLS) + list(_DYSTOPIAN_TOOLS)
-        except ImportError:
-            all_tools = list(_ALL_CYBERSEC_TOOLS)
+        all_tools = list(_ALL_CYBERSEC_TOOLS)
     except ImportError:
         return sdk_error("Could not load tool registry")
 

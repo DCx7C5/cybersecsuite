@@ -1,9 +1,0 @@
-{
-  "hostname": "anonsys",
-  "os": "Linux",
-  "os_version": "6.19.11-zen1-1-zen",
-  "arch": "x86_64",
-  "python": "3.14.4",
-  "initialized": "2026-04-17T21:35:17.520370+00:00",
-  "project_root": "/home/daen/Projects/cybersecsuite"
-}

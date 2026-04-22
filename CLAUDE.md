@@ -31,24 +31,24 @@ uv run python -m manage seed-all
 ## MCP Tools (57 total)
 
 ### cybersec server (56 tools, `mcp__cybersec__*`)
-| Category     | Tools                                                                                                                                                                             |
-|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Findings     | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`                                                                                                                |
-| Database     | `db_healthcheck`, `bootstrap_intelligence`                                                                                                                                        |
-| Intelligence | `suggest_mitre`, `get_project_memory`                                                                                                                                             |
-| Layers       | `share_to_layers`, `get_layer_value`                                                                                                                                              |
-| Cache        | `cache_lookup`, `cache_store`, `cache_analytics`, `cache_invalidate`                                                                                                              |
-| Proxy        | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies` |
-| Session      | `session_snapshot`, `agent_registry`, `best_provider`                                                                                                                             |
-| Cases        | `case_open`, `case_status`                                                                                                                                                        |
-| PoC          | `add_poc`, `query_pocs`                                                                                                                                                           |
-| Routing      | `combo_list`, `combo_metrics`, `combo_switch`, `combo_test`, `route_request`, `simulate_route`, `set_routing_strategy`, `set_resilience_profile`, `best_combo_for_task`, `explain_route` |
-| Quota/Pricing| `check_quota`, `cost_report`, `list_models_catalog`                                                                                                                               |
-| AI Memory    | `memory_search`, `memory_add`, `memory_clear`                                                                                                                                    |
-| Web Search   | `web_search`                                                                                                                                                                      |
-| Sync         | `sync_pricing`                                                                                                                                                                    |
-| Health       | `get_health`, `get_provider_metrics`, `get_session_snapshot`                                                                                                                      |
-| QoL Controls | `qol_get`, `qol_set`, `qol_reset`, `qol_presets`                                                                                                                                  |
+| Category      | Tools                                                                                                                                                                                    |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Findings      | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`                                                                                                                       |
+| Database      | `db_healthcheck`, `bootstrap_intelligence`                                                                                                                                               |
+| Intelligence  | `suggest_mitre`, `get_project_memory`                                                                                                                                                    |
+| Layers        | `share_to_layers`, `get_layer_value`                                                                                                                                                     |
+| Cache         | `cache_lookup`, `cache_store`, `cache_analytics`, `cache_invalidate`                                                                                                                     |
+| Proxy         | `proxy_chat`, `proxy_providers`, `proxy_models`, `proxy_usage`, `proxy_cost`, `simulate_route`, `set_budget_guard`, `get_circuit_breakers`, `explain_route`, `routing_strategies`        |
+| Session       | `session_snapshot`, `agent_registry`, `best_provider`                                                                                                                                    |
+| Cases         | `case_open`, `case_status`                                                                                                                                                               |
+| PoC           | `add_poc`, `query_pocs`                                                                                                                                                                  |
+| Routing       | `combo_list`, `combo_metrics`, `combo_switch`, `combo_test`, `route_request`, `simulate_route`, `set_routing_strategy`, `set_resilience_profile`, `best_combo_for_task`, `explain_route` |
+| Quota/Pricing | `check_quota`, `cost_report`, `list_models_catalog`                                                                                                                                      |
+| AI Memory     | `memory_search`, `memory_add`, `memory_clear`                                                                                                                                            |
+| Web Search    | `web_search`                                                                                                                                                                             |
+| Sync          | `sync_pricing`                                                                                                                                                                           |
+| Health        | `get_health`, `get_provider_metrics`, `get_session_snapshot`                                                                                                                             |
+| QoL Controls  | `qol_get`, `qol_set`, `qol_reset`, `qol_presets`                                                                                                                                         |
 
 ### dystopian server (5 tools, `mcp__dystopian__*`)
 `crypto_generate_keypair`, `crypto_sign_artifact`, `crypto_verify_artifact`, `crypto_list_keys`, `crypto_rotate_key`
@@ -83,21 +83,21 @@ Claude Code / claude-agent-sdk query()
 
 ## Key Directories
 
-| Path                   | Purpose                                                            |
-|------------------------|--------------------------------------------------------------------|
-| `src/csmcp/cybersec/`  | SDK MCP package (56 tools, multiple submodules)                     |
-| `src/csmcp/dystopian.py` | Crypto tools (Ed25519, Argon2id, AES-256-GCM)                    |
-| `src/a2a/`             | A2A protocol, agent SDK bridge, orchestrator                       |
-| `src/ai_proxy/`        | AI proxy (60 providers, 13 routing strategies)                     |
-| `src/db/models/`       | 44 Tortoise ORM models                                             |
-| `src/dashboard/`       | Live forensic dashboard (Starlette)                                |
-| `src/telemetry/`       | In-process metrics (ring buffer, p50/p95/p99)                      |
-| `src/crypto/`          | Ed25519 signing, BLAKE2b-256, Argon2id, AES-256-GCM                |
-| `.claude/agents/`      | 33 specialist agents + 3 team modes                                |
-| `.claude/skills/`      | 922 SKILL.md across 24+ domains                                    |
-| `.claude/commands/`    | 7 slash commands                                                   |
-| `.claude/hooks/`       | 5 hooks (on_start, on_end, on_tool_call, on_tool_result, on_error) |
-| `data/fixtures/`       | NIST CSF 2.0, NIST AI RMF 1.0 seed data                            |
+| Path                     | Purpose                                                            |
+|--------------------------|--------------------------------------------------------------------|
+| `src/csmcp/cybersec/`    | SDK MCP package (56 tools, multiple submodules)                    |
+| `src/csmcp/dystopian.py` | Crypto tools (Ed25519, Argon2id, AES-256-GCM)                      |
+| `src/a2a/`               | A2A protocol, agent SDK bridge, orchestrator                       |
+| `src/ai_proxy/`          | AI proxy (60 providers, 13 routing strategies)                     |
+| `src/db/models/`         | 44 Tortoise ORM models                                             |
+| `src/dashboard/`         | Live forensic dashboard (Starlette)                                |
+| `src/telemetry/`         | In-process metrics (ring buffer, p50/p95/p99)                      |
+| `src/crypto/`            | Ed25519 signing, BLAKE2b-256, Argon2id, AES-256-GCM                |
+| `.claude/agents/`        | 33 specialist agents + 3 team modes                                |
+| `.claude/skills/`        | 922 SKILL.md across 24+ domains                                    |
+| `.claude/commands/`      | 7 slash commands                                                   |
+| `.claude/hooks/`         | 5 hooks (on_start, on_end, on_tool_call, on_tool_result, on_error) |
+| `data/fixtures/`         | NIST CSF 2.0, NIST AI RMF 1.0 seed data                            |
 
 
 ## Environment Variables

@@ -738,7 +738,7 @@ def vault_command() -> None:
 
 def check_command() -> None:
     """Run model, fixture, and config integrity checks."""
-    from a2a.checks.integrity import run_all_checks
+    from checks.integrity import run_all_checks
 
     report = run_all_checks()
 

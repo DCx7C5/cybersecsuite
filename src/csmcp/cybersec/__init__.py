@@ -69,7 +69,7 @@ _ALL_CYBERSEC_TOOLS = (
 
 cybersec_server = create_sdk_mcp_server(
     name="cybersec",
-    version="1.0.0",
+    version="0.1.0",
     tools=_ALL_CYBERSEC_TOOLS,
 )
 

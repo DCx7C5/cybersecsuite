@@ -83,6 +83,8 @@ async def chat_completions(request: Request) -> JSONResponse | StreamingResponse
     # T017/T018: session and agent context for QoL scope cascade + agent presets
     session_id: str | None = request.headers.get("x-session-id") or None
     agent_name: str | None = request.headers.get("x-agent-name") or None
+    # T026: webllm flag — prefer browser providers (header or body meta field)
+    webllm: bool = request.headers.get("x-webllm", "").lower() in ("true", "1", "yes") or bool(body.get("webllm"))
 
     start = time.monotonic()
 
@@ -100,12 +102,12 @@ async def chat_completions(request: Request) -> JSONResponse | StreamingResponse
             strategy=Strategy.PRIORITY,
             targets=[ComboTarget(provider_id=provider.id, model_id=model)],
         )
-        result = await route_request(body, combo, stream=stream, session_id=session_id, agent_name=agent_name)
+        result = await route_request(body, combo, stream=stream, session_id=session_id, agent_name=agent_name, webllm=webllm)
     else:
         # Smart routing
         result = await smart_route(
             body, stream=stream, prefer_free=prefer_free, max_cost_per_1k=max_cost,
-            session_id=session_id, agent_name=agent_name,
+            session_id=session_id, agent_name=agent_name, webllm=webllm,
         )
 
     latency = (time.monotonic() - start) * 1000

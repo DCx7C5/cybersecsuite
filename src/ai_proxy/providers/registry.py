@@ -1,7 +1,7 @@
 """
 Provider Registry — Pydantic-validated provider configurations.
 
-Mirrors OmniRoute's providerRegistry.ts: each provider has a base URL,
+Each provider has a base URL,
 auth scheme, API format, model list, and cost metadata.
 Supports custom providers loaded from YAML config or environment,
 including Playwright-based browser automation providers.

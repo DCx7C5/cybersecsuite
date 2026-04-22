@@ -43,6 +43,22 @@ async def agent_registry(args: dict[str, Any]) -> JsonDict:
         load_cybersecsuite_agents(registry)
         agents = registry.summary()
         orchestrators = [a for a in agents if a.get("claude_metadata", {}).get("role") == "orchestrator"]
+
+        # Append installed marketplace agents (T036).
+        try:
+            from marketplace.registry import get_registry as _get_mkt_registry
+            for item in _get_mkt_registry().list_installed():
+                if item.kind == "agent":
+                    agents.append({
+                        "name": item.id,
+                        "description": item.description,
+                        "source": "marketplace",
+                        "provider": item.provider,
+                        "tags": item.tags,
+                    })
+        except Exception:
+            pass  # marketplace not available — skip silently
+
         return sdk_result({
             "status": "success",
             "total": len(agents),

@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from _utils import ensure_structure, get_app_home, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 
 async def main():
@@ -24,6 +24,7 @@ async def main():
     item_count = data.get("item_count")
 
     project_dir = get_project_dir()
+    app_home = get_app_home()
     session_dir = get_session_dir()
     now         = datetime.now(timezone.utc)
 
@@ -36,7 +37,7 @@ async def main():
     }
 
     # Baseline history log
-    baseline_log = project_dir / ".memory" / "system" / "baseline_history.jsonl"
+    baseline_log = app_home / "memory" / "system" / "baseline_history.jsonl"
     baseline_log.parent.mkdir(parents=True, exist_ok=True)
     append_file(baseline_log, json.dumps(record) + "\n")
 
@@ -60,7 +61,7 @@ async def main():
         f"**Agent:** {agent_name}\n"
         f"**Items:** {item_count if item_count is not None else 'N/A'}\n"
         f"**Time:** {now.strftime('%H:%M:%S UTC')}\n\n"
-        "Baseline synced to `.memory/system/baseline_history.jsonl`."
+        "Baseline synced to `~/.cybersecsuite/memory/system/baseline_history.jsonl`."
     ))
 
 

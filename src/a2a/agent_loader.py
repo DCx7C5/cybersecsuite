@@ -222,7 +222,7 @@ def frontmatter_to_claude_agent(
         name=name,
         description=description,
         url=base_url,
-        version="1.0.0",
+        version="0.1.0",
         capabilities=AgentCapabilities(
             streaming=True,
             push_notifications=False,

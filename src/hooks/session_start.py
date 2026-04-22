@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, emit, hook_context
+from _utils import ensure_structure, get_app_home, get_project_dir, get_session_dir, audit, emit, hook_context
 
 
 AGENT_PROFILES = {
@@ -23,12 +23,11 @@ MEMORY_FILES = ["scope.md", "threat_model.md", "risk_register.md", "mitre-attack
 
 async def load_layer(layer_name: str, layer_dir: Path) -> list[str]:
     parts = []
-    loop = asyncio.get_running_loop()
     for filename in MEMORY_FILES:
         p = layer_dir / filename
         if p.exists():
             try:
-                content = await loop.run_in_executor(None, p.read_text, "utf-8")
+                content = await asyncio.to_thread(lambda: p.read_text("utf-8"))
                 if content.strip():
                     parts.append(f"### {layer_name} — {filename}\n{content.strip()[:800]}")
             except Exception:
@@ -39,13 +38,14 @@ async def load_layer(layer_name: str, layer_dir: Path) -> list[str]:
 async def main():
     ensure_structure()
 
+    app_home = get_app_home()
     project_dir = get_project_dir()
     session_dir = get_session_dir()
 
     layers = [
-        ("System", project_dir / ".memory" / "system"),
-        ("Project", project_dir / ".memory" / "project"),
-        ("Session", session_dir if session_dir else project_dir / ".memory" / "session"),
+        ("System", app_home / "memory" / "system"),
+        ("Project", app_home / "memory" / "project"),
+        ("Session", session_dir if session_dir else app_home / "memory" / "session"),
     ]
 
     parts: list[str] = []
@@ -61,7 +61,7 @@ async def main():
     # A2A registry summary (static read)
     a2a_summary = _a2a_summary(project_dir)
 
-    audit({"event": "SessionStart", "session_dir": str(session_dir)})
+    audit({"event": "SessionStart", "session_dir": str(session_dir), "app_home": str(app_home)})
 
     emit(
         hook_context(f"""🔐 **CYBERSECSUITE SESSION STARTED**

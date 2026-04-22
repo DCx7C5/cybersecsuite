@@ -1,7 +1,7 @@
 """
 Executor layer — dispatch requests to upstream LLM providers.
 
-Mirrors OmniRoute's open-sse/executors/: base class with retry logic,
+Base class with retry logic,
 provider-specific subclasses for auth/URL differences.
 """
 from __future__ import annotations

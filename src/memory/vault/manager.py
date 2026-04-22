@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import re
 import time
 from dataclasses import dataclass, field
@@ -17,6 +18,11 @@ from typing import Any, Optional
 from urllib.parse import urlparse
 
 logger = logging.getLogger("csmcp.vault")
+
+_DEFAULT_VAULT_PATH = str(
+    Path(os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))).expanduser()
+    / "vault"
+)
 
 # ── Vault structure ────────────────────────────────────────────────────────────
 
@@ -122,8 +128,10 @@ class VaultManager:
       memories/      — SDK memory tool root
     """
 
-    def __init__(self, vault_path: str | Path = "./data/vault") -> None:
-        self.vault_path = Path(vault_path).resolve()
+    def __init__(self, vault_path: str | Path | None = None) -> None:
+        if vault_path is None:
+            vault_path = _DEFAULT_VAULT_PATH
+        self.vault_path = Path(vault_path).expanduser().resolve()
         self._manifest_path = self.vault_path / ".raw" / ".manifest.json"
 
     # ── scaffold ──────────────────────────────────────────────────────────────

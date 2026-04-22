@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Shared utilities for cybersecsuite Claude hooks.
-Replaces the old utils/ from the AI plugin with cybersecsuite-native paths and DB.
+Shared utilities for cybersecsuite hooks.
+
+Scope layout
+────────────
+  Global   ~/.claude/                  (LLM-harness config only)
+  App      CYBERSECSUITE_HOME          (sessions, memory, vault, cache, logs)
+             defaults to ~/.cybersecsuite
+  Project  $(pwd)/.claude/             (project harness config only)
+  Session  CYBERSECSUITE_HOME/sessions/<sid>/
 """
 import json
 import os
@@ -10,23 +17,37 @@ from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional
 
-# ── Project layout ────────────────────────────────────────────────────────────
+# ── Scope roots ───────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(os.environ.get("CYBERSECSUITE_ROOT", Path(__file__).resolve().parent.parent.parent))
 HOOKS_DIR    = PROJECT_ROOT / ".claude" / "hooks"
-SESSION_SCOPE = (os.environ.get("CYBERSEC_SESSION_SCOPE", "cybersec").strip().lstrip(".") or "cybersec")
-SESSIONS_DIR = PROJECT_ROOT / f".{SESSION_SCOPE}" / "sessions"
-LEGACY_SESSIONS_DIR = PROJECT_ROOT / ".claude" / "sessions"
 AUDIT_LOG    = HOOKS_DIR / "audit.jsonl"
+
+
+def get_app_home() -> Path:
+    """Return the app-scope home directory (CYBERSECSUITE_HOME, default ~/.cybersecsuite)."""
+    return Path(
+        os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))
+    ).expanduser().resolve()
+
+
+SESSIONS_DIR        = get_app_home() / "sessions"
+LEGACY_SESSIONS_DIR = PROJECT_ROOT / ".claude" / "sessions"
 
 
 def get_project_dir() -> Path:
     return PROJECT_ROOT
 
 
+def get_memory_dir(layer: str = "") -> Path:
+    """Return a memory layer dir inside app home. layer: 'system' | 'project' | 'session' | ''."""
+    base = get_app_home() / "memory"
+    return base / layer if layer else base
+
+
 def get_session_dir() -> Optional[Path]:
     session_id = os.environ.get("CYBERSEC_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID")
     if session_id:
-        primary = SESSIONS_DIR / session_id
+        primary = get_app_home() / "sessions" / session_id
         if primary.exists():
             return primary
         legacy = LEGACY_SESSIONS_DIR / session_id
@@ -35,7 +56,7 @@ def get_session_dir() -> Optional[Path]:
         primary.mkdir(parents=True, exist_ok=True)
         return primary
     # Fall back to latest session symlink
-    latest = SESSIONS_DIR / "latest"
+    latest = get_app_home() / "sessions" / "latest"
     if latest.exists():
         return latest.resolve()
     legacy_latest = LEGACY_SESSIONS_DIR / "latest"
@@ -45,7 +66,17 @@ def get_session_dir() -> Optional[Path]:
 
 
 def ensure_structure() -> None:
-    for d in [HOOKS_DIR, SESSIONS_DIR]:
+    app = get_app_home()
+    for d in [
+        HOOKS_DIR,
+        app / "sessions",
+        app / "memory" / "system",
+        app / "memory" / "project",
+        app / "memory" / "session",
+        app / "vault",
+        app / "cache",
+        app / "logs",
+    ]:
         d.mkdir(parents=True, exist_ok=True)
 
 

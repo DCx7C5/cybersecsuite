@@ -173,6 +173,72 @@ async def cmd_chat(args: argparse.Namespace) -> None:
             print(f"--- Tokens: {usage.get('total_tokens', 0)}", file=sys.stderr)
 
 
+async def cmd_marketplace(args: argparse.Namespace) -> None:
+    """Dispatch marketplace sub-commands."""
+    from marketplace.registry import get_registry
+
+    reg = get_registry()
+
+    if args.mp_command == "list":
+        kind = getattr(args, "kind", None)
+        provider = getattr(args, "provider", None)
+        items = reg.list_items(kind=kind, provider=provider)
+        rows = [
+            {
+                "id": i.id,
+                "name": i.name,
+                "kind": i.kind,
+                "provider": i.provider,
+                "status": i.status.value,
+                "tags": ", ".join(i.tags),
+            }
+            for i in items
+        ]
+        _print_table(rows, ["id", "name", "kind", "provider", "status", "tags"])
+        print(f"\n{len(rows)} item(s) in catalog")
+
+    elif args.mp_command == "install":
+        try:
+            item = reg.install(args.item_id)
+            print(f"✓ Installed {item.id!r} ({item.name}) — status: {item.status.value}")
+        except KeyError as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.mp_command == "uninstall":
+        removed = reg.uninstall(args.item_id)
+        if removed:
+            print(f"✓ Uninstalled {args.item_id!r}")
+        else:
+            print(f"Error: {args.item_id!r} is not installed", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.mp_command == "info":
+        item = reg.get_item(args.item_id)
+        if item is None:
+            print(f"Error: item {args.item_id!r} not found", file=sys.stderr)
+            sys.exit(1)
+        _print_json(item.model_dump(mode="json"))
+
+    elif args.mp_command == "search":
+        items = reg.search(args.query)
+        rows = [
+            {
+                "id": i.id,
+                "name": i.name,
+                "kind": i.kind,
+                "provider": i.provider,
+                "status": i.status.value,
+            }
+            for i in items
+        ]
+        _print_table(rows, ["id", "name", "kind", "provider", "status"])
+        print(f"\n{len(rows)} result(s) for {args.query!r}")
+
+    else:
+        print("Unknown marketplace sub-command. Use: list, install, uninstall, info, search")
+
+
 async def cmd_serve(args: argparse.Namespace) -> None:
     import uvicorn
     print(f"Starting AI proxy on {args.host}:{args.port}")
@@ -232,6 +298,34 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--port", type=int, default=8000, help="Bind port (default: 8000)")
     s.add_argument("--reload", action="store_true", help="Enable auto-reload")
 
+    # marketplace
+    mp = sub.add_parser("marketplace", help="Browse and manage the marketplace catalog")
+    mp_sub = mp.add_subparsers(dest="mp_command", help="Marketplace sub-commands")
+
+    mp_list = mp_sub.add_parser("list", help="List catalog items")
+    mp_list.add_argument(
+        "--kind",
+        choices=["agent", "skill", "combo", "template"],
+        help="Filter by item kind",
+    )
+    mp_list.add_argument(
+        "--provider",
+        choices=["claude", "copilot", "cursor", "openai", "gemini", "grok", "universal"],
+        help="Filter by provider",
+    )
+
+    mp_install = mp_sub.add_parser("install", help="Install a marketplace item")
+    mp_install.add_argument("item_id", help="Item ID (kebab-case)")
+
+    mp_uninstall = mp_sub.add_parser("uninstall", help="Uninstall a marketplace item")
+    mp_uninstall.add_argument("item_id", help="Item ID (kebab-case)")
+
+    mp_info = mp_sub.add_parser("info", help="Show details about an item")
+    mp_info.add_argument("item_id", help="Item ID (kebab-case)")
+
+    mp_search = mp_sub.add_parser("search", help="Search the catalog")
+    mp_search.add_argument("query", help="Search query string")
+
     return parser
 
 
@@ -250,6 +344,7 @@ async def _main() -> None:
         "cost": cmd_cost,
         "chat": cmd_chat,
         "serve": cmd_serve,
+        "marketplace": cmd_marketplace,
     }
 
     handler = commands.get(args.command)

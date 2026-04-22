@@ -53,6 +53,17 @@
 
 <!-- ── INJECT tab ─────────────────────────────────────────────────────── -->
 <div id="tab-inject" class="tab-content">
+  <!-- T025: target tab selector (includes non-focused tabs with detected forms) -->
+  <div class="field">
+    <div class="row gap-2" style="align-items:center;">
+      <label style="flex:1;margin:0;">Target tab</label>
+      <button class="btn btn-ghost btn-sm" id="btn-refresh-tabs">↻ Refresh</button>
+    </div>
+    <select id="inject-target-tab" style="margin-top:4px;">
+      <option value="active">Active tab (current)</option>
+    </select>
+  </div>
+
   <div class="field">
     <label>Prompt (streams to page via AI)</label>
     <textarea id="inject-prompt" rows="5" placeholder="Enter prompt — will be streamed through TS API and typed into the active form…"></textarea>

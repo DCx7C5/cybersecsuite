@@ -10,9 +10,10 @@ import sys
 from pathlib import Path
 from typing import Any, Final, TypedDict
 
-# Make hooks available (PYTHONPATH equivalent for package context)
-_AI_HOOKS_DIR = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "/home/daen/Projects/AI")
-if _AI_HOOKS_DIR not in sys.path:
+# Make hooks importable if the caller has set CYBERSEC_AI_HOOKS_DIR.
+# No default — callers that need hooks must set the env var explicitly.
+_AI_HOOKS_DIR = os.environ.get("CYBERSEC_AI_HOOKS_DIR")
+if _AI_HOOKS_DIR and _AI_HOOKS_DIR not in sys.path:
     sys.path.insert(0, _AI_HOOKS_DIR)
 
 JsonDict = dict[str, Any]
@@ -33,13 +34,18 @@ SCOPE_LEVELS: Final[tuple[str, ...]] = ("project", "session")
 
 
 def _get_base_dir() -> Path:
+    # Explicit env override
     base_dir = os.environ.get("CYBERSEC_BASE_DIR") or os.environ.get("MALWAREHUNTER_BASE_DIR")
     if base_dir:
         return Path(base_dir).expanduser().resolve()
     plugin_data_dir = os.environ.get("PLUGIN_DATA_DIR") or os.environ.get("CLAUDE_PLUGIN_DATA")
     if plugin_data_dir:
         return Path(plugin_data_dir).expanduser().resolve() / "cybersec"
-    return Path(__file__).resolve().parents[3] / "data"
+    # Default: app-scope home data dir
+    app_home = Path(
+        os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))
+    ).expanduser().resolve()
+    return app_home / "data"
 
 
 def _normalize_scope_value(value: str | None, fallback: str | None = None) -> str | None:

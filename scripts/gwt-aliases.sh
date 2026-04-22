@@ -13,7 +13,7 @@ _gwt_manager() {
     echo "[gwt] ERROR: Not inside a git repository" >&2
     return 1
   }
-  echo "$root/worktree-session-manager.py"
+  echo "$root/scripts/worktree-session-manager.py"
 }
 
 # ─── gwt-create [branch] ───────────────────────────────────────────────────

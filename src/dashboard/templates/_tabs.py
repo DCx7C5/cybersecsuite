@@ -26,6 +26,8 @@ _NAV: list = [
     ("flowgraph",     "Flowgraph",        "⬡", "agents"),
     ("prompts",       "Prompts",          "⊘", "agents"),
     ("sdk-lab",       "SDK Lab",          "⊗", "agents"),
+    ("marketplace",   "Marketplace",      "⊞", "agents"),
+    ("marketplace-factory", "Agent Factory ⊕", "⊕", "agents"),
     # OPERATIONS
     ("cases",         "Cases",            "⊡", "ops"),
     ("tasks",         "Tasks",            "⊛", "ops"),

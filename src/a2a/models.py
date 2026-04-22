@@ -157,7 +157,7 @@ class AgentCard(BaseModel):
     name: str
     description: Optional[str] = None
     url: str
-    version: str = "1.0.0"
+    version: str = "0.1.0"
     documentation_url: Optional[str] = None
     capabilities: AgentCapabilities = Field(default_factory=AgentCapabilities)
     authentication: AgentAuthentication = Field(default_factory=AgentAuthentication)

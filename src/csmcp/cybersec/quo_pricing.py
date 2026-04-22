@@ -7,96 +7,111 @@ from csmcp._sdk_compat import tool
 from csmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
 
 
-@tool("check_quota", "Check remaining API quota for one or all providers.", {"provider": {"type": "string", "nullable": True}})
+@tool(
+    "check_quota",
+    "Check rate limit and budget quota for a provider or all providers.",
+    {"provider": {"type": "string", "nullable": True}},
+)
 async def check_quota(args: dict[str, Any]) -> JsonDict:
-    provider = args.get("provider")
-    # Stub: simulate quota check
-    quotas = {
-        "openai": {"used": 85000, "limit": 100000, "remaining": 15000, "reset_date": "2026-05-01"},
-        "anthropic": {"used": 120000, "limit": 200000, "remaining": 80000, "reset_date": "2026-05-01"},
-        "google": {"used": 50000, "limit": 100000, "remaining": 50000, "reset_date": "2026-05-01"},
-    }
-    if provider:
-        if provider not in quotas:
-            return sdk_error(f"Provider '{provider}' not found")
-        return sdk_result({"status": "success", "provider": provider, "quota": quotas[provider]})
+    try:
+        from ai_proxy.providers.registry import get_all_providers
+        from ai_proxy.services.rate_limiter import rate_limiter
+        from ai_proxy.routing.combo import budget_guard
+    except ImportError:
+        return sdk_error("ai_proxy not available")
+
+    filter_provider = args.get("provider")
+    providers = get_all_providers()
+    if filter_provider and filter_provider not in providers:
+        return sdk_error(f"Provider '{filter_provider}' not found")
+
+    budgets = budget_guard.get_all()
+    targets = [filter_provider] if filter_provider else list(providers.keys())
+
+    quotas = {}
+    for pid in targets:
+        p = providers[pid]
+        rate_status = rate_limiter.get_status(pid)
+        provider_budget = budgets.get(pid)
+        spent = budget_guard.get_spent(pid) if provider_budget is not None else None
+        quotas[pid] = {
+            "available": p.is_available,
+            "rate_limit": rate_status,
+            "budget_usd": provider_budget,
+            "spent_usd": round(spent, 6) if spent is not None else None,
+            "budget_remaining_usd": round(provider_budget - spent, 6) if (provider_budget is not None and spent is not None) else None,
+        }
+
+    if filter_provider:
+        return sdk_result({"status": "success", "provider": filter_provider, **quotas[filter_provider]})
     return sdk_result({"status": "success", "quotas": quotas})
 
 
-@tool("cost_report", "Cost report for session/day/week/month.", {"period": {"type": "string", "enum": ["session", "day", "week", "month"], "default": "session"}})
+@tool(
+    "cost_report",
+    "Cost and usage report broken down by provider. Optional limit on recent records.",
+    {"limit": {"type": "integer", "nullable": True}},
+)
 async def cost_report(args: dict[str, Any]) -> JsonDict:
-    period = args.get("period", "session")
-    # Stub: simulate cost report
-    reports = {
-        "session": {
-            "period": "session",
-            "total_cost_usd": 12.45,
-            "total_tokens": 125000,
-            "requests": 450,
-            "by_provider": {
-                "openai": {"cost_usd": 8.50, "tokens": 85000, "requests": 320},
-                "anthropic": {"cost_usd": 3.95, "tokens": 40000, "requests": 130},
-            },
-            "by_model": {
-                "gpt-4o": {"cost_usd": 6.20, "tokens": 62000},
-                "claude-3-5-sonnet-20241022": {"cost_usd": 3.95, "tokens": 40000},
-                "gpt-4o-mini": {"cost_usd": 2.30, "tokens": 23000},
-            },
+    try:
+        from ai_proxy.services.usage_tracker import usage_tracker
+    except ImportError:
+        return sdk_error("ai_proxy not available")
+
+    limit = int(args.get("limit") or 20)
+    summary = usage_tracker.get_summary()
+    recent = usage_tracker.get_recent(limit=limit)
+
+    top_providers = sorted(
+        summary["by_provider"].items(),
+        key=lambda kv: kv[1]["cost_usd"],
+        reverse=True,
+    )
+
+    return sdk_result({
+        "status": "success",
+        "totals": {
+            "requests": summary["total_requests"],
+            "tokens": summary["total_tokens"],
+            "cost_usd": summary["total_cost_usd"],
+            "errors": summary["total_errors"],
         },
-        "day": {"period": "day", "total_cost_usd": 45.20, "total_tokens": 452000, "requests": 1800},
-        "week": {"period": "week", "total_cost_usd": 312.80, "total_tokens": 3128000, "requests": 12500},
-        "month": {"period": "month", "total_cost_usd": 1250.00, "total_tokens": 12500000, "requests": 50000},
-    }
-    report = reports.get(period, reports["session"])
-    return sdk_result({"status": "success", "report": report})
+        "by_provider": dict(top_providers),
+        "recent": recent,
+    })
 
 
-@tool("list_models_catalog", "All available AI models across providers with capabilities + pricing.", {})
+@tool(
+    "list_models_catalog",
+    "List all available models with context window, cost, and availability.",
+    {
+        "provider": {"type": "string", "nullable": True},
+        "free_only": {"type": "boolean", "nullable": True},
+    },
+)
 async def list_models_catalog(args: dict[str, Any]) -> JsonDict:
-    # Stub: simulate models catalog
-    models = [
-        {
-            "id": "gpt-4o",
-            "owned_by": "openai",
-            "capabilities": ["chat", "vision", "tools"],
-            "context_window": 128000,
-            "pricing": {"input": 2.5, "output": 10.0},  # per 1M tokens
-            "status": "available",
-        },
-        {
-            "id": "claude-3-5-sonnet-20241022",
-            "owned_by": "anthropic",
-            "capabilities": ["chat", "vision", "tools"],
-            "context_window": 200000,
-            "pricing": {"input": 3.0, "output": 15.0},
-            "status": "available",
-        },
-        {
-            "id": "gemini-1.5-pro",
-            "owned_by": "google",
-            "capabilities": ["chat", "vision", "tools"],
-            "context_window": 2097152,
-            "pricing": {"input": 1.25, "output": 5.0},
-            "status": "available",
-        },
-        {
-            "id": "gpt-4o-mini",
-            "owned_by": "openai",
-            "capabilities": ["chat", "tools"],
-            "context_window": 128000,
-            "pricing": {"input": 0.15, "output": 0.6},
-            "status": "available",
-        },
-        {
-            "id": "claude-3-5-haiku-20241022",
-            "owned_by": "anthropic",
-            "capabilities": ["chat", "tools"],
-            "context_window": 200000,
-            "pricing": {"input": 0.25, "output": 1.25},
-            "status": "available",
-        },
-    ]
-    return sdk_result({"status": "success", "models": models, "count": len(models)})
+    try:
+        from ai_proxy.providers.registry import list_all_models, get_all_providers
+    except ImportError:
+        return sdk_error("ai_proxy not available")
+
+    filter_provider = args.get("provider")
+    free_only = bool(args.get("free_only", False))
+    all_providers = get_all_providers()
+
+    models = list_all_models()
+
+    if filter_provider:
+        models = [m for m in models if m.get("provider") == filter_provider]
+    if free_only:
+        free_pids = {pid for pid, p in all_providers.items() if p.is_free}
+        models = [m for m in models if m.get("provider") in free_pids]
+
+    return sdk_result({
+        "status": "success",
+        "count": len(models),
+        "models": models,
+    })
 
 
 ALL_TOOLS = [check_quota, cost_report, list_models_catalog]

@@ -285,6 +285,7 @@ async def route_request(
     stream: bool = False,
     session_id: str | None = None,
     agent_name: str | None = None,
+    webllm: bool = False,
 ) -> ExecutorResult:
     """
     Route a request through a combo config. Tries targets in strategy order,
@@ -294,6 +295,7 @@ async def route_request(
     - Budget guard: skip targets if combo budget exceeded
     - Context relay: carry conversation context across provider switches
     - LKGP: remember last successful provider
+    - webllm (T026): prefer browser/Playwright providers when True
     """
     # Budget check
     if not budget_guard.check_budget(combo.id, combo.budget_usd):
@@ -305,6 +307,13 @@ async def route_request(
 
     targets = resolve_targets(combo)
     ordered = _apply_strategy(targets, combo.strategy, combo.id)
+
+    # T026: webllm mode — prefer browser/Playwright providers, fall back to all
+    if webllm or body.get("webllm"):
+        from ai_proxy.providers.registry import AuthType as _AT
+        browser_targets = [t for t in ordered if t.provider.auth_type == _AT.BROWSER]
+        ordered = browser_targets if browser_targets else ordered
+        body = {k: v for k, v in body.items() if k != "webllm"}  # strip meta field
 
     if not ordered:
         return ExecutorResult(
@@ -473,6 +482,7 @@ async def smart_route(
     budget_usd: float | None = None,
     session_id: str | None = None,
     agent_name: str | None = None,
+    webllm: bool = False,
 ) -> ExecutorResult:
     """
     4-tier free-first smart routing with budget guard.
@@ -552,7 +562,7 @@ async def smart_route(
         targets=ordered_targets,
         budget_usd=budget_usd,
     )
-    return await route_request(body, combo, stream=stream, session_id=session_id, agent_name=agent_name)
+    return await route_request(body, combo, stream=stream, session_id=session_id, agent_name=agent_name, webllm=webllm)
 
 
 def _combo_target_cost(t: ComboTarget) -> float:

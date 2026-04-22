@@ -1,7 +1,7 @@
 """
 API Format Translators — convert between OpenAI, Anthropic, and Gemini formats.
 
-Mirrors OmniRoute's open-sse/translator/: bidirectional request/response
+Bidirectional request/response
 translation so any client format can talk to any provider format.
 """
 from __future__ import annotations

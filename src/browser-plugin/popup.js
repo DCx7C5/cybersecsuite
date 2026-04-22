@@ -138,6 +138,8 @@ function initTabs() {
       const tab = `tab-${btn.dataset.tab}`;
       const el = $(tab);
       if (el) el.classList.add('active');
+      // T025: refresh target tab list when inject tab is opened
+      if (btn.dataset.tab === 'inject') refreshTargetTabs();
     };
   });
 }
@@ -177,6 +179,54 @@ function saveSettings() {
   });
 }
 
+// ── T025: Multi-tab targeting ─────────────────────────────────────────────────
+
+function refreshTargetTabs() {
+  const sel = $('inject-target-tab');
+  if (!sel) return;
+  chrome.runtime.sendMessage({ action: 'listTargetTabs' }, resp => {
+    if (chrome.runtime.lastError || !resp?.tabs) return;
+    const prev = sel.value;
+    sel.innerHTML = '<option value="active">Active tab (current)</option>';
+    for (const t of resp.tabs) {
+      const opt = document.createElement('option');
+      opt.value = String(t.tabId);
+      opt.textContent = `${t.hostname}${t.active ? ' ✓' : ''} — ${(t.title || '').slice(0, 35)}`;
+      sel.appendChild(opt);
+    }
+    if (prev !== 'active') sel.value = prev;
+  });
+}
+
+/** Resolves the selected target tab ID via cb(tabId). Active tab → query; specific → parse. */
+function getTargetTabId(cb) {
+  const val = $('inject-target-tab')?.value;
+  if (!val || val === 'active') {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => cb(tabs[0]?.id || null));
+  } else {
+    cb(parseInt(val, 10));
+  }
+}
+
+/** Send a message to the selected target tab (via background for cross-tab support). */
+function sendToTargetTab(msg, callback) {
+  const val = $('inject-target-tab')?.value;
+  if (!val || val === 'active') {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (!tabs[0]?.id) { callback({ ok: false, error: 'no active tab' }); return; }
+      chrome.tabs.sendMessage(tabs[0].id, msg, resp => {
+        if (chrome.runtime.lastError) callback({ ok: false, error: chrome.runtime.lastError.message });
+        else callback(resp || { ok: false, error: 'no response' });
+      });
+    });
+  } else {
+    chrome.runtime.sendMessage({ action: 'injectToTab', tabId: parseInt(val, 10), msg }, resp => {
+      if (chrome.runtime.lastError) callback({ ok: false, error: chrome.runtime.lastError.message });
+      else callback(resp || { ok: false, error: 'no response' });
+    });
+  }
+}
+
 // ── Inject ────────────────────────────────────────────────────────────────────
 
 function injectStream() {
@@ -189,11 +239,7 @@ function injectStream() {
   };
 
   setInjectStatus('Streaming…', 'info');
-  chrome.runtime.sendMessage({ action: 'injectPromptManual', prompt, options }, resp => {
-    if (chrome.runtime.lastError) {
-      setInjectStatus('Error: ' + chrome.runtime.lastError.message, 'err');
-      return;
-    }
+  sendToTargetTab({ action: 'injectPrompt', prompt, options }, resp => {
     if (resp?.ok) {
       stats.streams++;
       updateStats();
@@ -209,28 +255,23 @@ function injectText() {
   const text = $('inject-prompt')?.value?.trim();
   if (!text) { setInjectStatus('Enter text first', 'err'); return; }
 
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    if (!tabs[0]?.id) return;
-    chrome.tabs.sendMessage(tabs[0].id, {
-      action: 'injectText',
-      text,
-      options: { typingSpeedMs: parseInt($('inject-speed')?.value || '28', 10) },
-    }, resp => {
-      if (resp?.ok) {
-        stats.streams++;
-        updateStats();
-        setInjectStatus(`Typed ${resp.length} chars`, 'ok');
-      } else {
-        setInjectStatus('Error: ' + (resp?.error || 'no active form'), 'err');
-      }
-    });
+  sendToTargetTab({
+    action: 'injectText',
+    text,
+    options: { typingSpeedMs: parseInt($('inject-speed')?.value || '28', 10) },
+  }, resp => {
+    if (resp?.ok) {
+      stats.streams++;
+      updateStats();
+      setInjectStatus(`Typed ${resp.length} chars`, 'ok');
+    } else {
+      setInjectStatus('Error: ' + (resp?.error || 'no active form'), 'err');
+    }
   });
 }
 
 function abortInject() {
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    if (tabs[0]?.id) chrome.tabs.sendMessage(tabs[0].id, { action: 'abortStream' });
-  });
+  sendToTargetTab({ action: 'abortStream' }, () => {});
   setInjectStatus('Aborted', 'warn');
 }
 
@@ -242,20 +283,17 @@ function setInjectStatus(msg, kind = '') {
 }
 
 function detectForm() {
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    if (!tabs[0]?.id) { setText('form-info', 'No active tab'); return; }
-    chrome.tabs.sendMessage(tabs[0].id, { action: 'detectForm' }, resp => {
-      if (chrome.runtime.lastError) { setText('form-info', 'Content script not ready'); return; }
-      if (resp?.found) {
-        const f = resp.form;
-        $('form-info').textContent = `<${f.tag}${f.id ? ' #' + f.id : ''}${f.placeholder ? ` placeholder="${f.placeholder}"` : ''}>\n${JSON.stringify(f.rect, null, 2)}`;
-        stats.forms++;
-        updateStats();
-        addLog(`Form detected: <${f.tag}> ${f.placeholder || ''}`, 'ok');
-      } else {
-        setText('form-info', 'No AI chat input found on this page');
-      }
-    });
+  sendToTargetTab({ action: 'detectForm' }, resp => {
+    if (!resp || resp.error) { setText('form-info', resp?.error || 'Content script not ready'); return; }
+    if (resp?.found) {
+      const f = resp.form;
+      $('form-info').textContent = `<${f.tag}${f.id ? ' #' + f.id : ''}${f.placeholder ? ` placeholder="${f.placeholder}"` : ''}>\n${JSON.stringify(f.rect, null, 2)}`;
+      stats.forms++;
+      updateStats();
+      addLog(`Form detected: <${f.tag}> ${f.placeholder || ''}`, 'ok');
+    } else {
+      setText('form-info', 'No AI chat input found on this page');
+    }
   });
 }
 
@@ -297,6 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('btn-inject-text')?.addEventListener('click', injectText);
   $('btn-inject-abort')?.addEventListener('click', abortInject);
   $('btn-detect-form')?.addEventListener('click', detectForm);
+  $('btn-refresh-tabs')?.addEventListener('click', refreshTargetTabs);  // T025
 
   // Load current config from background
   chrome.runtime.sendMessage({ action: 'getStatus' }, resp => {

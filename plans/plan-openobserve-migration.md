@@ -79,7 +79,7 @@ After all four tables are confirmed dropped:
 ### Phase 6 — Dashboard OO stats panel fix
 **File:** `src/dashboard/api/opensearch_stats.py`
 
-Currently calls `ensure_streams()` and returns dummy `docs=0`. Replace with real OO stats by calling the OpenObserve stream stats API (`/api/{org}/{stream}/_stats`) for each stream and returning actual doc count + size.
+Currently, calls `ensure_streams()` and returns dummy `docs=0`. Replace with real OO stats by calling the OpenObserve stream stats API (`/api/{org}/{stream}/_stats`) for each stream and returning actual doc count + size.
 
 ---
 

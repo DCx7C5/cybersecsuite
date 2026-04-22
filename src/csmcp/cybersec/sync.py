@@ -1,31 +1,44 @@
-"""Sync and pricing tools — SDK in-process MCP server module."""
+"""Sync tools — reload pricing/provider config from disk and optional upstream sources."""
 from __future__ import annotations
 
+import os
+import time
 from typing import Any
 
 from csmcp._sdk_compat import tool
-from csmcp.cybersec.helpers import JsonDict, sdk_result
+from csmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
 
 
-@tool("sync_pricing", "Sync pricing data from external source without overwriting user-set prices.", {})
+@tool(
+    "sync_pricing",
+    "Reload provider pricing and custom provider config from disk. Returns count of loaded providers.",
+    {"config_path": {"type": "string", "nullable": True}},
+)
 async def sync_pricing(args: dict[str, Any]) -> JsonDict:
-    # Stub: simulate pricing sync
-    sync_status = {
+    try:
+        from ai_proxy.providers.registry import load_custom_providers
+    except ImportError:
+        return sdk_error("ai_proxy not available")
+
+    config_path = args.get("config_path") or os.environ.get(
+        "CYBERSEC_PROVIDERS_CONFIG",
+        os.path.expanduser("~/.cybersecsuite/providers.yaml"),
+    )
+
+    t0 = time.perf_counter()
+    try:
+        count = load_custom_providers(config_path)
+    except Exception as exc:
+        return sdk_error(f"Failed to load providers from '{config_path}': {exc}")
+
+    elapsed_ms = round((time.perf_counter() - t0) * 1000, 1)
+
+    return sdk_result({
         "status": "success",
-        "synced_at": "2026-04-19T12:00:00Z",
-        "source": "LiteLLM API",
-        "models_updated": 45,
-        "providers_updated": 12,
-        "new_models_added": 3,
-        "pricing_changes": [
-            {"model": "gpt-4o", "old_input": 2.0, "new_input": 2.5, "change_percent": 25.0},
-            {"model": "claude-3-5-sonnet-20241022", "old_input": 2.5, "new_input": 3.0, "change_percent": 20.0},
-        ],
-        "user_overrides_preserved": 5,
-        "errors": [],
-        "next_sync_available": "2026-04-20T12:00:00Z",
-    }
-    return sdk_result({"status": "success", "sync_result": sync_status})
+        "config_path": config_path,
+        "providers_loaded": count,
+        "elapsed_ms": elapsed_ms,
+    })
 
 
 ALL_TOOLS = [sync_pricing]

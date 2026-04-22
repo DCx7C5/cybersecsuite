@@ -25,7 +25,7 @@ from pathlib import Path
 import importlib.util as _ilu
 _spec = _ilu.spec_from_file_location(
     "wsm",
-    Path(__file__).parent.parent / "worktree-session-manager.py",
+    Path(__file__).parent.parent / "scripts" / "worktree-session-manager.py",
 )
 wsm = _ilu.module_from_spec(_spec)  # type: ignore[assignment]
 _spec.loader.exec_module(wsm)  # type: ignore[union-attr]
@@ -550,7 +550,7 @@ class TestCLI(unittest.TestCase):
         self.repo.mkdir()
         _init_repo(self.repo)
         self.tpl = _make_template_dir(self.base)
-        self.manager = Path(__file__).parent.parent / "worktree-session-manager.py"
+        self.manager = Path(__file__).parent.parent / "scripts" / "worktree-session-manager.py"
 
     def tearDown(self):
         self._tmp.cleanup()

@@ -3,7 +3,7 @@ Agent SDK Integration — bridges cybersecsuite agents with the Claude Agent SDK
 
 Loads all .claude/agents/*.md agent definitions and exposes them as:
   1. SDK AgentDefinitions for subagent dispatch
-  2. All 36 MCP tools via csmcp (cybersec + dystopian) in-process
+  2. All 83 MCP tools via csmcp (cybersec) in-process
   3. A high-level query runner for programmatic agent invocation
 
 Caching
@@ -174,15 +174,16 @@ def build_agent_definitions() -> dict[str, AgentDefinition]:
 # ── Hooks ────────────────────────────────────────────────────────────────────
 
 
-_AI_HOOKS_DIR = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "/home/daen/Projects/AI")
+_AI_HOOKS_DIR = os.environ.get("CYBERSEC_AI_HOOKS_DIR")
 _HOOKS_OK = False
 
 try:
-    import sys as _sys
-    if _AI_HOOKS_DIR not in _sys.path:
-        _sys.path.insert(0, _AI_HOOKS_DIR)
-    from hooks.database import write_scoped_entry_async  # type: ignore[import]
-    _HOOKS_OK = True
+    if _AI_HOOKS_DIR:
+        import sys as _sys
+        if _AI_HOOKS_DIR not in _sys.path:
+            _sys.path.insert(0, _AI_HOOKS_DIR)
+        from hooks.database import write_scoped_entry_async  # type: ignore[import]
+        _HOOKS_OK = True
 except ImportError:
     pass
 
@@ -225,7 +226,7 @@ def build_agent_options(
 
     Args:
         extra_tools: Additional built-in tool names to include (bypasses cache).
-        include_mcp: Include all csmcp servers (cybersec + dystopian, 36 tools).
+        include_mcp: Include all csmcp servers (83 tools).
     """
     global _OPTIONS_CACHE
 
@@ -349,6 +350,7 @@ async def run_agent_query(
 
     full_prompt = f"{agent_context}{prompt}"
     result_text: str | None = None
+    captured: str | None = None
 
     logger.debug("run_agent_query: agent=%s", agent_name)
 

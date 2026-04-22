@@ -82,7 +82,7 @@ async def seed_nist_ai_rmf() -> Dict[str, Any]:
 
 
 async def seed_mitre_techniques() -> Dict[str, Any]:
-    """Idempotent seed of MITRE ATT&CK techniques from data/fixtures/mitre_techniques.json."""
+    """Idempotent seed of MITRE ATT&CK techniques from src/db/fixtures/mitre_techniques.json."""
     from db.models.mitre_technique import MitreTechniqueIntel
 
     data: list = json.loads((_INTEL_FIXTURES_DIR / "mitre_techniques.json").read_text())
@@ -108,7 +108,7 @@ async def seed_mitre_techniques() -> Dict[str, Any]:
 
 
 async def seed_mitre_actors() -> Dict[str, Any]:
-    """Idempotent seed of MITRE ATT&CK threat actors from data/fixtures/mitre_actors.json."""
+    """Idempotent seed of MITRE ATT&CK threat actors from src/db/fixtures/mitre_actors.json."""
     from db.models.mitre_actor import MitreThreatActorIntel
 
     data: list = json.loads((_INTEL_FIXTURES_DIR / "mitre_actors.json").read_text())
@@ -134,7 +134,7 @@ async def seed_mitre_actors() -> Dict[str, Any]:
 
 
 async def seed_mitre_software() -> Dict[str, Any]:
-    """Idempotent seed of MITRE ATT&CK software families from data/fixtures/mitre_software.json."""
+    """Idempotent seed of MITRE ATT&CK software families from src/db/fixtures/mitre_software.json."""
     from db.models.mitre_software import MitreSoftwareFamilyIntel
 
     data: list = json.loads((_INTEL_FIXTURES_DIR / "mitre_software.json").read_text())
@@ -159,7 +159,7 @@ async def seed_mitre_software() -> Dict[str, Any]:
 
 
 async def seed_cwe() -> Dict[str, Any]:
-    """Idempotent seed of CWE weaknesses from data/fixtures/cwe_entries.json."""
+    """Idempotent seed of CWE weaknesses from src/db/fixtures/cwe_entries.json."""
     from db.models.cwe import CWEIntel
 
     data: list = json.loads((_INTEL_FIXTURES_DIR / "cwe_entries.json").read_text())
@@ -183,7 +183,7 @@ async def seed_cwe() -> Dict[str, Any]:
 
 
 async def seed_capec() -> Dict[str, Any]:
-    """Idempotent seed of CAPEC attack patterns from data/fixtures/capec_entries.json."""
+    """Idempotent seed of CAPEC attack patterns from src/db/fixtures/capec_entries.json."""
     from db.models.capec import CapecAttackPatternIntel
 
     data: list = json.loads((_INTEL_FIXTURES_DIR / "capec_entries.json").read_text())
@@ -208,7 +208,7 @@ async def seed_capec() -> Dict[str, Any]:
 
 
 async def seed_cve() -> Dict[str, Any]:
-    """Idempotent seed of CVE entries from data/fixtures/cve_entries.json."""
+    """Idempotent seed of CVE entries from src/db/fixtures/cve_entries.json."""
     from db.models.cve import CVEIntel
 
     data: list = json.loads((_INTEL_FIXTURES_DIR / "cve_entries.json").read_text())

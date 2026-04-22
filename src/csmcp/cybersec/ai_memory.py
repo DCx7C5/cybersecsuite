@@ -13,7 +13,11 @@ from typing import Any
 from csmcp._sdk_compat import tool
 from csmcp.cybersec.helpers import JsonDict, _get_current_scope, sdk_result, sdk_error
 
-_VAULT_PATH = os.getenv("CYBERSEC_VAULT_PATH", "./data/vault")
+_DEFAULT_VAULT_PATH = str(
+    Path(os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))).expanduser()
+    / "vault"
+)
+_VAULT_PATH = os.getenv("CYBERSEC_VAULT_PATH", _DEFAULT_VAULT_PATH)
 
 # Fallback in-memory store used when disk writes fail
 _MEMORY_STORE: dict[str, list[dict[str, Any]]] = {}

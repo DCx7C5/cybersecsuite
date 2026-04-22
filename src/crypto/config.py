@@ -90,7 +90,7 @@ class SecurityConfig:
 class AppSettings:
     """Main application settings container."""
     agent: str = "cybersec-agent"
-    version: str = "1.0.0"
+    version: str = "0.1.0"
     crypto: CryptoConfig = field(default_factory=CryptoConfig)
     signing: SigningConfig = field(default_factory=SigningConfig)
     artifacts: ArtifactsConfig = field(default_factory=ArtifactsConfig)
@@ -132,7 +132,7 @@ class AppSettings:
 
         return cls(
             agent=data.get("agent", "cybersec-agent"),
-            version=data.get("version", "1.0.0"),
+            version=data.get("version", "0.1.0"),
             crypto=crypto,
             signing=signing,
             artifacts=artifacts,
@@ -153,8 +153,8 @@ class AppSettings:
             Loaded AppSettings instance
         """
         if path is None:
-            # Default to project root settings.json
-            path = Path(__file__).parent.parent.parent / "settings.json"
+            # Default to project .claude/settings.json
+            path = Path(__file__).parent.parent.parent / ".claude" / "settings.json"
         else:
             path = Path(path)
 
@@ -225,7 +225,7 @@ class AppSettings:
     def save(self, path: Optional[str] = None) -> None:
         """Save settings to JSON file."""
         if path is None:
-            path = Path(__file__).parent.parent.parent / "settings.json"
+            path = Path(__file__).parent.parent.parent / ".claude" / "settings.json"
         else:
             path = Path(path)
 

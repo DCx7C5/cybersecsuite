@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../Anthropic-Cybersecurity-Skills/.idea/Anthropic-Cybersecurity-Skills.iml" filepath="$PROJECT_DIR$/../Anthropic-Cybersecurity-Skills/.idea/Anthropic-Cybersecurity-Skills.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ai-marketplace/.idea/ai-marketplace.iml" filepath="$PROJECT_DIR$/../ai-marketplace/.idea/ai-marketplace.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AI/blueprints/.idea/blueprints.iml" filepath="$PROJECT_DIR$/../AI/blueprints/.idea/blueprints.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ccs-browser-plugin/.idea/ccs-browser-plugin.iml" filepath="$PROJECT_DIR$/../ccs-browser-plugin/.idea/ccs-browser-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/browser-plugin/.idea/browser-plugin.iml" filepath="$PROJECT_DIR$/src/browser-plugin/.idea/browser-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite@1.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite@1.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AI/mcps/.idea/mcps.iml" filepath="$PROJECT_DIR$/../AI/mcps/.idea/mcps.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AI/plugins/.idea/plugins.iml" filepath="$PROJECT_DIR$/../AI/plugins/.idea/plugins.iml" />
     </modules>
   </component>
 </project>

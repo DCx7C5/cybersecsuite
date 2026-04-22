@@ -1,0 +1,54 @@
+# JetBrains AI Assistant — excluded from AI context
+# Syntax: same as .gitignore
+
+# Compiled / cache
+__pycache__/
+*.py[cod]
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments & dependencies
+.venv/
+node_modules/
+*.egg-info/
+
+# Fixtures & seed data (large JSON, not useful as AI context)
+src/db/fixtures/
+./data/
+
+# Secrets & credentials
+.env
+.env.*
+secrets/
+*.key
+*.pem
+*.p12
+uv.lock
+
+# IDE state
+.idea/
+.vscode/
+
+# Build / dist
+dist/
+build/
+*.whl
+*.tar.gz
+*.zip
+
+# Logs & temp
+logs/
+*.log
+tmp/
+temp/
+
+# Test artefacts
+htmlcov/
+coverage.xml
+.coverage
+
+# Large / binary assets
+*.js.map
+dump.rdb

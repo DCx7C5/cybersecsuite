@@ -47,6 +47,11 @@ from anthropic.types.beta import (
 from anthropic.lib.tools._beta_functions import BetaFunctionToolResultType
 from typing_extensions import override
 
+_DEFAULT_VAULT_PATH = str(
+    Path(os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))).expanduser()
+    / "vault"
+)
+
 # Vault-level path aliases — /memories/<alias> → wiki/<target>
 _VAULT_ALIASES: dict[str, str] = {
     "entities": "wiki/entities",
@@ -79,9 +84,9 @@ class ObsidianMemoryBackend(BetaAbstractMemoryTool):
         ).until_done()
     """
 
-    def __init__(self, vault_path: str | Path = "./data/vault") -> None:
+    def __init__(self, vault_path: str | Path | None = None) -> None:
         super().__init__()
-        self.vault_path = Path(vault_path).resolve()
+        self.vault_path = Path(vault_path if vault_path is not None else _DEFAULT_VAULT_PATH).expanduser().resolve()
         self.memory_root = self.vault_path / "memories"
         self.memory_root.mkdir(parents=True, exist_ok=True, mode=_DIR_CREATE_MODE)
         # Ensure wiki dir exists for aliases

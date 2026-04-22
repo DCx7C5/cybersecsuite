@@ -1,6 +1,6 @@
 """AI proxy routing tools — SDK in-process MCP server module.
 
-Wraps ai_proxy (OmniRoute) with 10 tools mirroring the FastMCP implementation.
+Wraps ai_proxy with 10 MCP tools.
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ async def proxy_chat(args: dict[str, Any]) -> JsonDict:
     try:
         from ai_proxy.routing.combo import smart_route, route_request, ComboConfig, ComboTarget, Strategy
     except ImportError:
-        return sdk_error("ai_proxy not available — ensure OmniRoute is in PYTHONPATH")
+        return sdk_error("ai_proxy not available")
 
     prompt = args["prompt"]
     model = args.get("model", "gpt-4o-mini")

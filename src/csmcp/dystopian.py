@@ -172,7 +172,7 @@ _ALL_DYSTOPIAN_TOOLS = [
 
 dystopian_server = create_sdk_mcp_server(
     name="dystopian",
-    version="1.0.0",
+    version="0.1.0",
     tools=_ALL_DYSTOPIAN_TOOLS,
 )
 

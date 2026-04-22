@@ -12,13 +12,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import SESSIONS_DIR, ensure_structure, get_project_dir, audit, emit, hook_context
+from _utils import get_app_home, SESSIONS_DIR, ensure_structure, get_project_dir, audit, emit, hook_context
 
 MARKER = get_project_dir() / ".claude" / ".initialized"
 
 
 async def main():
     project_dir = get_project_dir()
+    app_home = get_app_home()
 
     if MARKER.exists():
         emit(hook_context("✅ **CyberSecSuite already initialized** — skipping FirstInit."))
@@ -26,9 +27,9 @@ async def main():
 
     ensure_structure()
 
-    # Create memory hierarchy
+    # Create memory hierarchy under app home
     for layer in ["system", "project", "session"]:
-        (project_dir / ".memory" / layer).mkdir(parents=True, exist_ok=True)
+        (app_home / "memory" / layer).mkdir(parents=True, exist_ok=True)
 
     # System baseline
     sys_info = {
@@ -39,14 +40,16 @@ async def main():
         "python":      platform.python_version(),
         "initialized": datetime.now(timezone.utc).isoformat(),
         "project_root": str(project_dir),
+        "app_home": str(app_home),
     }
 
-    sys_dir = project_dir / ".memory" / "system"
+    sys_dir = app_home / "memory" / "system"
     (sys_dir / "baseline.json").write_text(json.dumps(sys_info, indent=2))
     (sys_dir / "scope.md").write_text(
         f"# CyberSecSuite Scope\n\n"
         f"Host: `{sys_info['hostname']}`  \nOS: `{sys_info['os']} {sys_info['os_version']}`  \n"
-        f"Project: `{project_dir}`\n\n"
+        f"Project: `{project_dir}`\n"
+        f"App home: `{app_home}`\n\n"
         "## Active Agents\n- cybersec-agent (SDK → .claude/agents/ → AI Proxy)\n"
     )
 
@@ -62,7 +65,8 @@ async def main():
     emit(hook_context(
         f"🚀 **CYBERSECSUITE INITIALIZED**\n\n"
         f"Host: `{sys_info['hostname']}` | OS: `{sys_info['os']} {sys_info['os_version']}`\n"
-        f"Project root: `{project_dir}`\n\n"
+        f"Project root: `{project_dir}`\n"
+        f"App home: `{app_home}`\n\n"
         "**Memory layers created:** System → Project → Session\n"
         "**A2A agent registered:** CybersecA2AAgent (SDK routes to .claude/agents/)\n\n"
         "Ready for investigation."

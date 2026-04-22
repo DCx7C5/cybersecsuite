@@ -425,7 +425,7 @@ class TestWSMCli:
         import importlib.util
         spec = importlib.util.spec_from_file_location(
             "wsm",
-            Path(__file__).parent.parent / "worktree-session-manager.py",
+            Path(__file__).parent.parent / "scripts" / "worktree-session-manager.py",
         )
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

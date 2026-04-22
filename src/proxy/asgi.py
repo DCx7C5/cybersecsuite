@@ -17,8 +17,8 @@ Ports (env-configurable):
     ASGI_HOST      — bind address     (default: 0.0.0.0)
     ASGI_PORT      — HTTP port        (default: 8000)
     ASGI_TLS_PORT  — HTTPS port       (default: 8433)
-    ASGI_TLS_CERT  — PEM cert path    (default: ~/.omniroute/certs/cert.pem)
-    ASGI_TLS_KEY   — PEM key path     (default: ~/.omniroute/certs/key.pem)
+    ASGI_TLS_CERT  — PEM cert path    (default: ~/.cybersecsuite/certs/cert.pem)
+    ASGI_TLS_KEY   — PEM key path     (default: ~/.cybersecsuite/certs/key.pem)
 """
 
 from __future__ import annotations
@@ -56,11 +56,11 @@ ASGI_PORT = int(os.environ.get("ASGI_PORT", "8000"))
 ASGI_TLS_PORT = int(os.environ.get("ASGI_TLS_PORT", "8433"))
 ASGI_TLS_CERT = os.environ.get(
     "ASGI_TLS_CERT",
-    str(Path.home() / ".omniroute" / "certs" / "cert.pem"),
+    str(Path.home() / ".cybersecsuite" / "certs" / "cert.pem"),
 )
 ASGI_TLS_KEY = os.environ.get(
     "ASGI_TLS_KEY",
-    str(Path.home() / ".omniroute" / "certs" / "key.pem"),
+    str(Path.home() / ".cybersecsuite" / "certs" / "key.pem"),
 )
 
 # Check if TLS is available

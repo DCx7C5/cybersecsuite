@@ -8,13 +8,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit
+from _utils import ensure_structure, get_app_home, get_project_dir, get_session_dir, audit, append_file, emit
 
 
 async def main():
     ensure_structure()
     session_dir = get_session_dir()
     project_dir = get_project_dir()
+    app_home = get_app_home()
 
     if not session_dir:
         emit({"status": "warning", "message": "No active session to end."})
@@ -24,15 +25,14 @@ async def main():
     session_files = ["findings.md", "iocs.md", "timeline.md", "artifacts.md"]
 
     # Read session files concurrently
-    loop = asyncio.get_running_loop()
     results = await asyncio.gather(*[
-        loop.run_in_executor(None, _read_safe, session_dir / f)
+        asyncio.to_thread(_read_safe, session_dir / f)
         for f in session_files
     ])
     file_data = dict(zip(session_files, results))
 
-    # Write session summary to project layer
-    summary_path = project_dir / ".memory" / "project" / "last_session.md"
+    # Write session summary to project memory layer in app home
+    summary_path = app_home / "memory" / "project" / "last_session.md"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_lines = [
         f"# Session Summary — {end_time.strftime('%Y-%m-%d %H:%M UTC')}",
@@ -42,7 +42,8 @@ async def main():
     for fname, content in file_data.items():
         if content:
             summary_lines.append(f"## {fname}\n{content[:600]}")
-    await loop.run_in_executor(None, summary_path.write_text, "\n".join(summary_lines), "utf-8")
+    text = "\n".join(summary_lines)
+    await asyncio.to_thread(lambda: summary_path.write_text(text, "utf-8"))
 
     # Changelog
     changelog = project_dir / "session_changes.log"

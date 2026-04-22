@@ -9,13 +9,13 @@ import httpx
 
 _client: httpx.AsyncClient | None = None
 
-OPENOBSERVE_HOST = os.environ.get("OPENOBSERVE_HOST", "http://localhost:5080")
+OPENOBSERVE_HOST = os.environ.get("OPENOBSERVE_HOST", "http://127.0.0.1:5080")
 OPENOBSERVE_ORG = os.environ.get("OPENOBSERVE_ORG", "default")
 OPENOBSERVE_EMAIL = os.environ.get("OPENOBSERVE_EMAIL", "admin@cybersec.local")
 OPENOBSERVE_PASSWORD = os.environ.get("OPENOBSERVE_PASSWORD", "cYb3rS3c!")
 
 
-def get_client() -> httpx.AsyncClient:
+def get_client() -> httpx.AsyncClient | None:
     """Return the module-level async httpx client, creating it on first call."""
     global _client
     if _client is None:
@@ -37,7 +37,9 @@ async def close_client() -> None:
 
 async def get_health() -> dict[str, Any]:
     """Check OpenObserve health."""
-    client = get_client()
+    client: httpx.AsyncClient | None = get_client()
+    if client is None:
+        return {"status": "unavailable", "host": OPENOBSERVE_HOST, "error": "client not initialized"}
     try:
         resp = await client.get("/healthz")
         if resp.status_code == 200:

@@ -193,6 +193,14 @@ from dashboard.api.qol import (
     api_qol_presets_get,
     api_qol_preset_save,
 )
+from dashboard.api.marketplace import (
+    api_marketplace_list,
+    api_marketplace_installed,
+    api_marketplace_get,
+    api_marketplace_install,
+    api_marketplace_uninstall,
+    api_marketplace_generate_agent,
+)
 
 
 def create_dashboard_router() -> Router:
@@ -338,6 +346,13 @@ def create_dashboard_router() -> Router:
             Route("/api/qol", api_qol_delete, methods=["DELETE"]),
             Route("/api/qol/presets", api_qol_presets_get, methods=["GET"]),
             Route("/api/qol/presets/{name}", api_qol_preset_save, methods=["POST"]),
+            # Marketplace
+            Route("/api/marketplace/installed", api_marketplace_installed, methods=["GET"]),
+            Route("/api/marketplace/generate-agent", api_marketplace_generate_agent, methods=["POST"]),
+            Route("/api/marketplace", api_marketplace_list, methods=["GET"]),
+            Route("/api/marketplace/{item_id}", api_marketplace_get, methods=["GET"]),
+            Route("/api/marketplace/{item_id}/install", api_marketplace_install, methods=["POST"]),
+            Route("/api/marketplace/{item_id}/install", api_marketplace_uninstall, methods=["DELETE"]),
             # Local LLM
             Route("/api/local-llm/status", api_local_llm_status, methods=["GET"]),
             Route("/api/local-llm/activate", api_local_llm_activate, methods=["POST"]),

@@ -1,7 +1,7 @@
 """asyncpg helpers for llm_sessions and llm_calls.
 
 These helpers bypass Tortoise ORM so they can be called from
-worktree-session-manager.py (which may run outside the ASGI process)
+scripts/worktree-session-manager.py (which may run outside the ASGI process)
 and from fire-and-forget background tasks.
 """
 from __future__ import annotations
@@ -78,47 +78,6 @@ async def _ensure_session_exists(pool, sid: str) -> None:
         datetime.now(timezone.utc),
     )
 
-
-async def persist_call(
-    *,
-    sid: str,
-    model: str,
-    input_tokens: int,
-    output_tokens: int,
-    cache_read_tokens: int = 0,
-    cache_write_tokens: int = 0,
-    cost_usd: Decimal,
-    latency_ms: float,
-    stream: bool,
-    success: bool,
-    error: str | None = None,
-    request_id: str | None = None,
-) -> None:
-    """Insert one llm_calls row. Intended to be called as a fire-and-forget task."""
-    pool = await get_pool()
-    await _ensure_session_exists(pool, sid)
-    await pool.execute(
-        """
-        INSERT INTO llm_calls
-          (sid, model, input_tokens, output_tokens,
-           cache_read_tokens, cache_write_tokens,
-           cost_usd, latency_ms, stream, success, error, request_id, called_at)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-        """,
-        sid,
-        model,
-        input_tokens,
-        output_tokens,
-        cache_read_tokens,
-        cache_write_tokens,
-        float(cost_usd),
-        latency_ms,
-        stream,
-        success,
-        error,
-        request_id,
-        datetime.now(timezone.utc),
-    )
 
 
 async def close_session(sid: str) -> dict[str, Any]:

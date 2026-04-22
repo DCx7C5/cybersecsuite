@@ -39,7 +39,7 @@ from anthropic.types.beta import (
 from anthropic.lib.tools._beta_functions import BetaFunctionToolResultType
 from typing_extensions import override
 
-from memory.backends.obsidian import _VAULT_ALIASES
+from memory.backends.obsidian import _VAULT_ALIASES, _DEFAULT_VAULT_PATH
 
 
 class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
@@ -54,9 +54,9 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         # pass backend to tools= in client.beta.messages.run_tools()
     """
 
-    def __init__(self, vault_path: str | Path = "./data/vault") -> None:
+    def __init__(self, vault_path: str | Path | None = None) -> None:
         super().__init__()
-        self.vault_path = Path(vault_path).resolve()
+        self.vault_path = Path(vault_path if vault_path is not None else _DEFAULT_VAULT_PATH).expanduser().resolve()
         self.memory_root = self.vault_path / "memories"
 
     async def _ensure_dirs(self) -> None:

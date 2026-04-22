@@ -22,6 +22,8 @@ from .advanced import (
     _sdk_lab,
 )
 from .settings import _settings, _settings_cybersecsuite, _crypto, _qol_controls
+from .agent_factory import _marketplace_agent_factory
+from .marketplace import _marketplace
 
 __all__ = [
     # Platform
@@ -66,6 +68,8 @@ __all__ = [
     "_settings_cybersecsuite",
     "_crypto",
     "_qol_controls",
+    "_marketplace_agent_factory",
+    "_marketplace",
     "all_panels",
 ]
 
@@ -108,4 +112,6 @@ def all_panels() -> str:
         + _templates()
         + _flowgraph()
         + _sdk_lab()
+        + _marketplace()
+        + _marketplace_agent_factory()
     )
