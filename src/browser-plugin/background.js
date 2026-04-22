@@ -42,8 +42,8 @@ const DEFAULT_CFG = {
 
 async function loadCfg() {
   return new Promise(resolve => {
-    chrome.storage.local.get(['ccs_cfg'], d => {
-      cfg = { ...DEFAULT_CFG, ...(d.ccs_cfg || {}) };
+    chrome.storage.local.get(['css_cfg'], d => {
+      cfg = { ...DEFAULT_CFG, ...(d.css_cfg || {}) };
       resolve(cfg);
     });
   });
@@ -51,7 +51,7 @@ async function loadCfg() {
 
 async function saveCfg(patch) {
   cfg = { ...cfg, ...patch };
-  return new Promise(resolve => chrome.storage.local.set({ ccs_cfg: cfg }, resolve));
+  return new Promise(resolve => chrome.storage.local.set({ css_cfg: cfg }, resolve));
 }
 
 // ── Domain activation ─────────────────────────────────────────────────────
@@ -140,6 +140,56 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
       });
       return true;
 
+    // T025: list all tabs that have a detected form (incl. non-focused tabs)
+    case 'listTargetTabs':
+      chrome.tabs.query({}, tabs => {
+        const targets = tabs
+          .filter(t => t.id && detectedForms[t.id])
+          .map(t => {
+            let hostname = '';
+            try { hostname = new URL(t.url || '').hostname; } catch (_) { hostname = t.url || ''; }
+            return {
+              tabId: t.id,
+              title: t.title || '',
+              hostname,
+              active: t.active,
+              form: detectedForms[t.id]?.form,
+            };
+          });
+        respond({ tabs: targets });
+      });
+      return true;
+
+    // T025: forward an inject/detect/abort message to a specific tab by ID
+    case 'injectToTab':
+      if (!req.tabId) { respond({ ok: false, error: 'no tabId' }); break; }
+      chrome.tabs.sendMessage(req.tabId, req.msg, msgResp => {
+        if (chrome.runtime.lastError) {
+          respond({ ok: false, error: chrome.runtime.lastError.message });
+        } else {
+          respond(msgResp || { ok: false, error: 'no response' });
+        }
+      });
+      return true;
+
+    // Forward injectPromptManual to the active tab (keeps existing popup.js working)
+    case 'injectPromptManual':
+      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        if (!tabs[0]?.id) { respond({ ok: false, error: 'no active tab' }); return; }
+        chrome.tabs.sendMessage(tabs[0].id, {
+          action: 'injectPrompt',
+          prompt: req.prompt,
+          options: req.options || {},
+        }, msgResp => {
+          if (chrome.runtime.lastError) {
+            respond({ ok: false, error: chrome.runtime.lastError.message });
+          } else {
+            respond(msgResp || { ok: false });
+          }
+        });
+      });
+      return true;
+
     default:
       break;
   }
@@ -187,7 +237,7 @@ async function registerPluginWithDashboard() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        domain: 'ccs-browser-plugin',
+        domain: 'browser-plugin',
         version: '3.0',
         timestamp: Date.now(),
       }),

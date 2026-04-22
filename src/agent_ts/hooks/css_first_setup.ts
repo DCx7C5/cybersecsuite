@@ -6,7 +6,7 @@ import { repoRootFromHere, sendEvent } from "../ipc";
 /**
  * Setup hook — runs `make ccs-first-setup` once per machine/repo (sentinel).
  */
-export async function onCcsFirstSetup(payload: unknown): Promise<void> {
+export async function onCssFirstSetup(payload: unknown): Promise<void> {
   const root = repoRootFromHere();
   const sentinel = path.join(root, ".css-initialized");
   if (fs.existsSync(sentinel)) {

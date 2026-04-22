@@ -6,7 +6,7 @@
  */
 import { createRequire } from "module";
 import { startIpcServer, stopIpcServer } from "./ipc";
-import { onCcsFirstSetup } from "./hooks/ccs_first_setup";
+import { onCssFirstSetup } from "./hooks/css_first_setup";
 import { onSetup } from "./hooks/setup";
 import { onSessionEnd, onSessionStart } from "./hooks/session";
 import { onTeammateIdle } from "./hooks/team";
@@ -47,7 +47,7 @@ function tryRegisterClaudeCodeHooks(): void {
           WorktreeCreate: onWorktreeCreate,
           WorktreeRemove: onWorktreeRemove,
           // Non-standard: guarded first-run installer
-          CcsFirstSetup: onCcsFirstSetup,
+          CcsFirstSetup: onCssFirstSetup,
         });
       } catch (err) {
         console.warn("[agent_ts] Hook registration failed:", String(err));
