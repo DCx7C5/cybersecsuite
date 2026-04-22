@@ -6,7 +6,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from claude_agent_sdk import ClaudeSDKClient
+    pass
 
 logger = logging.getLogger("agent.client_pool")
 

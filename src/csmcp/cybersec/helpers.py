@@ -78,9 +78,10 @@ def get_project_dir(scope: ScopeState | None = None) -> Path:
 
 def get_session_dir(scope: ScopeState | None = None) -> Path | None:
     scope = scope or _get_current_scope()
-    if scope["session"]:
+    session_id = scope["session"]
+    if session_id:
         project_dir = get_project_dir(scope)
-        return project_dir / "sessions" / scope["session"]
+        return project_dir / "sessions" / session_id
     return None
 
 

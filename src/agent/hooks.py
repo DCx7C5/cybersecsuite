@@ -7,6 +7,7 @@ Provides four hooks for use in ClaudeAgentOptions.hooks:
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from agent import getLogger
 

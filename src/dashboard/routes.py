@@ -95,7 +95,7 @@ from dashboard.api.template_registry import (
 )
 from dashboard.api.sdk_tool import api_sdk_tool
 from dashboard.api.sdk_session import api_sdk_session_last, api_sdk_session_resume
-from dashboard.api.core import api_providers_hub, api_provider_set_enabled, api_dashboard_activity, api_plugin_register, api_plugin_status, _record_dashboard_activity
+from dashboard.api.core import api_providers_hub, api_provider_set_enabled, api_dashboard_activity, api_plugin_register, _record_dashboard_activity
 from dashboard.api.dbus import (
     api_dbus_notify,
     api_dbus_signal,

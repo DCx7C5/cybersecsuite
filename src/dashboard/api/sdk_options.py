@@ -1,14 +1,14 @@
 """SDK runtime options API endpoints."""
 from __future__ import annotations
 
-from typing import Any, Literal, Optional
+from typing import Optional
 from pydantic import BaseModel
 
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from agent.options_manager import RuntimeOptionsManager, Scope
+from agent.options_manager import RuntimeOptionsManager
 
 
 class OptionsUpdateRequest(BaseModel):
@@ -50,7 +50,7 @@ async def api_sdk_options_post(request: Request) -> JSONResponse:
     manager = RuntimeOptionsManager.get_instance()
     await manager.update(scope, scope_id, **update_data)
 
-    merged = await manager.resolve(scope_id=project_id)
+    merged = await manager.resolve(scope_id=scope_id)
     return JSONResponse(merged)
 
 

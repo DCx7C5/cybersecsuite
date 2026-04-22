@@ -9,6 +9,7 @@ Usage (mcp.json):
 from __future__ import annotations
 
 import asyncio
+import logging
 from csmcp import getLogger
 
 logger = getLogger("csmcp.dystopian_server")

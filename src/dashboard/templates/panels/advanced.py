@@ -1,6 +1,5 @@
 """Advanced Features panels (Chat, Workflows, etc)."""
 from .._components import (
-    simple_panel,
     tab_panel,
 )
 

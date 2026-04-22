@@ -252,7 +252,7 @@ def ssl_sign_csr(
     """Sign a CSR with a CA keypair, producing a signed certificate."""
     import datetime as dt
     from cryptography import x509
-    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives import serialization
     from cryptography.x509.oid import NameOID
 
     try:
@@ -266,7 +266,7 @@ def ssl_sign_csr(
         ca_cert_path = keys_path / f"ca-cert.{ca_name}.pem"
         if not ca_cert_path.exists():
             raise FileNotFoundError(f"CA cert not found: {ca_cert_path}")
-        ca_pub = serialization.load_pem_public_key(ca_cert_path.read_bytes())
+        _ = serialization.load_pem_public_key(ca_cert_path.read_bytes())
 
         # Load CSR.
         csr = x509.load_pem_x509_csr(Path(csr_path).read_bytes())

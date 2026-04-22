@@ -1,7 +1,6 @@
 """First-run setup and marketplace loader."""
 
 import json
-import os
 from pathlib import Path
 
 _CYBERSECSUITE_DIR = Path.home() / ".cybersecsuite"

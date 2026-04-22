@@ -1,3 +1,5 @@
+from typing import Any
+
 from tortoise import fields
 from tortoise.models import Model
 

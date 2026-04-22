@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import time
 import uuid
 from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -259,9 +257,9 @@ async def api_workflow_update(request: Request) -> JSONResponse:
         return JSONResponse({"error": "invalid JSON body"}, status_code=400)
     # Patch top-level scalar fields stored in the internal dict
     d = wf.to_dict()
-    for field in ("status", "current_step", "metadata"):
-        if field in body:
-            d[field] = body[field]
+    for attr in ("status", "current_step", "metadata"):
+        if attr in body:
+            d[attr] = body[attr]
     # Reflect back into the WorkflowRun object where possible
     if hasattr(wf, "status") and "status" in body:
         wf.status = body["status"]

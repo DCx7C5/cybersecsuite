@@ -20,13 +20,10 @@ from __future__ import annotations
 import os
 import shutil
 import time
-import uuid
 from pathlib import Path
-from typing import Any
 
 from anthropic.lib.tools._beta_builtin_memory_tool import (
     BetaAbstractMemoryTool,
-    _FILE_CREATE_MODE,
     _DIR_CREATE_MODE,
     _atomic_write_file,
     _read_file_content,
@@ -44,7 +41,6 @@ from anthropic.types.beta import (
     BetaMemoryTool20250818RenameCommand,
     BetaMemoryTool20250818StrReplaceCommand,
 )
-from anthropic.lib.tools._beta_functions import BetaFunctionToolResultType
 from typing_extensions import override
 
 _DEFAULT_VAULT_PATH = str(
@@ -186,7 +182,7 @@ class ObsidianMemoryBackend(BetaAbstractMemoryTool):
                 lines = split[s:e]
                 start = s + 1
 
-            numbered = [f"{str(i + start).rjust(LINE_NUMBER_WIDTH)}\t{l}" for i, l in enumerate(lines)]
+            numbered = [f"{str(i + start).rjust(LINE_NUMBER_WIDTH)}\t{ln}" for i, ln in enumerate(lines)]
             return f"Content of {command.path}:\n" + "\n".join(numbered)
 
         raise ToolError(f"Unsupported file type at {command.path}")

@@ -1,7 +1,6 @@
 """Projects API — CRUD for Project model (db.models.scope.Project)."""
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from starlette.requests import Request

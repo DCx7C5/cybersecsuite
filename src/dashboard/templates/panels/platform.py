@@ -1,7 +1,5 @@
 """Platform & System panels."""
 from .._components import (
-    panel_section,
-    simple_panel,
     stat_card,
     stat_grid,
     table_slot,

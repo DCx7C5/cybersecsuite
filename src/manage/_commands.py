@@ -434,7 +434,7 @@ async def seed_mitre_command():
     await init_tortoise_async(create_db=True)
     print("⏳ Syncing MITRE ATT&CK...")
     results = await seed_mitre_full(max_results=args.limit)
-    print(f"✅ MITRE ATT&CK synced:")
+    print("✅ MITRE ATT&CK synced:")
     print(f"   Techniques: {results['techniques_created']} created, {results['techniques_total']} total")
     print(f"   Actors: {results['actors_created']} created, {results['actors_total']} total")
     print(f"   Software: {results['software_created']} created, {results['software_total']} total")
@@ -574,7 +574,6 @@ async def case_open_command():
     """Open a new investigation case interactively (Phase 0)."""
     from db.bootstrap import init_tortoise_async
     from db.models.case_intake import CaseIntake
-    from db.models.scope import Project
 
     await init_tortoise_async(create_db=True)
 

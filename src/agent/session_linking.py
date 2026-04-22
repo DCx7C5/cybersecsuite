@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from db.models import Session
+    pass
 
 logger = logging.getLogger("agent.session_linking")
 

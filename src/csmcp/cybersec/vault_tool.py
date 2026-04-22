@@ -69,7 +69,7 @@ async def vault_status(args: dict[str, Any]) -> JsonDict:
 )
 async def vault_ingest(args: dict[str, Any]) -> JsonDict:
     source = args.get("source", "")
-    category = args.get("category", "articles")
+    _category = args.get("category", "articles")
     force = args.get("force", False)
     tags = args.get("tags", [])
 

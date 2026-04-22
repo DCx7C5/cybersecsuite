@@ -10,7 +10,6 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timezone
-from decimal import Decimal
 from typing import Any
 
 log = logging.getLogger("llm.db")

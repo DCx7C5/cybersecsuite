@@ -18,9 +18,6 @@ Public API::
 """
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any
-
 from template_engine.context import get_context
 from template_engine.discovery import list_templates, resolve_template
 from template_engine.renderer import build_environment, render, render_string

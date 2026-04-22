@@ -9,9 +9,6 @@ from .._components import (
     mini_grid,
     modal_overlay,
     panel_toolbar,
-    simple_panel,
-    stat_card,
-    stat_grid,
     table_slot,
     tab_panel,
 )

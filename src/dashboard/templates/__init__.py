@@ -4,7 +4,7 @@ Entry point: build_dashboard_html() → full SPA HTML string.
 """
 from ._base import head, header, context_bar, _TOAST_JS
 from .panels import all_panels
-from ._tabs import tab_bar, first_tab
+from ._tabs import tab_bar
 from ._bootstrap_modal import bootstrap_modal_html
 
 

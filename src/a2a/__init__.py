@@ -17,7 +17,7 @@ All agent routing is handled by the Agent SDK which reads .claude/agents/*.md di
 Routing to 60 providers (DeepSeek, Gemini, Groq, …) is done via the AI proxy at
 ANTHROPIC_BASE_URL=http://localhost:8000/v1 using each agent's declared model.
 """
-from logger import getLogger
+from logger import getLogger  # noqa: F401
 
 from a2a.enums import TaskState, MessageRole, PartType, AuthScheme
 from a2a.models import (

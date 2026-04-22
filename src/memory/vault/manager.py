@@ -10,12 +10,10 @@ import hashlib
 import json
 import logging
 import os
-import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
-from urllib.parse import urlparse
 
 logger = logging.getLogger("csmcp.vault")
 

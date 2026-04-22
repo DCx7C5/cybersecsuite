@@ -10,19 +10,15 @@ import os
 import shutil
 import time
 from pathlib import Path
-from typing import Any
 
 from anyio import Path as AsyncPath
-from anyio.to_thread import run_sync
 
 from anthropic.lib.tools._beta_builtin_memory_tool import (
     BetaAsyncAbstractMemoryTool,
     _DIR_CREATE_MODE,
-    _FILE_CREATE_MODE,
     _async_atomic_write_file,
     _async_read_file_content,
     _async_validate_no_symlink_escape,
-    _validate_no_symlink_escape,
     _format_file_size,
     MAX_LINES,
     LINE_NUMBER_WIDTH,
@@ -36,7 +32,6 @@ from anthropic.types.beta import (
     BetaMemoryTool20250818RenameCommand,
     BetaMemoryTool20250818StrReplaceCommand,
 )
-from anthropic.lib.tools._beta_functions import BetaFunctionToolResultType
 from typing_extensions import override
 
 from memory.backends.obsidian import _VAULT_ALIASES, _DEFAULT_VAULT_PATH
@@ -157,7 +152,7 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
                 lines = split[s:e]
                 start = s + 1
 
-            numbered = [f"{str(i + start).rjust(LINE_NUMBER_WIDTH)}\t{l}" for i, l in enumerate(lines)]
+            numbered = [f"{str(i + start).rjust(LINE_NUMBER_WIDTH)}\t{ln}" for i, ln in enumerate(lines)]
             return f"Content of {command.path}:\n" + "\n".join(numbered)
 
         raise ToolError(f"Unsupported type at {command.path}")
@@ -198,7 +193,7 @@ class BetaAsyncObsidianMemoryTool(BetaAsyncAbstractMemoryTool):
         if count == 0:
             raise ToolError(f"String not found in {command.path}.")
         if count > 1:
-            raise ToolError(f"Multiple occurrences of old_str — make it unique.")
+            raise ToolError("Multiple occurrences of old_str — make it unique.")
 
         new_content = content.replace(command.old_str, command.new_str, 1)
         await _async_atomic_write_file(full, new_content)

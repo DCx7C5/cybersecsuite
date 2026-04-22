@@ -62,7 +62,7 @@ async def _handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWri
 async def _dispatch_event(data: dict) -> None:
     """Dispatch received event."""
     event_type = data.get("event", "unknown")
-    payload = data.get("payload", {})
+    _payload = data.get("payload", {})
     ts = data.get("ts", "")
 
     logger.info(f"IPC event: {event_type} at {ts}")

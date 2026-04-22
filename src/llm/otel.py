@@ -10,7 +10,7 @@ import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from opentelemetry import metrics, trace
+    pass
 
 _tracer = None
 _meter = None

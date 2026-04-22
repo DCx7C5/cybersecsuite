@@ -1,6 +1,5 @@
 """In-memory registry for account index, synced with vault + DB."""
 
-from typing import Any
 
 from accounts.models import AccountEntry
 

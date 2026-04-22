@@ -122,7 +122,7 @@ async def _findings_heatmap(days: int) -> JSONResponse:
     labels = _day_labels(days)
     try:
         from db.models.investigation import Finding
-        cutoff = _days_ago(days)
+        _cutoff = _days_ago(days)
         matrix: list[list] = []
         max_val = 1
         for d_idx, day_label in enumerate(labels):

@@ -60,7 +60,7 @@ async def api_plugin_register(request: Request) -> JSONResponse:
     try:
         body = await request.json()
         domain = body.get("domain", "unknown")
-    except:
+    except Exception:
         domain = "unknown"
     
     _PLUGIN_REGISTERED[domain] = now

@@ -9,7 +9,7 @@ Usage:
 """
 from __future__ import annotations
 
-from logger import getLogger
+from logger import getLogger  # noqa: F401
 
 from typing import Any
 

@@ -19,7 +19,6 @@ Registry format:
 from __future__ import annotations
 
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -27,7 +26,6 @@ from typing import Any, Optional
 from csmcp._sdk_compat import tool
 from csmcp.cybersec.helpers import (
     JsonDict,
-    SCOPE_LEVELS,
     _get_current_scope,
     _get_base_dir,
     get_project_dir,

@@ -1,6 +1,5 @@
 """Data & Management panels."""
 from .._components import (
-    simple_panel,
     tab_panel,
     stat_card,
     stat_grid,

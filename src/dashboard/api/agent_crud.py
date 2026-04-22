@@ -38,7 +38,7 @@ def _build_frontmatter(data: dict[str, Any]) -> str:
     if data.get("description"):
         desc = data["description"].replace("\n", " ").strip()
         if len(desc) > 80:
-            lines.append(f"description: >")
+            lines.append("description: >")
             # Word-wrap at ~78 chars
             words = desc.split()
             current = "  "

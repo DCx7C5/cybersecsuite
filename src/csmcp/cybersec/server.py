@@ -22,7 +22,7 @@ logger = getLogger("csmcp.cybersec.server")
 def _build_mcp_server():
     """Build a real mcp.server.Server backed by the SdkMcpServer shim."""
     from mcp.server import Server
-    from mcp.types import Tool, TextContent, CallToolResult
+    from mcp.types import Tool, TextContent
     from csmcp.cybersec import cybersec_server, _ALL_CYBERSEC_TOOLS
 
     app = Server("cybersec")

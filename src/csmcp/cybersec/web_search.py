@@ -1,7 +1,6 @@
 """Web search tools — routes to first available engine: Perplexity > Serper > Brave > Tavily."""
 from __future__ import annotations
 
-import json
 import os
 from typing import Any
 

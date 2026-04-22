@@ -52,7 +52,7 @@ def form_select(
     """Styled <select> with (value, label) pairs."""
     style = _INPUT_BASE + (f";{extra_style}" if extra_style else "")
     onchange_attr = f' onchange="{onchange}"' if onchange else ""
-    opts = "".join(f'<option value="{v}">{l}</option>' for v, l in options)
+    opts = "".join(f'<option value="{v}">{lbl}</option>' for v, lbl in options)
     return f'<select id="{elem_id}"{onchange_attr} style="{style}">{opts}</select>'
 
 
