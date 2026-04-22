@@ -35,6 +35,7 @@ from csmcp.cybersec.thinking_tool import ALL_TOOLS as _thinking_tools
 from csmcp.cybersec.tool_search import ALL_TOOLS as _tool_search_tools
 from csmcp.cybersec.agents_beta import ALL_TOOLS as _agents_beta_tools
 from csmcp.cybersec.qol_tools import ALL_TOOLS as _qol_tools
+from csmcp.cybersec.playwright_tool import ALL_TOOLS as _playwright_tools
 from csmcp.dystopian import _ALL_DYSTOPIAN_TOOLS as _dystopian_tools
 
 _ALL_CYBERSEC_TOOLS = (
@@ -62,6 +63,7 @@ _ALL_CYBERSEC_TOOLS = (
     + _tool_search_tools
     + _agents_beta_tools
     + _qol_tools
+    + _playwright_tools
     + _dystopian_tools
 )
 
