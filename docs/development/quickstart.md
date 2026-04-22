@@ -57,7 +57,7 @@ make install
 ## Step 3.5 — One-time bootstrap
 
 ```bash
-make ccs-first-setup
+make css-first-setup
 ```
 
 Idempotent. Creates `~/.cybersecsuite/{sessions,templates,cache,logs}` (mode `700`), patches `~/.claude/settings.json`, runs `schema` + `seed`, writes `.css-initialized` sentinel.

@@ -101,7 +101,7 @@ See [mcp-json.md](mcp-json.md) for MCP server wiring and [env-vars.md](env-vars.
 python src/manage.py install
 
 # Or via Makefile
-make ccs-first-setup
+make css-first-setup
 ```
 
 This is idempotent — safe to run multiple times.

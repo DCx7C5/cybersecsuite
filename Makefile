@@ -165,11 +165,11 @@ fmt:  ## Auto-format with ruff
 # ── First-time setup ──────────────────────────────────────────────────────────
 
 .css-initialized:
-	@$(MAKE) --no-print-directory ccs-first-setup
+	@$(MAKE) --no-print-directory css-first-setup
 	@touch .css-initialized
 
-.PHONY: ccs-first-setup
-ccs-first-setup:  ## One-time app + DB setup (auto-triggered on first make run)
+.PHONY: css-first-setup
+css-first-setup:  ## One-time app + DB setup (auto-triggered on first make run)
 	@echo "==> [1/4] Installing app home (CYBERSECSUITE_HOME=~/.cybersecsuite)..."
 	$(UV) run --no-project python src/manage.py install
 	@echo "==> [2/4] Patching ~/.claude/settings.json..."
@@ -188,7 +188,7 @@ print('  OK: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS set')"
 	$(UV) run --no-project python src/manage.py seed
 	@touch .css-initialized
 	@echo ""
-	@echo "✅ ccs-first-setup complete. Run 'make serve' to start."
+	@echo "✅ css-first-setup complete. Run 'make serve' to start."
 
 .PHONY: setup
 setup: env install db schema seed  ## Full first-run setup: env + deps + db + schema + seed

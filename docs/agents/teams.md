@@ -89,4 +89,4 @@ agents:
 ---
 ```
 
-Teams require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Set in `.claude/settings.json` or by running `make ccs-first-setup`.
+Teams require `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Set in `.claude/settings.json` or by running `make css-first-setup`.

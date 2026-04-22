@@ -4,7 +4,7 @@ import * as path from "path";
 import { repoRootFromHere, sendEvent } from "../ipc";
 
 /**
- * Setup hook — runs `make ccs-first-setup` once per machine/repo (sentinel).
+ * Setup hook — runs `make css-first-setup` once per machine/repo (sentinel).
  */
 export async function onCssFirstSetup(payload: unknown): Promise<void> {
   const root = repoRootFromHere();
