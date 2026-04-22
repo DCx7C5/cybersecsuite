@@ -80,6 +80,9 @@ async def chat_completions(request: Request) -> JSONResponse | StreamingResponse
     prefer_free = request.headers.get("x-prefer-free", "").lower() in ("true", "1", "yes")
     max_cost_str = request.headers.get("x-max-cost-per-1k")
     max_cost = float(max_cost_str) if max_cost_str else None
+    # T017/T018: session and agent context for QoL scope cascade + agent presets
+    session_id: str | None = request.headers.get("x-session-id") or None
+    agent_name: str | None = request.headers.get("x-agent-name") or None
 
     start = time.monotonic()
 
@@ -97,10 +100,13 @@ async def chat_completions(request: Request) -> JSONResponse | StreamingResponse
             strategy=Strategy.PRIORITY,
             targets=[ComboTarget(provider_id=provider.id, model_id=model)],
         )
-        result = await route_request(body, combo, stream=stream)
+        result = await route_request(body, combo, stream=stream, session_id=session_id, agent_name=agent_name)
     else:
         # Smart routing
-        result = await smart_route(body, stream=stream, prefer_free=prefer_free, max_cost_per_1k=max_cost)
+        result = await smart_route(
+            body, stream=stream, prefer_free=prefer_free, max_cost_per_1k=max_cost,
+            session_id=session_id, agent_name=agent_name,
+        )
 
     latency = (time.monotonic() - start) * 1000
 

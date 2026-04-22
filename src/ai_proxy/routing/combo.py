@@ -27,12 +27,22 @@ from ai_proxy.translators.core import translate_request, translate_response
 logger = logging.getLogger("ai_proxy.routing")
 
 # QoL injection — imported lazily to avoid circular deps at module load time
-def _qol_inject(body: dict[str, Any], session_id: str | None) -> dict[str, Any]:
-    """Apply QoL output-control directives to *body* if any toggles are active."""
+def _qol_inject(
+    body: dict[str, Any],
+    session_id: str | None,
+    agent_name: str | None = None,
+) -> dict[str, Any]:
+    """Apply QoL output-control directives to *body* if any toggles are active.
+
+    Scope cascade (T017): session → project (if session has no toggles).
+    Agent preset (T018): agent_name overrides scope if a binding exists.
+    """
     try:
         from ai_proxy.qol_controls.manager import get_manager
         scope = "session" if session_id else "project"
-        return get_manager().inject_into_request(body, scope=scope, session_id=session_id)
+        return get_manager().inject_into_request(
+            body, scope=scope, session_id=session_id, agent_name=agent_name
+        )
     except Exception:
         # Never break routing due to QoL errors
         return body
@@ -274,6 +284,7 @@ async def route_request(
     combo: ComboConfig,
     stream: bool = False,
     session_id: str | None = None,
+    agent_name: str | None = None,
 ) -> ExecutorResult:
     """
     Route a request through a combo config. Tries targets in strategy order,
@@ -315,7 +326,7 @@ async def route_request(
                 ]}
 
     # QoL: inject output-control directives before dispatch
-    body = _qol_inject(body, session_id)
+    body = _qol_inject(body, session_id, agent_name=agent_name)
 
     last_result: ExecutorResult | None = None
 
@@ -461,6 +472,7 @@ async def smart_route(
     max_cost_per_1k: float | None = None,
     budget_usd: float | None = None,
     session_id: str | None = None,
+    agent_name: str | None = None,
 ) -> ExecutorResult:
     """
     4-tier free-first smart routing with budget guard.
@@ -540,7 +552,7 @@ async def smart_route(
         targets=ordered_targets,
         budget_usd=budget_usd,
     )
-    return await route_request(body, combo, stream=stream, session_id=session_id)
+    return await route_request(body, combo, stream=stream, session_id=session_id, agent_name=agent_name)
 
 
 def _combo_target_cost(t: ComboTarget) -> float:

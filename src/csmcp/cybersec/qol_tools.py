@@ -1,13 +1,15 @@
 """QoL Output Controls — MCP tool definitions.
 
-4 tools:
-    qol_get       — get current QoL settings for a scope
-    qol_set       — enable/disable one or more toggles
-    qol_reset     — reset all toggles for a scope
-    qol_presets   — list available presets (builtin + user-defined)
+5 tools:
+    qol_get          — get current QoL settings for a scope
+    qol_set          — enable/disable one or more toggles
+    qol_reset        — reset all toggles for a scope
+    qol_presets      — list available presets (builtin + user-defined)
+    qol_agent_preset — bind/get/clear a per-agent QoL preset (T018)
 
 Referenz:
     plan.md T006 — Phase 1 QoL Core
+    plan.md T018 — Per-Agent QoL Presets
     src/ai_proxy/qol_controls/models.py   — QoLToggle, QoLSettings, BUILTIN_PRESETS
     src/ai_proxy/qol_controls/manager.py  — QoLManager
     src/csmcp/cybersec/tool_toggles.py    — design pattern
@@ -126,7 +128,11 @@ async def qol_set(args: dict[str, Any]) -> JsonDict:
     if errors:
         return sdk_error("; ".join(errors))
 
-    mgr.save_settings(settings)
+    from ai_proxy.qol_controls.models import QoLSecurityError
+    try:
+        mgr.save_settings(settings)
+    except QoLSecurityError as e:
+        return sdk_error(f"Security violation: {e}")
     return sdk_result({
         "message": "QoL settings updated",
         **mgr.status(scope),
@@ -181,4 +187,70 @@ async def qol_presets(args: dict[str, Any]) -> JsonDict:
     })
 
 
-ALL_TOOLS = [qol_get, qol_set, qol_reset, qol_presets]
+# ── qol_agent_preset ─────────────────────────────────────────────────────────
+
+@tool(
+    "qol_agent_preset",
+    "Get, set, or clear a per-agent QoL output-control preset. "
+    "When a preset is bound to an agent, it overrides scope-level settings for every "
+    "request from that agent (sent via X-Agent-Name header). "
+    "Pass preset_name='' to remove the binding.",
+    {
+        "agent_name": {
+            "type": "string",
+            "description": "Agent name as it appears in .claude/agents/*.md (e.g. 'cybersec-analyst')",
+        },
+        "preset_name": {
+            "type": "string",
+            "description": (
+                "Preset to bind. Builtin: silent, code-only, structured, audit, plain-text. "
+                "Omit or pass empty string to read the current binding."
+            ),
+        },
+    },
+)
+async def qol_agent_preset(args: dict[str, Any]) -> JsonDict:
+    agent_name = (args.get("agent_name") or "").strip()
+    if not agent_name:
+        return sdk_error("agent_name is required")
+
+    preset_name = args.get("preset_name")
+    mgr = _manager()
+
+    # Read-only when preset_name is not provided
+    if preset_name is None:
+        current = mgr.get_agent_preset(agent_name)
+        return sdk_result({
+            "agent_name": agent_name,
+            "preset_name": current,
+            "message": f"Agent '{agent_name}' has preset '{current}'" if current else f"No preset bound to '{agent_name}'",
+        })
+
+    preset_name = preset_name.strip()
+
+    # Clear binding
+    if not preset_name:
+        mgr.set_agent_preset(agent_name, None)
+        return sdk_result({
+            "agent_name": agent_name,
+            "preset_name": None,
+            "message": f"Preset binding cleared for agent '{agent_name}'",
+        })
+
+    # Set binding
+    from ai_proxy.qol_controls.models import QoLSecurityError
+    try:
+        mgr.set_agent_preset(agent_name, preset_name)
+    except ValueError as e:
+        return sdk_error(str(e))
+    except QoLSecurityError as e:
+        return sdk_error(f"Security violation: {e}")
+
+    return sdk_result({
+        "agent_name": agent_name,
+        "preset_name": preset_name,
+        "message": f"Agent '{agent_name}' will now use preset '{preset_name}'",
+    })
+
+
+ALL_TOOLS = [qol_get, qol_set, qol_reset, qol_presets, qol_agent_preset]

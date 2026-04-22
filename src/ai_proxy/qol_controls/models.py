@@ -66,6 +66,31 @@ def toggle_description(t: QoLToggle) -> str:
     return _TOGGLE_DESCRIPTIONS.get(t, t.value)
 
 
+# ── Dangerous toggle combinations ─────────────────────────────────────────────
+
+class QoLSecurityError(ValueError):
+    """Raised when an invalid/dangerous QoL toggle combination is requested."""
+
+
+# Pairs that produce contradictory directives and should never coexist.
+_DANGEROUS_COMBOS: tuple[frozenset[QoLToggle], ...] = (
+    frozenset({QoLToggle.FILE_ONLY, QoLToggle.APPEND_AUDIT_TRAIL}),   # file-only but append text
+    frozenset({QoLToggle.FILE_ONLY, QoLToggle.STRUCTURED_ONLY}),      # file-only vs structured-data-only
+    frozenset({QoLToggle.MINIMAL, QoLToggle.APPEND_AUDIT_TRAIL}),     # minimal but append audit text
+)
+
+
+def validate_toggle_combo(toggles: frozenset["QoLToggle"]) -> None:
+    """Raise QoLSecurityError if *toggles* contains a contradictory combination."""
+    for bad_pair in _DANGEROUS_COMBOS:
+        if bad_pair.issubset(toggles):
+            names = ", ".join(sorted(t.value for t in bad_pair))
+            raise QoLSecurityError(
+                f"Contradictory QoL toggle combination: [{names}]. "
+                "These directives cannot coexist — disable one before enabling the other."
+            )
+
+
 class QoLSettings(BaseModel):
     """Active QoL configuration for a scope / session.
 

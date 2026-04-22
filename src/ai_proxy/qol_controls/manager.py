@@ -27,8 +27,10 @@ from typing import Any
 
 from ai_proxy.qol_controls.models import (
     BUILTIN_PRESETS,
+    QoLSecurityError,
     QoLSettings,
     QoLToggle,
+    validate_toggle_combo,
 )
 from ai_proxy.qol_controls.prompts import build_fragment_block
 
@@ -118,6 +120,10 @@ class QoLManager:
     def _presets_path(self) -> Path:
         return self.base_dir / "qol_presets.json"
 
+    @property
+    def _agents_path(self) -> Path:
+        return self.base_dir / "qol_agents.json"
+
     # ── Settings persistence ─────────────────────────────────────────────────
 
     def load_settings(self, scope: str = "session") -> QoLSettings:
@@ -129,6 +135,8 @@ class QoLManager:
         return QoLSettings.from_dict({**scope_data, "scope": scope})
 
     def save_settings(self, settings: QoLSettings) -> None:
+        """Persist *settings* to disk, raising QoLSecurityError for dangerous combos."""
+        validate_toggle_combo(frozenset(settings.enabled_toggles))
         data = _load_json(self._settings_path)
         data[settings.scope] = settings.as_dict()
         _save_json(self._settings_path, data)
@@ -137,7 +145,7 @@ class QoLManager:
         data = _load_json(self._settings_path)
         data.pop(scope, None)
         _save_json(self._settings_path, data)
-        return QoLSettings(scope=scope)
+        return QoLSettings(scope=scope, enabled_toggles=set(self._default_toggles))
 
     # ── Preset management ────────────────────────────────────────────────────
 
@@ -163,6 +171,37 @@ class QoLManager:
         if name in user:
             return QoLSettings.from_dict(user[name])
         return None
+
+    # ── Agent preset management (T018) ──────────────────────────────────────
+
+    def get_agent_preset(self, agent_name: str) -> str | None:
+        """Return the preset name bound to *agent_name*, or None if unset."""
+        return _load_json(self._agents_path).get(agent_name)
+
+    def set_agent_preset(self, agent_name: str, preset_name: str | None) -> None:
+        """Bind (or clear) a preset for *agent_name*.
+
+        Raises QoLSecurityError if the resolved preset's toggles form a dangerous combo.
+        Pass *preset_name=None* to remove the binding.
+        """
+        if preset_name is not None:
+            resolved = self.load_preset(preset_name)
+            if resolved is None:
+                raise ValueError(f"Unknown preset: {preset_name!r}")
+            validate_toggle_combo(frozenset(resolved.enabled_toggles))
+        agents = _load_json(self._agents_path)
+        if preset_name is None:
+            agents.pop(agent_name, None)
+        else:
+            agents[agent_name] = preset_name
+        _save_json(self._agents_path, agents)
+
+    def load_agent_settings(self, agent_name: str) -> QoLSettings | None:
+        """Return resolved QoLSettings for *agent_name*, or None if no binding exists."""
+        preset_name = self.get_agent_preset(agent_name)
+        if not preset_name:
+            return None
+        return self.load_preset(preset_name)
 
     # ── Injection ────────────────────────────────────────────────────────────
 
@@ -200,75 +239,95 @@ class QoLManager:
         body: dict[str, Any],
         scope: str = "session",
         session_id: str | None = None,
+        agent_name: str | None = None,
         settings: QoLSettings | None = None,
     ) -> dict[str, Any]:
         """Return a copy of *body* with QoL directives prepended to the system prompt.
 
-        If *settings* is provided it is used directly; otherwise settings are loaded
-        from disk for *scope* (enables per-request override without I/O for hot paths
-        when the caller supplies pre-loaded settings).
+        Resolution order (T017/T018):
+          1. If *settings* is supplied, use directly.
+          2. Else if *agent_name* is set and has a bound preset, use that.
+          3. Else load *scope* settings; if empty, cascade to 'project' scope.
 
-        Returns the original body unchanged when no toggles are active.
-        Emits a telemetry event (qol.injection) recording token count when injecting.
+        Security (T019): validates the effective toggle set before injection.
+        Returns the original body unchanged when no toggles are active or on error (T020).
+        Emits a telemetry event (qol.injection) on each injection (T016).
         """
-        if settings is None:
-            settings = self.load_settings(scope)
-
-        if not settings.enabled_toggles:
-            return body
-
-        fragment = self.build_injection(settings)
-        if not fragment:
-            return body
-
-        # Emit observability metric (fire-and-forget; never blocks routing)
         try:
-            import asyncio
-            from telemetry import record_event
-            tok = _estimate_tokens(fragment)
-            if tok > self._max_tokens:
-                logger.warning(
-                    "qol.injection token budget exceeded: %d > %d (scope=%s)",
-                    tok,
-                    self._max_tokens,
-                    scope,
-                )
-            toggle_names = ",".join(sorted(t.value for t in settings.enabled_toggles))
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                loop.create_task(
-                    record_event(
-                        "qol.injection",
-                        float(tok),
-                        labels={
-                            "scope": scope,
-                            "toggle_count": str(len(settings.enabled_toggles)),
-                            "toggle_names": toggle_names,
-                            "session_id": session_id or "",
-                            "over_budget": str(tok > self._max_tokens).lower(),
-                        },
+            if settings is None:
+                # T018: agent-level preset overrides scope settings
+                if agent_name:
+                    settings = self.load_agent_settings(agent_name)
+                if settings is None:
+                    settings = self.load_settings(scope)
+                    # T017: cascade to project scope if session has no toggles
+                    if not settings.enabled_toggles and scope != "project":
+                        project_settings = self.load_settings("project")
+                        if project_settings.enabled_toggles:
+                            settings = project_settings
+
+            if not settings.enabled_toggles:
+                return body
+
+            # T019: validate effective combo before injection
+            try:
+                validate_toggle_combo(frozenset(settings.enabled_toggles))
+            except QoLSecurityError as sec_err:
+                logger.warning("qol.security: blocked dangerous combo — %s", sec_err)
+                return body
+
+            fragment = self.build_injection(settings)
+            if not fragment:
+                return body
+
+            # T016: emit structured observability metric
+            try:
+                import asyncio
+                from telemetry import record_event
+                tok = _estimate_tokens(fragment)
+                if tok > self._max_tokens:
+                    logger.warning(
+                        "qol.injection token budget exceeded: %d > %d (scope=%s)",
+                        tok, self._max_tokens, scope,
                     )
-                )
+                toggle_names = ",".join(sorted(t.value for t in settings.enabled_toggles))
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    loop.create_task(
+                        record_event(
+                            "qol.injection",
+                            float(tok),
+                            labels={
+                                "scope": scope,
+                                "toggle_count": str(len(settings.enabled_toggles)),
+                                "toggle_names": toggle_names,
+                                "session_id": session_id or "",
+                                "agent_name": agent_name or "",
+                                "over_budget": str(tok > self._max_tokens).lower(),
+                            },
+                        )
+                    )
+            except Exception:
+                pass
+
+            # Prepend to existing system message or insert a new one
+            messages: list[dict[str, Any]] = list(body.get("messages", []))
+            system_content = body.get("system", "")
+
+            if system_content:
+                return {**body, "system": f"{fragment}\n\n{system_content}"}
+
+            if messages and messages[0].get("role") == "system":
+                existing = messages[0].get("content", "")
+                new_msg = {**messages[0], "content": f"{fragment}\n\n{existing}"}
+                return {**body, "messages": [new_msg, *messages[1:]]}
+
+            return {**body, "messages": [{"role": "system", "content": fragment}, *messages]}
+
         except Exception:
-            pass
-
-        # Prepend to existing system message or insert a new one
-        messages: list[dict[str, Any]] = list(body.get("messages", []))
-        system_content = body.get("system", "")
-
-        if system_content:
-            # String system field (Anthropic-style)
-            modified_system = f"{fragment}\n\n{system_content}"
-            return {**body, "system": modified_system}
-
-        if messages and messages[0].get("role") == "system":
-            existing = messages[0].get("content", "")
-            new_msg = {**messages[0], "content": f"{fragment}\n\n{existing}"}
-            return {**body, "messages": [new_msg, *messages[1:]]}
-
-        # No system message — insert one
-        new_system = {"role": "system", "content": fragment}
-        return {**body, "messages": [new_system, *messages]}
+            # T020: never break routing — return body unmodified on any unexpected error
+            logger.warning("qol.inject_into_request failed unexpectedly; proceeding without injection", exc_info=True)
+            return body
 
     # ── Diagnostics ──────────────────────────────────────────────────────────
 
