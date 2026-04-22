@@ -2,7 +2,7 @@
 Routing Engine — multi-provider combo routing with 13 strategies,
 4-tier free-first smart fallback, budget guards, and context relay.
 
-Mirrors OmniRoute's combo.ts: resolve combo targets, apply strategy,
+Resolve combo targets, apply strategy,
 execute with fallback on failure, circuit breaker per target.
 """
 from __future__ import annotations
@@ -26,8 +26,19 @@ from ai_proxy.translators.core import translate_request, translate_response
 
 logger = logging.getLogger("ai_proxy.routing")
 
+# QoL injection — imported lazily to avoid circular deps at module load time
+def _qol_inject(body: dict[str, Any], session_id: str | None) -> dict[str, Any]:
+    """Apply QoL output-control directives to *body* if any toggles are active."""
+    try:
+        from ai_proxy.qol_controls.manager import get_manager
+        scope = "session" if session_id else "project"
+        return get_manager().inject_into_request(body, scope=scope, session_id=session_id)
+    except Exception:
+        # Never break routing due to QoL errors
+        return body
 
-# ── 13 Combo Strategies (matching OmniRoute) ─────────────────────────────────
+
+# ── 13 Combo Strategies ─────────────────────────────────
 
 class Strategy(str, Enum):
     PRIORITY = "priority"               # Ordered list, first success wins
@@ -302,6 +313,9 @@ async def route_request(
                     {"role": "system", "content": f"[Context from previous provider session]\n{context_summary}"},
                     *messages,
                 ]}
+
+    # QoL: inject output-control directives before dispatch
+    body = _qol_inject(body, session_id)
 
     last_result: ExecutorResult | None = None
 

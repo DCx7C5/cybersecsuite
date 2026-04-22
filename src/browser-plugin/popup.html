@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberSecSuite Agent</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <span class="logo">⬡</span>
+    <span>CyberSecSuite <span class="version">v3.0</span></span>
+  </div>
+  <div id="ws-status" class="ws-badge ws-off">● Offline</div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="status">Status</button>
+  <button class="tab-btn" data-tab="inject">Inject</button>
+  <button class="tab-btn" data-tab="ajax">AJAX</button>
+  <button class="tab-btn" data-tab="settings">Settings</button>
+</div>
+
+<!-- ── STATUS tab ─────────────────────────────────────────────────────── -->
+<div id="tab-status" class="tab-content active">
+  <div class="status-card" id="domain-status">
+    <div class="sc-label">Active Tab</div>
+    <div id="domain-name" class="sc-value">—</div>
+    <div id="domain-active" class="sc-badge badge-off">not active</div>
+    <div id="form-detected" class="sc-badge badge-off" style="margin-top: 8px;">No form auto-detected</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-val" id="stat-ajax">0</div>
+      <div class="stat-lbl">AJAX captured</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-streams">0</div>
+      <div class="stat-lbl">Streams sent</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-forms">0</div>
+      <div class="stat-lbl">Forms found</div>
+    </div>
+  </div>
+
+  <div id="event-log" class="event-log"></div>
+
+  <button class="btn btn-ghost mt-2" id="btn-clear-log">✕ Clear log</button>
+</div>
+
+<!-- ── INJECT tab ─────────────────────────────────────────────────────── -->
+<div id="tab-inject" class="tab-content">
+  <div class="field">
+    <label>Prompt (streams to page via AI)</label>
+    <textarea id="inject-prompt" rows="5" placeholder="Enter prompt — will be streamed through TS API and typed into the active form…"></textarea>
+  </div>
+
+  <div class="row gap-2">
+    <div class="field flex-1">
+      <label>Typing speed (ms/char)</label>
+      <input type="number" id="inject-speed" value="28" min="5" max="200">
+    </div>
+    <div class="field flex-1">
+      <label>Auto-submit</label>
+      <div class="toggle-row mt-1">
+        <label class="switch"><input type="checkbox" id="inject-autosubmit"><span class="slider"></span></label>
+        <span class="toggle-lbl" id="inject-autosubmit-lbl">Off</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-accent" id="btn-inject-stream">▶ Stream inject</button>
+  <button class="btn btn-ghost" id="btn-inject-text">T Type text only (no AI)</button>
+  <button class="btn btn-danger" id="btn-inject-abort">✕ Abort</button>
+
+  <div id="inject-status" class="status-line"></div>
+
+  <hr>
+  <div class="field">
+    <label>Detect active form</label>
+    <div id="form-info" class="code-block">Click button to detect</div>
+    <button class="btn btn-ghost" id="btn-detect-form">⌖ Detect form</button>
+  </div>
+</div>
+
+<!-- ── AJAX tab ───────────────────────────────────────────────────────── -->
+<div id="tab-ajax" class="tab-content">
+  <div class="row gap-2 mb-2">
+    <span class="text-muted small">Intercepted API calls on active domains</span>
+    <button class="btn btn-ghost btn-sm ml-auto" id="btn-clear-ajax">Clear</button>
+  </div>
+  <div id="ajax-log" class="ajax-log"></div>
+</div>
+
+<!-- ── SETTINGS tab ───────────────────────────────────────────────────── -->
+<div id="tab-settings" class="tab-content">
+
+  <div class="field">
+    <label>Dashboard URL</label>
+    <input type="text" id="s-http-url" placeholder="http://localhost:8000">
+  </div>
+
+  <div class="field">
+    <label>Active domains <span class="text-muted">(one per line)</span></label>
+    <textarea id="s-domains" rows="5" placeholder="github.com&#10;claude.ai&#10;platform.openai.com"></textarea>
+  </div>
+
+  <div class="field">
+    <label>AJAX intercept patterns <span class="text-muted">(one per line)</span></label>
+    <textarea id="s-patterns" rows="4" placeholder="/v1/messages&#10;api.anthropic.com"></textarea>
+  </div>
+
+  <div class="row gap-2">
+    <div class="field flex-1">
+      <label>Default typing speed (ms)</label>
+      <input type="number" id="s-speed" value="28" min="5" max="500">
+    </div>
+    <div class="field flex-1">
+      <label>Plugin enabled</label>
+      <div class="toggle-row mt-1">
+        <label class="switch"><input type="checkbox" id="s-enabled" checked><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-accent" id="btn-save-settings">✓ Save & Apply</button>
+  <div id="settings-status" class="status-line"></div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
+

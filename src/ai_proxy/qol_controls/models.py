@@ -1,0 +1,147 @@
+"""QoL Output Controls — Pydantic v2 models.
+
+QoLToggle   — individual boolean switch
+QoLSettings — aggregated per-scope configuration persisted to ~/.cybersecsuite/data/qol.json
+
+Storage layout (JSON, no DB):
+    {base_dir}/qol.json  — active settings per scope
+    {base_dir}/qol_presets.json  — named preset bundles
+
+Referenz:
+    plan.md T002 — Phase 1 QoL Core
+    src/csmcp/cybersec/helpers.py — scope helpers reused here
+"""
+from __future__ import annotations
+
+from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field
+
+
+class QoLToggle(str, Enum):
+    """All supported QoL output-control toggles."""
+
+    # ── Output suppression ──────────────────────────────────────────────────
+    NO_THINKING = "no_thinking"
+    """Suppress any <thinking> / reasoning blocks from LLM output."""
+
+    NO_CHAT = "no_chat"
+    """Suppress conversational filler. Return only the requested artefact."""
+
+    MINIMAL = "minimal"
+    """Absolute minimum output — one-liners and direct answers only."""
+
+    FILE_ONLY = "file_only"
+    """Only produce file/code output; NOTHING ELSE MAY APPEAR in the response."""
+
+    # ── Format controls ─────────────────────────────────────────────────────
+    NO_MARKDOWN = "no_markdown"
+    """Return plain text; do not use Markdown formatting."""
+
+    STRUCTURED_ONLY = "structured_only"
+    """Output only structured data (JSON / YAML / table). No prose."""
+
+    # ── Safety / audit ──────────────────────────────────────────────────────
+    REDACT_SECRETS = "redact_secrets"
+    """Auto-redact any API keys, passwords, or tokens that appear in output."""
+
+    APPEND_AUDIT_TRAIL = "append_audit_trail"
+    """Append a compact audit trail (timestamp + model + toggle hash) to every response."""
+
+
+_TOGGLE_DESCRIPTIONS: dict[QoLToggle, str] = {
+    QoLToggle.NO_THINKING: "Suppress reasoning/thinking blocks",
+    QoLToggle.NO_CHAT: "Suppress conversational filler",
+    QoLToggle.MINIMAL: "Absolute minimum output",
+    QoLToggle.FILE_ONLY: "File/code output only — NOTHING ELSE MAY APPEAR",
+    QoLToggle.NO_MARKDOWN: "Plain text, no Markdown",
+    QoLToggle.STRUCTURED_ONLY: "Structured data output only (JSON/YAML/table)",
+    QoLToggle.REDACT_SECRETS: "Auto-redact secrets in output",
+    QoLToggle.APPEND_AUDIT_TRAIL: "Append audit trail to each response",
+}
+
+
+def toggle_description(t: QoLToggle) -> str:
+    return _TOGGLE_DESCRIPTIONS.get(t, t.value)
+
+
+class QoLSettings(BaseModel):
+    """Active QoL configuration for a scope / session.
+
+    Fields
+    ------
+    enabled_toggles : set of active QoLToggle values
+    scope           : the scope this setting applies to (project / session / global)
+    preset_name     : optional label if loaded from a named preset
+    """
+
+    model_config = {"frozen": False, "extra": "ignore"}
+
+    enabled_toggles: set[QoLToggle] = Field(default_factory=set)
+    scope: str = Field(default="session")
+    preset_name: str | None = Field(default=None)
+
+    # ── Convenience helpers ─────────────────────────────────────────────────
+
+    def is_active(self, toggle: QoLToggle | str) -> bool:
+        t = QoLToggle(toggle) if isinstance(toggle, str) else toggle
+        return t in self.enabled_toggles
+
+    def activate(self, *toggles: QoLToggle | str) -> "QoLSettings":
+        for t in toggles:
+            self.enabled_toggles.add(QoLToggle(t) if isinstance(t, str) else t)
+        return self
+
+    def deactivate(self, *toggles: QoLToggle | str) -> "QoLSettings":
+        for t in toggles:
+            self.enabled_toggles.discard(QoLToggle(t) if isinstance(t, str) else t)
+        return self
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "enabled_toggles": [t.value for t in sorted(self.enabled_toggles, key=lambda x: x.value)],
+            "scope": self.scope,
+            "preset_name": self.preset_name,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "QoLSettings":
+        raw_toggles = data.get("enabled_toggles", [])
+        toggles: set[QoLToggle] = set()
+        for v in raw_toggles:
+            try:
+                toggles.add(QoLToggle(v))
+            except ValueError:
+                pass  # ignore unknown / removed toggles gracefully
+        return cls(
+            enabled_toggles=toggles,
+            scope=data.get("scope", "session"),
+            preset_name=data.get("preset_name"),
+        )
+
+
+# ── Named presets ─────────────────────────────────────────────────────────────
+
+BUILTIN_PRESETS: dict[str, QoLSettings] = {
+    "silent": QoLSettings(
+        enabled_toggles={QoLToggle.NO_THINKING, QoLToggle.NO_CHAT, QoLToggle.MINIMAL},
+        preset_name="silent",
+    ),
+    "code-only": QoLSettings(
+        enabled_toggles={QoLToggle.FILE_ONLY, QoLToggle.NO_THINKING, QoLToggle.NO_CHAT},
+        preset_name="code-only",
+    ),
+    "structured": QoLSettings(
+        enabled_toggles={QoLToggle.STRUCTURED_ONLY, QoLToggle.NO_THINKING},
+        preset_name="structured",
+    ),
+    "audit": QoLSettings(
+        enabled_toggles={QoLToggle.APPEND_AUDIT_TRAIL, QoLToggle.REDACT_SECRETS},
+        preset_name="audit",
+    ),
+    "plain-text": QoLSettings(
+        enabled_toggles={QoLToggle.NO_MARKDOWN, QoLToggle.NO_THINKING},
+        preset_name="plain-text",
+    ),
+}

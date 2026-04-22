@@ -186,6 +186,13 @@ from dashboard.api.a2a_crud import (
     api_a2a_tasks_update,
     api_a2a_tasks_delete,
 )
+from dashboard.api.qol import (
+    api_qol_get,
+    api_qol_post,
+    api_qol_delete,
+    api_qol_presets_get,
+    api_qol_preset_save,
+)
 
 
 def create_dashboard_router() -> Router:
@@ -325,6 +332,12 @@ def create_dashboard_router() -> Router:
             # Templates CRUD
             Route("/api/templates/{id}", api_template_update, methods=["PATCH"]),
             Route("/api/opensearch", api_opensearch, methods=["GET"]),
+            # QoL Output Controls
+            Route("/api/qol", api_qol_get, methods=["GET"]),
+            Route("/api/qol", api_qol_post, methods=["POST"]),
+            Route("/api/qol", api_qol_delete, methods=["DELETE"]),
+            Route("/api/qol/presets", api_qol_presets_get, methods=["GET"]),
+            Route("/api/qol/presets/{name}", api_qol_preset_save, methods=["POST"]),
             # Local LLM
             Route("/api/local-llm/status", api_local_llm_status, methods=["GET"]),
             Route("/api/local-llm/activate", api_local_llm_activate, methods=["POST"]),

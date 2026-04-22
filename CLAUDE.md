@@ -9,7 +9,7 @@
 
 **CyberSecSuite** is a full-stack cybersecurity forensics platform with:
 - **ASGI server** (Starlette, port 8000) — AI proxy, A2A protocol, live dashboard
-- **MCP server** — 57 tools for forensic investigation, intel lookup, crypto, AI routing
+- **MCP server** — 61 tools for forensic investigation, intel lookup, crypto, AI routing
 - **33 specialist sub-agents** — filesystem, memory, network, kernel, persistence, and more
 - **922 skills** — deep taxonomy across 24+ domains
 - **PostgreSQL** — 44 models (findings, IOCs, MITRE, CVE, CWE, CAPEC, NIST CSF/AI RMF, ...)
@@ -30,7 +30,7 @@ uv run python -m manage seed-all
 
 ## MCP Tools (57 total)
 
-### cybersec server (52 tools, `mcp__cybersec__*`)
+### cybersec server (56 tools, `mcp__cybersec__*`)
 | Category     | Tools                                                                                                                                                                             |
 |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Findings     | `add_finding`, `add_ioc`, `query_findings`, `update_risk_register`                                                                                                                |
@@ -48,6 +48,7 @@ uv run python -m manage seed-all
 | Web Search   | `web_search`                                                                                                                                                                      |
 | Sync         | `sync_pricing`                                                                                                                                                                    |
 | Health       | `get_health`, `get_provider_metrics`, `get_session_snapshot`                                                                                                                      |
+| QoL Controls | `qol_get`, `qol_set`, `qol_reset`, `qol_presets`                                                                                                                                  |
 
 ### dystopian server (5 tools, `mcp__dystopian__*`)
 `crypto_generate_keypair`, `crypto_sign_artifact`, `crypto_verify_artifact`, `crypto_list_keys`, `crypto_rotate_key`
@@ -84,7 +85,7 @@ Claude Code / claude-agent-sdk query()
 
 | Path                   | Purpose                                                            |
 |------------------------|--------------------------------------------------------------------|
-| `src/csmcp/cybersec/`  | SDK MCP package (52 tools, multiple submodules)                     |
+| `src/csmcp/cybersec/`  | SDK MCP package (56 tools, multiple submodules)                     |
 | `src/csmcp/dystopian.py` | Crypto tools (Ed25519, Argon2id, AES-256-GCM)                    |
 | `src/a2a/`             | A2A protocol, agent SDK bridge, orchestrator                       |
 | `src/ai_proxy/`        | AI proxy (60 providers, 13 routing strategies)                     |

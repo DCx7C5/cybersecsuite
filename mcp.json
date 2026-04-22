@@ -2,7 +2,7 @@
   "mcpServers": {
     "cybersec": {
       "name": "CyberSecSuite",
-      "description": "Main forensics SDK — 31 tools via agent-sdk in-process MCP: findings, IOCs, cases, MITRE, intel, cache, AI proxy, PoC management (stdio)",
+      "description": "Main forensics SDK — 87 tools: findings, IOCs, cases, MITRE, intel, cache, AI proxy, crypto (Ed25519/Argon2id), memory, canvas, vault, agents, QoL output controls (stdio)",
       "command": "uv",
       "args": [
         "--directory",
@@ -17,24 +17,7 @@
         "CYBERSEC_DB_HOST": "localhost",
         "CYBERSEC_DB_PORT": "5432",
         "CYBERSEC_DB_USER": "cybersec",
-        "CYBERSEC_DB_NAME": "cybersec_forensics"
-      },
-      "cwd": "${workspaceFolder}"
-    },
-    "dystopian-crypto": {
-      "name": "Dystopian Crypto",
-      "description": "5 crypto tools — Ed25519 key management, artifact signing/verification, key rotation (Argon2id + AES-256-GCM, stdio)",
-      "command": "uv",
-      "args": [
-        "--directory",
-        "${workspaceFolder}",
-        "run",
-        "python",
-        "-m",
-        "csmcp.dystopian_server"
-      ],
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/src",
+        "CYBERSEC_DB_NAME": "cybersec_forensics",
         "DYSTOPIAN_KEYS_DIR": "/etc/dystopian/crypto/cert/private",
         "DYSTOPIAN_VAULT_PASSWORD_FILE": "/etc/dystopian/crypto/cert/private/.vault-password"
       },
@@ -42,9 +25,12 @@
     },
     "kerneldev": {
       "name": "KernelDev MCP",
-      "description": "Kernel module development — compile, load, inspect LKM; eBPF program analysis; kernel symbol lookup",
+      "description": "Kernel module development \u2014 compile, load, inspect LKM; eBPF program analysis; kernel symbol lookup",
       "command": "python",
-      "args": ["-m", "kerneldev_mcp.server"],
+      "args": [
+        "-m",
+        "kerneldev_mcp.server"
+      ],
       "env": {
         "KERNEL_SRC": "/usr/src/linux",
         "KERNELDEV_WORKSPACE": "./kernel-modules"
@@ -52,7 +38,7 @@
     },
     "playwright-stealth": {
       "name": "Playwright Stealth",
-      "description": "Browser automation with stealth capabilities — headless detection evasion, fingerprint randomization, proxy management (stdio)",
+      "description": "Browser automation with stealth capabilities \u2014 headless detection evasion, fingerprint randomization, proxy management (stdio)",
       "command": "uv",
       "args": [
         "--directory",
@@ -68,7 +54,7 @@
     },
     "token-optimization": {
       "name": "Token Optimization",
-      "description": "Token usage analysis and optimization — input token counting, output token estimation, prompt engineering suggestions (stdio)",
+      "description": "Token usage analysis and optimization \u2014 input token counting, output token estimation, prompt engineering suggestions (stdio)",
       "command": "uv",
       "args": [
         "--directory",
@@ -81,7 +67,7 @@
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src"
       },
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}"
     }
   }
 }
