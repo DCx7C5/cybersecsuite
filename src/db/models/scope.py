@@ -71,13 +71,23 @@ class Session(Model):
 
 
 class ScopedEntry(Model):
-    """Abstract base for all scoped data."""
+    """Abstract base for all scoped data.
+
+    5-level scope columns (T045 / scope_v2):
+        runtime_id    — container/pod runtime identity
+        worktree_path — absolute path to .ccs/<runtime-id>/worktree-<SID>/
+        scope_level   — one of: global, app, project, runtime, session
+    """
     project = fields.ForeignKeyField("models.Project", related_name=False, null=True, on_delete=fields.CASCADE, db_index=True)
     session = fields.ForeignKeyField("models.Session", related_name=False, null=True, on_delete=fields.CASCADE)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
+    # T045: 5-level scope fields
+    runtime_id    = fields.CharField(max_length=64,   null=True, db_index=True)
+    worktree_path = fields.CharField(max_length=1024, null=True)
+    scope_level   = fields.CharField(max_length=16,   default="session", db_index=True)
 
     class Meta:
         abstract = True
