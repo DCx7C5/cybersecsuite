@@ -51,13 +51,13 @@
    aria-hidden="true" hides skeleton rows from assistive technology.
 ───────────────────────────────────────────────────────────────────────────── #}
 {% macro table_row_skeleton(cols=4, rows=5) -%}
-{%- set _widths = [72, 85, 61, 90, 68, 78, 55, 83, 70, 88] -%}
+{%- set col_widths = [72, 85, 61, 90, 68, 78, 55, 83, 70, 88] -%}
 {%- for r in range(rows) %}
 <tr class="comp-skeleton-row" aria-hidden="true">
   {%- for c in range(cols) %}
   <td>
     <div class="comp-skeleton"
-         style="width: {{ _widths[(r * cols + c) % (_widths | length)] }}%;"></div>
+         style="width: {{ col_widths[(r * cols + c) % (col_widths | length)] }}%;"></div>
   </td>
   {%- endfor %}
 </tr>

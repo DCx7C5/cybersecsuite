@@ -43,7 +43,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family: var(--font-ui);
+  font-family: var(--font-ui), sans-serif;
   font-size: 14px;
   line-height: 1.6;
   min-height: 100vh;
