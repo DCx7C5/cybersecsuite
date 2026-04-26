@@ -343,7 +343,7 @@ sqlite3 ~/.copilot/session-state/3777f81e-1423-4f67-a498-029f40e5e0df/session.db
 - **Deliverables:** Tested MCPs, auto-generated docs, marketplace index
 
 ### Phase 7: Bootstrap Installer (3-4h)
-- Create `scripts/install-mcp-core.sh` (installs 7 foundation MCPs)
+- Create `scripts/deploy/install-mcp-core.sh` (installs 7 foundation MCPs)
 - Update CyberSecSuite to use externalized MCPs (SDK mode)
 - Test bootstrap on fresh environment
 - **Deliverables:** Automated bootstrap, CyberSecSuite integration

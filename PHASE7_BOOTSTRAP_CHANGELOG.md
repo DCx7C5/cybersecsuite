@@ -6,7 +6,7 @@ Phase 7 implements the complete bootstrap installation system for CyberSecSuite 
 ## Deliverables
 
 ### 1. Bootstrap Installation Script
-**File:** `scripts/install-mcp-core.sh`
+**File:** `scripts/deploy/install-mcp-core.sh`
 - **Lines of Code:** 381 (production-quality bash)
 - **Status:** ✅ Complete and tested
 
@@ -241,7 +241,7 @@ def allowed_tools() -> list[str]:
 ## Migration Guide
 Existing deployments can upgrade by:
 1. Pulling latest code
-2. Running: `bash scripts/install-mcp-core.sh`
+2. Running: `bash scripts/deploy/install-mcp-core.sh`
 3. No configuration changes needed (defaults to hybrid mode)
 
 ## Known Limitations
@@ -307,7 +307,7 @@ If issues occur:
 ## Files Modified/Created
 
 ### New Files
-- `scripts/install-mcp-core.sh` (381 lines)
+- `scripts/deploy/install-mcp-core.sh` (381 lines)
 - `src/csmcp/mcps/custom-mcp/__init__.py` (120 lines)
 - `src/csmcp/mcps/custom-mcp/pyproject.toml` (47 lines)
 - `docs/BOOTSTRAP.md` (601 lines)

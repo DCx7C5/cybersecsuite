@@ -19,10 +19,10 @@ The fastest way to get CyberSecSuite with all MCPs installed:
 
 ```bash
 # 1. Run the bootstrap installer
-bash scripts/install-mcp-core.sh
+bash scripts/deploy/install-mcp-core.sh
 
 # 2. Verify installation
-bash scripts/install-mcp-core.sh --verify-only
+bash scripts/deploy/install-mcp-core.sh --verify-only
 
 # 3. Start CyberSecSuite with external MCPs
 export SDK_MODE=hybrid
@@ -101,20 +101,20 @@ The `install-mcp-core.sh` script automates installation of 7 MCPs:
 cd /home/daen/Projects/cybersecsuite
 
 # Run installer with progress display
-bash scripts/install-mcp-core.sh
+bash scripts/deploy/install-mcp-core.sh
 
 # Or run in verbose mode for debugging
-bash scripts/install-mcp-core.sh --verbose
+bash scripts/deploy/install-mcp-core.sh --verbose
 
 # Or run in offline mode (uses local sources only)
-bash scripts/install-mcp-core.sh --offline
+bash scripts/deploy/install-mcp-core.sh --offline
 ```
 
 ### Installation Modes
 
 #### Standard Mode (Default)
 ```bash
-bash scripts/install-mcp-core.sh
+bash scripts/deploy/install-mcp-core.sh
 ```
 - Tries local sources first (from `/home/daen/Projects/ai-marketplace`)
 - Falls back to PyPI if local not found
@@ -123,7 +123,7 @@ bash scripts/install-mcp-core.sh
 
 #### Offline Mode
 ```bash
-bash scripts/install-mcp-core.sh --offline
+bash scripts/deploy/install-mcp-core.sh --offline
 ```
 - Uses only local sources
 - Fails if any local source unavailable
@@ -131,7 +131,7 @@ bash scripts/install-mcp-core.sh --offline
 
 #### Verbose Mode
 ```bash
-bash scripts/install-mcp-core.sh --verbose
+bash scripts/deploy/install-mcp-core.sh --verbose
 ```
 - Shows full output from pip/uv
 - Logs to `/tmp/mcp_install.log`
@@ -139,7 +139,7 @@ bash scripts/install-mcp-core.sh --verbose
 
 #### Verification Only
 ```bash
-bash scripts/install-mcp-core.sh --verify-only
+bash scripts/deploy/install-mcp-core.sh --verify-only
 ```
 - Checks if MCPs are already installed
 - Does not attempt installation
@@ -391,10 +391,10 @@ source venv/bin/activate
 **Solutions:**
 ```bash
 # 1. Run offline mode (uses local sources)
-bash scripts/install-mcp-core.sh --offline
+bash scripts/deploy/install-mcp-core.sh --offline
 
 # 2. Run verbose to diagnose
-bash scripts/install-mcp-core.sh --verbose
+bash scripts/deploy/install-mcp-core.sh --verbose
 
 # 3. Check network
 ping 8.8.8.8
@@ -435,7 +435,7 @@ echo $EXTERNAL_MCPS_ENABLED
 **Solution:**
 ```bash
 # Ensure MCPs are installed
-bash scripts/install-mcp-core.sh --verify-only
+bash scripts/deploy/install-mcp-core.sh --verify-only
 
 # Check for import errors
 python3 -c "import csscore_mcp; print('✓')" || echo "Import failed"
@@ -510,7 +510,7 @@ curl http://localhost:8000/api/v1/tools/list
 ```bash
 # Use parallel installation (uv default)
 export UV_PYTHON_DOWNLOADS=never
-bash scripts/install-mcp-core.sh
+bash scripts/deploy/install-mcp-core.sh
 
 # Install specific MCPs only
 cd /home/daen/Projects/ai-marketplace/mcps/csscore-mcp

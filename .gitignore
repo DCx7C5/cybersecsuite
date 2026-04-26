@@ -88,7 +88,7 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
-data/
+/data/
 
 # Dependencies (using uv, not pip freeze)
 node_modules/
