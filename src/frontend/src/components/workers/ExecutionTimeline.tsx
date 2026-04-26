@@ -33,12 +33,12 @@ export default function ExecutionTimeline({ projectId, workerId }: ExecutionTime
   const [selectedHistoryId, setSelectedHistoryId] = useState<number | null>(null)
 
   const { data: history, isLoading: historyLoading } = useApiQuery<HistoryItem[]>(
-    ['worker-history', projectId, workerId],
+    ['worker-history', String(projectId), String(workerId)],
     `/api/projects/${projectId}/workers/${workerId}/history`
   )
 
   const { data: bookmarks, isLoading: bookmarksLoading } = useApiQuery<Bookmark[]>(
-    ['worker-bookmarks', projectId, workerId],
+    ['worker-bookmarks', String(projectId), String(workerId)],
     `/api/projects/${projectId}/workers/${workerId}/bookmarks`
   )
 
@@ -231,6 +231,7 @@ export default function ExecutionTimeline({ projectId, workerId }: ExecutionTime
 
       {showBookmarkModal && (
         <Modal
+          open={showBookmarkModal}
           title="Add Bookmark"
           onClose={() => setShowBookmarkModal(false)}
         >
