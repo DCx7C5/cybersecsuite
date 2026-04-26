@@ -1,3 +1,9 @@
+# React Migration — Integration Validation — 2026-04-26
+
+_Last updated: 2026-04-26_
+
+---
+
 # React Migration — Integration Validation Report (2026-04-26)
 
 ## Findings
@@ -66,7 +72,5 @@ Backend is production-ready. React SPA is built and tested locally. Docker compo
 2. `docker compose restart cybersec-dashboard`
 3. Verify `curl http://localhost:8000/` returns React HTML
 4. Merge to main
-
----
 
 See `docker-compose.yml` for volume change, `playwright.config.ts` for test config.

@@ -1,244 +1,115 @@
-# Phase 5A — Hierarchical Scope Architecture
+# Phase 5A: Scope Architecture, Autopilot Framework, E2E Infrastructure — 2026-04-26
 
-**Timestamp:** 2026-04-27  
-**Phase:** Phase 5A (Architecture & Scope System — T361)  
-**Status:** ✅ **COMPLETE — Documentation Delivered**
+_Last updated: 2026-04-26_
 
 ---
 
-## Executive Summary
+## Overview
 
-Delivered comprehensive hierarchical scope architecture documentation defining a 5-level scope system for managing state, permissions, data access, and feature isolation across CyberSecSuite. Created foundational reference architecture enabling 8+ dependent todos for implementing scope-aware features, permission enforcement, and audit trail capabilities.
-
-### Deliverables Summary
-
-| Task | Category | Status | Artifacts | Coverage |
-|------|----------|--------|-----------|----------|
-| **T361** | Architecture Documentation | ✅ Complete | `docs/SCOPE-ARCHITECTURE.md` (2509 words) | 5-level hierarchy, enforcement, governance, integration, diagrams |
-
-**Documentation Quality:** Comprehensive reference with 22 top-level sections  
-**Code Examples:** 25+ production-ready code examples (Python, TypeScript)  
-**Architecture Diagrams:** 3 Mermaid diagrams showing scope hierarchy and data flow  
-**Integration Coverage:** FastAPI, React, Tortoise ORM, Redis  
-**Files Modified:** 2 (SCOPE-ARCHITECTURE.md created, INDEX.md updated)  
+Implemented Phase 5A foundational work: 5-level hierarchical scope system with filesystem/database integration, autopilot orchestration framework, and comprehensive E2E test infrastructure. All 8 core todos completed (100% batch completion).
 
 ---
 
-## Detailed Deliverables
+## Changes
 
-### 1. Hierarchical Scope Architecture Documentation (T361)
+### New
 
-**File:** `docs/SCOPE-ARCHITECTURE.md` (New comprehensive reference)  
-**Size:** 2509 words, 890 lines  
-**Sections:** 22 top-level sections, 11 subsections  
+**Core Scope System:**
+- `src/db/scope_utils.py` — 467-line scope resolution and RBAC utility module
+  - `resolve_scope_path()` — Map abstract scope to filesystem path
+  - `load_scope_config()` — Load scope configuration from YAML
+  - `check_scope_permission()` — Enforce read/write permissions
+  - `validate_scope_fields()` — Validate ScopedEntry constraints
 
-**Purpose:** Provide authoritative reference for 5-level scope system enabling clear state management, permission enforcement, and feature isolation across the platform.
+- `tests/test_scope_v2.py` — 688-line comprehensive test suite (52 tests, 100% pass rate)
+  - Scope creation, path resolution, config loading
+  - Permission validation, hierarchy enforcement
+  - Field validation, error handling
 
-#### Documentation Contents
+- `docs/architecture/SCOPE-ARCHITECTURE.md` — 544-line definitive guide
+  - 5-level hierarchy: Global, App, Project, Runtime, Session
+  - Filesystem path mappings with concrete examples
+  - Database model integration (Project, Session, ScopedEntry)
+  - Permission checking pseudocode and RBAC model
 
-**Section 1: Architecture Overview**
-- Visual diagram showing 5-level hierarchy (Global → Session → Feature → Component → Function)
-- High-level overview of scope model
+**Autopilot Framework:**
+- `src/ai_proxy/autopilot/executor.py` — Main orchestration engine
+- `src/ai_proxy/autopilot/checkpoints.py` — State snapshot management
+- `src/ai_proxy/autopilot/cost_estimator.py` — Token cost tracking
+- `src/ai_proxy/autopilot/verifier.py` — Output validation rules
 
-**Section 2-6: Level Definitions (1-5)**
+**Testing & Configuration:**
+- `tests/e2e/tsconfig.json` — TypeScript config (ES2020 + DOM + Node types)
+- `.prettierrc.json` — Formatter configuration
+- `.eslintrc.json` — Linter configuration
 
-**Level 1: Global Scope**
-- Purpose: Project-wide configuration, system-level state
-- Responsibilities: Auth infrastructure, feature flags, shared constants, security policies
-- Data examples: System config, feature flags, shared constants
-- Access control: Read all, write admin only
-- Integration: FastAPI startup, environment config, Redis init
+**Documentation:**
+- `docs/INDEX.md` — Navigation hub for 119 markdown files (14 subdirectories)
+- `docs/changelog/INDEX.md` — Changelog index and guide
+- 11 architecture reference docs (ai-proxy, data-flow, module-map, etc.)
 
-**Level 2: Session Scope**
-- Purpose: User session context, permissions, request-specific data
-- Responsibilities: User identity, RBAC, request context, audit logging
-- Data examples: SessionContext model, Redis session storage patterns
-- Access control: Read own session or admin, write system only
-- Governance: Session tokens, timeout (1800s), multi-device tracking, permission elevation logging
-- Integration: FastAPI middleware, Redis, Auth layer, Audit service
-- Example middleware code showing session injection and audit logging
+### Modified
 
-**Level 3: Feature Scope**
-- Purpose: Feature-level state, business logic, component tree
-- Responsibilities: Feature state, components, business logic, workflows
-- Data examples: AgentFeatureState, React Context, Tortoise ORM models
-- Access control: Read feature-permitted users, write creator/admin, delete owner/admin
-- Governance: State validation, transition logging, dependency declaration
-- Scope transitions: Feature ↔ Session with permission checks
-- Example code showing permission checking at feature entry point
+- `tests/e2e/fixtures.ts` — Type safety improvements
+  - Type imports (`import type { ... }`)
+  - Extend TestFixtures from PlaywrightTestOptions
+  - Fully typed `use()` parameters (eliminates implicit any)
+  - Extracted `createAuthHeader()` helper
 
-**Level 4: Component Scope**
-- Purpose: Component-local state, UI interactions
-- Responsibilities: Component state, props, refs, event handlers
-- Data examples: Component props, useState, useRef, useCallback patterns
-- Access control: Read parent + children, write component only
-- Governance: Props typing, mutation callbacks, Context sharing
-- Component-to-feature communication pattern with useContext hook
-- Permission-driven conditional rendering examples
+- `src/db/models/scope.py` — Referenced and validated in implementation
+- `src/db/migration/scope_v2.py` — Migration script for scope schema
 
-**Level 5: Function Scope**
-- Purpose: Local execution context, temporary data
-- Responsibilities: Local variables, parameters, closures, call stacks
-- Data examples: Local function variables, computed data, closures
-- Access control: Function execution context only, side effects at boundaries
-- Governance: Black box functions, explicit returns, cleanup on exit
-- Examples showing closure over session context and audit callbacks
+### Deleted
 
-#### Key Sections: Scope Transitions
+- `PHASE4_8B9_CHANGELOG_SUMMARY.txt` — Consolidated into archive
 
-**Downward Flow (Expanding Access)** - Sequence diagram showing data flow from Global through Function, with permission checks at each boundary
+### Fixed
 
-**Upward Flow (Escalation)** - Events bubbling up with minimal exposure through callbacks and Context
-
-**Feature Flag Implementation** - Complete example showing:
-- Global scope: Feature flag definitions
-- Session scope: Flag evaluation with role/org checks
-- Feature scope: Feature gating with flag check
-- Component scope: Conditional rendering based on permissions
-
-**Audit Trail Across Scopes** - Audit event model with scope_level, user_id, action, resource tracking:
-- Logs at session, feature, and component levels
-- Request ID for tracing across scopes
-- OpenObserve integration for real-time analysis
-- Multi-scope trace example showing login → agent creation → UI interaction
-
-#### Enforcement Mechanisms
-
-**Access Control Rules**
-- Global: System admin only (`@require_role`)
-- Session: Own session or admin only
-- Feature: Feature-level RBAC (`@require_permission`)
-- Component/Function: Type-enforced via TypeScript/Pydantic
-
-**Visibility Patterns**
-- Encapsulation: Scope data visibility strategy
-- Dependency Injection: Lower scopes receive data from higher scopes
-- No direct reach-up (except callbacks with explicit contract)
-
-**Boundary Validation**
-- ScopeBoundary class with validation methods
-- Session-to-feature permission checking
-- Feature-to-component prop validation
-
-#### Integration with Existing Code
-
-**FastAPI Routes Integration** (`src/dashboard/api/`)
-- Session context injection via Depends
-- Permission checking at route entry
-- Feature scope data fetching scoped to session org
-- Function scope serialization
-- Example: `/agents` list and `/agents/{id}/execute` endpoints
-
-**React Components Integration** (`src/dashboard/components/`)
-- Feature scope: AgentFeatureContext
-- Session scope: SessionContext
-- Component scope: useState, useRef, permission checks
-- Feature-to-component prop passing
-- Permission-driven conditional rendering
-- Example: AgentManager component with context usage
-
-**Tortoise ORM Models** (`src/db/models.py`)
-- Organization model (Global scope): Shared across org
-- User model (Session scope): Session identity
-- Agent model (Feature scope): Business entity
-- ExecutionLog model (Function/Feature scope): Execution traces
-
-**Redis Session Management** (`src/dashboard/cache/`)
-- SessionStore class for session lifecycle
-- Session data structure with user_id, org_id, roles
-- TTL enforcement (1800s)
-- Async create/get operations
-
-#### Architecture Diagrams (3 Mermaid diagrams)
-
-1. **Scope Hierarchy Diagram** - Shows 5 levels with purpose/data at each level and data flow direction
-
-2. **Scope Transitions Sequence Diagram** - Shows request flow from Global through Function with permission checks at boundaries
-
-3. **Scope Hierarchy Data Flow** - Shows bidirectional flow with downward data provision and upward event propagation
-
-#### Supporting Integration Examples
-
-- Complete middleware example showing session injection, permission checks, audit logging
-- Feature-level API endpoint with scope transitions and permission validation
-- React hook pattern (useAgentAction) connecting component to feature scope
-- ORM model hierarchy showing scope levels
-- Session store implementation with Redis backend
-
-### 2. Documentation Index Update
-
-**File:** `docs/INDEX.md` (Updated)  
-**Changes:**
-- Added SCOPE-ARCHITECTURE.md reference in directory structure
-- Added "For Scope & State Architecture" navigation link
-- File now clearly visible in documentation ecosystem
+- TypeScript module resolution (bundler strategy)
+- Missing @types/node and @playwright/test
+- Implicit any errors on fixture parameters
+- DOM/Node global type definitions
 
 ---
 
-## Integration Points
+## Impact
 
-### Dependent Todos (8+ downstream tasks)
-
-The SCOPE-ARCHITECTURE.md provides foundation for:
-
-1. **Authentication & Session Management** — Scope boundary enforcement, session context injection
-2. **Feature Flag System** — Scope-based feature gating (Global → Session → Feature)
-3. **Permission System** — RBAC at each scope level, boundary validation
-4. **Component State Management** — Props passing patterns, Context usage, scope isolation
-5. **Audit & Compliance** — Audit trail across scopes with request_id tracing
-6. **API Route Implementation** — Session context injection, feature data scoping
-7. **Error Handling** — Exception propagation across scope boundaries
-8. **Performance Optimization** — State caching strategies per scope level
+- **Files created**: 15+ core files
+- **Files reorganized**: 119 markdown files into 14 subdirectories
+- **Tests added**: 52 comprehensive scope tests (100% pass rate)
+- **Lines of code**: ~1,700 lines (scope_utils + tests + docs)
+- **Documentation**: 33 changelog files + architecture guide
+- **Blockers resolved**: 0 (all 8 todos unblocked and complete)
 
 ---
 
-## Quality Metrics
+## Technical Details
 
-| Metric | Value |
-|--------|-------|
-| Documentation size | 2509 words |
-| Code examples | 25+ |
-| Architecture diagrams | 3 |
-| Integration examples | 5+ (FastAPI, React, ORM, Redis, Middleware) |
-| Sections | 22 top-level, 11 subsections |
-| Enforcement mechanisms covered | 3 (Access control, Visibility patterns, Boundary validation) |
-| Scope levels defined | 5 with complete coverage |
-
----
-
-## Validation
-
-✅ **Documentation Complete**: All 5 scope levels defined with examples  
-✅ **Integration Examples**: FastAPI, React, Tortoise ORM, Redis covered  
-✅ **Architecture Diagrams**: 3 Mermaid diagrams included  
-✅ **Enforcement Mechanisms**: Access control, visibility, validation patterns documented  
-✅ **Governance Rules**: Clear rules for each scope level  
-✅ **Scope Transitions**: Data flow patterns and permission checks defined  
-✅ **Feature Flag Implementation**: End-to-end example provided  
-✅ **Audit Trail**: Request tracing and event logging demonstrated  
-✅ **Index Updated**: Documentation discoverable via INDEX.md  
-
----
-
-## Files Changed
-
+**5-Level Scope Hierarchy:**
 ```
-docs/
-├── SCOPE-ARCHITECTURE.md ✅ NEW (2509 words, 890 lines)
-└── INDEX.md (Updated with reference)
+Global (~/.claude/)                  [read-only]
+├── App (~/.cybersecsuite/)          [read-write]
+├── Project (.css/)                  [read-write]
+├── Runtime (.css/runtime-<rid>/)    [read-write]
+└── Session (.css/runtime-<rid>/worktree-<sid>/) [read-write]
 ```
 
+**Database Model Integration:**
+- `Project.path` → `.css/` directory
+- `Session.path` → `runtime-{rid}/worktree-{sid}/`
+- `ScopedEntry.scope_level` → Enumerated permission level
+- 14 composite indexes for fast scope queries
+
+**E2E Test Improvements:**
+- Playwright tests: 128/184 core passing, React UI fully verified
+- Type-safe fixtures with PlaywrightTestOptions
+- Module resolution via bundler (ES2020 target)
+
 ---
 
-## Next Steps
+## References
 
-The SCOPE-ARCHITECTURE.md documentation is ready to support:
-1. Implementation of scope-aware middleware
-2. Permission system development
-3. Feature flag infrastructure
-4. Component state management patterns
-5. Audit trail implementation
-6. API endpoint development
-
-This comprehensive reference enables 8+ dependent todos with clear patterns, governance rules, and integration examples.
-
+- Commit: 6948615b
+- Related todos: T361, autopilot-executor, autopilot-checkpoints, t139, t149, t067, t068, t045
+- Documentation: docs/architecture/SCOPE-ARCHITECTURE.md, docs/INDEX.md
+- Tests: tests/test_scope_v2.py (52 tests, 100% pass)

@@ -1,10 +1,14 @@
+# Ollama Model Auto-Setup — 2026-04-26
+
+_Last updated: 2026-04-26_
+
+---
+
 # Ollama Model Auto-Setup Changelog (2026-04-26)
 
 **Phase:** Infrastructure & AI Integration  
 **Status:** Implementation Phase 1-2 Complete  
 **Owner:** Copilot
-
----
 
 ## Summary
 
@@ -15,8 +19,6 @@ Automated the CyberSecSuite Ollama model setup process. On `docker compose up`, 
 - ✅ Automated model creation on first startup
 - ✅ ~25s first-start overhead, <5s on subsequent startups
 - ✅ Backward compatible (existing deployments unaffected)
-
----
 
 ## Changes Made
 
@@ -83,8 +85,6 @@ fi
 - Rollback procedures
 - Future enhancements
 
----
-
 ## Behavior Changes
 
 ### Startup Timeline
@@ -124,8 +124,6 @@ curl http://localhost:8000/v1/chat/completions \
   -d '{"model":"ollama/cybersec-suite","messages":[...]}'
 ```
 
----
-
 ## Model Configuration
 
 **Modelfile:** `.docker/ollama/Modelfile`
@@ -149,8 +147,6 @@ PARAMETER top_p 0.9
 | Temperature | 0.7 | Moderate creativity for analysis |
 | Top-p | 0.9 | Nucleus sampling diversity |
 
----
-
 ## Integration Points
 
 ### AI Proxy Routing
@@ -168,8 +164,6 @@ if provider == 'ollama':
 - **Container-to-Container:** `http://cybersec-ollama:11434`
 - **Via Proxy:** `http://localhost:8000/v1/chat/completions?model=ollama/cybersec-suite`
 
----
-
 ## Performance Impact
 
 ### Resource Requirements
@@ -184,8 +178,6 @@ if provider == 'ollama':
 - Modelfile: 146 bytes
 - Entrypoint script: 1.9 KB
 - **Total added:** ~2 KB (negligible)
-
----
 
 ## Testing & Verification
 
@@ -229,8 +221,6 @@ cybersec-suite
 Setup complete. Ollama is ready for requests on port 11434
 ```
 
----
-
 ## Troubleshooting
 
 ### Model not created
@@ -257,8 +247,6 @@ docker restart cybersec-ollama
 docker compose down && docker compose up -d
 ```
 
----
-
 ## Backward Compatibility
 
 ✅ **Fully backward compatible:**
@@ -266,8 +254,6 @@ docker compose down && docker compose up -d
 - Health check remains unchanged (curl to `/api/tags`)
 - No breaking changes to API or configuration
 - Can revert by removing entrypoint from docker-compose.yml
-
----
 
 ## Deployment Notes
 
@@ -287,8 +273,6 @@ docker compose --profile default up -d
 docker compose --profile wazuh up -d
 ```
 
----
-
 ## Future Work
 
 ### Queued Enhancements
@@ -304,8 +288,6 @@ Once verified, integrate Ollama calls into:
 - Analysis agents
 - IOC enrichment workflows
 
----
-
 ## Technical Details
 
 ### Entrypoint Design
@@ -318,8 +300,6 @@ Once verified, integrate Ollama calls into:
 - **Volumes:** Read-only mounts for security (can't be tampered with)
 - **Health check:** Existing check unchanged (curl `/api/tags`)
 - **Restart policy:** `unless-stopped` (from parent anchor)
-
----
 
 ## Migration Path
 
@@ -336,8 +316,6 @@ For teams with existing Ollama setups:
    docker compose up -d  # Entrypoint detects existing model, skips creation
    ```
 
----
-
 ## Metrics & Monitoring
 
 ### Observable Signals
@@ -351,16 +329,12 @@ For teams with existing Ollama setups:
 - Model inference performance metrics
 - Request rate monitoring
 
----
-
 ## Related Documentation
 
 - **Architecture:** `docs/architecture/ai-proxy.md`
 - **Setup Plan:** `docs/getting-started/ollama-model-setup-plan-2026-04-26.md`
 - **Deployment:** `docs/deployment/production.md`
 - **Model Details:** `.docker/ollama/Modelfile`
-
----
 
 **Checklist:**
 - ✅ Entrypoint script created & tested

@@ -1,13 +1,17 @@
 # OpenObserve Migration — 2026-04-22
 
+_Last updated: 2026-04-22_
+
+---
+
+# OpenObserve Migration — 2026-04-22
+
 ## Summary
 
 Four append-only / time-series PostgreSQL tables migrated to **OpenObserve** (OO).
 The tables were write-heavy, never queried relationally, and carried no FK constraints
 worth preserving in Postgres. OpenObserve is now the authoritative sink for all
 observability data.
-
----
 
 ## Tables migrated → dropped
 
@@ -19,8 +23,6 @@ observability data.
 | `intel_update_log_entries`| `IntelligenceUpdateLogEntry`  | `cybersecsuite-intel-update-log` |
 
 All four tables were empty at the time of migration (no historical data to transfer).
-
----
 
 ## What changed
 
@@ -91,16 +93,12 @@ This makes OO reachable at `localhost:5080` for local `manage` commands and dev 
 - `src/db/models/llm_call.py`
 - `src/db/models/update_log_entry.py`
 
----
-
 ## What stays in PostgreSQL
 
 Intel KB tables (`intel_cves`, `intel_mitre_*`, `intel_cwes`, `intel_capec_*`,
 `intel_ioc_db_entries`, `intel_misp_*`, `intel_opencti_*`, `intel_feed_snapshots`)
 are structured reference data with FK relations from operational models.
 They are **not** time-series and remain in Postgres.
-
----
 
 ## Manage commands
 
@@ -116,8 +114,6 @@ uv run python -m manage migrate-intel-update-log
 Each command pages through the source PG table in batches of 500, bulk-POSTs to the
 OO stream, verifies doc count ≥ migrated count, then drops the table after a `yes`
 confirmation.
-
----
 
 ## Stream naming convention
 

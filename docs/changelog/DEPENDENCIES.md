@@ -1,10 +1,14 @@
+# Dependencies: Package Audit & Migration Guide — 2026-04
+
+_Last updated: 2026-04_
+
+---
+
 # DEPENDENCIES.md — Package Audit & Migration Guide
 
 **Status:** Phase 1 Backend Infrastructure Audit
 **Python Version:** >=3.14
 **Dependency Manager:** `uv` (universal Python package installer)
-
----
 
 ## Core Dependencies (Runtime)
 
@@ -101,8 +105,6 @@
 |---------|---------|---------|-------------|-------|
 | `redis` | >=7.0 | Redis client | ~1.2 MB | Session management, caching, rate limiting |
 
----
-
 ## Development Dependencies
 
 ### Testing & Quality
@@ -134,8 +136,6 @@
 |---------|---------|---------|-------------|-------|
 | `playwright` | >=1.49 | Cross-browser testing framework | ~400 MB | **Use standard Playwright (not stealth)** for dev |
 | ~~`playwright-stealth`~~ | ~~1.0~~ | ~~Anti-detection wrapper~~ | ~~1 MB~~ | **⚠️ DEPRECATED in Phase 1:** Removed from dev; use only for specific stealth scenarios |
-
----
 
 ## Dependency Groups
 
@@ -216,8 +216,6 @@ uv run playwright test tests/e2e/ --project=chromium
 - Standard Playwright is now the default for all dev/test environments
 - If stealth anti-detection is needed in production, see architecture decision document
 
----
-
 ## Migration Notes — Redux → Context API
 
 **Status:** No changes in pyproject.toml dependencies (frontend only).
@@ -238,8 +236,6 @@ No backend Python changes required. The A2A protocol, FastAPI endpoints, and ORM
 - Database schema unaffected
 - Async patterns continue as-is
 
----
-
 ## Package Audit Results — Phase 1
 
 ### Dependency Verification
@@ -259,8 +255,6 @@ No backend Python changes required. The A2A protocol, FastAPI endpoints, and ORM
 | `typing_extensions` | Conditional on Python <3.13 | Keeps dependency spec; not imported on 3.13+ |
 | `uvloop` | Linux-only | Platform marker: `sys_platform == 'linux'` |
 | `postgresql` | Not declared (external) | PostgreSQL server managed externally; asyncpg is driver only |
-
----
 
 ## Bundle Impact Analysis
 
@@ -300,8 +294,6 @@ Total (All Groups): ~485 MB
 ├── Test: ~4 MB
 ├── Playwright: ~400 MB (includes Chromium, Firefox, WebKit)
 ```
-
----
 
 ## Installation Instructions
 
@@ -350,8 +342,6 @@ pip install package-name
 uv add package-name
 ```
 
----
-
 ## Verification & Cleanup
 
 ### Check for Unused Dependencies
@@ -384,8 +374,6 @@ uv sync --all-groups
 uv sync --verify
 ```
 
----
-
 ## License & Compliance
 
 All dependencies are reviewed for:
@@ -395,8 +383,6 @@ All dependencies are reviewed for:
 - ✅ Python 3.14 compatibility
 
 For license details, see `LICENSES/` directory.
-
----
 
 ## Performance Baseline
 
@@ -409,8 +395,6 @@ For license details, see `LICENSES/` directory.
 | `pytest tests/` (120 tests) | ~12s | With async support |
 | `ruff check src/` | ~500ms | Full codebase lint |
 | `playwright test tests/e2e/` (40 tests) | ~2m 30s | All 3 browsers, single machine |
-
----
 
 ## References
 

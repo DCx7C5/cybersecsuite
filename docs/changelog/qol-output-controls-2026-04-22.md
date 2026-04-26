@@ -1,5 +1,11 @@
 # QoL Output Controls — Phase 1 — 2026-04-22
 
+_Last updated: 2026-04-22_
+
+---
+
+# QoL Output Controls — Phase 1 — 2026-04-22
+
 Implemented server-side QoL output-control injection (plan.md T001–T015). Tool count: 83 → **87**.
 
 ## Changes

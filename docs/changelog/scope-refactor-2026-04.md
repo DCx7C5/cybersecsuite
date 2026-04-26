@@ -1,6 +1,6 @@
-# Scope Refactor & MCP Integration Fixes — April 2026
+# Scope Refactor & MCP Integration — 2026-04
 
-_Last updated: 2026-04-21_
+_Last updated: 2026-04_
 
 ---
 
@@ -10,8 +10,6 @@ This document summarises two work streams completed in the April 2026 session:
 
 1. **Four-scope model refactor** — moved all runtime/session state out of the project tree into a dedicated app-home (`~/.cybersecsuite`)
 2. **MCP integration bug fixes** — corrected the stdio server bridge, removed hardcoded developer paths, fixed async type errors
-
----
 
 ## 1. Four-Scope Model
 
@@ -58,8 +56,6 @@ CYBERSECSUITE_HOME=/opt/ccs uv run python src/manage.py install
 
 Idempotent — safe to re-run. Existing directories are not modified.
 
----
-
 ## 2. Files Changed
 
 ### `src/hooks/_utils.py`
@@ -98,8 +94,6 @@ Idempotent — safe to re-run. Existing directories are not modified.
 - Replaced inline `mkdir -p ~/.cybersecsuite/{sessions,templates,cache,logs}` with `uv run python src/manage.py install`
 - Step numbering updated (install is now step 1)
 
----
-
 ## 3. MCP Integration Fixes
 
 ### Problem: `server.py` used dict subscript on a non-dict
@@ -131,8 +125,6 @@ The same `SdkMcpServer` instance is also used in-process by `agent_sdk.py` via `
 | `agent_sdk.py` | Hardcoded `/home/daen/Projects/AI` as default for `_AI_HOOKS_DIR` | Opt-in via env var only |
 | `agent_sdk.py` | `captured` variable potentially unbound after the `async for` loop | Initialised to `None` before the loop |
 
----
-
 ## 4. SDK Choice: `claude_agent_sdk` vs `anthropic`
 
 **Keep `claude_agent_sdk`.**
@@ -147,8 +139,6 @@ The same `SdkMcpServer` instance is also used in-process by `agent_sdk.py` via `
 | Multi-provider routing | ✗ (Anthropic only) | ✅ via `ANTHROPIC_BASE_URL` proxy |
 
 The `anthropic` SDK is richer for low-level control (prompt caching, extended thinking, raw streaming). `claude_agent_sdk` is the correct layer for orchestrating MCP-tool-using agents. This project uses both: `anthropic` SDK via the AI proxy, `claude_agent_sdk` for agent dispatch.
-
----
 
 ## 5. Why Keep `.claude/` in the Project?
 

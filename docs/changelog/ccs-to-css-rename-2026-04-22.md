@@ -1,16 +1,18 @@
+# Rename: .ccs → .css Scope Directory Prefix — 2026-04-22
+
+_Last updated: 2026-04-22_
+
+---
+
 # Rename: `.ccs` → `.css` scope directory prefix
 
 **Date:** 2026-04-22  
 **Type:** refactor / breaking-rename  
 **Scope:** filesystem paths, identifiers, Makefile targets, TS hooks, browser plugin
 
----
-
 ## Summary
 
 The scope runtime directory prefix was incorrectly named `.ccs` (likely a typo from early scaffolding). All occurrences have been renamed to `.css` (CyberSecSuite) — including path strings, docstrings, Makefile targets, TypeScript identifiers, and browser-plugin config keys.
-
----
 
 ## Changes
 
@@ -58,8 +60,6 @@ The scope runtime directory prefix was incorrectly named `.ccs` (likely a typo f
 ### `plans/plan.md`
 - Scope table paths updated
 
----
-
 ## Migration notes
 
 If you have an existing workspace with a `.ccs-initialized` sentinel file, rename it:
@@ -75,8 +75,6 @@ mv .ccs .css
 ```
 
 The browser plugin `ccs_cfg` key in `chrome.storage.local` has been renamed to `css_cfg`. Existing stored values will not be migrated automatically — users who have installed the plugin previously will need to re-configure it once after updating.
-
----
 
 ## Not changed
 

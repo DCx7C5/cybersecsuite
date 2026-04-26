@@ -1,5 +1,11 @@
 # OmniRoute References Removed — 2026-04-21
 
+_Last updated: 2026-04-21_
+
+---
+
+# OmniRoute References Removed — 2026-04-21
+
 Deleted all OmniRoute references from docs and source. The TypeScript OmniRoute MCP server
 (`src/omniroute_mcp/`) and its Python stub counterpart (`routing.py`) were already removed.
 This change cleans up the remaining traces.
@@ -25,8 +31,6 @@ This change cleans up the remaining traces.
 - `src/ai_proxy/providers/registry.py`, `executors/base.py`, `translators/core.py`, `routing/combo.py`, `services/rate_limiter.py` — removed "Mirrors OmniRoute's ..." from module docstrings
 - `src/csmcp/cybersec/proxy.py` — removed OmniRoute reference from docstring and error message
 
----
-
 # Dystopian Server Merged into Cybersec — 2026-04-21
 
 The separate `dystopian-crypto` MCP server has been merged into `cybersec`. Tool count: 78 → **83**.
@@ -43,8 +47,6 @@ The separate `dystopian-crypto` MCP server has been merged into `cybersec`. Tool
 - `docs/README.md` — counts updated
 
 Tool prefix change: `mcp__dystopian__crypto_*` → `mcp__cybersec__crypto_*`
-
----
 
 ## src/ README Integration — 2026-05
 

@@ -1,11 +1,15 @@
+# Stub Implementation & MCP Cleanup — 2026-05
+
+_Last updated: 2026-05_
+
+---
+
 # Stub Implementation & MCP Cleanup — May 2026
 
 ## Summary
 
 Deleted the redundant `routing.py` module and fully implemented all remaining stub tools
 in the `cybersec` MCP server. Tool count: **88 → 78** (routing.py removed, 8 stubs → live).
-
----
 
 ## Changes
 
@@ -54,8 +58,6 @@ Backed by `ai_proxy.providers.registry.load_custom_providers`.
 - `docs/mcp/overview.md` — 120 → 110 total, 88 → 78 cybersec, routing.py row removed
 - `docs/README.md` — all tool counts corrected (110 total: 78 + 5 + 27)
 - `src/csmcp/cybersec/__init__.py` — docstring updated to "78 tools"
-
----
 
 ## Tool Count Summary
 
