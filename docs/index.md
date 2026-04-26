@@ -52,6 +52,8 @@
 ## 📋 Changelog & History
 
 - **[changelog/index.md](changelog/index.md)** — Changelog index (phases 0–5)
+- **[changelog/phase5d_worker_api_changelog.md](changelog/phase5d_worker_api_changelog.md)** — Phase 5D: Worker API (19 endpoints, 85+ tests)
+- **[changelog/phase5e_worker_dashboard_changelog.md](changelog/phase5e_worker_dashboard_changelog.md)** — Phase 5E: Dashboard UI (3 components, in progress)
 - **[changelog/](changelog/)** — Individual phase changelogs (30+ files)
 
 ## 🛠️ Development
