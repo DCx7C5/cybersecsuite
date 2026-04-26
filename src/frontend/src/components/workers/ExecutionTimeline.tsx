@@ -143,7 +143,7 @@ export default function ExecutionTimeline({ projectId, workerId }: ExecutionTime
                 }}
               />
 
-              {items.map((item, idx) => {
+              {items.map((item) => {
                 const bookmark = bookmarkMap.get(item.id)
                 return (
                   <div

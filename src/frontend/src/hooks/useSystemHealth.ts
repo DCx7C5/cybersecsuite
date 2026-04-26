@@ -16,7 +16,7 @@ interface HealthMetrics {
 }
 
 export function useSystemHealth() {
-  const [metrics, setMetrics] = useState<HealthMetrics>({
+  const [_metrics] = useState<HealthMetrics>({
     uptime_hours: 240,
     active_workers: 5,
     idle_workers: 2,
@@ -35,7 +35,7 @@ export function useSystemHealth() {
     refetchInterval: 5000,
   })
 
-  const metricsToReturn = fetchedMetrics || metrics
+  const metricsToReturn = fetchedMetrics || _metrics
 
   return {
     metrics: metricsToReturn,

@@ -100,8 +100,6 @@ export function useWebSocket(options: UseWebSocketOptions) {
     }
   }, [url, isConnecting, isConnected, onError, maxRetries, scheduleBatchProcess])
 
-  connectRef.current = connect
-
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current)
@@ -116,6 +114,10 @@ export function useWebSocket(options: UseWebSocketOptions) {
     setIsConnected(false)
     setIsConnecting(false)
   }, [])
+
+  useEffect(() => {
+    connectRef.current = connect
+  }, [connect])
 
   const send = useCallback((message: unknown) => {
     if (isConnected && wsRef.current) {
