@@ -1,7 +1,6 @@
 """Tests for Phase 0 Backend Infrastructure components."""
 import pytest
-import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from ai_proxy.health import (
     detect_gpu,

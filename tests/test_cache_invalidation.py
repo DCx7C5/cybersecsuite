@@ -8,9 +8,6 @@ Tests:
 - 100% coverage of invalidation logic
 """
 import pytest
-import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta
 
 from db.cache_manager import (
     CacheManager,

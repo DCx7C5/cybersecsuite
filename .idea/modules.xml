@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/src/browser-plugin/.idea/browser-plugin.iml" filepath="$PROJECT_DIR$/src/browser-plugin/.idea/browser-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/custom-mcp.iml" filepath="$PROJECT_DIR$/.idea/custom-mcp.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite@1.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite@1.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/mcp-template.iml" filepath="$PROJECT_DIR$/.idea/mcp-template.iml" />
     </modules>
   </component>
 </project>

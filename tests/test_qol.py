@@ -491,7 +491,7 @@ class TestQoLFragmentGeneration:
         assert key not in tmp_manager._fragment_cache
 
         # Build again
-        fragment = tmp_manager.build_injection(s)
+        _ = tmp_manager.build_injection(s)
         assert key in tmp_manager._fragment_cache
 
 

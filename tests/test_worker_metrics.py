@@ -11,18 +11,16 @@ from __future__ import annotations
 
 import pytest
 import pytest_asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from uuid import uuid4
 from unittest.mock import MagicMock
-import time
 
 from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
-from tortoise import Tortoise
 
 from db.models.scope import Project
 from db.models.worker import (
-    WorkerSession, WorkerState, WorkerAuditLog, WorkerStateTransition
+    WorkerSession, WorkerState, WorkerAuditLog
 )
 from api.routes.worker_metrics import router as metrics_router
 

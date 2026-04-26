@@ -4,19 +4,15 @@ Tests for t366: Worker State Machine.
 Tests state transitions, query/filter functionality, and audit logging.
 """
 import pytest
-from datetime import datetime, timedelta
 
 from db.models.worker import (
     WorkerState,
-    WorkerStateTransition,
     WorkerSession,
 )
-from db.models.scope import Project, Session
 from db.worker_manager import (
     WorkerStateMachine,
     WorkerStateQueryEngine,
     InvalidStateTransitionError,
-    WorkerNotFoundError,
 )
 
 
@@ -242,7 +238,7 @@ class TestWorkerStateQueryEngine:
     ) -> None:
         """Test querying workers by state."""
         # Create multiple workers in different states
-        sm1 = WorkerStateMachine("worker-q1", test_project.id)
+        _ = WorkerStateMachine("worker-q1", test_project.id)
         sm2 = WorkerStateMachine("worker-q2", test_project.id)
         sm3 = WorkerStateMachine("worker-q3", test_project.id)
         
@@ -268,7 +264,7 @@ class TestWorkerStateQueryEngine:
         """Test querying workers by multiple states."""
         sm1 = WorkerStateMachine("worker-m1", test_project.id)
         sm2 = WorkerStateMachine("worker-m2", test_project.id)
-        sm3 = WorkerStateMachine("worker-m3", test_project.id)
+        _ = WorkerStateMachine("worker-m3", test_project.id)
         
         await sm1.transition(to_state=WorkerState.RUNNING, reason="Start")
         await sm1.transition(to_state=WorkerState.PAUSED, reason="Pause")
@@ -326,8 +322,6 @@ class TestWorkerStateQueryEngine:
         test_project
     ) -> None:
         """Test retrieving stale (inactive) workers."""
-        from datetime import timedelta
-        from db.models.worker import WorkerSession
         
         sm = WorkerStateMachine("worker-stale", test_project.id)
         await sm.transition(to_state=WorkerState.RUNNING, reason="Start")

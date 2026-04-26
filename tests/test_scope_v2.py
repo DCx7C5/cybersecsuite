@@ -11,12 +11,7 @@ Tests cover:
 - Query filtering by scope
 """
 import pytest
-import asyncio
-from pathlib import Path
-from datetime import datetime
-from unittest.mock import patch, MagicMock, AsyncMock
-import json
-import tempfile
+from unittest.mock import patch, MagicMock
 
 from db.scope_utils import (
     ScopeLevel,
@@ -371,14 +366,14 @@ class TestCheckScopeHierarchy:
     
     def test_runtime_contains_only_same_runtime(self) -> None:
         """Test runtime scope contains only same runtime and session."""
-        runtime_ctx = ScopeContext(
+        _ = ScopeContext(
             scope_level="runtime",
             runtime_id="pod-1",
             session_id="sess1",
             worktree_path="/var/css/pod-1/worktree-sess1",
         )
         
-        session_ctx_same = ScopeContext(
+        _ = ScopeContext(
             scope_level="session",
             project_id=123,
             session_id="sess1",
@@ -386,7 +381,7 @@ class TestCheckScopeHierarchy:
         # Different scope types but hierarchically contained if IDs match
         # (simplified test)
         
-        session_ctx_diff = ScopeContext(
+        _ = ScopeContext(
             scope_level="session",
             project_id=123,
             session_id="sess2",
@@ -475,7 +470,7 @@ class TestGetScopedQueryset:
         mock_model = MagicMock()
         mock_model.filter = MagicMock(return_value=mock_model)
         
-        queryset = get_scoped_queryset(mock_model, ctx)
+        _ = get_scoped_queryset(mock_model, ctx)
         
         # Verify filter was called with session_id
         mock_model.filter.assert_called_with(session_id="sess1")
@@ -487,7 +482,7 @@ class TestGetScopedQueryset:
         mock_model = MagicMock()
         mock_model.filter = MagicMock(return_value=mock_model)
         
-        queryset = get_scoped_queryset(mock_model, ctx)
+        _ = get_scoped_queryset(mock_model, ctx)
         
         mock_model.filter.assert_called_with(project_id=456)
     
@@ -503,7 +498,7 @@ class TestGetScopedQueryset:
         mock_model = MagicMock()
         mock_model.filter = MagicMock(return_value=mock_model)
         
-        queryset = get_scoped_queryset(mock_model, ctx)
+        _ = get_scoped_queryset(mock_model, ctx)
         
         # Should have been called with session_id first, then filter for runtime_id
         assert mock_model.filter.called

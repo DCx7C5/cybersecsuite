@@ -7,7 +7,6 @@ Tests:
 - 90%+ code coverage
 """
 import pytest
-from typing import Dict, Any
 
 from db.exceptions import (
     ScopeError,

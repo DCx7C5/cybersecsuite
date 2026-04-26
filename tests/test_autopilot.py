@@ -9,30 +9,21 @@ Tests:
 from __future__ import annotations
 
 import pytest
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
 
 # Import components
 from ai_proxy.autopilot.executor import (
-    AutopilotExecution,
     ExecutionChange,
-    ExecutionPhase,
     ExecutionState,
     RiskLevel,
     ExecutorClient,
 )
 from ai_proxy.autopilot.checkpoints import (
-    BudgetTracker,
-    CheckpointEvent,
     CheckpointManager,
     CheckpointReason,
     CheckpointState,
-    TaskClassification,
 )
 from ai_proxy.autopilot.cost_estimator import (
-    CostEstimate,
     CostEstimator,
-    CostResult,
 )
 
 
@@ -503,7 +494,7 @@ class TestIntegration:
         )
 
         # Check cost threshold
-        checkpoint = await manager.check_cost_threshold(
+        _ = await manager.check_cost_threshold(
             "exec-1",
             "session-1",
             threshold_percentage=0.9,

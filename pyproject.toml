@@ -111,3 +111,13 @@ asyncio_mode = "auto"
 src = ["src"]
 line-length = 100
 exclude = [".claude"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_unused_configs = true
+exclude = [".claude", ".venv", "__pycache__"]
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic]
+mypy_plugins = ["pydantic.mypy"]

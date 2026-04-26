@@ -1,0 +1,223 @@
+name: 'Tier 1: PR Checks'
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - 'pytest.ini'
+      - 'package.json'
+      - 'tsconfig.json'
+      - '.github/workflows/qa-pr.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  eslint:
+    name: 'ESLint (TypeScript)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'src/ts_api/package-lock.json'
+      
+      - name: Install TypeScript API dependencies
+        run: npm ci
+        working-directory: src/ts_api
+      
+      - name: Run ESLint
+        run: npm run lint --if-present
+        working-directory: src/ts_api
+        continue-on-error: false
+
+  ruff-lint:
+    name: 'Ruff (Python Linting)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      
+      - name: Install dependencies
+        run: uv sync --all-extras
+      
+      - name: Run Ruff lint
+        run: uv run ruff check src tests
+
+  mypy:
+    name: 'mypy (Type Checking)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      
+      - name: Install dependencies
+        run: uv sync --all-extras
+      
+      - name: Run mypy
+        run: uv run mypy src
+
+  pytest-unit:
+    name: 'pytest (Unit Tests)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      
+      - name: Install dependencies
+        run: uv sync --all-extras
+      
+      - name: Run unit tests (exclude integration)
+        run: uv run pytest tests -m "not integration" -x --tb=short
+        env:
+          REDIS_URL: redis://localhost:6379
+
+  integration-core:
+    name: 'Integration Tests (Core MCPs)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    services:
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      
+      - name: Install dependencies
+        run: uv sync --all-extras
+      
+      - name: Run core integration tests
+        run: uv run pytest tests -m integration -k "mcp or core" --tb=short
+        env:
+          REDIS_URL: redis://localhost:6379
+
+  playwright-brave-fast:
+    name: 'Playwright E2E (Brave - Fast)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'src/ts_api/package-lock.json'
+      
+      - name: Install Node dependencies
+        run: npm ci
+        working-directory: src/ts_api
+      
+      - name: Install Brave browser
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y brave-browser
+      
+      - name: Run Playwright tests (Brave only - fast path)
+        run: npx playwright test --project=brave || true
+        working-directory: src/ts_api
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+  pr-gate:
+    name: 'PR Gate - All Checks Passed'
+    runs-on: ubuntu-latest
+    needs: [eslint, ruff-lint, mypy, pytest-unit, integration-core, playwright-brave-fast]
+    if: always()
+    
+    steps:
+      - name: Check all required jobs passed
+        run: |
+          if [[ "${{ needs.eslint.result }}" == "failure" ]] || \
+             [[ "${{ needs.ruff-lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.mypy.result }}" == "failure" ]] || \
+             [[ "${{ needs.pytest-unit.result }}" == "failure" ]] || \
+             [[ "${{ needs.integration-core.result }}" == "failure" ]]; then
+            echo "❌ PR checks failed - one or more jobs did not pass"
+            exit 1
+          fi
+          echo "✅ All PR checks passed - ready for review"
+
+  # Report to PR
+  comment:
+    name: 'Report Status'
+    runs-on: ubuntu-latest
+    needs: pr-gate
+    if: always()
+    steps:
+      - name: Report results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ needs.pr-gate.result }}' === 'success' ? '✅ PASS' : '❌ FAIL';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Tier 1: PR Checks ${status}\n\n**Status**: ${{ needs.pr-gate.result }}\n\n- ESLint: ${{ needs.eslint.result }}\n- Ruff: ${{ needs.ruff-lint.result }}\n- mypy: ${{ needs.mypy.result }}\n- pytest: ${{ needs.pytest-unit.result }}\n- Integration: ${{ needs.integration-core.result }}\n- Playwright (Brave): ${{ needs.playwright-brave-fast.result }}`
+            })

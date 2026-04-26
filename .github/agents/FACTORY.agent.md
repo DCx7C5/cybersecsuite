@@ -7,12 +7,7 @@ description: >-
   blue/red/purple team-mode support. Handles BOTH orchestrator agents and
   specialist sub-agents. Preserves all original rules, tools, and output formats
   verbatim. Never hardcodes ports, URLs, or agent addresses — all integration is
-  dynamic via AgentRegistry. Token-efficient: concise output, no filler, no
-redundancy.: ''
-maxTurns: 5
-tools: ['microsoft/markitdown/convert_to_markdown', 'token-optimization/estimate_tokens', 'token-optimization/compress_prompt', 'token-optimization/route_model', 'token-optimization/cache_lookup', 'token-optimization/cache_store', 'token-optimization/cache_invalidate', 'token-optimization/analyze_context', 'token-optimization/savings_report', 'token-optimization/deduplicate_messages', 'playwright-stealth/navigate', 'playwright-stealth/click', 'playwright-stealth/type_text', 'playwright-stealth/get_full_html', 'playwright-stealth/take_screenshot', 'desktop-commander/get_config', 'desktop-commander/set_config_value', 'desktop-commander/read_file', 'desktop-commander/read_multiple_files', 'desktop-commander/write_file', 'desktop-commander/write_pdf', 'desktop-commander/create_directory', 'desktop-commander/list_directory', 'desktop-commander/move_file', 'desktop-commander/start_search', 'desktop-commander/get_more_search_results', 'desktop-commander/stop_search', 'desktop-commander/list_searches', 'desktop-commander/get_file_info', 'desktop-commander/edit_block', 'desktop-commander/start_process', 'desktop-commander/read_process_output', 'desktop-commander/interact_with_process', 'desktop-commander/force_terminate', 'desktop-commander/list_sessions', 'desktop-commander/list_processes', 'desktop-commander/kill_process', 'desktop-commander/get_usage_stats', 'desktop-commander/get_recent_tool_calls', 'desktop-commander/give_feedback_to_desktop_commander', 'desktop-commander/get_prompts', 'insert_edit_into_file', 'replace_string_in_file', 'create_file', 'apply_patch', 'get_terminal_output', 'open_file', 'run_in_terminal', 'get_errors', 'list_dir', 'read_file', 'file_search', 'grep_search', 'validate_cves', 'run_subagent', 'semantic_search']
-disallowedTools:
-  - Edit
+  dynamic via AgentRegistry. Token-efficient: concise output, no filler, no redundancy
 ---
 # Agent Factory — Perfect Agent Creator
 
@@ -695,9 +690,11 @@ FROM CYBERSEC-AGENT:
 - [ ] Negative findings documented
 - [ ] Findings forwarded to CYBERSEC-AGENT
 - [ ] Session artifacts stored in workspace scope only
-```
 
 ---
+
+
+```markdown
 
 ## QUALITY RULES FOR THE FACTORY
 
@@ -711,3 +708,4 @@ FROM CYBERSEC-AGENT:
 8. **No hardcoded URLs/ports** — All A2A integration uses `AgentRegistry` dynamic discovery. Never write `localhost:8000` or any specific port in the output.
 9. **Archetype awareness** — Use the Orchestrator Template for orchestrator agents and the Specialist Template for all others. Never mix them.
 10. **Dynamic delegation** — Sub-agent references use names (e.g., `memory-analyst`), never URLs. The registry resolves names to addresses at runtime.
+```

@@ -353,7 +353,7 @@ async def seed_marketplace_assets() -> Dict[str, Any]:
     Returns:
         {"created": int, "skipped": int, "total": int, "mcp_count": int, "skill_count": int, ...}
     """
-    from db.models.marketplace import MarketplaceMCP, Skill, Agent, Plugin, Workflow
+    from db.models.marketplace import MarketplaceMCP, Skill, Agent
     
     created = skipped = 0
     mcp_created = skill_created = agent_created = 0

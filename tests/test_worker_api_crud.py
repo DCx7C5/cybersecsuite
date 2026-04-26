@@ -12,14 +12,12 @@ from __future__ import annotations
 
 import pytest
 import pytest_asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime
+from unittest.mock import MagicMock
 from uuid import uuid4
 
 from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
-from tortoise.exceptions import DoesNotExist
 
 from db.models.scope import Project, Session
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog

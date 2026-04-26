@@ -19,18 +19,16 @@ from __future__ import annotations
 
 import pytest
 import pytest_asyncio
-import json
 import time
-from datetime import datetime
 from uuid import uuid4
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import MagicMock
 
-from httpx import AsyncClient, ASGITransport
-from fastapi import FastAPI, Request, status
+from httpx import AsyncClient
+from fastapi import FastAPI, Request
 from tortoise import Tortoise
 
 from db.models.scope import Project, Session
-from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog, WorkerStateTransition
+from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 from api.routes.worker_batch import router as batch_router
 
 
@@ -312,7 +310,6 @@ async def test_batch_stop_invalid_state(test_project, test_workers, mock_scope_c
 @pytest.mark.asyncio
 async def test_batch_update_single_field(test_project, test_workers, mock_scope_context):
     """Test updating single configuration field in batch."""
-    from pydantic import BaseModel
     from api.routes.worker_batch import WorkerConfigUpdate, _process_batch_operation
     
     worker = test_workers[0]

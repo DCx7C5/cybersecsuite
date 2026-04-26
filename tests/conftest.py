@@ -7,13 +7,16 @@ import os
 import sys
 from pathlib import Path
 
-import pytest  # noqa: E402 — must come after sys.path manipulation below
-
 # Add src to path FIRST — before any imports
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
+
+import pytest  # noqa: E402 — must come after sys.path manipulation
+import pytest_asyncio  # noqa: E402
+from tortoise import Tortoise  # noqa: E402
+from db.models.scope import Project, Session  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -68,10 +71,7 @@ def pytest_configure(config):
 
 
 # Database and model fixtures for Phase 5C tests
-import pytest_asyncio
-import os
-from tortoise import Tortoise
-from db.models.scope import Project, Session
+
 
 
 @pytest_asyncio.fixture(scope="function")

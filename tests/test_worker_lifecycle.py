@@ -16,16 +16,15 @@ from __future__ import annotations
 import pytest
 import pytest_asyncio
 import json
-from datetime import datetime
 from uuid import uuid4
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 
 from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 
 from db.models.scope import Project
-from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog, WorkerStateTransition
+from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 from api.routes.worker_lifecycle import router as lifecycle_router
 
 

@@ -4,10 +4,9 @@ Tests for t367: Worker Session State Save/Restore.
 Tests context persistence, execution history, bookmarks, and integrity verification.
 """
 import pytest
-import json
 from datetime import datetime
 
-from db.models.worker import WorkerSession, WorkerState
+from db.models.worker import WorkerSession
 from db.session_manager import (
     WorkerSessionManager,
     ExecutionHistoryManager,
@@ -15,7 +14,6 @@ from db.session_manager import (
     IntegrityCheckError,
     SessionNotFoundError,
 )
-from db.models.scope import Project
 
 
 @pytest.mark.asyncio

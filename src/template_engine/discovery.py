@@ -125,37 +125,83 @@ def discover_skills(
     domain: str | None = None,
     project_dir: Path | None = None,
 ) -> list[dict]:
-    """Discover skills from .claude/skills/ directory."""
+    """Discover skills from multiple locations (marketplace, .claude/skills, etc).
+    
+    Search order (highest priority first):
+    1. AI Marketplace: /home/daen/Projects/ai-marketplace/skills/
+    2. User global: ~/.claude/skills/
+    3. Fallback: Look for skills-index.json
+    """
     global_dir = Path("~/.claude").expanduser()
     if project_dir is None:
         project_dir = Path.cwd()
 
+    # Primary locations to search (highest to lowest priority)
+    marketplace_dir = Path("/home/daen/Projects/ai-marketplace/skills")
+    marketplace_index = marketplace_dir / "index.json"
     skills_dir = global_dir / "skills"
     index_file = global_dir / "skills-index.json"
 
     results: list[dict] = []
+    seen_ids: set[str] = set()
 
+    def add_skill(skill_data: dict) -> None:
+        """Add skill to results, avoiding duplicates."""
+        skill_id = skill_data.get("id") or skill_data.get("path", "")
+        if skill_id not in seen_ids:
+            results.append(skill_data)
+            seen_ids.add(skill_id)
+
+    # 1. Try marketplace index first (highest priority)
+    if marketplace_index.exists():
+        try:
+            index = json.loads(marketplace_index.read_text())
+            skills = index.get("skills", [])
+            for s in skills:
+                if domain is None or s.get("category", "").startswith(domain):
+                    add_skill(s)
+            if results:
+                return results  # Use marketplace skills exclusively
+        except Exception:
+            pass
+
+    # 2. Try marketplace directory (if index not found)
+    if marketplace_dir.exists() and not results:
+        for p in sorted(marketplace_dir.rglob("SKILL.md")):
+            name = p.parent.name
+            rel = str(p.parent.relative_to(marketplace_dir))
+            if domain and not rel.startswith(domain):
+                continue
+            add_skill({
+                "name": name,
+                "path": str(p),
+                "domain": rel.split("/")[0] if "/" in rel else "other",
+                "source": "marketplace",
+            })
+
+    # 3. Try user index
     if index_file.exists():
         try:
             index = json.loads(index_file.read_text())
             skills = index.get("skills", [])
             for s in skills:
                 if domain is None or s.get("domain") == domain:
-                    results.append(s)
-            return results
+                    add_skill(s)
         except Exception:
             pass
 
+    # 4. Try user skills directory
     if skills_dir.exists():
         for p in sorted(skills_dir.rglob("SKILL.md")):
             name = p.parent.name
             rel = str(p.parent.relative_to(skills_dir))
             if domain and not rel.startswith(domain):
                 continue
-            results.append({
+            add_skill({
                 "name": name,
                 "path": str(p),
                 "domain": rel.split("/")[0] if "/" in rel else "other",
+                "source": "user",
             })
 
     return results

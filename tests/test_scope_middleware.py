@@ -10,18 +10,13 @@ Tests:
 - 90%+ code coverage
 """
 import pytest
-import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime
 
 from fastapi import FastAPI, Request
 from starlette.testclient import TestClient
-from starlette.responses import JSONResponse
 
 from ai_proxy.middleware import ScopeMiddleware, ScopeContext
 from db.exceptions import (
-    ScopeError,
-    ScopePermissionError,
     ScopeValidationError,
 )
 
@@ -328,13 +323,13 @@ class TestScopePermissionChecking:
         with patch('ai_proxy.middleware.check_scope_permission') as mock_check:
             mock_check.return_value = True
             
-            middleware = ScopeMiddleware(
+            _ = ScopeMiddleware(
                 app,
                 permission_check_enabled=True,
                 audit_enabled=False,
             )
             
-            ctx = ScopeContext(
+            _ = ScopeContext(
                 request_id="req-123",
                 scope_level="project",
                 user_id="user-456",

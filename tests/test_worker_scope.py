@@ -12,7 +12,7 @@ from db.models.worker import (
     WorkerAuditLog,
     WorkerState,
 )
-from db.models.scope import Project, Session as DBSession
+from db.models.scope import Project
 from db.worker_manager import WorkerStateMachine
 
 
@@ -331,7 +331,7 @@ class TestAuditTrail:
         test_project
     ) -> None:
         """Test that audit log timestamp is recorded correctly."""
-        from datetime import datetime, timezone
+        from datetime import timezone
         
         sm = WorkerStateMachine(
             worker_id="worker-audit-trail-3",

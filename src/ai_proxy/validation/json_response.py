@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 logger = logging.getLogger("ai_proxy.validation.json_response")
 
-T = TypeVar("T", bound=BaseModel")
+T = TypeVar("T", bound=BaseModel)
 
 
 class ResponseFormat(str, Enum):

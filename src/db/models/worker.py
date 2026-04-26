@@ -18,12 +18,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from tortoise import fields, models
-from tortoise.expressions import F
 
 
 class WorkerState(str, Enum):

@@ -17,11 +17,7 @@ Test categories:
 """
 from __future__ import annotations
 
-import asyncio
-import json
 import os
-import tempfile
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -29,10 +25,8 @@ import pytest
 from ai_proxy.qol_controls.a2a_integration import (
     QoLA2APublisher,
     QoLA2ASubscriber,
-    get_publisher,
-    get_subscriber,
 )
-from ai_proxy.qol_controls.manager import QoLManager, _get_base_dir, get_manager
+from ai_proxy.qol_controls.manager import QoLManager
 from ai_proxy.qol_controls.models import (
     QoLSecurityError,
     QoLSettings,
@@ -352,7 +346,6 @@ class TestEnvVarConfigurationT021:
     def test_openobserve_enabled_env_var(self):
         """Test OPENOBSERVE_ENABLED environment variable."""
         with patch.dict(os.environ, {"OPENOBSERVE_ENABLED": "false"}):
-            from openobserve.writer import _ENABLED
             # Re-import to check the flag
             import importlib
             import openobserve.writer

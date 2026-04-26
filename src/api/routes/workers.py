@@ -13,19 +13,16 @@ All endpoints enforce scope via request.state.scope_context
 from __future__ import annotations
 
 import logging
-import hashlib
 from datetime import datetime
 from typing import Any, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Query, Path
 from pydantic import BaseModel, Field, field_validator, ConfigDict
-from tortoise.exceptions import DoesNotExist
 from tortoise.transactions import in_transaction
 
 from db.models.scope import Project, Session
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
-from db.worker_manager import WorkerStateMachine
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/workers", tags=["workers"])

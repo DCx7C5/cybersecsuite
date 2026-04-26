@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-04-26T22:47:11.580Z",
+  "wcagTargetLevel": "wcag21aa",
+  "pagesScanned": [],
+  "summary": {
+    "totalPages": 6,
+    "pagesScanned": 0,
+    "criticalViolations": 0,
+    "seriousViolations": 0,
+    "totalViolations": 0,
+    "compliancePass": true,
+    "issues": []
+  }
+}

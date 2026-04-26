@@ -18,16 +18,13 @@ import json
 from typing import Any, Optional
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Depends, status, Request, Path, Query
+from fastapi import APIRouter, HTTPException, Depends, status, Request, Path
 from pydantic import BaseModel, Field, ConfigDict
-from tortoise.exceptions import DoesNotExist
 
 from db.models.scope import Project
-from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
+from db.models.worker import WorkerSession, WorkerState
 from db.worker_manager import (
     WorkerStateMachine,
-    InvalidStateTransitionError,
-    WorkerNotFoundError,
 )
 
 logger = logging.getLogger(__name__)
