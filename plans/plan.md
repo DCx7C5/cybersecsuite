@@ -68,37 +68,57 @@ Every phase must pass a quality gate before marking DONE and proceeding to the n
 ```bash
 # CyberSecSuite (if changes)
 cd /home/daen/Projects/cybersecsuite
-ruff check .
-mypy src/ --strict
+ruff check . --exclude node_modules,build,dist,__pycache__
+mypy src/ --strict --exclude=tests
 
 # AI Marketplace (if changes)
 cd /home/daen/Projects/ai-marketplace
-ruff check .
-mypy mcps/ --strict
+ruff check mcps/ --exclude node_modules,build,dist,__pycache__
+mypy mcps/ --strict --exclude=tests
 ```
 **Success Criteria:** Zero errors, zero warnings
 
 **2. Run Test Suite**
 ```bash
 # CyberSecSuite tests
-pytest tests/ -v --cov=src/ --cov-report=term-missing
+pytest tests/ -v --cov=src/ --cov-report=term-missing --cov-fail-under=80
 
 # AI Marketplace template tests
-pytest mcps/_template/tests/ -v --cov=src/mcp_template/ --cov-report=term-missing
-```
-**Success Criteria:** All tests pass, coverage ≥80%
+pytest mcps/_template/tests/ -v --cov=src/mcp_template/ --cov-report=term-missing --cov-fail-under=80
 
-**3. Integration Smoke Tests**
-- Verify imports work without circular dependencies
-- Verify database schema migrations (if applicable)
-- Verify CLI tools execute without errors
-- Verify MCP servers start without crashing
+# Phase-specific MCP tests (if applicable)
+pytest mcps/{mcp_name}/tests/ -v --cov=src/{mcp_name} --cov-fail-under=80
+```
+**Success Criteria:** All tests pass, coverage ≥80%, no skipped/xfail tests allowed except documented
+
+**3. Integration Smoke Tests (Detailed Checklist)**
+```bash
+# 1. Import validation: No circular dependencies
+python -c "from src.csmcp import *; print('✓ Core imports OK')"
+
+# 2. MCP server startup: Can initialize and respond
+python -m mcps._template && echo "✓ Template MCP starts OK" || exit 1
+
+# 3. csscore availability (Phase 0.75+): Other MCPs can import csscore
+python -c "from mcp_csscore import *; print('✓ csscore imports OK')"
+
+# 4. Database schema: Migrations clean (if applicable)
+python manage.py migrate --dry-run --check || echo "Schema check OK"
+
+# 5. CLI tools: Basic commands execute without errors
+python -m src.cli --help > /dev/null && echo "✓ CLI tools OK"
+
+# 6. Tool registry: Marketplace catalog loads without errors
+jq . /home/daen/Projects/ai-marketplace/index.json > /dev/null && echo "✓ Catalog OK"
+```
 
 **4. Fix Issues & Re-run**
 - Any linting/type errors → fix immediately
 - Any test failures → debug and fix
+- Any import/startup errors → diagnose root cause
 - Re-run entire loop until all pass
 - Do NOT proceed to next phase if quality gate fails
+- Document any known issues in phase changelog
 
 **5. Documentation & Changelog**
 - **Changelog:** Create `docs/changelog/phase{N}_*.md` with:
@@ -163,34 +183,43 @@ pytest mcps/_template/tests/ -v --cov=src/mcp_template/ --cov-report=term-missin
 ### ⏳ **Phase 0.75: Core MCP Foundation (csscore)** (NEXT)
 **Purpose:** Single, unified MCP for essential CyberSecSuite core functions that all other MCPs depend on.
 
-**Scope (3-5 critical tools):**
-- Marketplace registry access
-- Asset discovery & enumeration
-- Configuration management
-- Core logging/audit functions
-- Session/context management
+**Scope (EXPLICITLY DEFINED — 5 core functions):**
+1. **Marketplace Registry Access** — Query available MCPs, versions, dependencies
+2. **Asset Discovery & Enumeration** — List discovered systems, assets, targets
+3. **Configuration Management** — Read/write/validate CyberSecSuite config
+4. **Core Logging & Audit** — Structured logging for all MCPs (not syslog)
+5. **Scope & Context Management** — Runtime scope tracking (session/project/app level)
 
 **Why Needed:**
-- All Phase 2-5 MCPs will import csscore
-- Prevents circular dependencies between MCPs
-- Centralizes shared infrastructure
-- Foundation for Phases 2-5
+- All Phase 2-5 MCPs will import csscore (dependency graph prevents circular references)
+- Centralizes shared infrastructure (logging, config, registry)
+- Prevents N MCPs reimplementing the same utilities
+- Single version contract: all MCPs use csscore==1.0.0 (pinned)
+
+**csscore Constraints (ENFORCED):**
+- ❌ NO domain-specific logic (only generic utilities)
+- ❌ NO direct database access (use CyberSecSuite proxy)
+- ✅ ONLY async/await patterns
+- ✅ MUST be ≤2 MB (prevent bloat)
+- ✅ MUST have 100% test coverage
+- ✅ MUST NOT import from any Phase 2-5 MCPs
 
 **Tasks:**
-- Extract core utility functions from monolithic csmcp
-- Create csscore MCP structure in template
-- Implement async/await foundations
-- Write integration tests
-- Add to GitHub Actions CI/CD
-- Update marketplace catalog (add csscore as dependency for all others)
+- Extract 5 core utility functions from monolithic csmcp
+- Create csscore MCP structure in /home/daen/Projects/ai-marketplace/mcps/csscore/
+- Implement async/await foundations with proper type hints
+- Write unit tests (100% coverage minimum)
+- Add to GitHub Actions CI/CD (inherit from _template)
+- Update marketplace catalog (add csscore as REQUIRED dependency for all MCPs)
 
 **Quality Gate for Phase 0.75:**
 - ✓ Ruff: zero errors
 - ✓ MyPy strict: zero errors
-- ✓ Pytest: 100% of tests pass
-- ✓ Core functions importable by other MCPs
+- ✓ Pytest: 100% coverage (not 80%)
+- ✓ Module size: ≤2 MB
 - ✓ MCP server starts cleanly
-- ✓ All 12 MCPs can import csscore without issues
+- ✓ All 12 Phase 2-5 MCPs can import csscore without issues
+- ✓ No circular imports detected (run check-circular-deps.py)
 
 ### ⏳ **Phase 2: High-Priority MCP Extraction** (AFTER CSSCORE)
 **Target MCPs (4 tools with ~52 tools total, all depend on csscore):**
@@ -267,13 +296,28 @@ Before marking any phase DONE:
 
 ### Pre-Existing Issues
 - Database schema migration issues (manage schema command fails on pre-existing state) — documented but not blocking
-- Circular dependency potential in Phase 2-5 (will validate with check-circular-deps.py)
+- Circular dependency potential in Phase 2-5 (will validate with check-circular-deps.py after csscore)
+
+### Phase 0.75-Specific Risks
+- **csscore Bloat:** Core functions creeping into domain logic
+  - **Mitigation:** Enforce ≤2 MB size limit, explicit module allowlist
+- **Circular Imports:** csscore accidentally importing from Phase 2-5 MCPs
+  - **Mitigation:** check-circular-deps.py mandatory in Phase 0.75 exit gate
+- **Version Pinning:** csscore breaking changes affect all Phase 2-5 MCPs
+  - **Mitigation:** Strict SemVer (1.0.0 locked), change gate requires all dependent tests pass
+
+### Phase 2-5 Risks (Updated for csscore dependency)
+- **Import Cascades:** One csscore function change requires retesting all 12 MCPs
+  - **Mitigation:** Minimal function exports, explicit dependency contract in __all__
+- **Test Coverage:** csscore must maintain 100% coverage (not 80%) to protect dependents
+  - **Mitigation:** Phase 0.75 exit gate enforces coverage >= 100%
 
 ### Mitigation Strategies
 - Run linting/testing after every phase
 - Use strict type checking to catch issues early
-- Validate imports before committing
+- Validate imports and circular dependency detection before committing
 - Tag phases in git for easy rollback if needed
+- Document csscore API in dedicated docs/csscore.md (API contract)
 
 ---
 

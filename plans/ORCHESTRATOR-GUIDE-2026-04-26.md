@@ -4,7 +4,7 @@
 **Date:** 2026-04-26  
 **Project:** 87 tools → 12 externalized MCPs + comprehensive QA  
 **Duration:** 50-68 hours (6-9 days)  
-**Status:** ✅ Ready for Phase 0.5 Execution (All blockers resolved)
+**Status:** ✅ Phases 0.5 & 1 COMPLETE | Phase 0.75 (csscore) NEXT | Orchestrator updated
 
 ---
 
@@ -14,11 +14,13 @@
 Execute a 12-phase transformation externalizing 87 monolithic MCP tools into 12 self-contained, distributable MCPs plus comprehensive QA infrastructure.
 
 ### Timeline
-- **Phase 0.5** (2-3h): Marketplace Models & Database
-- **Phases 1-5** (22-34h): MCP Extraction (87 tools → 12 MCPs)
+- **Phase 0.5** (2-3h): ✅ DONE — Marketplace Models & Database
+- **Phase 1** (4-6h): ✅ DONE — MCP Template Infrastructure
+- **Phase 0.75** (3-5h): ⏳ NEXT — csscore Foundation (5 core functions, 100% coverage)
+- **Phases 2-5** (20-30h): Extract 4 MCPs (52 tools total, all depend on csscore)
 - **Phases 6-9** (11-15h): Testing, docs, bootstrap, skills migration
 - **Phases 10-11** (15-19h): Marketplace readiness + QA
-- **Total:** 50-68 hours
+- **Total:** 50-68 hours + Phase 0.75 buffer (new)
 
 ### Your Authority (YOU CAN)
 ✅ Spawn agents (python-developer, explore, task)  
@@ -150,28 +152,61 @@ sqlite3 session.db "SELECT COUNT(*) FROM todos WHERE id LIKE 'phase$(N-1)%' AND 
 
 Follow EXACTLY in order:
 
-**1. Run Exit Validation** (from plan.md Phase N → "Exit Gate" section)
+**1. Run Quality Gate Loop** (mandatory for all phases)
 ```bash
-# Example Phase 1
-cd ai-marketplace/mcps/_template && pytest tests/ && echo "✅ Phase 1 Complete"
+# Linting + Type Checking
+cd /home/daen/Projects/cybersecsuite && ruff check . && mypy src/ --strict
+cd /home/daen/Projects/ai-marketplace && ruff check mcps/ && mypy mcps/ --strict
+
+# Test Suite (Phase-specific coverage: ≥80% normal, 100% for Phase 0.75 csscore)
+pytest tests/ -v --cov=src/ --cov-report=term-missing --cov-fail-under=80
+
+# Integration Smoke Tests (see plan.md → Phase Completion Workflow)
+python -c "from src.csmcp import *; print('✓ Core imports OK')"
+jq . /home/daen/Projects/ai-marketplace/index.json > /dev/null && echo "✓ Catalog OK"
+```
+**Must PASS all checks before proceeding. If ANY FAIL, fix and re-run loop.**
+
+**2. Create Changelog** (if Phase N has deliverables)
+```bash
+# Create: docs/changelog/phase0N_deliverable_name.md
+# Include: executive summary, files, metrics, integration points, known issues
+# Reference: Phase 0.5 changelog as template
 ```
 
-**2. Create Git Commit** (with Co-authored-by trailer)
+**3. Update Documentation** (if applicable)
+- `docs/database.md` — schema changes
+- `docs/csscore.md` — if Phase 0.75 (API contract)
+- New MCP READMEs — if Phase 2-5 (tool list + usage)
+- Architecture diagrams — if Phase 6+ (major changes)
+
+**4. Create Git Commit** (with Co-authored-by trailer)
 ```bash
 git add -A
-git commit -m "Phase N complete: deliverable-1, deliverable-2
+git commit -m "Phase N complete: [descriptive title]
 
-- Tests: passing
-- Duration: Y hours
+Core deliverables:
+- Deliverable 1: [description, file count, size]
+- Deliverable 2: [description]
+
+Quality metrics:
+- Ruff: zero errors
+- MyPy: strict mode, zero errors
+- Pytest: [coverage]% coverage, all pass
+- Exit gate: [status + details]
+
+Next: Phase N+1 brief description
 
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+
+git tag -a phase-N-complete -m "Phase N: [title]"
 ```
 
-**3. Update plan.md** (change Phase N from "📋" to "✅")
-
-**4. Update CHANGELOG.md** (add date + phase + deliverables + duration)
-
-**5. Update Documentation** (if structure changed: tools.md, database.md, READMEs)
+**5. Verify Commit & Tag**
+```bash
+git log --oneline -1  # Verify commit message
+git tag -l | tail -1  # Verify tag exists
+```
 
 ### Handling Phase Failures (Rollback)
 
@@ -179,7 +214,8 @@ If Phase N fails mid-execution:
 
 **1. Identify the Problem**
 - Check test output / error logs
-- Read phase spec in plan.md → Phase N → "Rollback" section
+- Read phase spec in plan.md → Phase N → specific guidance
+- For Phase 0.75 csscore: Check for circular imports, bloat (>2MB), coverage <100%
 
 **2. Mark Todo Blocked**
 ```sql
@@ -192,16 +228,35 @@ WHERE id='phase_N_failing_todo';
 git log --oneline | head -10  # Find Phase N start commit
 git revert -n <start_of_phase_N>..<current_commit>
 git commit -m "Phase N rollback: [reason]"
+git tag -a phase-N-rollback -m "Rollback Phase N"
 ```
 
 **4. Fix Root Cause**
-- Reference phase spec in plan.md
-- Or read addendum (phase10-addendum.md, phase11-qa-addendum.md)
-- Common issues documented in phase spec
+- Reference phase spec in plan.md (detailed in Phase section)
+- csscore-specific: Check constraints (no domain logic, ≤2MB, 100% coverage)
+- Run check-circular-deps.py if imports suspect
 
 **5. Re-Execute Phase N**
 - Mark Phase N todos back to `pending`
 - Start Phase N from beginning
+- Document the fix in phase changelog
+
+### ⚠️ csscore Special Rules (Phase 0.75)
+
+**DO:**
+- ✅ Keep csscore functions generic (no domain-specific logic)
+- ✅ Maintain 100% test coverage minimum
+- ✅ Lock version: csscore==1.0.0 (all MCPs pin to exact version)
+- ✅ Run check-circular-deps.py in exit gate
+- ✅ Document API contract in docs/csscore.md
+
+**DON'T:**
+- ❌ Add domain-specific functions (those belong in Phase 2-5 MCPs)
+- ❌ Import from Phase 2-5 MCPs (creates circular dependency)
+- ❌ Exceed 2 MB total size (symptom of scope creep)
+- ❌ Break backwards compatibility without coordinating all MCPs
+
+**If csscore breaks, ALL Phase 2-5 MCPs break. Be extra careful.**
 
 ---
 
