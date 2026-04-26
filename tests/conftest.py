@@ -65,3 +65,51 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "asyncio: mark test as async")
     config.addinivalue_line("markers", "integration: mark test as integration test")
     config.addinivalue_line("markers", "slow: mark test as slow")
+
+
+# Database and model fixtures for Phase 5C tests
+import pytest_asyncio
+import os
+from tortoise import Tortoise
+from db.models.scope import Project, Session
+
+
+@pytest_asyncio.fixture(scope="function")
+async def db():
+    """Initialize SQLite database for tests."""
+    db_path = ":memory:"  # Use in-memory for tests
+    
+    # Only load the minimal models needed for worker tests
+    modules_to_load = [
+        "db.models.scope",  # Project and Session
+        "db.models.worker",  # Our new worker models
+    ]
+    
+    await Tortoise.init(
+        db_url=f"sqlite://{db_path}",
+        modules={"models": modules_to_load},
+    )
+    await Tortoise.generate_schemas()
+    yield Tortoise
+    await Tortoise.close_connections()
+
+
+@pytest_asyncio.fixture
+async def test_project(db):
+    """Provide a test project."""
+    project = await Project.create(
+        name="test-project",
+        description="Test project for Phase 5C",
+    )
+    return project
+
+
+@pytest_asyncio.fixture
+async def test_session(db, test_project):
+    """Provide a test session."""
+    session = await Session.create(
+        project=test_project,
+        session_id="test-session-001",
+        name="Test Session",
+    )
+    return session

@@ -64,6 +64,8 @@ MODEL_MODULES: list[str] = [
     "db.models.ai_provider_state",
     "db.models.ai_provider_events",
     "db.models.worker_context",
+    # Phase 5C — Worker state machine (t366, t367, t368)
+    "db.models.worker",
 ]
 
 from db.models.api_account import ApiAccount  # noqa: E402
@@ -78,6 +80,12 @@ from db.models.prompt import Prompt  # noqa: E402
 from db.models.ai_provider_state import AIProviderState  # noqa: E402
 from db.models.ai_provider_events import AIProviderEvent  # noqa: E402
 from db.models.worker_context import WorkerContext  # noqa: E402
+from db.models.worker import (  # noqa: E402
+    WorkerState,
+    WorkerStateTransition,
+    WorkerSession,
+    WorkerAuditLog,
+)
 
 __all__ = [
     "MODEL_MODULES",
@@ -99,4 +107,8 @@ __all__ = [
     "AIProviderState",
     "AIProviderEvent",
     "WorkerContext",
+    "WorkerState",
+    "WorkerStateTransition",
+    "WorkerSession",
+    "WorkerAuditLog",
 ]
