@@ -458,6 +458,7 @@ CREATE INDEX IF NOT EXISTS idx_pci_devices_machine_id ON pci_devices(machine_id)
 CREATE INDEX IF NOT EXISTS idx_persistence_baselines_session_id ON persistence_baselines(session_id);
 CREATE INDEX IF NOT EXISTS idx_process_baselines_session_id ON process_baselines(session_id);
 CREATE INDEX IF NOT EXISTS idx_provider_auth_methods_provider_id ON provider_auth_methods(provider_id);
+CREATE INDEX IF NOT EXISTS idx_provider_auth_methods_provider_revoked ON provider_auth_methods(provider_id, revoked_at);
 CREATE INDEX IF NOT EXISTS idx_risks_session_id ON risks(session_id);
 CREATE INDEX IF NOT EXISTS idx_scoped_entries_session_id ON scoped_entries(session_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_project_id ON sessions(project_id);

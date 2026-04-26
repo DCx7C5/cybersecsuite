@@ -61,7 +61,7 @@ async def sync_providers_to_db() -> int:
                 await ProviderAuthMethod.update_or_create(
                     provider=p,
                     auth_method=auth_method,
-                    defaults={"config": config},
+                    defaults={"config": config, "revoked_at": None},
                 )
 
     logger.info(f"Synced {synced} providers to DB")
@@ -85,5 +85,5 @@ async def sync_auth_methods(provider_id: str) -> None:
         await ProviderAuthMethod.update_or_create(
             provider=p,
             auth_method=auth_method,
-            defaults={"config": config},
+            defaults={"config": config, "revoked_at": None},
         )

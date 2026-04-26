@@ -37,10 +37,17 @@ class ProviderAuthMethod(Model):
     )
     auth_method = fields.CharField(max_length=20)
     config = fields.JSONField(default=dict)
+    auth_flow_id = fields.CharField(max_length=64, null=True)
+    device_code = fields.CharField(max_length=255, null=True)
+    user_code = fields.CharField(max_length=64, null=True)
+    expires_at = fields.DatetimeField(null=True)
+    last_polled_at = fields.DatetimeField(null=True)
+    revoked_at = fields.DatetimeField(null=True)
 
     class Meta:
         table = "provider_auth_methods"
         unique_together = (("provider", "auth_method"),)
+        indexes = (("provider_id", "revoked_at"),)
 
     def __str__(self):
         return f"ProviderAuthMethod({self.provider_id}, {self.auth_method})"

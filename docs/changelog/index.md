@@ -1,10 +1,19 @@
 # Changelog — CyberSecSuite
 
-**Latest Status**: 2026-04-26 — Phase 5B & 5C Complete (201/201 tests passing)
+**Latest Status**: 2026-04-26 — Provider Auth Buttons + Health Hook Repair Complete
 
 ---
 
 ## 🚀 Quick Reference: Most Recent Phases
+
+### Provider Auth Buttons + Health Hook Repair (2026-04-26)
+**Status**: ✅ Complete
+- Provider auth API endpoints (`initiate`, `verify`, `revoke`, `accounts`)
+- Provider Hub sign-in modal + actions column + account revoke flow
+- `ProviderAuthMethod` flow-tracking schema extensions
+- `useSystemHealth` repaired to use shared query path and `/api/health`
+- **Tests**: backend 5 passing, frontend 4 passing
+- **Docs**: [provider-auth-buttons-2026-04-26.md](provider-auth-buttons-2026-04-26.md)
 
 ### Phase 5C: Worker Context & State Machine (2026-04-26)
 **Status**: ✅ Complete (3/3 todos)
@@ -47,6 +56,7 @@
 | **0** | ✅ Complete | [phase0_changelog.md](phase0_changelog.md) | — |
 
 ### Feature & Integration Changelogs
+- [provider-auth-buttons-2026-04-26.md](provider-auth-buttons-2026-04-26.md) — Provider auth UI/API + hook repair
 - [react-migration-complete-2026-04-26.md](react-migration-complete-2026-04-26.md) — React migration complete
 - [react-router-integration-2026-04-26.md](react-router-integration-2026-04-26.md) — Router integration
 - [integration-validation-2026-04-26.md](integration-validation-2026-04-26.md) — Validation report

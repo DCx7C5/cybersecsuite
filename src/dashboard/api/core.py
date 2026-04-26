@@ -172,7 +172,7 @@ async def api_providers_hub(request: Request) -> JSONResponse:
     accounts_by_provider: dict[str, list[dict]] = {}
     try:
         db_auth_methods = await asyncio.wait_for(
-            ProviderAuthMethod.all().select_related("provider"),
+            ProviderAuthMethod.filter(revoked_at__isnull=True).select_related("provider"),
             timeout=5.0,
         )
         for am in db_auth_methods:

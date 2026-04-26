@@ -137,6 +137,44 @@ Returns `{"task_id": "uuid"}`. Read events via `GET /sse/agent-run/{task_id}`.
 | DELETE | `/api/accounts/{vault_key}`              | Delete account                  |
 | GET    | `/api/accounts/resolve?provider_id={id}` | Resolve API key for provider    |
 
+### Provider Authentication (Provider Hub)
+
+| Method | Path                                              | Description |
+|--------|---------------------------------------------------|-------------|
+| POST   | `/api/providers/{provider_id}/auth/initiate`      | Start provider auth flow (`oauth`, `device_flow`, `api_key`, `browser`) |
+| POST   | `/api/providers/{provider_id}/auth/verify`        | Verify/complete provider auth flow or save credentials |
+| POST   | `/api/providers/{provider_id}/auth/revoke`        | Revoke (delete) provider account credentials |
+| GET    | `/api/providers/{provider_id}/accounts`           | List provider-scoped accounts |
+
+**`POST /api/providers/{provider_id}/auth/initiate` body:**
+```json
+{"auth_method": "oauth"}
+```
+
+**OAuth initiate response (example):**
+```json
+{
+  "status": "oauth_pending",
+  "auth_flow_id": "uuid",
+  "state": "random-state",
+  "oauth_url": "https://provider/oauth/authorize?...",
+  "expires_in": 900
+}
+```
+
+**Device flow initiate response (example):**
+```json
+{
+  "status": "device_pending",
+  "auth_flow_id": "uuid",
+  "device_code": "opaque-device-code",
+  "user_code": "ABCD-EFGH",
+  "verification_uri": "https://provider/device",
+  "interval": 8,
+  "expires_in": 900
+}
+```
+
 ### Startup
 
 | Method | Path                   | Description                               |

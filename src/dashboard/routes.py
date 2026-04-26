@@ -116,6 +116,12 @@ from dashboard.api.accounts import (
     api_accounts_delete,
     api_accounts_resolve,
 )
+from dashboard.api.provider_auth import (
+    api_provider_auth_initiate,
+    api_provider_auth_verify,
+    api_provider_auth_revoke,
+    api_provider_accounts,
+)
 from dashboard.api.startup import (
     api_startup_status,
 )
@@ -229,6 +235,10 @@ def create_dashboard_router() -> Router:
             Route("/api/providers", api_providers, methods=["GET"]),
             Route("/api/providers/hub", api_providers_hub, methods=["GET"]),
             Route("/api/providers/{provider_id}", api_provider_set_enabled, methods=["PATCH"]),
+            Route("/api/providers/{provider_id}/auth/initiate", api_provider_auth_initiate, methods=["POST"]),
+            Route("/api/providers/{provider_id}/auth/verify", api_provider_auth_verify, methods=["POST"]),
+            Route("/api/providers/{provider_id}/auth/revoke", api_provider_auth_revoke, methods=["POST"]),
+            Route("/api/providers/{provider_id}/accounts", api_provider_accounts, methods=["GET"]),
             Route("/api/usage", api_usage, methods=["GET"]),
             Route("/api/health", api_health, methods=["GET"]),
             Route("/api/activity", api_dashboard_activity, methods=["GET"]),

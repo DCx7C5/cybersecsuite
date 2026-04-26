@@ -25,25 +25,34 @@ make dashboard-serve  # serves at http://localhost:9000
 
 ## REST API Endpoints
 
-All endpoints return JSON. Mounted at `/dashboard/api/`.
+All endpoints return JSON. Mounted at `/api/`.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/dashboard/api/overview` | GET | System overview: version, uptime, module status |
-| `/dashboard/api/providers` | GET | AI provider list with status and model counts |
-| `/dashboard/api/usage` | GET | Token + cost usage stats by provider |
-| `/dashboard/api/health` | GET | Full health check (DB, providers, MCP) |
-| `/dashboard/api/crypto` | GET | Crypto module status (keys loaded, algo info) |
-| `/dashboard/api/a2a` | GET | A2A server status: agent count, task counts |
-| `/dashboard/api/db/counts` | GET | Row counts for all 50 ORM models |
-| `/dashboard/api/investigations` | GET | Recent investigations list |
-| `/dashboard/api/agents` | GET | All loaded agents (name, model, skills) |
-| `/dashboard/api/routing` | GET | Circuit breaker states + routing stats |
-| `/dashboard/api/agent-factory` | GET | AGENT_FACTORY config + available models |
-| `/dashboard/api/cases` | GET | Open investigation cases |
-| `/dashboard/api/tasks` | GET | Recent A2A tasks (state + summary) |
-| `/dashboard/api/tasks/{id}/cancel` | POST | Cancel a running A2A task |
-| `/dashboard/api/prompts` | GET | Prompt templates catalog |
+| `/api/overview` | GET | System overview: version, uptime, module status |
+| `/api/providers` | GET | AI provider list with status and model counts |
+| `/api/usage` | GET | Token + cost usage stats by provider |
+| `/api/health` | GET | Full health check (DB, providers, MCP) |
+| `/api/crypto` | GET | Crypto module status (keys loaded, algo info) |
+| `/api/a2a` | GET | A2A server status: agent count, task counts |
+| `/api/db-counts` | GET | Row counts for all ORM models |
+| `/api/investigations` | GET | Recent investigations list |
+| `/api/agents` | GET | All loaded agents (name, model, skills) |
+| `/api/routing` | GET | Circuit breaker states + routing stats |
+| `/api/agent-factory` | GET | AGENT_FACTORY config + available models |
+| `/api/cases` | GET | Open investigation cases |
+| `/api/tasks` | GET | Recent A2A tasks (state + summary) |
+| `/api/tasks/{task_id}/cancel` | POST | Cancel a running A2A task |
+| `/api/prompts` | GET | Prompt templates catalog |
+
+### Provider Hub auth endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/providers/{provider_id}/auth/initiate` | POST | Start OAuth/device/API key auth flow |
+| `/api/providers/{provider_id}/auth/verify` | POST | Verify or complete auth flow |
+| `/api/providers/{provider_id}/auth/revoke` | POST | Revoke provider account credentials |
+| `/api/providers/{provider_id}/accounts` | GET | List provider accounts |
 
 ## SSE Endpoints
 
