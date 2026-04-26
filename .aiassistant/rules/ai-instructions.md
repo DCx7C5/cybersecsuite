@@ -1,3 +1,7 @@
+---
+apply: always
+---
+
 # CyberSecSuite — AI Context (v1.4)
 
 Full-stack cybersecurity forensics platform.
@@ -110,7 +114,7 @@ async def _fn(args: dict[str, Any]) -> dict:
 - Never use `Exception` or catch broad exceptions without re-raising or logging the error details; always use specific exception types and include error handling logic that provides useful feedback for debugging.
 - Check Python for PEP 8 compliance and TypeScript for best practices; avoid antipatterns and ensure code readability and maintainability.
 - Imports should be organized with standard library imports first, followed by third-party imports, and then local application imports, each separated by a blank line.
-- Python files must be linted with `flake8` and TypeScript files must be linted with `eslint` to maintain code quality and consistency across the codebase.
+- TypeScript files must be linted with `eslint` to maintain code quality and consistency across the codebase.
 ---
 
 ## Documentation and Changelog

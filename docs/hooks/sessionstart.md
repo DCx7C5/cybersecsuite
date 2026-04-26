@@ -21,4 +21,3 @@ Ensure clean, reproducible forensic state before any agent (Hunter, Hunter_Elite
 **Ready for Layer 2–7 Specialists, Memory-Analyst and Hunter_Elite.**
 
 **Do not modify without updating manifest.json + hooks.json**
-</FILE>

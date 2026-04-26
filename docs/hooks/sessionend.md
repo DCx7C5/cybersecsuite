@@ -22,4 +22,3 @@ Guarantee **nothing is lost** between sessions.
 **All agents must call this hook before ending a session.**
 
 **Do not modify without updating manifest.json + hooks.json**
-</FILE>

@@ -66,6 +66,8 @@ MODEL_MODULES: list[str] = [
     "db.models.worker_context",
     # Phase 5C — Worker state machine (t366, t367, t368)
     "db.models.worker",
+    # Phase 0.5 — Marketplace models
+    "db.models.marketplace",
 ]
 
 from db.models.api_account import ApiAccount  # noqa: E402
@@ -85,6 +87,14 @@ from db.models.worker import (  # noqa: E402
     WorkerStateTransition,
     WorkerSession,
     WorkerAuditLog,
+)
+from db.models.marketplace import (  # noqa: E402
+    MarketplaceAsset,
+    MarketplaceMCP,
+    Skill,
+    Agent,
+    Plugin,
+    Workflow,
 )
 
 __all__ = [
@@ -111,4 +121,10 @@ __all__ = [
     "WorkerStateTransition",
     "WorkerSession",
     "WorkerAuditLog",
+    "MarketplaceAsset",
+    "MarketplaceMCP",
+    "Skill",
+    "Agent",
+    "Plugin",
+    "Workflow",
 ]

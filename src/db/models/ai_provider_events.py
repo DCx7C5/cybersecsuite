@@ -136,9 +136,9 @@ class AIProviderEvent(Model):
         table = "ai_provider_events"
         # Composite index for session + timestamp queries (most common)
         indexes = [
-            ("session", "-created_at"),  # DESC ordering for recent events
+            ("session", "created_at"),
             ("session", "event_type"),
-            ("event_type", "-created_at"),
+            ("event_type", "created_at"),
         ]
         # Append-only: prevent accidental updates
         # (enforced at application layer, not DB)
