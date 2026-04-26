@@ -8,7 +8,7 @@ append-only time-series data (audit logs, API usage, LLM calls, intel update log
 
 ---
 
-## Model Inventory (~41 ORM models)
+## Model Inventory (~47 ORM models)
 
 | Module                         | Table                                    | Base          | Purpose                          |
 |--------------------------------|------------------------------------------|---------------|----------------------------------|
@@ -46,6 +46,12 @@ append-only time-series data (audit logs, API usage, LLM calls, intel update log
 | `intel_feed_source.py`         | `intel_feed_sources`                     | `Model`       | Threat intel feeds               |
 | `feed_snapshot.py`             | `feed_snapshots`                         | `Model`       | Feed ingestion snapshots         |
 | `opencti.py`                   | `opencti_entries`                        | `Model`       | OpenCTI indicator bridge         |
+| `marketplace.py`               | `marketplace_assets`                     | `Model`       | Unified marketplace asset catalog (Phase 0.5) |
+| `marketplace.py`               | `marketplace_mcps`                       | `Model`       | MCP package registry w/ install tracking |
+| `marketplace.py`               | `marketplace_skills`                     | `Model`       | Skill discovery index            |
+| `marketplace.py`               | `marketplace_agents`                     | `Model`       | AI agent registry                |
+| `marketplace.py`               | `marketplace_plugins`                    | `Model`       | Browser plugin registry          |
+| `marketplace.py`               | `marketplace_workflows`                  | `Model`       | Workflow template registry       |
 | `settings.py`                  | `system_settings`                        | `Model`       | KV system settings               |
 
 ---
