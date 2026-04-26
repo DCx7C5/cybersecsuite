@@ -129,7 +129,7 @@ describe('ExecutionTimeline', () => {
     )
 
     const buttons = container.querySelectorAll('button')
-    const bookmarkBtn = Array.from(buttons).find((b) => b.textContent?.includes('Bookmark'))
+    const bookmarkBtn = Array.from(buttons).find((b: Element) => b.textContent?.includes('Bookmark'))
 
     if (bookmarkBtn) {
       fireEvent.click(bookmarkBtn)
@@ -144,7 +144,7 @@ describe('ExecutionTimeline', () => {
     )
 
     const buttons = container.querySelectorAll('button')
-    const exportBtn = Array.from(buttons).find((b) => b.textContent?.includes('Export'))
+    const exportBtn = Array.from(buttons).find((b: Element) => b.textContent?.includes('Export'))
 
     if (exportBtn) {
       fireEvent.click(exportBtn)
