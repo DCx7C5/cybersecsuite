@@ -70,7 +70,7 @@ export default function Sidebar() {
         {Object.entries(NAV_GROUPS).map(([groupId, groupLabel]) => {
           if (groupId === 'settings') return null
           const items = NAV_ITEMS.filter((i) => i.group === groupId)
-          const isOpen = dropdowns[groupId] !== false
+          const isOpen = dropdowns[groupId]
           return (
             <div key={groupId} data-testid={`nav-group-${groupId}`}>
               {groupLabel && (
