@@ -128,8 +128,8 @@ describe('ExecutionTimeline', () => {
       </QueryClientProvider>
     )
 
-    const buttons = container.querySelectorAll('button')
-    const bookmarkBtn = Array.from(buttons).find((b: Element) => b.textContent?.includes('Bookmark'))
+    const buttons = container.querySelectorAll('button') as NodeListOf<HTMLButtonElement>
+    const bookmarkBtn = Array.from(buttons).find((b) => b.textContent?.includes('Bookmark'))
 
     if (bookmarkBtn) {
       fireEvent.click(bookmarkBtn)
@@ -143,8 +143,8 @@ describe('ExecutionTimeline', () => {
       </QueryClientProvider>
     )
 
-    const buttons = container.querySelectorAll('button')
-    const exportBtn = Array.from(buttons).find((b: Element) => b.textContent?.includes('Export'))
+    const buttons = container.querySelectorAll('button') as NodeListOf<HTMLButtonElement>
+    const exportBtn = Array.from(buttons).find((b) => b.textContent?.includes('Export'))
 
     if (exportBtn) {
       fireEvent.click(exportBtn)
