@@ -352,24 +352,3 @@ The password reset flow generates a one-time token but does not invalidate it af
 4. Implement idempotency keys to prevent duplicate transaction processing
 5. Rate-limit and log coupon applications, referral submissions, and transfers
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "business" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

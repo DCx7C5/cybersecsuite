@@ -79,24 +79,3 @@ for pkt in packets:
         if entropy > 4.0:
             print(f"Suspicious: {query} (entropy={entropy:.2f})")
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "dnstunnel" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

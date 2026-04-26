@@ -61,24 +61,3 @@ Dump suspicious memory regions and identify shellcode using byte pattern analysi
 ## Expected Output
 
 JSON report with suspicious processes, heap spray indicators, NOP sled locations, memory region sizes, and extracted shellcode hashes.
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "heap" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

@@ -68,24 +68,3 @@ Email account compromise (EAC) is a prevalent attack vector where adversaries ga
 ## Expected Output
 
 A JSON report listing compromised or suspicious accounts, malicious inbox rules detected, impossible travel events, suspicious OAuth grants, and recommended containment actions with severity ratings.
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "email" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

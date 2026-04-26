@@ -252,24 +252,3 @@ INVESTIGATION STATUS:
   admin_svc01: Under review — may be new automation deployment (checking with IT Ops)
   mwilson:     Pending HR context — employee on notice period, monitoring increased
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "user" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

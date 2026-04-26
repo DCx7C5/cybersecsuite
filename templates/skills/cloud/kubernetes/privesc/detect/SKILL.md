@@ -261,24 +261,3 @@ kubectl get pods --all-namespaces -o json | \
 6. **Monitor with Falco** for runtime privilege escalation attempts
 7. **Audit RBAC changes** with Kubernetes audit logging
 8. **Use seccomp profiles** to restrict syscalls
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "kubernetes" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

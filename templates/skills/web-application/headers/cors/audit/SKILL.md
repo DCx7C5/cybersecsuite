@@ -343,24 +343,3 @@ The server uses regex `target\.example\.com` to validate origins, but fails to a
 4. Validate origins with exact string matching, not regex substring matching
 5. Set Access-Control-Max-Age to a reasonable value (600 seconds)
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "cors" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

@@ -320,24 +320,3 @@ A WAF blocks common XSS patterns and CSP restricts inline scripts. Discover a JS
 4. Set HttpOnly and Secure flags on session cookies
 5. Add X-Content-Type-Options: nosniff header
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "burpsuite" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

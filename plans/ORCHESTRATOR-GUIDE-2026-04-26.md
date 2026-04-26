@@ -2,25 +2,26 @@
 **Complete Reference for Executing 12-Phase Infrastructure Modernization**
 
 **Date:** 2026-04-26  
-**Project:** 87 tools → 12 externalized MCPs + comprehensive QA  
-**Duration:** 50-68 hours (6-9 days)  
-**Status:** ✅ Phases 0.5 & 1 COMPLETE | Phase 0.75 (csscore) NEXT | Orchestrator updated
+**Project:** 87 tools → 6 consolidated MCPs (real implementations)  
+**Status:** ✅ MCP Extraction & Consolidation COMPLETE
 
 ---
 
 ## ⚡ START HERE (5 minutes)
 
 ### Your Mission
-Execute a 12-phase transformation externalizing 87 monolithic MCP tools into 12 self-contained, distributable MCPs plus comprehensive QA infrastructure.
+Deliver 6 consolidated MCPs extracted from csmcp implementations: csscore (22 modules) + 5 specialized MCPs.
 
 ### Timeline
-- **Phase 0.5** (2-3h): ✅ DONE — Marketplace Models & Database
-- **Phase 1** (4-6h): ✅ DONE — MCP Template Infrastructure
-- **Phase 0.75** (3-5h): ⏳ NEXT — csscore Foundation (5 core functions, 100% coverage)
-- **Phases 2-5** (20-30h): Extract 4 MCPs (52 tools total, all depend on csscore)
-- **Phases 6-9** (11-15h): Testing, docs, bootstrap, skills migration
-- **Phases 10-11** (15-19h): Marketplace readiness + QA
-- **Total:** 50-68 hours + Phase 0.75 buffer (new)
+- **Extraction:** ✅ DONE — Real implementations from csmcp/cybersec/
+- **Consolidation:** ✅ DONE — 87 tools → 6 MCPs
+  - csscore-mcp: 22 modules (core infrastructure)
+  - canvas-mcp: forensic visualization
+  - memory-mcp: vector memory
+  - template-mcp: template engine
+  - playwright-mcp: browser automation
+  - dystopian-crypto-mcp: cryptography
+- **Next:** Testing, docs, bootstrap integration
 
 ### Your Authority (YOU CAN)
 ✅ Spawn agents (python-developer, explore, task)  

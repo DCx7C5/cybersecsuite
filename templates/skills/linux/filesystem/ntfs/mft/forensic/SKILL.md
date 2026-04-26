@@ -253,24 +253,3 @@ Recovered files exported to: /analysis/mft_output/recovered/
 Full CSV report: /analysis/mft_output/mft_analysis.csv (395,264 rows)
 Timeline CSV: /analysis/mft_output/mft_timeline.csv
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "mft" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

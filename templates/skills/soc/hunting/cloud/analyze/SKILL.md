@@ -169,24 +169,3 @@ Indicators are retrieved separately via `list-indicators` and include types such
 3. Cross-reference Detective findings with raw CloudTrail logs for accuracy
 4. Verify finding group correlations match manual investigation conclusions
 5. Confirm automated alerts trigger for HIGH/CRITICAL severity investigations
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "cloud" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

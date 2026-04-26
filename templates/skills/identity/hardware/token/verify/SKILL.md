@@ -220,24 +220,3 @@ Plan and execute migration from passwords to passkeys:
 | alice | YubiKey Backup | 2fc0579f... | 2026-02-15 | 2026-03-01 | 12 |
 | bob | YubiKey Primary | 2fc0579f... | 2026-02-16 | 2026-03-19 | 631 |
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "hardware" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

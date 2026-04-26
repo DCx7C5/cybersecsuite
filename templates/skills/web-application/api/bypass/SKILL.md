@@ -411,24 +411,3 @@ At 1000 attempts per minute, a 6-digit PIN can be brute-forced in under
 5. Use atomic rate limit counters (Redis INCR) to prevent race conditions
 6. Implement progressive delays (exponential backoff) in addition to hard limits
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "bypass" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

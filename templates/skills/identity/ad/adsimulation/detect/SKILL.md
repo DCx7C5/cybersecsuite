@@ -189,24 +189,3 @@ could access all 5,000 user accounts, 800 computer objects, and all data within 
 5. Implement Protected Users group for privileged accounts to prevent credential caching
 6. Deploy Microsoft Defender for Identity to detect Kerberoasting and DCSync attacks
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "adsimulation" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

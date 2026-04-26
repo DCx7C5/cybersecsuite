@@ -437,24 +437,3 @@ An OAuth consent screen allows framing. The attacker embeds the consent page and
 4. Add confirmation dialogs that cannot be pre-filled or auto-submitted
 5. Implement SameSite=Strict cookies to reduce session availability in frames
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "clickjacking" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

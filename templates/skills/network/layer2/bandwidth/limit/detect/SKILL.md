@@ -324,24 +324,3 @@ iperf3 -c 10.10.20.10 -t 10 -f m -p 5201
 2. Configure QoS to prioritize DSCP EF (46) marked traffic
 3. Set monitoring threshold at 80% bandwidth utilization for early warning
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "bandwidth" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist

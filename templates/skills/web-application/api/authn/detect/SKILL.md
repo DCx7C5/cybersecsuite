@@ -447,24 +447,3 @@ and the 7-day expiration means stolen tokens remain valid for extended periods.
 4. Reduce token TTL to 15 minutes with refresh token rotation
 5. Add `iss` and `aud` claims validation to prevent token misuse across services
 ```
-
-
----
-
-## CyberSecSuite Integration
-
-```bash
-# Open a case before starting investigation
-mcp__cybersec__case_open --title "authn" --type investigation
-
-# Persist findings to PostgreSQL
-mcp__cybersec__add_finding --title "..." --severity high --description "..."
-
-# Log IOCs
-mcp__cybersec__add_ioc --type domain --value "..." --confidence 0.9
-
-# Map to MITRE
-mcp__cybersec__suggest_mitre --description "..."
-```
-
-**Agent:** `@cybersec-agent` → delegates to appropriate specialist
