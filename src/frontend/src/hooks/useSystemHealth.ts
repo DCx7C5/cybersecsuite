@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 
@@ -35,15 +35,11 @@ export function useSystemHealth() {
     refetchInterval: 5000,
   })
 
-  useEffect(() => {
-    if (fetchedMetrics) {
-      setMetrics(fetchedMetrics)
-    }
-  }, [fetchedMetrics])
+  const metricsToReturn = fetchedMetrics || metrics
 
   return {
-    metrics,
+    metrics: metricsToReturn,
     isLoading,
-    isHealthy: metrics.error_rate_24h < 1 && metrics.cpu_usage_percent < 80,
+    isHealthy: metricsToReturn.error_rate_24h < 1 && metricsToReturn.cpu_usage_percent < 80,
   }
 }

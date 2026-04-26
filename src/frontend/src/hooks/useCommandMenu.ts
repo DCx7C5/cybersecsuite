@@ -10,7 +10,7 @@ interface CommandItem {
   shortcut?: string
 }
 
-export function useCommandMenu(commands: CommandItem[] = []) {
+export function useCommandMenu(_commands: CommandItem[] = []) {
   const [isOpen, setIsOpen] = useState(false)
 
   const openMenu = useCallback(() => setIsOpen(true), [])

@@ -49,7 +49,7 @@ test.describe('Sidebar component', () => {
     expect(visibleCount).toBeLessThanOrEqual(count)
   })
 
-  test('Sidebar persists settings open state', async ({ page, context }) => {
+  test('Sidebar persists settings open state', async ({ page }) => {
     const settingsToggle = page.locator('[data-testid="settings-toggle"]')
 
     // Open settings
@@ -70,7 +70,7 @@ test.describe('Sidebar component', () => {
     expect(isVisible).toBe(true)
   })
 
-  test('Sidebar responds to screen size changes', async ({ page, context }) => {
+  test('Sidebar responds to screen size changes', async ({ page }) => {
     const sidebar = page.locator('[data-testid="sidebar"]')
 
     // Desktop size

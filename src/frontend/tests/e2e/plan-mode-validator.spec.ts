@@ -6,8 +6,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('validatePlanMode returns valid config', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { validatePlanMode, DEFAULT_PLAN_MODE } = require('../src/utils/plan-mode-validator')
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { validatePlanMode } = validator
       return validatePlanMode({ enabled: true })
     })
 
@@ -17,8 +18,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('validatePlanMode detects conflicting modes', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { validatePlanMode } = require('../src/utils/plan-mode-validator')
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { validatePlanMode } = validator
       return validatePlanMode({ readonly: true, preview: true })
     })
 
@@ -27,8 +29,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('validatePlanMode generates warnings', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { validatePlanMode } = require('../src/utils/plan-mode-validator')
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { validatePlanMode } = validator
       return validatePlanMode({ strict: true, enabled: false })
     })
 
@@ -36,8 +39,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('canExecuteOperation respects readonly mode', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { canExecuteOperation, createReadonlyMode } = require('../src/utils/plan-mode-validator')
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { canExecuteOperation, createReadonlyMode } = validator
       const mode = createReadonlyMode()
 
       return {
@@ -53,8 +57,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('canExecuteOperation respects preview mode', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { canExecuteOperation, createPreviewMode } = require('../src/utils/plan-mode-validator')
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { canExecuteOperation, createPreviewMode } = validator
       const mode = createPreviewMode()
 
       return {
@@ -68,14 +73,15 @@ test.describe('Plan mode validator', () => {
   })
 
   test('getPlanModeString represents mode correctly', async ({ page }) => {
-    const result = await page.evaluate(() => {
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
       const {
         getPlanModeString,
         createReadonlyMode,
         createPreviewMode,
         createStrictMode,
-        DEFAULT_PLAN_MODE,
-      } = require('../src/utils/plan-mode-validator')
+      } = validator
+      const DEFAULT_PLAN_MODE = validator.DEFAULT_PLAN_MODE || { enabled: false }
 
       return {
         default: getPlanModeString(DEFAULT_PLAN_MODE),
@@ -92,10 +98,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('parsePlanMode parses string correctly', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { parsePlanMode, getPlanModeString, validatePlanMode } = require(
-        '../src/utils/plan-mode-validator'
-      )
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { parsePlanMode, validatePlanMode } = validator
 
       const mode1 = parsePlanMode('STRICT+READONLY')
       const validated1 = validatePlanMode(mode1)
@@ -120,8 +125,9 @@ test.describe('Plan mode validator', () => {
   })
 
   test('mergePlanModes combines configurations', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { mergePlanModes } = require('../src/utils/plan-mode-validator')
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
+      const { mergePlanModes } = validator
 
       const merged = mergePlanModes(
         { enabled: true },
@@ -142,12 +148,13 @@ test.describe('Plan mode validator', () => {
   })
 
   test('Preset modes are properly configured', async ({ page }) => {
-    const result = await page.evaluate(() => {
+    const result = await page.evaluate(async () => {
+      const validator = await import('../src/utils/plan-mode-validator')
       const {
         createReadonlyMode,
         createPreviewMode,
         createStrictMode,
-      } = require('../src/utils/plan-mode-validator')
+      } = validator
 
       const readonly = createReadonlyMode()
       const preview = createPreviewMode()

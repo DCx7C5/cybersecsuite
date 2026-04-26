@@ -20,9 +20,6 @@ test.describe('Hook: useBreakPoint', () => {
   test('updates breakpoint on window resize', async ({ page }) => {
     await page.goto('/')
     
-    // Store initial width
-    const initial = await page.evaluate(() => window.innerWidth)
-    
     // Resize window
     await page.setViewportSize({ width: 500, height: 600 })
     

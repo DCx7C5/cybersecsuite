@@ -250,7 +250,6 @@ test.describe('CommandMenu component', () => {
       const input = page.locator('[data-testid="command-menu-input"]')
 
       if (await input.isVisible().catch(() => false)) {
-        const initialText = await input.inputValue()
         await input.fill('chat')
         await page.waitForTimeout(100)
         await page.keyboard.press('Enter')

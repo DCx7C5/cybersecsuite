@@ -26,7 +26,7 @@ const defaultPreferences: NotificationPreferences = {
 }
 
 export default function AlertPreferences({ onClose }: AlertPreferencesProps) {
-  const { success, error, warning, info } = useNotifications()
+  useNotifications()
   const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences)
 
   const handleToggle = (type: keyof NotificationPreferences, key: keyof AlertPreference) => {

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Data Persistence E2E (T351)', () => {
-  test('localStorage persists active tab', async ({ page, context }) => {
+  test('localStorage persists active tab', async ({ page }) => {
     await page.goto('/')
 
     const chatItem = page.locator('[data-testid="nav-item-chat"]')

@@ -10,7 +10,9 @@ export default function NotificationCenter() {
 
   useEffect(() => {
     setHistory((prev) => {
-      const updated = [...prev, ...notifications.filter((n) => !prev.find((h) => h.id === n.id))]
+      const newNotifications = notifications.filter((n) => !prev.find((h) => h.id === n.id))
+      if (newNotifications.length === 0) return prev
+      const updated = [...prev, ...newNotifications]
       return updated.slice(-50)
     })
   }, [notifications])

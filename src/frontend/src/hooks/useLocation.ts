@@ -4,12 +4,12 @@ export interface Location {
   pathname: string
   search: string
   hash: string
-  state?: Record<string, any>
+  state?: Record<string, unknown>
 }
 
 export interface NavigationOptions {
   replace?: boolean
-  state?: Record<string, any>
+  state?: Record<string, unknown>
 }
 
 /**
@@ -95,16 +95,16 @@ export function useSearchParams(): [URLSearchParams, (params: URLSearchParams | 
 /**
  * Hook for deep linking with state persistence
  */
-export function useDeepLink(key: string): [any, (value: any) => void] {
+export function useDeepLink(key: string): [unknown, (value: unknown) => void] {
   const navigate = useNavigate()
   const location = useLocation()
   
-  const [state, setState] = useState<any>(() => {
+  const [state, setState] = useState<unknown>(() => {
     const saved = sessionStorage.getItem(`deeplink-${key}`)
     return saved ? JSON.parse(saved) : null
   })
 
-  const setDeepLinkState = useCallback((value: any) => {
+  const setDeepLinkState = useCallback((value: unknown) => {
     sessionStorage.setItem(`deeplink-${key}`, JSON.stringify(value))
     setState(value)
     navigate(location.pathname, { state: { [key]: value } })

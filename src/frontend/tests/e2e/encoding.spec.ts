@@ -6,8 +6,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('base64 encode/decode roundtrip', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { base64Encode, base64Decode } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { base64Encode, base64Decode } = encoding
       const original = 'Hello, World!'
       const encoded = base64Encode(original)
       const decoded = base64Decode(encoded)
@@ -21,8 +22,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('hex encode/decode roundtrip', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { ab2hex, hex2ab } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { ab2hex, hex2ab } = encoding
       const original = new Uint8Array([72, 101, 108, 108, 111]) // "Hello"
       const hex = ab2hex(original)
       const decoded = hex2ab(hex)
@@ -39,8 +41,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('URL-safe base64 encoding', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { base64UrlEncode, base64UrlDecode } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { base64UrlEncode, base64UrlDecode } = encoding
       const original = 'Test?data+with/special=chars'
       const encoded = base64UrlEncode(original)
       const decoded = base64UrlDecode(encoded)
@@ -53,8 +56,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('URL safe encode/decode', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { encodeURLSafe, decodeURLSafe } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { encodeURLSafe, decodeURLSafe } = encoding
       const original = 'Hello World & Foo=Bar'
       const encoded = encodeURLSafe(original)
       const decoded = decodeURLSafe(encoded)
@@ -66,8 +70,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('string to uint8 and back', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { stringToUint8, uint8ToString } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { stringToUint8, uint8ToString } = encoding
       const original = 'CyberSecSuite'
       const bytes = stringToUint8(original)
       const decoded = uint8ToString(bytes)
@@ -79,8 +84,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('encodeByFormat function', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { encodeByFormat } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { encodeByFormat } = encoding
       const original = 'Test'
       return {
         base64: encodeByFormat(original, 'base64'),
@@ -97,8 +103,9 @@ test.describe('Encoding utilities', () => {
   })
 
   test('decodeByFormat function', async ({ page }) => {
-    const result = await page.evaluate(() => {
-      const { encodeByFormat, decodeByFormat } = require('../src/utils/encoding')
+    const result = await page.evaluate(async () => {
+      const encoding = await import('../src/utils/encoding')
+      const { encodeByFormat, decodeByFormat } = encoding
       const original = 'Test Data'
 
       const b64 = encodeByFormat(original, 'base64')

@@ -36,7 +36,7 @@ describe('Sidebar Component - t074: Collapse State', () => {
   })
 
   it('should persist collapse state to localStorage', async () => {
-    const { rerender } = render(<Sidebar />)
+    render(<Sidebar />)
     const button = screen.getByTestId('nav-group-toggle-main')
     
     fireEvent.click(button)
@@ -96,7 +96,7 @@ describe('Sidebar Component - t092: Dropdown Functionality', () => {
   })
 
   it('should animate dropdown icon rotation', () => {
-    const { container } = render(<Sidebar />)
+    render(<Sidebar />)
     const toggle = screen.getByTestId('nav-group-toggle-main')
     const icon = toggle.querySelector('span:last-child')
     
@@ -130,7 +130,6 @@ describe('Sidebar Component - t094: Component Isolation', () => {
     const mainToggle = screen.getByTestId('nav-group-toggle-main')
     fireEvent.click(mainToggle)
     
-    const settingsToggle = screen.getByTestId('settings-toggle')
     expect(screen.getByTestId('settings-item-settings')).toBeInTheDocument()
   })
 

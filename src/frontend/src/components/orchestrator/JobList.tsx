@@ -10,10 +10,9 @@ interface JobListProps {
   jobs: ScheduledJob[]
   isLoading: boolean
   onSelectJob: (job: ScheduledJob) => void
-  onRefresh: () => void
 }
 
-export default function JobList({ jobs, isLoading, onSelectJob, onRefresh }: JobListProps) {
+export default function JobList({ jobs, isLoading, onSelectJob }: JobListProps) {
   if (isLoading) {
     return <div data-testid="job-list-loading">Loading jobs...</div>
   }

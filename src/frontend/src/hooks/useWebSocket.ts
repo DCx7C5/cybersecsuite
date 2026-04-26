@@ -30,6 +30,7 @@ export function useWebSocket(options: UseWebSocketOptions) {
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messageBufferRef = useRef<WebSocketMessage[]>([])
+  const connectRef = useRef<() => void>(() => {})
 
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
@@ -98,6 +99,8 @@ export function useWebSocket(options: UseWebSocketOptions) {
       onError?.(err instanceof Error ? err : new Error('Failed to create WebSocket'))
     }
   }, [url, isConnecting, isConnected, onError, maxRetries, scheduleBatchProcess])
+
+  connectRef.current = connect
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {

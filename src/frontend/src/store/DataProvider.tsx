@@ -1,77 +1,14 @@
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react'
-
-/**
- * T114: DataProvider Context Integration (Optional)
- * 
- * Provides global state management for sidebar, menu, and navigation state.
- * Reduces prop-drilling for deeply nested components.
- */
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface SidebarState {
-  collapsedGroups: Set<string>
-  selectedItem: { groupId: string; itemId: string } | null
-  isOpen: boolean
-  width: number
-  searchQuery: string
-}
-
-export interface MenuState {
-  isVisible: boolean
-  focusedIndex: number
-  animationInProgress: boolean
-}
-
-export interface UIState {
-  isDarkMode: boolean
-  isMobile: boolean
-  animationsEnabled: boolean
-}
-
-export interface DataContextType {
-  sidebar: SidebarState
-  menu: MenuState
-  ui: UIState
-  toggleCollapsedGroup: (groupId: string) => void
-  selectItem: (groupId: string, itemId: string) => void
-  setSidebarOpen: (isOpen: boolean) => void
-  setSidebarWidth: (width: number) => void
-  setSidebarSearchQuery: (query: string) => void
-  setMenuVisible: (isVisible: boolean) => void
-  setMenuFocusedIndex: (index: number) => void
-  setMenuAnimationInProgress: (inProgress: boolean) => void
-  setDarkMode: (isDarkMode: boolean) => void
-  setIsMobile: (isMobile: boolean) => void
-  setAnimationsEnabled: (enabled: boolean) => void
-  reset: () => void
-}
-
-// ============================================================================
-// Initial State
-// ============================================================================
-
-const initialSidebarState: SidebarState = {
-  collapsedGroups: new Set(),
-  selectedItem: null,
-  isOpen: true,
-  width: 256,
-  searchQuery: ''
-}
-
-const initialMenuState: MenuState = {
-  isVisible: false,
-  focusedIndex: -1,
-  animationInProgress: false
-}
-
-const initialUIState: UIState = {
-  isDarkMode: false,
-  isMobile: false,
-  animationsEnabled: true
-}
+import React, { useReducer, useCallback, ReactNode } from 'react'
+import { 
+  DataContext, 
+  type DataContextType, 
+  type SidebarState, 
+  type MenuState, 
+  type UIState,
+  initialSidebarState,
+  initialMenuState,
+  initialUIState,
+} from '@/context/DataContext'
 
 // ============================================================================
 // Actions
@@ -192,8 +129,6 @@ const dataReducer = (state: State, action: Action): State => {
 // Context & Hook
 // ============================================================================
 
-const DataContext = createContext<DataContextType | undefined>(undefined)
-
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(dataReducer, {
     sidebar: initialSidebarState,
@@ -280,26 +215,4 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   )
 }
 
-export const useData = (): DataContextType => {
-  const context = useContext(DataContext)
-  if (!context) {
-    throw new Error('useData must be used within DataProvider')
-  }
-  return context
-}
-
-// Convenience hooks for specific state slices
-export const useSidebarState = () => {
-  const { sidebar, toggleCollapsedGroup, selectItem, setSidebarOpen, setSidebarWidth, setSidebarSearchQuery } = useData()
-  return { sidebar, toggleCollapsedGroup, selectItem, setSidebarOpen, setSidebarWidth, setSidebarSearchQuery }
-}
-
-export const useMenuState = () => {
-  const { menu, setMenuVisible, setMenuFocusedIndex, setMenuAnimationInProgress } = useData()
-  return { menu, setMenuVisible, setMenuFocusedIndex, setMenuAnimationInProgress }
-}
-
-export const useUIState = () => {
-  const { ui, setDarkMode, setIsMobile, setAnimationsEnabled } = useData()
-  return { ui, setDarkMode, setIsMobile, setAnimationsEnabled }
-}
+export type { SidebarState, MenuState, UIState, DataContextType }
