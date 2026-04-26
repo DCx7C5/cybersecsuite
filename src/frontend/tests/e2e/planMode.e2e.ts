@@ -2,6 +2,7 @@
  * E2E Tests for Plan Mode Functionality
  */
 
+
 describe('Plan Mode E2E Tests', () => {
   beforeEach(() => {
     // Set up test environment

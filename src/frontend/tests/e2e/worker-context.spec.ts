@@ -10,7 +10,7 @@
  * - Error states and recovery
  */
 
-import { test, expect } from "./fixtures";
+import { test, expect } from "../fixtures";
 
 test.describe("Worker Context Status Display", () => {
   test.beforeEach(async ({ page }) => {

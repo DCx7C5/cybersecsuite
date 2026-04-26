@@ -11,7 +11,7 @@
  * - Graceful fallback on permission denial
  */
 
-import { test, expect } from "./fixtures";
+import { test, expect } from "../fixtures";
 
 test.describe("Tier-Based Routing & Access Control", () => {
   test.beforeEach(async ({ page }) => {

@@ -2,17 +2,19 @@
 
 ## Test Organization
 
-### TypeScript/Frontend Tests (This Directory)
-All TypeScript and frontend tests are in `tests/frontend/`:
+### TypeScript/Frontend Tests
+**Location**: `src/frontend/tests/`
+
+All TypeScript tests are now colocated in the frontend package:
 
 ```
-tests/frontend/
-├── ExecutionTimeline.test.tsx
-├── OrchestratorLayout.test.tsx
-├── WorkerList.test.tsx
-├── *.test.tsx (20+ component tests)
-├── test-runner.sh (executor script)
-└── README.md (this file)
+src/frontend/tests/
+├── *.test.tsx (25 component & hook tests)
+├── fixtures.ts (Playwright test fixtures)
+├── e2e/
+│   ├── *.spec.ts (4 e2e tests - includes planMode.e2e.ts)
+│   └── ...
+└── ...
 ```
 
 **Run TypeScript tests:**
@@ -20,22 +22,21 @@ tests/frontend/
 # From src/frontend/
 npm test
 
-# From anywhere via executor script
-./tests/frontend/test-runner.sh
+# With UI
+npm run test:ui
 
-# Run specific test
-npm test -- ExecutionTimeline
+# Watch mode
+npm test -- --watch
 ```
 
 ### Python Tests (Backend)
-All Python backend and integration tests are in `tests/backend/` and `tests/e2e/`:
+Backend tests remain in `tests/`:
 
 ```
 tests/
 ├── backend/          ← Unit tests for API
-├── e2e/              ← End-to-end integration tests
-├── pytest.ini        ← Python test config
-└── frontend/         ← TypeScript tests
+├── integration/      ← Integration tests
+└── pytest.ini        ← Python test config
 ```
 
 **Run Python tests:**
@@ -48,41 +49,49 @@ pytest -k "test_worker"  # Specific tests
 
 | Type | Location | Count |
 |------|----------|-------|
-| TypeScript Unit | `tests/frontend/` | 25+ |
+| TypeScript Unit | `src/frontend/tests/` | 25 |
+| TypeScript E2E | `src/frontend/tests/e2e/` | 4 |
 | Python Unit | `tests/backend/` | 150+ |
-| Python E2E | `tests/e2e/` | 50+ |
-| **Total** | Mixed | **225+** |
+| Python Integration | `tests/integration/` | 50+ |
+| **Total** | Mixed | **229+** |
 
 ## Running All Tests
 
 ```bash
-# From project root - run all tests
-pytest                              # Python tests
-npm -w src/frontend test           # TypeScript tests
+# From src/frontend/ - run TypeScript tests
+npm test
 
-# Or sequentially
-pytest && npm -w src/frontend test
+# From project root - run Python tests
+pytest
+
+# Run both sequentially
+npm test -w src/frontend && pytest
 ```
 
 ## Test Structure
 
-### Frontend Tests (tests/frontend/)
-Organized by component type:
-- Orchestrator components (OrchestratorLayout, TemplateBuilder, ConfigManager, etc.)
-- Worker components (WorkerList, WorkerDetail, ExecutionTimeline, etc.)
-- Hooks (useWebSocket, router, etc.)
-- Layout (Sidebar, Breadcrumb, etc.)
-- Routes (authProtectedRoutes, etc.)
+### Frontend Tests (src/frontend/tests/)
+- Component tests (Worker*, Orchestrator*, etc.)
+- Hook tests (useWebSocket, router, etc.)
+- Layout tests (Sidebar, Breadcrumb, etc.)
+- Route tests (authProtectedRoutes, etc.)
+- E2E tests (planMode, response-window, worker-context, tier-routing)
+- Fixtures (Playwright test fixtures for E2E tests)
 
-### Backend Tests
-- `tests/backend/` — Unit tests for API endpoints
-- `tests/e2e/` — Integration and end-to-end tests
+### Backend Tests (tests/)
+- `backend/` — Unit tests for API endpoints
+- `integration/` — Integration and backend-specific tests
 
 ## Configuration
 
 ### Vitest Config (src/frontend/vitest.config.ts)
-- Discovers tests in `../tests/frontend/**/*.test.tsx`
-- Uses jsdom environment
+```typescript
+test: {
+  include: ['tests/**/*.test.{ts,tsx}', 'tests/**/*.spec.ts'],
+}
+```
+- Discovers tests in `src/frontend/tests/`
+- Uses jsdom environment for React components
 - Includes test globals (describe, it, expect)
 
 ### Pytest Config (tests/pytest.ini)
@@ -90,51 +99,75 @@ Organized by component type:
 [pytest]
 testpaths = .
 python_files = test_*.py
-python_classes = Test*
-python_functions = test_*
 ```
 
 ## Test Execution Flow
 
 ```
-User runs: npm test
+User runs: npm test (from src/frontend/)
   ↓
-Executes: src/frontend/vitest.config.ts
+Loads: vitest.config.ts
   ↓
-Looks in: ../tests/frontend/**/*.test.tsx
+Discovers: tests/**/*.test.{ts,tsx}
   ↓
-Runs: 25+ TypeScript tests with vitest
-```
-
-Or with executor script:
-```
-User runs: ./tests/frontend/test-runner.sh
+Runs: All tests in src/frontend/tests/
   ↓
-Changes to: src/frontend/
-  ↓
-Executes: npm test
-  ↓
-Result: Same as above
+Result: TypeScript tests executed
 ```
 
 ## Quick Reference
 
 ```bash
-# Run all tests
-npm -w src/frontend test
+# TypeScript tests
+npm -w src/frontend test              # Run all
+npm -w src/frontend test -- --watch   # Watch mode
+npm -w src/frontend run test:ui       # UI mode
+npm -w src/frontend test -- ExecutionTimeline  # Single file
 
-# Run tests with UI
-npm -w src/frontend run test:ui
+# Python tests
+pytest                     # Run all
+pytest -v                  # Verbose
+pytest -k "pattern"        # Pattern matching
+pytest --collect-only      # List tests
 
-# Run tests in watch mode
-npm -w src/frontend test -- --watch
+# Both
+npm test -w src/frontend && pytest
+```
 
-# Run specific test file
-npm -w src/frontend test -- ExecutionTimeline
+## Test File Organization
 
-# Run Python tests
-pytest -v
-
-# Run Python tests matching pattern
-pytest -k "test_worker"
+```
+src/frontend/tests/
+├── ExecutionTimeline.test.tsx
+├── OrchestratorLayout.test.tsx
+├── WorkerList.test.tsx
+├── WorkerDetail.test.tsx
+├── MetricsCard.test.tsx
+├── BatchOperations.test.tsx
+├── TemplateBuilder.test.tsx
+├── ConfigManager.test.tsx
+├── NotificationCenter.test.tsx
+├── BatchScheduler.test.tsx
+├── HealthDashboard.test.tsx
+├── UserSettings.test.tsx
+├── AnalyticsDashboard.test.tsx
+├── Sidebar.test.tsx
+├── Breadcrumb.test.tsx
+├── authProtectedRoutes.test.tsx
+├── router.test.tsx
+├── useWebSocket.test.tsx
+├── useWebSocket.test.tsx
+├── useLocation.test.ts
+├── useKeyboardShortcuts.test.ts
+├── commandEngine.test.ts
+├── mentionValidation.test.ts
+├── sidebarPersist.test.ts
+├── useHideElement.test.ts
+├── useMenuInput.test.ts
+├── fixtures.ts
+└── e2e/
+    ├── planMode.e2e.ts
+    ├── response-window.spec.ts
+    ├── worker-context.spec.ts
+    └── tier-routing.spec.ts
 ```

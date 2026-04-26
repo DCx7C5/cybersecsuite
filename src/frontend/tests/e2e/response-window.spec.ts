@@ -10,7 +10,7 @@
  * - Responsive layout on mobile/tablet
  */
 
-import { test, expect } from "./fixtures";
+import { test, expect } from "../fixtures";
 
 test.describe("Response Window Rendering", () => {
   test.beforeEach(async ({ page }) => {
