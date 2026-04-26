@@ -1,6 +1,10 @@
 import { NAV_ITEMS, NAV_GROUPS } from '@/constants/nav'
 import { useUIStore } from '@/store/uiStore'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+
+interface DropdownState {
+  [key: string]: boolean
+}
 
 export default function Sidebar() {
   const { activeTab, setActiveTab, sidebarCollapsed } = useUIStore()
@@ -8,16 +12,27 @@ export default function Sidebar() {
     const saved = localStorage.getItem('sidebar-settings-open')
     return saved ? JSON.parse(saved) : false
   })
+  const [dropdowns, setDropdowns] = useState<DropdownState>(() => {
+    const saved = localStorage.getItem('sidebar-dropdowns')
+    return saved ? JSON.parse(saved) : {}
+  })
+  const sidebarRef = useRef<HTMLAsideElement>(null)
 
   useEffect(() => {
     localStorage.setItem('sidebar-settings-open', JSON.stringify(settingsOpen))
   }, [settingsOpen])
 
-  const groups = Object.entries(NAV_GROUPS)
-  const settingsItems = NAV_ITEMS.filter(i => i.group === 'settings')
+  useEffect(() => {
+    localStorage.setItem('sidebar-dropdowns', JSON.stringify(dropdowns))
+  }, [dropdowns])
+
+  const toggleDropdown = useCallback((groupId: string) => {
+    setDropdowns(prev => ({ ...prev, [groupId]: !prev[groupId] }))
+  }, [])
 
   return (
     <aside
+      ref={sidebarRef}
       data-testid="sidebar"
       style={{
         position: 'fixed',
@@ -52,26 +67,38 @@ export default function Sidebar() {
       </div>
 
       <nav style={{ flex: 1, padding: '8px 0' }}>
-        {groups.map(([groupId, groupLabel]) => {
+        {Object.entries(NAV_GROUPS).map(([groupId, groupLabel]) => {
           if (groupId === 'settings') return null
           const items = NAV_ITEMS.filter((i) => i.group === groupId)
+          const isOpen = dropdowns[groupId] !== false
           return (
             <div key={groupId} data-testid={`nav-group-${groupId}`}>
               {groupLabel && (
-                <div
+                <button
+                  data-testid={`nav-group-toggle-${groupId}`}
+                  onClick={() => toggleDropdown(groupId)}
                   style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     padding: '8px 12px 4px',
                     fontSize: '10px',
                     fontWeight: 700,
                     color: 'var(--text-faint)',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'color 0.15s',
                   }}
                 >
-                  {groupLabel}
-                </div>
+                  <span>{groupLabel}</span>
+                  <span style={{ fontSize: '10px', transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }}>▾</span>
+                </button>
               )}
-              {items.map((item) => (
+              {isOpen && items.map((item) => (
                 <button
                   key={item.id}
                   data-testid={`nav-item-${item.id}`}
@@ -119,13 +146,14 @@ export default function Sidebar() {
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               cursor: 'pointer',
+              transition: 'color 0.15s',
             }}
           >
             <span>SETTINGS</span>
-            <span style={{ fontSize: '10px' }}>{settingsOpen ? '▾' : '▸'}</span>
+            <span style={{ fontSize: '10px', transform: settingsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }}>▾</span>
           </button>
           {settingsOpen &&
-            settingsItems.map((item) => (
+            NAV_ITEMS.filter(i => i.group === 'settings').map((item) => (
               <button
                 key={item.id}
                 data-testid={`settings-item-${item.id}`}
@@ -144,6 +172,7 @@ export default function Sidebar() {
                   fontSize: '13px',
                   cursor: 'pointer',
                   textAlign: 'left',
+                  transition: 'all 0.15s',
                 }}
               >
                 <span style={{ fontSize: '14px', minWidth: '18px' }}>{item.icon}</span>
