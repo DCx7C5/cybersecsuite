@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import ExecutionTimeline from '@/components/workers/ExecutionTimeline.tsx'
+import ExecutionTimeline from '@/components/workers/ExecutionTimeline'
 
 const mockQueryClient = new QueryClient({
   defaultOptions: {
@@ -55,8 +55,8 @@ describe('ExecutionTimeline', () => {
 
   it('displays timeline items', () => {
     vi.mock('@/hooks/useApi.ts', () => ({
-      useApiQuery: (key: unknown, url: string) => {
-        if (url.includes('history')) {
+      useApiQuery: (key: unknown, url: string | unknown) => {
+        if (typeof url === 'string' && url.includes('history')) {
           return {
             data: mockHistory,
             isLoading: false,
@@ -129,7 +129,7 @@ describe('ExecutionTimeline', () => {
     )
 
     const buttons = container.querySelectorAll('button')
-    const bookmarkBtn = Array.from(buttons).find(b => b.textContent?.includes('Bookmark'))
+    const bookmarkBtn = Array.from(buttons).find((b) => b.textContent?.includes('Bookmark'))
 
     if (bookmarkBtn) {
       fireEvent.click(bookmarkBtn)
@@ -144,7 +144,7 @@ describe('ExecutionTimeline', () => {
     )
 
     const buttons = container.querySelectorAll('button')
-    const exportBtn = Array.from(buttons).find(b => b.textContent?.includes('Export'))
+    const exportBtn = Array.from(buttons).find((b) => b.textContent?.includes('Export'))
 
     if (exportBtn) {
       fireEvent.click(exportBtn)
@@ -153,8 +153,8 @@ describe('ExecutionTimeline', () => {
 
   it('displays bookmark markers', () => {
     vi.mock('@/hooks/useApi.ts', () => ({
-      useApiQuery: (key: unknown, url: string) => {
-        if (url.includes('history')) {
+      useApiQuery: (key: unknown, url: string | unknown) => {
+        if (typeof url === 'string' && url.includes('history')) {
           return {
             data: mockHistory,
             isLoading: false,
