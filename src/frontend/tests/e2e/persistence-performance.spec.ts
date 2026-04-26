@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Data Persistence E2E (T351)', () => {
-  test('localStorage persists active tab', async ({ page, context }} => {
+  test('localStorage persists active tab', async ({ page, context }) => {
     await page.goto('/')
 
     const chatItem = page.locator('[data-testid="nav-item-chat"]')
@@ -15,7 +15,7 @@ test.describe('Data Persistence E2E (T351)', () => {
     expect(parsed.activeTab).toBe('chat')
   })
 
-  test('Settings open state persists', async ({ page }} => {
+  test('Settings open state persists', async ({ page }) => {
     await page.goto('/')
 
     const settingsToggle = page.locator('[data-testid="settings-toggle"]')
@@ -37,7 +37,7 @@ test.describe('Data Persistence E2E (T351)', () => {
     expect(count).toBeGreaterThan(0)
   })
 
-  test('collapsible section state persists', async ({ page }} => {
+  test('collapsible section state persists', async ({ page }) => {
     await page.goto('/')
 
     const state1 = await page.evaluate(() => {
@@ -51,7 +51,7 @@ test.describe('Data Persistence E2E (T351)', () => {
     expect(state1).toBeDefined()
   })
 
-  test('Multiple state changes persist', async ({ page }} => {
+  test('Multiple state changes persist', async ({ page }) => {
     await page.goto('/')
 
     // Make several changes
@@ -77,7 +77,7 @@ test.describe('Data Persistence E2E (T351)', () => {
     expect(Object.keys(allStorage).length).toBeGreaterThan(0)
   })
 
-  test('State survives page reload', async ({ page }} => {
+  test('State survives page reload', async ({ page }) => {
     await page.goto('/')
 
     const chatItem = page.locator('[data-testid="nav-item-chat"]')
@@ -96,7 +96,7 @@ test.describe('Data Persistence E2E (T351)', () => {
 })
 
 test.describe('Performance E2E (T352)', () => {
-  test('Page loads within acceptable time', async ({ page }} => {
+  test('Page loads within acceptable time', async ({ page }) => {
     const startTime = Date.now()
     await page.goto('/')
     const loadTime = Date.now() - startTime
@@ -104,7 +104,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(loadTime).toBeLessThan(5000) // 5 seconds
   })
 
-  test('DOM renders quickly', async ({ page }} => {
+  test('DOM renders quickly', async ({ page }) => {
     const startTime = Date.now()
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
@@ -113,7 +113,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(domTime).toBeLessThan(3000) // 3 seconds
   })
 
-  test('Sidebar navigation is responsive', async ({ page }} => {
+  test('Sidebar navigation is responsive', async ({ page }) => {
     await page.goto('/')
 
     const startTime = Date.now()
@@ -125,7 +125,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(clickTime).toBeLessThan(500) // 500ms
   })
 
-  test('Settings toggle is fast', async ({ page }} => {
+  test('Settings toggle is fast', async ({ page }) => {
     await page.goto('/')
 
     const settingsToggle = page.locator('[data-testid="settings-toggle"]')
@@ -136,7 +136,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(toggleTime).toBeLessThan(300) // 300ms
   })
 
-  test('No memory leaks from repeated interactions', async ({ page }} => {
+  test('No memory leaks from repeated interactions', async ({ page }) => {
     await page.goto('/')
 
     // Perform 10 rapid clicks
@@ -151,7 +151,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(await sidebar.isVisible()).toBe(true)
   })
 
-  test('Sidebar rendering is efficient', async ({ page }} => {
+  test('Sidebar rendering is efficient', async ({ page }) => {
     await page.goto('/')
 
     const startTime = Date.now()
@@ -164,7 +164,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(timePerItem).toBeLessThan(50) // Less than 50ms per item
   })
 
-  test('No excessive re-renders on navigation', async ({ page }} => {
+  test('No excessive re-renders on navigation', async ({ page }) => {
     await page.goto('/')
 
     let clickCount = 0
@@ -181,7 +181,7 @@ test.describe('Performance E2E (T352)', () => {
     expect(clickCount).toBeLessThan(3)
   })
 
-  test('Viewport resize is handled smoothly', async ({ page }} => {
+  test('Viewport resize is handled smoothly', async ({ page }) => {
     await page.goto('/')
 
     const startTime = Date.now()

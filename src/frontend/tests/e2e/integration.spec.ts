@@ -91,7 +91,7 @@ test.describe('Navigation E2E (T347)', () => {
     }
   })
 
-  test('Navigation persists active state', async ({ page }} => {
+  test('Navigation persists active state', async ({ page }) => {
     await page.goto('/')
 
     const chatItem = page.locator('[data-testid="nav-item-chat"]')
@@ -105,7 +105,7 @@ test.describe('Navigation E2E (T347)', () => {
 })
 
 test.describe('Error Handling E2E (T350)', () => {
-  test('App handles missing elements gracefully', async ({ page }} => {
+  test('App handles missing elements gracefully', async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
@@ -113,7 +113,7 @@ test.describe('Error Handling E2E (T350)', () => {
     expect(await body.isVisible()).toBe(true)
   })
 
-  test('No console errors on load', async ({ page }} => {
+  test('No console errors on load', async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', (error) => {
       errors.push(error.toString())
@@ -125,7 +125,7 @@ test.describe('Error Handling E2E (T350)', () => {
     expect(errors).toHaveLength(0)
   })
 
-  test('Invalid navigation is handled', async ({ page }} => {
+  test('Invalid navigation is handled', async ({ page }) => {
     await page.goto('/')
     await page.goto('/invalid-route')
 
@@ -134,7 +134,7 @@ test.describe('Error Handling E2E (T350)', () => {
     expect(await body.isVisible()).toBe(true)
   })
 
-  test('Component rendering errors are caught', async ({ page }} => {
+  test('Component rendering errors are caught', async ({ page }) => {
     const consoleErrors: string[] = []
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
@@ -149,7 +149,7 @@ test.describe('Error Handling E2E (T350)', () => {
     expect(relevantErrors.length).toBeLessThan(5)
   })
 
-  test('UI remains responsive after errors', async ({ page }} => {
+  test('UI remains responsive after errors', async ({ page }) => {
     await page.goto('/')
     const sidebar = page.locator('[data-testid="sidebar"]')
 

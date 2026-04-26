@@ -8,9 +8,13 @@
  */
 
 import { test as base, expect } from "@playwright/test";
-import { APIRequestContext } from "@playwright/test";
+import type {
+  APIRequestContext,
+  PlaywrightTestOptions,
+  PlaywrightWorkerOptions,
+} from "@playwright/test";
 
-type TestFixtures = {
+type TestFixtures = PlaywrightTestOptions & {
   authenticatedApi: APIRequestContext;
   testFinding: {
     id: number;
@@ -28,21 +32,32 @@ type TestFixtures = {
   };
 };
 
+/**
+ * Test fixtures using utilities from src packages
+ */
+
+const createAuthHeader = (): Record<string, string> => {
+  const token = process.env.TEST_API_KEY || "test-key";
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+};
+
 export const test = base.extend<TestFixtures>({
-  authenticatedApi: async ({ playwright }, use) => {
+  authenticatedApi: async ({ playwright }, use: (arg: APIRequestContext) => Promise<void>) => {
     const context = await playwright.request.newContext({
       baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:8000",
-      extraHTTPHeaders: {
-        Authorization: `Bearer ${process.env.TEST_API_KEY || "test-key"}`,
-        "Content-Type": "application/json",
-      },
+      extraHTTPHeaders: createAuthHeader(),
     });
     await use(context);
     await context.dispose();
   },
 
-  testFinding: async ({ authenticatedApi }, use) => {
-    // Create test finding
+  testFinding: async (
+    { authenticatedApi },
+    use: (arg: { id: number; cve_id: string; severity: string }) => Promise<void>
+  ) => {
     const response = await authenticatedApi.post("/api/v1/findings/", {
       data: {
         cve_id: `CVE-2024-${Math.random().toString().slice(2, 6)}`,
@@ -55,11 +70,17 @@ export const test = base.extend<TestFixtures>({
 
     await use(finding);
 
-    // Cleanup
     await authenticatedApi.delete(`/api/v1/findings/${finding.id}`);
   },
 
-  responseWindowContext: async ({ page }, use) => {
+  responseWindowContext: async (
+    { page },
+    use: (arg: {
+      open: () => Promise<void>;
+      close: () => Promise<void>;
+      isVisible: () => Promise<boolean>;
+    }) => Promise<void>
+  ) => {
     const responseWindow = {
       async open() {
         await page.click('[data-testid="response-window-toggle"]');
@@ -76,15 +97,20 @@ export const test = base.extend<TestFixtures>({
         });
       },
       async isVisible() {
-        const element = page.locator('[data-testid="response-window"]');
-        return element.isVisible();
+        return page.locator('[data-testid="response-window"]').isVisible();
       },
     };
 
     await use(responseWindow);
   },
 
-  workerContext: async ({ page }, use) => {
+  workerContext: async (
+    { page },
+    use: (arg: {
+      status: () => Promise<string>;
+      logs: () => Promise<string[]>;
+    }) => Promise<void>
+  ) => {
     const workerContext = {
       async status() {
         const status = await page
@@ -93,10 +119,9 @@ export const test = base.extend<TestFixtures>({
         return status || "unknown";
       },
       async logs() {
-        const logs = await page
+        return page
           .locator('[data-testid="worker-logs"] .log-entry')
           .allTextContents();
-        return logs;
       },
     };
 

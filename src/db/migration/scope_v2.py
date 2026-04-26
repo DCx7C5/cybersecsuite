@@ -3,14 +3,20 @@
 Adds three columns to every table that inherits ScopedEntry:
     runtime_id    VARCHAR(64)  NULL  — container/pod runtime identity
     worktree_path VARCHAR(1024) NULL — absolute path to .css/<runtime-id>/worktree-<SID>/
-    scope_level   VARCHAR(16)  NULL  DEFAULT 'session' — one of: global, app, project, runtime, session
+    scope_level   VARCHAR(16)  NULL  DEFAULT 'session'
+    Default: one of global, app, project, runtime, session
+
+Also creates composite indexes for optimized queries:
+    - (project_id, scope_level) for filtering by project and scope
+    - (session_id, runtime_id) for filtering by session and runtime
+    - (runtime_id, worktree_path) for filtering by runtime location
 
 Idempotent: uses ADD COLUMN IF NOT EXISTS so it can be re-run safely.
 
 Usage:
     uv run python -m db.migration.scope_v2
 
-Referenz:
+Reference:
     plan.md T045 — Phase 5: Database Optimization
     plan.md §1 Scope Model (5 Levels)
     src/db/models/scope.py — ScopedEntry abstract base
@@ -55,6 +61,31 @@ _COLUMNS: Final[list[tuple[str, str, str]]] = [
 _ADD_COLUMN_SQL = "ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {type} {default};"
 _ADD_INDEX_SQL  = "CREATE INDEX IF NOT EXISTS idx_{table}_scope_level ON {table}(scope_level);"
 
+# Composite indexes for optimized scope queries (T045)
+_COMPOSITE_INDEXES: Final[list[tuple[str, str, str]]] = [
+    # (table_name, index_name, columns)
+    ("findings", "idx_findings_project_scope", "(project_id, scope_level)"),
+    ("findings", "idx_findings_session_runtime", "(session_id, runtime_id)"),
+    ("findings", "idx_findings_runtime_path", "(runtime_id, worktree_path)"),
+
+    ("iocs", "idx_iocs_project_scope", "(project_id, scope_level)"),
+    ("iocs", "idx_iocs_session_runtime", "(session_id, runtime_id)"),
+    ("iocs", "idx_iocs_runtime_path", "(runtime_id, worktree_path)"),
+
+    ("case_intakes", "idx_case_intakes_project_scope", "(project_id, scope_level)"),
+    ("case_intakes", "idx_case_intakes_session_runtime", "(session_id, runtime_id)"),
+
+    ("shared_entries", "idx_shared_entries_project_scope", "(project_id, scope_level)"),
+    ("shared_entries", "idx_shared_entries_session_runtime", "(session_id, runtime_id)"),
+    ("shared_entries", "idx_shared_entries_runtime_path", "(runtime_id, worktree_path)"),
+
+    ("artifacts", "idx_artifacts_project_scope", "(project_id, scope_level)"),
+    ("artifacts", "idx_artifacts_session_runtime", "(session_id, runtime_id)"),
+
+    ("audit_logs", "idx_audit_logs_project_scope", "(project_id, scope_level)"),
+    ("audit_logs", "idx_audit_logs_session_runtime", "(session_id, runtime_id)"),
+]
+
 
 async def _run_migration(dsn: str) -> dict[str, list[str]]:
     """Execute the scope_v2 migration and return a report of changes."""
@@ -74,15 +105,31 @@ async def _run_migration(dsn: str) -> dict[str, list[str]]:
                     break
                 except Exception as exc:
                     logger.warning("Could not add %s.%s: %s", table, col, exc)
-            # Add index on scope_level for filtering performance
+
+            # Add single-column scope_level index
             if "scope_level" in applied:
                 try:
                     await conn.execute(_ADD_INDEX_SQL.format(table=table))
                     logger.debug("  ✓ idx_%s_scope_level", table)
                 except Exception as exc:
                     logger.warning("Could not create index on %s.scope_level: %s", table, exc)
+
             if applied:
                 report[table] = applied
+
+        # Add composite indexes for optimized scope queries (T045)
+        logger.info("Creating composite indexes for scope queries...")
+        for table, index_name, columns in _COMPOSITE_INDEXES:
+            sql = f"CREATE INDEX IF NOT EXISTS {index_name} ON {table}{columns};"
+            try:
+                await conn.execute(sql)
+                logger.debug("  ✓ %s on %s", index_name, table)
+            except asyncpg.UndefinedTableError:
+                logger.debug("Table '%s' does not exist — skipping composite index", table)
+            except asyncpg.DuplicateTableError:
+                logger.debug("Index '%s' already exists", index_name)
+            except Exception as exc:
+                logger.warning("Could not create composite index %s: %s", index_name, exc)
     finally:
         await conn.close()
     return report
@@ -105,6 +152,7 @@ async def migrate() -> None:
         logger.info("scope_v2 migration complete — %d table(s) updated", len(report))
     else:
         logger.info("scope_v2 migration: nothing to do (columns already exist)")
+    logger.info("All composite indexes created for optimal scope query performance")
 
 
 def main() -> None:

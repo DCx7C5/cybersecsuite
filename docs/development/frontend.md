@@ -372,6 +372,160 @@ Current stats (2026-04-22):
 
 ---
 
+---
+
+## React Router v7 Architecture
+
+CyberSecSuite frontend uses **React Router v7** for URL-driven navigation, enabling browser back/forward buttons, deep linking, and shareable URLs.
+
+### URL Schemes
+
+Navigation uses query parameter routing:
+
+```
+/app?tab=<panelId>                     — Navigate to panel
+/app?tab=<panelId>&context=<value>     — Deep link with state
+/app?tab=iocs&case=42                  — IOCs panel with Case #42 selected
+/app?tab=opensearch&query=APT-28       — OpenSearch with query pre-filled
+```
+
+### Migration from activeTab
+
+**Old pattern (Zustand state):**
+```typescript
+const { setActiveTab } = useUIStore()
+<button onClick={() => setActiveTab('cases')}>Cases</button>
+```
+
+**New pattern (React Router):**
+```typescript
+import { useNavigate } from 'react-router-dom'
+const navigate = useNavigate()
+<button onClick={() => navigate('?tab=cases')}>Cases</button>
+```
+
+Or using `<Link>` component:
+```typescript
+import { Link } from 'react-router-dom'
+<Link to="?tab=cases">Cases</Link>
+```
+
+### Extracting Current Tab
+
+From URL parameters:
+```typescript
+import { useLocation } from 'react-router-dom'
+
+export default function App() {
+  const location = useLocation()
+  const tab = new URLSearchParams(location.search).get('tab') || 'chat'
+  // Use 'tab' to render the appropriate panel
+}
+```
+
+### Lazy Loading & Code Splitting
+
+All 33 panel components use `React.lazy()` for automatic code splitting:
+
+```typescript
+const ChatPanel = React.lazy(() => import('./features/agents/ChatPanel'))
+const CasesPanel = React.lazy(() => import('./features/operations/CasesPanel'))
+// ... one lazy import per panel
+```
+
+Each panel loads on-demand (~2–6 kB per chunk after gzip). Use Suspense to show a loading spinner:
+
+```typescript
+<Suspense fallback={<Spinner />}>
+  {tab === 'chat' && <ChatPanel />}
+  {tab === 'cases' && <CasesPanel />}
+</Suspense>
+```
+
+### Browser Back/Forward Support
+
+React Router automatically integrates with browser history:
+
+1. Click panel → URL updates → back button works
+2. Back button → URL reverts → panel switches
+3. Forward button → URL re-applies → panel re-renders
+
+No explicit history handling needed.
+
+### Deep Linking & State Restoration
+
+Use URL search params to persist context:
+
+```typescript
+// User navigates to IOCs panel with case=42 selected
+navigate('?tab=iocs&case=42')
+
+// On page reload or shared link, extract context:
+const case_id = new URLSearchParams(location.search).get('case')
+if (case_id) {
+  // Load case 42 automatically
+}
+```
+
+### Breadcrumb Integration
+
+The Topbar breadcrumb reads from URL:
+
+```typescript
+import { useLocation } from 'react-router-dom'
+
+export default function Topbar() {
+  const location = useLocation()
+  const tab = new URLSearchParams(location.search).get('tab') || 'chat'
+  const breadcrumbs = { chat: ['Home', 'Chat'], cases: ['Home', 'Operations', 'Cases'] }
+  return <Breadcrumb items={breadcrumbs[tab]} />
+}
+```
+
+### TypeScript Contracts
+
+Define router types for type safety:
+
+```typescript
+export interface RouteParams {
+  tab: string
+  case?: string
+  query?: string
+  entity?: string
+}
+
+export const parseRouteParams = (search: string): RouteParams => {
+  const sp = new URLSearchParams(search)
+  return {
+    tab: sp.get('tab') || 'chat',
+    case: sp.get('case'),
+    query: sp.get('query'),
+    entity: sp.get('entity'),
+  }
+}
+```
+
+### Performance & Best Practices
+
+1. **Memoize components** that render conditionally based on URL:
+   ```typescript
+   const ChatPanelMemo = React.memo(ChatPanel)
+   const CasesPanelMemo = React.memo(CasesPanel)
+   ```
+
+2. **Avoid re-parsing URL** in multiple places:
+   ```typescript
+   // Create a custom hook instead:
+   export const useRouteParams = () => {
+     const location = useLocation()
+     return parseRouteParams(location.search)
+   }
+   ```
+
+3. **Test route changes** with Playwright (see `/tests/e2e/`).
+
+---
+
 ## See Also
 
 - [`changelog/react-migration-2026-04-22.md`](../changelog/react-migration-2026-04-22.md) — full migration changelog
