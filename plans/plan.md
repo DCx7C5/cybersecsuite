@@ -35,11 +35,13 @@ Transform CyberSecSuite from a monolithic architecture (87 integrated tools in s
 **Quality Assurance:** 100% of phase tasks passed linting, type-checking, tests, and exit gates.
 
 ### What's Next
-**Phase 2: High-Priority MCP Extraction** (4 MCPs, 52 tools)
-- forensic-vault (14 tools) — APT analysis, IOC extraction, case management
-- network-layers (9 tools) — Network protocol analysis, packet inspection
-- threat-intelligence (14 tools) — CVE lookups, IOC enrichment, MITRE mapping
-- database-tools (15 tools) — Database forensics, schema inspection
+**Phase 0.75: Core MCP Foundation (csscore)** — Single, unified MCP for essential functions
+- 3-5 critical core functions (marketplace registry, asset discovery, config management)
+- Foundation that all Phase 2-5 MCPs depend on
+- Prevents circular dependencies
+- Ready for Phase 2-5 extraction
+
+Then **Phase 2: High-Priority MCPs** (4 MCPs, 52 tools, all importing csscore)
 
 ### Success Criteria (Per Phase)
 1. ✅ Code quality: Ruff zero errors, MyPy strict zero errors
@@ -158,28 +160,60 @@ pytest mcps/_template/tests/ -v --cov=src/mcp_template/ --cov-report=term-missin
 - 7/7 tasks done, exit gate validation passed (100%)
 - **Git commit:** 5a6793e
 
-### ⏳ **Phase 2: High-Priority MCP Extraction** (NEXT)
-**Target MCPs (4 tools with ~52 tools total):**
-1. forensic-vault (14 tools)
-2. network-layers (9 tools)
-3. threat-intelligence (14 tools)
-4. database-tools (15 tools)
+### ⏳ **Phase 0.75: Core MCP Foundation (csscore)** (NEXT)
+**Purpose:** Single, unified MCP for essential CyberSecSuite core functions that all other MCPs depend on.
+
+**Scope (3-5 critical tools):**
+- Marketplace registry access
+- Asset discovery & enumeration
+- Configuration management
+- Core logging/audit functions
+- Session/context management
+
+**Why Needed:**
+- All Phase 2-5 MCPs will import csscore
+- Prevents circular dependencies between MCPs
+- Centralizes shared infrastructure
+- Foundation for Phases 2-5
 
 **Tasks:**
-- Extract tool definitions from monolithic csmcp
+- Extract core utility functions from monolithic csmcp
+- Create csscore MCP structure in template
+- Implement async/await foundations
+- Write integration tests
+- Add to GitHub Actions CI/CD
+- Update marketplace catalog (add csscore as dependency for all others)
+
+**Quality Gate for Phase 0.75:**
+- ✓ Ruff: zero errors
+- ✓ MyPy strict: zero errors
+- ✓ Pytest: 100% of tests pass
+- ✓ Core functions importable by other MCPs
+- ✓ MCP server starts cleanly
+- ✓ All 12 MCPs can import csscore without issues
+
+### ⏳ **Phase 2: High-Priority MCP Extraction** (AFTER CSSCORE)
+**Target MCPs (4 tools with ~52 tools total, all depend on csscore):**
+1. forensic-vault (14 tools) — depends on csscore
+2. network-layers (9 tools) — depends on csscore
+3. threat-intelligence (14 tools) — depends on csscore
+4. database-tools (15 tools) — depends on csscore
+
+**Tasks:**
+- Extract tool definitions from monolithic csmcp (avoiding csscore)
 - Create tool stubs in MCP template
-- Implement tool functions with async/await
+- Implement tool functions with async/await (with csscore imports)
 - Write unit tests for each tool
 - Add to GitHub Actions CI/CD
-- Update marketplace catalog
+- Update marketplace catalog (add csscore dependency)
 
 **Quality Gate for Phase 2:**
 - ✓ Ruff: zero errors on all 4 MCPs
 - ✓ MyPy strict: zero errors
 - ✓ Pytest: 100% of tests pass
-- ✓ Tool imports work
+- ✓ Tool imports work + csscore imports work
 - ✓ MCP servers start cleanly
-- ✓ Integration tests pass
+- ✓ Integration tests pass with csscore
 
 ---
 
@@ -295,13 +329,14 @@ cd /home/daen/Projects/ai-marketplace && git log --oneline -1
 cd /home/daen/Projects/cybersecsuite && git log --oneline -1
 ```
 
-**Current State Summary (As of 2026-04-26T22:21):**
+**Current State Summary (As of 2026-04-26T22:27):**
 
 | Phase | Status | Deliverables | Git Tag |
 |-------|--------|--------------|---------|
 | 0.5 | ✅ DONE | 6 models, seed function | (not tagged) |
 | 1 | ✅ DONE | Template (11 files), installer, catalog | 5a6793e |
-| 2 | ⏳ READY | 4 MCPs (52 tools) waiting | — |
+| 0.75 | ⏳ READY | csscore MCP (3-5 core functions) | — |
+| 2 | ⏳ READY | 4 MCPs (52 tools, all use csscore) | — |
 
 **Key Locations:**
 - CyberSecSuite: `/home/daen/Projects/cybersecsuite`
@@ -310,19 +345,21 @@ cd /home/daen/Projects/cybersecsuite && git log --oneline -1
 - Marketplace Catalog: `/home/daen/Projects/ai-marketplace/index.json`
 
 **Next Task:**
-Phase 2 MCP Extraction (forensic-vault, network-layers, threat-intelligence, database-tools)
-- Extract 52 tools from monolithic csmcp
-- Create 4 MCPs with stub tools
+Phase 0.75 csscore MCP Extraction (single core MCP with 3-5 critical functions)
+- Extract essential core functions from monolithic csmcp
+- Create csscore MCP structure in ai-marketplace
+- Implement async/await foundations
 - Run quality gate loop (lint, type-check, test)
 - Create changelog & documentation
 - Commit & tag
+- All Phase 2-5 MCPs will depend on csscore
 
 **Instructions for New Chat:**
 1. Run "Restore State" commands above
-2. Read plan.md for full context
+2. Read plan.md for full context (now includes Phase 0.75 csscore)
 3. Review prior checkpoint (001-session-e5d7518f.md)
 4. Confirm canonical repos are accessible
-5. Ask user: "Continue with Phase 2 MCP extraction?"
+5. Ask user: "Ready for Phase 0.75 csscore MCP extraction?"
 6. Update SQL todos as work progresses
 7. Maintain same post-phase workflow (quality gates → docs → commit → tag)
 
