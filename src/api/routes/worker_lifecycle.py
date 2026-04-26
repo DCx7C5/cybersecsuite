@@ -14,6 +14,7 @@ All transitions logged to AuditLog.
 from __future__ import annotations
 
 import logging
+import json
 from typing import Any, Optional
 from datetime import datetime
 
@@ -112,10 +113,10 @@ async def _get_worker_for_transition(
             detail="Project scope required"
         )
     
-    worker = await WorkerSession.get_or_none(
+    worker = await WorkerSession.filter(
         worker_id=worker_id,
         project_id=scope.project_id
-    ).select_related("project", "session")
+    ).select_related("project", "session").first()
     
     if not worker:
         raise HTTPException(
@@ -123,7 +124,7 @@ async def _get_worker_for_transition(
             detail="Worker not found"
         )
     
-    project = await worker.project
+    project = worker.project
     return worker, project
 
 
@@ -175,16 +176,17 @@ async def start_worker(
         # Verify transition is valid
         if worker.current_state != WorkerState.QUEUED:
             valid_transitions = _get_valid_transitions(worker.current_state)
+            error_detail = json.dumps({
+                "error": "invalid_state_transition",
+                "message": f"Cannot transition from {worker.current_state} to running",
+                "request_id": scope.request_id,
+                "scope_level": scope.scope_level,
+                "current_state": worker.current_state.value,
+                "allowed_transitions": valid_transitions,
+            })
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=ErrorResponse(
-                    error="invalid_state_transition",
-                    message=f"Cannot transition from {worker.current_state} to running",
-                    request_id=scope.request_id,
-                    scope_level=scope.scope_level,
-                    current_state=str(worker.current_state),
-                    allowed_transitions=valid_transitions,
-                ).model_dump()
+                detail=error_detail
             )
         
         # Execute transition
@@ -208,8 +210,8 @@ async def start_worker(
         
         return WorkerStateResponse(
             worker_id=worker_id,
-            previous_state=str(transition.from_state),
-            current_state=str(transition.to_state),
+            previous_state=transition.from_state.value,
+            current_state=transition.to_state.value,
             reason=transition.reason,
             transitioned_at=transition.transitioned_at
         )
@@ -258,16 +260,17 @@ async def pause_worker(
         # Verify transition is valid
         if worker.current_state != WorkerState.RUNNING:
             valid_transitions = _get_valid_transitions(worker.current_state)
+            error_detail = json.dumps({
+                "error": "invalid_state_transition",
+                "message": f"Cannot transition from {worker.current_state} to paused",
+                "request_id": scope.request_id,
+                "scope_level": scope.scope_level,
+                "current_state": worker.current_state.value,
+                "allowed_transitions": valid_transitions,
+            })
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=ErrorResponse(
-                    error="invalid_state_transition",
-                    message=f"Cannot transition from {worker.current_state} to paused",
-                    request_id=scope.request_id,
-                    scope_level=scope.scope_level,
-                    current_state=str(worker.current_state),
-                    allowed_transitions=valid_transitions,
-                ).model_dump()
+                detail=error_detail
             )
         
         # Execute transition
@@ -291,8 +294,8 @@ async def pause_worker(
         
         return WorkerStateResponse(
             worker_id=worker_id,
-            previous_state=str(transition.from_state),
-            current_state=str(transition.to_state),
+            previous_state=transition.from_state.value,
+            current_state=transition.to_state.value,
             reason=transition.reason,
             transitioned_at=transition.transitioned_at
         )
@@ -338,16 +341,17 @@ async def resume_worker(
         # Verify transition is valid
         if worker.current_state != WorkerState.PAUSED:
             valid_transitions = _get_valid_transitions(worker.current_state)
+            error_detail = json.dumps({
+                "error": "invalid_state_transition",
+                "message": f"Cannot transition from {worker.current_state} to running",
+                "request_id": scope.request_id,
+                "scope_level": scope.scope_level,
+                "current_state": worker.current_state.value,
+                "allowed_transitions": valid_transitions,
+            })
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=ErrorResponse(
-                    error="invalid_state_transition",
-                    message=f"Cannot transition from {worker.current_state} to running",
-                    request_id=scope.request_id,
-                    scope_level=scope.scope_level,
-                    current_state=str(worker.current_state),
-                    allowed_transitions=valid_transitions,
-                ).model_dump()
+                detail=error_detail
             )
         
         # Execute transition
@@ -371,8 +375,8 @@ async def resume_worker(
         
         return WorkerStateResponse(
             worker_id=worker_id,
-            previous_state=str(transition.from_state),
-            current_state=str(transition.to_state),
+            previous_state=transition.from_state.value,
+            current_state=transition.to_state.value,
             reason=transition.reason,
             transitioned_at=transition.transitioned_at
         )
@@ -418,16 +422,17 @@ async def stop_worker(
         # Verify transition is valid
         if worker.current_state not in [WorkerState.RUNNING, WorkerState.PAUSED]:
             valid_transitions = _get_valid_transitions(worker.current_state)
+            error_detail = json.dumps({
+                "error": "invalid_state_transition",
+                "message": f"Cannot stop worker in {worker.current_state} state",
+                "request_id": scope.request_id,
+                "scope_level": scope.scope_level,
+                "current_state": worker.current_state.value,
+                "allowed_transitions": valid_transitions,
+            })
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=ErrorResponse(
-                    error="invalid_state_transition",
-                    message=f"Cannot stop worker in {worker.current_state} state",
-                    request_id=scope.request_id,
-                    scope_level=scope.scope_level,
-                    current_state=str(worker.current_state),
-                    allowed_transitions=valid_transitions,
-                ).model_dump()
+                detail=error_detail
             )
         
         # Execute transition
@@ -451,8 +456,8 @@ async def stop_worker(
         
         return WorkerStateResponse(
             worker_id=worker_id,
-            previous_state=str(transition.from_state),
-            current_state=str(transition.to_state),
+            previous_state=transition.from_state.value,
+            current_state=transition.to_state.value,
             reason=transition.reason,
             transitioned_at=transition.transitioned_at
         )
@@ -498,16 +503,17 @@ async def retry_worker(
         # Verify transition is valid
         if worker.current_state != WorkerState.FAILED:
             valid_transitions = _get_valid_transitions(worker.current_state)
+            error_detail = json.dumps({
+                "error": "invalid_state_transition",
+                "message": f"Cannot retry worker in {worker.current_state} state",
+                "request_id": scope.request_id,
+                "scope_level": scope.scope_level,
+                "current_state": worker.current_state.value,
+                "allowed_transitions": valid_transitions,
+            })
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=ErrorResponse(
-                    error="invalid_state_transition",
-                    message=f"Cannot retry worker in {worker.current_state} state",
-                    request_id=scope.request_id,
-                    scope_level=scope.scope_level,
-                    current_state=str(worker.current_state),
-                    allowed_transitions=valid_transitions,
-                ).model_dump()
+                detail=error_detail
             )
         
         # Execute transition
@@ -531,8 +537,8 @@ async def retry_worker(
         
         return WorkerStateResponse(
             worker_id=worker_id,
-            previous_state=str(transition.from_state),
-            current_state=str(transition.to_state),
+            previous_state=transition.from_state.value,
+            current_state=transition.to_state.value,
             reason=transition.reason,
             transitioned_at=transition.transitioned_at
         )

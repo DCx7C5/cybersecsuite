@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 from unittest.mock import MagicMock
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 
@@ -26,7 +26,7 @@ from api.routes.worker_history import router as history_router
 
 
 # ============================================================================
-# Fixtures
+# Fixtures — Using Tortoise ORM initialization
 # ============================================================================
 
 @pytest_asyncio.fixture
@@ -105,8 +105,8 @@ async def test_worker_with_history(db_with_models, test_project):
     return worker
 
 
-@pytest.fixture
-def mock_scope_context():
+@pytest_asyncio.fixture
+async def mock_scope_context():
     """Create a mock scope context."""
     ctx = MagicMock()
     ctx.request_id = "req-test-123"
@@ -117,8 +117,8 @@ def mock_scope_context():
     return ctx
 
 
-@pytest.fixture
-def app_with_router(mock_scope_context):
+@pytest_asyncio.fixture
+async def app_with_router(mock_scope_context):
     """Create FastAPI app with history router."""
     app = FastAPI()
     
@@ -131,10 +131,12 @@ def app_with_router(mock_scope_context):
     return app
 
 
-@pytest.fixture
-def client(app_with_router):
-    """Create test client."""
-    return TestClient(app_with_router)
+@pytest_asyncio.fixture
+async def async_client(app_with_router):
+    """Create async test client."""
+    transport = ASGITransport(app=app_with_router)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        yield client
 
 
 # ============================================================================
@@ -142,13 +144,13 @@ def client(app_with_router):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_get_execution_history_success(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_get_execution_history_success(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test getting execution history successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/history")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -159,13 +161,13 @@ async def test_get_execution_history_success(client, db_with_models, test_projec
 
 
 @pytest.mark.asyncio
-async def test_get_execution_history_pagination(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_get_execution_history_pagination(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test execution history pagination."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?page=1&size=2")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?page=1&size=2")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -174,19 +176,19 @@ async def test_get_execution_history_pagination(client, db_with_models, test_pro
     assert data["has_more"] is True
     
     # Check second page
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?page=2&size=2")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?page=2&size=2")
     data = response.json()
     assert len(data["items"]) == 2
 
 
 @pytest.mark.asyncio
-async def test_get_execution_history_filter_by_action(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_get_execution_history_filter_by_action(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test filtering execution history by action."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?action=step_completed")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?action=step_completed")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -197,7 +199,7 @@ async def test_get_execution_history_filter_by_action(client, db_with_models, te
 
 
 @pytest.mark.asyncio
-async def test_get_execution_history_filter_by_timestamp(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_get_execution_history_filter_by_timestamp(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test filtering execution history by timestamp."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
@@ -205,7 +207,7 @@ async def test_get_execution_history_filter_by_timestamp(client, db_with_models,
     
     # Get items from last hour only
     cutoff = (datetime.utcnow() - timedelta(hours=1)).isoformat()
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?since={cutoff}")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?since={cutoff}")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -213,11 +215,11 @@ async def test_get_execution_history_filter_by_timestamp(client, db_with_models,
 
 
 @pytest.mark.asyncio
-async def test_get_execution_history_not_found(client, mock_scope_context):
+async def test_get_execution_history_not_found(async_client, db_with_models, mock_scope_context):
     """Test getting history for non-existent worker."""
     mock_scope_context.project_id = 1
     
-    response = client.get("/api/workers/nonexistent/history")
+    response = await async_client.get("/api/workers/nonexistent/history")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -226,7 +228,7 @@ async def test_get_execution_history_not_found(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_create_bookmark_success(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_create_bookmark_success(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test creating a bookmark successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
@@ -237,7 +239,7 @@ async def test_create_bookmark_success(client, db_with_models, test_project, tes
         "description": "Test bookmark for unit tests"
     }
     
-    response = client.post(
+    response = await async_client.post(
         f"/api/workers/{test_worker_with_history.worker_id}/bookmarks",
         json=payload
     )
@@ -251,7 +253,7 @@ async def test_create_bookmark_success(client, db_with_models, test_project, tes
 
 
 @pytest.mark.asyncio
-async def test_create_multiple_bookmarks(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_create_multiple_bookmarks(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test creating multiple bookmarks."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
@@ -263,7 +265,7 @@ async def test_create_multiple_bookmarks(client, db_with_models, test_project, t
             "name": f"bookmark_{i}",
             "description": f"Bookmark {i}"
         }
-        response = client.post(
+        response = await async_client.post(
             f"/api/workers/{test_worker_with_history.worker_id}/bookmarks",
             json=payload
         )
@@ -275,7 +277,7 @@ async def test_create_multiple_bookmarks(client, db_with_models, test_project, t
 
 
 @pytest.mark.asyncio
-async def test_create_bookmark_missing_name(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_create_bookmark_missing_name(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test bookmark creation without name fails."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
@@ -283,7 +285,7 @@ async def test_create_bookmark_missing_name(client, db_with_models, test_project
     
     payload = {"description": "Missing name"}
     
-    response = client.post(
+    response = await async_client.post(
         f"/api/workers/{test_worker_with_history.worker_id}/bookmarks",
         json=payload
     )
@@ -292,12 +294,12 @@ async def test_create_bookmark_missing_name(client, db_with_models, test_project
 
 
 @pytest.mark.asyncio
-async def test_create_bookmark_worker_not_found(client, mock_scope_context):
+async def test_create_bookmark_worker_not_found(async_client, db_with_models, mock_scope_context):
     """Test bookmark creation for non-existent worker."""
     mock_scope_context.project_id = 1
     
     payload = {"name": "test"}
-    response = client.post(
+    response = await async_client.post(
         "/api/workers/nonexistent/bookmarks",
         json=payload
     )
@@ -310,13 +312,13 @@ async def test_create_bookmark_worker_not_found(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_list_bookmarks_empty(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_list_bookmarks_empty(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test listing bookmarks when none exist."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -325,7 +327,7 @@ async def test_list_bookmarks_empty(client, db_with_models, test_project, test_w
 
 
 @pytest.mark.asyncio
-async def test_list_bookmarks_success(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_list_bookmarks_success(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test listing bookmarks successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
@@ -335,14 +337,14 @@ async def test_list_bookmarks_success(client, db_with_models, test_project, test
     bookmark_ids = []
     for i in range(3):
         payload = {"name": f"bookmark_{i}", "description": f"Desc {i}"}
-        response = client.post(
+        response = await async_client.post(
             f"/api/workers/{test_worker_with_history.worker_id}/bookmarks",
             json=payload
         )
         bookmark_ids.append(response.json()["bookmark_id"])
     
     # List bookmarks
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -355,7 +357,7 @@ async def test_list_bookmarks_success(client, db_with_models, test_project, test
 
 
 @pytest.mark.asyncio
-async def test_list_bookmarks_pagination(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_list_bookmarks_pagination(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test bookmarks list pagination."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
@@ -364,13 +366,13 @@ async def test_list_bookmarks_pagination(client, db_with_models, test_project, t
     # Create 10 bookmarks
     for i in range(10):
         payload = {"name": f"bookmark_{i}"}
-        client.post(
+        await async_client.post(
             f"/api/workers/{test_worker_with_history.worker_id}/bookmarks",
             json=payload
         )
     
     # Get first page
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks?page=1&size=3")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks?page=1&size=3")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -380,11 +382,11 @@ async def test_list_bookmarks_pagination(client, db_with_models, test_project, t
 
 
 @pytest.mark.asyncio
-async def test_list_bookmarks_not_found(client, mock_scope_context):
+async def test_list_bookmarks_not_found(async_client, db_with_models, mock_scope_context):
     """Test listing bookmarks for non-existent worker."""
     mock_scope_context.project_id = 1
     
-    response = client.get("/api/workers/nonexistent/bookmarks")
+    response = await async_client.get("/api/workers/nonexistent/bookmarks")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -393,41 +395,41 @@ async def test_list_bookmarks_not_found(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_delete_bookmark_success(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_delete_bookmark_success(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test deleting a bookmark successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
     # Create a bookmark
-    create_response = client.post(
+    create_response = await async_client.post(
         f"/api/workers/{test_worker_with_history.worker_id}/bookmarks",
         json={"name": "to_delete"}
     )
     bookmark_id = create_response.json()["bookmark_id"]
     
     # Delete it
-    response = client.delete(
+    response = await async_client.delete(
         f"/api/workers/{test_worker_with_history.worker_id}/bookmarks/{bookmark_id}"
     )
     
     assert response.status_code == status.HTTP_204_NO_CONTENT
     
     # Verify it's gone
-    list_response = client.get(
+    list_response = await async_client.get(
         f"/api/workers/{test_worker_with_history.worker_id}/bookmarks"
     )
     assert list_response.json()["total"] == 0
 
 
 @pytest.mark.asyncio
-async def test_delete_bookmark_not_found(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_delete_bookmark_not_found(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test deleting non-existent bookmark."""
     mock_scope_context.project_id = test_project.id
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.delete(
+    response = await async_client.delete(
         f"/api/workers/{test_worker_with_history.worker_id}/bookmarks/nonexistent_bm"
     )
     
@@ -435,11 +437,11 @@ async def test_delete_bookmark_not_found(client, db_with_models, test_project, t
 
 
 @pytest.mark.asyncio
-async def test_delete_bookmark_worker_not_found(client, mock_scope_context):
+async def test_delete_bookmark_worker_not_found(async_client, db_with_models, mock_scope_context):
     """Test deleting bookmark from non-existent worker."""
     mock_scope_context.project_id = 1
     
-    response = client.delete(
+    response = await async_client.delete(
         "/api/workers/nonexistent/bookmarks/some_bm"
     )
     
@@ -451,22 +453,22 @@ async def test_delete_bookmark_worker_not_found(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_history_enforces_scope(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_history_enforces_scope(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test history endpoints enforce scope."""
     mock_scope_context.project_id = 999  # Different project
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/history")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_bookmarks_enforce_scope(client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
+async def test_bookmarks_enforce_scope(async_client, db_with_models, test_project, test_worker_with_history, mock_scope_context):
     """Test bookmarks endpoints enforce scope."""
     mock_scope_context.project_id = 999  # Different project
     test_worker_with_history.project_id = test_project.id
     await test_worker_with_history.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks")
+    response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/bookmarks")
     assert response.status_code == status.HTTP_404_NOT_FOUND

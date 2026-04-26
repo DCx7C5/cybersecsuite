@@ -12,17 +12,15 @@ Optimized queries with select_related to avoid N+1.
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any, Optional
-from datetime import datetime, timedelta
-from statistics import mean, stdev
+from datetime import datetime, timedelta, timezone
+from statistics import mean
 
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Path, Query
-from pydantic import BaseModel, Field, ConfigDict
-from tortoise.expressions import Q
+from pydantic import BaseModel, Field
 
 from db.models.scope import Project
-from db.models.worker import WorkerSession, WorkerState, WorkerStateTransition, WorkerAuditLog
+from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["worker-metrics"])
@@ -189,9 +187,12 @@ async def get_worker_metrics(
         avg_duration_ms = mean(durations) if durations else 0.0
         
         # Calculate uptime
-        uptime_ms = int(
-            (datetime.utcnow() - worker.start_time).total_seconds() * 1000
-        )
+        now = datetime.now(timezone.utc)
+        start_time = worker.start_time
+        # Handle both naive and aware datetimes
+        if start_time.tzinfo is None:
+            start_time = start_time.replace(tzinfo=timezone.utc)
+        uptime_ms = int((now - start_time).total_seconds() * 1000)
         
         logger.info(
             f"Retrieved metrics for worker {worker_id}",
@@ -203,7 +204,7 @@ async def get_worker_metrics(
             step_count=worker.steps_executed,
             success_rate=success_rate,
             avg_duration_ms=avg_duration_ms,
-            current_state=str(worker.current_state),
+            current_state=worker.current_state.value,
             uptime_ms=uptime_ms
         )
     
@@ -260,21 +261,23 @@ async def get_worker_audit(
                 detail="Worker not found"
             )
         
-        # Build query with select_related
-        query = WorkerAuditLog.filter(
-            worker_id=worker_id,
-            project_id=scope.project_id
-        )
+        # Build query
+        filter_params = {
+            "worker_id": worker_id,
+            "project_id": scope.project_id
+        }
         
         if action:
-            query = query.filter(action=action)
+            filter_params["action"] = action
         
         # Get total count
-        total = await query.clone().count()
+        total = await WorkerAuditLog.filter(**filter_params).count()
         
         # Get paginated results
         offset = (page - 1) * size
-        audit_logs = await query.select_related(
+        audit_logs = await WorkerAuditLog.filter(
+            **filter_params
+        ).select_related(
             "project", "session"
         ).offset(offset).limit(size).order_by(
             "-occurred_at"
@@ -434,27 +437,33 @@ async def get_workers_health() -> HealthStatus:
                 total_workers=0,
                 avg_metrics={},
                 error_rate=0.0,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now(timezone.utc)
             )
         
         # Calculate metrics
         total = len(all_workers)
         
         # Get recent audit logs
+        now = datetime.now(timezone.utc)
+        one_hour_ago = now - timedelta(hours=1)
         recent_logs = await WorkerAuditLog.filter(
-            occurred_at__gte=datetime.utcnow() - timedelta(hours=1)
+            occurred_at__gte=one_hour_ago
         ).limit(1000)
         
-        failures = len([l for l in recent_logs if l.status == "failure"])
+        failures = len([log for log in recent_logs if log.status == "failure"])
         total_recent = len(recent_logs)
         error_rate = (failures / total_recent) if total_recent > 0 else 0.0
         
         # Calculate average metrics
         step_counts = [w.steps_executed for w in all_workers]
-        uptimes = [
-            (datetime.utcnow() - w.start_time).total_seconds() * 1000
-            for w in all_workers
-        ]
+        uptimes = []
+        for w in all_workers:
+            start_time = w.start_time
+            # Handle both naive and aware datetimes
+            if start_time.tzinfo is None:
+                start_time = start_time.replace(tzinfo=timezone.utc)
+            uptime_seconds = (now - start_time).total_seconds() * 1000
+            uptimes.append(uptime_seconds)
         
         avg_metrics = {
             "avg_steps": mean(step_counts) if step_counts else 0,
@@ -464,24 +473,24 @@ async def get_workers_health() -> HealthStatus:
         
         # Determine health status
         if error_rate < 0.01:
-            status = "healthy"
+            health_status = "healthy"
         elif error_rate < 0.05:
-            status = "degraded"
+            health_status = "degraded"
         else:
-            status = "unhealthy"
+            health_status = "unhealthy"
         
         logger.info(
-            f"Workers health check: {status} ({error_rate:.1%} error rate)",
+            f"Workers health check: {health_status} ({error_rate:.1%} error rate)",
             extra={"request_id": "health_check"}
         )
         
         return HealthStatus(
-            status=status,
+            status=health_status,
             total_workers=total,
             avg_metrics=avg_metrics,
             error_rate=error_rate,
             last_error=None,
-            timestamp=datetime.utcnow()
+            timestamp=now
         )
     
     except Exception as exc:
@@ -492,5 +501,5 @@ async def get_workers_health() -> HealthStatus:
             avg_metrics={},
             error_rate=1.0,
             last_error=str(exc),
-            timestamp=datetime.utcnow()
+            timestamp=datetime.now(timezone.utc)
         )

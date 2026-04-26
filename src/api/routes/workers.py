@@ -86,7 +86,7 @@ class WorkerResponse(BaseModel):
     description: str
     worker_type: str
     current_state: str
-    config: dict[str, Any]
+    config: dict[str, Any] = Field(default_factory=dict)
     project_id: int
     session_id: Optional[int]
     steps_executed: int
@@ -96,7 +96,38 @@ class WorkerResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    
+    @field_validator("config", mode="before")
+    @classmethod
+    def extract_config(cls, v: Any) -> dict[str, Any]:
+        """Extract config from context_data if needed."""
+        # If we receive the WorkerSession object directly, extract config from context_data
+        if hasattr(v, "context_data"):
+            context_data = v.context_data or {}
+            return context_data.get("config", {})
+        # If we receive a dict (from model_dump), just return it
+        if isinstance(v, dict):
+            return v
+        return {}
+    
+    @field_validator("project_id", mode="before")
+    @classmethod
+    def extract_project_id(cls, v: Any) -> int:
+        """Extract project_id if we get a FK object."""
+        if hasattr(v, "id"):
+            return v.id
+        return v
+    
+    @field_validator("session_id", mode="before")
+    @classmethod
+    def extract_session_id(cls, v: Any) -> Optional[int]:
+        """Extract session_id if we get a FK object."""
+        if v is None:
+            return None
+        if hasattr(v, "id"):
+            return v.id
+        return v
 
 
 class PaginatedWorkersResponse(BaseModel):
@@ -213,6 +244,8 @@ async def create_worker(
             worker_session = await WorkerSession.create(
                 worker_id=worker_id,
                 worker_type=data.worker_type,
+                name=data.name,
+                description=data.description,
                 project=project,
                 session=session_obj,
                 current_state=WorkerState.QUEUED,
@@ -309,8 +342,11 @@ async def list_workers(
                     detail=f"Invalid state: {state}"
                 )
         
-        # Get total count
-        total = await query.clone().count()
+        # Get total count (without pagination)
+        count_query = WorkerSession.filter(project_id=query_project_id)
+        if state:
+            count_query = count_query.filter(current_state=state_enum)
+        total = await count_query.count()
         
         # Get paginated results with select_related
         offset = (page - 1) * size
@@ -462,8 +498,9 @@ async def update_worker(
         if "config" in update_data:
             config_data = update_data.pop("config")
             context = worker.context_data or {}
-            context["config"] = config_data.model_dump()
-            worker.update_context(context)
+            # config_data is already a dict from model_dump()
+            context["config"] = config_data if isinstance(config_data, dict) else config_data.model_dump()
+            worker.context_data = context
         
         for field, value in update_data.items():
             if value is not None:

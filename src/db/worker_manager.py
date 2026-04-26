@@ -55,7 +55,7 @@ class WorkerStateMachine:
         WorkerState.RUNNING: [WorkerState.PAUSED, WorkerState.COMPLETED, WorkerState.FAILED],
         WorkerState.PAUSED: [WorkerState.RUNNING, WorkerState.FAILED, WorkerState.COMPLETED],
         WorkerState.COMPLETED: [],  # Terminal state
-        WorkerState.FAILED: [],  # Terminal state
+        WorkerState.FAILED: [WorkerState.QUEUED],  # Allow retry (failed → queued)
     }
     
     def __init__(

@@ -150,6 +150,15 @@ class WorkerSession(models.Model):
         default="generic",
         description="Type of worker"
     )
+    name = fields.CharField(
+        max_length=256,
+        default="",
+        description="Human-readable worker name"
+    )
+    description = fields.TextField(
+        default="",
+        description="Worker description"
+    )
     
     # Scope binding (t368)
     project = fields.ForeignKeyField(

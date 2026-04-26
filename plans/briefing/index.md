@@ -8,23 +8,30 @@
 
 ## 📚 Briefing Documents (This Directory)
 
-### 🔥 LATEST: Phase 5D Dispatch
+### 🔥 LATEST: Phase 5E Dispatch
 
-**[phase5d-briefing-2026-04-26.md](phase5d-briefing-2026-04-26.md)** (8.5 KB)  
-Worker API & Lifecycle endpoints. Start here for Phase 5D implementation.
-- 4 todos: CRUD API, lifecycle transitions, history/bookmarks, metrics & monitoring
-- Implementation patterns, test matrix, acceptance criteria
-- Builds on Phase 5B & 5C foundations
-- **Effort**: 4-6 todos, 11-15 hours estimated
+**[phase5e-briefing-2026-04-26.md](phase5e-briefing-2026-04-26.md)** (10 KB) **[NEW]**  
+Worker Dashboard UI with React components & WebSocket. Start here for Phase 5E.
+- 5-6 todos: List view, detail view, real-time updates, timeline, metrics, batch UI
+- Component architecture, React Query patterns, WebSocket integration
+- Builds on Phase 5D API endpoints
+- **Effort**: 5-6 todos, 12-18 hours estimated
 
-### ✅ Phase 5B & 5C Recap
+### ✅ Phase 5A, 5B, 5C & 5D Complete
 
-**[phase5b-briefing-2026-04-26.md](phase5b-briefing-2026-04-26.md)** (6.8 KB)  
-Summary of completed phases with artifacts and commits.
+**[phase5d-briefing-2026-04-26.md](phase5d-briefing-2026-04-26.md)** (8.5 KB) **[COMPLETE]**  
+Worker API & Lifecycle endpoints.
+- 5 todos: CRUD API, lifecycle transitions, history/bookmarks, metrics, batch ops
+- 22 endpoints, 107 tests (100% passing), 85%+ coverage
+- **Status**: 20/20 Phase 5 todos complete ✅
+
+**[phase5b-briefing-2026-04-26.md](phase5b-briefing-2026-04-26.md)** (6.8 KB) **[COMPLETE]**  
+Summary of completed phases.
 - Phase 5A: Scope architecture (8/8 todos) ✅
-- Phase 5B: Scope enforcement middleware (4 todos, 91 tests) ✅
-- Phase 5C: Worker state machine (3 todos, 58 tests) ✅
-- **Status**: 201/201 tests passing
+- Phase 5B: Scope enforcement middleware (4/4 todos) ✅
+- Phase 5C: Worker state machine (3/3 todos) ✅
+- Phase 5D: Worker API (5/5 todos) ✅
+- **Status**: 347 total tests passing
 
 ### 🎓 Orchestrator Protocol
 

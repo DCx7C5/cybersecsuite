@@ -15,12 +15,12 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 from datetime import datetime
+from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Path, Query
-from pydantic import BaseModel, Field, ConfigDict
-from tortoise.expressions import Q
+from pydantic import BaseModel, Field
 
-from db.models.scope import Project
+# Note: These imports work both in production (with src/ in path) and tests
 from db.models.worker import WorkerSession, WorkerAuditLog
 
 logger = logging.getLogger(__name__)
@@ -133,10 +133,10 @@ async def validate_scope_access(
 async def get_execution_history(
     worker_id: str = Path(..., description="Worker ID"),
     action: Optional[str] = Query(None, description="Filter by action"),
-    since: Optional[datetime] = Query(None, description="Filter by timestamp after this date"),
+    since: Optional[str] = Query(None, description="Filter by timestamp after this date (ISO 8601)"),
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(50, ge=1, le=1000, description="Page size"),
-    request: Request = Request,
+    request: Request = None,
     scope: Any = Depends(validate_scope_access)
 ) -> ExecutionHistoryResponse:
     """
@@ -170,7 +170,7 @@ async def get_execution_history(
         worker = await WorkerSession.get_or_none(
             worker_id=worker_id,
             project_id=scope.project_id
-        ).select_related("project", "session")
+        )
         
         if not worker:
             raise HTTPException(
@@ -187,10 +187,17 @@ async def get_execution_history(
         
         # Filter by timestamp
         if since:
-            history = [
-                h for h in history
-                if datetime.fromisoformat(h.get("timestamp", "")) >= since
-            ]
+            try:
+                since_dt = datetime.fromisoformat(since.replace('Z', '+00:00'))
+                history = [
+                    h for h in history
+                    if datetime.fromisoformat(h.get("timestamp", "").replace('Z', '+00:00')) >= since_dt
+                ]
+            except (ValueError, TypeError):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid 'since' parameter. Must be ISO 8601 date format."
+                )
         
         # Sort by timestamp descending
         history = sorted(
@@ -210,7 +217,7 @@ async def get_execution_history(
         
         logger.info(
             f"Retrieved execution history for worker {worker_id} ({len(items)} items)",
-            extra={"request_id": scope.request_id}
+            extra={"request_id": getattr(scope, 'request_id', 'unknown')}
         )
         
         return ExecutionHistoryResponse(
@@ -248,7 +255,7 @@ async def get_execution_history(
 async def create_bookmark(
     worker_id: str = Path(..., description="Worker ID"),
     data: BookmarkCreateRequest = None,
-    request: Request = Request,
+    request: Request = None,
     scope: Any = Depends(validate_scope_access)
 ) -> BookmarkResponse:
     """
@@ -288,7 +295,6 @@ async def create_bookmark(
             )
         
         # Generate bookmark ID
-        from uuid import uuid4
         bookmark_id = f"bm_{uuid4().hex[:16]}"
         
         # Create bookmark
@@ -313,7 +319,7 @@ async def create_bookmark(
             worker_id=worker_id,
             project=project_obj,
             session=session_obj,
-            scope_level=scope.scope_level,
+            scope_level=getattr(scope, 'scope_level', 'project'),
             action="create_bookmark",
             status="success",
             permission_check_passed=True,
@@ -321,13 +327,13 @@ async def create_bookmark(
             details={
                 "bookmark_id": bookmark_id,
                 "name": data.name,
-                "user_id": scope.user_id,
+                "user_id": getattr(scope, 'user_id', 'unknown'),
             }
         )
         
         logger.info(
             f"Created bookmark {bookmark_id} for worker {worker_id}",
-            extra={"request_id": scope.request_id}
+            extra={"request_id": getattr(scope, 'request_id', 'unknown')}
         )
         
         return BookmarkResponse(
@@ -360,7 +366,7 @@ async def list_bookmarks(
     worker_id: str = Path(..., description="Worker ID"),
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(50, ge=1, le=1000, description="Page size"),
-    request: Request = Request,
+    request: Request = None,
     scope: Any = Depends(validate_scope_access)
 ) -> BookmarksListResponse:
     """
@@ -429,7 +435,7 @@ async def list_bookmarks(
         
         logger.info(
             f"Listed {len(items)} bookmarks for worker {worker_id}",
-            extra={"request_id": scope.request_id}
+            extra={"request_id": getattr(scope, 'request_id', 'unknown')}
         )
         
         return BookmarksListResponse(
@@ -462,7 +468,7 @@ async def list_bookmarks(
 async def delete_bookmark(
     worker_id: str = Path(..., description="Worker ID"),
     bookmark_id: str = Path(..., description="Bookmark ID"),
-    request: Request = Request,
+    request: Request = None,
     scope: Any = Depends(validate_scope_access)
 ) -> None:
     """
@@ -514,20 +520,20 @@ async def delete_bookmark(
             worker_id=worker_id,
             project=project_obj,
             session=session_obj,
-            scope_level=scope.scope_level,
+            scope_level=getattr(scope, 'scope_level', 'project'),
             action="delete_bookmark",
             status="success",
             permission_check_passed=True,
             permission_required="worker_bookmark_delete",
             details={
                 "bookmark_id": bookmark_id,
-                "user_id": scope.user_id,
+                "user_id": getattr(scope, 'user_id', 'unknown'),
             }
         )
         
         logger.info(
             f"Deleted bookmark {bookmark_id} for worker {worker_id}",
-            extra={"request_id": scope.request_id}
+            extra={"request_id": getattr(scope, 'request_id', 'unknown')}
         )
     
     except HTTPException:

@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
 from uuid import uuid4
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 from tortoise.exceptions import DoesNotExist
@@ -80,8 +80,8 @@ async def test_worker(db_with_models, test_project):
     )
 
 
-@pytest.fixture
-def mock_scope_context():
+@pytest_asyncio.fixture
+async def mock_scope_context():
     """Create a mock scope context."""
     ctx = MagicMock()
     ctx.request_id = "req-test-123"
@@ -92,8 +92,8 @@ def mock_scope_context():
     return ctx
 
 
-@pytest.fixture
-def app_with_router(mock_scope_context):
+@pytest_asyncio.fixture
+async def app_with_router(mock_scope_context):
     """Create FastAPI app with workers router."""
     app = FastAPI()
     
@@ -106,10 +106,12 @@ def app_with_router(mock_scope_context):
     return app
 
 
-@pytest.fixture
-def client(app_with_router):
-    """Create test client."""
-    return TestClient(app_with_router)
+@pytest_asyncio.fixture
+async def async_client(app_with_router):
+    """Create async test client."""
+    transport = ASGITransport(app=app_with_router)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        yield client
 
 
 # ============================================================================
@@ -117,8 +119,10 @@ def client(app_with_router):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_create_worker_success(client, db_with_models, mock_scope_context):
+async def test_create_worker_success(async_client, db_with_models, mock_scope_context, test_project):
     """Test successful worker creation."""
+    mock_scope_context.project_id = test_project.id
+    
     payload = {
         "name": "test_worker",
         "description": "Test worker for unit tests",
@@ -131,7 +135,7 @@ async def test_create_worker_success(client, db_with_models, mock_scope_context)
         }
     }
     
-    response = client.post("/api/workers/", json=payload)
+    response = await async_client.post("/api/workers/", json=payload)
     assert response.status_code == status.HTTP_201_CREATED
     
     data = response.json()
@@ -141,7 +145,7 @@ async def test_create_worker_success(client, db_with_models, mock_scope_context)
 
 
 @pytest.mark.asyncio
-async def test_create_worker_invalid_name(client):
+async def test_create_worker_invalid_name(async_client):
     """Test worker creation with invalid name."""
     payload = {
         "name": "test@worker!",  # Invalid characters
@@ -150,12 +154,12 @@ async def test_create_worker_invalid_name(client):
         "config": {}
     }
     
-    response = client.post("/api/workers/", json=payload)
+    response = await async_client.post("/api/workers/", json=payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 @pytest.mark.asyncio
-async def test_create_worker_missing_name(client):
+async def test_create_worker_missing_name(async_client):
     """Test worker creation without name."""
     payload = {
         "description": "Test",
@@ -163,17 +167,26 @@ async def test_create_worker_missing_name(client):
         "config": {}
     }
     
-    response = client.post("/api/workers/", json=payload)
+    response = await async_client.post("/api/workers/", json=payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 @pytest.mark.asyncio
-async def test_create_worker_no_scope(client):
+async def test_create_worker_no_scope(async_client, mock_scope_context):
     """Test worker creation without scope."""
-    client.app.middleware_stack = None  # Remove middleware to test scope validation
+    # Remove project_id to simulate no scope
+    mock_scope_context.project_id = None
     
-    # This would fail because there's no scope context
-    # Skip for now as we're testing with mocked scope
+    payload = {
+        "name": "test_worker",
+        "description": "Test",
+        "worker_type": "generic",
+        "config": {}
+    }
+    
+    response = await async_client.post("/api/workers/", json=payload)
+    # Should fail due to missing scope
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 # ============================================================================
@@ -181,7 +194,7 @@ async def test_create_worker_no_scope(client):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_list_workers_success(client, db_with_models, test_project, mock_scope_context):
+async def test_list_workers_success(async_client, db_with_models, test_project, mock_scope_context):
     """Test listing workers successfully."""
     # Create test workers
     mock_scope_context.project_id = test_project.id
@@ -194,7 +207,7 @@ async def test_list_workers_success(client, db_with_models, test_project, mock_s
             current_state=WorkerState.QUEUED,
         )
     
-    response = client.get("/api/workers/")
+    response = await async_client.get("/api/workers/")
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -206,7 +219,7 @@ async def test_list_workers_success(client, db_with_models, test_project, mock_s
 
 
 @pytest.mark.asyncio
-async def test_list_workers_pagination(client, db_with_models, test_project, mock_scope_context):
+async def test_list_workers_pagination(async_client, db_with_models, test_project, mock_scope_context):
     """Test workers list pagination."""
     mock_scope_context.project_id = test_project.id
     
@@ -220,7 +233,7 @@ async def test_list_workers_pagination(client, db_with_models, test_project, moc
         )
     
     # Request first page with size 25
-    response = client.get("/api/workers/?page=1&size=25")
+    response = await async_client.get("/api/workers/?page=1&size=25")
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -230,14 +243,14 @@ async def test_list_workers_pagination(client, db_with_models, test_project, moc
     assert data["has_more"] is True
     
     # Request second page
-    response = client.get("/api/workers/?page=2&size=25")
+    response = await async_client.get("/api/workers/?page=2&size=25")
     data = response.json()
     assert len(data["items"]) == 25
     assert data["page"] == 2
 
 
 @pytest.mark.asyncio
-async def test_list_workers_filter_by_state(client, db_with_models, test_project, mock_scope_context):
+async def test_list_workers_filter_by_state(async_client, db_with_models, test_project, mock_scope_context):
     """Test filtering workers by state."""
     mock_scope_context.project_id = test_project.id
     
@@ -258,7 +271,7 @@ async def test_list_workers_filter_by_state(client, db_with_models, test_project
             current_state=WorkerState.QUEUED,
         )
     
-    response = client.get("/api/workers/?state=running")
+    response = await async_client.get("/api/workers/?state=running")
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -269,9 +282,11 @@ async def test_list_workers_filter_by_state(client, db_with_models, test_project
 
 
 @pytest.mark.asyncio
-async def test_list_workers_invalid_state_filter(client):
+async def test_list_workers_invalid_state_filter(async_client, mock_scope_context, test_project):
     """Test filtering with invalid state."""
-    response = client.get("/api/workers/?state=invalid_state")
+    mock_scope_context.project_id = test_project.id
+    
+    response = await async_client.get("/api/workers/?state=invalid_state")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -280,13 +295,13 @@ async def test_list_workers_invalid_state_filter(client):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_get_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_get_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test getting a single worker successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.get(f"/api/workers/{test_worker.worker_id}")
+    response = await async_client.get(f"/api/workers/{test_worker.worker_id}")
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -295,17 +310,17 @@ async def test_get_worker_success(client, db_with_models, test_project, test_wor
 
 
 @pytest.mark.asyncio
-async def test_get_worker_not_found(client, mock_scope_context):
+async def test_get_worker_not_found(async_client, mock_scope_context, test_project):
     """Test getting non-existent worker."""
-    mock_scope_context.project_id = 999  # Non-existent project
+    mock_scope_context.project_id = test_project.id
     
-    response = client.get("/api/workers/nonexistent_worker")
+    response = await async_client.get("/api/workers/nonexistent_worker")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
 async def test_get_worker_cross_project_access_denied(
-    client, db_with_models, test_project, test_worker, mock_scope_context
+    async_client, db_with_models, test_project, test_worker, mock_scope_context
 ):
     """Test cross-project worker access is denied."""
     # Create another project
@@ -319,7 +334,7 @@ async def test_get_worker_cross_project_access_denied(
     # Try to access from different project scope
     mock_scope_context.project_id = test_project.id
     
-    response = client.get(f"/api/workers/{test_worker.worker_id}")
+    response = await async_client.get(f"/api/workers/{test_worker.worker_id}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -328,7 +343,7 @@ async def test_get_worker_cross_project_access_denied(
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_update_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_update_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test updating worker successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -345,7 +360,7 @@ async def test_update_worker_success(client, db_with_models, test_project, test_
         }
     }
     
-    response = client.patch(f"/api/workers/{test_worker.worker_id}", json=payload)
+    response = await async_client.patch(f"/api/workers/{test_worker.worker_id}", json=payload)
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -353,7 +368,7 @@ async def test_update_worker_success(client, db_with_models, test_project, test_
 
 
 @pytest.mark.asyncio
-async def test_update_worker_partial(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_update_worker_partial(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test partial worker update."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -363,7 +378,7 @@ async def test_update_worker_partial(client, db_with_models, test_project, test_
         "description": "Only updating description"
     }
     
-    response = client.patch(f"/api/workers/{test_worker.worker_id}", json=payload)
+    response = await async_client.patch(f"/api/workers/{test_worker.worker_id}", json=payload)
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -371,11 +386,11 @@ async def test_update_worker_partial(client, db_with_models, test_project, test_
 
 
 @pytest.mark.asyncio
-async def test_update_worker_not_found(client, mock_scope_context):
+async def test_update_worker_not_found(async_client, mock_scope_context, test_project):
     """Test updating non-existent worker."""
-    mock_scope_context.project_id = 1
+    mock_scope_context.project_id = test_project.id
     
-    response = client.patch("/api/workers/nonexistent", json={"description": "Test"})
+    response = await async_client.patch("/api/workers/nonexistent", json={"description": "Test"})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -384,13 +399,13 @@ async def test_update_worker_not_found(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_delete_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_delete_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test deleting worker successfully."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.delete(f"/api/workers/{test_worker.worker_id}")
+    response = await async_client.delete(f"/api/workers/{test_worker.worker_id}")
     assert response.status_code == status.HTTP_204_NO_CONTENT
     
     # Verify worker is gone
@@ -399,22 +414,22 @@ async def test_delete_worker_success(client, db_with_models, test_project, test_
 
 
 @pytest.mark.asyncio
-async def test_delete_worker_not_found(client, mock_scope_context):
+async def test_delete_worker_not_found(async_client, mock_scope_context, test_project):
     """Test deleting non-existent worker."""
-    mock_scope_context.project_id = 1
+    mock_scope_context.project_id = test_project.id
     
-    response = client.delete("/api/workers/nonexistent")
+    response = await async_client.delete("/api/workers/nonexistent")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_delete_worker_logs_audit(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_delete_worker_logs_audit(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test deleting worker creates audit log."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.delete(f"/api/workers/{test_worker.worker_id}")
+    response = await async_client.delete(f"/api/workers/{test_worker.worker_id}")
     assert response.status_code == status.HTTP_204_NO_CONTENT
     
     # Check audit log
@@ -430,7 +445,7 @@ async def test_delete_worker_logs_audit(client, db_with_models, test_project, te
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_create_worker_logs_audit(client, db_with_models, test_project, mock_scope_context):
+async def test_create_worker_logs_audit(async_client, db_with_models, test_project, mock_scope_context):
     """Test worker creation creates audit log."""
     mock_scope_context.project_id = test_project.id
     
@@ -441,7 +456,7 @@ async def test_create_worker_logs_audit(client, db_with_models, test_project, mo
         "config": {}
     }
     
-    response = client.post("/api/workers/", json=payload)
+    response = await async_client.post("/api/workers/", json=payload)
     assert response.status_code == status.HTTP_201_CREATED
     
     data = response.json()
@@ -457,13 +472,13 @@ async def test_create_worker_logs_audit(client, db_with_models, test_project, mo
 
 
 @pytest.mark.asyncio
-async def test_update_worker_logs_audit(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_update_worker_logs_audit(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test worker update creates audit log."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.patch(
+    response = await async_client.patch(
         f"/api/workers/{test_worker.worker_id}",
         json={"description": "Updated for audit test"}
     )
@@ -482,9 +497,11 @@ async def test_update_worker_logs_audit(client, db_with_models, test_project, te
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_error_response_format(client):
+async def test_error_response_format(async_client, mock_scope_context, test_project):
     """Test error response format."""
-    response = client.get("/api/workers/nonexistent")
+    mock_scope_context.project_id = test_project.id
+    
+    response = await async_client.get("/api/workers/nonexistent")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     
     data = response.json()
@@ -496,10 +513,10 @@ async def test_error_response_format(client):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_list_workers_enforces_scope(client, db_with_models, test_project, mock_scope_context):
+async def test_list_workers_enforces_scope(async_client, db_with_models, test_project, mock_scope_context):
     """Test list workers enforces project scope."""
     mock_scope_context.project_id = None  # No scope
     
-    response = client.get("/api/workers/")
+    response = await async_client.get("/api/workers/")
     # Should fail or return empty based on implementation
     assert response.status_code in [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN]

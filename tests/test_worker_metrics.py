@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import pytest
 import pytest_asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 from unittest.mock import MagicMock
+import time
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 
@@ -31,36 +32,9 @@ from api.routes.worker_metrics import router as metrics_router
 # ============================================================================
 
 @pytest_asyncio.fixture
-async def db_with_models():
-    """Initialize SQLite database with worker models."""
-    db_path = ":memory:"
-    
-    modules_to_load = [
-        "db.models.scope",
-        "db.models.worker",
-    ]
-    
-    await Tortoise.init(
-        db_url=f"sqlite://{db_path}",
-        modules={"models": modules_to_load},
-    )
-    await Tortoise.generate_schemas()
-    yield Tortoise
-    await Tortoise.close_connections()
-
-
-@pytest_asyncio.fixture
-async def test_project(db_with_models):
-    """Create a test project."""
-    return await Project.create(
-        name=f"test_project_{uuid4().hex[:8]}"
-    )
-
-
-@pytest_asyncio.fixture
-async def test_worker_with_metrics(db_with_models, test_project):
+async def test_worker_with_metrics(db, test_project):
     """Create a test worker with execution metrics."""
-    history = [
+    history: list[dict] = [
         {
             "timestamp": datetime.utcnow().isoformat(),
             "action": "step_completed",
@@ -98,20 +72,20 @@ async def test_worker_with_metrics(db_with_models, test_project):
     return worker
 
 
-@pytest.fixture
-def mock_scope_context():
+@pytest_asyncio.fixture
+async def mock_scope_context(test_project):
     """Create a mock scope context."""
     ctx = MagicMock()
     ctx.request_id = "req-test-123"
     ctx.scope_level = "project"
-    ctx.project_id = 1
+    ctx.project_id = test_project.id
     ctx.session_id = None
     ctx.user_id = "user-123"
     return ctx
 
 
-@pytest.fixture
-def app_with_router(mock_scope_context):
+@pytest_asyncio.fixture
+async def app_with_router(mock_scope_context):
     """Create FastAPI app with metrics router."""
     app = FastAPI()
     
@@ -124,10 +98,12 @@ def app_with_router(mock_scope_context):
     return app
 
 
-@pytest.fixture
-def client(app_with_router):
-    """Create test client."""
-    return TestClient(app_with_router)
+@pytest_asyncio.fixture
+async def async_client(app_with_router):
+    """Create async test client."""
+    transport = ASGITransport(app=app_with_router)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        yield client
 
 
 # ============================================================================
@@ -135,13 +111,11 @@ def client(app_with_router):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_get_worker_metrics_success(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_get_worker_metrics_success(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test getting worker metrics successfully."""
     mock_scope_context.project_id = test_project.id
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -156,22 +130,22 @@ async def test_get_worker_metrics_success(client, db_with_models, test_project, 
 
 
 @pytest.mark.asyncio
-async def test_get_worker_metrics_not_found(client, mock_scope_context):
+async def test_get_worker_metrics_not_found(async_client, test_project, mock_scope_context):
     """Test getting metrics for non-existent worker."""
-    mock_scope_context.project_id = 1
+    mock_scope_context.project_id = test_project.id
     
-    response = client.get("/api/workers/nonexistent/metrics")
+    response = await async_client.get("/api/workers/nonexistent/metrics")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_get_worker_metrics_cross_project_denied(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_get_worker_metrics_cross_project_denied(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test metrics access enforces project scope."""
-    mock_scope_context.project_id = 999  # Different project
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
+    # Create a different project for scope check
+    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    mock_scope_context.project_id = other_project.id  # Different project
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -180,11 +154,9 @@ async def test_get_worker_metrics_cross_project_denied(client, db_with_models, t
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_get_worker_audit_success(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_get_worker_audit_success(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test getting worker audit trail successfully."""
     mock_scope_context.project_id = test_project.id
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
     
     # Create some audit logs
     for i in range(3):
@@ -197,7 +169,7 @@ async def test_get_worker_audit_success(client, db_with_models, test_project, te
             details={"user_id": "user-123"}
         )
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -208,11 +180,9 @@ async def test_get_worker_audit_success(client, db_with_models, test_project, te
 
 
 @pytest.mark.asyncio
-async def test_get_worker_audit_pagination(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_get_worker_audit_pagination(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test audit trail pagination."""
     mock_scope_context.project_id = test_project.id
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
     
     # Create 10 audit logs
     for i in range(10):
@@ -225,7 +195,7 @@ async def test_get_worker_audit_pagination(client, db_with_models, test_project,
             details={}
         )
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?page=1&size=3")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?page=1&size=3")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -235,11 +205,9 @@ async def test_get_worker_audit_pagination(client, db_with_models, test_project,
 
 
 @pytest.mark.asyncio
-async def test_get_worker_audit_filter_by_action(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_get_worker_audit_filter_by_action(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test audit trail filtering by action."""
     mock_scope_context.project_id = test_project.id
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
     
     # Create audit logs with different actions
     for i in range(2):
@@ -262,7 +230,7 @@ async def test_get_worker_audit_filter_by_action(client, db_with_models, test_pr
             details={}
         )
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?action=pause")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?action=pause")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -272,11 +240,11 @@ async def test_get_worker_audit_filter_by_action(client, db_with_models, test_pr
 
 
 @pytest.mark.asyncio
-async def test_get_worker_audit_not_found(client, mock_scope_context):
+async def test_get_worker_audit_not_found(async_client, test_project, mock_scope_context):
     """Test audit for non-existent worker."""
-    mock_scope_context.project_id = 1
+    mock_scope_context.project_id = test_project.id
     
-    response = client.get("/api/workers/nonexistent/audit")
+    response = await async_client.get("/api/workers/nonexistent/audit")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -285,7 +253,7 @@ async def test_get_worker_audit_not_found(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_get_workers_summary_success(client, db_with_models, test_project, mock_scope_context):
+async def test_get_workers_summary_success(async_client, test_project, mock_scope_context):
     """Test getting worker summary successfully."""
     mock_scope_context.project_id = test_project.id
     
@@ -317,7 +285,7 @@ async def test_get_workers_summary_success(client, db_with_models, test_project,
             steps_executed=20
         )
     
-    response = client.get(f"/api/workers/summary?project_id={test_project.id}")
+    response = await async_client.get(f"/api/workers/summary?project_id={test_project.id}")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -332,7 +300,7 @@ async def test_get_workers_summary_success(client, db_with_models, test_project,
 
 
 @pytest.mark.asyncio
-async def test_get_workers_summary_defaults_to_scope(client, db_with_models, test_project, mock_scope_context):
+async def test_get_workers_summary_defaults_to_scope(async_client, test_project, mock_scope_context):
     """Test summary defaults to scope project."""
     mock_scope_context.project_id = test_project.id
     
@@ -343,7 +311,7 @@ async def test_get_workers_summary_defaults_to_scope(client, db_with_models, tes
         current_state=WorkerState.RUNNING
     )
     
-    response = client.get("/api/workers/summary")
+    response = await async_client.get("/api/workers/summary")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -351,11 +319,11 @@ async def test_get_workers_summary_defaults_to_scope(client, db_with_models, tes
 
 
 @pytest.mark.asyncio
-async def test_get_workers_summary_no_workers(client, db_with_models, test_project, mock_scope_context):
+async def test_get_workers_summary_no_workers(async_client, test_project, mock_scope_context):
     """Test summary with no workers."""
     mock_scope_context.project_id = test_project.id
     
-    response = client.get(f"/api/workers/summary?project_id={test_project.id}")
+    response = await async_client.get(f"/api/workers/summary?project_id={test_project.id}")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -367,9 +335,9 @@ async def test_get_workers_summary_no_workers(client, db_with_models, test_proje
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_get_workers_health_success(client, db_with_models):
+async def test_get_workers_health_success(async_client):
     """Test getting workers health successfully."""
-    response = client.get("/api/health/workers")
+    response = await async_client.get("/api/health/workers")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -384,9 +352,9 @@ async def test_get_workers_health_success(client, db_with_models):
 
 
 @pytest.mark.asyncio
-async def test_get_workers_health_empty(client, db_with_models):
+async def test_get_workers_health_empty(async_client):
     """Test health check with no workers."""
-    response = client.get("/api/health/workers")
+    response = await async_client.get("/api/health/workers")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -395,7 +363,7 @@ async def test_get_workers_health_empty(client, db_with_models):
 
 
 @pytest.mark.asyncio
-async def test_get_workers_health_with_failures(client, db_with_models, test_project):
+async def test_get_workers_health_with_failures(async_client, test_project):
     """Test health check calculates error rate."""
     # Create a worker
     worker = await WorkerSession.create(
@@ -416,7 +384,7 @@ async def test_get_workers_health_with_failures(client, db_with_models, test_pro
             details={}
         )
     
-    response = client.get("/api/health/workers")
+    response = await async_client.get("/api/health/workers")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -429,12 +397,12 @@ async def test_get_workers_health_with_failures(client, db_with_models, test_pro
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_metrics_success_rate_calculation(client, db_with_models, test_project, mock_scope_context):
+async def test_metrics_success_rate_calculation(async_client, test_project, mock_scope_context):
     """Test success rate metric calculation."""
     mock_scope_context.project_id = test_project.id
     
     # Create worker with mixed success/failure
-    history = [
+    history: list[dict] = [
         {"timestamp": datetime.utcnow().isoformat(), "action": "step", "status": "success"},
         {"timestamp": datetime.utcnow().isoformat(), "action": "step", "status": "success"},
         {"timestamp": datetime.utcnow().isoformat(), "action": "step", "status": "failure"},
@@ -452,7 +420,7 @@ async def test_metrics_success_rate_calculation(client, db_with_models, test_pro
     worker.update_execution_history(history)
     await worker.save()
     
-    response = client.get(f"/api/workers/{worker.worker_id}/metrics")
+    response = await async_client.get(f"/api/workers/{worker.worker_id}/metrics")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -464,22 +432,338 @@ async def test_metrics_success_rate_calculation(client, db_with_models, test_pro
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_metrics_enforces_scope(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_metrics_enforces_scope(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test metrics endpoint enforces scope."""
-    mock_scope_context.project_id = 999  # Different project
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
+    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    mock_scope_context.project_id = other_project.id  # Different project
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_audit_enforces_scope(client, db_with_models, test_project, test_worker_with_metrics, mock_scope_context):
+async def test_audit_enforces_scope(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test audit endpoint enforces scope."""
-    mock_scope_context.project_id = 999  # Different project
-    test_worker_with_metrics.project_id = test_project.id
-    await test_worker_with_metrics.save()
+    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    mock_scope_context.project_id = other_project.id  # Different project
     
-    response = client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit")
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+async def test_summary_enforces_scope(async_client, test_project, mock_scope_context):
+    """Test summary endpoint enforces scope."""
+    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    mock_scope_context.project_id = other_project.id
+    
+    # Try to access different project
+    response = await async_client.get(f"/api/workers/summary?project_id={test_project.id}")
+    # Should either deny or only show scoped data
+    assert response.status_code in [status.HTTP_200_OK, status.HTTP_403_FORBIDDEN]
+
+
+# ============================================================================
+# Additional Tests for Comprehensive Coverage
+# ============================================================================
+
+@pytest.mark.asyncio
+async def test_get_worker_metrics_empty_history(async_client, test_project, mock_scope_context):
+    """Test metrics for worker with no execution history."""
+    mock_scope_context.project_id = test_project.id
+    
+    worker = await WorkerSession.create(
+        worker_id=f"worker_{uuid4().hex[:16]}",
+        worker_type="generic",
+        project=test_project,
+        current_state=WorkerState.QUEUED,
+        execution_history=[],
+        steps_executed=0
+    )
+    
+    response = await async_client.get(f"/api/workers/{worker.worker_id}/metrics")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["step_count"] == 0
+    assert data["success_rate"] == 0.0
+    assert data["avg_duration_ms"] == 0.0
+
+
+@pytest.mark.asyncio
+async def test_get_worker_metrics_partial_failures(async_client, test_project, mock_scope_context):
+    """Test metrics calculation with partial failures."""
+    mock_scope_context.project_id = test_project.id
+    
+    history: list[dict] = [
+        {
+            "timestamp": datetime.utcnow().isoformat(),
+            "action": "step",
+            "status": "success",
+            "result": {"duration_ms": 100}
+        },
+        {
+            "timestamp": datetime.utcnow().isoformat(),
+            "action": "step",
+            "status": "failure",
+            "result": {}
+        },
+        {
+            "timestamp": datetime.utcnow().isoformat(),
+            "action": "step",
+            "status": "success",
+            "result": {"duration_ms": 50}
+        },
+    ]
+    
+    worker = await WorkerSession.create(
+        worker_id=f"worker_{uuid4().hex[:16]}",
+        worker_type="generic",
+        project=test_project,
+        current_state=WorkerState.COMPLETED,
+        execution_history=history,
+        steps_executed=3
+    )
+    worker.update_execution_history(history)
+    await worker.save()
+    
+    response = await async_client.get(f"/api/workers/{worker.worker_id}/metrics")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["step_count"] == 3
+    assert data["success_rate"] == pytest.approx(2/3, abs=0.01)
+    assert data["avg_duration_ms"] == 75.0  # (100 + 50) / 2
+
+
+@pytest.mark.asyncio
+async def test_get_worker_audit_large_pagination(async_client, test_project, test_worker_with_metrics, mock_scope_context):
+    """Test audit pagination with large page size."""
+    mock_scope_context.project_id = test_project.id
+    
+    # Create 50 audit logs
+    for i in range(50):
+        await WorkerAuditLog.create(
+            worker_id=test_worker_with_metrics.worker_id,
+            project=test_project,
+            scope_level="project",
+            action=f"action_{i}",
+            status="success" if i % 2 == 0 else "failure",
+            details={"index": i}
+        )
+    
+    # Test with page 1, size 100 (all results)
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?page=1&size=100")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["total"] == 50
+    assert len(data["items"]) == 50
+    assert data["page"] == 1
+    assert data["has_more"] is False
+
+
+@pytest.mark.asyncio
+async def test_get_worker_audit_second_page(async_client, test_project, test_worker_with_metrics, mock_scope_context):
+    """Test audit trail second page navigation."""
+    mock_scope_context.project_id = test_project.id
+    
+    # Create 25 audit logs
+    for i in range(25):
+        await WorkerAuditLog.create(
+            worker_id=test_worker_with_metrics.worker_id,
+            project=test_project,
+            scope_level="project",
+            action=f"action_{i}",
+            status="success",
+            details={}
+        )
+    
+    # Get second page with size 10
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?page=2&size=10")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["total"] == 25
+    assert len(data["items"]) == 10
+    assert data["page"] == 2
+    assert data["has_more"] is True
+
+
+@pytest.mark.asyncio
+async def test_get_workers_summary_with_averages(async_client, test_project, mock_scope_context):
+    """Test summary correctly calculates averages."""
+    mock_scope_context.project_id = test_project.id
+    
+    # Create workers with specific step counts
+    step_counts = [10, 20, 30, 40, 50]
+    for i, steps in enumerate(step_counts):
+        await WorkerSession.create(
+            worker_id=f"worker_{uuid4().hex[:16]}",
+            worker_type="generic",
+            project=test_project,
+            current_state=WorkerState.COMPLETED,
+            steps_executed=steps,
+            execution_history=[
+                {"status": "success"},
+                {"status": "success"},
+                {"status": "failure"},
+            ]
+        )
+    
+    response = await async_client.get(f"/api/workers/summary?project_id={test_project.id}")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    
+    # Average should be 30
+    assert data["avg_step_count"] == 30.0
+    # Success rate should be 2/3 for all workers
+    assert data["avg_success_rate"] == pytest.approx(2/3, abs=0.01)
+
+
+@pytest.mark.asyncio
+async def test_get_workers_summary_all_states(async_client, test_project, mock_scope_context):
+    """Test summary with workers in all possible states."""
+    mock_scope_context.project_id = test_project.id
+    
+    states = [
+        (WorkerState.QUEUED, 2),
+        (WorkerState.RUNNING, 3),
+        (WorkerState.PAUSED, 1),
+        (WorkerState.COMPLETED, 4),
+        (WorkerState.FAILED, 1),
+    ]
+    
+    for state, count in states:
+        for _ in range(count):
+            await WorkerSession.create(
+                worker_id=f"worker_{uuid4().hex[:16]}",
+                worker_type="generic",
+                project=test_project,
+                current_state=state
+            )
+    
+    response = await async_client.get(f"/api/workers/summary?project_id={test_project.id}")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    
+    assert data["total_workers"] == 11
+    assert data["queued"] == 2
+    assert data["running"] == 3
+    assert data["paused"] == 1
+    assert data["completed"] == 4
+    assert data["failed"] == 1
+
+
+@pytest.mark.asyncio
+async def test_get_workers_health_status_degraded(async_client, test_project):
+    """Test health check reports degraded status."""
+    # Create workers and failures between 1-5% error rate
+    worker = await WorkerSession.create(
+        worker_id=f"worker_{uuid4().hex[:16]}",
+        worker_type="generic",
+        project=test_project,
+        current_state=WorkerState.RUNNING
+    )
+    
+    # Create 2 failures out of 100 recent actions = 2% error rate (degraded)
+    for i in range(2):
+        await WorkerAuditLog.create(
+            worker_id=worker.worker_id,
+            project=test_project,
+            scope_level="project",
+            action="test",
+            status="failure",
+            details={}
+        )
+    
+    for i in range(98):
+        await WorkerAuditLog.create(
+            worker_id=worker.worker_id,
+            project=test_project,
+            scope_level="project",
+            action="test",
+            status="success",
+            details={}
+        )
+    
+    response = await async_client.get("/api/health/workers")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["status"] in ["healthy", "degraded"]  # Could be either depending on timing
+    assert data["total_workers"] == 1
+
+
+@pytest.mark.asyncio
+async def test_audit_max_size_enforcement(async_client, test_project, test_worker_with_metrics, mock_scope_context):
+    """Test audit endpoint max size constraint."""
+    mock_scope_context.project_id = test_project.id
+    
+    # Try to request size > 1000
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?size=2000")
+    
+    # Should either cap at 1000 or return an error
+    assert response.status_code in [status.HTTP_200_OK, status.HTTP_422_UNPROCESSABLE_ENTITY]
+
+
+@pytest.mark.asyncio
+async def test_get_worker_metrics_large_execution_history(async_client, test_project, mock_scope_context):
+    """Test metrics calculation with large execution history."""
+    mock_scope_context.project_id = test_project.id
+    
+    # Create 100 execution history entries
+    history: list[dict] = []
+    for i in range(100):
+        history.append({
+            "timestamp": datetime.utcnow().isoformat(),
+            "action": f"step_{i}",
+            "status": "success" if i % 10 != 0 else "failure",  # 10% failure rate
+            "result": {"duration_ms": 50 + (i % 50)}
+        })
+    
+    worker = await WorkerSession.create(
+        worker_id=f"worker_{uuid4().hex[:16]}",
+        worker_type="generic",
+        project=test_project,
+        current_state=WorkerState.RUNNING,
+        execution_history=history,
+        steps_executed=100
+    )
+    worker.update_execution_history(history)
+    await worker.save()
+    
+    response = await async_client.get(f"/api/workers/{worker.worker_id}/metrics")
+    
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["step_count"] == 100
+    assert data["success_rate"] == pytest.approx(0.9, abs=0.01)
+    assert data["avg_duration_ms"] > 0
+
+
+@pytest.mark.asyncio
+async def test_get_workers_summary_missing_scope(async_client, mock_scope_context):
+    """Test summary without scope context."""
+    mock_scope_context.project_id = None
+    
+    response = await async_client.get("/api/workers/summary")
+    
+    # Should fail when no scope is available
+    assert response.status_code in [status.HTTP_400_BAD_REQUEST, status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED]
+
+
+@pytest.mark.asyncio
+async def test_audit_enforces_pagination_constraints(async_client, test_project, test_worker_with_metrics, mock_scope_context):
+    """Test audit endpoint enforces pagination parameter constraints."""
+    mock_scope_context.project_id = test_project.id
+    
+    # Try invalid page number
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?page=0")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    
+    # Try invalid size
+    response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit?size=0")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

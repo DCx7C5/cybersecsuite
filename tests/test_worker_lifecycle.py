@@ -15,11 +15,12 @@ from __future__ import annotations
 
 import pytest
 import pytest_asyncio
+import json
 from datetime import datetime
 from uuid import uuid4
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 
@@ -37,14 +38,16 @@ async def db_with_models():
     """Initialize SQLite database with worker models."""
     db_path = ":memory:"
     
-    modules_to_load = [
-        "db.models.scope",
-        "db.models.worker",
-    ]
+    modules_to_load = {
+        "models": [
+            "db.models.scope",
+            "db.models.worker",
+        ]
+    }
     
     await Tortoise.init(
         db_url=f"sqlite://{db_path}",
-        modules={"models": modules_to_load},
+        modules=modules_to_load,
     )
     await Tortoise.generate_schemas()
     yield Tortoise
@@ -72,8 +75,8 @@ async def test_worker(db_with_models, test_project):
     )
 
 
-@pytest.fixture
-def mock_scope_context():
+@pytest_asyncio.fixture
+async def mock_scope_context():
     """Create a mock scope context."""
     ctx = MagicMock()
     ctx.request_id = "req-test-123"
@@ -84,8 +87,8 @@ def mock_scope_context():
     return ctx
 
 
-@pytest.fixture
-def app_with_router(mock_scope_context):
+@pytest_asyncio.fixture
+async def app_with_router(mock_scope_context):
     """Create FastAPI app with lifecycle router."""
     app = FastAPI()
     
@@ -98,10 +101,12 @@ def app_with_router(mock_scope_context):
     return app
 
 
-@pytest.fixture
-def client(app_with_router):
-    """Create test client."""
-    return TestClient(app_with_router)
+@pytest_asyncio.fixture
+async def async_client(app_with_router):
+    """Create async test client."""
+    transport = ASGITransport(app=app_with_router)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        yield client
 
 
 # ============================================================================
@@ -109,14 +114,14 @@ def client(app_with_router):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_start_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_start_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test starting a worker (queued → running)."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
     payload = {"reason": "Manual start for testing"}
-    response = client.post(f"/api/workers/{test_worker.worker_id}/start", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json=payload)
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -126,7 +131,7 @@ async def test_start_worker_success(client, db_with_models, test_project, test_w
 
 
 @pytest.mark.asyncio
-async def test_pause_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_pause_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test pausing a worker (running → paused)."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -134,7 +139,7 @@ async def test_pause_worker_success(client, db_with_models, test_project, test_w
     await test_worker.save()
     
     payload = {"reason": "Checkpoint triggered"}
-    response = client.post(f"/api/workers/{test_worker.worker_id}/pause", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/pause", json=payload)
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -143,7 +148,7 @@ async def test_pause_worker_success(client, db_with_models, test_project, test_w
 
 
 @pytest.mark.asyncio
-async def test_resume_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_resume_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test resuming a worker (paused → running)."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -151,7 +156,7 @@ async def test_resume_worker_success(client, db_with_models, test_project, test_
     await test_worker.save()
     
     payload = {"reason": "Resume from checkpoint"}
-    response = client.post(f"/api/workers/{test_worker.worker_id}/resume", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/resume", json=payload)
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -160,7 +165,7 @@ async def test_resume_worker_success(client, db_with_models, test_project, test_
 
 
 @pytest.mark.asyncio
-async def test_stop_worker_from_running(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_stop_worker_from_running(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test stopping a running worker."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -168,7 +173,7 @@ async def test_stop_worker_from_running(client, db_with_models, test_project, te
     await test_worker.save()
     
     payload = {"reason": "User requested stop"}
-    response = client.post(f"/api/workers/{test_worker.worker_id}/stop", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/stop", json=payload)
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -177,7 +182,7 @@ async def test_stop_worker_from_running(client, db_with_models, test_project, te
 
 
 @pytest.mark.asyncio
-async def test_stop_worker_from_paused(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_stop_worker_from_paused(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test stopping a paused worker."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -185,7 +190,7 @@ async def test_stop_worker_from_paused(client, db_with_models, test_project, tes
     await test_worker.save()
     
     payload = {"reason": "Stop from paused state"}
-    response = client.post(f"/api/workers/{test_worker.worker_id}/stop", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/stop", json=payload)
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -193,7 +198,7 @@ async def test_stop_worker_from_paused(client, db_with_models, test_project, tes
 
 
 @pytest.mark.asyncio
-async def test_retry_worker_success(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_retry_worker_success(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test retrying a failed worker (failed → queued)."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -201,7 +206,7 @@ async def test_retry_worker_success(client, db_with_models, test_project, test_w
     await test_worker.save()
     
     payload = {"reason": "Retry after error"}
-    response = client.post(f"/api/workers/{test_worker.worker_id}/retry", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/retry", json=payload)
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -214,67 +219,68 @@ async def test_retry_worker_success(client, db_with_models, test_project, test_w
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_start_already_running_worker_409(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_start_already_running_worker_409(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test starting already running worker returns 409."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     test_worker.current_state = WorkerState.RUNNING
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
     
     assert response.status_code == status.HTTP_409_CONFLICT
     data = response.json()
-    assert "invalid_state_transition" in str(data)
-    assert "allowed_transitions" in str(data)
+    # Error response may be JSON string or dict
+    error_detail = data if isinstance(data, dict) else json.loads(data)
+    assert "invalid_state_transition" in str(error_detail)
 
 
 @pytest.mark.asyncio
-async def test_pause_queued_worker_409(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_pause_queued_worker_409(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test pausing queued worker returns 409."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     # Worker already in queued state
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/pause", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/pause", json={})
     
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
 @pytest.mark.asyncio
-async def test_resume_running_worker_409(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_resume_running_worker_409(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test resuming running worker returns 409."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     test_worker.current_state = WorkerState.RUNNING
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/resume", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/resume", json={})
     
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
 @pytest.mark.asyncio
-async def test_stop_queued_worker_409(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_stop_queued_worker_409(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test stopping queued worker returns 409."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     # Worker in queued state
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/stop", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/stop", json={})
     
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
 @pytest.mark.asyncio
-async def test_retry_running_worker_409(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_retry_running_worker_409(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test retrying running worker returns 409."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     test_worker.current_state = WorkerState.RUNNING
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/retry", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/retry", json={})
     
     assert response.status_code == status.HTTP_409_CONFLICT
 
@@ -284,47 +290,47 @@ async def test_retry_running_worker_409(client, db_with_models, test_project, te
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_start_nonexistent_worker_404(client, mock_scope_context):
+async def test_start_nonexistent_worker_404(async_client, db_with_models, mock_scope_context):
     """Test starting non-existent worker returns 404."""
     mock_scope_context.project_id = 1
     
-    response = client.post("/api/workers/nonexistent/start", json={})
+    response = await async_client.post("/api/workers/nonexistent/start", json={})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_pause_nonexistent_worker_404(client, mock_scope_context):
+async def test_pause_nonexistent_worker_404(async_client, db_with_models, mock_scope_context):
     """Test pausing non-existent worker returns 404."""
     mock_scope_context.project_id = 1
     
-    response = client.post("/api/workers/nonexistent/pause", json={})
+    response = await async_client.post("/api/workers/nonexistent/pause", json={})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_resume_nonexistent_worker_404(client, mock_scope_context):
+async def test_resume_nonexistent_worker_404(async_client, db_with_models, mock_scope_context):
     """Test resuming non-existent worker returns 404."""
     mock_scope_context.project_id = 1
     
-    response = client.post("/api/workers/nonexistent/resume", json={})
+    response = await async_client.post("/api/workers/nonexistent/resume", json={})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_stop_nonexistent_worker_404(client, mock_scope_context):
+async def test_stop_nonexistent_worker_404(async_client, db_with_models, mock_scope_context):
     """Test stopping non-existent worker returns 404."""
     mock_scope_context.project_id = 1
     
-    response = client.post("/api/workers/nonexistent/stop", json={})
+    response = await async_client.post("/api/workers/nonexistent/stop", json={})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_retry_nonexistent_worker_404(client, mock_scope_context):
+async def test_retry_nonexistent_worker_404(async_client, db_with_models, mock_scope_context):
     """Test retrying non-existent worker returns 404."""
     mock_scope_context.project_id = 1
     
-    response = client.post("/api/workers/nonexistent/retry", json={})
+    response = await async_client.post("/api/workers/nonexistent/retry", json={})
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -333,13 +339,13 @@ async def test_retry_nonexistent_worker_404(client, mock_scope_context):
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_start_worker_logs_audit(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_start_worker_logs_audit(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test starting worker creates audit log."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
     assert response.status_code == status.HTTP_200_OK
     
     # Check audit log
@@ -352,14 +358,14 @@ async def test_start_worker_logs_audit(client, db_with_models, test_project, tes
 
 
 @pytest.mark.asyncio
-async def test_pause_worker_logs_audit(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_pause_worker_logs_audit(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test pausing worker creates audit log."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     test_worker.current_state = WorkerState.RUNNING
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/pause", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/pause", json={})
     assert response.status_code == status.HTTP_200_OK
 
 
@@ -368,13 +374,13 @@ async def test_pause_worker_logs_audit(client, db_with_models, test_project, tes
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_transition_response_format(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_transition_response_format(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test transition response contains all required fields."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
     assert response.status_code == status.HTTP_200_OK
     
     data = response.json()
@@ -390,7 +396,7 @@ async def test_transition_response_format(client, db_with_models, test_project, 
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_transition_with_metadata(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_transition_with_metadata(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test transition with additional metadata."""
     mock_scope_context.project_id = test_project.id
     test_worker.project_id = test_project.id
@@ -404,7 +410,7 @@ async def test_transition_with_metadata(client, db_with_models, test_project, te
         }
     }
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/start", json=payload)
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json=payload)
     assert response.status_code == status.HTTP_200_OK
 
 
@@ -413,11 +419,32 @@ async def test_transition_with_metadata(client, db_with_models, test_project, te
 # ============================================================================
 
 @pytest.mark.asyncio
-async def test_transition_enforces_scope(client, db_with_models, test_project, test_worker, mock_scope_context):
+async def test_transition_enforces_scope(async_client, db_with_models, test_project, test_worker, mock_scope_context):
     """Test transitions enforce project scope."""
     mock_scope_context.project_id = 999  # Different project
     test_worker.project_id = test_project.id
     await test_worker.save()
     
-    response = client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+# ============================================================================
+# Test: Error Response Format (409 with allowed_transitions)
+# ============================================================================
+
+@pytest.mark.asyncio
+async def test_conflict_error_includes_allowed_transitions(async_client, db_with_models, test_project, test_worker, mock_scope_context):
+    """Test 409 error response includes allowed_transitions."""
+    mock_scope_context.project_id = test_project.id
+    test_worker.project_id = test_project.id
+    test_worker.current_state = WorkerState.RUNNING
+    await test_worker.save()
+    
+    response = await async_client.post(f"/api/workers/{test_worker.worker_id}/start", json={})
+    assert response.status_code == status.HTTP_409_CONFLICT
+    
+    # Parse error response (may be JSON string)
+    data = response.json()
+    error_detail = data if isinstance(data, dict) else json.loads(data)
+    assert "allowed_transitions" in error_detail or "detail" in data
