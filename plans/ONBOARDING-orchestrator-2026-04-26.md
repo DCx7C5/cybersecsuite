@@ -142,6 +142,105 @@ Before executing ANY code, understand these 7 rules:
 
 ---
 
+## 🎯 THE ORCHESTRATOR PLAYBOOK (Critical Reference)
+
+This is your authority document. Follow EXACTLY.
+
+### Phase Transition Guard (Before Phase N Starts)
+
+Before advancing to Phase N, verify Phase N-1 is complete:
+
+```bash
+# Verify all Phase N-1 todos marked done
+sqlite3 ~/.copilot/session-state/.../session.db \
+  "SELECT COUNT(*) as blockers FROM todos \
+   WHERE id LIKE 'phase$(N-1)%' AND status != 'done';"
+# Must return 0. If not, unblock dependencies first.
+```
+
+### Phase Completion Ritual (After Phase N Finishes)
+
+After all Phase N todos marked `done`, follow this EXACTLY:
+
+1. **Run Exit Validation** (in plan.md Phase N → "Exit Gate" section)
+   ```bash
+   # Example Phase 1
+   cd ai-marketplace/mcps/_template && pytest tests/ && echo "✅ Phase 1 Complete"
+   ```
+
+2. **Create Git Commit** (MUST include Co-authored-by trailer)
+   ```bash
+   git add -A
+   git commit -m "Phase N complete: deliverable-1, deliverable-2
+
+   - Extracted tools: X
+   - Tests: all passing
+   - Duration: Y hours (planned Z)
+   
+   Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+   ```
+
+3. **Update plan.md:** Change Phase N from `📋 Planned` → `✅ Complete`
+
+4. **Update CHANGELOG.md:**
+   ```markdown
+   ## Phase N — [Date] — [Your Name]
+   - Deliverable 1
+   - Deliverable 2
+   - Git: [commit-sha]
+   - Duration: Y hours
+   ```
+
+5. **Update Documentation** (if structure changed):
+   - `docs/mcp/tools.md` — new MCPs + tools
+   - `docs/database.md` — schema changes
+   - Auto-generate READMEs for new MCPs
+
+### Handling Phase Failures (Rollback)
+
+If Phase N fails mid-execution:
+
+1. **Check Phase N Rollback Spec** (in plan.md Phase N section)
+
+2. **Mark Todo Blocked:**
+   ```sql
+   UPDATE todos SET status='blocked', 
+     description='Phase N rollback: [reason]' 
+   WHERE id='phase_N_failing_todo';
+   ```
+
+3. **Revert Phase N Commits:**
+   ```bash
+   git log --oneline | head -10  # Find Phase N start
+   git revert -n <phase_N_start>..<current>
+   git commit -m "Phase N rollback: [reason]"
+   ```
+
+4. **Fix Root Cause** (reference plan.md Phase N spec or addendums)
+
+5. **Re-Execute Phase N** (update todos back to `pending`)
+
+### Spawning Sub-Agents
+
+You have full authority to delegate. Patterns:
+
+**MCP Extraction (Phases 2-5):**
+- Use: `task` agent, type="python-developer"
+- Pass: SQL todos + plan.md phase spec
+- Verify: All tests pass + zero linting errors
+
+**Testing & QA (Phases 6, 11):**
+- Use: `task` agent, type="task"
+- Pass: Test matrix + coverage targets
+- Verify: Tests pass + coverage >= target
+
+**Dependency Analysis (pre-Phase-2):**
+- Use: `task` agent, type="explore"
+- Pass: Tool inventory + module structure
+- Verify: No circular dependencies
+
+---
+
 ## 🚀 Getting Started (Step by Step)
 
 ### Step 1: Read Everything (1.5 hours)

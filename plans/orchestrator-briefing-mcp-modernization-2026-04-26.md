@@ -75,6 +75,58 @@ Execute 12 phases of work, each with specific deliverables:
 - ✅ Blocker analysis documents (`phase10-addendum.md`, `phase11-qa-addendum.md`)
 - ✅ Rubber-duck validation (all architectural unknowns eliminated)
 
+### ⚠️ YOUR 4 CORE RESPONSIBILITIES (CRITICAL):
+
+#### 1. Guard Phase Transitions
+- Before Phase N: Query SQL to verify Phase N-1 todos are `status='done'`
+- After Phase N: Run phase exit validation (documented in plan.md Phase N section)
+- If blocked: Document reason + update todo status to `blocked`
+
+#### 2. Create Changelog & Update Documentation  
+**After EACH completed phase:**
+- ✏️ Create `CHANGELOG.md` entry: date + phase + deliverables + actual duration
+- 📝 Update docs if structure changed: `docs/mcp/tools.md`, `docs/database.md`, etc.
+- Auto-generate READMEs for new MCPs/skills
+- **Before Phase 1 starts:** Create empty `CHANGELOG.md`
+
+#### 3. Commit to Git (With Proper Format)
+**After EACH completed phase:**
+```bash
+git commit -m "Phase N complete: <deliverable-1>, <deliverable-2>, ...
+
+- Extracted tools: X
+- Tests: all passing
+- Duration: Y hours (planned Z hours)
+- Artifacts: [list key files/dirs]
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+```
+
+#### 4. Spawn Sub-Agents For Complex Work
+You have authority to delegate. Use these patterns:
+
+**MCP Extraction (Phases 2-5):**
+```
+Use `task` agent with type="python-developer"
+- Provide: SQL todos for phase + plan.md phase spec
+- Verify: All MCP tests pass + no linting errors
+- If fails: Rollback phase, fix root cause, re-execute
+```
+
+**Testing & QA (Phases 6, 11):**
+```
+Use `task` agent with type="task"
+- Provide: Test matrix + coverage targets
+- Verify: pytest passing + coverage >= target
+```
+
+**Dependency Analysis (pre-Phase 2):**
+```
+Use `task` agent with type="explore"
+- Provide: Tool inventory + module structure
+- Verify: No circular dependencies detected
+```
+
 ---
 
 ## 📚 Documentation You MUST Know
