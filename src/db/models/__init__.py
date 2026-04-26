@@ -71,6 +71,7 @@ from db.models.provider import Provider, ProviderAuthMethod  # noqa: E402
 from db.models.provider_model import ProviderModel, AccountModel  # noqa: E402
 from db.models.tool_registry import ToolRegistry, ToolToggleState, ToolToggleRegistry, AccountToolAccess  # noqa: E402
 from db.models.settings import ScopedEntry, GlobalSettings  # noqa: E402
+from db.models.core import AuditLog  # noqa: E402
 from db.models.llm_session import LlmSession  # noqa: E402
 from db.models.intel_feed_source import IntelFeedSource  # noqa: E402
 from db.models.prompt import Prompt  # noqa: E402
@@ -91,6 +92,7 @@ __all__ = [
     "AccountToolAccess",
     "ScopedEntry",
     "GlobalSettings",
+    "AuditLog",
     "LlmSession",
     "IntelFeedSource",
     "Prompt",

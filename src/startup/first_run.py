@@ -48,13 +48,13 @@ async def first_run_setup() -> dict:
         if market_file.exists():
             try:
                 _MARKETPLACE = json.loads(market_file.read_text())
-            except Exception:
+            except Exception(BaseException):
                 _MARKETPLACE = {}
 
     try:
         from accounts.sync import sync_providers_to_db
         await sync_providers_to_db()
-    except Exception:
+    except Exception(BaseException):
         pass
 
     return {
