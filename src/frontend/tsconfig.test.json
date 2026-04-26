@@ -4,5 +4,5 @@
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["tests", "test-types.ts"]
+  "include": ["src/**/*.test.tsx", "src/**/*.test.ts", "test-types.ts"]
 }
