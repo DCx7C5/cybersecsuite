@@ -1,3 +1,7 @@
+/// <reference types="vitest/globals" />
+/// <reference types="@testing-library/jest-dom" />
+/// <reference path="../../src/types/ambient.d.ts" />
+
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, fireEvent } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
