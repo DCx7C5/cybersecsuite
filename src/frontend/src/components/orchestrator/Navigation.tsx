@@ -90,7 +90,7 @@ export default function Navigation({
         ))}
       </ul>
 
-      <style jsx>{`
+      <style>{`
         .nav-sidebar {
           display: flex;
           flex-direction: column;

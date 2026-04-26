@@ -17,7 +17,7 @@ export default function YaraPanel() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <Card title={`YARA Rules (${rules.length})`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {rules.map(rule => (
+          {rules.map((rule: any) => (
             <div key={rule.id} style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden' }}>
               <div style={{ background: 'var(--surface-2)', padding: '8px 12px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontWeight: 600, fontSize: '13px', fontFamily: 'var(--font-mono)' }}>{rule.name}</span>

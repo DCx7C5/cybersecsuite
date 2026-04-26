@@ -138,7 +138,7 @@ export default function NotificationCenter() {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .notification-center {
           display: flex;
           flex-direction: column;

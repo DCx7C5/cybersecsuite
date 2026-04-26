@@ -57,7 +57,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Default error UI
-      const isDev = process.env.NODE_ENV === 'development'
+      const isDev = import.meta.env.DEV
       return (
         <div
           style={{

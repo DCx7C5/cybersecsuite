@@ -85,7 +85,7 @@ export default function ProviderAuthModal({
     setTenant('')
 
     const preferred = normalizeAuthMethod(defaultMethod || undefined)
-    if (preferred && methods.includes(preferred)) {
+    if (preferred && preferred !== 'none' && methods.includes(preferred)) {
       setSelectedMethod(preferred)
       return
     }

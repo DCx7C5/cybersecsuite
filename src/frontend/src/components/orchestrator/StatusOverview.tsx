@@ -87,7 +87,7 @@ export default function StatusOverview({ isPaused = false }: StatusOverviewProps
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .status-overview {
           display: flex;
           gap: 1rem;

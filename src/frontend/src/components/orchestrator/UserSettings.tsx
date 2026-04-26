@@ -179,7 +179,7 @@ export default function UserSettings() {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .user-settings {
           display: flex;
           flex-direction: column;

@@ -1,18 +1,26 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { useWorkerDetail, useWorkerMetrics, type WorkerResponse } from '@/hooks/useWorkers.ts'
+import * as RQ from '@tanstack/react-query'
+import { useWorkerDetail, useWorkerMetrics } from '@/hooks/useWorkers.ts'
 import Button from '@/components/ui/Button.tsx'
 import Badge from '@/components/ui/Badge.tsx'
 import Card from '@/components/ui/Card.tsx'
 import Modal from '@/components/ui/Modal.tsx'
 import Spinner from '@/components/ui/Spinner.tsx'
 
-const STATE_COLORS: Record<string, string> = {
-  queued: 'var(--blue)',
-  running: 'var(--green)',
-  paused: 'var(--yellow)',
-  completed: 'var(--green)',
-  failed: 'var(--red)',
+function getStatusVariant(state: string): 'ok' | 'err' | 'warn' | 'info' | 'muted' {
+  switch (state) {
+    case 'running':
+    case 'completed':
+      return 'ok'
+    case 'failed':
+      return 'err'
+    case 'paused':
+      return 'warn'
+    case 'queued':
+      return 'info'
+    default:
+      return 'muted'
+  }
 }
 
 interface WorkerDetailProps {
@@ -32,31 +40,30 @@ async function performAction(projectId: number, workerId: number, action: string
 
 export default function WorkerDetail({ projectId, workerId, onBack }: WorkerDetailProps) {
   const { data: worker, isLoading: workerLoading, error: workerError } = useWorkerDetail(projectId, workerId)
-  const { data: metrics, isLoading: metricsLoading } = useWorkerMetrics(projectId, workerId)
+  const { data: metrics } = useWorkerMetrics(projectId, workerId)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedAction, setSelectedAction] = useState<string | null>(null)
 
-  const startMutation = useMutation({
+  const startMutation = RQ.useMutation({
     mutationFn: () => performAction(projectId, workerId, 'start'),
   })
 
-  const pauseMutation = useMutation({
+  const pauseMutation = RQ.useMutation({
     mutationFn: () => performAction(projectId, workerId, 'pause'),
   })
 
-  const resumeMutation = useMutation({
+  const resumeMutation = RQ.useMutation({
     mutationFn: () => performAction(projectId, workerId, 'resume'),
   })
 
-  const stopMutation = useMutation({
+  const stopMutation = RQ.useMutation({
     mutationFn: () => performAction(projectId, workerId, 'stop'),
   })
 
-  const retryMutation = useMutation({
+  const retryMutation = RQ.useMutation({
     mutationFn: () => performAction(projectId, workerId, 'retry'),
   })
 
-  const deleteMutation = useMutation({
+  const deleteMutation = RQ.useMutation({
     mutationFn: () => performAction(projectId, workerId, 'delete'),
     onSuccess: onBack,
   })
@@ -98,7 +105,7 @@ export default function WorkerDetail({ projectId, workerId, onBack }: WorkerDeta
                 ID: {worker.worker_id}
               </p>
             </div>
-            <Badge style={{ background: STATE_COLORS[worker.current_state] || 'var(--border)' }}>
+            <Badge variant={getStatusVariant(worker.current_state)}>
               {worker.current_state}
             </Badge>
           </div>
@@ -239,6 +246,7 @@ export default function WorkerDetail({ projectId, workerId, onBack }: WorkerDeta
 
       {showDeleteModal && (
         <Modal
+          open={showDeleteModal}
           title="Delete Worker"
           onClose={() => setShowDeleteModal(false)}
         >

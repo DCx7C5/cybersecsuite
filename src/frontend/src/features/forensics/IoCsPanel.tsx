@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -17,9 +17,9 @@ export default function IoCsPanel() {
   const [showModal, setShowModal] = useState(false)
   const [editItem, setEditItem] = useState<IoC | null>(null)
   const [form, setForm] = useState({ type: '', value: '', confidence: '80', source: '' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const saveMut = useMutation({
+  const saveMut = RQ.useMutation({
     mutationFn: () => {
       const url = editItem ? `/api/iocs/${editItem.id}` : '/api/iocs'
       const method = editItem ? 'PATCH' : 'POST'
@@ -28,7 +28,7 @@ export default function IoCsPanel() {
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['iocs'] }); setShowModal(false); setEditItem(null) }
   })
 
-  const deleteMut = useMutation({
+  const deleteMut = RQ.useMutation({
     mutationFn: (id: string) => fetchApi(`/api/iocs/${id}`, { method: 'DELETE' }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['iocs'] }) }
   })

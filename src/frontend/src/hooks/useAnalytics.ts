@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 
 interface AnalyticsData {
@@ -17,7 +17,7 @@ interface AnalyticsData {
 }
 
 export function useAnalytics(dateRange: string = '7d', filters: Record<string, string> = {}) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = RQ.useQuery({
     queryKey: ['analytics', dateRange, filters],
     queryFn: () => {
       const params = new URLSearchParams()

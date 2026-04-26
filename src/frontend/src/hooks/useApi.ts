@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 
 export async function fetchApi<T>(url: string, opts?: RequestInit): Promise<T> {
   const r = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts })
@@ -8,8 +8,8 @@ export async function fetchApi<T>(url: string, opts?: RequestInit): Promise<T> {
 
 export function useApiQuery<T>(
   key: string[],
-  url: string,
+  url: string | null,
   opts?: { enabled?: boolean; refetchInterval?: number }
 ) {
-  return useQuery<T>({ queryKey: key, queryFn: () => fetchApi<T>(url), ...opts })
+  return RQ.useQuery<T>({ queryKey: key, queryFn: () => fetchApi<T>(url!), ...opts, enabled: !!url && opts?.enabled !== false })
 }

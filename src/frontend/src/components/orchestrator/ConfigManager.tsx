@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 import ConfigForm from './ConfigForm'
 import ConfigHistory from './ConfigHistory'
@@ -35,17 +35,17 @@ export default function ConfigManager() {
   const [showHistory, setShowHistory] = useState(false)
   const [changes, setChanges] = useState<Record<string, unknown>>({})
 
-  const { data: config, isLoading, refetch } = useQuery({
+  const { data: config, isLoading, refetch } = RQ.useQuery({
     queryKey: ['config'],
     queryFn: () => fetchApi<ConfigResponse>('/api/config'),
   })
 
-  const { data: history } = useQuery({
+  const { data: history } = RQ.useQuery({
     queryKey: ['config-history'],
     queryFn: () => fetchApi<ConfigHistoryEntry[]>('/api/config/history'),
   })
 
-  const updateConfigMutation = useMutation({
+  const updateConfigMutation = RQ.useMutation({
     mutationFn: (updates: Record<string, unknown>) =>
       fetchApi('/api/config/update', {
         method: 'POST',
@@ -155,7 +155,7 @@ export default function ConfigManager() {
         })}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .config-manager {
           display: flex;
           flex-direction: column;

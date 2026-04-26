@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 import LogsViewer from './LogsViewer'
 
@@ -38,7 +38,7 @@ export default function HealthDashboard() {
   })
   const [showLogs, setShowLogs] = useState(false)
 
-  const { data: logs } = useQuery({
+  const { data: logs } = RQ.useQuery({
     queryKey: ['system-logs'],
     queryFn: () => fetchApi<SystemLog[]>('/api/system/logs'),
   })
@@ -183,7 +183,7 @@ export default function HealthDashboard() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .health-dashboard {
           display: flex;
           flex-direction: column;

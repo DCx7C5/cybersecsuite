@@ -66,7 +66,7 @@ export default function LogsViewer({ logs }: LogsViewerProps) {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .logs-viewer {
           margin-top: 1rem;
           border: 1px solid var(--border);

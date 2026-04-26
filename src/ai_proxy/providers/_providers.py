@@ -4,7 +4,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from ai_proxy.providers.registry import _register, ProviderConfig, ModelConfig, ModelCost, AuthType, ApiFormat
+from ai_proxy.providers.registry import (
+    _register,
+    ProviderConfig,
+    ModelConfig,
+    ModelCost,
+    AuthType,
+    ApiFormat,
+)
 
 # ── Default providers ────────────────────────────────────────────────────────
 

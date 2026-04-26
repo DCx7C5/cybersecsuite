@@ -5,7 +5,7 @@ import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Spinner from '@/components/ui/Spinner'
-import { useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 
 const TABS = ['API', 'MCPs', 'Skills', 'Hooks'] as const
 type Tab = typeof TABS[number]
@@ -19,7 +19,7 @@ function ApiTab() {
   const { data, isLoading } = useApiQuery<ApiSettings>(['settings-api'], '/api/settings')
   const [form, setForm] = useState<ApiSettings>(() => data ?? {})
   const [isDirty, setIsDirty] = useState(false)
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
   useEffect(() => { if (data) setForm(data) }, [data])
   
   const save = useCallback(async () => {
@@ -85,7 +85,7 @@ function McpTab() {
   const { data, isLoading } = useApiQuery<McpSettings>(['settings-mcps'], '/api/settings/mcps')
   const [local, setLocal] = useState<Record<string, boolean>>(() => data?.mcps ?? {})
   const [search, setSearch] = useState('')
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
   useEffect(() => { if (data?.mcps) setLocal(data.mcps) }, [data?.mcps])
 
@@ -138,7 +138,7 @@ function SkillsTab() {
   const { data, isLoading } = useApiQuery<SkillSettings>(['settings-skills'], '/api/settings/skills')
   const [local, setLocal] = useState<Record<string, boolean>>(() => data?.skills ?? {})
   const [search, setSearch] = useState('')
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
   useEffect(() => { if (data?.skills) setLocal(data.skills) }, [data?.skills])
 
@@ -192,7 +192,7 @@ function HooksTab() {
   const [hooks, setHooks] = useState<string[]>(() => data?.hooks ?? [])
   const [newHook, setNewHook] = useState('')
   const [search, setSearch] = useState('')
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
   useEffect(() => { if (data?.hooks) setHooks(data.hooks) }, [data?.hooks])
 

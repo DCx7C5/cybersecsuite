@@ -56,7 +56,7 @@ export default function ConfigHistory({ entries }: ConfigHistoryProps) {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .config-history {
           background: var(--surface-1);
           border: 1px solid var(--border);

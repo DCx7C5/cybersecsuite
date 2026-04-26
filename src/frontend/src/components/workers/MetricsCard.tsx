@@ -36,19 +36,19 @@ interface MetricsCardProps {
 
 export default function MetricsCard({ projectId, workerId, showSummary = false }: MetricsCardProps) {
   const { data: workerMetrics, isLoading: metricsLoading } = useApiQuery<WorkerMetrics>(
-    ['metrics', projectId, workerId],
+    ['metrics', projectId.toString(), workerId?.toString() || ''],
     workerId ? `/api/projects/${projectId}/workers/${workerId}/metrics` : null,
     { enabled: !!workerId }
   )
 
   const { data: summary, isLoading: summaryLoading } = useApiQuery<WorkerSummary>(
-    ['summary', projectId],
+    ['summary', projectId.toString()],
     showSummary ? `/api/projects/${projectId}/workers/summary` : null,
     { enabled: showSummary }
   )
 
   const { data: health } = useApiQuery<HealthStatus>(
-    ['health', projectId],
+    ['health', projectId.toString()],
     `/api/projects/${projectId}/health/workers`
   )
 

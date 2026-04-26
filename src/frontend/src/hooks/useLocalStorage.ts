@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 
 interface StorageInterface {
   getItem: (key: string) => string | null

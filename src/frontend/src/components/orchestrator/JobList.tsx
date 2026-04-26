@@ -56,7 +56,7 @@ export default function JobList({ jobs, isLoading, onSelectJob }: JobListProps) 
         </table>
       )}
 
-      <style jsx>{`
+      <style>{`
         .job-list {
           border: 1px solid var(--border);
           border-radius: 6px;

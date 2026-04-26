@@ -124,7 +124,7 @@ export default function APIKeyManager() {
         </table>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .api-key-manager {
           display: flex;
           flex-direction: column;

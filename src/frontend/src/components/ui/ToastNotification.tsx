@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { Toast, type ToastProps, type ToastVariant } from './Toast'
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { Toast, type ToastProps } from './Toast'
 
 interface ToastMessage extends Omit<ToastProps, 'id'> {
   id: string

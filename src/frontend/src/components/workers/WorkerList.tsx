@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useWorkers, type WorkerResponse } from '@/hooks/useWorkers.ts'
+import { useWorkers } from '@/hooks/useWorkers.ts'
 import Badge from '@/components/ui/Badge.tsx'
 import Button from '@/components/ui/Button.tsx'
 import Input from '@/components/ui/Input.tsx'
@@ -7,17 +7,25 @@ import Select from '@/components/ui/Select.tsx'
 import Spinner from '@/components/ui/Spinner.tsx'
 import Card from '@/components/ui/Card.tsx'
 
-const STATE_COLORS: Record<string, string> = {
-  queued: 'var(--blue)',
-  running: 'var(--green)',
-  paused: 'var(--yellow)',
-  completed: 'var(--green)',
-  failed: 'var(--red)',
+function getStatusVariant(state: string): 'ok' | 'err' | 'warn' | 'info' | 'muted' {
+  switch (state) {
+    case 'running':
+    case 'completed':
+      return 'ok'
+    case 'failed':
+      return 'err'
+    case 'paused':
+      return 'warn'
+    case 'queued':
+      return 'info'
+    default:
+      return 'muted'
+  }
 }
 
 export default function WorkerList({ projectId }: { projectId: number }) {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(50)
+  const [limit] = useState(50)
   const [search, setSearch] = useState('')
   const [stateFilter, setStateFilter] = useState('')
   const [sort, setSort] = useState('name')
@@ -156,7 +164,7 @@ export default function WorkerList({ projectId }: { projectId: number }) {
                     </td>
                     <td style={{ padding: '12px' }}>{worker.name}</td>
                     <td style={{ padding: '12px' }}>
-                      <Badge style={{ background: STATE_COLORS[worker.current_state] || 'var(--border)' }}>
+                      <Badge variant={getStatusVariant(worker.current_state)}>
                         {worker.current_state}
                       </Badge>
                     </td>

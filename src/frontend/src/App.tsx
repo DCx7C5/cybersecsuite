@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react'
-import { QueryClientProvider } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { queryClient } from './libs/queryClient'
 import { useUIStore } from './store/uiStore'
 import Sidebar from './components/layout/Sidebar'
@@ -54,7 +54,7 @@ export default function App() {
   const Panel = panels[activeTab]
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <RQ.QueryClientProvider client={queryClient}>
       <div id="shell" style={{ display: 'flex', minHeight: '100vh' }}>
         <Sidebar />
         <div
@@ -83,6 +83,6 @@ export default function App() {
           <StatusBar />
         </div>
       </div>
-    </QueryClientProvider>
+    </RQ.QueryClientProvider>
   )
 }

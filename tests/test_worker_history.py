@@ -59,7 +59,7 @@ async def test_project(db_with_models):
 @pytest_asyncio.fixture
 async def test_worker_with_history(db_with_models, test_project):
     """Create a test worker with execution history."""
-    now = datetime.utcnow()
+    now = datetime.now()
     
     history = [
         {
@@ -206,7 +206,7 @@ async def test_get_execution_history_filter_by_timestamp(async_client, db_with_m
     await test_worker_with_history.save()
     
     # Get items from last hour only
-    cutoff = (datetime.utcnow() - timedelta(hours=1)).isoformat()
+    cutoff = (datetime.now() - timedelta(hours=1)).isoformat()
     response = await async_client.get(f"/api/workers/{test_worker_with_history.worker_id}/history?since={cutoff}")
     
     assert response.status_code == status.HTTP_200_OK

@@ -59,7 +59,7 @@ export default function ConfigForm({
         </tbody>
       </table>
 
-      <style jsx>{`
+      <style>{`
         .config-form {
           padding: 1.5rem;
         }

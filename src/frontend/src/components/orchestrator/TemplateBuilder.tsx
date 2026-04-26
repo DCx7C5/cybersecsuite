@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 import TemplateEditor from './TemplateEditor'
 import TemplatePreview from './TemplatePreview'
@@ -30,7 +30,7 @@ export default function TemplateBuilder() {
   const [showCreate, setShowCreate] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
 
-  const { data: templatesData, isLoading, refetch } = useQuery({
+  const { data: templatesData, isLoading, refetch } = RQ.useQuery({
     queryKey: ['templates', page, search, filterStatus],
     queryFn: () => {
       const params = new URLSearchParams()
@@ -42,7 +42,7 @@ export default function TemplateBuilder() {
     },
   })
 
-  const updateTemplateMutation = useMutation({
+  const updateTemplateMutation = RQ.useMutation({
     mutationFn: (data: { id: string; template: Partial<Template> }) =>
       fetchApi(`/api/templates/${data.id}`, {
         method: 'PUT',
@@ -51,7 +51,7 @@ export default function TemplateBuilder() {
     onSuccess: () => refetch(),
   })
 
-  const createTemplateMutation = useMutation({
+  const createTemplateMutation = RQ.useMutation({
     mutationFn: (template: Partial<Template>) =>
       fetchApi('/api/templates', {
         method: 'POST',
@@ -205,7 +205,7 @@ export default function TemplateBuilder() {
         />
       )}
 
-      <style jsx>{`
+      <style>{`
         .template-builder {
           display: flex;
           flex-direction: column;

@@ -13,9 +13,9 @@ declare module '@testing-library/jest-dom' {
   export * from '@testing-library/jest-dom'
 }
 
-declare module '@tanstack/react-query' {
-  export * from '@tanstack/react-query'
-}
+// declare module '@tanstack/react-query' {
+//   export * from '@tanstack/react-query'
+// }
 
 declare module '@/components/workers/ExecutionTimeline' {
   import type ExecutionTimeline from '@/components/workers/ExecutionTimeline'

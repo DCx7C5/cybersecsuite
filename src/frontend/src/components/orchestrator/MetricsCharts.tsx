@@ -83,7 +83,7 @@ export default function MetricsCharts({ data }: MetricsChartsProps) {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .metrics-charts {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));

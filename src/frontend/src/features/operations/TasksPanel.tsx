@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -12,9 +12,9 @@ interface TasksData { tasks?: Task[] }
 
 export default function TasksPanel() {
   const { data, isLoading, error } = useApiQuery<TasksData>(['tasks'], '/api/tasks-list')
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const cancelMut = useMutation({
+  const cancelMut = RQ.useMutation({
     mutationFn: (id: string) => fetchApi(`/api/tasks/${id}/cancel`, { method: 'POST' }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['tasks'] }) }
   })

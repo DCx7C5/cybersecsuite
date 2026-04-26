@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Card } from './Card'
-import { Spinner } from './Spinner'
-import { Badge } from './Badge'
+import Card from './Card'
+import Spinner from './Spinner'
+import Badge from './Badge'
 
 interface WorkerMetrics {
   worker_id: string
@@ -183,12 +183,12 @@ export function BackgroundWorkerMonitor({
             >
               <div
                 style={{
-                  width: `${data.vram_percent}%`,
+                  width: `${data.vram_percent ?? 0}%`,
                   height: '100%',
                   backgroundColor:
-                    data.vram_percent > 80
+                    (data.vram_percent ?? 0) > 80
                       ? 'var(--red)'
-                      : data.vram_percent > 50
+                      : (data.vram_percent ?? 0) > 50
                         ? 'var(--warning)'
                         : 'var(--success)',
                   transition: 'width 0.3s ease',
@@ -196,7 +196,7 @@ export function BackgroundWorkerMonitor({
               />
             </div>
             <span style={{ minWidth: '40px', textAlign: 'right' }}>
-              {data.vram_percent.toFixed(1)}%
+              {(data.vram_percent ?? 0).toFixed(1)}%
             </span>
           </div>
           <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '4px' }}>
@@ -261,8 +261,8 @@ export function BackgroundWorkerMonitor({
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Badge label={`${worker.active_task_count} active`} variant="info" />
-                    <Badge label={`Q:${worker.queue_depth}`} variant="info" />
+                    <Badge variant="info">{`${worker.active_task_count} active`}</Badge>
+                    <Badge variant="info">{`Q:${worker.queue_depth}`}</Badge>
                     <span style={{ opacity: 0.7 }}>
                       {expanded.has(worker.worker_id) ? '▼' : '▶'}
                     </span>

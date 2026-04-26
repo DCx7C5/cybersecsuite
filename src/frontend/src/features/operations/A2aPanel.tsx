@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -17,9 +17,9 @@ export default function A2aPanel() {
   const { data: status } = useApiQuery<A2aStatus>(['a2a-status'], '/api/a2a')
   const { data, isLoading, error } = useApiQuery<A2aData>(['a2a-tasks'], '/api/a2a/tasks')
   const [form, setForm] = useState({ task_id: '', input: '' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const createMut = useMutation({
+  const createMut = RQ.useMutation({
     mutationFn: () => fetchApi('/api/a2a/tasks', { method: 'POST', body: JSON.stringify(form) }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['a2a-tasks'] }) }
   })

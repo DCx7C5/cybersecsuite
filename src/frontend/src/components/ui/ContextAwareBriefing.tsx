@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card } from './Card'
-import { Badge } from './Badge'
+import Card from './Card'
+import Badge from './Badge'
 
 interface ContextAwareness {
   worker_id: string
@@ -109,16 +109,14 @@ export function ContextAwareBriefing({
           </div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {context.architecture.current_layer && (
-              <Badge
-                label={`Layer: ${context.architecture.current_layer}`}
-                variant="info"
-              />
+              <Badge variant="info">
+                {`Layer: ${context.architecture.current_layer}`}
+              </Badge>
             )}
             {context.architecture.current_component && (
-              <Badge
-                label={context.architecture.current_component}
-                variant="info"
-              />
+              <Badge variant="info">
+                {context.architecture.current_component}
+              </Badge>
             )}
           </div>
           {context.architecture.recent_components && context.architecture.recent_components.length > 0 && (
@@ -137,22 +135,19 @@ export function ContextAwareBriefing({
           </div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {context.scope.scope_level && (
-              <Badge
-                label={`Level: ${context.scope.scope_level}`}
-                variant="success"
-              />
+              <Badge variant="ok">
+                {`Level: ${context.scope.scope_level}`}
+              </Badge>
             )}
             {context.scope.session_id && (
-              <Badge
-                label={`Session: ${context.scope.session_id}`}
-                variant="success"
-              />
+              <Badge variant="ok">
+                {`Session: ${context.scope.session_id}`}
+              </Badge>
             )}
             {context.scope.project_id && (
-              <Badge
-                label={`Project: ${context.scope.project_id}`}
-                variant="success"
-              />
+              <Badge variant="ok">
+                {`Project: ${context.scope.project_id}`}
+              </Badge>
             )}
           </div>
         </div>
@@ -222,10 +217,9 @@ export function ContextAwareBriefing({
       {/* Recent Errors */}
       {context.recent_errors !== undefined && context.recent_errors > 0 && (
         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
-          <Badge
-            label={`${context.recent_errors} recent errors`}
-            variant="warning"
-          />
+          <Badge variant="warn">
+            {`${context.recent_errors} recent errors`}
+          </Badge>
         </div>
       )}
     </Card>

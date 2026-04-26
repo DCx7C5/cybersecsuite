@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 import ScheduleForm from './ScheduleForm'
 import JobList from './JobList'
@@ -30,7 +30,7 @@ export default function BatchScheduler() {
   const [selectedJob, setSelectedJob] = useState<ScheduledJob | null>(null)
   const [page, setPage] = useState(1)
 
-  const { data: jobsData, isLoading, refetch } = useQuery({
+  const { data: jobsData, isLoading, refetch } = RQ.useQuery({
     queryKey: ['batch-jobs', page],
     queryFn: () => {
       const params = new URLSearchParams()
@@ -40,7 +40,7 @@ export default function BatchScheduler() {
     },
   })
 
-  const scheduleMutation = useMutation({
+  const scheduleMutation = RQ.useMutation({
     mutationFn: (data: {
       name: string
       template_id: string
@@ -58,7 +58,7 @@ export default function BatchScheduler() {
     },
   })
 
-  const cancelJobMutation = useMutation({
+  const cancelJobMutation = RQ.useMutation({
     mutationFn: (jobId: string) =>
       fetchApi(`/api/batch/jobs/${jobId}/cancel`, {
         method: 'POST',
@@ -86,8 +86,7 @@ export default function BatchScheduler() {
         <JobList
           jobs={jobsData?.data || []}
           isLoading={isLoading}
-          onSelectJob={setSelectedJob}
-          onRefresh={refetch}
+          onSelectJob={(job) => setSelectedJob(job as ScheduledJob)}
         />
 
         {jobsData && jobsData.total > 10 && (
@@ -194,7 +193,7 @@ export default function BatchScheduler() {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .batch-scheduler {
           display: flex;
           flex-direction: column;

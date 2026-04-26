@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -14,9 +14,9 @@ export default function AgentFactoryPanel() {
   const { data, isLoading, error } = useApiQuery<TemplatesData>(['agent-factory'], '/api/agent-factory')
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({ name: '', description: '', model: '', skills: '' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const createMut = useMutation({
+  const createMut = RQ.useMutation({
     mutationFn: () => fetchApi('/api/agents/generate', {
       method: 'POST',
       body: JSON.stringify({ name: form.name, description: form.description, model: form.model, skills: form.skills.split(',').map(s => s.trim()).filter(Boolean) })

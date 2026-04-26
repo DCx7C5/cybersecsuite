@@ -26,7 +26,7 @@ const defaultPreferences: NotificationPreferences = {
 }
 
 export default function AlertPreferences({ onClose }: AlertPreferencesProps) {
-  useNotifications()
+  const { success } = useNotifications()
   const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences)
 
   const handleToggle = (type: keyof NotificationPreferences, key: keyof AlertPreference) => {
@@ -114,7 +114,7 @@ export default function AlertPreferences({ onClose }: AlertPreferencesProps) {
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .alert-preferences {
           background: var(--surface-1);
           border: 1px solid var(--border);

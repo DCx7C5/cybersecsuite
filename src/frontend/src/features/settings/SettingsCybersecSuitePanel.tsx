@@ -43,7 +43,7 @@ export default function SettingsCybersecSuitePanel() {
       <Card title="Global Environment">
         {globalEnvEntries.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {globalEnvEntries.map(e => (
+            {globalEnvEntries.map((e: any) => (
               <div key={e.key} style={{ display: 'flex', gap: '12px', padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent)', minWidth: '200px' }}>{e.key}</span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-muted)' }}>{e.value}</span>
@@ -56,7 +56,7 @@ export default function SettingsCybersecSuitePanel() {
       <Card title="Project Environment">
         {projectEnvEntries.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {projectEnvEntries.map(e => (
+            {projectEnvEntries.map((e: any) => (
               <div key={e.key} style={{ display: 'flex', gap: '12px', padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent)', minWidth: '200px' }}>{e.key}</span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-muted)' }}>{e.value}</span>

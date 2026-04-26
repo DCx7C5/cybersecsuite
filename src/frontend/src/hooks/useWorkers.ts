@@ -48,7 +48,7 @@ export function useWorkers(
   const url = `/api/projects/${projectId}/workers?${params.toString()}`
 
   return useApiQuery<WorkersListResponse>(
-    ['workers', projectId, page, limit, search, state, sort],
+    ['workers', String(projectId), String(page), String(limit), search, state, sort],
     url,
     { enabled }
   )
@@ -56,7 +56,7 @@ export function useWorkers(
 
 export function useWorkerDetail(projectId: number, workerId: number) {
   return useApiQuery<WorkerResponse>(
-    ['worker', projectId, workerId],
+    ['worker', String(projectId), String(workerId)],
     `/api/projects/${projectId}/workers/${workerId}`
   )
 }
@@ -72,7 +72,7 @@ export interface WorkerMetrics {
 
 export function useWorkerMetrics(projectId: number, workerId: number) {
   return useApiQuery<WorkerMetrics>(
-    ['worker-metrics', projectId, workerId],
+    ['worker-metrics', String(projectId), String(workerId)],
     `/api/projects/${projectId}/workers/${workerId}/metrics`
   )
 }
@@ -91,7 +91,7 @@ export interface WorkerSummary {
 
 export function useWorkersSummary(projectId: number) {
   return useApiQuery<WorkerSummary>(
-    ['workers-summary', projectId],
+    ['workers-summary', String(projectId)],
     `/api/projects/${projectId}/workers/summary`
   )
 }

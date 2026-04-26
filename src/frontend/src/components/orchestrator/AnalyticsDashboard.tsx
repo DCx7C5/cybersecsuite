@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 import MetricsCharts from './MetricsCharts'
 
@@ -23,7 +23,7 @@ export default function AnalyticsDashboard() {
   const [workerType, setWorkerType] = useState<string>('all')
   const [state, setState] = useState<string>('all')
 
-  const { data: analytics, isLoading } = useQuery({
+  const { data: analytics, isLoading } = RQ.useQuery({
     queryKey: ['analytics', dateRange, workerType, state],
     queryFn: () => {
       const params = new URLSearchParams()
@@ -198,7 +198,7 @@ Error Rate,${data.error_rate}%`
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .analytics-dashboard {
           display: flex;
           flex-direction: column;

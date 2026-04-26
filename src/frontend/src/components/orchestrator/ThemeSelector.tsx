@@ -47,7 +47,7 @@ export default function ThemeSelector() {
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .theme-selector {
           margin-bottom: 1.5rem;
           padding-bottom: 1.5rem;

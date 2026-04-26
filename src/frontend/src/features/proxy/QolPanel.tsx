@@ -22,7 +22,7 @@
  * - useEffect: sync fetched data to local state on mount
  * - useCallback: memoized save handler
  * - useApiQuery: fetch QoL settings from /api/qol
- * - useQueryClient: invalidate cache after save
+ * - RQ.useQueryClient: invalidate cache after save
  *
  * API Integration:
  * - GET /api/qol → fetch current settings
@@ -59,7 +59,7 @@ import Card from '@/components/ui/Card'
 import Spinner from '@/components/ui/Spinner'
 import Button from '@/components/ui/Button'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
-import { useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 
 interface QolData {
   settings?: Record<string, boolean | string | number>
@@ -69,7 +69,7 @@ export default function QolPanel() {
   const { data, isLoading, error } = useApiQuery<QolData>(['qol'], '/api/qol')
   const [local, setLocal] = useState<Record<string, boolean | string | number>>(() => data?.settings ?? {})
   const [saving, setSaving] = useState(false)
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
   // TanStack Query: intentionally sync data to local state on mount
   useEffect(() => {

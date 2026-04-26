@@ -68,7 +68,7 @@ export default function TemplatePreview({ template, onClose }: TemplatePreviewPr
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .modal-overlay {
           position: fixed;
           top: 0;

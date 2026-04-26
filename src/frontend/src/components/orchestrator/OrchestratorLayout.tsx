@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import Navigation from './Navigation'
 import StatusOverview from './StatusOverview'
 
@@ -19,9 +19,9 @@ export default function OrchestratorLayout({
     <div className="orchestrator-layout" data-testid="orchestrator-layout">
       <Navigation 
         currentView={currentView}
-        onViewChange={setCurrentView}
+        onViewChange={(view) => setCurrentView(view as typeof defaultView)}
         collapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
+        onCollapsedChange={(collapsed) => setSidebarCollapsed(collapsed)}
       />
       
       <main className="orchestrator-main" data-testid="orchestrator-main">
@@ -51,7 +51,7 @@ export default function OrchestratorLayout({
         </div>
       </main>
 
-      <style jsx>{`
+      <style>{`
         .orchestrator-layout {
           display: grid;
           grid-template-columns: ${sidebarCollapsed ? '60px' : '250px'} 1fr;

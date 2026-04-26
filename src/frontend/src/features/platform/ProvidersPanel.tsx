@@ -4,7 +4,7 @@ import Spinner from '@/components/ui/Spinner'
 import Badge from '@/components/ui/Badge'
 import Table from '@/components/ui/Table'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
-import { useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import type { ColumnDef } from '@tanstack/react-table'
 import ProviderAuthModal from '@/features/platform/ProviderAuthModal'
 import { resolveProviderAuthConfig } from '@/config/providerAuthMethods'
@@ -56,7 +56,7 @@ function statusVariant(status: string): 'ok' | 'warn' | 'err' {
 
 export default function ProvidersPanel() {
   const { data, isLoading, error } = useApiQuery<ProvidersHubResponse>(['providers-hub'], '/api/providers/hub')
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
   const [defaultMethod, setDefaultMethod] = useState<string | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)

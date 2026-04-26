@@ -40,7 +40,7 @@ export default function RoutingPanel() {
 
       <Card title="Fallback Chain">
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {chain.map((p, i) => (
+          {chain.map((p: any, i: any) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Badge variant="info">{p}</Badge>
               {i < chain.length - 1 && <span style={{ color: 'var(--text-faint)' }}>→</span>}

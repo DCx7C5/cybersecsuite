@@ -1,4 +1,5 @@
-import React, { useReducer, useCallback, ReactNode } from 'react'
+import React, { useReducer, useCallback } from 'react'
+import type { ReactNode } from 'react'
 import { 
   DataContext, 
   type DataContextType, 

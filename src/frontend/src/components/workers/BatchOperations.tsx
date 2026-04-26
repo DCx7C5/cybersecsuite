@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import Button from '@/components/ui/Button.tsx'
 import Modal from '@/components/ui/Modal.tsx'
 import Card from '@/components/ui/Card.tsx'
@@ -36,7 +36,7 @@ export default function BatchOperations({ projectId, selectedWorkerIds, onComple
   const [results, setResults] = useState<BatchResult | null>(null)
   const [showResults, setShowResults] = useState(false)
 
-  const startMutation = useMutation({
+  const startMutation = RQ.useMutation({
     mutationFn: () => performBatchAction(projectId, 'start', selectedWorkerIds),
     onSuccess: (data) => {
       setResults(data)
@@ -45,7 +45,7 @@ export default function BatchOperations({ projectId, selectedWorkerIds, onComple
     },
   })
 
-  const stopMutation = useMutation({
+  const stopMutation = RQ.useMutation({
     mutationFn: () => performBatchAction(projectId, 'stop', selectedWorkerIds),
     onSuccess: (data) => {
       setResults(data)
@@ -54,7 +54,7 @@ export default function BatchOperations({ projectId, selectedWorkerIds, onComple
     },
   })
 
-  const updateMutation = useMutation({
+  const updateMutation = RQ.useMutation({
     mutationFn: () => performBatchAction(projectId, 'update', selectedWorkerIds),
     onSuccess: (data) => {
       setResults(data)
@@ -153,6 +153,7 @@ export default function BatchOperations({ projectId, selectedWorkerIds, onComple
       {/* Confirmation Modal */}
       {showModal && (
         <Modal
+          open={showModal}
           title={`Confirm: ${currentAction?.toUpperCase()} all workers?`}
           onClose={() => setShowModal(false)}
         >
@@ -187,6 +188,7 @@ export default function BatchOperations({ projectId, selectedWorkerIds, onComple
       {/* Results Modal */}
       {showResults && results && (
         <Modal
+          open={showResults}
           title="Batch Operation Results"
           onClose={() => setShowResults(false)}
         >

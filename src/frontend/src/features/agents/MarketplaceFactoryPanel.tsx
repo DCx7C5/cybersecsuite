@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -10,7 +10,7 @@ export default function MarketplaceFactoryPanel() {
   const [form, setForm] = useState({ name: '', description: '', type: '' })
   const [result, setResult] = useState<unknown>(null)
 
-  const createMut = useMutation({
+  const createMut = RQ.useMutation({
     mutationFn: () => fetchApi<unknown>('/api/marketplace/create', { method: 'POST', body: JSON.stringify(form) }),
     onSuccess: (data) => { setResult(data) }
   })

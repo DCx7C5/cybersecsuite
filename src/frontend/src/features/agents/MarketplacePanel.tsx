@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -13,9 +13,9 @@ export default function MarketplacePanel() {
   const [tab, setTab] = useState<'all' | 'installed'>('all')
   const { data: allData, isLoading: allLoading } = useApiQuery<MarketData>(['marketplace'], '/api/marketplace')
   const { data: instData, isLoading: instLoading } = useApiQuery<MarketData>(['marketplace-installed'], '/api/marketplace/installed', { enabled: tab === 'installed' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const installMut = useMutation({
+  const installMut = RQ.useMutation({
     mutationFn: (id: string) => fetchApi('/api/marketplace/install', { method: 'POST', body: JSON.stringify({ id }) }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['marketplace'] }); void qc.invalidateQueries({ queryKey: ['marketplace-installed'] }) }
   })

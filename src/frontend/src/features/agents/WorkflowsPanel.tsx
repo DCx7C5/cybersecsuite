@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -17,14 +17,14 @@ export default function WorkflowsPanel() {
   const { data, isLoading, error } = useApiQuery<WorkflowsData>(['workflows'], '/api/workflows')
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({ name: '', steps: '' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const createMut = useMutation({
+  const createMut = RQ.useMutation({
     mutationFn: () => fetchApi('/api/workflows', { method: 'POST', body: JSON.stringify({ name: form.name, steps: form.steps }) }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['workflows'] }); setShowModal(false) }
   })
 
-  const cancelMut = useMutation({
+  const cancelMut = RQ.useMutation({
     mutationFn: (id: string) => fetchApi(`/api/workflows/${id}/cancel`, { method: 'POST' }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['workflows'] }) }
   })

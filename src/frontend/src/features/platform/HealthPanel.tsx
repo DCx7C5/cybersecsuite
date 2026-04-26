@@ -53,7 +53,7 @@ export default function HealthPanel() {
 
       <Card title="Services">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {services.map((svc, i) => (
+          {services.map((svc: any, i: any) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '8px 12px', background: 'var(--surface-2)', borderRadius: 'var(--radius)',

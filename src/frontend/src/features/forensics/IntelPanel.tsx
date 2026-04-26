@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -19,14 +19,14 @@ export default function IntelPanel() {
   const { data: sourcesData } = useApiQuery<SourcesData>(['intel-sources'], '/api/intel-sources')
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({ name: '', url: '', type: '' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const addSourceMut = useMutation({
+  const addSourceMut = RQ.useMutation({
     mutationFn: () => fetchApi('/api/intel-sources', { method: 'POST', body: JSON.stringify(form) }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['intel-sources'] }); setShowModal(false) }
   })
 
-  const deleteSourceMut = useMutation({
+  const deleteSourceMut = RQ.useMutation({
     mutationFn: (id: string) => fetchApi(`/api/intel-sources/${id}`, { method: 'DELETE' }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['intel-sources'] }) }
   })

@@ -162,7 +162,7 @@ export default function ScheduleForm({ onSchedule, onClose }: ScheduleFormProps)
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .modal-overlay {
           position: fixed;
           top: 0;

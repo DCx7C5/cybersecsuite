@@ -94,7 +94,7 @@ export default function TemplateEditor({ template, onSave, onClose }: TemplateEd
             <select
               id="template-status"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as "active" | "inactive" | "draft")}
               data-testid="template-status-select"
               className="form-select"
             >
@@ -133,7 +133,7 @@ export default function TemplateEditor({ template, onSave, onClose }: TemplateEd
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .modal-overlay {
           position: fixed;
           top: 0;

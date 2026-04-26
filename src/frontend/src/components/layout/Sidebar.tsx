@@ -16,7 +16,7 @@ export default function Sidebar() {
     const saved = localStorage.getItem('sidebar-dropdowns')
     return saved ? JSON.parse(saved) : {}
   })
-  const sidebarRef = useRef<HTMLAsideElement>(null)
+  const sidebarRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     localStorage.setItem('sidebar-settings-open', JSON.stringify(settingsOpen))

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as RQ from '@tanstack/react-query'
 import { useApiQuery, fetchApi } from '@/hooks/useApi'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -18,9 +18,9 @@ export default function AgentCrafterPanel() {
   const [showModal, setShowModal] = useState(false)
   const [editItem, setEditItem] = useState<Agent | null>(null)
   const [form, setForm] = useState({ name: '', description: '', model: '' })
-  const qc = useQueryClient()
+  const qc = RQ.useQueryClient()
 
-  const saveMut = useMutation({
+  const saveMut = RQ.useMutation({
     mutationFn: () => {
       const url = editItem ? `/api/agents/crud/${editItem.id}` : '/api/agents/crud'
       const method = editItem ? 'PATCH' : 'POST'
@@ -29,7 +29,7 @@ export default function AgentCrafterPanel() {
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['agents'] }); setShowModal(false); setEditItem(null) }
   })
 
-  const deleteMut = useMutation({
+  const deleteMut = RQ.useMutation({
     mutationFn: (id: string) => fetchApi(`/api/agents/crud/${id}`, { method: 'DELETE' }),
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['agents'] }) }
   })

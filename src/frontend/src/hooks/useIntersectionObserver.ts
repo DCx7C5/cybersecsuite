@@ -1,4 +1,5 @@
-import { useState, useEffect, RefObject } from 'react'
+import { useState, useEffect } from 'react'
+import type { RefObject } from 'react'
 
 /**
  * Hook to detect when an element enters/exits the viewport

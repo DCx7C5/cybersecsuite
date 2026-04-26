@@ -112,6 +112,7 @@ services:
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
+      - redis_socket:/var/run/redis
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
@@ -173,64 +174,15 @@ services:
       retries: 5
       start_period: 40s
 
-  #
-  # Wazuh requires privileged mode for certain operations, so we set it up as a separate profile to avoid granting unnecessary privileges to other services.
-  #
-  cybersec-wazuh:
-    image: wazuh/wazuh-manager:latest
-    container_name: cybersec-wazuh
-    profiles:
-      - wazuh
-    <<: *common
-    environment:
-      WAZUH_API_USER: ${WAZUH_API_USER:-wazuh}
-      WAZUH_API_PASSWORD: ${WAZUH_API_PASSWORD:-Wazuh_API_Pass123!}
-    expose:
-      - "55000"
-    volumes:
-      - wazuh_data:/var/ossec/data
-      - wazuh_logs:/var/ossec/logs
-      - wazuh_etc:/var/ossec/etc
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsk https://localhost:55000/ || exit 1"]
-      start_period: 60s
-
-  cybersec-opensearch:
-    image: wazuh/opensearch:latest
-    container_name: cybersec-opensearch
-    profiles:
-      - wazuh
-    <<: *common
-    environment:
-      cluster.name: wazuh-cluster
-      node.name: wazuh-node
-      discovery.type: single-node
-      bootstrap.memory_lock: "true"
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    expose:
-      - "9200"
-      - "9300"
-    healthcheck:
-      test: ["CMD", "curl", "-fs", "http://localhost:9200/"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
 
 
 volumes:
   pg_data:
   pg_socket:
   redis_data:
+  redis_socket:
   oo_data:
   ollama_data:
   openobserve_data:
   openobserve_logs:
   openobserve_etc:
-  wazuh_data:
-  wazuh_logs:
-  wazuh_etc:

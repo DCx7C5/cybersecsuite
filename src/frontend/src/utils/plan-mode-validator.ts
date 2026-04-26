@@ -88,7 +88,8 @@ export function canExecuteOperation(
  * Merge plan mode configurations with precedence
  */
 export function mergePlanModes(...configs: Partial<PlanMode>[]): PlanMode {
-  return configs.reduce((acc, config) => ({ ...acc, ...config }), DEFAULT_PLAN_MODE)
+  const merged = configs.reduce((acc, config) => ({ ...acc, ...config }), DEFAULT_PLAN_MODE)
+  return merged as PlanMode
 }
 
 /**
