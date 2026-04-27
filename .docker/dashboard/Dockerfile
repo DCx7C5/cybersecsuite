@@ -25,7 +25,6 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 # Copy source
 COPY src/ src/
-COPY data/fixtures/ data/fixtures/
 COPY mcp.json ./
 
 # Install the project itself
