@@ -1,9 +1,6 @@
 """
 ASGI application — combines:
   - AI proxy routes (OpenAI-compatible)    at /v1/*
-  - Dashboard                             at / (root, SPA)
-  - Dashboard API                         at /api/*
-  - Dashboard SSE                         at /sse/*
   - A2A agent server  (JSON-RPC + SSE)    at /a2a/*
   - Agent card discovery                  at /.well-known/agent.json
   - Health endpoint                       at /health
@@ -33,7 +30,6 @@ from starlette.middleware import Middleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
 
 from a2a import CybersecA2AAgent, A2AServer
 from db.bootstrap import init_tortoise_async, close_tortoise
@@ -41,7 +37,6 @@ from ai_proxy.routes import create_proxy_router
 from ai_proxy.routing.combo import cleanup_executors
 from ai_proxy.services.rate_limiter import rate_limiter, ProviderLimits
 from ai_proxy.providers.registry import get_enabled_providers
-from dashboard.routes import create_dashboard_router
 from telemetry.middleware import TelemetryMiddleware
 from telemetry.collector import collector as _telemetry_collector
 from logger import getLogger
@@ -223,12 +218,8 @@ app = Starlette(
         Route("/.well-known/agent.json", _a2a._agent_card, methods=["GET"]),
         Route("/a2a", _a2a._jsonrpc, methods=["POST"]),
         Route("/a2a/stream/{task_id}", _a2a._sse_stream, methods=["GET"]),
-        # Static files (compiled TypeScript + CSS/images)
-        Mount("/static", StaticFiles(directory="src/dashboard/static"), name="static"),
         # AI Proxy
         Mount("/v1", create_proxy_router()),
-        # Dashboard SPA — mounted at / (must be last; handles /, /api/*, /sse/*)
-        Mount("/", create_dashboard_router()),
     ],
     on_startup=[_on_startup],
     on_shutdown=[_on_shutdown],
