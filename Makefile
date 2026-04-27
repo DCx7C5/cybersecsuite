@@ -114,7 +114,7 @@ test-cov:  ## Run tests with HTML coverage report
 
 .PHONY: test-crypto
 test-crypto:  ## Run crypto tests only
-	$(UV) run --group test pytest tests/test_crypto.py -v
+	$(UV) run --group test pytest tests/scope/test_crypto.py -v
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
