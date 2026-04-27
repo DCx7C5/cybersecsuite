@@ -24,13 +24,13 @@ make serve
 
 ## Prerequisites
 
-| Tool | Minimum version | Install |
-|------|----------------|---------|
-| **Python** | 3.14+ | <https://python.org> |
-| **uv** | latest | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| **Docker** | 24+ (with Compose v2) | <https://docs.docker.com/get-docker/> |
-| **Node / npm** | 18+ (optional — dashboard TypeScript only) | <https://nodejs.org> |
-| **git** | any | system package manager |
+| Tool           | Minimum version                            | Install                                            |
+|----------------|--------------------------------------------|----------------------------------------------------|
+| **Python**     | 3.14+                                      | <https://python.org>                               |
+| **uv**         | latest                                     | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| **Docker**     | 24+ (with Compose v2)                      | <https://docs.docker.com/get-docker/>              |
+| **Node / npm** | 18+ (optional — dashboard TypeScript only) | <https://nodejs.org>                               |
+| **git**        | any                                        | system package manager                             |
 
 Verify with:
 
@@ -48,80 +48,80 @@ Copy `.env.example` to `.env` (`make env`) and fill in the values marked **requi
 
 ### PostgreSQL
 
-| Variable | Default | Required | Description |
-|----------|---------|----------|-------------|
-| `CYBERSEC_DB_HOST` | `127.0.0.1` | Yes | DB host (use `/tmp` for Unix socket inside Docker) |
-| `CYBERSEC_DB_PORT` | `5432` | Yes | PostgreSQL port |
-| `CYBERSEC_DB_USER` | `cybersec` | Yes | DB user name |
-| `CYBERSEC_DB_PASSWORD` | `change_me` | **Yes — change this** | DB password |
-| `CYBERSEC_DB_NAME` | `cybersec_forensics` | Yes | Database name |
+| Variable               | Default              | Required              | Description                                        |
+|------------------------|----------------------|-----------------------|----------------------------------------------------|
+| `CYBERSEC_DB_HOST`     | `127.0.0.1`          | Yes                   | DB host (use `/tmp` for Unix socket inside Docker) |
+| `CYBERSEC_DB_PORT`     | `5432`               | Yes                   | PostgreSQL port                                    |
+| `CYBERSEC_DB_USER`     | `cybersec`           | Yes                   | DB user name                                       |
+| `CYBERSEC_DB_PASSWORD` | `change_me`          | **Yes — change this** | DB password                                        |
+| `CYBERSEC_DB_NAME`     | `cybersec_forensics` | Yes                   | Database name                                      |
 
 ### Startup behaviour
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CYBERSEC_AUTO_CREATE_DB` | `true` | Create DB + schema on first ASGI startup if missing (idempotent) |
+| Variable                            | Default | Description                                                                  |
+|-------------------------------------|---------|------------------------------------------------------------------------------|
+| `CYBERSEC_AUTO_CREATE_DB`           | `true`  | Create DB + schema on first ASGI startup if missing (idempotent)             |
 | `CYBERSEC_BOOTSTRAP_INTEL_ON_START` | `false` | Re-seed MITRE/CVE intel on every ASGI start — set `false` after initial seed |
 
 ### Data directories
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CYBERSEC_BASE_DIR` | `./data` | Root for runtime data files |
-| `CYBERSEC_INTEL_DIR` | `./data/cybersec-shared/intelligence` | Directory scanned for MISP/STIX feed JSON files |
-| `CYBERSEC_PROJECT_DIR` | `.` | Project working directory |
+| Variable               | Default                               | Description                                     |
+|------------------------|---------------------------------------|-------------------------------------------------|
+| `CYBERSEC_BASE_DIR`    | `./data`                              | Root for runtime data files                     |
+| `CYBERSEC_INTEL_DIR`   | `./data/cybersec-shared/intelligence` | Directory scanned for MISP/STIX feed JSON files |
+| `CYBERSEC_PROJECT_DIR` | `.`                                   | Project working directory                       |
 
 ### Scope defaults
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CYBERSEC_WORKSPACE` | `default` | Active workspace name |
-| `CYBERSEC_PROJECT` | `default` | Active project name |
+| Variable              | Default   | Description                                 |
+|-----------------------|-----------|---------------------------------------------|
+| `CYBERSEC_WORKSPACE`  | `default` | Active workspace name                       |
+| `CYBERSEC_PROJECT`    | `default` | Active project name                         |
 | `CYBERSEC_SESSION_ID` | _(unset)_ | Per-investigation session ID (set manually) |
 
 ### A2A server
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CYBERSEC_A2A_BASE_URL` | `http://127.0.0.1:8000` | Public base URL for A2A agent card |
-| `CYBERSEC_A2A_PORT` | `8000` | A2A server port |
-| `ASGI_HOST` | `127.0.0.1` | uvicorn bind address |
-| `ASGI_PORT` | `8000` | uvicorn HTTP port |
-| `ASGI_TLS_PORT` | `8433` | uvicorn HTTPS port (only used when cert/key exist) |
+| Variable                | Default                 | Description                                        |
+|-------------------------|-------------------------|----------------------------------------------------|
+| `CYBERSEC_A2A_BASE_URL` | `http://127.0.0.1:8000` | Public base URL for A2A agent card                 |
+| `CYBERSEC_A2A_PORT`     | `8000`                  | A2A server port                                    |
+| `ASGI_HOST`             | `127.0.0.1`             | uvicorn bind address                               |
+| `ASGI_PORT`             | `8000`                  | uvicorn HTTP port                                  |
+| `ASGI_TLS_PORT`         | `8433`                  | uvicorn HTTPS port (only used when cert/key exist) |
 
 ### Observability
 
-| Variable | Default | Description |
-|----------|---------|-------------|
+| Variable                    | Default                             | Description                         |
+|-----------------------------|-------------------------------------|-------------------------------------|
 | `OPENOBSERVE_OTLP_ENDPOINT` | `http://127.0.0.1:5080/api/default` | OTLP ingest endpoint for LLM traces |
-| `OPENOBSERVE_EMAIL` | `admin@cybersec.local` | OpenObserve admin login |
-| `OPENOBSERVE_PASSWORD` | `cYb3rS3c!` | OpenObserve admin password |
-| `OTEL_SERVICE_NAME` | `cybersecsuite-llm` | OTEL service name in traces |
+| `OPENOBSERVE_EMAIL`         | `admin@cybersec.local`              | OpenObserve admin login             |
+| `OPENOBSERVE_PASSWORD`      | `cYb3rS3c!`                         | OpenObserve admin password          |
+| `OTEL_SERVICE_NAME`         | `cybersecsuite-llm`                 | OTEL service name in traces         |
 
 ### AI provider keys (all optional, provide at least one for AI features)
 
-| Variable | Description |
-|----------|-------------|
-| `ANTHROPIC_API_KEY` | Claude (Anthropic) |
-| `OPENAI_API_KEY` | GPT-* (OpenAI) |
-| `GEMINI_API_KEY` | Gemini (Google) |
-| `DEEPSEEK_API_KEY` | DeepSeek |
-| `GROQ_API_KEY` | Groq (fast inference) |
-| `MISTRAL_API_KEY` | Mistral AI |
-| `XAI_API_KEY` | Grok (xAI) |
-| `TOGETHER_API_KEY` | Together AI |
-| `OPENROUTER_API_KEY` | OpenRouter |
-| `NVIDIA_API_KEY` | NVIDIA NIM |
+| Variable                   | Description                                    |
+|----------------------------|------------------------------------------------|
+| `ANTHROPIC_API_KEY`        | Claude (Anthropic)                             |
+| `OPENAI_API_KEY`           | GPT-* (OpenAI)                                 |
+| `GEMINI_API_KEY`           | Gemini (Google)                                |
+| `DEEPSEEK_API_KEY`         | DeepSeek                                       |
+| `GROQ_API_KEY`             | Groq (fast inference)                          |
+| `MISTRAL_API_KEY`          | Mistral AI                                     |
+| `XAI_API_KEY`              | Grok (xAI)                                     |
+| `TOGETHER_API_KEY`         | Together AI                                    |
+| `OPENROUTER_API_KEY`       | OpenRouter                                     |
+| `NVIDIA_API_KEY`           | NVIDIA NIM                                     |
 | `DYSTOPIAN_VAULT_PASSWORD` | Master password for the encrypted secret vault |
 
 ### Debug / QoL
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DEBUG` | `false` | Enable verbose logging |
+| Variable              | Default   | Description                                                         |
+|-----------------------|-----------|---------------------------------------------------------------------|
+| `DEBUG`               | `false`   | Enable verbose logging                                              |
 | `QOL_DEFAULT_TOGGLES` | _(unset)_ | Comma-separated default output toggles (e.g. `no_thinking,no_chat`) |
-| `QOL_DEFAULT_SCOPE` | _(unset)_ | Default scope for QoL settings (`session`, `project`, `global`) |
-| `QOL_MAX_TOKENS` | _(unset)_ | Max token budget for QoL directive block |
+| `QOL_DEFAULT_SCOPE`   | _(unset)_ | Default scope for QoL settings (`session`, `project`, `global`)     |
+| `QOL_MAX_TOKENS`      | _(unset)_ | Max token budget for QoL directive block                            |
 
 ---
 
@@ -194,14 +194,14 @@ make db
 
 **Container details:**
 
-| Property | Value |
-|----------|-------|
-| Container name | `cybersec-postgres` |
-| Image | Custom build from `.docker/postgres/Dockerfile` |
-| Host port | `127.0.0.1:5432` (configurable via `POSTGRES_PORT` env var) |
-| Data volume | `pg_data` (named Docker volume, persists across restarts) |
-| Socket volume | `pg_socket` (shared with the proxy container when using Docker Compose full stack) |
-| Health check | `pg_isready -U $POSTGRES_USER -d $POSTGRES_DB` every 30 s |
+| Property       | Value                                                                              |
+|----------------|------------------------------------------------------------------------------------|
+| Container name | `cybersec-postgres`                                                                |
+| Image          | Custom build from `.docker/postgres/Dockerfile`                                    |
+| Host port      | `127.0.0.1:5432` (configurable via `POSTGRES_PORT` env var)                        |
+| Data volume    | `pg_data` (named Docker volume, persists across restarts)                          |
+| Socket volume  | `pg_socket` (shared with the proxy container when using Docker Compose full stack) |
+| Health check   | `pg_isready -U $POSTGRES_USER -d $POSTGRES_DB` every 30 s                          |
 
 The database, user, and initial schema are created automatically using the values from `.env`
 (`CYBERSEC_DB_USER`, `CYBERSEC_DB_PASSWORD`, `CYBERSEC_DB_NAME`).
@@ -260,17 +260,17 @@ Runs `python src/manage.py seed`, which calls `initialize_default_seed_data()` t
 intelligence fixtures from **local JSON files** bundled in `src/db/fixtures/`. No network
 required. All operations are idempotent (uses `get_or_create`).
 
-| Dataset | Fixture file | Approximate size |
-|---------|-------------|-----------------|
-| NIST CSF 2.0 controls | `nist_csf_2.json` | 185 subcategories |
-| NIST AI RMF 1.0 controls | `nist_ai_rmf.json` | 72 subcategories |
-| MITRE ATT&CK techniques | `mitre_techniques.json` | 30 canonical entries |
-| MITRE ATT&CK threat actors | `mitre_actors.json` | 12 entries |
-| MITRE ATT&CK software | `mitre_software.json` | 14 entries |
-| CWE weaknesses | `cwe_entries.json` | curated subset |
-| CAPEC attack patterns | `capec_entries.json` | curated subset |
-| CVE entries | `cve_entries.json` | curated subset |
-| PoC exploit records | `poc_entries.json` | 5 entries |
+| Dataset                    | Fixture file            | Approximate size     |
+|----------------------------|-------------------------|----------------------|
+| NIST CSF 2.0 controls      | `nist_csf_2.json`       | 185 subcategories    |
+| NIST AI RMF 1.0 controls   | `nist_ai_rmf.json`      | 72 subcategories     |
+| MITRE ATT&CK techniques    | `mitre_techniques.json` | 30 canonical entries |
+| MITRE ATT&CK threat actors | `mitre_actors.json`     | 12 entries           |
+| MITRE ATT&CK software      | `mitre_software.json`   | 14 entries           |
+| CWE weaknesses             | `cwe_entries.json`      | curated subset       |
+| CAPEC attack patterns      | `capec_entries.json`    | curated subset       |
+| CVE entries                | `cve_entries.json`      | curated subset       |
+| PoC exploit records        | `poc_entries.json`      | 5 entries            |
 
 **Example output:**
 
@@ -386,7 +386,7 @@ and calls `accounts.sync.sync_providers_to_db()` to sync configured AI providers
 ## What `make css-first-setup` Does
 
 This is the one-time application bootstrap. It runs automatically on the first `make serve`
-(or can be run manually). It executes five steps in order:
+(or can be run manually). It executes seven steps in order:
 
 ### [1/5] Install app home
 
@@ -446,7 +446,7 @@ uv run --no-project python src/manage.py seed
 Same as `make seed` (see [Step 4](#step-4-seed-intelligence-data)). Loads all fixture-based
 intel data from local JSON files.
 
-### [5/5] Scaffold project templates
+### [5/7] Scaffold project templates
 
 ```bash
 uv run python -m cybersecsuite.scaffold
@@ -454,7 +454,24 @@ uv run python -m cybersecsuite.scaffold
 
 Copies embedded templates into `.claude/templates/` (see [Step 5](#step-5-template-scaffolding-automatic)).
 
-After all five steps, `.css-initialized` is written (via `touch`) and the script prints:
+### [6/7] Install core MCPs
+
+```bash
+bash scripts/deploy/install-mcp-core.sh
+```
+
+Installs core MCPs to `~/.cybersecsuite/mcps`. Safe to re-run.
+
+### [7/7] Seed marketplace from search-index.json
+
+```bash
+uv run --no-project python src/manage.py seed-marketplace
+```
+
+Populates the marketplace DB from the bundled `search-index.json` (1064 entries: tools and skills).
+Idempotent — skips existing entries on subsequent runs.
+
+After all seven steps, `.css-initialized` is written (via `touch`) and the script prints:
 
 ```
 ✅ css-first-setup complete. Run 'make serve' to start.
@@ -553,7 +570,7 @@ Created by `manage.py install` (step 1 of `css-first-setup`):
 
 ### Project templates (`.claude/templates/`)
 
-Created by `python -m cybersecsuite.scaffold` (step 5 of `css-first-setup`):
+Created by `python -m cybersecsuite.scaffold` (step 5 of 7 in `css-first-setup`):
 
 ```
 .claude/templates/
@@ -590,7 +607,7 @@ make serve
 ```
 
 1. **`.css-initialized` check** — Make checks for the sentinel file. If absent,
-   `css-first-setup` runs automatically (all 5 steps above), then `touch .css-initialized`.
+   `css-first-setup` runs automatically (all 7 steps above), then `touch .css-initialized`.
 
 2. **uvicorn starts** — Runs:
    ```
@@ -639,15 +656,15 @@ bash scripts/deploy/install-mcp-core.sh [--verbose] [--offline] [--verify-only]
 
 MCPs installed (requires `~/Projects/ai-marketplace/mcps/*` to exist):
 
-| MCP | Source |
-|-----|--------|
-| `csscore-mcp` | `ai-marketplace/mcps/csscore-mcp` |
-| `canvas-mcp` | `ai-marketplace/mcps/canvas-mcp` |
-| `memory-mcp` | `ai-marketplace/mcps/memory-mcp` |
-| `template-mcp` | `ai-marketplace/mcps/template-mcp` |
-| `playwright-mcp` | `ai-marketplace/mcps/playwright-mcp` |
+| MCP                    | Source                                     |
+|------------------------|--------------------------------------------|
+| `csscore-mcp`          | `ai-marketplace/mcps/csscore-mcp`          |
+| `canvas-mcp`           | `ai-marketplace/mcps/canvas-mcp`           |
+| `memory-mcp`           | `ai-marketplace/mcps/memory-mcp`           |
+| `template-mcp`         | `ai-marketplace/mcps/template-mcp`         |
+| `playwright-mcp`       | `ai-marketplace/mcps/playwright-mcp`       |
 | `dystopian-crypto-mcp` | `ai-marketplace/mcps/dystopian-crypto-mcp` |
-| `custom-mcp` | `src/csmcp/mcps/custom-mcp` (bundled) |
+| `custom-mcp`           | `src/csmcp/mcps/custom-mcp` (bundled)      |
 
 The script runs preflight checks (uv present, Python ≥ 3.11, both repo directories exist),
 installs each MCP via `uv pip install -e .`, verifies `import <mcp_module>` succeeds, and
@@ -666,14 +683,14 @@ make docker-up      # docker compose up -d (all services)
 
 Services started:
 
-| Container | Port (host) | Description |
-|-----------|-------------|-------------|
-| `cybersec-postgres` | `127.0.0.1:5432` | PostgreSQL 16 |
-| `cybersec-redis` | `127.0.0.1:6379` | Redis (session cache, queues) |
-| `cybersec-proxy` | `127.0.0.1:8765` | ASGI app (AI proxy + A2A) |
-| `cybersec-dashboard` | `127.0.0.1:8000`, `127.0.0.1:8443` | React frontend |
-| `cybersec-ollama` | `127.0.0.1:11434` | Ollama (local LLM inference, GPU optional) |
-| `cybersec-openobserve` | `127.0.0.1:5080` | OpenObserve (LLM telemetry, logs) |
+| Container              | Port (host)                        | Description                                |
+|------------------------|------------------------------------|--------------------------------------------|
+| `cybersec-postgres`    | `127.0.0.1:5432`                   | PostgreSQL 16                              |
+| `cybersec-redis`       | `127.0.0.1:6379`                   | Redis (session cache, queues)              |
+| `cybersec-proxy`       | `127.0.0.1:8765`                   | ASGI app (AI proxy + A2A)                  |
+| `cybersec-dashboard`   | `127.0.0.1:8000`, `127.0.0.1:8443` | React frontend                             |
+| `cybersec-ollama`      | `127.0.0.1:11434`                  | Ollama (local LLM inference, GPU optional) |
+| `cybersec-openobserve` | `127.0.0.1:5080`                   | OpenObserve (LLM telemetry, logs)          |
 
 > The `cybersec-proxy` container connects to PostgreSQL via Unix socket (`pg_socket` volume)
 > rather than TCP when running in the full stack.

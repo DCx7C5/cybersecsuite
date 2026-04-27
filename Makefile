@@ -188,8 +188,12 @@ print('  OK: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS set')"
 	$(UV) run --no-project python src/manage.py schema
 	@echo "==> [4/5] DB seed..."
 	$(UV) run --no-project python src/manage.py seed
-	@echo "==> [5/5] Scaffolding project templates..."
+	@echo "==> [5/7] Scaffolding project templates..."
 	$(UV) run python -m cybersecsuite.scaffold
+	@echo "==> [6/7] Installing core MCPs..."
+	@bash scripts/deploy/install-mcp-core.sh
+	@echo "==> [7/7] Seeding marketplace from search-index.json..."
+	$(UV) run --no-project python src/manage.py seed-marketplace
 	@touch .css-initialized
 	@echo ""
 	@echo "✅ css-first-setup complete. Run 'make serve' to start."
