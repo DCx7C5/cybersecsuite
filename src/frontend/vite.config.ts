@@ -16,10 +16,11 @@ export default defineConfig({
   },
   server: {
     host: true,
+    port: 8000,
     proxy: {
-      '/api': process.env.BACKEND_URL ?? 'http://localhost:8000',
-      '/sse': process.env.BACKEND_URL ?? 'http://localhost:8000',
-      '/ts':  process.env.BACKEND_URL ?? 'http://localhost:8000',
+      '/api': process.env.BACKEND_URL ?? 'http://localhost:8765',
+      '/sse': process.env.BACKEND_URL ?? 'http://localhost:8765',
+      '/ts':  process.env.BACKEND_URL ?? 'http://localhost:8765',
     },
   },
 })
