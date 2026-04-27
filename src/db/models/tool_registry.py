@@ -100,10 +100,10 @@ class ToolToggleState(Model):
     )
 
     scope_type = fields.CharEnumField(ToggleScopeType)
-    scope_id = fields.CharField(max_length=255, null=True)   # null → global
+    scope_id = fields.CharField(max_length=255, null=True)
 
     enabled = fields.BooleanField()
-    set_by = fields.CharField(max_length=128, null=True)     # agent name or "user"
+    set_by = fields.CharField(max_length=128, null=True)
 
     updated_at = fields.DatetimeField(auto_now=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -118,10 +118,6 @@ class ToolToggleState(Model):
         ]
         unique_together = (("tool_id", "scope_type", "scope_id"),)
 
-    def __str__(self) -> str:
-        sid = self.scope_id or "*"
-        return f"Toggle({self.tool_id} @ {self.scope_type}/{sid} = {self.enabled})"
-
 
 class ToolToggleRegistry(Model):
     """
@@ -135,7 +131,9 @@ class ToolToggleRegistry(Model):
 
     id = fields.BigIntField(pk=True)
     tool = fields.OneToOneField(
-        "models.ToolRegistry", related_name="active_toggle", on_delete=fields.CASCADE
+        "models.ToolRegistry",
+        related_name="active_toggle",
+        on_delete=fields.CASCADE,
     )
 
     active_scope_type = fields.CharEnumField(ToggleScopeType, null=True)
