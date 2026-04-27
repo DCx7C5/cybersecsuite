@@ -16,10 +16,20 @@ async def seed_nist_csf() -> Dict[str, Any]:
     Returns:
         {"created": int, "skipped": int, "total": int}
     """
+    import re as _re
     from db.models.nist_csf import NistCsfControl
 
     fixture = _INTEL_FIXTURES_DIR / "nist_csf_2.json"
     data: list = json.loads(fixture.read_text())
+
+    def _to_list(value) -> list:
+        """Normalise fixture field to list — handles str (split on Ex\\d+:) or already a list."""
+        if isinstance(value, list):
+            return value
+        if not value:
+            return []
+        parts = _re.split(r"\s*Ex\d+:\s*", str(value))
+        return [p.strip() for p in parts if p.strip()]
 
     created = skipped = 0
     for entry in data:
@@ -32,8 +42,8 @@ async def seed_nist_csf() -> Dict[str, Any]:
                 "function_description": entry.get("function_description", ""),
                 "category": entry.get("category", ""),
                 "category_description": entry.get("category_description", ""),
-                "implementation_examples": entry.get("implementation_examples", []),
-                "informative_references": entry.get("informative_references", []),
+                "implementation_examples": _to_list(entry.get("implementation_examples", [])),
+                "informative_references": _to_list(entry.get("informative_references", [])),
             },
         )
         if was_created:

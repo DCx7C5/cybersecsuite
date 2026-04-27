@@ -16,7 +16,7 @@ class NistAiRmfControl(Model):
     section_about = fields.TextField(default="")
     suggested_actions = fields.JSONField(default=list)          # list[str]
     ai_actors = fields.JSONField(default=list)                  # list[str]
-    topic = fields.CharField(max_length=128, default="", db_index=True)
+    topic = fields.CharField(max_length=512, default="", db_index=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
