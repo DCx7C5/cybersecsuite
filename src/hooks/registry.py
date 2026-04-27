@@ -275,6 +275,151 @@ class HookRegistry:
             HookInstrument instance if enabled, None otherwise
         """
         return self._instrumentation
+    
+    async def execute_streaming(
+        self,
+        event_type: str,
+        event: dict[str, Any],
+        context: HookContext,
+        batch_size: int = 1,
+    ) -> dict[str, Any]:
+        """Execute streaming hooks with optional token batching.
+        
+        This method is optimized for frequent streaming token events.
+        It can batch multiple token events before executing hooks to
+        reduce overhead (e.g., collect 10 tokens, then call hooks once).
+        
+        Args:
+            event_type: Event name (e.g., "StreamingToken", "PreStreaming")
+            event: Event payload dict from SDK
+            context: HookContext with correlation_id, session_id, etc.
+            batch_size: For StreamingToken events, batch this many tokens
+                       before executing hooks (default 1 = no batching)
+        
+        Returns:
+            HookOutput with hookSpecificOutput (may be empty dict)
+        
+        Behavior:
+            - Delegates to existing matchers from build_python_hooks()
+            - For StreamingToken events with batch_size > 1:
+              - Accumulates tokens in event dict as "_batched_tokens"
+              - Executes hooks when batch reaches batch_size
+              - Resets batch for next iteration
+            - Type validation at boundaries only
+            - Errors handled per error_strategy
+            - Backward compatible with non-streaming hooks
+        
+        Raises:
+            Nothing (errors are logged and handled per strategy)
+        
+        Performance Note:
+            Streaming token hooks are called frequently (per token).
+            Use batch_size > 1 to amortize hook execution cost.
+            Example: batch_size=10 reduces hook calls to 10% overhead.
+        """
+        if event_type not in self._hooks:
+            logger.warning(f"No hooks registered for event_type: {event_type}")
+            return {}
+        
+        # For non-batched streams or pre/post streaming events, use standard execute
+        if event_type != "StreamingToken" or batch_size <= 1:
+            return await self.execute(event_type, event, context)
+        
+        # Streaming token batching logic
+        matchers = self._hooks[event_type]
+        combined_output: dict[str, Any] = {}
+        
+        # Initialize batch accumulator in event if needed
+        if "_batched_tokens" not in event:
+            event["_batched_tokens"] = []
+        
+        # Add current token to batch
+        if "token" in event:
+            event["_batched_tokens"].append({
+                "token": event["token"],
+                "delta": event.get("delta", ""),
+                "cumulative_length": event.get("cumulative_length", 0),
+                "token_count": event.get("token_count", 0),
+                "timestamp": event.get("timestamp", time.time()),
+            })
+        
+        # Check if we've reached batch size
+        if len(event["_batched_tokens"]) >= batch_size:
+            try:
+                # Execute all matching hooks in order
+                for matcher in matchers:
+                    try:
+                        hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+                        
+                        for hook_fn in hooks:
+                            try:
+                                # Execute hook with optional instrumentation
+                                if self._instrumentation:
+                                    result, metrics = await self._instrumentation.instrument_hook_call(
+                                        hook_fn.__name__,
+                                        event_type,
+                                        hook_fn,
+                                        event,
+                                    )
+                                else:
+                                    # No instrumentation: execute directly
+                                    result = await hook_fn(event)  # type: ignore
+                                
+                                # Validate result type
+                                if not isinstance(result, dict):
+                                    logger.warning(
+                                        f"Hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                    )
+                                    result = {}
+                                
+                                # Log execution
+                                log_data = {
+                                    "event": "StreamingHookExecuted",
+                                    "event_type": event_type,
+                                    "hook": hook_fn.__name__,
+                                    "correlation_id": context.correlation_id,
+                                    "session_id": context.session_id,
+                                    "batch_size": len(event["_batched_tokens"]),
+                                    "has_output": bool(result),
+                                }
+                                
+                                if self._instrumentation:
+                                    recent_metrics = self._instrumentation.metrics
+                                    if recent_metrics:
+                                        last_metric = recent_metrics[-1]
+                                        log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                        log_data["success"] = last_metric.success
+                                
+                                _audit(log_data)
+                                
+                                # Merge output
+                                if result:
+                                    combined_output.update(result)
+                            
+                            except Exception as exc:
+                                self._handle_hook_error(
+                                    hook_fn.__name__,
+                                    event_type,
+                                    exc,
+                                    context,
+                                )
+                    
+                    except Exception as exc:
+                        logger.error(f"Error processing matcher for {event_type}: {exc}")
+                        if self._error_strategy == ErrorStrategy.PRESERVE_EXISTING:
+                            pass
+                        else:
+                            raise
+            
+            except Exception as exc:
+                logger.error(f"Fatal error in streaming hook registry for {event_type}: {exc}")
+                if self._error_strategy != ErrorStrategy.PRESERVE_EXISTING:
+                    raise
+            
+            # Reset batch for next iteration
+            event["_batched_tokens"] = []
+        
+        return combined_output
 
 
 # ── Global Registry Singleton ─────────────────────────────────────────────

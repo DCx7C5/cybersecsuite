@@ -11,9 +11,7 @@ Tests verify:
 
 import asyncio
 import sys
-import time
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
 
 import pytest
 

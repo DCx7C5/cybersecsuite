@@ -1,11 +1,9 @@
 """Tests for hooks.registry: stateless hook registry wrapper."""
 
-import asyncio
 import sys
 import time
 from pathlib import Path
-from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -14,7 +12,7 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks.core import ErrorStrategy, HookContext, HookOutput
+from hooks.core import ErrorStrategy, HookContext
 from hooks.registry import HookRegistry, get_registry, reset_registry
 
 

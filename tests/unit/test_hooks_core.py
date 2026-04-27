@@ -1,13 +1,11 @@
 """Tests for hooks.core: type-safe hook foundation."""
 
-import asyncio
 import sys
 import time
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
-import pytest
 
 # Adjust path for imports
 SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"

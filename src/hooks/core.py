@@ -234,6 +234,94 @@ class NotificationEvent(TypedDict, total=False):
     hook_event_name: str
 
 
+class PreStreamingEvent(TypedDict, total=False):
+    """PreStreaming event: before streaming response starts.
+    
+    Input fields:
+        correlation_id: Unique request correlation ID
+        session_id: CyberSecSuite session ID
+        model: Model identifier (e.g., "claude-3.5-sonnet")
+        token_count_estimate: Estimated total tokens in response (optional)
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with stream configuration in hookSpecificOutput.
+    
+    Error handling: PRESERVE_EXISTING - pre-stream setup failures don't block streaming.
+    
+    Use Cases:
+        - Initialize token collectors/aggregators
+        - Log streaming start with metadata
+        - Adjust monitoring based on estimated token count
+    """
+    correlation_id: str
+    session_id: str
+    model: str
+    token_count_estimate: Optional[int]
+    hook_event_name: str
+
+
+class StreamingTokenEvent(TypedDict, total=False):
+    """StreamingToken event: each token/chunk arrives (per-token hook).
+    
+    Input fields:
+        token: The token/chunk content (str)
+        delta: The incremental content (str)
+        cumulative_length: Total characters so far (int)
+        token_count: Count of tokens processed (int)
+        timestamp: When this token arrived (float, seconds since epoch)
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with token aggregation metadata.
+    
+    Error handling: PRESERVE_EXISTING - per-token hook failures don't block stream.
+    
+    Use Cases:
+        - Token aggregation/batching (collect N tokens before action)
+        - Real-time progress monitoring
+        - Per-token filtering/transformation
+        - Streaming analytics
+    
+    Performance Note:
+        This hook is called FREQUENTLY (often per-token). Keep it lightweight.
+        Use batching (e.g., collect 10 tokens then process) to reduce overhead.
+    """
+    token: str
+    delta: str
+    cumulative_length: int
+    token_count: int
+    timestamp: float
+    hook_event_name: str
+
+
+class PostStreamingEvent(TypedDict, total=False):
+    """PostStreaming event: after streaming completes.
+    
+    Input fields:
+        total_tokens: Total tokens in the completed stream (int)
+        duration_ms: Total streaming duration in milliseconds (float)
+        status: Stream completion status (str, e.g., "success", "interrupted")
+        final_content: Complete streamed content (str, optional for large responses)
+        cumulative_length: Total characters in stream (int)
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with stream summary/metrics.
+    
+    Error handling: PRESERVE_EXISTING - post-stream logging failures don't affect result.
+    
+    Use Cases:
+        - Log streaming metrics (duration, token count, throughput)
+        - Finalize token aggregators
+        - Update stream statistics
+        - Generate streaming analytics
+    """
+    total_tokens: int
+    duration_ms: float
+    status: str
+    final_content: Optional[str]
+    cumulative_length: int
+    hook_event_name: str
+
+
 # Union of all event types for dispatch
 EventType = (
     PreToolUseEvent |
@@ -245,7 +333,10 @@ EventType = (
     SubagentStopEvent |
     PreCompactEvent |
     PermissionRequestEvent |
-    NotificationEvent
+    NotificationEvent |
+    PreStreamingEvent |
+    StreamingTokenEvent |
+    PostStreamingEvent
 )
 
 

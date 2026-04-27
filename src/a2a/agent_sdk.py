@@ -66,8 +66,13 @@ from a2a.agent_loader import (
 )
 try:
     from hooks.sdk_hooks import build_python_hooks
+    from hooks.registry import HookRegistry, get_registry
+    from hooks.instrumentation import HookInstrument
 except ImportError:  # optional during minimal/test installs
     build_python_hooks = None  # type: ignore[assignment]
+    HookRegistry = None  # type: ignore[assignment]
+    get_registry = None  # type: ignore[assignment]
+    HookInstrument = None  # type: ignore[assignment]
 
 logger = logging.getLogger("a2a.agent_sdk")
 
@@ -243,7 +248,11 @@ def _build_agent_options_uncached(
     extra_tools: list[str] | None,
     include_mcp: bool,
 ) -> ClaudeAgentOptions:
-    """Build ClaudeAgentOptions without consulting or populating the cache."""
+    """Build ClaudeAgentOptions without consulting or populating the cache.
+    
+    Integrates typed hook system via HookRegistry wrapper while maintaining
+    backward compatibility with build_python_hooks() output format.
+    """
     from cssmcp import all_servers, allowed_tools as mcp_tools
 
     agents = build_agent_definitions()
@@ -258,11 +267,30 @@ def _build_agent_options_uncached(
         mcp_servers = all_servers()
         allowed.extend(mcp_tools())
 
-    hooks = (
-        build_python_hooks()
-        if callable(build_python_hooks)
-        else {"PreToolUse": [HookMatcher(hooks=[_audit_hook])]}
-    )
+    # ── Hook Integration: Use HookRegistry wrapper ──
+    # HookRegistry wraps build_python_hooks() and maintains backward compatibility
+    # by exposing ._hooks in the same format as build_python_hooks() output.
+    if callable(get_registry):
+        try:
+            # Get global registry singleton (stateless, cached hooks)
+            registry = get_registry()
+            hooks = registry._hooks
+            logger.info(
+                f"Initialized hook registry with {sum(len(v) for v in hooks.values())} "
+                f"matchers across {len(hooks)} event types"
+            )
+        except Exception as exc:
+            logger.warning(f"Failed to initialize HookRegistry: {exc}. Falling back to direct hooks.")
+            if callable(build_python_hooks):
+                hooks = build_python_hooks()
+            else:
+                hooks = {"PreToolUse": [HookMatcher(hooks=[_audit_hook])]}
+    elif callable(build_python_hooks):
+        # Fallback: direct SDK hooks (backward compat for test/minimal installs)
+        hooks = build_python_hooks()
+    else:
+        # Last resort: minimal audit hook
+        hooks = {"PreToolUse": [HookMatcher(hooks=[_audit_hook])]}
 
     return ClaudeAgentOptions(
         allowed_tools=allowed,
