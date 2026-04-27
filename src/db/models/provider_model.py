@@ -70,7 +70,7 @@ class ProviderModel(Model):
 
     class Meta:
         table = "provider_models"
-        unique_together = (("provider", "model_id"),)
+        unique_together = (("provider_id", "model_id"),)
         ordering = ["provider_id", "model_id"]
 
     def __str__(self) -> str:
@@ -112,7 +112,7 @@ class AccountModel(Model):
 
     class Meta:
         table = "account_models"
-        unique_together = (("account", "provider_model"),)
+        unique_together = (("account_id", "provider_model_id"),)
 
     def __str__(self) -> str:
         return f"AccountModel({self.account_id} → {self.provider_model_id})"

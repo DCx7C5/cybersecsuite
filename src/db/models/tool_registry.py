@@ -104,7 +104,7 @@ class ToolToggleState(Model):
 
     class Meta:
         table = "tool_toggle_states"
-        unique_together = (("tool", "scope_type", "scope_id"),)
+        unique_together = (("tool_id", "scope_type", "scope_id"),)
 
     def __str__(self) -> str:
         sid = self.scope_id or "*"
@@ -175,7 +175,7 @@ class AccountToolAccess(Model):
 
     class Meta:
         table = "account_tool_access"
-        unique_together = (("account", "tool"),)
+        unique_together = (("account_id", "tool_id"),)
 
     def __str__(self) -> str:
         return f"AccountToolAccess({self.account_id} → {self.tool_id}: {self.accessible})"

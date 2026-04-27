@@ -46,7 +46,7 @@ class ProviderAuthMethod(Model):
 
     class Meta:
         table = "provider_auth_methods"
-        unique_together = (("provider", "auth_method"),)
+        unique_together = (("provider_id", "auth_method"),)
         indexes = (("provider_id", "revoked_at"),)
 
     def __str__(self):

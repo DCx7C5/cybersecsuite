@@ -27,7 +27,7 @@ class NetworkBaseline(ScopedEntry):
         table = "network_baselines"
         ordering = ["-captured_at"]
         indexes = [
-            ("project", "is_active_baseline"),
+            ("project_id", "is_active_baseline"),
         ]
 
 
@@ -55,7 +55,7 @@ class ProcessBaseline(ScopedEntry):
         table = "process_baselines"
         ordering = ["-captured_at"]
         indexes = [
-            ("project", "is_active_baseline"),
+            ("project_id", "is_active_baseline"),
         ]
 
 
@@ -81,7 +81,7 @@ class KernelBaseline(ScopedEntry):
         table = "kernel_baselines"
         ordering = ["-captured_at"]
         indexes = [
-            ("project", "is_active_baseline"),
+            ("project_id", "is_active_baseline"),
         ]
 
 
@@ -106,5 +106,5 @@ class PersistenceBaseline(ScopedEntry):
         table = "persistence_baselines"
         ordering = ["-captured_at"]
         indexes = [
-            ("project", "is_active_baseline"),
+            ("project_id", "is_active_baseline"),
         ]

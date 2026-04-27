@@ -140,13 +140,13 @@ class AIProviderState(Model):
         table = "ai_provider_states"
         # Composite index for session + provider lookups
         indexes = [
-            ("session", "provider"),
-            ("session", "is_active"),
-            ("session", "health_status"),
-            ("session", "error_count"),
+            ("session_id", "provider_id"),
+            ("session_id", "is_active"),
+            ("session_id", "health_status"),
+            ("session_id", "error_count"),
         ]
         # Ensure one active provider per session (upsert pattern)
-        unique_together = (("session", "provider"),)
+        unique_together = (("session_id", "provider_id"),)
         ordering = ["-last_used_at"]
 
     def __str__(self) -> str:

@@ -111,8 +111,8 @@ class WorkerStateTransition(models.Model):
         table = "worker_state_transitions"
         indexes = [
             ("worker_id", "transitioned_at"),
-            ("project", "to_state"),
-            ("session", "to_state"),
+            ("project_id", "to_state"),
+            ("session_id", "to_state"),
             ("to_state",),  # For filtering by state
         ]
         ordering = ["-transitioned_at"]
@@ -249,8 +249,8 @@ class WorkerSession(models.Model):
     class Meta:
         table = "worker_sessions"
         indexes = [
-            ("project", "current_state"),
-            ("session", "current_state"),
+            ("project_id", "current_state"),
+            ("session_id", "current_state"),
             ("worker_id",),
             ("current_state",),
         ]
@@ -441,8 +441,8 @@ class WorkerAuditLog(models.Model):
         table = "worker_audit_logs"
         indexes = [
             ("worker_id", "occurred_at"),
-            ("project", "scope_level"),
-            ("session", "scope_level"),
+            ("project_id", "scope_level"),
+            ("session_id", "scope_level"),
             ("action", "status"),
             ("permission_check_passed",),
         ]

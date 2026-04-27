@@ -70,7 +70,7 @@ class IOCMITREMapping(Model):
 
     class Meta:
         table = "ioc_mitre_mappings"
-        unique_together = [("ioc", "technique")]
+        unique_together = [("ioc_id", "technique_id")]
         indexes = [
             ("technique", "confidence"),
         ]

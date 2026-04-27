@@ -251,7 +251,7 @@ class CPUInfo(Model):
 
     class Meta:
         table          = "cpu_info"
-        unique_together = [("machine", "socket_id")]
+        unique_together = [("machine_id", "socket_id")]
         ordering        = ["machine_id", "socket_id"]
 
 
@@ -277,7 +277,7 @@ class MemoryModule(Model):
 
     class Meta:
         table          = "memory_modules"
-        unique_together = [("machine", "slot_id")]
+        unique_together = [("machine_id", "slot_id")]
         ordering        = ["machine_id", "slot_id"]
 
 
@@ -313,7 +313,7 @@ class NetworkInterface(Model):
 
     class Meta:
         table          = "network_interfaces"
-        unique_together = [("machine", "name")]
+        unique_together = [("machine_id", "name")]
         ordering        = ["machine_id", "name"]
 
 
@@ -336,7 +336,7 @@ class InterfaceAddress(Model):
 
     class Meta:
         table          = "interface_addresses"
-        unique_together = [("interface", "address")]
+        unique_together = [("interface_id", "address")]
         ordering        = ["interface_id", "-is_primary", "address"]
 
 
@@ -383,7 +383,7 @@ class StorageDrive(Model):
 
     class Meta:
         table          = "storage_drives"
-        unique_together = [("machine", "device_path")]
+        unique_together = [("machine_id", "device_path")]
         ordering        = ["machine_id", "device_path"]
 
 
@@ -408,7 +408,7 @@ class StoragePartition(Model):
 
     class Meta:
         table          = "storage_partitions"
-        unique_together = [("drive", "device_path")]
+        unique_together = [("drive_id", "device_path")]
         ordering        = ["drive_id", "partition_number"]
 
 
@@ -436,6 +436,6 @@ class PCIDevice(Model):
 
     class Meta:
         table          = "pci_devices"
-        unique_together = [("machine", "bus_address")]
+        unique_together = [("machine_id", "bus_address")]
         ordering        = ["machine_id", "bus_address"]
 

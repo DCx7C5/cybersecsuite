@@ -102,8 +102,8 @@ class ForensicSession(Model):
         table = "forensic_sessions"
         ordering = ["-start_time"]
         indexes = [
-            ("project", "status"),
-            ("project", "phase"),
+            ("project_id", "status"),
+            ("project_id", "phase"),
             ("investigator",),
             ("agent",),
         ]
@@ -155,10 +155,10 @@ class ForensicFinding(Model):
     class Meta:
         table = "forensic_findings"
         ordering = ["-created_at"]
-        unique_together = ("session", "finding_id")
+        unique_together = ("session_id", "finding_id")
         indexes = [
-            ("session", "severity"),
-            ("session", "status"),
+            ("session_id", "severity"),
+            ("session_id", "status"),
         ]
 
     def __str__(self):

@@ -38,4 +38,4 @@ class KernelModule(Model):
 
     class Meta:
         table = "kernel_modules"
-        unique_together = [("kernel", "name")]
+        unique_together = [("kernel_id", "name")]

@@ -67,10 +67,10 @@ class UserRule(Model):
     class Meta:
         table = "user_rules"
         ordering = ["index"]
-        unique_together = [("session", "index")]
+        unique_together = [("session_id", "index")]
         indexes = [
-            ("session", "chain"),
-            ("session", "enabled"),
+            ("session_id", "chain"),
+            ("session_id", "enabled"),
         ]
 
     def __str__(self):
@@ -109,8 +109,8 @@ class UserSuggestion(Model):
         table = "user_suggestions"
         ordering = ["-weight", "-created_at"]
         indexes = [
-            ("session", "category"),
-            ("session", "enabled"),
+            ("session_id", "category"),
+            ("session_id", "enabled"),
         ]
 
     def __str__(self):

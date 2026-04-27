@@ -15,7 +15,7 @@ class CVECWEReference(Model):
 
     class Meta:
         table = "intel_cve_cwe_refs"
-        unique_together = (("cve", "cwe"),)
+        unique_together = (("cve_id", "cwe_id"),)
 
 
 class CVEMitreTechniqueReference(Model):
@@ -29,7 +29,7 @@ class CVEMitreTechniqueReference(Model):
 
     class Meta:
         table = "intel_cve_mitre_refs"
-        unique_together = (("cve", "technique"),)
+        unique_together = (("cve_id", "technique_id"),)
 
 
 class CWECAPECReference(Model):
@@ -43,7 +43,7 @@ class CWECAPECReference(Model):
 
     class Meta:
         table = "intel_cwe_capec_refs"
-        unique_together = (("cwe", "capec"),)
+        unique_together = (("cwe_id", "capec_id"),)
 
 
 class CAPECMitreTechniqueReference(Model):
@@ -57,7 +57,7 @@ class CAPECMitreTechniqueReference(Model):
 
     class Meta:
         table = "intel_capec_mitre_refs"
-        unique_together = (("capec", "technique"),)
+        unique_together = (("capec_id", "technique_id"),)
 
 
 class ThreatActorTechniqueReference(Model):
@@ -72,7 +72,7 @@ class ThreatActorTechniqueReference(Model):
 
     class Meta:
         table = "intel_actor_technique_refs"
-        unique_together = (("actor", "technique"),)
+        unique_together = (("actor_id", "technique_id"),)
 
 
 class ThreatActorSoftwareReference(Model):
@@ -88,7 +88,7 @@ class ThreatActorSoftwareReference(Model):
 
     class Meta:
         table = "intel_actor_software_refs"
-        unique_together = (("actor", "software", "relationship_type"),)
+        unique_together = (("actor_id", "software_id", "relationship_type"),)
 
 
 class SoftwareTechniqueReference(Model):
@@ -104,6 +104,6 @@ class SoftwareTechniqueReference(Model):
 
     class Meta:
         table = "intel_software_technique_refs"
-        unique_together = (("software", "technique", "relationship_type"),)
+        unique_together = (("software_id", "technique_id", "relationship_type"),)
 
 

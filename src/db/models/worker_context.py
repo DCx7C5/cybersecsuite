@@ -176,14 +176,14 @@ class WorkerContext(Model):
         table = "worker_contexts"
         # Composite indexes for common queries
         indexes = [
-            ("session", "worker_id"),
-            ("session", "is_active"),
-            ("session", "health_status"),
+            ("session_id", "worker_id"),
+            ("session_id", "is_active"),
+            ("session_id", "health_status"),
             ("expires_at",),  # For cleanup queries
             ("last_heartbeat_at",),  # For stale worker detection
         ]
         # Ensure one context per worker per session
-        unique_together = (("session", "worker_id"),)
+        unique_together = (("session_id", "worker_id"),)
         ordering = ["-last_heartbeat_at"]
 
     def __str__(self) -> str:

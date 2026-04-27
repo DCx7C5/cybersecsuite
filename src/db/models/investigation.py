@@ -47,8 +47,8 @@ class Finding(ScopedEntry):
         table = "findings"
         ordering = ["-updated_at"]
         indexes = [
-            ("project", "severity", "status"),
-            ("session", "severity"),
+            ("project_id", "severity", "status"),
+            ("session_id", "severity"),
             ("created_at",),
         ]
 

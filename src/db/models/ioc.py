@@ -50,9 +50,9 @@ class IOCEntry(Model):
         table = "ioc_entries"
         ordering = ["-last_observed"]
         indexes = [
-            ("project", "ioc_type"),
-            ("project", "status"),
-            ("project", "severity"),
+            ("project_id", "ioc_type"),
+            ("project_id", "status"),
+            ("project_id", "severity"),
             ("ioc_type", "value"),
         ]
 
@@ -84,8 +84,8 @@ class ForensicWatchlistItem(Model):
         table = "forensic_watchlist_items"
         ordering = ["-priority", "-created_at"]
         indexes = [
-            ("project", "item_type"),
-            ("project", "status"),
+            ("project_id", "item_type"),
+            ("project_id", "status"),
         ]
 
     def __str__(self):
@@ -114,7 +114,7 @@ class ClearedItem(Model):
         table = "cleared_items"
         ordering = ["-date_cleared"]
         indexes = [
-            ("project", "item_type"),
+            ("project_id", "item_type"),
         ]
 
     def __str__(self):

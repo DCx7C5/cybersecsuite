@@ -83,8 +83,8 @@ class Session(Model):
     class Meta:
         table = "sessions"
         indexes = [
-            models.Index(fields=["project", "is_active"]),
-            models.Index(fields=["session_id", "project"]),
+            models.Index(fields=["project_id", "is_active"]),
+            models.Index(fields=["session_id", "project_id"]),
         ]
 
 

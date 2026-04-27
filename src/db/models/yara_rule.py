@@ -86,8 +86,8 @@ class YaraRule(Model):
         table = "yara_rules"
         ordering = ["-created_at"]
         indexes = [
-            ("project", "status"),
-            ("project", "severity"),
+            ("project_id", "status"),
+            ("project_id", "severity"),
             ("source", "status"),
         ]
 
@@ -126,7 +126,7 @@ class YaraTestRun(Model):
         table = "yara_test_runs"
         ordering = ["-run_at"]
         indexes = [
-            ("rule", "verdict"),
+            ("rule_id", "verdict"),
         ]
 
     def __str__(self):
