@@ -4,11 +4,18 @@ Renders artifact.md template with Ed25519 signatures in frontmatter.
 """
 import hashlib
 import json
+import re
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
 
-from template_engine import render_string
+
+def _render_template_string(source: str, ctx: dict) -> str:
+    """Render a Jinja2-style {{ var }} template using regex substitution."""
+    def replace(m):
+        key = m.group(1).strip()
+        return str(ctx.get(key, ""))
+    return re.sub(r'\{\{\s*(\w+)\s*\}\}', replace, source)
 
 
 class ArtifactTemplateRenderer:
@@ -130,7 +137,7 @@ class ArtifactTemplateRenderer:
             "verified_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        return render_string(self.template, ctx)
+        return _render_template_string(self.template, ctx)
 
     def render_from_artifact(
         self,

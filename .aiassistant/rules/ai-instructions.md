@@ -7,7 +7,6 @@ apply: always
 Full-stack cybersecurity forensics platform.
 
 ## Stack
-- **Python 3.14**, `uv` only (never `pip` or `poetry`)
 - **TypeScript**, never JavaScript in the codebase (except for browser plugin)
 - **ASGI** — Starlette, port 8000 (`src/proxy/asgi.py`)
 - **MCP server** — 83+ tools, single `mcp__cybersec__*` namespace (`src/csmcp/`)

@@ -28,6 +28,8 @@ from __future__ import annotations
 
 import contextlib
 import logging
+import os
+import re
 import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -43,13 +45,70 @@ from cybersecsuite._session_io import (
     write_last_session,
     write_manifest,
 )
-from template_engine.session_scope import (
+from cybersecsuite.session_scope import (
     legacy_project_sessions_dir,
     project_session_scope_dir,
     project_sessions_dir,
     resolve_session_scope_name,
 )
-from template_engine.renderer import render as _render, render_string as _render_string
+
+
+def _render_template_string(source: str, ctx: dict) -> str:
+    """Render {{ var }} placeholders using regex substitution."""
+    def _replace(m):
+        key = m.group(1).strip()
+        return str(ctx.get(key, ""))
+    return re.sub(r'\{\{\s*(\w+)\s*\}\}', _replace, source)
+
+
+def _build_template_dirs(project_dir: Path, session_id: str | None) -> list[Path]:
+    """Return template search dirs: session → project → app → global."""
+    global_dir = Path("~/.claude").expanduser()
+    app_dir = Path("~/.cybersecsuite").expanduser()
+    sessions_dir = project_sessions_dir(project_dir)
+    legacy_sessions_dir = legacy_project_sessions_dir(project_dir)
+    sid = session_id or os.environ.get("CYBERSEC_SESSION_ID") or os.environ.get("CLAUDE_SESSION_ID")
+    session_dirs: list[Path] = []
+    if sid:
+        primary = sessions_dir / sid / "templates"
+        legacy = legacy_sessions_dir / sid / "templates"
+        if primary.exists():
+            session_dirs.append(primary)
+        if legacy.exists() and legacy != primary:
+            session_dirs.append(legacy)
+        if not session_dirs:
+            session_dirs.append(primary)
+    else:
+        latest = sessions_dir / "latest" / "templates"
+        if latest.is_symlink() or latest.is_dir():
+            session_dirs.append(latest)
+    return session_dirs + [
+        project_dir / ".claude" / "templates",
+        app_dir / "templates",
+        global_dir / "templates",
+    ]
+
+
+def _render(
+    template_name: str,
+    ctx: dict,
+    project_dir: Path | None = None,
+    session_id: str | None = None,
+    **_: Any,
+) -> str:
+    """Render a named template with scope-aware search (session→project→app→global)."""
+    project_dir = project_dir or Path.cwd()
+    for d in _build_template_dirs(project_dir, session_id):
+        candidate = d / template_name
+        if candidate.exists():
+            return _render_template_string(candidate.read_text(encoding="utf-8"), ctx)
+    raise FileNotFoundError(f"Template '{template_name}' not found in any scope")
+
+
+def _render_string(source: str, ctx: dict, **_: Any) -> str:
+    """Render an inline {{ var }} template string."""
+    return _render_template_string(source, ctx)
+
 
 logger = logging.getLogger(__name__)
 

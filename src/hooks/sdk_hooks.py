@@ -106,7 +106,7 @@ async def _post_tool_failure_audit(event: dict[str, Any], *_: Any) -> dict[str, 
 
 async def _user_prompt_context(event: dict[str, Any], *_: Any) -> dict[str, Any]:
     try:
-        from template_engine.context import get_context
+        from cybersecsuite._context import get_context
 
         ctx = get_context(project_dir=PROJECT_ROOT)
         if ctx:

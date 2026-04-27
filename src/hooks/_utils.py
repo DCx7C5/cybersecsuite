@@ -30,8 +30,6 @@ def get_app_home() -> Path:
     ).expanduser().resolve()
 
 
-SESSIONS_DIR        = get_app_home() / "sessions"
-LEGACY_SESSIONS_DIR = PROJECT_ROOT / ".claude" / "sessions"
 
 
 def get_project_dir() -> Path:
