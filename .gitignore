@@ -127,3 +127,6 @@ mcps/brave_stealth_profile/
 # TypeScript compiled output
 src/dashboard/static/js/
 *.js.map
+
+# Project-scope templates (scaffolded at first run from embedded package data)
+.claude/templates/
