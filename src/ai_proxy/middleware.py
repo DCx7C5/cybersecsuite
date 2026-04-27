@@ -20,6 +20,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
+from proxy.middleware_utils import should_skip_path
 from db.scope_utils import ScopeLevel, check_scope_permission
 from db.exceptions import (
     ScopeError,
@@ -146,7 +147,7 @@ class ScopeMiddleware(BaseHTTPMiddleware):
             Response (with scope context or error)
         """
         # Skip scope enforcement for certain paths
-        if self._should_skip(request.url.path):
+        if should_skip_path(request.url.path, self.skip_paths):
             return await call_next(request)
         
         # Create request scope context
@@ -202,20 +203,6 @@ class ScopeMiddleware(BaseHTTPMiddleware):
         response.headers["X-Scope-Elapsed-Ms"] = f"{elapsed_ms:.2f}"
         
         return response
-    
-    def _should_skip(self, path: str) -> bool:
-        """Check if path should skip scope enforcement.
-        
-        Args:
-            path: Request path
-            
-        Returns:
-            True if path should be skipped
-        """
-        for skip_path in self.skip_paths:
-            if path.startswith(skip_path):
-                return True
-        return False
     
     async def _extract_scope_context(
         self,
