@@ -33,6 +33,8 @@ class ThreatProfile(Model):
 
     class Meta:
         table = "threat_profiles"
+        table_description_plural = "Threat Profiles"
+        table_description_singular = "Threat Profile"
         ordering = ["-updated_at"]
 
 
@@ -54,6 +56,8 @@ class ForensicMITRETechnique(Model):
 
     class Meta:
         table = "forensic_mitre_techniques"
+        table_description_plural = "Forensic MITRE Techniques"
+        table_description_singular = "Forensic MITRE Technique"
         ordering = ["technique_id"]
 
 
@@ -70,6 +74,8 @@ class IOCMITREMapping(Model):
 
     class Meta:
         table = "ioc_mitre_mappings"
+        table_description_plural = "IOC MITRE Mappings"
+        table_description_singular = "IOC MITRE Mapping"
         unique_together = [("ioc_id", "technique_id")]
         indexes = [
             ("technique", "confidence"),

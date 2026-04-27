@@ -23,6 +23,8 @@ class ThreatProfileEntry(Model):
 
     class Meta:
         table = "intel_threat_profile_entries"
+        table_description_plural = "Threat Profile Entries"
+        table_description_singular = "Threat Profile Entry"
         indexes = (("profile_name",),)
 
 

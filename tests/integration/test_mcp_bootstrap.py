@@ -27,7 +27,7 @@ import pytest
 # Path Configuration
 PROJECT_ROOT = Path("/home/daen/Projects/cybersecsuite")
 MARKETPLACE_ROOT = Path("/home/daen/Projects/ai-marketplace")
-BOOTSTRAP_SCRIPT = PROJECT_ROOT / "scripts" / "install-mcp-core.sh"
+BOOTSTRAP_SCRIPT = PROJECT_ROOT / "scripts" / "deploy" / "install-mcp-core.sh"
 BOOTSTRAP_REPORT = Path("/tmp/mcp_bootstrap_report.txt")
 
 # MCP Names
@@ -317,7 +317,7 @@ class TestCyberSecSuiteIntegration:
 
     def test_bootstrap_docs_exist(self) -> None:
         """Test that bootstrap documentation exists."""
-        bootstrap_doc = PROJECT_ROOT / "docs" / "BOOTSTRAP.md"
+        bootstrap_doc = PROJECT_ROOT / "docs" / "bootstrap.md"
         assert bootstrap_doc.exists(), f"Bootstrap documentation not found: {bootstrap_doc}"
         
         content = bootstrap_doc.read_text()
@@ -456,7 +456,7 @@ class TestBootstrapDocumentation:
 
     def test_bootstrap_doc_structure(self) -> None:
         """Test that bootstrap doc has all required sections."""
-        bootstrap_doc = PROJECT_ROOT / "docs" / "BOOTSTRAP.md"
+        bootstrap_doc = PROJECT_ROOT / "docs" / "bootstrap.md"
         content = bootstrap_doc.read_text()
         
         required_sections = [
@@ -473,7 +473,7 @@ class TestBootstrapDocumentation:
 
     def test_bootstrap_doc_has_examples(self) -> None:
         """Test that bootstrap doc has code examples."""
-        bootstrap_doc = PROJECT_ROOT / "docs" / "BOOTSTRAP.md"
+        bootstrap_doc = PROJECT_ROOT / "docs" / "bootstrap.md"
         content = bootstrap_doc.read_text()
         
         # Should have bash examples
@@ -483,7 +483,7 @@ class TestBootstrapDocumentation:
 
     def test_bootstrap_doc_has_troubleshooting(self) -> None:
         """Test that bootstrap doc has troubleshooting section."""
-        bootstrap_doc = PROJECT_ROOT / "docs" / "BOOTSTRAP.md"
+        bootstrap_doc = PROJECT_ROOT / "docs" / "bootstrap.md"
         content = bootstrap_doc.read_text()
         
         # Should have common issues

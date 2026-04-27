@@ -577,6 +577,48 @@ uv pip show dystopian-crypto-mcp | grep Version
 uv pip show custom-mcp | grep Version
 ```
 
+## Worker API — Task Orchestration
+
+Phase 12+ introduces the Worker API for managing long-running tasks within CyberSecSuite.
+
+### Available Endpoints
+
+The Worker API provides 21 endpoints across 5 categories:
+
+- **CRUD (5):** Create, List, Get, Update, Delete workers
+- **Lifecycle (5):** Start, Pause, Resume, Stop, Retry workers
+- **Batch (3):** Batch start, stop, update multiple workers
+- **History (4):** Execution history, bookmarks, list, delete
+- **Metrics (4):** Worker metrics, audit, summary, health
+
+### Quick Start
+
+```bash
+# Create a worker
+curl -X POST http://localhost:8000/api/workers \
+  -H "Content-Type: application/json" \
+  -H "X-Project-ID: 1" \
+  -d '{
+    "name": "forensics-scan",
+    "config": {"timeout_seconds": 3600}
+  }'
+
+# Start the worker
+curl -X POST http://localhost:8000/api/workers/w-12345/start \
+  -H "X-Project-ID: 1"
+
+# Get worker metrics
+curl http://localhost:8000/api/workers/w-12345/metrics \
+  -H "X-Project-ID: 1"
+```
+
+### Documentation
+
+- **Full API Reference:** [Worker API Docs](./api/workers.md)
+- **State Machine:** Worker progresses through queued → running → paused/completed/failed
+- **Scope-Based Access:** Workers are project-scoped and session-scoped
+- **Audit Logging:** All transitions logged automatically
+
 ## Next Steps
 
 1. **Configure API Access** — Set up API keys and rate limiting

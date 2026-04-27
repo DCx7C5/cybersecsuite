@@ -438,7 +438,6 @@ class TestDAGEnforcement:
     async def test_set_task_status_clears_claim_on_done(self, tortoise_ctx):
         """Test that set_task_status clears claim when transitioning to done."""
         from db.managers.plan_manager import PlanManager
-        from db.models.plan import Task
 
         mgr = PlanManager()
         plan = await mgr.create_plan("Done Test")
@@ -456,7 +455,6 @@ class TestDAGEnforcement:
     async def test_set_task_status_clears_claim_on_blocked(self, tortoise_ctx):
         """Test that set_task_status clears claim when transitioning to blocked."""
         from db.managers.plan_manager import PlanManager
-        from db.models.plan import Task
 
         mgr = PlanManager()
         plan = await mgr.create_plan("Blocked Test")

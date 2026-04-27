@@ -9,7 +9,7 @@ Tests:
 """
 import pytest
 
-from db.cache_manager import (
+from db.managers.cache_manager import (
     CacheManager,
     CacheScope,
 )

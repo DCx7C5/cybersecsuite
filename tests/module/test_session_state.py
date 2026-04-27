@@ -7,7 +7,7 @@ import pytest
 from datetime import datetime
 
 from db.models.worker import WorkerSession
-from db.session_manager import (
+from db.managers.session_manager import (
     WorkerSessionManager,
     ExecutionHistoryManager,
     BookmarkManager,

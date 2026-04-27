@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from starlette.routing import Mount, Route, Router
+from starlette.routing import Route, Router
 
 
 async def _stub_endpoint(*args, **kwargs) -> dict[str, str]:

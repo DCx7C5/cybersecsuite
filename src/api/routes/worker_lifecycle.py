@@ -25,7 +25,6 @@ from db.models.scope import ProjectScope
 from db.models.worker import WorkerSession, WorkerState
 from db.managers.worker_manager import (
     WorkerStateMachine,
-    InvalidStateTransitionError,
 )
 
 logger = logging.getLogger(__name__)

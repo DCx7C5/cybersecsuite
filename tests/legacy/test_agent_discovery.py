@@ -7,7 +7,6 @@ from a2a.agent_loader import load_agents_from_dir
 from a2a.registry import AgentRegistry
 
 # Import stubs for deleted src/dashboard/ module
-import sys
 from tests.legacy.conftest import _scan_agents  # noqa: F401
 
 

@@ -1,12 +1,9 @@
 """
 Tests for agent_hooks: baseline snapshotting, change detection, and ruff scoping.
 """
-import asyncio
 import json
-import os
 import tempfile
 from pathlib import Path
-from typing import List
 
 import pytest
 

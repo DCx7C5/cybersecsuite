@@ -15,7 +15,11 @@ class Tag(Model):
     color = fields.CharEnumField(TagColor, default=TagColor.GRAY)
     description = fields.TextField(default="")
     created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "tags"
+        table_description_plural = "Tags"
+        table_description_singular = "Tag"
         ordering = ["name"]
+

@@ -15,7 +15,8 @@ from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, Field
-from tortoise import fields, Model
+from tortoise import fields
+from tortoise.models import Model
 from tortoise.transactions import in_transaction
 
 logger = logging.getLogger("llm.ai_provider_context")

@@ -26,7 +26,7 @@ class ToolRegistry(Model):
     tool_name is the canonical unique key (snake_case, globally unique across all types).
     """
 
-    id = fields.UUIDField(pk=True)
+    id = fields.BigIntField(pk=True)
 
     # Identity
     tool_name = fields.CharField(max_length=128, unique=True)
@@ -72,7 +72,13 @@ class ToolRegistry(Model):
 
     class Meta:
         table = "tool_registry"
+        table_description_plural = "Tools"
+        table_description_singular = "Tool"
         ordering = ["tool_type", "tool_name"]
+        indexes = [
+            ("tool_type", "tool_name"),
+        ]
+
 
     def __str__(self) -> str:
         return f"Tool({self.tool_name} [{self.tool_type}])"
@@ -88,7 +94,7 @@ class ToolToggleState(Model):
     The DB-backed version of what was previously stored in JSON files.
     """
 
-    id = fields.UUIDField(pk=True)
+    id = fields.BigIntField(pk=True)
     tool = fields.ForeignKeyField(
         "models.ToolRegistry", related_name="toggle_states", on_delete=fields.CASCADE
     )
@@ -104,6 +110,12 @@ class ToolToggleState(Model):
 
     class Meta:
         table = "tool_toggle_states"
+        table_description_plural = "Tool Toggle States"
+        table_description_singular = "Tool Toggle State"
+        ordering = ["scope_type", "scope_id"]
+        indexes = [
+            ("tool_id", "scope_type", "scope_id"),
+        ]
         unique_together = (("tool_id", "scope_type", "scope_id"),)
 
     def __str__(self) -> str:
@@ -121,6 +133,7 @@ class ToolToggleRegistry(Model):
     all other ToolToggleState rows for that tool are cleared.
     """
 
+    id = fields.BigIntField(pk=True)
     tool = fields.OneToOneField(
         "models.ToolRegistry", related_name="active_toggle", on_delete=fields.CASCADE
     )
@@ -132,11 +145,13 @@ class ToolToggleRegistry(Model):
 
     class Meta:
         table = "tool_toggle_registry"
+        table_description_plural = "Tool Toggle Registry"
+        table_description_singular = "Tool Toggle Registry"
+        ordering = ["tool_id"]
+        indexes = [
+            ("tool_id",),
+        ]
 
-    def __str__(self) -> str:
-        if self.active_scope_type:
-            return f"ToggleRegistry({self.tool_id} → {self.active_scope_type}/{self.active_scope_id or '*'})"
-        return f"ToggleRegistry({self.tool_id} → inactive)"
 
 
 class AccountToolAccess(Model):
@@ -152,7 +167,7 @@ class AccountToolAccess(Model):
     - beta enrollments  → tool.required_beta
     """
 
-    id = fields.UUIDField(pk=True)
+    id = fields.BigIntField(pk=True)
     account = fields.ForeignKeyField(
         "models.ApiAccount", related_name="tool_access", on_delete=fields.CASCADE
     )
@@ -175,7 +190,12 @@ class AccountToolAccess(Model):
 
     class Meta:
         table = "account_tool_access"
+        table_description_plural = "Account Tool Access"
+        table_description_singular = "Account Tool Access"
         unique_together = (("account_id", "tool_id"),)
+        ordering = ["account_id", "tool_id"]
+        indexes = [
+            ("account_id", "tool_id"),
+        ]
 
-    def __str__(self) -> str:
-        return f"AccountToolAccess({self.account_id} → {self.tool_id}: {self.accessible})"
+

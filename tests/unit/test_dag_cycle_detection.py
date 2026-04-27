@@ -1,5 +1,4 @@
 """Unit tests for DAG cycle detection logic (DFS-based)."""
-import pytest
 
 
 class MockTask:

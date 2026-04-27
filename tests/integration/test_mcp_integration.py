@@ -30,7 +30,7 @@ import pytest
 # Path Configuration
 PROJECT_ROOT = Path("/home/daen/Projects/cybersecsuite")
 MARKETPLACE_ROOT = Path("/home/daen/Projects/ai-marketplace")
-BOOTSTRAP_SCRIPT = PROJECT_ROOT / "scripts" / "install-mcp-core.sh"
+BOOTSTRAP_SCRIPT = PROJECT_ROOT / "scripts" / "deploy" / "install-mcp-core.sh"
 MARKETPLACE_DB = MARKETPLACE_ROOT / "marketplace.db"
 SKILLS_INDEX = MARKETPLACE_ROOT / "index.json"
 SEARCH_INDEX = MARKETPLACE_ROOT / "search-index.json"
