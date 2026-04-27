@@ -30,10 +30,16 @@ from starlette.middleware import Middleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
+from fastapi import FastAPI
 
 from a2a import CybersecA2AAgent, A2AServer
 from db.bootstrap import init_tortoise_async, close_tortoise
 from ai_proxy.routes import create_proxy_router
+from api.routes.workers import router as _workers_router
+from api.routes.worker_metrics import router as _worker_metrics_router
+from api.routes.worker_lifecycle import router as _worker_lifecycle_router
+from api.routes.worker_history import router as _worker_history_router
+from api.routes.worker_batch import router as _worker_batch_router
 from ai_proxy.routing.combo import cleanup_executors
 from ai_proxy.services.rate_limiter import rate_limiter, ProviderLimits
 from ai_proxy.providers.registry import get_enabled_providers
@@ -208,6 +214,16 @@ _agent = CybersecA2AAgent(base_url=_base_url)
 _a2a = A2AServer(_agent)
 
 
+# ── Worker API (FastAPI sub-app) ──────────────────────────────────────────────
+
+_worker_api = FastAPI(title="Worker API", docs_url=None, redoc_url=None)
+_worker_api.include_router(_workers_router)
+_worker_api.include_router(_worker_metrics_router)
+_worker_api.include_router(_worker_lifecycle_router)
+_worker_api.include_router(_worker_history_router)
+_worker_api.include_router(_worker_batch_router)
+
+
 # ── Application ───────────────────────────────────────────────────────────────
 
 app = Starlette(
@@ -220,6 +236,8 @@ app = Starlette(
         Route("/a2a/stream/{task_id}", _a2a._sse_stream, methods=["GET"]),
         # AI Proxy
         Mount("/v1", create_proxy_router()),
+        # Worker REST API
+        Mount("", app=_worker_api),
     ],
     on_startup=[_on_startup],
     on_shutdown=[_on_shutdown],
