@@ -559,3 +559,103 @@ async def seed_marketplace_assets() -> Dict[str, Any]:
         "skill_count": skill_created,
         "agent_count": agent_created,
     }
+
+
+async def seed_marketplace_from_json() -> Dict[str, Any]:
+    """
+    Idempotent seed of marketplace data from the bundled search-index.json.
+
+    Reads src/cybersecsuite/data/marketplace/search-index.json via importlib.resources,
+    iterates ``documents``, and upserts into the appropriate model:
+    - doctype "tool"  → MarketplaceAsset (asset_type="tool")
+    - doctype "skill" → Skill model
+    - doctype "agent" → Agent model
+
+    Returns:
+        {"created": int, "skipped": int, "total": int}
+    """
+    import importlib.resources
+    from db.models.marketplace import MarketplaceAsset, Skill, Agent
+
+    raw = (
+        importlib.resources.files("cybersecsuite.data.marketplace")
+        .joinpath("search-index.json")
+        .read_text(encoding="utf-8")
+    )
+    data = json.loads(raw)
+    documents = data.get("documents", [])
+
+    created = skipped = 0
+
+    for doc in documents:
+        doctype = doc.get("doctype", "")
+        name = doc.get("name", "")
+        if not name:
+            skipped += 1
+            continue
+
+        description = doc.get("description", "")
+        tags = doc.get("tags", [])
+        category = doc.get("category", "")
+
+        if doctype == "tool":
+            _, was_created = await MarketplaceAsset.get_or_create(
+                name=name,
+                defaults={
+                    "asset_type": "tool",
+                    "description": description,
+                    "metadata": {
+                        "tags": tags,
+                        "category": category,
+                        "mcp": doc.get("mcp", ""),
+                        "searchable": doc.get("searchable", ""),
+                    },
+                },
+            )
+        elif doctype == "skill":
+            _, was_created = await Skill.get_or_create(
+                name=name,
+                defaults={
+                    "description": description,
+                    "category": category or "general",
+                    "tags": tags if isinstance(tags, list) else [],
+                    "metadata": {
+                        "mcp": doc.get("mcp", ""),
+                        "searchable": doc.get("searchable", ""),
+                    },
+                },
+            )
+        elif doctype == "agent":
+            _, was_created = await Agent.get_or_create(
+                name=name,
+                defaults={
+                    "description": description,
+                    "category": category or "general",
+                    "tags": tags if isinstance(tags, list) else [],
+                    "metadata": {
+                        "mcp": doc.get("mcp", ""),
+                        "searchable": doc.get("searchable", ""),
+                    },
+                },
+            )
+        else:
+            _, was_created = await MarketplaceAsset.get_or_create(
+                name=name,
+                defaults={
+                    "asset_type": doctype or "unknown",
+                    "description": description,
+                    "metadata": {
+                        "tags": tags,
+                        "category": category,
+                        "mcp": doc.get("mcp", ""),
+                        "searchable": doc.get("searchable", ""),
+                    },
+                },
+            )
+
+        if was_created:
+            created += 1
+        else:
+            skipped += 1
+
+    return {"created": created, "skipped": skipped, "total": len(documents)}

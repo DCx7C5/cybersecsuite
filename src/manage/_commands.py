@@ -495,6 +495,19 @@ async def seed_poc_command():
     print(f"✅ PoC seeded: {result['created']} created, {result['skipped']} skipped")
 
 
+async def seed_marketplace_command():
+    """Seed marketplace from bundled search-index.json (1064 entries, idempotent)."""
+    from db.bootstrap import init_tortoise_async
+    from db.models.seeds import seed_marketplace_from_json
+
+    await init_tortoise_async(create_db=True)
+    print("→ Seeding marketplace from search-index.json...")
+    result = await seed_marketplace_from_json()
+    print(
+        f"✅ Marketplace: {result['created']} created, {result['skipped']} skipped ({result['total']} total)"
+    )
+
+
 def dashboard_command():
     """Generate a static HTML dashboard (synchronous — has its own arg parser)."""
     import importlib.util

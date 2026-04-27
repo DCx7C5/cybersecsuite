@@ -36,6 +36,7 @@ from ._commands import (
     migrate_intel_update_log_command,
     build_skill_index_command,
     install_command,
+    seed_marketplace_command,
 )
 
 
@@ -103,6 +104,8 @@ def show_usage():
     print("App install:")
     print("  install  - Create ~/.cybersecsuite/ directory structure (idempotent)")
     print("             Set CYBERSECSUITE_HOME to override the default path")
+    print("  seed-marketplace - Seed marketplace from bundled search-index.json (1064 entries)")
+    print("                     Safe to re-run (idempotent: skips existing entries)")
 
 
 async def main():
@@ -140,6 +143,7 @@ async def main():
         "migrate-intel-update-log": migrate_intel_update_log_command,
         "build-skill-index": build_skill_index_command,
         "install": install_command,
+        "seed-marketplace": seed_marketplace_command,
     }
 
     if command not in async_commands:

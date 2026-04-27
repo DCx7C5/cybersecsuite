@@ -68,6 +68,7 @@ packages = [
   "src/csmcp",
   "src/cybersecsuite",
   "src/cybersecsuite/data",
+  "src/cybersecsuite/data/marketplace",
   "src/dashboard",
   "src/db",
   "src/hooks",
