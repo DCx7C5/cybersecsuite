@@ -420,6 +420,297 @@ class HookRegistry:
             event["_batched_tokens"] = []
         
         return combined_output
+    
+    async def execute_pre_message(
+        self,
+        message_content: str,
+        role: str,
+        correlation_id: str,
+        context: HookContext,
+        message_id: Optional[str] = None,
+        metadata: Optional[dict[str, Any]] = None,
+    ) -> tuple[str, dict[str, Any]]:
+        """Execute PreMessage hooks for message transformation/validation.
+        
+        PreMessage hooks can transform or validate messages before they are
+        added to the conversation. The message can be:
+        - Passed through unchanged (most common)
+        - Transformed (e.g., translated, redacted, reformatted)
+        - Filtered (though not explicitly blocked, can be effectively filtered)
+        
+        Args:
+            message_content: The message text to process
+            role: Message role (e.g., "user", "assistant", "system")
+            correlation_id: Request correlation ID for tracking
+            context: HookContext with session_id, timestamp, etc.
+            message_id: Optional unique message identifier
+            metadata: Optional additional context metadata
+        
+        Returns:
+            Tuple of (transformed_message, hook_output_dict):
+            - transformed_message: The processed message (may be transformed)
+            - hook_output_dict: Combined output from all hooks (for logging/metrics)
+        
+        Behavior:
+            - Executes all registered PreMessage hooks in order
+            - Each hook receives the CURRENT message (may be transformed by prior hooks)
+            - First hook to return transformed_message wins (applied to subsequent hooks)
+            - If no transformed_message, original message_content is used
+            - Errors handled per error_strategy (failures preserve original message)
+            - Instrumentation captures timing if enabled
+        
+        Raises:
+            Nothing (errors are logged and handled per strategy)
+        
+        Use Cases:
+            - Validate message format/encoding
+            - Sanitize/redact sensitive data
+            - Apply content transformations
+            - Track message correlation
+            - Prevent spam/malicious content
+        """
+        event: dict[str, Any] = {
+            "message_content": message_content,
+            "role": role,
+            "correlation_id": correlation_id,
+            "message_id": message_id,
+            "metadata": metadata or {},
+            "hook_event_name": "PreMessage",
+        }
+        
+        if "PreMessage" not in self._hooks:
+            logger.debug("No PreMessage hooks registered")
+            return message_content, {}
+        
+        matchers = self._hooks["PreMessage"]
+        combined_output: dict[str, Any] = {}
+        current_message = message_content
+        
+        try:
+            for matcher in matchers:
+                try:
+                    hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+                    
+                    for hook_fn in hooks:
+                        try:
+                            # Update event with current message (may be transformed)
+                            event["message_content"] = current_message
+                            
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    "PreMessage",
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                result = await hook_fn(event)  # type: ignore
+                            
+                            # Validate result type
+                            if not isinstance(result, dict):
+                                logger.warning(
+                                    f"PreMessage hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                )
+                                result = {}
+                            
+                            # Check for message transformation
+                            if "transformed_message" in result:
+                                transformed = result.pop("transformed_message")
+                                if isinstance(transformed, str):
+                                    current_message = transformed
+                                    logger.debug(
+                                        f"PreMessage hook {hook_fn.__name__} transformed message "
+                                        f"({len(message_content)} -> {len(current_message)} chars)"
+                                    )
+                            
+                            # Log execution
+                            log_data = {
+                                "event": "PreMessageHookExecuted",
+                                "hook": hook_fn.__name__,
+                                "correlation_id": correlation_id,
+                                "session_id": context.session_id,
+                                "has_output": bool(result),
+                            }
+                            
+                            if self._instrumentation:
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+                            
+                            _audit(log_data)
+                            
+                            # Merge output
+                            if result:
+                                combined_output.update(result)
+                        
+                        except Exception as exc:
+                            self._handle_hook_error(
+                                hook_fn.__name__,
+                                "PreMessage",
+                                exc,
+                                context,
+                            )
+                
+                except Exception as exc:
+                    logger.error(f"Error processing matcher for PreMessage: {exc}")
+                    if self._error_strategy == ErrorStrategy.PRESERVE_EXISTING:
+                        pass
+                    else:
+                        raise
+        
+        except Exception as exc:
+            logger.error(f"Fatal error in PreMessage hook registry: {exc}")
+            if self._error_strategy != ErrorStrategy.PRESERVE_EXISTING:
+                raise
+        
+        return current_message, combined_output
+    
+    async def execute_post_message(
+        self,
+        message_content: str,
+        role: str,
+        response_time_ms: float,
+        token_count: int,
+        status: str,
+        correlation_id: str,
+        context: HookContext,
+        metadata: Optional[dict[str, Any]] = None,
+    ) -> dict[str, Any]:
+        """Execute PostMessage hooks for logging/metrics (read-only).
+        
+        PostMessage hooks are executed AFTER a message has been processed
+        by the agent. They are read-only and cannot modify the message.
+        They are typically used for:
+        - Logging/auditing
+        - Metrics collection
+        - Performance monitoring
+        - Token usage tracking
+        
+        Args:
+            message_content: The processed message text (str)
+            role: Message role (e.g., "assistant", "user")
+            response_time_ms: Time to process/generate message (float)
+            token_count: Number of tokens in message (int)
+            status: Processing status (str, e.g., "success", "filtered")
+            correlation_id: Request correlation ID for tracking
+            context: HookContext with session_id, timestamp, etc.
+            metadata: Optional additional context metadata
+        
+        Returns:
+            Combined output dict from all hooks (for logging/metrics)
+        
+        Behavior:
+            - Executes all registered PostMessage hooks in order (fire-and-forget)
+            - Hooks receive read-only message (cannot modify)
+            - Errors handled per error_strategy (failures don't affect message)
+            - Instrumentation captures timing if enabled
+            - Should complete quickly (logging only, no heavy processing)
+        
+        Raises:
+            Nothing (errors are logged and handled per strategy)
+        
+        Use Cases:
+            - Audit message and processing decision
+            - Log response metrics (time, tokens)
+            - Track message flow through system
+            - Collect analytics
+            - Export to monitoring systems
+        
+        Note:
+            This is a fire-and-forget logging hook. If you need to modify
+            the message, use PreMessage hooks instead.
+        """
+        event: dict[str, Any] = {
+            "message_content": message_content,
+            "role": role,
+            "response_time_ms": response_time_ms,
+            "token_count": token_count,
+            "status": status,
+            "correlation_id": correlation_id,
+            "metadata": metadata or {},
+            "hook_event_name": "PostMessage",
+        }
+        
+        if "PostMessage" not in self._hooks:
+            logger.debug("No PostMessage hooks registered")
+            return {}
+        
+        matchers = self._hooks["PostMessage"]
+        combined_output: dict[str, Any] = {}
+        
+        try:
+            for matcher in matchers:
+                try:
+                    hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+                    
+                    for hook_fn in hooks:
+                        try:
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    "PostMessage",
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                result = await hook_fn(event)  # type: ignore
+                            
+                            # Validate result type
+                            if not isinstance(result, dict):
+                                logger.warning(
+                                    f"PostMessage hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                )
+                                result = {}
+                            
+                            # Log execution
+                            log_data = {
+                                "event": "PostMessageHookExecuted",
+                                "hook": hook_fn.__name__,
+                                "correlation_id": correlation_id,
+                                "session_id": context.session_id,
+                                "status": status,
+                                "has_output": bool(result),
+                            }
+                            
+                            if self._instrumentation:
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+                            
+                            _audit(log_data)
+                            
+                            # Merge output
+                            if result:
+                                combined_output.update(result)
+                        
+                        except Exception as exc:
+                            self._handle_hook_error(
+                                hook_fn.__name__,
+                                "PostMessage",
+                                exc,
+                                context,
+                            )
+                
+                except Exception as exc:
+                    logger.error(f"Error processing matcher for PostMessage: {exc}")
+                    if self._error_strategy == ErrorStrategy.PRESERVE_EXISTING:
+                        pass
+                    else:
+                        raise
+        
+        except Exception as exc:
+            logger.error(f"Fatal error in PostMessage hook registry: {exc}")
+            if self._error_strategy != ErrorStrategy.PRESERVE_EXISTING:
+                raise
+        
+        return combined_output
+
 
 
 # ── Global Registry Singleton ─────────────────────────────────────────────

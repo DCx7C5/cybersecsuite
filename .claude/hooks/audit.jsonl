@@ -352,3 +352,305 @@
 {"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:37:07.439387+00:00"}
 {"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:37:07.439494+00:00"}
 {"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:37:07.439481+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:39:40.145649+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:39:40.145795+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:39:40.145778+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.362675+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.362795+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.362864+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.362927+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:53:37.362917+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:53:37.362779+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.365332+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.365420+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T12:53:37.365480+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.365530+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T12:53:37.378288+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.378367+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:53:37.365408+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.380040+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.380137+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.380254+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.380329+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:53:37.380125+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:53:37.380317+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.382640+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.382732+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:53:37.382720+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.384295+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.384389+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T12:53:37.384377+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.391345+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:53:37.391471+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:53:37.391456+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.501936+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.502084+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.502156+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.502220+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:54:34.502067+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:54:34.502209+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.505236+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.505340+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T12:54:34.505402+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.505452+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T12:54:34.519533+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.519636+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:54:34.505328+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.522313+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.522436+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.522497+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.522571+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:54:34.522560+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:54:34.522423+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.525162+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.526442+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:34.526563+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T12:54:34.526537+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T12:54:34.533323+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T12:54:40.486727+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T12:54:40.489590+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T12:54:40.504701+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T12:54:40.518844+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T12:54:40.522656+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T12:54:40.536901+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.653593+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.653716+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.653781+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.653850+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:54:40.653839+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:54:40.653701+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.655639+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.655724+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T12:54:40.655785+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.655833+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T12:54:40.658676+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.658746+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:54:40.655712+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.660305+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.660391+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.660447+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.660503+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:54:40.660379+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:54:40.660495+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.662560+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.663580+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.663673+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T12:54:40.663661+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T12:54:40.670351+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "test_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:54:40.678928+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.679959+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.680047+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:54:40.680035+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "failing_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": false, "ts": "2026-04-27T12:54:40.683221+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:54:40.684658+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:54:40.684776+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:54:40.684838+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:54:40.684892+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:54:40.684941+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.695110+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:54:40.695211+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:54:40.695199+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.369402+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.369533+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.369606+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.369673+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:55:45.369517+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:55:45.369659+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.372025+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.372116+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T12:55:45.372179+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.372229+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T12:55:45.385277+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.385359+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:55:45.372103+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.387051+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.387145+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.387204+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.387264+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:55:45.387254+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:55:45.387133+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.389447+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.390576+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.390666+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T12:55:45.390654+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T12:55:45.397286+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "test_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:55:45.401734+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.402786+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.402879+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:55:45.402867+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "failing_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 1, "success": false, "ts": "2026-04-27T12:55:45.405134+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:55:45.406530+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:55:45.406661+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:55:45.406726+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:55:45.406783+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:55:45.406841+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.417470+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:55:45.417587+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:55:45.417574+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T12:56:03.075083+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T12:56:03.078405+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T12:56:03.089999+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T12:56:03.101353+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T12:56:03.104281+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T12:56:03.115510+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.232206+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.232328+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.232393+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.232456+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:56:03.232313+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:56:03.232446+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.234237+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.234325+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T12:56:03.234387+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.234435+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T12:56:03.237037+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.237110+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:56:03.234313+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.238694+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.238791+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.238856+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.239027+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:56:03.239016+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:56:03.238779+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.241837+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.243055+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.243155+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T12:56:03.243142+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T12:56:03.248957+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "test_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:56:03.257932+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.258976+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.259066+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:56:03.259054+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "failing_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": false, "ts": "2026-04-27T12:56:03.261192+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:56:03.262649+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:56:03.262733+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:56:03.262796+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:56:03.262853+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:56:03.262907+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.273385+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:56:03.273500+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:56:03.273487+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T12:57:21.612326+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T12:57:21.615206+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T12:57:21.626220+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T12:57:21.637494+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T12:57:21.640423+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T12:57:21.651759+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.766241+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.766365+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.766428+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.766491+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:57:21.766350+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:57:21.766481+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.768254+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.768339+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T12:57:21.768400+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.768447+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T12:57:21.770970+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.771034+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T12:57:21.768327+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.772536+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.772630+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.772688+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.772750+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:57:21.772619+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:57:21.772741+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.775357+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.776604+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.776701+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T12:57:21.776688+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T12:57:21.782585+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "test_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:57:21.790929+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.792044+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.792153+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:57:21.792139+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "failing_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": false, "ts": "2026-04-27T12:57:21.794349+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:57:21.795921+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:57:21.796025+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:57:21.796087+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:57:21.796141+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T12:57:21.796192+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.805919+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T12:57:21.806022+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T12:57:21.806007+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T13:00:02.036815+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T13:00:02.039959+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T13:00:02.052789+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T13:00:02.066797+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T13:00:02.069680+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T13:00:02.083158+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.202498+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.202744+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.202811+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.202874+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T13:00:02.202727+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T13:00:02.202863+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.204883+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.205238+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T13:00:02.205311+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.205363+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T13:00:02.207943+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.208010+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T13:00:02.204960+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.209611+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.209699+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.209756+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.209812+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:02.209687+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:02.209803+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.212249+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.213436+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.213553+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T13:00:02.213532+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T13:00:02.220588+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:02.252195+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:02.252305+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:02.252370+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:02.252426+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:02.252479+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.262580+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:02.262689+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:02.262677+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T13:00:19.592464+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T13:00:19.599265+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T13:00:19.610638+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T13:00:19.627825+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T13:00:19.634339+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T13:00:19.651802+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.760885+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.761012+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.761076+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.761145+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T13:00:21.761135+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T13:00:21.760996+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.762988+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.763073+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-27T13:00:21.763197+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.763251+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-27T13:00:21.766293+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.766374+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-27T13:00:21.763061+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.768133+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.768231+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.768305+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.768366+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:21.768356+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:21.768219+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.770738+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.771732+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:21.771816+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-27T13:00:21.771804+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-27T13:00:21.777447+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "test_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:22.679744+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:22.680783+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:22.680883+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:22.680871+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "failing_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": false, "ts": "2026-04-27T13:00:22.682963+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:22.684108+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:22.684195+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:22.684255+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:22.684308+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-27T13:00:22.684357+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:22.695127+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-27T13:00:22.695235+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-27T13:00:22.695223+00:00"}

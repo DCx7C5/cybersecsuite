@@ -322,6 +322,77 @@ class PostStreamingEvent(TypedDict, total=False):
     hook_event_name: str
 
 
+class PreMessageEvent(TypedDict, total=False):
+    """PreMessage event: before message is added to conversation.
+    
+    Input fields:
+        message_content: The message text/content (str)
+        role: Message role (e.g., "user", "assistant", "system")
+        message_id: Unique message identifier (str, optional)
+        correlation_id: Request correlation ID (str)
+        metadata: Additional message metadata dict (optional)
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with optionally transformed message in hookSpecificOutput.
+        - If hookSpecificOutput contains "transformed_message", that value is used
+        - Otherwise, original message_content is preserved
+        - Can filter/redact/validate message before processing
+    
+    Error handling: PRESERVE_EXISTING - hook failure uses original message.
+    
+    Use Cases:
+        - Validate message content before processing
+        - Sanitize/redact sensitive information
+        - Transform message (e.g., language translation, PII masking)
+        - Filter spam or malicious content
+        - Track message correlation across systems
+    """
+    message_content: str
+    role: str
+    message_id: Optional[str]
+    correlation_id: str
+    metadata: Optional[dict[str, Any]]
+    hook_event_name: str
+
+
+class PostMessageEvent(TypedDict, total=False):
+    """PostMessage event: after message processed by agent.
+    
+    Input fields:
+        message_content: The message that was processed (str)
+        role: Message role (e.g., "assistant", "user")
+        response_time_ms: Time to process message (float)
+        token_count: Number of tokens in message (int)
+        status: Processing status (str, e.g., "success", "filtered", "error")
+        correlation_id: Request correlation ID (str)
+        metadata: Additional context metadata dict (optional)
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with logging/metrics in hookSpecificOutput (read-only).
+    
+    Error handling: PRESERVE_EXISTING - logging failures don't affect processed message.
+    
+    Use Cases:
+        - Log message processing metrics
+        - Audit message content and decisions
+        - Track message flow through system
+        - Collect statistics on response times
+        - Monitor token usage
+    
+    Note:
+        PostMessage hooks CANNOT modify the message (read-only).
+        Use PreMessage if message transformation is needed.
+    """
+    message_content: str
+    role: str
+    response_time_ms: float
+    token_count: int
+    status: str
+    correlation_id: str
+    metadata: Optional[dict[str, Any]]
+    hook_event_name: str
+
+
 # Union of all event types for dispatch
 EventType = (
     PreToolUseEvent |
@@ -336,7 +407,9 @@ EventType = (
     NotificationEvent |
     PreStreamingEvent |
     StreamingTokenEvent |
-    PostStreamingEvent
+    PostStreamingEvent |
+    PreMessageEvent |
+    PostMessageEvent
 )
 
 

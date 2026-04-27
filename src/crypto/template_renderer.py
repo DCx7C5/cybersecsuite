@@ -1,5 +1,5 @@
 """
-Template renderer for artifact markdown files.
+Template renderer for artifact Markdown files.
 Renders artifact.md template with Ed25519 signatures in frontmatter.
 """
 import hashlib
@@ -38,7 +38,7 @@ class ArtifactTemplateRenderer:
         self._template: Optional[str] = None
 
     @property
-    def template(self) -> str:
+    def template(self) -> str | None:
         """Load and cache template."""
         if self._template is None:
             if self.template_path.exists():

@@ -51,7 +51,7 @@ async def create_batch(request: Request) -> JSONResponse:
     """
     try:
         body = await request.json()
-    except Exception:
+    except Exception(BaseException):
         return JSONResponse(
             {"error": {"message": "Invalid JSON body", "type": "invalid_request_error"}},
             status_code=400,
