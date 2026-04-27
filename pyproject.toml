@@ -35,9 +35,14 @@ dependencies = [
     "dbus-next>=0.2.3",
     "redis>=7.0",
     "anthropic>=0.84.0",
+    # OpenTelemetry observability stack
+    "opentelemetry-api>=1.28",
     "opentelemetry-sdk>=1.28",
     "opentelemetry-exporter-otlp-proto-http>=1.28",
+    "opentelemetry-instrumentation>=0.49",
     "opentelemetry-instrumentation-httpx>=0.49",
+    "opentelemetry-instrumentation-openai>=0.53.0",
+    "opentelemetry-semantic-conventions>=0.49",
 ]
 
 [project.scripts]

@@ -125,11 +125,11 @@ Phase 13 completes the cleanup initiated in Phase 12 and establishes OpenTelemet
 - Record errors with exception type
 
 ### Baseline Metrics (Week 1 End)
-| Metric | Target | Alert Threshold |
-|--------|--------|-----------------|
-| A2A JSON-RPC P95 | < 500ms | > 575ms |
-| MCP tool P95 | < 2000ms | > 2300ms |
-| SSE stream latency | < 100ms | > 115ms |
+| Metric             | Target   | Alert Threshold |
+|--------------------|----------|-----------------|
+| A2A JSON-RPC P95   | < 500ms  | > 575ms         |
+| MCP tool P95       | < 2000ms | > 2300ms        |
+| SSE stream latency | < 100ms  | > 115ms         |
 
 ### Success Criteria
 - ✅ A2A tracer operational
@@ -180,12 +180,12 @@ Phase 13 completes the cleanup initiated in Phase 12 and establishes OpenTelemet
 - Parent-child span relationships
 
 ### Baseline Metrics (Week 2 End)
-| Metric | Target |
-|--------|--------|
-| DB query P95 | < 100ms |
-| Worker transition P95 | < 50ms |
-| Token usage tracking | Enabled |
-| Cost tracking | Enabled |
+| Metric                | Target  |
+|-----------------------|---------|
+| DB query P95          | < 100ms |
+| Worker transition P95 | < 50ms  |
+| Token usage tracking  | Enabled |
+| Cost tracking         | Enabled |
 
 ### Success Criteria
 - ✅ Database queries traced
@@ -241,13 +241,13 @@ Phase 13 completes the cleanup initiated in Phase 12 and establishes OpenTelemet
 
 ## Timeline
 
-| Phase | Week | Key Milestones |
-|-------|------|----------------|
-| Cleanup Validation | 0 (Days 1-2) | Bootstrap restored, tests passing |
-| Docs & Planning | 0 (Days 3-4) | API reference complete, roadmap ready |
-| OTEL Foundation | 1 | A2A/MCP tracing live, baseline P95s |
-| OTEL Depth | 2 | DB/worker tracing, business metrics |
-| Performance & Phase 14 | 3-4 | Baselines stable, Phase 14 drafted |
+| Phase                  | Week         | Key Milestones                        |
+|------------------------|--------------|---------------------------------------|
+| Cleanup Validation     | 0 (Days 1-2) | Bootstrap restored, tests passing     |
+| Docs & Planning        | 0 (Days 3-4) | API reference complete, roadmap ready |
+| OTEL Foundation        | 1            | A2A/MCP tracing live, baseline P95s   |
+| OTEL Depth             | 2            | DB/worker tracing, business metrics   |
+| Performance & Phase 14 | 3-4          | Baselines stable, Phase 14 drafted    |
 
 ---
 
