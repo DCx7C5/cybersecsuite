@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 const axeCorePath = path.resolve(__dirname, '../../node_modules/axe-core/axe.min.js');
 
 // Report aggregator - one per browser
-let reportData: any = {
+const reportData: any = {
   timestamp: new Date().toISOString(),
   browser: process.env.PWDEBUG ? 'unknown' : '',
   wcagTargetLevel: 'wcag21aa',

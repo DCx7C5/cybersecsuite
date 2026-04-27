@@ -16,14 +16,14 @@
 
 ## 🔐 Your Authority
 
-| Action | Permission | When to Use |
-|--------|-----------|-----------|
-| **Commit code** | ✅ YES | After agent work is verified |
-| **Delete files** | ✅ YES | When covered by exit gate verification |
-| **Tag releases** | ✅ YES | After phase completion |
-| **Spawn agents** | ✅ YES | Always (agents are safe) |
-| **Skip tests** | ⛔ NO | Never (exit gate must pass) |
-| **Commit unverified code** | ⛔ NO | Never (runs tests first) |
+| Action                     | Permission | When to Use                            |
+|----------------------------|------------|----------------------------------------|
+| **Commit code**            | ✅ YES      | After agent work is verified           |
+| **Delete files**           | ✅ YES      | When covered by exit gate verification |
+| **Tag releases**           | ✅ YES      | After phase completion                 |
+| **Spawn agents**           | ✅ YES      | Always (agents are safe)               |
+| **Skip tests**             | ⛔ NO       | Never (exit gate must pass)            |
+| **Commit unverified code** | ⛔ NO       | Never (runs tests first)               |
 
 ---
 
@@ -103,24 +103,24 @@ Every phase must pass:
 
 ## 🆘 Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Agent commit failed | Re-run with `git commit --no-verify` |
-| Tests failing | Delegate to task agent for detailed logs |
-| Unclear exit gate | See MASTER_PLAN.md phase spec |
-| Want to skip phase | ⛔ NO — exit gate must pass first |
-| Need to rollback | `git reset --hard phase-11-complete` |
+| Problem             | Solution                                 |
+|---------------------|------------------------------------------|
+| Agent commit failed | Re-run with `git commit --no-verify`     |
+| Tests failing       | Delegate to task agent for detailed logs |
+| Unclear exit gate   | See MASTER_PLAN.md phase spec            |
+| Want to skip phase  | ⛔ NO — exit gate must pass first         |
+| Need to rollback    | `git reset --hard phase-11-complete`     |
 
 ---
 
 ## 📊 When to Call Rubber Duck
 
-| Scenario | Action |
-|----------|--------|
-| Plan feels unclear | Call rubber duck → get critique |
-| Multiple options exist | Call rubber duck → evaluate trade-offs |
-| After major deletions | Call rubber duck → verify nothing broke |
-| Before major commits | Call rubber duck → catch bugs early |
+| Scenario               | Action                                  |
+|------------------------|-----------------------------------------|
+| Plan feels unclear     | Call rubber duck → get critique         |
+| Multiple options exist | Call rubber duck → evaluate trade-offs  |
+| After major deletions  | Call rubber duck → verify nothing broke |
+| Before major commits   | Call rubber duck → catch bugs early     |
 
 ---
 
