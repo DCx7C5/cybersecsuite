@@ -1,26 +1,26 @@
 """
-AI Provider State — Session-scoped tracking of active provider health and usage.
+ApiService State — Session-scoped tracking of active API service health and usage.
 
-Tracks the current active AI provider per session, including health status,
+Tracks the current active AI API service per session, including health status,
 response times, error counts, and token usage. This model enables intelligent
-provider fallback decisions and session-aware load balancing.
+service fallback decisions and session-aware load balancing.
 
 Session lifecycle:
-- Created when a new session starts (first AI provider call)
-- Updated after each provider interaction (health check, response time record)
-- Queried for fallback decisions when provider becomes unavailable
+- Created when a new session starts (first AI API service call)
+- Updated after each service interaction (health check, response time record)
+- Queried for fallback decisions when service becomes unavailable
 - Cleaned up when session ends or times out
 """
 from tortoise import fields
 from tortoise.models import Model
 
 
-class AIProviderState(Model):
+class ApiServiceState(Model):
     """
-    Session-scoped AI provider state tracking.
+    Session-scoped AI API service state tracking.
 
     Tracks:
-    - Current active provider for this session
+    - Current active API service for this session
     - Health status (ok, degraded, error)
     - Performance metrics (last response time, error count)
     - Usage metrics (calls this session, tokens this session)
@@ -28,20 +28,20 @@ class AIProviderState(Model):
 
     id = fields.IntField(primary_key=True)
 
-    # Session and provider references
+    # Session and API service references
     session = fields.ForeignKeyField(
         "models.Session",
-        related_name="ai_provider_states",
+        related_name="api_service_states",
         on_delete=fields.CASCADE,
         db_index=True,
-        description="Session this provider state belongs to"
+        description="Session this API service state belongs to"
     )
-    provider = fields.ForeignKeyField(
-        "models.Provider",
+    api_service = fields.ForeignKeyField(
+        "models.ApiService",
         related_name="session_states",
         on_delete=fields.CASCADE,
         db_index=True,
-        description="Active provider for this session"
+        description="Active API service for this session"
     )
 
     # Health status
@@ -115,11 +115,11 @@ class AIProviderState(Model):
     # Metadata and audit
     first_used_at = fields.DatetimeField(
         auto_now_add=True,
-        description="When this provider was first used in this session"
+        description="When this API service was first used in this session"
     )
     last_used_at = fields.DatetimeField(
         auto_now=True,
-        description="When this provider was last used"
+        description="When this API service was last used"
     )
     created_at = fields.DatetimeField(
         auto_now_add=True,
@@ -133,28 +133,28 @@ class AIProviderState(Model):
     # Metadata for flexibility
     metadata = fields.JSONField(
         default=dict,
-        description="Additional provider state metadata"
+        description="Additional API service state metadata"
     )
 
     class Meta:
-        table = "ai_provider_states"
-        # Composite index for session + provider lookups
+        table = "api_service_states"
+        # Composite index for session + api_service lookups
         indexes = [
-            ("session_id", "provider_id"),
+            ("session_id", "api_service_id"),
             ("session_id", "is_active"),
             ("session_id", "health_status"),
             ("session_id", "error_count"),
         ]
-        # Ensure one active provider per session (upsert pattern)
-        unique_together = (("session_id", "provider_id"),)
+        # Ensure one active API service per session (upsert pattern)
+        unique_together = (("session_id", "api_service_id"),)
         ordering = ["-last_used_at"]
 
     def __str__(self) -> str:
-        """String representation of provider state."""
+        """String representation of API service state."""
         return (
-            f"AIProviderState("
+            f"ApiServiceState("
             f"session={self.session_id}, "
-            f"provider={self.provider_id}, "
+            f"api_service={self.api_service_id}, "
             f"status={self.health_status}"
             f")"
         )

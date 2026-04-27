@@ -1,31 +1,31 @@
 """
-AI Provider Events — Immutable audit trail of provider state changes per session.
+ApiService Events — Immutable audit trail of API service state changes per session.
 
-Captures all provider-related events in chronological order:
-- PROVIDER_CHANGED: Active provider switched
-- FALLBACK_TRIGGERED: Fallback to alternative provider due to failure
-- ERROR_RECORDED: Error occurred with current provider
+Captures all API service-related events in chronological order:
+- SERVICE_CHANGED: Active API service switched
+- FALLBACK_TRIGGERED: Fallback to alternative service due to failure
+- ERROR_RECORDED: Error occurred with current service
 - HEALTH_CHECK: Health status update
 - RATE_LIMIT: Rate limit hit
 - TIMEOUT: Request timeout
 
 This is an append-only event log (no updates) that enables full audit trail
-and provider history analysis per session.
+and service history analysis per session.
 """
 from tortoise import fields
 from tortoise.models import Model
 
 
-class AIProviderEvent(Model):
+class ApiServiceEvent(Model):
     """
-    Immutable audit trail of provider events per session.
+    Immutable audit trail of API service events per session.
 
-    Each row represents a single provider-related event in chronological order.
+    Each row represents a single service-related event in chronological order.
     Events are never updated or deleted (append-only log).
 
     Event types:
-    - PROVIDER_CHANGED: Active provider switched
-    - FALLBACK_TRIGGERED: Switched to fallback provider
+    - SERVICE_CHANGED: Active API service switched
+    - FALLBACK_TRIGGERED: Switched to fallback service
     - ERROR_RECORDED: Error occurred
     - HEALTH_CHECK: Health status check
     - RATE_LIMIT: Rate limit encountered
@@ -35,10 +35,10 @@ class AIProviderEvent(Model):
 
     id = fields.BigIntField(primary_key=True)
 
-    # Session and provider references
+    # Session and API service references
     session = fields.ForeignKeyField(
         "models.Session",
-        related_name="ai_provider_events",
+        related_name="api_service_events",
         on_delete=fields.CASCADE,
         db_index=True,
         description="Session this event belongs to"
@@ -48,7 +48,7 @@ class AIProviderEvent(Model):
     event_type = fields.CharField(
         max_length=32,
         choices=[
-            ("PROVIDER_CHANGED", "PROVIDER_CHANGED"),
+            ("SERVICE_CHANGED", "SERVICE_CHANGED"),
             ("FALLBACK_TRIGGERED", "FALLBACK_TRIGGERED"),
             ("ERROR_RECORDED", "ERROR_RECORDED"),
             ("HEALTH_CHECK", "HEALTH_CHECK"),
@@ -60,20 +60,20 @@ class AIProviderEvent(Model):
         description="Type of event"
     )
 
-    # Provider references
-    old_provider = fields.ForeignKeyField(
-        "models.Provider",
+    # API service references
+    old_api_service = fields.ForeignKeyField(
+        "models.ApiService",
         related_name="events_old",
         on_delete=fields.SET_NULL,
         null=True,
-        description="Previous provider (for PROVIDER_CHANGED and FALLBACK_TRIGGERED)"
+        description="Previous API service (for SERVICE_CHANGED and FALLBACK_TRIGGERED)"
     )
-    new_provider = fields.ForeignKeyField(
-        "models.Provider",
+    new_api_service = fields.ForeignKeyField(
+        "models.ApiService",
         related_name="events_new",
         on_delete=fields.SET_NULL,
         null=True,
-        description="New provider (for PROVIDER_CHANGED and FALLBACK_TRIGGERED)"
+        description="New API service (for SERVICE_CHANGED and FALLBACK_TRIGGERED)"
     )
 
     # Event context
@@ -133,7 +133,7 @@ class AIProviderEvent(Model):
     )
 
     class Meta:
-        table = "ai_provider_events"
+        table = "api_service_events"
         # Composite index for session + timestamp queries (most common)
         indexes = [
             ("session_id", "created_at"),
@@ -145,9 +145,9 @@ class AIProviderEvent(Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        """String representation of provider event."""
+        """String representation of API service event."""
         return (
-            f"AIProviderEvent("
+            f"ApiServiceEvent("
             f"session={self.session_id}, "
             f"type={self.event_type}, "
             f"reason={self.reason}"

@@ -1,10 +1,10 @@
-"""Provider and auth method models - DB mirror of ProviderConfig registry."""
+"""ApiService and auth method models - DB mirror of ProviderConfig registry."""
 from tortoise import fields
 from tortoise.models import Model
 
 
-class Provider(Model):
-    """AI provider configuration stored in DB."""
+class ApiService(Model):
+    """AI API service configuration stored in DB."""
     id = fields.CharField(max_length=40, pk=True)
     name = fields.CharField(max_length=80)
     base_url = fields.CharField(max_length=255)
@@ -24,16 +24,16 @@ class Provider(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
-        table = "providers"
+        table = "api_services"
 
     def __str__(self):
-        return f"Provider({self.id})"
+        return f"ApiService({self.id})"
 
 
-class ProviderAuthMethod(Model):
-    """M2M: Provider ↔ supported auth methods."""
-    provider = fields.ForeignKeyField(
-        "models.Provider", related_name="auth_methods", on_delete=fields.CASCADE
+class ApiServiceAuthMethod(Model):
+    """M2M: ApiService ↔ supported auth methods."""
+    api_service = fields.ForeignKeyField(
+        "models.ApiService", related_name="auth_methods", on_delete=fields.CASCADE
     )
     auth_method = fields.CharField(max_length=20)
     config = fields.JSONField(default=dict)
@@ -45,9 +45,9 @@ class ProviderAuthMethod(Model):
     revoked_at = fields.DatetimeField(null=True)
 
     class Meta:
-        table = "provider_auth_methods"
-        unique_together = (("provider_id", "auth_method"),)
-        indexes = (("provider_id", "revoked_at"),)
+        table = "api_service_auth_methods"
+        unique_together = (("api_service_id", "auth_method"),)
+        indexes = (("api_service_id", "revoked_at"),)
 
     def __str__(self):
-        return f"ProviderAuthMethod({self.provider_id}, {self.auth_method})"
+        return f"ApiServiceAuthMethod({self.api_service_id}, {self.auth_method})"

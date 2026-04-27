@@ -47,7 +47,7 @@ Stream naming: `cybersecsuite-<base>-YYYY.MM.DD` (daily rollover, auto-stamped b
 ## Docker Compose & Environment (Correct Service Names)
 The entire stack runs in Docker Compose. After any code change, **restart the affected service**:
 
-- `docker compose restart cybersec-dashboard`
+- `docker compose restart cybersec-proxy`
 - `docker compose restart cybersec-postgres`
 - `docker compose restart cybersec-openobserve`
 - `docker compose restart cybersec-redis`

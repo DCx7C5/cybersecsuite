@@ -24,8 +24,8 @@ MODEL_MODULES: list[str] = [
     "db.models.threat_intel",
     # Accounts + API keys
     "db.models.api_account",
-    "db.models.provider",
-    "db.models.provider_model",
+    "db.models.api_service",
+    "db.models.api_service_model",
     "db.models.tool_registry",
     # Tool seeds is not a model module — loaded separately
     # Investigation + forensic
@@ -60,9 +60,9 @@ MODEL_MODULES: list[str] = [
     "db.models.intel_feed_source",
     # Prompts
     "db.models.prompt",
-    # Phase 0 — AI Provider State Management
-    "db.models.ai_provider_state",
-    "db.models.ai_provider_events",
+    # Phase 0 — ApiService State Management
+    "db.models.api_service_state",
+    "db.models.api_service_events",
     "db.models.worker_context",
     # Phase 5C — Worker state machine (t366, t367, t368)
     "db.models.worker",
@@ -71,16 +71,16 @@ MODEL_MODULES: list[str] = [
 ]
 
 from db.models.api_account import ApiAccount  # noqa: E402
-from db.models.provider import Provider, ProviderAuthMethod  # noqa: E402
-from db.models.provider_model import ProviderModel, AccountModel  # noqa: E402
+from db.models.api_service import ApiService, ApiServiceAuthMethod  # noqa: E402
+from db.models.api_service_model import ApiServiceModel, AccountModel  # noqa: E402
 from db.models.tool_registry import ToolRegistry, ToolToggleState, ToolToggleRegistry, AccountToolAccess  # noqa: E402
 from db.models.settings import ScopedEntry, GlobalSettings  # noqa: E402
 from db.models.core import AuditLog  # noqa: E402
 from db.models.llm_session import LlmSession  # noqa: E402
 from db.models.intel_feed_source import IntelFeedSource  # noqa: E402
 from db.models.prompt import Prompt  # noqa: E402
-from db.models.ai_provider_state import AIProviderState  # noqa: E402
-from db.models.ai_provider_events import AIProviderEvent  # noqa: E402
+from db.models.api_service_state import ApiServiceState  # noqa: E402
+from db.models.api_service_events import ApiServiceEvent  # noqa: E402
 from db.models.worker_context import WorkerContext  # noqa: E402
 from db.models.worker import (  # noqa: E402
     WorkerState,
@@ -100,9 +100,9 @@ from db.models.marketplace import (  # noqa: E402
 __all__ = [
     "MODEL_MODULES",
     "ApiAccount",
-    "Provider",
-    "ProviderAuthMethod",
-    "ProviderModel",
+    "ApiService",
+    "ApiServiceAuthMethod",
+    "ApiServiceModel",
     "AccountModel",
     "ToolRegistry",
     "ToolToggleState",
@@ -114,8 +114,8 @@ __all__ = [
     "LlmSession",
     "IntelFeedSource",
     "Prompt",
-    "AIProviderState",
-    "AIProviderEvent",
+    "ApiServiceState",
+    "ApiServiceEvent",
     "WorkerContext",
     "WorkerState",
     "WorkerStateTransition",

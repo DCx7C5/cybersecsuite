@@ -200,7 +200,7 @@ async def seed_all_command():
         seed_capec,
         seed_poc,
     )
-    from db.models.tool_seeds import seed_tool_registry, seed_provider_models
+    from db.models.tool_seeds import seed_tool_registry, seed_api_service_models
 
     await init_tortoise_async(create_db=True)
     seeds = [
@@ -225,9 +225,9 @@ async def seed_all_command():
         for e in r["errors"]:
             print(f"  ⚠️  {e}")
 
-    print("→ Seeding Provider Models...")
-    r = await seed_provider_models()
-    print(f"  ✅ Provider Models: {r['created']} created, {r['updated']} updated ({r['total']} total)")
+    print("→ Seeding ApiService Models...")
+    r = await seed_api_service_models()
+    print(f"  ✅ ApiService Models: {r['created']} created, {r['updated']} updated ({r['total']} total)")
     if r.get("errors"):
         for e in r["errors"][:5]:
             print(f"  ⚠️  {e}")

@@ -1,8 +1,8 @@
 """
-Seed helpers for ToolRegistry and ProviderModel tables.
+Seed helpers for ToolRegistry and ApiServiceModel tables.
 
 seed_tool_registry()  — populate ToolRegistry from live MCP tools + known SDK builtins
-seed_provider_models() — populate ProviderModel from provider registry / pricing data
+seed_api_service_models() — populate ApiServiceModel from API service registry / pricing data
 """
 from __future__ import annotations
 
@@ -266,14 +266,14 @@ async def seed_tool_registry() -> dict[str, Any]:
     }
 
 
-async def seed_provider_models(provider_id: str | None = None) -> dict[str, Any]:
+async def seed_api_service_models(api_service_id: str | None = None) -> dict[str, Any]:
     """
-    Sync ProviderModel rows from the live provider registry / pricing catalog.
+    Sync ApiServiceModel rows from the live API service registry / pricing catalog.
 
-    If provider_id is given, only syncs that provider. Otherwise syncs all.
+    If api_service_id is given, only syncs that service. Otherwise syncs all.
     """
-    from db.models.provider_model import ProviderModel
-    from db.models.provider import Provider
+    from db.models.api_service_model import ApiServiceModel
+    from db.models.api_service import ApiService
     from db.models.enums import ModelTier, ModelStatus
 
     created = 0
@@ -290,14 +290,14 @@ async def seed_provider_models(provider_id: str | None = None) -> dict[str, Any]
 
     for prov_cfg in providers:
         pid = prov_cfg.get("id") or prov_cfg.get("provider_id", "")
-        if provider_id and pid != provider_id:
+        if api_service_id and pid != api_service_id:
             continue
 
-        # Ensure provider row exists
+        # Ensure API service row exists
         try:
-            db_provider = await Provider.filter(id=pid).first()
-            if not db_provider:
-                logger.debug("Provider %s not in DB — skipping model sync", pid)
+            db_api_service = await ApiService.filter(id=pid).first()
+            if not db_api_service:
+                logger.debug("ApiService %s not in DB — skipping model sync", pid)
                 continue
         except Exception:
             continue
@@ -338,8 +338,8 @@ async def seed_provider_models(provider_id: str | None = None) -> dict[str, Any]
                         "context_window", "max_output_tokens", "max_tokens",
                     )},
                 }
-                _, was_created = await ProviderModel.update_or_create(
-                    provider=db_provider, model_id=model_id, defaults=defaults
+                _, was_created = await ApiServiceModel.update_or_create(
+                    api_service=db_api_service, model_id=model_id, defaults=defaults
                 )
                 created += int(was_created)
                 updated += int(not was_created)
@@ -348,7 +348,7 @@ async def seed_provider_models(provider_id: str | None = None) -> dict[str, Any]
                 logger.warning("Error syncing model %s/%s: %s", pid, model_id, e)
 
     total = created + updated
-    logger.info("ProviderModel seed: %d created, %d updated", created, updated)
+    logger.info("ApiServiceModel seed: %d created, %d updated", created, updated)
     return {
         "status": "ok" if not errors else "partial",
         "created": created,

@@ -1,7 +1,7 @@
 """Sync ProviderConfig registry to database."""
 import logging
 
-from db.models import Provider, ProviderAuthMethod
+from db.models import ApiService, ApiServiceAuthMethod
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def sync_providers_to_db() -> int:
     synced = 0
 
     for pid, cfg in providers.items():
-        await Provider.update_or_create(
+        await ApiService.update_or_create(
             id=pid,
             defaults={
                 "name": cfg.name,
@@ -55,11 +55,11 @@ async def sync_providers_to_db() -> int:
         )
         synced += 1
         if auths := cfg.extra.get("auth_methods"):
-            p = await Provider.get(id=pid)
+            p = await ApiService.get(id=pid)
             for auth_entry in auths:
                 auth_method, config = _normalize_auth_method(auth_entry)
-                await ProviderAuthMethod.update_or_create(
-                    provider=p,
+                await ApiServiceAuthMethod.update_or_create(
+                    api_service=p,
                     auth_method=auth_method,
                     defaults={"config": config, "revoked_at": None},
                 )
@@ -69,7 +69,7 @@ async def sync_providers_to_db() -> int:
 
 
 async def sync_auth_methods(provider_id: str) -> None:
-    """Sync auth methods for a specific provider."""
+    """Sync auth methods for a specific API service."""
     try:
         from ai_proxy.providers.registry import get_provider
     except ImportError:
@@ -77,13 +77,13 @@ async def sync_auth_methods(provider_id: str) -> None:
     cfg = get_provider(provider_id)
     if not cfg:
         return
-    p = await Provider.get_or_none(id=provider_id)
+    p = await ApiService.get_or_none(id=provider_id)
     if not p:
         return
     for auth_entry in cfg.extra.get("auth_methods", []):
         auth_method, config = _normalize_auth_method(auth_entry)
-        await ProviderAuthMethod.update_or_create(
-            provider=p,
+        await ApiServiceAuthMethod.update_or_create(
+            api_service=p,
             auth_method=auth_method,
             defaults={"config": config, "revoked_at": None},
         )

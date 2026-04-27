@@ -5,11 +5,11 @@ from tortoise.models import Model
 
 
 class ApiAccount(Model):
-    """API account with vault-backed key, linked to Provider."""
+    """API account with vault-backed key, linked to ApiService."""
 
     vault_key = fields.CharField(max_length=255, pk=True)
-    provider = fields.ForeignKeyField(
-        "models.Provider", related_name="accounts", on_delete=fields.CASCADE
+    api_service = fields.ForeignKeyField(
+        "models.ApiService", related_name="accounts", on_delete=fields.CASCADE
     )
     label = fields.CharField(max_length=255, null=True)
     active = fields.BooleanField(default=False)
@@ -28,7 +28,7 @@ class ApiAccount(Model):
 
     def __init__(self, **kwargs: Any):
         super().__init__(kwargs)
-        self.provider_id = None
+        self.api_service_id = None
 
     def __str__(self):
         return f"ApiAccount({self.vault_key})"

@@ -1,4 +1,4 @@
-"""Tests for accounts sync and provider models."""
+"""Tests for accounts sync and API service models."""
 import pytest
 
 
@@ -11,17 +11,17 @@ async def test_sync_providers_import():
 
 
 @pytest.mark.asyncio
-async def test_provider_model_import():
-    """Test Provider model can be imported."""
-    from db.models.provider import Provider
-    assert Provider is not None
+async def test_api_service_model_import():
+    """Test ApiService model can be imported."""
+    from db.models.api_service import ApiService
+    assert ApiService is not None
 
 
 @pytest.mark.asyncio
-async def test_provider_auth_method_import():
-    """Test ProviderAuthMethod model can be imported."""
-    from db.models.provider import ProviderAuthMethod
-    assert ProviderAuthMethod is not None
+async def test_api_service_auth_method_import():
+    """Test ApiServiceAuthMethod model can be imported."""
+    from db.models.api_service import ApiServiceAuthMethod
+    assert ApiServiceAuthMethod is not None
 
 
 @pytest.mark.asyncio
@@ -34,9 +34,9 @@ async def test_api_account_import():
 @pytest.mark.asyncio
 async def test_all_new_models_load():
     """Verify all new models load without errors."""
-    from db.models import Provider, ProviderAuthMethod, ApiAccount
+    from db.models import ApiService, ApiServiceAuthMethod, ApiAccount
 
     # Just verify they can be instantiated without error
-    assert Provider is not None
-    assert ProviderAuthMethod is not None
+    assert ApiService is not None
+    assert ApiServiceAuthMethod is not None
     assert ApiAccount is not None

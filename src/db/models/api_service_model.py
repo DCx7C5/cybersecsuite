@@ -1,8 +1,8 @@
 """
-Provider models — AI models available per provider and per API account.
+ApiService models — AI models available per API service and per API account.
 
 Tables:
-  provider_models     — canonical model catalog per provider
+  api_service_models  — canonical model catalog per API service
   account_models      — per-account model access, tier overrides, rate limits
 """
 from tortoise import fields
@@ -11,17 +11,17 @@ from tortoise.models import Model
 from db.models.enums import ModelTier, ModelStatus
 
 
-class ProviderModel(Model):
+class ApiServiceModel(Model):
     """
-    A single AI model offered by a provider.
+    A single AI model offered by an API service.
 
-    Populated via sync_pricing / live models API. One row per (provider, model_id).
+    Populated via sync_pricing / live models API. One row per (api_service, model_id).
     Capability flags enable UI filtering and routing decisions.
     """
 
     id = fields.UUIDField(pk=True)
-    provider = fields.ForeignKeyField(
-        "models.Provider", related_name="models", on_delete=fields.CASCADE
+    api_service = fields.ForeignKeyField(
+        "models.ApiService", related_name="models", on_delete=fields.CASCADE
     )
 
     # Identity
@@ -65,16 +65,16 @@ class ProviderModel(Model):
     discovered_at = fields.DatetimeField(auto_now_add=True)
     last_seen_at = fields.DatetimeField(auto_now=True)
 
-    # Raw extra metadata from provider API
+    # Raw extra metadata from API service
     extra = fields.JSONField(default=dict)
 
     class Meta:
-        table = "provider_models"
-        unique_together = (("provider_id", "model_id"),)
-        ordering = ["provider_id", "model_id"]
+        table = "api_service_models"
+        unique_together = (("api_service_id", "model_id"),)
+        ordering = ["api_service_id", "model_id"]
 
     def __str__(self) -> str:
-        return f"ProviderModel({self.provider_id}/{self.model_id})"
+        return f"ApiServiceModel({self.api_service_id}/{self.model_id})"
 
 
 class AccountModel(Model):
@@ -89,8 +89,8 @@ class AccountModel(Model):
     account = fields.ForeignKeyField(
         "models.ApiAccount", related_name="account_models", on_delete=fields.CASCADE
     )
-    provider_model = fields.ForeignKeyField(
-        "models.ProviderModel", related_name="account_access", on_delete=fields.CASCADE
+    api_service_model = fields.ForeignKeyField(
+        "models.ApiServiceModel", related_name="account_access", on_delete=fields.CASCADE
     )
 
     # Access state
@@ -100,7 +100,7 @@ class AccountModel(Model):
     # Per-account tier override (e.g. account has enterprise but model is standard)
     tier_override = fields.CharEnumField(ModelTier, null=True)
 
-    # Per-account rate limit overrides (null = use provider defaults)
+    # Per-account rate limit overrides (null = use API service defaults)
     rate_limit_rpm = fields.IntField(null=True)
     rate_limit_tpm = fields.IntField(null=True)
 
@@ -112,7 +112,7 @@ class AccountModel(Model):
 
     class Meta:
         table = "account_models"
-        unique_together = (("account_id", "provider_model_id"),)
+        unique_together = (("account_id", "api_service_model_id"),)
 
     def __str__(self) -> str:
-        return f"AccountModel({self.account_id} → {self.provider_model_id})"
+        return f"AccountModel({self.account_id} → {self.api_service_model_id})"

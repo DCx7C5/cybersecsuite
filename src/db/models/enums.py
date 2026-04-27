@@ -216,7 +216,7 @@ class SuggestionCategory(str, Enum):
     REMEDIATION = "remediation"
 
 
-class ProviderEnum(str, Enum):
+class ApiServiceEnum(str, Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
