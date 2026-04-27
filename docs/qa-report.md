@@ -538,13 +538,13 @@ TIER 3: Release (<35 min)
 ## L. Appendix: Links & References
 
 ### Detailed Reports
-- **Phase 11.1 (Linting):** `docs/LINTING_SETUP.md`
+- **Phase 11.1 (Linting):** `docs/linting-setup.md`
 - **Phase 11.2 (Unit Tests):** pytest coverage report
-- **Phase 11.3 (Integration):** `docs/INTEGRATION_TEST_REPORT.md`
-- **Phase 11.4 (Visual):** `docs/VISUAL_REGRESSION_REPORT.md`
+- **Phase 11.3 (Integration):** `docs/integration-test-report.md`
+- **Phase 11.4 (Visual):** `docs/visual-regression-report.md`
 - **Phase 11.5 (A11y):** `src/frontend/docs/ACCESSIBILITY_AUDIT_REPORT.md`
-- **Phase 11.6 (Performance):** `docs/PERFORMANCE_BASELINE.md`
-- **Phase 11.7 (CI/CD):** `docs/CI_CD_DASHBOARD.md`
+- **Phase 11.6 (Performance):** `docs/performance-baseline.md`
+- **Phase 11.7 (CI/CD):** `docs/ci-cd-dashboard.md`
 
 ### Tool Versions Used
 - **Ruff:** 0.15.5

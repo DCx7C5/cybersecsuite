@@ -31,7 +31,6 @@ dependencies = [
     # Agent SDK
     "claude-agent-sdk @ git+https://github.com/anthropics/claude-agent-sdk-python.git@v0.1.61",
     "openpyxl>=3.1.5",
-    "opensearch-py[async]>=2.7",
     "dbus-next>=0.2.3",
     "redis>=7.0",
     "anthropic>=0.84.0",

@@ -39,7 +39,7 @@ A production-grade cybersecurity forensics suite with A2A agent orchestration, M
 
 ## 📚 Documentation
 
-- **[Setup Guide](docs/SETUP.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
+- **[Setup Guide](docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
 - **[Planning Hub](plans/README.md)** — Navigation, governance, Phase 12 specification
 - **[Orchestrator Quick Reference](plans/ORCHESTRATOR_QUICK_REFERENCE.md)** — Executor playbook
 - **[Architectural Decisions](plans/DECISIONS.md)** — 9 major design decisions

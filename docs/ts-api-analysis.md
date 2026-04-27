@@ -143,4 +143,4 @@ path used by the frontend today.
   port mapping exists; no service block is defined).
 - Update `SdkLabPanel.tsx` to call `/ts/stream`, `/ts/tools`, etc. directly.
 - Add integration tests under `tests/ts/` using `vitest` or `jest`.
-- Document in `docs/SETUP.md`.
+- Document in `docs/setup.md`.

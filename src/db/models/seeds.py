@@ -23,7 +23,7 @@ async def seed_nist_csf() -> Dict[str, Any]:
     data: list = json.loads(fixture.read_text())
 
     def _to_list(value) -> list:
-        """Normalise fixture field to list — handles str (split on Ex\\d+:) or already a list."""
+        """Normalize fixture field to list — handles str (split on Ex\\d+:) or already a list."""
         if isinstance(value, list):
             return value
         if not value:

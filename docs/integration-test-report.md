@@ -210,7 +210,7 @@
 - ✅ **Status Reporting:** Working
 
 ### Documentation
-- ✅ **Bootstrap Guide:** Present (docs/BOOTSTRAP.md)
+- ✅ **Bootstrap Guide:** Present (docs/bootstrap.md)
 - ✅ **Quick Start:** Complete
 - ✅ **Prerequisites:** Documented
 - ✅ **SDK Mode Config:** Documented

@@ -83,7 +83,7 @@ def allowed_tools() -> list[str]:
 - `health_check_mcps()` - Check health status of all MCPs
 
 ### 4. Bootstrap Documentation
-**File:** `docs/BOOTSTRAP.md`
+**File:** `docs/bootstrap.md`
 - **Lines of Code:** 601 (comprehensive guide)
 - **Status:** ✅ Complete
 
@@ -299,7 +299,7 @@ If issues occur:
 
 ## Support & Documentation
 
-- **Bootstrap Guide:** `/home/daen/Projects/cybersecsuite/docs/BOOTSTRAP.md`
+- **Bootstrap Guide:** `/home/daen/Projects/cybersecsuite/docs/bootstrap.md`
 - **MCP Documentation:** `/home/daen/Projects/ai-marketplace/mcps/*/README.md`
 - **Integration Tests:** `/home/daen/Projects/cybersecsuite/tests/integration/test_mcp_bootstrap.py`
 - **Bootstrap Report:** `/tmp/mcp_bootstrap_report.txt` (generated post-install)
@@ -310,7 +310,7 @@ If issues occur:
 - `scripts/deploy/install-mcp-core.sh` (381 lines)
 - `src/csmcp/mcps/custom-mcp/__init__.py` (120 lines)
 - `src/csmcp/mcps/custom-mcp/pyproject.toml` (47 lines)
-- `docs/BOOTSTRAP.md` (601 lines)
+- `docs/bootstrap.md` (601 lines)
 - `tests/integration/__init__.py` (empty)
 - `tests/integration/test_mcp_bootstrap.py` (505 lines)
 

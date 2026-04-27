@@ -327,7 +327,7 @@ src/frontend/
 │   │   └── ... (Firefox/WebKit pending Phase 11.7)
 │   └── (existing test files)
 └── docs/
-    └── VISUAL_REGRESSION_REPORT.md              (This file)
+    └── visual-regression-report.md              (This file)
 ```
 
 ---
