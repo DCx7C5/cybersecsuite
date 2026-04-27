@@ -324,77 +324,234 @@ class PostStreamingEvent(TypedDict, total=False):
 
 
 class PlanStartEvent(TypedDict, total=False):
+    """PlanStart event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        plan_title: Human-readable plan title
+        total_tasks: Number of tasks in plan
+        total_todos: Number of todos in plan
+        triggered_by: Trigger source (user|auto|resume)
+        hook_event_name: Event name
     """
-        PlanStart event from SDK.
-    """
+    plan_id: int
+    plan_title: str
+    total_tasks: int
+    total_todos: int
+    triggered_by: str
+    hook_event_name: str
 
 
 class PlanStopEvent(TypedDict, total=False):
+    """PlanStop event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        stop_reason: Reason for stop (user_interrupt|error|timeout)
+        completed_todos: Number of todos completed before stop
+        total_todos: Total todos in plan
+        hook_event_name: Event name
     """
-        PlanStop event from SDK.
-    """
+    plan_id: int
+    stop_reason: str
+    completed_todos: int
+    total_todos: int
+    hook_event_name: str
 
 
 
 class PlanCompleteEvent(TypedDict, total=False):
+    """PlanComplete event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        plan_title: Human-readable plan title
+        total_todos: Total todos in plan
+        completed_todos: Number of todos completed
+        failed_todos: Number of todos that failed
+        duration_ms: Total execution duration in milliseconds
+        hook_event_name: Event name
     """
-        PlanComplete event from SDK.
-    """
+    plan_id: int
+    plan_title: str
+    total_todos: int
+    completed_todos: int
+    failed_todos: int
+    duration_ms: float
+    hook_event_name: str
 
 
 
 class PlanPhaseStartEvent(TypedDict, total=False):
+    """PlanPhaseStart event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        phase_name: Logical label for phase (not DB field)
+        phase_index: Zero-based phase index
+        total_phases: Total phases in plan
+        todos_in_phase: Number of todos in this phase
+        hook_event_name: Event name
     """
-        PlanPhaseStart event from SDK.
-    """
+    plan_id: int
+    phase_name: str
+    phase_index: int
+    total_phases: int
+    todos_in_phase: int
+    hook_event_name: str
 
 
 class PlanPhaseStopEvent(TypedDict, total=False):
+    """PlanPhaseStop event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        phase_name: Logical label for phase
+        stop_reason: Reason for stop
+        completed_todos: Number of todos completed in phase
+        hook_event_name: Event name
     """
-        PlanPhaseStop event from SDK.
-    """
+    plan_id: int
+    phase_name: str
+    stop_reason: str
+    completed_todos: int
+    hook_event_name: str
 
 
 class PlanPhaseCompleteEvent(TypedDict, total=False):
+    """PlanPhaseComplete event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        phase_name: Logical label for phase
+        phase_index: Zero-based phase index
+        completed_todos: Number of todos completed in phase
+        failed_todos: Number of todos that failed in phase
+        duration_ms: Phase execution duration in milliseconds
+        hook_event_name: Event name
     """
-        PlanPhaseComplete event from SDK.
-    """
+    plan_id: int
+    phase_name: str
+    phase_index: int
+    completed_todos: int
+    failed_todos: int
+    duration_ms: float
+    hook_event_name: str
 
 
 class PlanTaskStartEvent(TypedDict, total=False):
+    """PlanTaskStart event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        task_id: Unique task identifier
+        task_title: Human-readable task title
+        task_sequence: Sequence number of task
+        hook_event_name: Event name
     """
-        PlanTaskStart event from SDK.
-    """
+    plan_id: int
+    task_id: int
+    task_title: str
+    task_sequence: int
+    hook_event_name: str
 
 
 class PlanTaskStopEvent(TypedDict, total=False):
+    """PlanTaskStop event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        task_id: Unique task identifier
+        stop_reason: Reason for stop
+        hook_event_name: Event name
     """
-        PlanTaskStop event from SDK.
-    """
+    plan_id: int
+    task_id: int
+    stop_reason: str
+    hook_event_name: str
 
 
 class PlanTaskCompleteEvent(TypedDict, total=False):
+    """PlanTaskComplete event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        task_id: Unique task identifier
+        task_title: Human-readable task title
+        duration_ms: Task execution duration in milliseconds
+        hook_event_name: Event name
     """
-        PlanTaskComplete event from SDK.
-    """
+    plan_id: int
+    task_id: int
+    task_title: str
+    duration_ms: float
+    hook_event_name: str
 
 
 class PlanTodoStartEvent(TypedDict, total=False):
+    """PlanTodoStart event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        todo_id: Unique todo identifier
+        todo_content: Todo content text (NOT "title")
+        task_id: Parent task identifier
+        hook_event_name: Event name
     """
-        PlanTodoStart event from SDK.
-    """
+    plan_id: int
+    todo_id: int
+    todo_content: str
+    task_id: int
+    hook_event_name: str
 
 
 class PlanTodoStopEvent(TypedDict, total=False):
+    """PlanTodoStop event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        todo_id: Unique todo identifier
+        stop_reason: Reason for stop
+        hook_event_name: Event name
     """
-        PlanTodoStop event from SDK.
-    """
+    plan_id: int
+    todo_id: int
+    stop_reason: str
+    hook_event_name: str
 
 
 class PlanTodoCompleteEvent(TypedDict, total=False):
+    """PlanTodoComplete event from SDK.
+    
+    Input fields:
+        plan_id: Unique plan identifier
+        todo_id: Unique todo identifier
+        todo_content: Todo content text
+        duration_ms: Todo execution duration in milliseconds
+        hook_event_name: Event name
     """
-        PlanTodoComplete event from SDK.
+    plan_id: int
+    todo_id: int
+    todo_content: str
+    duration_ms: float
+    hook_event_name: str
+
+
+class OnFirstSetupEvent(TypedDict, total=False):
+    """OnFirstSetup event: when CyberSecSuite runs for the first time.
+    
+    Input fields:
+        project_root: Project root directory path
+        app_home: Application home directory
+        hostname: System hostname
+        triggered_by: Setup trigger source (e.g., "user", "auto")
+        hook_event_name: Event name
     """
+    project_root: str
+    app_home: str
+    hostname: str
+    triggered_by: str
+    hook_event_name: str
 
 
 class PreRetryEvent(TypedDict, total=False):
@@ -498,7 +655,20 @@ EventType = (
         PostStreamingEvent |
         PreRetryEvent |
         OnRecoveryEvent |
-        OnErrorEvent
+        OnErrorEvent |
+        OnFirstSetupEvent |
+        PlanStartEvent |
+        PlanStopEvent |
+        PlanCompleteEvent |
+        PlanPhaseStartEvent |
+        PlanPhaseStopEvent |
+        PlanPhaseCompleteEvent |
+        PlanTaskStartEvent |
+        PlanTaskStopEvent |
+        PlanTaskCompleteEvent |
+        PlanTodoStartEvent |
+        PlanTodoStopEvent |
+        PlanTodoCompleteEvent
 )
 
 

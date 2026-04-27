@@ -11,13 +11,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from hooks.utils import get_project_dir, get_app_home, hook_context, emit, ensure_structure, audit
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import get_app_home, SESSIONS_DIR, ensure_structure, get_project_dir, audit, emit, hook_context
 
 MARKER = get_project_dir() / ".claude" / ".initialized"
 
 
-async def main():
+async def main(SESSIONS_DIR=None):
     project_dir = get_project_dir()
     app_home = get_app_home()
 

@@ -27,6 +27,49 @@ from typing import Optional
 import yaml
 
 
+# ── YAML Event Mapping ─────────────────────────────────────────────────
+
+_YAML_EVENT_MAP = {
+    "PreToolUse": "pre_tool_use",
+    "PostToolUse": "post_tool_use",
+    "PostToolUseFailure": "post_tool_use_failure",
+    "UserPromptSubmit": "user_prompt_submit",
+    "Stop": "stop",
+    "AgentStart": "agent_start",
+    "AgentStop": "agent_stop",
+    "OrchestratorStart": "orchestrator_start",
+    "OrchestratorStop": "orchestrator_stop",
+    "PreCompact": "pre_compact",
+    "PostCompact": "post_compact",
+    "Notification": "notification",
+    "PermissionRequest": "permission_request",
+    "PreStreaming": "pre_streaming",
+    "StreamingToken": "streaming_token",
+    "PostStreaming": "post_streaming",
+    "PreMessage": "pre_message",
+    "PostMessage": "post_message",
+    "PreRetry": "pre_retry",
+    "OnRecovery": "on_recovery",
+    "OnError": "on_error",
+    "OnFirstSetup": "first_setup",
+    "PlanStart": "plan_start",
+    "PlanStop": "plan_stop",
+    "PlanComplete": "plan_complete",
+    "PlanPhaseStart": "plan_phase_start",
+    "PlanPhaseStop": "plan_phase_stop",
+    "PlanPhaseComplete": "plan_phase_complete",
+    "PlanTaskStart": "plan_task_start",
+    "PlanTaskStop": "plan_task_stop",
+    "PlanTaskComplete": "plan_task_complete",
+    "PlanTodoStart": "plan_todo_start",
+    "PlanTodoStop": "plan_todo_stop",
+    "PlanTodoComplete": "plan_todo_complete",
+}
+
+
+
+
+
 # ── Handler Configuration ──────────────────────────────────────────────────
 
 @dataclass
@@ -202,11 +245,14 @@ class HookConfig:
             True if event is enabled, False otherwise
             (default True if event not found in config)
         """
-        if event_type not in self.hooks:
+        # Map PascalCase event type to snake_case YAML key
+        yaml_key = _YAML_EVENT_MAP.get(event_type, event_type.lower())
+        
+        if yaml_key not in self.hooks:
             # Default: enable events not explicitly configured
             return True
         
-        return self.hooks[event_type].enabled
+        return self.hooks[yaml_key].enabled
     
     def get_handlers_for_event(self, event_type: str) -> list[HookHandlerConfig]:
         """Get all enabled handlers for an event type.
@@ -217,10 +263,13 @@ class HookConfig:
         Returns:
             List of enabled HookHandlerConfig instances
         """
-        if event_type not in self.hooks:
+        # Map PascalCase event type to snake_case YAML key
+        yaml_key = _YAML_EVENT_MAP.get(event_type, event_type.lower())
+        
+        if yaml_key not in self.hooks:
             return []
         
-        event_config = self.hooks[event_type]
+        event_config = self.hooks[yaml_key]
         if not event_config.enabled:
             return []
         

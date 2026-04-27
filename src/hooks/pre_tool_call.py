@@ -30,7 +30,7 @@ DANGEROUS_PATTERNS = [
 ]
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import audit, get_project_dir  # noqa: E402
+from utils import audit, get_project_dir  # noqa: E402
 
 PROJECT_ROOT = get_project_dir()
 

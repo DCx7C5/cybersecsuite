@@ -10,7 +10,7 @@ from typing import Any
 
 from claude_agent_sdk import HookMatcher
 
-from hooks._utils import PROJECT_ROOT, audit
+from hooks.utils import PROJECT_ROOT, audit
 
 
 _PROJECT_ROOT_RESOLVED = PROJECT_ROOT.resolve()

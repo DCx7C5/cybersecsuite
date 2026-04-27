@@ -140,6 +140,78 @@ hooks:
       - name: compact_logger
         enabled: true
 
+  # First Setup
+  first_setup:
+    enabled: true
+    handlers:
+      - name: first_setup_handler
+        enabled: true
+
+  # Plan lifecycle (start events enabled by default)
+  plan_start:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_stop:
+    enabled: false        # verbose, opt-in
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_complete:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+
+  plan_phase_start:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_phase_stop:
+    enabled: false
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_phase_complete:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+
+  plan_task_start:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_task_stop:
+    enabled: false
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_task_complete:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+
+  plan_todo_start:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_todo_stop:
+    enabled: false
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+  plan_todo_complete:
+    enabled: true
+    handlers:
+      - name: plan_lifecycle_logger
+        enabled: true
+
 # Performance Budgets and Thresholds
 performance:
   # Maximum time (ms) for hooks that don't perform validation

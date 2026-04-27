@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import (
+from utils import (
     ensure_structure,
     get_project_dir,
     get_session_dir,

@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_app_home, get_project_dir, get_session_dir, audit, emit, hook_context
+from utils import ensure_structure, get_app_home, get_project_dir, get_session_dir, audit, emit, hook_context
 
 
 AGENT_PROFILES = {

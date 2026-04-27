@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import get_project_dir, get_session_dir, audit, append_file, emit, read_stdin
+from utils import get_project_dir, get_session_dir, audit, append_file, emit, read_stdin
 
 # Tools that produced artifacts worth signing
 ARTIFACT_TOOLS = frozenset({

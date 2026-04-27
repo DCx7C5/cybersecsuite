@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from agent_hooks import on_agent_start
-from _utils import read_stdin
+from utils import read_stdin
 
 
 async def main():

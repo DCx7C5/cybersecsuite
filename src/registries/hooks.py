@@ -22,6 +22,7 @@ from hooks.core import (
     HookContext,
 )
 from hooks.instrumentation import HookInstrument
+from hooks.utils import get_app_home
 
 if TYPE_CHECKING:
     pass
@@ -32,7 +33,7 @@ logger = logging.getLogger(__name__)
 def _audit(data: dict[str, Any]) -> None:
     """Lazy-load audit function to avoid circular imports."""
     try:
-        from hooks._utils import audit as audit_fn
+        from hooks.utils import audit as audit_fn
         audit_fn(data)
     except Exception:
         pass
@@ -338,7 +339,7 @@ class HookRegistry:
                        before executing hooks (default 1 = no batching)
         
         Returns:
-            HookOutput with hookSpecificOutput (may be empty dict)
+            HookOutput with hookSpecificOutput (maybe empty dict)
         
         Behavior:
             - Delegates to existing matchers from build_python_hooks()
@@ -367,7 +368,7 @@ class HookRegistry:
             logger.warning(f"No hooks registered for event_type: {event_type}")
             return {}
         
-        # For non-batched streams or pre/post streaming events, use standard execute
+        # For non-batched streams or pre- / post-streaming events, use standard execute
         if event_type != "StreamingToken" or batch_size <= 1:
             return await self.execute(event_type, event, context)
         
@@ -494,12 +495,12 @@ class HookRegistry:
         
         Returns:
             Tuple of (transformed_message, hook_output_dict):
-            - transformed_message: The processed message (may be transformed)
+            - transformed_message: The processed message (maybe transformed)
             - hook_output_dict: Combined output from all hooks (for logging/metrics)
         
         Behavior:
             - Executes all registered PreMessage hooks in order
-            - Each hook receives the CURRENT message (may be transformed by prior hooks)
+            - Each hook receives the CURRENT message (maybe transformed by prior hooks)
             - First hook to return transformed_message wins (applied to subsequent hooks)
             - If no transformed_message, original message_content is used
             - Errors handled per error_strategy (failures preserve original message)
@@ -866,7 +867,142 @@ class HookRegistry:
                 raise
         
         return combined_output
-    
+
+    async def execute_on_first_setup(
+            self,
+            event: dict[str, Any],
+            context: HookContext,
+    ) -> dict[str, Any]:
+        """
+        Execute OnFirstSetup hooks during initial system setup with atomic marker.
+        
+        Uses atomic marker file approach (~/.cybersecsuite/.initialized) for race-safe
+        initialization. Hooks are always executed on errors to allow partial setup.
+        
+        Returns:
+            - {"skipped": True, "reason": "already_initialized"} if already initialized
+            - {"initialized": True, ...hook_outputs...} if successful
+            - {"initialized": False, "had_errors": True, ...hook_outputs...} if errors occurred
+        """
+        # Determine marker path: ~/.cybersecsuite/.initialized (respects CYBERSECSUITE_HOME)
+        app_home = get_app_home()
+        marker_path = app_home / ".initialized"
+        marker_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Try to atomically claim initialization using exclusive create mode
+        try:
+            marker_path.open("x").close()
+        except FileExistsError:
+            logger.debug("OnFirstSetup already executed (marker exists)")
+            return {
+                "skipped": True,
+                "reason": "already_initialized",
+                "marker_path": str(marker_path),
+            }
+        except Exception as exc:
+            logger.error(f"Error checking initialization marker: {exc}")
+            return {
+                "initialized": False,
+                "had_errors": True,
+                "error": f"marker check failed: {exc}",
+            }
+        
+        if "OnFirstSetup" not in self._hooks:
+            logger.debug("No OnFirstSetup hooks registered")
+            return {"initialized": True}
+
+        matchers = self._hooks["OnFirstSetup"]
+        combined_output: dict[str, Any] = {}
+        had_errors = False
+
+        try:
+            for matcher in matchers:
+                try:
+                    hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+
+                    for hook_fn in hooks:
+                        try:
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    "OnFirstSetup",
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                result = await hook_fn(event)  # type: ignore
+
+                            # Validate result type
+                            if not isinstance(result, dict):
+                                logger.warning(
+                                    f"OnFirstSetup hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                )
+                                result = {}
+
+                            # Log execution
+                            log_data = {
+                                "event": "OnFirstSetupHookExecuted",
+                                "hook": hook_fn.__name__,
+                                "correlation_id": context.correlation_id,
+                                "session_id": context.session_id,
+                                "has_output": bool(result),
+                            }
+
+                            if self._instrumentation:
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+
+                            _audit(log_data)
+
+                            # Merge output
+                            if result:
+                                combined_output.update(result)
+
+                        except Exception as exc:
+                            had_errors = True
+                            self._handle_hook_error(
+                                hook_fn.__name__,
+                                "OnFirstSetup",
+                                exc,
+                                context,
+                            )
+
+                except Exception as exc:
+                    had_errors = True
+                    logger.error(f"Error processing matcher for OnFirstSetup: {exc}")
+                    if self._error_strategy != ErrorStrategy.PRESERVE_EXISTING:
+                        pass
+
+        except Exception as exc:
+            had_errors = True
+            logger.error(f"Fatal error in OnFirstSetup hook registry: {exc}")
+
+        if had_errors:
+            try:
+                marker_path.unlink()
+            except Exception as exc:
+                logger.error(f"Failed to delete marker after errors: {exc}")
+            return {
+                "initialized": False,
+                "had_errors": True,
+                **combined_output,
+            }
+
+        return {
+            "initialized": True,
+            **combined_output,
+        }
+
+
+
+
+
+
+
     async def execute_on_recovery(
         self,
         event: dict[str, Any],

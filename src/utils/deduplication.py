@@ -23,7 +23,7 @@ def deduplicate_strings(values: Iterable[Any]) -> list[str]:
     Remove duplicate strings while preserving order.
 
     Converts values to strings, strips whitespace, filters empty, and deduplicates.
-    Originally from: src/db/intel/_utils.py::_dedupe_strings()
+    Originally from: src/db/intel/utils.py::_dedupe_strings()
 
     Args:
         values: Iterable of values to deduplicate
@@ -44,7 +44,7 @@ def deduplicate_items(values: Iterable[T]) -> list[T]:
     Remove duplicate items while preserving order.
 
     Uses dict.fromkeys() for O(n) performance with hashable types.
-    Originally from: src/db/intel/_loaders.py and src/db/intel/_utils.py
+    Originally from: src/db/intel/_loaders.py and src/db/intel/utils.py
 
     Args:
         values: Iterable of hashable items

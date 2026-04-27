@@ -15,7 +15,11 @@ Key Design:
 import logging
 from typing import Any
 
-from hooks.core import OnErrorEvent, OnRecoveryEvent, PreRetryEvent
+from hooks.core import (
+    OnErrorEvent,
+    OnRecoveryEvent,
+    PreRetryEvent,
+)
 
 logger = logging.getLogger(__name__)
 

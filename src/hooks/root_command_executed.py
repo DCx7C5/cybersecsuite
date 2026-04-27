@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
+from utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 # Commands that are always high-risk regardless of mode
 HIGH_RISK = {"dd", "mkfs", "fdisk", "parted", "cryptsetup", "shred", "wipefs"}

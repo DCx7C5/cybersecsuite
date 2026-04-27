@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import get_session_dir, audit
+from utils import get_session_dir, audit
 
 
 def main():

@@ -197,7 +197,7 @@ class TestHookOutput:
     def test_hook_output_async_fire_and_forget(self):
         """HookOutput should support legacy async_ field."""
         output: HookOutput = {"async_": True}  # type: ignore
-        assert output["async_"] is True
+        assert output['async_'] is True
 
     def test_hook_output_accepts_dict(self):
         """HookOutput type should accept plain dict (backward compat)."""

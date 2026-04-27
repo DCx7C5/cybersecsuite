@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin, SEVERITY_EMOJI
+from utils import ensure_structure, get_session_dir, audit, append_file, emit, hook_context, read_stdin, SEVERITY_EMOJI
 
 async def main():
     ensure_structure()
