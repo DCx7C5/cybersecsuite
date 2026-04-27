@@ -1,8 +1,11 @@
 """PlanManager: CRUD and lifecycle for Plans, Tasks, and Todos."""
+import logging
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from db.models.plan import Plan, Task, Todo
+
+logger = logging.getLogger(__name__)
 
 
 class PlanManager:
@@ -10,10 +13,28 @@ class PlanManager:
         """Create a new plan."""
         return await Plan.create(title=title, description=description, scope=scope)
 
-    async def add_task(self, plan_id: int, title: str, description: str = "", assigned_to: str = None, sequence: int = 0) -> Task:
+    async def add_task(
+        self,
+        plan_id: int,
+        title: str,
+        description: str = "",
+        assigned_to: str = None,
+        sequence: int = 0,
+        target_files: Optional[List[str]] = None,
+    ) -> Task:
         """Add a task to a plan."""
         plan = await Plan.get(id=plan_id)
-        return await Task.create(plan=plan, title=title, description=description, assigned_to=assigned_to, sequence=sequence)
+        task = await Task.create(
+            plan=plan,
+            title=title,
+            description=description,
+            assigned_to=assigned_to,
+            sequence=sequence,
+        )
+        if target_files:
+            task.set_target_files(target_files)
+            await task.save()
+        return task
 
     async def add_todo(self, task_id: int, content: str, assignee: str = None) -> Todo:
         """Add a todo (sub-task) to a task."""
@@ -182,6 +203,49 @@ class PlanManager:
             await task.save()
             count += 1
         return count
+
+    async def delegate_task_with_hooks(
+        self,
+        task_id: int,
+        agent_name: str,
+        session_id: str,
+        dry_run: bool = True,
+    ) -> bool:
+        """
+        Delegate a task to an agent with hook support.
+        Calls agent hooks (start/stop) with target_files support.
+        
+        Args:
+            task_id: Task to delegate
+            agent_name: Agent handling the task
+            session_id: Session ID
+            dry_run: If True, ruff runs in dry-run mode
+            
+        Returns:
+            True if delegation was successful
+        """
+        try:
+            task = await Task.get(id=task_id)
+            target_files = task.get_target_files()
+            
+            # Import hooks here to avoid circular imports
+            from hooks.agent_hooks import on_agent_start, on_agent_stop
+            
+            # Call agent start hook
+            logger.info(f"Starting agent {agent_name} for task {task_id} with {len(target_files)} target files")
+            await on_agent_start(agent_name, session_id, target_files)
+            
+            # Delegate work (placeholder - actual delegation happens in calling code)
+            # ...
+            
+            # Call agent stop hook
+            logger.info(f"Stopping agent {agent_name} for task {task_id}")
+            await on_agent_stop(agent_name, session_id, target_files, dry_run=dry_run)
+            
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delegate task {task_id}: {e}")
+            return False
 
     
     async def set_todo_status(self, todo_id: int, status: str) -> Todo:

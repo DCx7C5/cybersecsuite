@@ -1,74 +1,26 @@
 #!/usr/bin/env python3
 """
-AgentEnd Hook — fires when an A2A agent finishes. Logs stats, cleans state.
+AgentEnd Hook — fires when an A2A agent finishes.
+Delegates to agent_hooks.on_agent_stop for ruff scoping and dry-run mode.
 """
 import asyncio
 import os
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _utils import ensure_structure, get_project_dir, get_session_dir, audit, append_file, emit, read_stdin, count_lines
-
-
-async def collect_stats(session_dir: Path) -> dict:
-    loop = asyncio.get_running_loop()
-    def _gather():
-        return {
-            "findings": count_lines(session_dir / "findings.md", r"^## F-"),
-            "iocs":     count_lines(session_dir / "iocs.md", r"^\|"),
-            "artifacts": count_lines(session_dir / "artifacts.md", r"^- "),
-        }
-    return await loop.run_in_executor(None, _gather)
+from agent_hooks import on_agent_stop
+from _utils import read_stdin
 
 
 async def main():
-    ensure_structure()
     data = read_stdin()
+    agent_name = data.get("agent_name") or data.get("agent") or os.environ.get("CYBERSEC_AGENT_NAME") or "unknown"
+    session_id = data.get("session_id") or os.environ.get("CYBERSEC_SESSION_ID") or ""
+    target_files = data.get("target_files") or []
+    dry_run = data.get("dry_run", True)
 
-    agent_name = data.get("agent_name") or os.environ.get("CYBERSEC_AGENT_NAME") or "unknown"
-    session_id = data.get("session_id", "")
-
-    project_dir = get_project_dir()
-    session_dir = get_session_dir()
-    end_time    = datetime.now(timezone.utc)
-
-    stats = await collect_stats(session_dir) if session_dir else {"findings": 0, "iocs": 0, "artifacts": 0}
-    loop  = asyncio.get_running_loop()
-
-    # Timeline
-    if session_dir:
-        timeline = session_dir / "timeline.md"
-        entry = (
-            f"| {end_time.strftime('%H:%M:%S')} | agent_end | **{agent_name}** | "
-            f"findings={stats['findings']} iocs={stats['iocs']} artifacts={stats['artifacts']} |\n"
-        )
-        await loop.run_in_executor(None, append_file, timeline, entry)
-
-    # Changelog
-    changelog = project_dir / "session_changes.log"
-    await loop.run_in_executor(
-        None, append_file, changelog,
-        f"[{end_time.isoformat(timespec='seconds')}] agent_end: {agent_name}"
-        f" findings={stats['findings']} iocs={stats['iocs']}\n"
-    )
-
-    # Clean up state file
-    state_file = project_dir / ".agent_active.json"
-    if state_file.exists():
-        await loop.run_in_executor(None, state_file.unlink)
-
-    audit({"event": "AgentEnd", "agent": agent_name, "stats": stats})
-
-    emit({
-        "status":     "success",
-        "agent_name": agent_name,
-        "end_time":   end_time.isoformat(),
-        "session_id": session_id,
-        "stats":      stats,
-        "message":    f"Agent {agent_name} finished. {stats['findings']} findings, {stats['iocs']} IOCs, {stats['artifacts']} artifacts.",
-    })
+    await on_agent_stop(agent_name, session_id, target_files, dry_run)
 
 
 if __name__ == "__main__":

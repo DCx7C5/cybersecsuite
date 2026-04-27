@@ -33,6 +33,7 @@ class Task(Model):
     claimed_by = fields.CharField(max_length=256, default="")  # Agent name or session ID
     claimed_at = fields.DatetimeField(null=True)  # When claimed
     lease_expires_at = fields.DatetimeField(null=True)  # Optional lease expiry for orphaned tasks
+    target_files = fields.TextField(default="")  # JSON list of file paths agent will modify
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -41,6 +42,21 @@ class Task(Model):
 
     def __str__(self) -> str:
         return f"Task({self.id}, {self.title!r}, status={self.status})"
+
+    def get_target_files(self) -> list[str]:
+        """Extract target files from JSON field. Returns empty list if not set."""
+        if not self.target_files:
+            return []
+        try:
+            import json
+            return json.loads(self.target_files)
+        except (json.JSONDecodeError, TypeError):
+            return []
+
+    def set_target_files(self, files: list[str]) -> None:
+        """Set target files as JSON."""
+        import json
+        self.target_files = json.dumps(files)
 
 
 class Todo(Model):
