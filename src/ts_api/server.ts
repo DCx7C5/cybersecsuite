@@ -13,6 +13,9 @@
  * so API keys never reach the browser.
  */
 
+// ⚠️  DEPRECATED: This server is not used by any active service.
+// Planned for removal in Phase 13. See docs/TS_API_ANALYSIS.md
+
 import express from 'express';
 import cors from 'cors';
 
