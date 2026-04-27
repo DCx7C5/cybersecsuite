@@ -68,6 +68,8 @@ MODEL_MODULES: list[str] = [
     "db.models.worker",
     # Phase 0.5 — Marketplace models
     "db.models.marketplace",
+    # Plan management
+    "db.models.plan",
 ]
 
 from db.models.api_account import ApiAccount  # noqa: E402
@@ -96,6 +98,7 @@ from db.models.marketplace import (  # noqa: E402
     Plugin,
     Workflow,
 )
+from db.models.plan import Plan, Task, ExecutionLog  # noqa: E402
 
 __all__ = [
     "MODEL_MODULES",
@@ -127,4 +130,7 @@ __all__ = [
     "Agent",
     "Plugin",
     "Workflow",
+    "Plan",
+    "Task",
+    "ExecutionLog",
 ]
