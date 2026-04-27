@@ -1,4 +1,4 @@
-"""Plan and task management models (3-level schema: Plan → Task → Todo)."""
+"""Plan and task management models (3-level schema: Plan → PlanTask → PlanTodo)."""
 from tortoise import fields
 from tortoise.models import Model
 
@@ -20,7 +20,7 @@ class Plan(Model):
         return f"Plan({self.id}, {self.title!r}, status={self.status})"
 
 
-class Task(Model):
+class PlanTask(Model):
     """Tasks grouped by plan, with optional sequencing and assignment."""
     id = fields.IntField(primary_key=True)
     plan = fields.ForeignKeyField("models.Plan", related_name="tasks", on_delete=fields.CASCADE)
@@ -29,7 +29,7 @@ class Task(Model):
     assigned_to = fields.CharField(max_length=128, null=True, default=None)  # User or team assignment
     sequence = fields.IntField(default=0)  # For ordering tasks within plan
     status = fields.CharField(max_length=32, default="pending")  # pending, in_progress, done, blocked
-    depends_on = fields.ManyToManyField("models.Task", related_name="dependents", through="task_deps")
+    depends_on = fields.ManyToManyField("models.PlanTask", related_name="dependents", through="task_deps")
     claimed_by = fields.CharField(max_length=256, default="")  # Agent name or session ID
     claimed_at = fields.DatetimeField(null=True)  # When claimed
     lease_expires_at = fields.DatetimeField(null=True)  # Optional lease expiry for orphaned tasks
@@ -41,7 +41,7 @@ class Task(Model):
         table = "tasks"
 
     def __str__(self) -> str:
-        return f"Task({self.id}, {self.title!r}, status={self.status})"
+        return f"PlanTask({self.id}, {self.title!r}, status={self.status})"
 
     def get_target_files(self) -> list[str]:
         """Extract target files from JSON field. Returns empty list if not set."""
@@ -59,13 +59,13 @@ class Task(Model):
         self.target_files = json.dumps(files)
 
 
-class Todo(Model):
-    """Sub-task items within a Task for granular tracking."""
+class PlanTodo(Model):
+    """Sub-task items within a PlanTask for granular tracking."""
     id = fields.IntField(primary_key=True)
-    task = fields.ForeignKeyField("models.Task", related_name="todos", on_delete=fields.CASCADE)
+    task = fields.ForeignKeyField("models.PlanTask", related_name="todos", on_delete=fields.CASCADE)
     content = fields.TextField()  # Todo item description
     assignee = fields.CharField(max_length=128, null=True, default=None)  # Individual assignee
-    status = fields.CharField(max_length=32, default="pending")  # pending, done
+    status = fields.CharField(max_length=32, default="pending")  # pending, done, blocked
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -73,4 +73,9 @@ class Todo(Model):
         table = "todos"
 
     def __str__(self) -> str:
-        return f"Todo({self.id}, {self.content[:50]!r}, status={self.status})"
+        return f"PlanTodo({self.id}, {self.content[:50]!r}, status={self.status})"
+
+
+# Backward compatibility aliases (for migration period)
+Task = PlanTask
+Todo = PlanTodo

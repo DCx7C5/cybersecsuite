@@ -8,6 +8,17 @@ class RedBlueMode(str, Enum):
     PURPLE = "purple"
 
 
+class ApiAuthMethod(str, Enum):
+    NONE = None
+    OAUTH = "oauth"
+    APIKEY = "apikey"
+    DFLOW = "dflow"
+    WEB = "web"
+    GOOGLE = "google"
+    GITHUB = "github"
+
+
+
 class AuditAction(str, Enum):
     CREATE = "create"
     UPDATE = "update"
@@ -275,6 +286,16 @@ class PocStatus(str, Enum):
     WEAPONIZED = "weaponized"
     PATCHED = "patched"
     DISPUTED = "disputed"
+
+
+
+class MarketplaceItem(str, Enum):
+    PLUGIN = "plugin"
+    SKILL = "skill"
+    MCP = "mcp"
+    AGENT = "agent"
+    RULE = "rule"
+    PROMPT = "prompt"
 
 
 # ── Provider model / tool registry enums ─────────────────────────────────────

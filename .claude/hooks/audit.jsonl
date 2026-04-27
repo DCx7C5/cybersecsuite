@@ -32,3 +32,15 @@
 {"event": "SessionStart", "session_dir": "None", "ts": "2026-04-18T05:47:05.688471+00:00"}
 {"event": "UserPromptSubmit", "prompt_length": 4, "context_injected": [], "ts": "2026-04-18T05:47:15.226497+00:00"}
 {"ts": "2026-04-18T05:48:11.696187+00:00", "event": "pre_tool_call", "session_id": "unknown", "tool": "bash", "input_keys": ["command"]}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T08:39:05.567600+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T08:39:05.573991+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:39:05.587845+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:39:05.600896+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T08:39:05.604029+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T08:39:05.616338+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T08:39:56.082151+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T08:39:56.085271+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:39:56.098890+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:39:56.111905+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T08:39:56.114767+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T08:39:56.126202+00:00"}
