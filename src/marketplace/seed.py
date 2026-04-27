@@ -7,7 +7,7 @@ Referenz:
 """
 
 
-from marketplace.models import MarketplaceItem, ProviderMeta
+from src.marketplace.models import MarketplaceItem, ProviderMeta
 
 SEED_ITEMS: list[MarketplaceItem] = [
     MarketplaceItem(
