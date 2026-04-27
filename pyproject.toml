@@ -26,7 +26,7 @@ dependencies = [
     # Agent loader
     "pyyaml>=6.0",
     # Cryptography
-    "cryptography>=44.0",
+    "cryptography>=46.0.7",
     # Event loop
     "uvloop>=0.21; sys_platform == 'linux'",
     # Agent SDK
