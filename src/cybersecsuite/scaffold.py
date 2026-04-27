@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import importlib.resources as _res
 import logging
-import shutil
 from pathlib import Path
 
 logger = logging.getLogger(__name__)

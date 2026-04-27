@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import pytest
-from pathlib import Path
 
 from cybersecsuite.scaffold import (
     scaffold_project_templates,

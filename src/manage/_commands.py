@@ -114,7 +114,9 @@ async def build_skill_index_command() -> None:
     project_out_dir.mkdir(parents=True, exist_ok=True)
     project_index_path = project_out_dir / "skills-index.json"
 
-    app_index_path.write_text(json.dumps(entries, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+    app_index_path.write_text(
+        json.dumps(entries, indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
+    )
     project_index_path.write_text(
         json.dumps(project_entries, indent=2, ensure_ascii=True) + "\n",
         encoding="utf-8",
@@ -146,10 +148,7 @@ async def shell_command():
 
     shell_context = {
         "models": models,
-        **{
-            name: getattr(models, name)
-            for name in ("Project", "Session", "Finding", "IOC")
-        },
+        **{name: getattr(models, name) for name in ("Project", "Session", "Finding", "IOC")},
     }
 
     try:
@@ -177,9 +176,7 @@ async def status_command():
     if health.get("status") == "error":
         print(f"Health      : ERROR - {health.get('error')}")
         return
-    print(
-        f"Tables ({health.get('table_count', 0)}): {', '.join(health.get('tables', [])) or '(none)'}"
-    )
+    print(f"Tables ({health.get('table_count', 0)}): {', '.join(health.get('tables', [])) or '(none)'}")
     counts = health.get("counts", {})
     if counts:
         print("Intel counts:")
@@ -435,7 +432,9 @@ async def seed_mitre_command():
     print("⏳ Syncing MITRE ATT&CK...")
     results = await seed_mitre_full(max_results=args.limit)
     print("✅ MITRE ATT&CK synced:")
-    print(f"   Techniques: {results['techniques_created']} created, {results['techniques_total']} total")
+    print(
+        f"   Techniques: {results['techniques_created']} created, {results['techniques_total']} total"
+    )
     print(f"   Actors: {results['actors_created']} created, {results['actors_total']} total")
     print(f"   Software: {results['software_created']} created, {results['software_total']} total")
 
@@ -658,7 +657,9 @@ async def case_open_command():
 
     print(f"\n✅ Case #{intake.id} opened: {title}")
     print(f"   Priority: {priority_input}  Mode: {mode_input}")
-    print(f"   Facts: {len(facts)}  IOCs: {len(iocs)}  Assets: {len(assets)}  MITRE: {len(mitre)}")
+    print(
+        f"   Facts: {len(facts)}  IOCs: {len(iocs)}  Assets: {len(assets)}  MITRE: {len(mitre)}"
+    )
     print("   Ready for Phase 1 (Recon).")
 
 
@@ -798,6 +799,7 @@ def check_command() -> None:
 
 # ── OpenSearch fast-forward migrations ───────────────────────────────────────
 
+
 async def migrate_audit_command() -> None:
     """Fast-forward AuditLog rows from PostgreSQL → OpenObserve, then drop PG table."""
     from db.bootstrap import init_tortoise_async
@@ -828,16 +830,18 @@ async def migrate_audit_command() -> None:
             break
         docs = []
         for r in rows:
-            docs.append({
-                "@timestamp": r.created_at.isoformat() if r.created_at else None,
-                "action": str(r.action.value) if hasattr(r.action, "value") else str(r.action),
-                "entity_type": r.entity_type or "",
-                "entity_id": str(r.entity_id) if r.entity_id else None,
-                "agent": r.agent or "",
-                "resource": r.resource or "",
-                "ip_address": r.ip_address or None,
-                "detail": r.entity_repr or "",
-            })
+            docs.append(
+                {
+                    "@timestamp": r.created_at.isoformat() if r.created_at else None,
+                    "action": str(r.action.value) if hasattr(r.action, "value") else str(r.action),
+                    "entity_type": r.entity_type or "",
+                    "entity_id": str(r.entity_id) if r.entity_id else None,
+                    "agent": r.agent or "",
+                    "resource": r.resource or "",
+                    "ip_address": r.ip_address or None,
+                    "detail": r.entity_repr or "",
+                }
+            )
         await client.post(f"/api/{org}/audit/_json", json=docs)
         migrated += len(rows)
         offset += batch_size
@@ -886,16 +890,18 @@ async def migrate_api_usage_command() -> None:
         docs = []
         for r in rows:
             prov = r.provider.value if hasattr(r.provider, "value") else str(r.provider)
-            docs.append({
-                "@timestamp": r.timestamp.isoformat() if r.timestamp else None,
-                "provider": prov,
-                "model": r.model or "",
-                "tokens_in": r.input_tokens or 0,
-                "tokens_out": r.output_tokens or 0,
-                "cost_usd": float(r.cost_estimate or 0),
-                "session_id": r.session_id or None,
-                "request_id": r.request_id or None,
-            })
+            docs.append(
+                {
+                    "@timestamp": r.timestamp.isoformat() if r.timestamp else None,
+                    "provider": prov,
+                    "model": r.model or "",
+                    "tokens_in": r.input_tokens or 0,
+                    "tokens_out": r.output_tokens or 0,
+                    "cost_usd": float(r.cost_estimate or 0),
+                    "session_id": r.session_id or None,
+                    "request_id": r.request_id or None,
+                }
+            )
         await client.post(f"/api/{org}/api-usage/_json", json=docs)
         migrated += len(rows)
         offset += batch_size
@@ -943,21 +949,23 @@ async def migrate_llm_calls_command() -> None:
             break
         docs = []
         for r in rows:
-            docs.append({
-                "@timestamp": r.called_at.isoformat() if r.called_at else None,
-                "worktree_sid": r.sid or "",
-                "model": r.model or "",
-                "input_tokens": r.input_tokens or 0,
-                "output_tokens": r.output_tokens or 0,
-                "cache_read_tokens": r.cache_read_tokens or 0,
-                "cache_write_tokens": r.cache_write_tokens or 0,
-                "cost_usd": float(r.cost_usd or 0),
-                "latency_ms": r.latency_ms or 0,
-                "stream": r.stream,
-                "success": r.success,
-                "error": r.error or None,
-                "request_id": r.request_id or None,
-            })
+            docs.append(
+                {
+                    "@timestamp": r.called_at.isoformat() if r.called_at else None,
+                    "worktree_sid": r.sid or "",
+                    "model": r.model or "",
+                    "input_tokens": r.input_tokens or 0,
+                    "output_tokens": r.output_tokens or 0,
+                    "cache_read_tokens": r.cache_read_tokens or 0,
+                    "cache_write_tokens": r.cache_write_tokens or 0,
+                    "cost_usd": float(r.cost_usd or 0),
+                    "latency_ms": r.latency_ms or 0,
+                    "stream": r.stream,
+                    "success": r.success,
+                    "error": r.error or None,
+                    "request_id": r.request_id or None,
+                }
+            )
         await client.post(f"/api/{org}/llm-calls/_json", json=docs)
         migrated += len(rows)
         offset += batch_size
@@ -1000,20 +1008,27 @@ async def migrate_intel_update_log_command() -> None:
     offset = 0
 
     while True:
-        rows = await IntelligenceUpdateLogEntry.all().order_by("logged_at").offset(offset).limit(batch_size)
+        rows = (
+            await IntelligenceUpdateLogEntry.all()
+            .order_by("logged_at")
+            .offset(offset)
+            .limit(batch_size)
+        )
         if not rows:
             break
         docs = []
         for r in rows:
-            docs.append({
-                "@timestamp": r.logged_at.isoformat() if r.logged_at else None,
-                "run_id": r.run_id or "",
-                "category": r.category or "",
-                "status": r.status or "",
-                "message": r.message or "",
-                "line_number": r.line_number,
-                "source_file": r.source_file or "",
-            })
+            docs.append(
+                {
+                    "@timestamp": r.logged_at.isoformat() if r.logged_at else None,
+                    "run_id": r.run_id or "",
+                    "category": r.category or "",
+                    "status": r.status or "",
+                    "message": r.message or "",
+                    "line_number": r.line_number,
+                    "source_file": r.source_file or "",
+                }
+            )
         await client.post(f"/api/{org}/intel-update-log/_json", json=docs)
         migrated += len(rows)
         offset += batch_size
@@ -1039,9 +1054,11 @@ async def install_command() -> None:
     import os
     from datetime import datetime, timezone
 
-    app_home = Path(
-        os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))
-    ).expanduser().resolve()
+    app_home = (
+        Path(os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite")))
+        .expanduser()
+        .resolve()
+    )
 
     dirs = [
         app_home,
@@ -1069,11 +1086,16 @@ async def install_command() -> None:
 
     marker = app_home / ".cybersecsuite"
     if not marker.exists():
-        marker.write_text(json.dumps({
-            "version": "1.0",
-            "installed_at": datetime.now(timezone.utc).isoformat(),
-            "app_home": str(app_home),
-        }, indent=2))
+        marker.write_text(
+            json.dumps(
+                {
+                    "version": "1.0",
+                    "installed_at": datetime.now(timezone.utc).isoformat(),
+                    "app_home": str(app_home),
+                },
+                indent=2,
+            )
+        )
 
     print(f"✅ App home: {app_home}")
     if created:

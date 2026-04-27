@@ -31,7 +31,7 @@ COPY mcp.json ./
 RUN uv sync --frozen --no-dev
 
 # Entrypoint (init DB + start uvicorn)
-COPY --chmod=755 .docker/dashboard/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 .docker/proxy/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Non-root user
 RUN useradd --no-create-home --shell /bin/false cybersec \

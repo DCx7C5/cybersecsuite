@@ -17,14 +17,12 @@ Coverage:
 """
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -157,7 +155,7 @@ class TestBootstrapIntegration:
     def test_bootstrap_prerequisite_check(self) -> None:
         """Verify bootstrap script and prerequisites exist."""
         assert BOOTSTRAP_SCRIPT.exists(), f"Bootstrap script not found: {BOOTSTRAP_SCRIPT}"
-        assert os.access(BOOTSTRAP_SCRIPT, os.X_OK), f"Bootstrap script not executable"
+        assert os.access(BOOTSTRAP_SCRIPT, os.X_OK), "Bootstrap script not executable"
 
     def test_bootstrap_core_installation(self) -> None:
         """Verify core SDK mode is available."""
@@ -379,7 +377,7 @@ class TestMarketplaceCatalog:
                 count = 0
             
             # Should have at least some items indexed (may be in development)
-            assert count > 0, f"Skills index is empty"
+            assert count > 0, "Skills index is empty"
         except json.JSONDecodeError:
             pytest.skip("Index JSON invalid")
 

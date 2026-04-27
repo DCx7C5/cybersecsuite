@@ -97,7 +97,7 @@ class HTTPSRedirectMiddleware:
                 host = host.rsplit(":", 1)[0]
             path = scope.get("root_path", "") + scope.get("path", "/")
             new_url = f"https://{host}:{ASGI_TLS_PORT}{path}"
-            response = RedirectResponse(new_url, status=301)
+            response = RedirectResponse(new_url)
             await response(scope, receive, send)
             return
         await self.app(scope, receive, send)

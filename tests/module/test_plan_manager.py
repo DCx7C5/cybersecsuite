@@ -1,4 +1,4 @@
-"""Tests for PlanManager: CRUD, ready-task logic, and dependency gating."""
+"""Tests for PlanManager: CRUD, ready-task logic, dependency gating, and todo management."""
 from __future__ import annotations
 
 import sys
@@ -53,8 +53,8 @@ class TestAddTaskAndReady:
 
         mgr = PlanManager()
         plan = await mgr.create_plan("Exploit Phase")
-        t1 = await mgr.add_task(plan.id, "Port Scan")
-        t2 = await mgr.add_task(plan.id, "Vuln Scan")
+        t1 = await mgr.add_task(plan.id, "Port Scan", sequence=1)
+        t2 = await mgr.add_task(plan.id, "Vuln Scan", sequence=2)
 
         ready = await mgr.get_ready_tasks(plan.id)
         ready_ids = {t.id for t in ready}
@@ -114,3 +114,52 @@ class TestTaskDependency:
 
         assert blocked_task.id in ready_ids
         assert dep_task.id not in ready_ids  # already done, not pending
+
+
+@pytest.mark.anyio
+@_SKIP_TORTOISE
+class TestTodoManagement:
+    async def test_add_todo_to_task(self, tortoise_ctx):
+        from db.managers.plan_manager import PlanManager
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Todo Test")
+        task = await mgr.add_task(plan.id, "Implementation")
+        todo1 = await mgr.add_todo(task.id, "Write core logic", assignee="alice")
+        todo2 = await mgr.add_todo(task.id, "Add tests", assignee="bob")
+
+        assert todo1.id is not None
+        assert todo1.content == "Write core logic"
+        assert todo1.assignee == "alice"
+        assert todo2.content == "Add tests"
+        assert todo2.assignee == "bob"
+
+    async def test_plan_hierarchy_with_todos(self, tortoise_ctx):
+        from db.managers.plan_manager import PlanManager
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Hierarchy Test")
+        t1 = await mgr.add_task(plan.id, "Task 1", sequence=1)
+        t2 = await mgr.add_task(plan.id, "Task 2", sequence=2)
+        todo1 = await mgr.add_todo(t1.id, "Todo 1.1")
+        todo2 = await mgr.add_todo(t1.id, "Todo 1.2")
+        todo3 = await mgr.add_todo(t2.id, "Todo 2.1")
+
+        hierarchy = await mgr.get_plan_hierarchy(plan.id)
+        assert len(hierarchy["tasks"]) == 2
+        assert len(hierarchy["tasks"][0]["todos"]) == 2
+        assert len(hierarchy["tasks"][1]["todos"]) == 1
+
+    async def test_plan_summary_with_todos(self, tortoise_ctx):
+        from db.managers.plan_manager import PlanManager
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Summary with Todos")
+        task = await mgr.add_task(plan.id, "Task 1")
+        todo1 = await mgr.add_todo(task.id, "Todo 1")
+        todo2 = await mgr.add_todo(task.id, "Todo 2")
+        await mgr.set_todo_status(todo1.id, "done")
+
+        summary = await mgr.get_plan_summary(plan.id)
+        assert summary["todos"]["pending"] == 1
+        assert summary["todos"]["done"] == 1

@@ -98,7 +98,7 @@ from db.models.marketplace import (  # noqa: E402
     Plugin,
     Workflow,
 )
-from db.models.plan import Plan, Task, ExecutionLog  # noqa: E402
+from db.models.plan import Plan, Task, Todo  # noqa: E402
 
 __all__ = [
     "MODEL_MODULES",
@@ -132,5 +132,5 @@ __all__ = [
     "Workflow",
     "Plan",
     "Task",
-    "ExecutionLog",
+    "Todo",
 ]

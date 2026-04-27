@@ -8,13 +8,13 @@
 
 ## Quick Links
 
-| Resource | Link |
-|----------|------|
-| **Workflow Files** | `.github/workflows/` |
-| **Workflow Docs** | `.github/workflows/README.md` |
-| **GitHub Actions UI** | https://github.com/cybersecsuite/cybersecsuite/actions |
-| **Codecov** | https://codecov.io/gh/cybersecsuite/cybersecsuite |
-| **Security Alerts** | https://github.com/cybersecsuite/cybersecsuite/security |
+| Resource              | Link                                                    |
+|-----------------------|---------------------------------------------------------|
+| **Workflow Files**    | `.github/workflows/`                                    |
+| **Workflow Docs**     | `.github/workflows/README.md`                           |
+| **GitHub Actions UI** | https://github.com/cybersecsuite/cybersecsuite/actions  |
+| **Codecov**           | https://codecov.io/gh/cybersecsuite/cybersecsuite       |
+| **Security Alerts**   | https://github.com/cybersecsuite/cybersecsuite/security |
 
 ---
 
@@ -89,14 +89,14 @@
 ## Success Criteria by Tier
 
 ### Tier 1: PR Ready for Review
-| Item | Status | Target |
-|------|--------|--------|
-| Linting (TS/Python) | ✅ All pass | 100% pass |
-| Type checking | ✅ All pass | 100% pass |
-| Unit tests | ✅ All pass | 100% pass |
-| Integration tests (core only) | ✅ All pass | 100% pass |
-| E2E tests (Brave) | ✅ Pass/Warn | 100% pass or known issues |
-| **Overall Status** | **✅ PASS** | **Ready for review** |
+| Item                          | Status      | Target                    |
+|-------------------------------|-------------|---------------------------|
+| Linting (TS/Python)           | ✅ All pass  | 100% pass                 |
+| Type checking                 | ✅ All pass  | 100% pass                 |
+| Unit tests                    | ✅ All pass  | 100% pass                 |
+| Integration tests (core only) | ✅ All pass  | 100% pass                 |
+| E2E tests (Brave)             | ✅ Pass/Warn | 100% pass or known issues |
+| **Overall Status**            | **✅ PASS**  | **Ready for review**      |
 
 **What PR reviewers should check:**
 - Code changes align with requirements
@@ -107,17 +107,17 @@
 ---
 
 ### Tier 2: Main Branch Stable
-| Item | Status | Target |
-|------|--------|--------|
-| Linting (TS/Python) | ✅ All pass | 100% pass |
-| Type checking | ✅ All pass | 100% pass |
-| Unit tests | ✅ All pass | 100% pass |
-| Integration tests (all) | ✅ All pass | 100% pass |
-| E2E tests (Brave + Firefox) | ✅ All pass | 100% pass on both |
-| Accessibility audit | ⚠️ No critical | WCAG 2A compliance |
-| Build size | ✅ <5MB | <5MB |
-| Code coverage | ✅ >70% | ≥70% target |
-| **Overall Status** | **✅ STABLE** | **Ready for deployment** |
+| Item                        | Status         | Target                   |
+|-----------------------------|----------------|--------------------------|
+| Linting (TS/Python)         | ✅ All pass     | 100% pass                |
+| Type checking               | ✅ All pass     | 100% pass                |
+| Unit tests                  | ✅ All pass     | 100% pass                |
+| Integration tests (all)     | ✅ All pass     | 100% pass                |
+| E2E tests (Brave + Firefox) | ✅ All pass     | 100% pass on both        |
+| Accessibility audit         | ⚠️ No critical | WCAG 2A compliance       |
+| Build size                  | ✅ <5MB         | <5MB                     |
+| Code coverage               | ✅ >70%         | ≥70% target              |
+| **Overall Status**          | **✅ STABLE**   | **Ready for deployment** |
 
 **What deployment teams should verify:**
 - All checks passed (main gate is green)
@@ -128,16 +128,16 @@
 ---
 
 ### Tier 3: Release Approved
-| Item | Status | Target |
-|------|--------|--------|
-| All Tier 2 checks | ✅ All pass | 100% pass |
-| Security scan (Trivy) | ✅ No critical | 0 critical vulns |
-| Dependency audit (pip + npm) | ✅ Clean | 0 known vulns |
-| Load test (100 req @ 10c) | ✅ Pass | <5s avg response |
-| Build artifacts | ✅ Created | dist/, src/ts_api/dist/ |
-| Manual approval | ⏳ Pending | Release team sign-off |
-| GitHub Release | ✅ Created | Release published |
-| **Overall Status** | **✅ RELEASED** | **Ready for production** |
+| Item                         | Status         | Target                   |
+|------------------------------|----------------|--------------------------|
+| All Tier 2 checks            | ✅ All pass     | 100% pass                |
+| Security scan (Trivy)        | ✅ No critical  | 0 critical vulns         |
+| Dependency audit (pip + npm) | ✅ Clean        | 0 known vulns            |
+| Load test (100 req @ 10c)    | ✅ Pass         | <5s avg response         |
+| Build artifacts              | ✅ Created      | dist/, src/ts_api/dist/  |
+| Manual approval              | ⏳ Pending      | Release team sign-off    |
+| GitHub Release               | ✅ Created      | Release published        |
+| **Overall Status**           | **✅ RELEASED** | **Ready for production** |
 
 **Release team checklist:**
 - [ ] Security scan shows no critical vulnerabilities
@@ -270,11 +270,11 @@ Target: 70% ✅ (Currently: 82.3%)
 
 ### Current Issues
 
-| Issue | Status | Action |
-|-------|--------|--------|
-| Playwright Firefox timing issues on slow runners | ⚠️ Minor | Increase timeout to 20s in slow tests |
-| Security scan Trivy DB takes time on first run | ⚠️ Expected | DB is cached on subsequent runs |
-| Load test needs warm-up before assertions | ℹ️ Fixed | Added sleep(5) before test |
+| Issue                                            | Status      | Action                                |
+|--------------------------------------------------|-------------|---------------------------------------|
+| Playwright Firefox timing issues on slow runners | ⚠️ Minor    | Increase timeout to 20s in slow tests |
+| Security scan Trivy DB takes time on first run   | ⚠️ Expected | DB is cached on subsequent runs       |
+| Load test needs warm-up before assertions        | ℹ️ Fixed    | Added sleep(5) before test            |
 
 ### Recently Resolved
 
