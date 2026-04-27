@@ -8,7 +8,6 @@ import asyncio
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from src.a2a.client import A2AClient
 from src.a2a.models import AgentCard
 
 
@@ -42,7 +41,9 @@ class RemoteAgent:
                 tags.update(skill.tags)
         return tags
 
-    def client(self, **kwargs) -> A2AClient:
+    def client(self, **kwargs):  # type: ignore
+        """Create an A2AClient for this agent."""
+        from src.a2a.client import A2AClient
         return A2AClient(self.base_url, **kwargs)
 
     def __repr__(self) -> str:
@@ -79,6 +80,7 @@ class AgentRegistry:
         Returns:
             Registered RemoteAgent
         """
+        from src.a2a.client import A2AClient
         async with A2AClient(base_url, **client_kwargs) as client:
             card = await client.get_agent_card()
         return self.register(base_url, card)

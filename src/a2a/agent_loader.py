@@ -6,10 +6,11 @@ Supports all .claude agent frontmatter fields:
   role (orchestrator, team-mode), default, effort, alias, loaded-by
 """
 
+from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 try:
     import yaml  # type: ignore
@@ -19,7 +20,9 @@ except ImportError:
 
 from a2a.models import AgentCard, AgentCapabilities, AgentAuthentication, AgentSkill
 from a2a.enums import AuthScheme
-from src.registries.agents import AgentRegistry, RemoteAgent
+
+if TYPE_CHECKING:
+    from src.registries.agents import AgentRegistry, RemoteAgent
 
 
 # ── Frontmatter parsing ───────────────────────────────────────────────────────

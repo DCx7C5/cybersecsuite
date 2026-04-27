@@ -7,7 +7,7 @@ from a2a.models import (
     TaskArtifact,
 )
 from a2a.task_store import TaskStore
-from a2a.registry import AgentRegistry
+from a2a import AgentRegistry
 from a2a.enums import TaskState, MessageRole, PartType
 
 

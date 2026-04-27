@@ -161,6 +161,8 @@ class TestTodoManagement:
         task = await mgr.add_task(plan.id, "Task 1")
         todo1 = await mgr.add_todo(task.id, "Todo 1")
         todo2 = await mgr.add_todo(task.id, "Todo 2")
+        todo3 = await mgr.add_todo(task.id, "Todo 3")
+        
         await mgr.set_todo_status(todo1.id, "done")
 
         summary = await mgr.get_plan_summary(plan.id)
