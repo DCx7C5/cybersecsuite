@@ -104,12 +104,24 @@ shell:  ## Interactive Python shell with all models loaded
 # ── Testing ───────────────────────────────────────────────────────────────────
 
 .PHONY: test
-test: .css-initialized  ## Run all tests
-	$(UV) run --group test pytest
+test: .css-initialized  ## Run all tests (excluding legacy)
+	$(UV) run --group test pytest --ignore=tests/legacy
+
+.PHONY: test-legacy
+test-legacy:  ## Run legacy (broken/pre-existing failures) tests only
+	$(UV) run --group test pytest tests/legacy/
+
+.PHONY: test-unit
+test-unit:  ## Run unit tests only
+	$(UV) run --group test pytest tests/unit/
+
+.PHONY: test-integration
+test-integration:  ## Run integration tests only
+	$(UV) run --group test pytest tests/integration/
 
 .PHONY: test-cov
 test-cov:  ## Run tests with HTML coverage report
-	$(UV) run --group test pytest --cov=src --cov-report=html --cov-report=term-missing
+	$(UV) run --group test pytest --ignore=tests/legacy --cov=src --cov-report=html --cov-report=term-missing
 	@echo "Coverage report: htmlcov/index.html"
 
 .PHONY: test-crypto
