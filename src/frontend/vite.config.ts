@@ -15,10 +15,11 @@ export default defineConfig({
     assetsDir: 'assets',
   },
   server: {
+    host: true,
     proxy: {
-      '/api': 'http://localhost:8000',
-      '/sse': 'http://localhost:8000',
-      '/ts': 'http://localhost:8000',
+      '/api': process.env.BACKEND_URL ?? 'http://localhost:8000',
+      '/sse': process.env.BACKEND_URL ?? 'http://localhost:8000',
+      '/ts':  process.env.BACKEND_URL ?? 'http://localhost:8000',
     },
   },
 })
