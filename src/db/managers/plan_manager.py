@@ -1,4 +1,5 @@
 """PlanManager: CRUD and lifecycle for Plans, Tasks, and Todos."""
+from datetime import datetime
 from typing import List
 
 from db.models.plan import Plan, Task, Todo
@@ -26,8 +27,8 @@ class PlanManager:
         await task.depends_on.add(dep)
 
     async def get_ready_tasks(self, plan_id: int) -> List[Task]:
-        """Return pending tasks whose dependencies are all done."""
-        tasks = await Task.filter(plan_id=plan_id, status="pending").prefetch_related("depends_on")
+        """Return pending tasks whose dependencies are all done and not claimed."""
+        tasks = await Task.filter(plan_id=plan_id, status="pending", claimed_by="").prefetch_related("depends_on")
         return [t for t in tasks if all(d.status == "done" for d in t.depends_on)]
 
     async def get_plan_tasks(self, plan_id: int) -> List[Task]:
@@ -51,12 +52,52 @@ class PlanManager:
         }
 
     async def set_task_status(self, task_id: int, status: str) -> Task:
-        """Update task status."""
+        """Update task status and clear claimed_by when transitioning to terminal states."""
         task = await Task.get(id=task_id)
         task.status = status
+        # Clear claim when task is done or blocked
+        if status in ("done", "blocked"):
+            task.claimed_by = ""
+            task.claimed_at = None
+            task.lease_expires_at = None
         await task.save()
         return task
 
+    async def claim_task(self, task_id: int, claimed_by: str, lease_expires_at: datetime | None = None) -> bool:
+        """
+        Atomically claim a task if it's pending and not already claimed.
+        Returns True if claim succeeds, False if already claimed or not pending.
+        """
+        task = await Task.get(id=task_id)
+        if task.status != "pending" or task.claimed_by != "":
+            return False  # already claimed or not pending
+        task.claimed_by = claimed_by
+        task.claimed_at = datetime.now()
+        task.lease_expires_at = lease_expires_at
+        task.status = "in_progress"
+        await task.save()
+        return True
+
+    async def cleanup_expired_leases(self, lease_timeout_minutes: int = 60) -> int:
+        """
+        Find tasks with expired leases and reset claimed_by.
+        Returns count of tasks reset.
+        """
+        now = datetime.now()
+        expired_tasks = await Task.filter(
+            lease_expires_at__lt=now
+        ).exclude(claimed_by="")
+        count = 0
+        for task in expired_tasks:
+            task.claimed_by = ""
+            task.claimed_at = None
+            task.lease_expires_at = None
+            task.status = "pending"
+            await task.save()
+            count += 1
+        return count
+
+    
     async def set_todo_status(self, todo_id: int, status: str) -> Todo:
         """Update todo status."""
         todo = await Todo.get(id=todo_id)

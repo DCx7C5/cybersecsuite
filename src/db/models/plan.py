@@ -30,6 +30,9 @@ class Task(Model):
     sequence = fields.IntField(default=0)  # For ordering tasks within plan
     status = fields.CharField(max_length=32, default="pending")  # pending, in_progress, done, blocked
     depends_on = fields.ManyToManyField("models.Task", related_name="dependents", through="task_deps")
+    claimed_by = fields.CharField(max_length=256, default="")  # Agent name or session ID
+    claimed_at = fields.DatetimeField(null=True)  # When claimed
+    lease_expires_at = fields.DatetimeField(null=True)  # Optional lease expiry for orphaned tasks
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 

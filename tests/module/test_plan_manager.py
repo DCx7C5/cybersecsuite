@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timedelta
 
 import pytest
 from tortoise.context import TortoiseContext
@@ -163,3 +164,168 @@ class TestTodoManagement:
         summary = await mgr.get_plan_summary(plan.id)
         assert summary["todos"]["pending"] == 1
         assert summary["todos"]["done"] == 1
+
+
+@pytest.mark.anyio
+@_SKIP_TORTOISE
+class TestTaskClaiming:
+    async def test_claim_task_success(self, tortoise_ctx):
+        """Test successful atomic task claiming."""
+        from db.managers.plan_manager import PlanManager
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Claim Test")
+        task = await mgr.add_task(plan.id, "Claimable Task")
+
+        claimed = await mgr.claim_task(task.id, claimed_by="agent_1")
+
+        assert claimed is True
+        refreshed = await mgr.get_ready_tasks(plan.id)
+        assert len(refreshed) == 0  # Task is now in_progress, not pending
+
+        updated_task = await Task.get(id=task.id)
+        assert updated_task.claimed_by == "agent_1"
+        assert updated_task.status == "in_progress"
+        assert updated_task.claimed_at is not None
+
+    async def test_claim_task_already_claimed(self, tortoise_ctx):
+        """Test that claiming an already-claimed task fails."""
+        from db.managers.plan_manager import PlanManager
+        from db.models.plan import Task
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Claim Test 2")
+        task = await mgr.add_task(plan.id, "Already Claimed Task")
+
+        claimed1 = await mgr.claim_task(task.id, claimed_by="agent_1")
+        assert claimed1 is True
+
+        claimed2 = await mgr.claim_task(task.id, claimed_by="agent_2")
+        assert claimed2 is False
+
+        updated_task = await Task.get(id=task.id)
+        assert updated_task.claimed_by == "agent_1"  # Still agent_1, not agent_2
+
+    async def test_concurrent_claim_race(self, tortoise_ctx):
+        """Simulate race condition: both agents try to claim same task."""
+        from db.managers.plan_manager import PlanManager
+        from db.models.plan import Task
+        import asyncio
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Race Test")
+        task = await mgr.add_task(plan.id, "Race Task")
+
+        async def attempt_claim(agent_name: str) -> bool:
+            return await mgr.claim_task(task.id, claimed_by=agent_name)
+
+        result1, result2 = await asyncio.gather(
+            attempt_claim("agent_a"),
+            attempt_claim("agent_b"),
+        )
+
+        assert result1 or result2  # One must succeed
+        assert not (result1 and result2)  # But not both
+
+        updated_task = await Task.get(id=task.id)
+        assert updated_task.claimed_by in ("agent_a", "agent_b")
+        assert updated_task.status == "in_progress"
+
+    async def test_get_ready_tasks_excludes_claimed(self, tortoise_ctx):
+        """Test that get_ready_tasks filters out claimed tasks."""
+        from db.managers.plan_manager import PlanManager
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Filter Test")
+        t1 = await mgr.add_task(plan.id, "Task 1")
+        t2 = await mgr.add_task(plan.id, "Task 2")
+
+        await mgr.claim_task(t1.id, claimed_by="agent_1")
+
+        ready = await mgr.get_ready_tasks(plan.id)
+        ready_ids = {t.id for t in ready}
+
+        assert t1.id not in ready_ids  # Claimed task not in ready list
+        assert t2.id in ready_ids  # Unclaimed pending task is ready
+
+    async def test_claim_task_with_lease_expiry(self, tortoise_ctx):
+        """Test claiming with lease expiry time."""
+        from db.managers.plan_manager import PlanManager
+        from db.models.plan import Task
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Lease Test")
+        task = await mgr.add_task(plan.id, "Lease Task")
+
+        future_time = datetime.now() + timedelta(minutes=30)
+        claimed = await mgr.claim_task(task.id, claimed_by="agent_lease", lease_expires_at=future_time)
+
+        assert claimed is True
+        updated_task = await Task.get(id=task.id)
+        assert updated_task.lease_expires_at == future_time
+
+    async def test_lease_expiry_cleanup(self, tortoise_ctx):
+        """Test cleanup_expired_leases resets orphaned tasks."""
+        from db.managers.plan_manager import PlanManager
+        from db.models.plan import Task
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Cleanup Test")
+        t1 = await mgr.add_task(plan.id, "Expired Task")
+        t2 = await mgr.add_task(plan.id, "Valid Task")
+
+        past_time = datetime.now() - timedelta(minutes=10)
+        future_time = datetime.now() + timedelta(minutes=10)
+
+        await mgr.claim_task(t1.id, claimed_by="agent_expired", lease_expires_at=past_time)
+        await mgr.claim_task(t2.id, claimed_by="agent_valid", lease_expires_at=future_time)
+
+        cleaned_count = await mgr.cleanup_expired_leases()
+
+        assert cleaned_count == 1
+
+        updated_t1 = await Task.get(id=t1.id)
+        assert updated_t1.claimed_by == ""
+        assert updated_t1.status == "pending"
+        assert updated_t1.lease_expires_at is None
+
+        updated_t2 = await Task.get(id=t2.id)
+        assert updated_t2.claimed_by == "agent_valid"
+        assert updated_t2.status == "in_progress"
+
+    async def test_set_task_status_clears_claim_on_done(self, tortoise_ctx):
+        """Test that set_task_status clears claim when transitioning to done."""
+        from db.managers.plan_manager import PlanManager
+        from db.models.plan import Task
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Done Test")
+        task = await mgr.add_task(plan.id, "Complete Task")
+
+        await mgr.claim_task(task.id, claimed_by="agent_complete")
+
+        updated_task = await mgr.set_task_status(task.id, "done")
+
+        assert updated_task.status == "done"
+        assert updated_task.claimed_by == ""
+        assert updated_task.claimed_at is None
+        assert updated_task.lease_expires_at is None
+
+    async def test_set_task_status_clears_claim_on_blocked(self, tortoise_ctx):
+        """Test that set_task_status clears claim when transitioning to blocked."""
+        from db.managers.plan_manager import PlanManager
+        from db.models.plan import Task
+
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Blocked Test")
+        task = await mgr.add_task(plan.id, "Blocked Task")
+
+        await mgr.claim_task(task.id, claimed_by="agent_blocked")
+
+        updated_task = await mgr.set_task_status(task.id, "blocked")
+
+        assert updated_task.status == "blocked"
+        assert updated_task.claimed_by == ""
+        assert updated_task.claimed_at is None
+        assert updated_task.lease_expires_at is None
+
