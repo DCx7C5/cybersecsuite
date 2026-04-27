@@ -15,6 +15,7 @@ from db.intel._utils import (
     _dedupe_strings,
     _extract_tag_names,
 )
+from utils.deduplication import deduplicate_items
 
 
 def _extract_misp_events(payload: Any) -> list[dict[str, Any]]:
@@ -238,7 +239,7 @@ def _extract_cwe_records(path: Path) -> dict[str, dict[str, Any]]:
             },
         }
         mitigation_values = [text for text in record['mitigations'] if isinstance(text, str)]
-        record["mitigations"] = list(dict.fromkeys(text for text in mitigation_values if text))
+        record["mitigations"] = deduplicate_items(text for text in mitigation_values if text)
         records[f"CWE-{cwe_id}"] = record
         elem.clear()
     return records
@@ -273,4 +274,4 @@ def _extract_group_url(description: str | None) -> str:
 def _extract_technique_ids(text: str | None) -> list[str]:
     if not text:
         return []
-    return list(dict.fromkeys(match.group(1) for match in re.finditer(r"\b(T\d{4}(?:\.\d{3})?)\b", text)))
+    return deduplicate_items(match.group(1) for match in re.finditer(r"\b(T\d{4}(?:\.\d{3})?)\b", text))

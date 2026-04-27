@@ -7,6 +7,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Iterable
 
+from utils.deduplication import deduplicate_strings, deduplicate_items
+
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 _DEFAULT_INTEL_DIR = _PROJECT_ROOT / "data" / "cybersec-shared" / "intelligence"
 _JSON_DECODER = json.JSONDecoder()
@@ -113,7 +115,7 @@ def _extract_capec_ids_from_attack_pattern(record: dict[str, Any]) -> list[str]:
         external_id = str(reference.get("external_id") or "").strip().upper()
         if source_name == "capec" and _CAPEC_EXTERNAL_ID_RE.fullmatch(external_id):
             capec_ids.append(external_id)
-    return list(dict.fromkeys(capec_ids))
+    return deduplicate_items(capec_ids)
 
 
 def _latest_matching_file(directory: Path, pattern: str) -> Path | None:
@@ -165,12 +167,19 @@ def _snapshot_payload(payload: Any) -> dict[str, Any]:
 
 
 def _dedupe_strings(values: Iterable[Any]) -> list[str]:
-    items: list[str] = []
-    for value in values:
-        text = str(value).strip()
-        if text and text not in items:
-            items.append(text)
-    return items
+    """
+    Remove duplicate strings while preserving order.
+
+    Delegates to utils.deduplication.deduplicate_strings() for consolidated logic.
+    Kept here for backward compatibility with internal db.intel imports.
+
+    Args:
+        values: Iterable of values to deduplicate
+
+    Returns:
+        List of unique strings in order of first appearance
+    """
+    return deduplicate_strings(values)
 
 
 def _normalize_bool(value: Any) -> bool:

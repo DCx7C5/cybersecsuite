@@ -71,6 +71,7 @@ from db.intel._loaders import (
     _misp_attribute_uuid,
     _technique_url,
 )
+from utils.deduplication import deduplicate_items
 
 @dataclass(slots=True)
 class BootstrapStats:
@@ -452,7 +453,7 @@ async def bootstrap_capec_intelligence_async(force: bool = False) -> dict[str, A
                 "url": _extract_external_url(obj, {"capec"}),
                 "source_file": _relative_source(capec_path),
                 "raw_record": obj,
-                "tags": list(dict.fromkeys((obj.get("x_capec_domains") or []) + ["capec"])),
+                "tags": deduplicate_items((obj.get("x_capec_domains") or []) + ["capec"]),
             }
 
         for obj in objects:

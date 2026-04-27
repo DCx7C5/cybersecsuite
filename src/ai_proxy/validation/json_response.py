@@ -15,6 +15,8 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
+from utils.deduplication import deduplicate_messages
+
 logger = logging.getLogger("ai_proxy.validation.json_response")
 
 T = TypeVar("T", bound=BaseModel)
@@ -261,43 +263,16 @@ class TokenOptimizer:
         """
         Compress conversation context by removing redundant messages.
 
+        Uses shared deduplication utility (utils.deduplication.deduplicate_messages)
+        to remove duplicate or similar consecutive messages while preserving order.
+
         Args:
             context: Conversation history
 
         Returns:
             Compressed context
         """
-        if len(context) <= 2:
-            return context
-
-        # Keep system and first user message
-        compressed = [context[0]] if context else []
-
-        # Remove duplicate or similar consecutive messages
-        for i in range(1, len(context)):
-            msg = context[i]
-            prev = context[i - 1]
-
-            # Skip if very similar to previous
-            if self._messages_similar(msg, prev):
-                continue
-
-            compressed.append(msg)
-
-        return compressed
-
-    def _messages_similar(self, msg1: dict[str, str], msg2: dict[str, str]) -> bool:
-        """Check if two messages are similar (simple heuristic)."""
-        if msg1.get("role") != msg2.get("role"):
-            return False
-
-        # Check content similarity (rough)
-        content1 = msg1.get("content", "").lower()
-        content2 = msg2.get("content", "").lower()
-
-        return content1 == content2 or (
-            len(content1) > 10 and content1[:30] == content2[:30]
-        )
+        return deduplicate_messages(context)
 
     def optimize_system_prompt(self, prompt: str, target_tokens: int = 500) -> str:
         """
