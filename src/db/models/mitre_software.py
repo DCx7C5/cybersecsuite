@@ -7,7 +7,7 @@ from tortoise.models import Model
 class MitreSoftwareFamilyIntel(Model):
     """Canonical ATT&CK malware/tool families for hunting and detection workflows."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     software_id = fields.CharField(max_length=32, unique=True, db_index=True)
     name = fields.CharField(max_length=255, db_index=True)
     software_type = fields.CharField(max_length=32, db_index=True, description="malware or tool")

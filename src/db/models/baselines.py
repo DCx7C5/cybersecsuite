@@ -9,7 +9,7 @@ from db.models.scope import ScopedEntry
 
 class NetworkBaseline(ScopedEntry):
     """Network configuration baseline."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
     snapshot_hash = fields.CharField(max_length=128, default="")
@@ -33,7 +33,7 @@ class NetworkBaseline(ScopedEntry):
 
 class ProcessBaseline(ScopedEntry):
     """Process and service baseline."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
     snapshot_hash = fields.CharField(max_length=128, default="")
@@ -61,7 +61,7 @@ class ProcessBaseline(ScopedEntry):
 
 class KernelBaseline(ScopedEntry):
     """Kernel and eBPF baseline."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
     snapshot_hash = fields.CharField(max_length=128, default="")
@@ -87,7 +87,7 @@ class KernelBaseline(ScopedEntry):
 
 class PersistenceBaseline(ScopedEntry):
     """Persistence mechanism baseline."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
     snapshot_hash = fields.CharField(max_length=128, default="")

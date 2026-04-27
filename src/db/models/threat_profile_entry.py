@@ -7,7 +7,7 @@ from tortoise.models import Model
 class ThreatProfileEntry(Model):
     """Structured threat profiles from threat-profile.md."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     profile_name = fields.CharField(max_length=255, unique=True)
     actor = fields.ForeignKeyField("models.MitreThreatActorIntel", related_name="profiles", null=True)
     summary = fields.TextField(null=True)

@@ -19,7 +19,7 @@ from statistics import mean
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Path, Query
 from pydantic import BaseModel, Field
 
-from db.models.scope import Project
+from db.models.scope import ProjectScope
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 
 logger = logging.getLogger(__name__)
@@ -355,7 +355,7 @@ async def get_workers_summary(
             )
         
         # Verify project accessibility
-        project = await Project.get_or_none(id=query_project_id)
+        project = await ProjectScope.get_or_none(id=query_project_id)
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

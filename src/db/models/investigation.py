@@ -15,7 +15,7 @@ from db.models.scope import ScopedEntry
 
 class Finding(ScopedEntry):
     """Main security finding model."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     title = fields.CharField(max_length=512, db_index=True)
     description = fields.TextField()
     severity = fields.CharEnumField(Severity, default=Severity.MEDIUM, db_index=True)
@@ -55,7 +55,7 @@ class Finding(ScopedEntry):
 
 class IOC(ScopedEntry):
     """Indicator of Compromise."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     ioc_id = fields.CharField(max_length=50, unique=True, db_index=True)
     ioc_type = fields.CharField(max_length=64, db_index=True)
     value = fields.CharField(max_length=2048, db_index=True)
@@ -84,7 +84,7 @@ class IOC(ScopedEntry):
 
 
 class Risk(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     risk_id = fields.CharField(max_length=128, db_index=True)
     title = fields.CharField(max_length=512, default="")
     description = fields.TextField(default="")
@@ -99,7 +99,7 @@ class Risk(ScopedEntry):
 
 
 class MITRETechnique(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     technique_id = fields.CharField(max_length=32, db_index=True)
     name = fields.CharField(max_length=256)
     description = fields.TextField(default="")
@@ -111,7 +111,7 @@ class MITRETechnique(ScopedEntry):
 
 
 class Baseline(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     domain = fields.CharEnumField(BaselineDomain, db_index=True)
     snapshot_data = fields.JSONField(default=dict)
     snapshot_hash = fields.CharField(max_length=128, default="")
@@ -124,7 +124,7 @@ class Baseline(ScopedEntry):
 
 
 class WatchlistItem(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     item_type = fields.CharField(max_length=64, db_index=True)
     value_pattern = fields.TextField()
     reason = fields.TextField(default="")

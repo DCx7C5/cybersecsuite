@@ -7,7 +7,7 @@ from tortoise.models import Model
 class IOCDatabaseEntry(Model):
     """IOC knowledge entries from ioc-db.md (or future structured exports)."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     ioc_type = fields.CharField(max_length=64)
     value = fields.CharField(max_length=2000)
     confidence = fields.CharField(max_length=32, null=True)

@@ -7,7 +7,7 @@ from tortoise.models import Model
 class MitreTechniqueIntel(Model):
     """MITRE ATT&CK techniques from shared MITRE technique snapshots."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     technique_id = fields.CharField(max_length=32, unique=True, db_index=True)
     name = fields.CharField(max_length=255, db_index=True)
     description = fields.TextField(null=True)

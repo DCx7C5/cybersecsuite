@@ -12,8 +12,8 @@ from db.models.worker import (
     WorkerAuditLog,
     WorkerState,
 )
-from db.models.scope import Project
-from db.worker_manager import WorkerStateMachine
+from db.models.scope import ProjectScope
+from db.managers.worker_manager import WorkerStateMachine
 
 
 @pytest.mark.asyncio
@@ -410,7 +410,7 @@ class TestScopeIsolation:
     ) -> None:
         """Test that workers are isolated between project scopes."""
         # Create second project
-        project2 = await Project.create(
+        project2 = await ProjectScope.create(
             name="test-project-2",
             description="Test project 2"
         )
@@ -448,7 +448,7 @@ class TestScopeIsolation:
         test_project
     ) -> None:
         """Test that audit logs are isolated between projects."""
-        project2 = await Project.create(
+        project2 = await ProjectScope.create(
             name="test-project-3",
             description="Test project 3"
         )

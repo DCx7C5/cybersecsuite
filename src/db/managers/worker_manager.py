@@ -22,7 +22,7 @@ from db.models.worker import (
     WorkerSession,
     WorkerAuditLog,
 )
-from db.models.scope import Project, Session
+from db.models.scope import ProjectScope, SessionScope
 
 logger = logging.getLogger(__name__)
 
@@ -78,9 +78,9 @@ class WorkerStateMachine:
         self.project_id = project_id
         self.session_id = session_id
         self.worker_type = worker_type
-        self._cached_session: Optional[Session] = None
+        self._cached_session: Optional[SessionScope] = None
     
-    async def _get_session_obj(self) -> Optional[Session]:
+    async def _get_session_obj(self) -> Optional[SessionScope]:
         """
         Get Session object with caching to eliminate N+1 queries (t366).
         
@@ -95,7 +95,7 @@ class WorkerStateMachine:
             return self._cached_session
         
         # Fetch and cache session
-        self._cached_session = await Session.get_or_none(
+        self._cached_session = await SessionScope.get_or_none(
             session_id=self.session_id
         )
         return self._cached_session
@@ -142,7 +142,7 @@ class WorkerStateMachine:
                 f"Allowed: {self.VALID_TRANSITIONS[from_state]}"
             )
         
-        project = await Project.get_or_none(id=self.project_id)
+        project = await ProjectScope.get_or_none(id=self.project_id)
         if not project:
             raise WorkerNotFoundError(f"Project {self.project_id} not found")
         

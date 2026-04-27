@@ -7,7 +7,7 @@ from tortoise.models import Model
 class MISPEventIntel(Model):
     """Normalized MISP event metadata."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     event_uuid = fields.CharField(max_length=64, unique=True, db_index=True)
     event_id = fields.CharField(max_length=64, null=True, db_index=True)
     info = fields.CharField(max_length=512, default="", db_index=True)
@@ -42,7 +42,7 @@ class MISPEventIntel(Model):
 class MISPAttributeIntel(Model):
     """Normalized MISP attributes extracted from events."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     attribute_uuid = fields.CharField(max_length=64, unique=True, db_index=True)
     event = fields.ForeignKeyField("models.MISPEventIntel", related_name="attributes", on_delete=fields.CASCADE)
     attribute_id = fields.CharField(max_length=64, null=True, db_index=True)

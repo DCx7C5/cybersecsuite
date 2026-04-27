@@ -16,7 +16,7 @@ from db.models.enums import Confidence, ConfidenceLevel, ThreatActorSophisticati
 # ----------------------------------------------------------------------
 class ThreatProfile(Model):
     """Threat actor intelligence profile."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     actor_name = fields.CharField(max_length=255, db_index=True)
     sophistication = fields.CharEnumField(ThreatActorSophistication, default=ThreatActorSophistication.UNKNOWN, db_index=True)
     attribution_confidence = fields.CharEnumField(Confidence, default=Confidence.LOW, db_index=True)
@@ -38,7 +38,7 @@ class ThreatProfile(Model):
 
 class ForensicMITRETechnique(Model):
     """Operational MITRE technique catalog used by forensic sessions and findings."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     technique_id = fields.CharField(max_length=32, unique=True, db_index=True)
     technique_name = fields.CharField(max_length=255, db_index=True)
     tactic = fields.CharEnumField(MITRETactic, db_index=True)
@@ -59,7 +59,7 @@ class ForensicMITRETechnique(Model):
 
 class IOCMITREMapping(Model):
     """Analyst-confirmed mapping between a forensic IOC and ATT&CK technique."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     ioc = fields.ForeignKeyField("models.IOCEntry", related_name="mitre_mappings", on_delete=fields.CASCADE, db_index=True)
     technique = fields.ForeignKeyField("models.ForensicMITRETechnique", related_name="ioc_mappings", on_delete=fields.CASCADE, db_index=True)
     confidence = fields.CharEnumField(ConfidenceLevel, default=ConfidenceLevel.MEDIUM, db_index=True)

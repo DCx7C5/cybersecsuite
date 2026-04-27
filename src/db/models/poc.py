@@ -9,7 +9,7 @@ from db.models.enums import PocStatus, Severity
 class ProofOfConcept(Model):
     """A known public PoC or exploit code linked to a CVE."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     cve = fields.ForeignKeyField(
         "models.CVEIntel",
         related_name="poc_instances",

@@ -70,6 +70,8 @@ class ApiServiceModel(Model):
 
     class Meta:
         table = "api_service_models"
+        table_description_plural = "API Service Models"
+        table_description_singular = "API Service Model"
         unique_together = (("api_service_id", "model_id"),)
         ordering = ["api_service_id", "model_id"]
 

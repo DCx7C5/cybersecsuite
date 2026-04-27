@@ -9,7 +9,9 @@ from typing import Any
 import pytest
 
 from a2a import agent_sdk
-from dashboard.routes import create_dashboard_router
+
+# Import stub for deleted src/dashboard/ module
+from tests.legacy.conftest import create_dashboard_router  # noqa: F401
 
 
 class _FakeResponse:

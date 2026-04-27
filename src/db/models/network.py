@@ -8,7 +8,7 @@ from db.models.scope import ScopedEntry
 
 
 class IPAddress(Model):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     address = fields.CharField(max_length=45, unique=True, db_index=True)
     version = fields.SmallIntField(default=4)
     is_private = fields.BooleanField(default=False, db_index=True)
@@ -23,7 +23,7 @@ class IPAddress(Model):
 
 
 class Host(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     hostname = fields.CharField(max_length=253, db_index=True)
     os_name = fields.CharField(max_length=128, default="")
     os_version = fields.CharField(max_length=128, default="")
@@ -44,7 +44,7 @@ class Host(ScopedEntry):
 
 
 class Domain(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=255, db_index=True)
     tld = fields.CharField(max_length=63, default="")
     host = fields.ForeignKeyField("models.Host", related_name="domains", null=True, on_delete=fields.SET_NULL)
@@ -57,7 +57,7 @@ class Domain(ScopedEntry):
 
 
 class Certificate(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     subject_cn = fields.CharField(max_length=255, db_index=True)
     sha256_fingerprint = fields.CharField(max_length=64, unique=True, db_index=True)
     not_after = fields.DatetimeField(null=True)
@@ -69,7 +69,7 @@ class Certificate(ScopedEntry):
 
 
 class NetworkConnection(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     src_ip = fields.CharField(max_length=45, db_index=True)
     dst_ip = fields.CharField(max_length=45, db_index=True)
     src_port = fields.IntField(default=0)

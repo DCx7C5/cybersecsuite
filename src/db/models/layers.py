@@ -5,7 +5,7 @@ from tortoise import fields
 
 class SessionLayer(Model):
     """Tracks the active investigation phase, hypotheses, and focus for a session."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField(
         "models.Session", related_name="layers", on_delete=fields.CASCADE, unique=True,
     )

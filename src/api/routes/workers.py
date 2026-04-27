@@ -21,7 +21,7 @@ from fastapi import APIRouter, HTTPException, Depends, status, Request, Query, P
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from tortoise.transactions import in_transaction
 
-from db.models.scope import Project, Session
+from db.models.scope import ProjectScope, SessionScope
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 
 logger = logging.getLogger(__name__)
@@ -222,7 +222,7 @@ async def create_worker(
             )
         
         # Get project
-        project = await Project.get_or_none(id=scope.project_id)
+        project = await ProjectScope.get_or_none(id=scope.project_id)
         if not project:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -236,7 +236,7 @@ async def create_worker(
         async with in_transaction():
             session_obj = None
             if scope.session_id:
-                session_obj = await Session.get_or_none(session_id=scope.session_id)
+                session_obj = await SessionScope.get_or_none(session_id=scope.session_id)
             
             worker_session = await WorkerSession.create(
                 worker_id=worker_id,
@@ -322,7 +322,7 @@ async def list_workers(
             )
         
         # Verify project accessibility
-        project = await Project.get_or_none(id=query_project_id)
+        project = await ProjectScope.get_or_none(id=query_project_id)
         if not project:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
         

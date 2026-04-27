@@ -19,7 +19,7 @@ from db.models.enums import (
 class YaraRule(Model):
     """A YARA rule generated or imported during a forensic investigation."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     rule_id = fields.CharField(max_length=100, unique=True, db_index=True,
                                description="Stable ID, e.g. YARA-20260407-0001")
 
@@ -98,7 +98,7 @@ class YaraRule(Model):
 class YaraTestRun(Model):
     """Individual test run record — one row per yara-test invocation."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     run_id = fields.CharField(max_length=100, unique=True, db_index=True)
 
     rule = fields.ForeignKeyField(

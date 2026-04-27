@@ -44,3 +44,19 @@
 {"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:39:56.111905+00:00"}
 {"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T08:39:56.114767+00:00"}
 {"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T08:39:56.126202+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T08:48:31.185526+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T08:48:31.188325+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:48:31.200259+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:48:31.214953+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T08:48:31.217910+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T08:48:31.230999+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T08:48:42.835352+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T08:48:42.838669+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T08:48:49.694749+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T08:48:49.705782+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-27T08:49:00.233711+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-27T08:49:00.236403+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:49:00.248091+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-27T08:49:00.258958+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-27T08:49:00.261938+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-27T08:49:00.273423+00:00"}

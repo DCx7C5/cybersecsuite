@@ -5,7 +5,7 @@ from tortoise.models import Model
 
 class Plan(Model):
     """Top-level plan container."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     title = fields.CharField(max_length=256)
     description = fields.TextField(default="")
     scope = fields.CharField(max_length=128, default="general")
@@ -22,7 +22,7 @@ class Plan(Model):
 
 class PlanTask(Model):
     """Tasks grouped by plan, with optional sequencing and assignment."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     plan = fields.ForeignKeyField("models.Plan", related_name="tasks", on_delete=fields.CASCADE)
     title = fields.CharField(max_length=256)
     description = fields.TextField(default="")
@@ -61,7 +61,7 @@ class PlanTask(Model):
 
 class PlanTodo(Model):
     """Sub-task items within a PlanTask for granular tracking."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     task = fields.ForeignKeyField("models.PlanTask", related_name="todos", on_delete=fields.CASCADE)
     content = fields.TextField()  # Todo item description
     assignee = fields.CharField(max_length=128, null=True, default=None)  # Individual assignee

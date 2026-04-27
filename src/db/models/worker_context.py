@@ -31,7 +31,7 @@ class WorkerContext(Model):
     - TTL for auto-cleanup of stale entries
     """
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
 
     # Session reference
     session = fields.ForeignKeyField(

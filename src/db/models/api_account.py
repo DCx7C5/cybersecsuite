@@ -25,10 +25,12 @@ class ApiAccount(Model):
 
     class Meta:
         table = "api_account"
+        table_description_plural = "API Service Accounts"
+        table_description_singular = "API Service Account"
+        ordering = ["id"]
+        ordering_field = "id"
+        unique_together = (("api_service_id", "vault_key"),)
+        indexes = [
+            ("api_service_id", "active"),
+        ]
 
-    def __init__(self, **kwargs: Any):
-        super().__init__(kwargs)
-        self.api_service_id = None
-
-    def __str__(self):
-        return f"ApiAccount({self.vault_key})"

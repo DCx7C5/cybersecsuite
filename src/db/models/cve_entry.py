@@ -7,7 +7,7 @@ from tortoise.models import Model
 class CVEIntelligenceEntry(Model):
     """Line/item entries from cve-intelligence.md (history can include duplicates)."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     cve = fields.ForeignKeyField("models.CVEIntel", related_name="intelligence_entries", null=True)
     cve_identifier = fields.CharField(max_length=32)
     score = fields.FloatField(null=True)

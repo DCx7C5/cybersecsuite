@@ -39,7 +39,7 @@ class WorkerStateTransition(models.Model):
     
     Implements t366: Worker state machine with full audit trail.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     
     # Worker identification
     worker_id = fields.CharField(
@@ -134,7 +134,7 @@ class WorkerSession(models.Model):
     
     Implements t367: Save/restore worker context, execution history, bookmarks.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     
     # Worker and session identification
     worker_id = fields.CharField(
@@ -353,7 +353,7 @@ class WorkerAuditLog(models.Model):
     Tracks all worker state changes, scope transitions, and permission checks
     for accountability and forensic analysis.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     
     # Worker identification
     worker_id = fields.CharField(

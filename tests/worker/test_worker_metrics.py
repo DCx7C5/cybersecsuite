@@ -18,7 +18,7 @@ from unittest.mock import MagicMock
 from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 
-from db.models.scope import Project
+from db.models.scope import ProjectScope
 from db.models.worker import (
     WorkerSession, WorkerState, WorkerAuditLog
 )
@@ -140,7 +140,7 @@ async def test_get_worker_metrics_not_found(async_client, test_project, mock_sco
 async def test_get_worker_metrics_cross_project_denied(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test metrics access enforces project scope."""
     # Create a different project for scope check
-    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    other_project = await ProjectScope.create(name=f"other_project_{uuid4().hex[:8]}")
     mock_scope_context.project_id = other_project.id  # Different project
     
     response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
@@ -432,7 +432,7 @@ async def test_metrics_success_rate_calculation(async_client, test_project, mock
 @pytest.mark.asyncio
 async def test_metrics_enforces_scope(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test metrics endpoint enforces scope."""
-    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    other_project = await ProjectScope.create(name=f"other_project_{uuid4().hex[:8]}")
     mock_scope_context.project_id = other_project.id  # Different project
     
     response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/metrics")
@@ -442,7 +442,7 @@ async def test_metrics_enforces_scope(async_client, test_project, test_worker_wi
 @pytest.mark.asyncio
 async def test_audit_enforces_scope(async_client, test_project, test_worker_with_metrics, mock_scope_context):
     """Test audit endpoint enforces scope."""
-    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    other_project = await ProjectScope.create(name=f"other_project_{uuid4().hex[:8]}")
     mock_scope_context.project_id = other_project.id  # Different project
     
     response = await async_client.get(f"/api/workers/{test_worker_with_metrics.worker_id}/audit")
@@ -452,7 +452,7 @@ async def test_audit_enforces_scope(async_client, test_project, test_worker_with
 @pytest.mark.asyncio
 async def test_summary_enforces_scope(async_client, test_project, mock_scope_context):
     """Test summary endpoint enforces scope."""
-    other_project = await Project.create(name=f"other_project_{uuid4().hex[:8]}")
+    other_project = await ProjectScope.create(name=f"other_project_{uuid4().hex[:8]}")
     mock_scope_context.project_id = other_project.id
     
     # Try to access different project

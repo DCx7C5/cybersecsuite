@@ -16,7 +16,7 @@ if str(SRC_PATH) not in sys.path:
 import pytest  # noqa: E402 — must come after sys.path manipulation
 import pytest_asyncio  # noqa: E402
 from tortoise import Tortoise  # noqa: E402
-from db.models.scope import Project, Session  # noqa: E402
+from db.models.scope import ProjectScope, SessionScope  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -97,7 +97,7 @@ async def db():
 @pytest_asyncio.fixture
 async def test_project(db):
     """Provide a test project."""
-    project = await Project.create(
+    project = await ProjectScope.create(
         name="test-project",
         description="Test project for Phase 5C",
     )
@@ -107,7 +107,7 @@ async def test_project(db):
 @pytest_asyncio.fixture
 async def test_session(db, test_project):
     """Provide a test session."""
-    session = await Session.create(
+    session = await SessionScope.create(
         project=test_project,
         session_id="test-session-001",
         name="Test Session",

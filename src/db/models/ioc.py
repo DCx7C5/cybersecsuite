@@ -10,7 +10,7 @@ from db.models.enums import (
 
 class IOCEntry(Model):
     """Indicators of Compromise with full forensic context."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     ioc_id = fields.CharField(max_length=50, unique=True, db_index=True, null=True)
     project = fields.ForeignKeyField("models.ForensicProject", related_name="iocs", db_index=True, null=True, on_delete=fields.SET_NULL)
     ioc_type = fields.CharEnumField(IOCType, db_index=True)
@@ -62,7 +62,7 @@ class IOCEntry(Model):
 
 class ForensicWatchlistItem(Model):
     """Items under active monitoring (forensic extension)."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     watchlist_id = fields.CharField(max_length=50, unique=True, db_index=True)
     project = fields.ForeignKeyField("models.ForensicProject", related_name="watchlist", db_index=True)
     item_type = fields.CharEnumField(IOCType, db_index=True)
@@ -94,7 +94,7 @@ class ForensicWatchlistItem(Model):
 
 class ClearedItem(Model):
     """Confirmed false positives and known-good items."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     cleared_id = fields.CharField(max_length=50, unique=True, db_index=True)
     project = fields.ForeignKeyField("models.ForensicProject", related_name="cleared_items", db_index=True)
     item_type = fields.CharEnumField(IOCType, db_index=True)

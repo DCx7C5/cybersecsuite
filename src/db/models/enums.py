@@ -8,15 +8,6 @@ class RedBlueMode(str, Enum):
     PURPLE = "purple"
 
 
-class ApiAuthMethod(str, Enum):
-    NONE = None
-    OAUTH = "oauth"
-    APIKEY = "apikey"
-    DFLOW = "dflow"
-    WEB = "web"
-    GOOGLE = "google"
-    GITHUB = "github"
-
 
 
 class AuditAction(str, Enum):

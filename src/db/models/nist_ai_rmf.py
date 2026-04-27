@@ -7,7 +7,7 @@ from tortoise.models import Model
 class NistAiRmfControl(Model):
     """NIST AI RMF 1.0 subcategory — 72 entries across 4 functions."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     control_id = fields.CharField(max_length=32, unique=True, db_index=True)
     function = fields.CharField(max_length=16, db_index=True)   # Govern/Map/Measure/Manage
     category = fields.CharField(max_length=128, db_index=True)

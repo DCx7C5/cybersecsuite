@@ -26,7 +26,7 @@ class ApiServiceState(Model):
     - Usage metrics (calls this session, tokens this session)
     """
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
 
     # Session and API service references
     session = fields.ForeignKeyField(
@@ -138,6 +138,8 @@ class ApiServiceState(Model):
 
     class Meta:
         table = "api_service_states"
+        table_description_plural = "API Service States"
+        table_description_singular = "API Service State"
         # Composite index for session + api_service lookups
         indexes = [
             ("session_id", "api_service_id"),

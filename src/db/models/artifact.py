@@ -10,7 +10,7 @@ class Artifact(Model):
     Represents a versioned, cryptographically-signed artifact.
     Each change generates a new signature automatically.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=512, db_index=True)
     description = fields.TextField(default="")
 
@@ -46,6 +46,9 @@ class Artifact(Model):
 
     class Meta:
         table = "artifacts"
+        table_description_plural = "Artifacts"
+        table_description_singular = "Artifact"
+        unique_together = (("name", "version"),)
         ordering = ["-updated_at"]
         indexes = [
             ("signature_valid", "created_at"),
@@ -63,7 +66,7 @@ class ArtifactSignatureLog(Model):
     """
     Audit log for all signature operations on artifacts.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     artifact = fields.ForeignKeyField(
         "models.Artifact",
         related_name="signature_logs",

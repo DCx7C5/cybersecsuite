@@ -6,7 +6,7 @@ from tortoise.models import Model
 class MarketplaceAsset(Model):
     """Base model for all marketplace assets (MCPs, skills, agents, plugins, workflows, prompts)."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     asset_type = fields.CharField(
         max_length=32,
@@ -35,7 +35,7 @@ class MarketplaceAsset(Model):
 class MarketplaceMCP(Model):
     """Model for externalized MCP packages."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
@@ -65,7 +65,7 @@ class MarketplaceMCP(Model):
 class Skill(Model):
     """Model for marketplace skills."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
@@ -91,7 +91,7 @@ class Skill(Model):
 class Agent(Model):
     """Model for marketplace agents."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
@@ -119,7 +119,7 @@ class Agent(Model):
 class Plugin(Model):
     """Model for marketplace browser plugins."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
@@ -146,7 +146,7 @@ class Plugin(Model):
 class Workflow(Model):
     """Model for marketplace workflows."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     version = fields.CharField(max_length=32, default="0.1.0", db_index=True)

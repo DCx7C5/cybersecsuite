@@ -10,7 +10,7 @@ from db.models.enums import (
 
 class ForensicProject(Model):
     """Extended project model with threat-intel and case-tracking metadata."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     project_name = fields.CharField(max_length=255, db_index=True)
     description = fields.TextField(null=True)
     case_id = fields.CharField(max_length=100, unique=True, db_index=True, null=True)
@@ -53,7 +53,7 @@ class ForensicProject(Model):
 
 class ForensicSession(Model):
     """Individual forensic investigation session with full system context."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session_id = fields.CharField(max_length=100, unique=True, db_index=True)
     project = fields.ForeignKeyField("models.ForensicProject", related_name="sessions", db_index=True)
     scope_session = fields.ForeignKeyField(
@@ -120,7 +120,7 @@ class ForensicSession(Model):
 
 class ForensicFinding(Model):
     """Extended finding with evidence, chain-of-custody, and cross-validation."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.ForensicSession", related_name="forensic_findings", db_index=True)
     finding_id = fields.CharField(max_length=50, db_index=True)
     title = fields.CharField(max_length=255, db_index=True)

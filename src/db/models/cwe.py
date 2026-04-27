@@ -7,7 +7,7 @@ from tortoise.models import Model
 class CWEIntel(Model):
     """Canonical CWE weakness definitions from CWE feeds/XML extractions."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     cwe_id = fields.CharField(max_length=32, unique=True, db_index=True)
     name = fields.CharField(max_length=255, db_index=True)
     abstraction = fields.CharField(max_length=64, null=True, db_index=True, description="Pillar/Class/Base/Variant.")

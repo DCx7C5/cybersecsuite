@@ -33,7 +33,7 @@ async def case_open(args: dict[str, Any]) -> JsonDict:
         from db.bootstrap import init_tortoise_async
         await init_tortoise_async()
         from db.models.case_intake import CaseIntake
-        from db.models.scope import Session, Project
+        from db.models.scope import SessionScope, ProjectScope
         from db.models.layers import SessionLayer
     except ImportError as exc:
         return sdk_error(f"db models not available: {exc}")
@@ -58,10 +58,10 @@ async def case_open(args: dict[str, Any]) -> JsonDict:
     try:
         proj = None
         if scope.get("project"):
-            proj, _ = await Project.get_or_create(name=scope["project"])
+            proj, _ = await ProjectScope.get_or_create(name=scope["project"])
         sess = None
         if scope.get("session"):
-            sess = await Session.get_or_none(session_id=scope["session"])
+            sess = await SessionScope.get_or_none(session_id=scope["session"])
             if sess:
                 sess.phase = "case_opening"
                 sess.mode = mode

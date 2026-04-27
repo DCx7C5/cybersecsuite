@@ -21,10 +21,11 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Path
 from pydantic import BaseModel, Field, ConfigDict
 
-from db.models.scope import Project
+from db.models.scope import ProjectScope
 from db.models.worker import WorkerSession, WorkerState
-from db.worker_manager import (
+from db.managers.worker_manager import (
     WorkerStateMachine,
+    InvalidStateTransitionError,
 )
 
 logger = logging.getLogger(__name__)
@@ -102,7 +103,7 @@ async def validate_scope_access(
 async def _get_worker_for_transition(
     worker_id: str,
     scope: Any
-) -> tuple[WorkerSession, Project]:
+) -> tuple[WorkerSession, ProjectScope]:
     """Get worker and project, validating scope."""
     if not scope.project_id:
         raise HTTPException(

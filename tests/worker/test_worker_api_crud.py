@@ -19,7 +19,7 @@ from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 
-from db.models.scope import Project, Session
+from db.models.scope import ProjectScope, SessionScope
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 from api.routes.workers import router as workers_router
 
@@ -50,7 +50,7 @@ async def db_with_models():
 @pytest_asyncio.fixture
 async def test_project(db_with_models):
     """Create a test project."""
-    return await Project.create(
+    return await ProjectScope.create(
         name=f"test_project_{uuid4().hex[:8]}",
         description="Test project"
     )
@@ -59,7 +59,7 @@ async def test_project(db_with_models):
 @pytest_asyncio.fixture
 async def test_session(db_with_models, test_project):
     """Create a test session."""
-    return await Session.create(
+    return await SessionScope.create(
         session_id=f"sess_{uuid4().hex[:8]}",
         project=test_project,
         status="active"
@@ -322,7 +322,7 @@ async def test_get_worker_cross_project_access_denied(
 ):
     """Test cross-project worker access is denied."""
     # Create another project
-    other_project = await Project.create(
+    other_project = await ProjectScope.create(
         name=f"other_project_{uuid4().hex[:8]}"
     )
     

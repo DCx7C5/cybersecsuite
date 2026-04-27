@@ -7,7 +7,7 @@ from tortoise.models import Model
 class OpenCTIIndicatorIntel(Model):
     """Normalized OpenCTI indicators."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     stix_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     opencti_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     indicator_type = fields.CharField(max_length=64, default="", db_index=True)
@@ -44,7 +44,7 @@ class OpenCTIIndicatorIntel(Model):
 class OpenCTIEntityIntel(Model):
     """Normalized non-indicator STIX/OpenCTI entities."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     stix_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     opencti_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     entity_type = fields.CharField(max_length=64, db_index=True)

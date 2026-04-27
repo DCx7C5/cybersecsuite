@@ -6,7 +6,7 @@ from tortoise.models import Model
 class Prompt(Model):
     """A named, versioned prompt template."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     content = fields.TextField(description="The prompt text body.")
     category = fields.CharField(max_length=128, default="general", db_index=True)
@@ -17,4 +17,8 @@ class Prompt(Model):
 
     class Meta:
         table = "prompts"
+        table_description_plural = "Prompts"
+        table_description_singular = "Prompt"
         ordering = ["name"]
+        unique_together = ("name", "category")
+

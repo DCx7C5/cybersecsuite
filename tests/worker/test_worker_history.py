@@ -20,7 +20,7 @@ from httpx import AsyncClient, ASGITransport
 from fastapi import FastAPI, Request, status
 from tortoise import Tortoise
 
-from db.models.scope import Project
+from db.models.scope import ProjectScope
 from db.models.worker import WorkerSession, WorkerState
 from api.routes.worker_history import router as history_router
 
@@ -51,7 +51,7 @@ async def db_with_models():
 @pytest_asyncio.fixture
 async def test_project(db_with_models):
     """Create a test project."""
-    return await Project.create(
+    return await ProjectScope.create(
         name=f"test_project_{uuid4().hex[:8]}"
     )
 

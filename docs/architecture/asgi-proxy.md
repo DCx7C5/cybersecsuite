@@ -10,6 +10,7 @@ Starlette ASGI application — entry point for all HTTP traffic.
 |------------------------------|-------------------------------------|
 | `GET /health`                | Health check (DB + provider status) |
 | `/` (and `/api/*`, `/sse/*`) | Dashboard UI and REST/SSE API       |
+| `/api/workers/*`             | Worker management API (CRUD, metrics, lifecycle, history, batch) |
 | `/v1/*`                      | AI proxy (OpenAI-compatible)        |
 | `/a2a/*`                     | A2A JSON-RPC 2.0 server             |
 | `/.well-known/agent.json`    | Agent card discovery                |

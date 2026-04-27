@@ -23,12 +23,9 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends, status, Request
 from pydantic import BaseModel, Field
 
-from db.models.scope import Project
+from db.managers.worker_manager import InvalidStateTransitionError, WorkerStateMachine
+from db.models.scope import ProjectScope
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
-from db.worker_manager import (
-    WorkerStateMachine,
-    InvalidStateTransitionError,
-)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/workers/batch", tags=["worker-batch"])
@@ -211,12 +208,6 @@ async def _process_batch_operation(
                         f"Cannot start worker in {worker.current_state} state"
                     )
                 
-                state_machine = WorkerStateMachine(
-                    worker_id=worker_id,
-                    project_id=project_id,
-                    session_id=scope.session_id,
-                    worker_type=worker.worker_type
-                )
                 await state_machine.transition(
                     to_state=WorkerState.RUNNING,
                     reason=reason,
@@ -298,7 +289,7 @@ async def _process_batch_operation(
                     await worker.save()
                 
                 # Log audit trail
-                project = await Project.get(id=project_id)
+                project = await ProjectScope.get(id=project_id)
                 await WorkerAuditLog.create(
                     worker_id=worker_id,
                     project=project,
@@ -333,7 +324,7 @@ async def _process_batch_operation(
             
             # Log audit trail for failure
             try:
-                project = await Project.get(id=project_id)
+                project = await ProjectScope.get(id=project_id)
                 await WorkerAuditLog.create(
                     worker_id=worker_id,
                     project=project,

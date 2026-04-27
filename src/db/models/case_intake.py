@@ -14,7 +14,7 @@ from db.models.scope import ScopedEntry
 class CaseIntake(ScopedEntry):
     """Phase 0 case opening record — structured threat-hunting intake."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
 
     # Core intake fields
     title = fields.CharField(max_length=512, db_index=True)

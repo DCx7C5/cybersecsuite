@@ -9,7 +9,7 @@ from db.models.scope import ScopedEntry
 
 class SharedEntry(ScopedEntry):
     """General-purpose scoped data store (findings, IOCs, risks are written here initially)."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     value_type = fields.CharField(max_length=128, db_index=True)
     key = fields.CharField(max_length=512, default="")
     data = fields.JSONField(default=dict)
@@ -24,7 +24,7 @@ class AuditLog(ScopedEntry):
     Tracks user actions, resource accesses, and security events
     with full scope hierarchy support.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     user_id = fields.CharField(max_length=128, index=True)
     resource = fields.CharField(max_length=256, index=True)
     action = fields.CharField(max_length=64)

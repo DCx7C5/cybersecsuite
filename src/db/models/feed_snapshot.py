@@ -7,7 +7,7 @@ from tortoise.models import Model
 class ThreatIntelFeedSnapshot(Model):
     """Generic snapshots for arbitrary intelligence feeds under feeds/."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     provider = fields.CharField(max_length=64, default="generic", db_index=True)
     feed_name = fields.CharField(max_length=255)
     feed_kind = fields.CharField(max_length=64, default="snapshot", db_index=True)

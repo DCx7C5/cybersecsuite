@@ -14,7 +14,7 @@ class LlmSession(Model):
     the git worktree identity, not a UUID.
     """
 
-    sid = fields.CharField(max_length=12, pk=True)
+    sid = fields.BigIntField(max_length=12, pk=True)
     repo_root = fields.CharField(max_length=512, default="")
     branch = fields.CharField(max_length=256, default="")
     opened_at = fields.DatetimeField()

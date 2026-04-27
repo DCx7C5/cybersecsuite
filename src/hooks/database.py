@@ -25,7 +25,7 @@ except ImportError:  # pragma: no cover - direct script execution fallback
 # Bootstrap Tortoise ORM lazily to avoid import-time DB failures
 from db.bootstrap import init_tortoise_async
 
-from db.models.scope import Project, Session
+from db.models.scope import ProjectScope, SessionScope
 from db.models.investigation import (
     Finding,
     IOC,
@@ -69,12 +69,12 @@ async def get_or_create_project_async(
     project_name: str,
     description: str = "",
     path: str = ""
-) -> Project:
+) -> ProjectScope:
     """Get or create a project by name."""
     await ensure_database_initialized()
-    project = await Project.filter(name=project_name).first()
+    project = await ProjectScope.filter(name=project_name).first()
     if not project:
-        project = await Project.create(
+        project = await ProjectScope.create(
             name=project_name,
             description=description,
             path=path
@@ -89,12 +89,12 @@ async def get_or_create_session_async(
     description: str = "",
     path: str = "",
     agent: str = ""
-) -> Session:
+) -> SessionScope:
     """Get or create a session within a project."""
     project = await get_or_create_project_async(project_name)
-    session = await Session.filter(session_id=session_id).first()
+    session = await SessionScope.filter(session_id=session_id).first()
     if not session:
-        session = await Session.create(
+        session = await SessionScope.create(
             project=project,
             session_id=session_id,
             name=name or session_id,
@@ -135,8 +135,8 @@ class ScopeContext:
     ):
         self.project_name = project_name
         self.session_id = session_id
-        self._project: Optional[Project] = None
-        self._session: Optional[Session] = None
+        self._project: Optional[ProjectScope] = None
+        self._session: Optional[SessionScope] = None
 
     async def resolve_scope_async(self):
         """Resolve project/session objects."""
@@ -150,11 +150,11 @@ class ScopeContext:
             )
 
     @property
-    def project(self) -> Optional[Project]:
+    def project(self) -> Optional[ProjectScope]:
         return self._project
 
     @property
-    def session(self) -> Optional[Session]:
+    def session(self) -> Optional[SessionScope]:
         return self._session
 
 

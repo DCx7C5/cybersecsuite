@@ -9,7 +9,7 @@ from db.models.worker import (
     WorkerState,
     WorkerSession,
 )
-from db.worker_manager import (
+from db.managers.worker_manager import (
     WorkerStateMachine,
     WorkerStateQueryEngine,
     InvalidStateTransitionError,

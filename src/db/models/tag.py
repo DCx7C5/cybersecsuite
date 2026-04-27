@@ -9,7 +9,7 @@ from db.models.enums import TagColor
 
 class Tag(Model):
     """Reusable tag that can be applied to any entity."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=128, db_index=True)
     slug = fields.CharField(max_length=128, db_index=True, default="", unique=True)
     color = fields.CharEnumField(TagColor, default=TagColor.GRAY)

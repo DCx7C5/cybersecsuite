@@ -9,7 +9,7 @@ from db.models.enums import Severity, Confidence
 
 class AntiForensicTechnique(Model):
     """Detected anti-forensic or evasion technique."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="anti_forensic_techniques", db_index=True, null=True, on_delete=fields.SET_NULL)
     name = fields.CharField(max_length=255, db_index=True)
     category = fields.CharField(max_length=100, db_index=True, default="")
@@ -28,7 +28,7 @@ class AntiForensicTechnique(Model):
 
 class HardeningRecommendation(Model):
     """Hardening recommendation for the system."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="hardening_recommendations", db_index=True, null=True, on_delete=fields.SET_NULL)
     title = fields.CharField(max_length=255)
     category = fields.CharField(max_length=100, default="")

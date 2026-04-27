@@ -7,9 +7,9 @@ from tortoise import fields, models
 from db.models.enums import RedBlueMode
 
 
-class Project(Model):
+class ProjectScope(Model):
     """Project scope level — organizational container."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     path = fields.CharField(max_length=1024, default="")
@@ -20,15 +20,17 @@ class Project(Model):
 
     class Meta:
         table = "projects"
+        table_description_plural = "Project Scopes"
+        table_description_singular = "Project Scope"
         indexes = [
             models.Index(fields=["name"]),
             models.Index(fields=["is_active", "deleted_at"]),
         ]
 
 
-class Application(Model):
+class ApplicationScope(Model):
     """Application scope level — top-level application container."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
     path = fields.CharField(max_length=1024, default="")
@@ -39,6 +41,7 @@ class Application(Model):
 
     class Meta:
         table = "applications"
+        table_description_singular = "Application Scope"
         indexes = [
             models.Index(fields=["name"]),
             models.Index(fields=["is_active"]),
@@ -46,7 +49,7 @@ class Application(Model):
         unique_together = ["name"]
 
 
-class Session(Model):
+class SessionScope(Model):
     """Forensic root session — UUID-keyed anchor for all forensic artifacts.
 
     Every :class:`Finding`, :class:`IOC`, :class:`AuditLog`, :class:`Artifact`,
@@ -82,6 +85,8 @@ class Session(Model):
 
     class Meta:
         table = "sessions"
+        table_description_singular = "Session Scope"
+        table_description_plural = "Session Scopes"
         indexes = [
             models.Index(fields=["project_id", "is_active"]),
             models.Index(fields=["session_id", "project_id"]),

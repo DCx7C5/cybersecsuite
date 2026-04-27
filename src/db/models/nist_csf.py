@@ -7,7 +7,7 @@ from tortoise.models import Model
 class NistCsfControl(Model):
     """NIST CSF 2.0 subcategory — 185 entries across 6 functions."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     control_id = fields.CharField(max_length=32, unique=True, db_index=True)
     title = fields.TextField()
     function = fields.CharField(max_length=32, db_index=True)       # GOVERN/IDENTIFY/PROTECT/DETECT/RESPOND/RECOVER

@@ -14,7 +14,7 @@ from db.models.enums import Severity
 # =====================================================================
 class ComplianceRule(Model):
     """Compliance and regulatory requirements."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     rule_id = fields.CharField(max_length=100, unique=True, db_index=True)
     title = fields.CharField(max_length=255)
     description = fields.TextField(default="")
@@ -34,7 +34,7 @@ class ComplianceRule(Model):
 
 class ComplianceCheck(Model):
     """Compliance check results."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="compliance_checks")
     rule = fields.ForeignKeyField("models.ComplianceRule", related_name="check_results")
     status = fields.CharField(max_length=50)
@@ -55,7 +55,7 @@ class AgentRootPermission(Model):
     """Controls which agents are allowed to request root/sudo execution.
     This is a REFERENCE / POLICY layer only — agents MUST check these rules themselves.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
 
     # Which agent this rule applies to
     agent_name = fields.CharField(max_length=100, db_index=True)

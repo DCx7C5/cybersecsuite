@@ -9,7 +9,7 @@ from db.models.enums import Severity
 
 class Timeline(Model):
     """Investigation timeline entries."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="timeline_entries", db_index=True)
     timestamp = fields.DatetimeField(db_index=True)
     phase = fields.CharField(max_length=64)
@@ -22,12 +22,13 @@ class Timeline(Model):
 
     class Meta:
         table = "timeline_entries"
+        table_description_plural = "Timeline Entries"
         ordering = ["timestamp"]
 
 
 class ForensicArtifact(Model):
     """Collected forensic artifacts."""
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="artifacts", db_index=True)
     name = fields.CharField(max_length=255)
     artifact_type = fields.CharField(max_length=100, db_index=True)

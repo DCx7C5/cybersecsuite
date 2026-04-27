@@ -9,7 +9,7 @@ from db.models.scope import ScopedEntry
 
 
 class Kernel(ScopedEntry):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     version = fields.CharField(max_length=256, db_index=True)
     release = fields.CharField(max_length=256, default="", db_index=True)
@@ -27,7 +27,7 @@ class Kernel(ScopedEntry):
 
 
 class KernelModule(Model):
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     kernel = fields.ForeignKeyField("models.Kernel", related_name="modules", on_delete=fields.CASCADE)
     name = fields.CharField(max_length=256, db_index=True)
     size = fields.BigIntField(default=0)

@@ -27,7 +27,7 @@ from httpx import AsyncClient
 from fastapi import FastAPI, Request
 from tortoise import Tortoise
 
-from db.models.scope import Project, Session
+from db.models.scope import ProjectScope, SessionScope
 from db.models.worker import WorkerSession, WorkerState, WorkerAuditLog
 from api.routes.worker_batch import router as batch_router
 
@@ -60,7 +60,7 @@ async def db_with_models():
 @pytest_asyncio.fixture
 async def test_project(db_with_models):
     """Create a test project."""
-    return await Project.create(
+    return await ProjectScope.create(
         name=f"test_project_{uuid4().hex[:8]}",
         description="Test project for batch operations"
     )
@@ -69,7 +69,7 @@ async def test_project(db_with_models):
 @pytest_asyncio.fixture
 async def test_session(db_with_models, test_project):
     """Create a test session."""
-    return await Session.create(
+    return await SessionScope.create(
         session_id=f"session_{uuid4().hex[:16]}",
         project=test_project,
         name="Test Session"
@@ -517,7 +517,7 @@ async def test_batch_start_max_workers(test_project, mock_scope_context):
 async def test_batch_start_scope_enforcement(test_project, test_workers, db_with_models):
     """Test batch operations enforce project scope."""
     # Create second project
-    other_project = await Project.create(
+    other_project = await ProjectScope.create(
         name=f"other_project_{uuid4().hex[:8]}",
         description="Another project"
     )

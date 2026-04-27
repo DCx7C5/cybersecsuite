@@ -134,6 +134,8 @@ class ApiServiceEvent(Model):
 
     class Meta:
         table = "api_service_events"
+        table_description_plural = "API Service Events"
+        table_description_singular = "API Service Event"
         # Composite index for session + timestamp queries (most common)
         indexes = [
             ("session_id", "created_at"),

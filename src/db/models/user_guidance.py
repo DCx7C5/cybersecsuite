@@ -21,7 +21,7 @@ class UserRule(Model):
     walked in ascending index order; the first match determines the
     action.  Semantics mirror iptables: chain → match → target.
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField(
         "models.Session", related_name="user_rules",
         on_delete=fields.CASCADE, db_index=True,
@@ -84,7 +84,7 @@ class UserSuggestion(Model):
     The optional ``weight`` lets the user signal relative importance
     (higher = more important, default 1.0).
     """
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField(
         "models.Session", related_name="user_suggestions",
         on_delete=fields.CASCADE, db_index=True,

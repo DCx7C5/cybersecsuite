@@ -6,7 +6,7 @@ from tortoise.models import Model
 class IntelFeedSource(Model):
     """A managed intelligence feed source (RSS, ATOM, JSON, or HTML scrape)."""
 
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(pk=True)
     name = fields.CharField(max_length=255)
     url = fields.CharField(max_length=2048, unique=True)
     feed_type = fields.CharField(max_length=32, default="rss")  # rss | atom | json | html

@@ -15,7 +15,7 @@ from typing import Any, Optional
 from tortoise.transactions import in_transaction
 
 from db.models.worker import WorkerSession, WorkerState
-from db.models.scope import Project, Session as DBSession
+from db.models.scope import ProjectScope, SessionScope as DBSession
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class WorkerSessionManager:
             SessionStateError: If save fails
         """
         try:
-            project = await Project.get_or_none(id=self.project_id)
+            project = await ProjectScope.get_or_none(id=self.project_id)
             if not project:
                 raise SessionStateError(f"Project {self.project_id} not found")
             

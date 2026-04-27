@@ -7,7 +7,7 @@ from tortoise.models import Model
 class CVEIntel(Model):
     """Canonical CVE records from intelligence CVE feeds."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     cve_id = fields.CharField(max_length=32, unique=True, db_index=True)
     cvss_score = fields.FloatField(null=True, db_index=True)
     cvss_vector = fields.CharField(max_length=128, default="", description="CVSS vector string.")

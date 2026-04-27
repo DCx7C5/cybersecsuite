@@ -7,7 +7,7 @@ from tortoise.models import Model
 class MitreThreatActorIntel(Model):
     """MITRE ATT&CK threat actor/group catalog from shared actor snapshots."""
 
-    id = fields.IntField(primary_key=True)
+    id = fields.BigIntField(primary_key=True)
     actor_name = fields.CharField(max_length=255, unique=True, db_index=True)
     description = fields.TextField(null=True)
     aliases = fields.JSONField(default=list, description="Known alternative names.")

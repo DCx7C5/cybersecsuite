@@ -25,6 +25,11 @@ class ApiService(Model):
 
     class Meta:
         table = "api_services"
+        table_description_plural = "Api Services"
+        table_description_singular = "Api Service"
+        ordering = ["id"]
+        ordering_field = "id"
+
 
     def __str__(self):
         return f"ApiService({self.id})"
@@ -46,8 +51,9 @@ class ApiServiceAuthMethod(Model):
 
     class Meta:
         table = "api_service_auth_methods"
+        table_description_plural = "Api Service Authentification Methods"
+        table_description_singular = "Api Service Authentification Method"
+        ordering = ["api_service_id", "auth_method"]
+        ordering_field = "api_service_id"
         unique_together = (("api_service_id", "auth_method"),)
         indexes = (("api_service_id", "revoked_at"),)
-
-    def __str__(self):
-        return f"ApiServiceAuthMethod({self.api_service_id}, {self.auth_method})"
