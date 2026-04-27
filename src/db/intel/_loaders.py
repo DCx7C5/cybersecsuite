@@ -1,5 +1,5 @@
 """Feed parsers and MITRE helpers — MISP, OpenCTI, STIX, CWE XML, MITRE ATT&CK."""
-from __future__ import annotations
+
 
 import hashlib
 import json

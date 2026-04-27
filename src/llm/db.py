@@ -4,7 +4,7 @@ These helpers bypass Tortoise ORM so they can be called from
 scripts/worktree-session-manager.py (which may run outside the ASGI process)
 and from fire-and-forget background tasks.
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

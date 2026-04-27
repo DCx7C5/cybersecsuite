@@ -12,7 +12,7 @@ Routes:
   GET    /v1/files/{file_id}/download    — download file content
   DELETE /v1/files/{file_id}             — delete a file
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any

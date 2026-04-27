@@ -1,5 +1,5 @@
 """Scope hierarchy — the foundation every other model depends on."""
-from __future__ import annotations
+
 
 from tortoise.models import Model
 from tortoise import fields, models

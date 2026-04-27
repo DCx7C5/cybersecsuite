@@ -7,7 +7,7 @@ Implements state machine logic:
 - Query/filter by state
 - Event logging and audit trail
 """
-from __future__ import annotations
+
 
 import logging
 from datetime import datetime

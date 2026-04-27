@@ -3,7 +3,7 @@
 Manages three-layer scope hierarchy (global/app/project) for runtime options
 that control MCP servers, sub-agents, permissions, model selection, and hooks.
 """
-from __future__ import annotations
+
 
 import asyncio
 from typing import Any, Literal

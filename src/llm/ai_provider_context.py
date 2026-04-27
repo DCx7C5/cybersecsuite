@@ -6,7 +6,7 @@ Referenz:
     src/llm/client.py — LLM client integration
     src/ai_proxy/routing/combo.py — Routing engine
 """
-from __future__ import annotations
+
 
 import logging
 from dataclasses import dataclass, field

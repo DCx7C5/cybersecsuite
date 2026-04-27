@@ -1,5 +1,5 @@
 """Session linking - connects DB Session model to Claude SDK session IDs."""
-from __future__ import annotations
+
 
 import logging
 from typing import TYPE_CHECKING

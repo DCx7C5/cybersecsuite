@@ -2,7 +2,7 @@
 Agent Registry — discovers, registers, and resolves remote A2A agents by skill.
 Also supports loading agents from .claude/agents/*.md frontmatter definitions.
 """
-from __future__ import annotations
+
 
 import asyncio
 from pathlib import Path

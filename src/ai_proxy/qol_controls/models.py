@@ -38,7 +38,7 @@ Version: 1.0
 Last modified: 2026-04-26 06:00:00Z
 Author: python-developer
 """
-from __future__ import annotations
+
 
 from enum import Enum
 from typing import Any

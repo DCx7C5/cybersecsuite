@@ -4,7 +4,7 @@ VaultManager — scaffold and manage a CyberSecSuite forensic Obsidian vault.
 Adapted from the claude-obsidian wiki pattern for forensic/security domains.
 Provides: scaffold, ingest (with delta-tracking), query, lint, status.
 """
-from __future__ import annotations
+
 
 import hashlib
 import json

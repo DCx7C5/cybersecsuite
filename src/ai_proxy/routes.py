@@ -4,7 +4,7 @@ AI Proxy ASGI Routes — /v1/chat/completions, /v1/models, /v1/usage, /v1/tokens
 Drop-in OpenAI-compatible proxy with multi-provider routing, format
 translation, rate limiting, and cost tracking.
 """
-from __future__ import annotations
+
 
 import logging
 import time

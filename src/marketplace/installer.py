@@ -9,8 +9,6 @@ Referenz:
     src/marketplace/registry.py — MarketplaceRegistry
     src/marketplace/manifest.py — ManifestParser
 """
-from __future__ import annotations
-
 import json
 import logging
 import shutil
@@ -20,7 +18,7 @@ from typing import Any
 
 from marketplace.manifest import ManifestParser
 from marketplace.models import MarketplaceItem, MarketplaceItemStatus
-from marketplace.registry import get_registry
+from marketplace.registry import get_registry, get_item, list_installed
 
 logger = logging.getLogger("marketplace.installer")
 
@@ -79,7 +77,7 @@ class PackageInstaller:
         """
         try:
             # Get the item from registry
-            item = self.registry.get_item(item_id)
+            item = get_item(item_id)
             if item is None:
                 return InstallationResult(
                     success=False,
@@ -179,7 +177,7 @@ class PackageInstaller:
                 return
             visited.add(item_id)
 
-            item = self.registry.get_item(item_id)
+            item = get_item(item_id)
             if item is None:
                 raise DependencyResolutionError(
                     f"Dependency not found in marketplace: {item_id}"
@@ -303,7 +301,7 @@ class PackageInstaller:
             ValidationReport with overall status and per-item results.
         """
         report = ValidationReport()
-        installed_items = self.registry.list_installed()
+        installed_items = list_installed()
 
         for item in installed_items:
             try:

@@ -1,5 +1,5 @@
 """Async decorators for timing and counting functions via MetricsStore."""
-from __future__ import annotations
+
 
 import functools
 import time

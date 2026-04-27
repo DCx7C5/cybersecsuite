@@ -7,7 +7,7 @@ Implements:
 - Rollback: Automatic rollback on validation failure or test failure
 - Audit trail: Full execution history with timing and risk scores
 """
-from __future__ import annotations
+
 
 import hashlib
 import logging

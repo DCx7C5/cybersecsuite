@@ -4,7 +4,7 @@ Scope and permission exception classes for CyberSecSuite.
 Provides structured exception types for scope validation failures,
 permission denials, and resource access errors.
 """
-from __future__ import annotations
+
 
 from typing import Any, Optional
 

@@ -8,7 +8,7 @@ Provides:
 - Audit logging integration
 - Error handling with proper HTTP status codes
 """
-from __future__ import annotations
+
 
 import logging
 import time

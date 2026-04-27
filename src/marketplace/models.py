@@ -6,7 +6,7 @@ Referenz:
     src/marketplace/registry.py — in-memory catalog
     src/marketplace/__init__.py — public API
 """
-from __future__ import annotations
+
 
 from datetime import datetime
 from enum import Enum

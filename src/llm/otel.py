@@ -3,7 +3,7 @@
 Call `setup_otel()` once during ASGI lifespan startup (or at process init).
 Afterwards use `get_tracer()` / `get_meter()` everywhere.
 """
-from __future__ import annotations
+
 
 import base64
 import os

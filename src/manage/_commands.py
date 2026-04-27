@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Command implementations for manage.py."""
 
-from __future__ import annotations
+
 
 import sys
 import json

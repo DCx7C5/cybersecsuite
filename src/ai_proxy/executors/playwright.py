@@ -7,7 +7,7 @@ Claude web, ChatGPT web, etc.).
 
 Requires: playwright, playwright-stealth
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

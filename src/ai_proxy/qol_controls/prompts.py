@@ -44,7 +44,7 @@ Version: 1.0
 Last modified: 2026-04-26 06:00:00Z
 Author: python-developer
 """
-from __future__ import annotations
+
 
 from ai_proxy.qol_controls.models import QoLToggle
 

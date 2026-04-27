@@ -5,7 +5,7 @@ Mounts at /a2a and serves:
   POST /a2a                     → JSON-RPC dispatch
   GET  /a2a/stream/{task_id}    → SSE streaming
 """
-from __future__ import annotations
+
 
 import json
 import time
@@ -32,9 +32,6 @@ from a2a.models import (
 )
 from a2a.enums import MessageRole, PartType
 from a2a.otel import (
-    trace_jsonrpc_method,
-    trace_task_operation,
-    trace_sse_stream,
     check_jsonrpc_baseline,
     check_task_baseline,
 )

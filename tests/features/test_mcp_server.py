@@ -3,7 +3,7 @@
 import pytest
 
 try:
-    from csmcp import all_servers, allowed_tools
+    from cssmcp import all_servers, allowed_tools
 
     MCP_AVAILABLE = True
 except ImportError:

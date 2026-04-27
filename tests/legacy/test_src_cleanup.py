@@ -382,7 +382,7 @@ class TestFlowchartCompleteness:
         [
             "ai_proxy",
             "a2a",
-            "csmcp",
+            "cssmcp",
             "OpenObserve",
             "PostgreSQL",
             "claude_agent_sdk",

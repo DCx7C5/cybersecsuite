@@ -12,7 +12,7 @@ Routes:
   POST   /v1/messages/batches/{id}/cancel        — cancel a batch
   DELETE /v1/messages/batches/{id}               — delete a completed batch
 """
-from __future__ import annotations
+
 
 import json
 import logging

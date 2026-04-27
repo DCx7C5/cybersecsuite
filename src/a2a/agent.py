@@ -2,7 +2,7 @@
 A2A Agent base class.
 Subclass this to implement a custom A2A-compatible agent.
 """
-from __future__ import annotations
+
 
 import abc
 from typing import AsyncIterator, Optional

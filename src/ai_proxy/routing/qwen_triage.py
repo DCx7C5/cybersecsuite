@@ -6,7 +6,7 @@ Referenz:
     src/ai_proxy/routing/combo.py — Routing engine
     src/llm/ai_provider_context.py — AIProviderContext
 """
-from __future__ import annotations
+
 
 import hashlib
 import logging

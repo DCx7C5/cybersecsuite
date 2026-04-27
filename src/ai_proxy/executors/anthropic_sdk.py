@@ -6,7 +6,7 @@ Replaces the raw-httpx AnthropicExecutor for ApiFormat.ANTHROPIC providers.
 Set CCS_AIOHTTP=1 to use the aiohttp backend for higher-concurrency workloads.
 Requires: pip install anthropic[aiohttp]
 """
-from __future__ import annotations
+
 
 import json
 import logging

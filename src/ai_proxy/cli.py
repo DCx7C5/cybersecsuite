@@ -14,7 +14,7 @@ Usage:
     cybersec-proxy chat "prompt" --free          # Use free providers only
     cybersec-proxy serve             # Start the proxy server
 """
-from __future__ import annotations
+
 
 import argparse
 import asyncio
@@ -182,7 +182,7 @@ async def cmd_marketplace(args: argparse.Namespace) -> None:
     if args.mp_command == "list":
         kind = getattr(args, "kind", None)
         provider = getattr(args, "provider", None)
-        items = reg.list_items(kind=kind, provider=provider)
+        items = list_items(kind=kind, provider=provider)
         rows = [
             {
                 "id": i.id,
@@ -214,14 +214,14 @@ async def cmd_marketplace(args: argparse.Namespace) -> None:
             sys.exit(1)
 
     elif args.mp_command == "info":
-        item = reg.get_item(args.item_id)
+        item = get_item(args.item_id)
         if item is None:
             print(f"Error: item {args.item_id!r} not found", file=sys.stderr)
             sys.exit(1)
         _print_json(item.model_dump(mode="json"))
 
     elif args.mp_command == "search":
-        items = reg.search(args.query)
+        items = search(args.query)
         rows = [
             {
                 "id": i.id,

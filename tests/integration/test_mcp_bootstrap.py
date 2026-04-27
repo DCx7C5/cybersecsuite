@@ -133,7 +133,7 @@ class TestSDKModeConfiguration:
         env.pop("SDK_MODE", None)
         
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
             capture_output=True,
             text=True,
             env=env,
@@ -151,7 +151,7 @@ class TestSDKModeConfiguration:
         env["EXTERNAL_MCPS_ENABLED"] = "true"
         
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
             capture_output=True,
             text=True,
             env=env,
@@ -168,7 +168,7 @@ class TestSDKModeConfiguration:
         env["EXTERNAL_MCPS_ENABLED"] = "false"
         
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
             capture_output=True,
             text=True,
             env=env,
@@ -185,7 +185,7 @@ class TestSDKModeConfiguration:
         env["EXTERNAL_MCPS_ENABLED"] = "true"
         
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
             capture_output=True,
             text=True,
             env=env,
@@ -201,7 +201,7 @@ class TestSDKModeConfiguration:
             [
                 sys.executable,
                 "-c",
-                "from csmcp import all_servers; import json; s = all_servers(); print(json.dumps(list(s.keys())))",
+                "from cssmcp import all_servers; import json; s = all_servers(); print(json.dumps(list(s.keys())))",
             ],
             capture_output=True,
             text=True,
@@ -224,7 +224,7 @@ class TestSDKModeConfiguration:
             [
                 sys.executable,
                 "-c",
-                "from csmcp import allowed_tools; import json; t = allowed_tools(); print(json.dumps(t))",
+                "from cssmcp import allowed_tools; import json; t = allowed_tools(); print(json.dumps(t))",
             ],
             capture_output=True,
             text=True,
@@ -247,7 +247,7 @@ class TestSDKModeConfiguration:
                 sys.executable,
                 "-c",
                 """
-from csmcp import get_external_mcps_status
+from cssmcp import get_external_mcps_status
 import json
 status = get_external_mcps_status()
 print(json.dumps(status))
@@ -297,7 +297,7 @@ class TestMCPInstallation:
         """Test that MCP source directory exists."""
         if mcp_name == "custom-mcp":
             # Custom MCP in CyberSecSuite
-            mcp_path = PROJECT_ROOT / "src" / "csmcp" / "mcps" / mcp_name
+            mcp_path = PROJECT_ROOT / "src" / "cssmcp" / "mcps" / mcp_name
         else:
             # Other MCPs in marketplace
             mcp_path = MARKETPLACE_ROOT / "mcps" / mcp_name
@@ -312,7 +312,7 @@ class TestCyberSecSuiteIntegration:
     def test_cybersecsuite_source_exists(self) -> None:
         """Test that CyberSecSuite source exists."""
         assert PROJECT_ROOT.exists(), f"CyberSecSuite root not found: {PROJECT_ROOT}"
-        assert (PROJECT_ROOT / "src" / "csmcp").exists(), "csmcp module not found"
+        assert (PROJECT_ROOT / "src" / "cssmcp").exists(), "cssmcp module not found"
         assert (PROJECT_ROOT / "pyproject.toml").exists(), "pyproject.toml not found"
 
     def test_bootstrap_docs_exist(self) -> None:
@@ -423,7 +423,7 @@ class TestEnvironmentConfiguration:
             env.update(env_vars)
             
             result = subprocess.run(
-                [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+                [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
                 capture_output=True,
                 text=True,
                 env=env,
@@ -439,7 +439,7 @@ class TestEnvironmentConfiguration:
         env["SDK_MODE"] = "invalid_mode"
         
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
             capture_output=True,
             text=True,
             env=env,

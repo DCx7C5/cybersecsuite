@@ -8,7 +8,7 @@ Provides tracing for A2A server operations:
 
 Service Name: cybersecsuite-a2a
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Callable, Optional
@@ -17,7 +17,6 @@ from functools import wraps
 from opentelemetry import trace, metrics
 from opentelemetry.trace import Status, StatusCode
 from opentelemetry.trace.span import Span
-from opentelemetry.metrics import Counter, Histogram
 
 logger = logging.getLogger("a2a.otel")
 

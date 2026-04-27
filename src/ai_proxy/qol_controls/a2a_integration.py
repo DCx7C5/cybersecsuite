@@ -19,7 +19,7 @@ Thread safety:
     - All message publishing is async and non-blocking
     - All subscribe callbacks are async-safe
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

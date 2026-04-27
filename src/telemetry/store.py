@@ -1,6 +1,6 @@
 """In-process metrics store with ring-buffer per key and percentile summaries."""
 
-from __future__ import annotations
+
 
 import asyncio
 import math

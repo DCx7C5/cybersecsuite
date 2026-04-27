@@ -5,7 +5,7 @@ Referenz:
     src/marketplace/registry.py — MarketplaceRegistry, get_registry
     src/marketplace/models.py — MarketplaceItem, MarketplaceItemStatus
 """
-from __future__ import annotations
+
 
 from marketplace.registry import MarketplaceRegistry, get_registry
 from marketplace.models import MarketplaceItem, MarketplaceItemStatus

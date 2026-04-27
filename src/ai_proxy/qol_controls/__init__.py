@@ -5,7 +5,7 @@ Provides:
     - Prompt fragments               (prompts.py)
     - Manager: build + inject        (manager.py)
 """
-from __future__ import annotations
+
 
 from ai_proxy.qol_controls.models import QoLToggle, QoLSettings, QoLSecurityError, validate_toggle_combo
 from ai_proxy.qol_controls.manager import QoLManager, get_manager

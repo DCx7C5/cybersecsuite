@@ -5,7 +5,7 @@ Referenz:
     src/marketplace/models.py — MarketplaceItem, ProviderMeta
     src/marketplace/registry.py — seed() call-site
 """
-from __future__ import annotations
+
 
 from marketplace.models import MarketplaceItem, ProviderMeta
 

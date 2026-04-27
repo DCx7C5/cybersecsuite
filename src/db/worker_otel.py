@@ -8,7 +8,7 @@ Provides tracing for worker lifecycle:
 
 Service Name: cybersecsuite-worker
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Optional, Callable
@@ -17,8 +17,6 @@ import time
 
 from opentelemetry import trace, metrics
 from opentelemetry.trace import Status, StatusCode
-from opentelemetry.trace.span import Span
-from opentelemetry.metrics import Counter, Histogram
 
 logger = logging.getLogger("db.worker.otel")
 

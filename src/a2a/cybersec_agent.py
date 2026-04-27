@@ -3,7 +3,7 @@ Cybersecurity A2A Agent — concrete implementation wired to the cybersecsuite.
 Handles cybersecurity tasks: CVE lookup, IOC analysis, MITRE ATT&CK, artifacts.
 Fully integrated with db ORM models and crypto signing.
 """
-from __future__ import annotations
+
 
 from typing import Any, Optional
 from datetime import datetime, timezone

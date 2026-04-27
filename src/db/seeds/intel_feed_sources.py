@@ -1,5 +1,5 @@
 """Seed curated cybersecurity intelligence feed sources."""
-from __future__ import annotations
+
 
 from db.models.intel_feed_source import IntelFeedSource
 

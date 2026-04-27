@@ -1,5 +1,5 @@
 """Telemetry package — module-level singleton and convenience helpers."""
-from __future__ import annotations
+
 
 from telemetry.store import MetricSummary, MetricsStore, TelemetryEvent
 

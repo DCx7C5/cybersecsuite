@@ -10,14 +10,13 @@ Provides tracing for business-level metrics:
 
 Service Name: cybersecsuite-business
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Optional
 from dataclasses import dataclass
 
 from opentelemetry import metrics
-from opentelemetry.metrics import Counter, Histogram, UpDownCounter
 
 logger = logging.getLogger("business.otel")
 

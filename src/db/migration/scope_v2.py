@@ -21,7 +21,7 @@ Reference:
     plan.md §1 Scope Model (5 Levels)
     src/db/models/scope.py — ScopedEntry abstract base
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

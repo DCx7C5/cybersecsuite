@@ -102,7 +102,7 @@ Version: 1.1
 Last modified: 2026-04-27 10:00:00Z
 Author: python-developer
 """
-from __future__ import annotations
+
 
 import hashlib
 import json

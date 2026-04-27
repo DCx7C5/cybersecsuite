@@ -4,7 +4,7 @@ Executor layer — dispatch requests to upstream LLM providers.
 Base class with retry logic,
 provider-specific subclasses for auth/URL differences.
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

@@ -6,14 +6,14 @@ from tortoise.models import Model
 class ApiService(Model):
     """AI API service configuration stored in DB."""
     id = fields.CharField(max_length=40, pk=True)
-    name = fields.CharField(max_length=80)
-    base_url = fields.CharField(max_length=255)
-    auth_type = fields.CharField(max_length=12)
+    name = fields.CharField(max_length=80, unique=True)
+    base_url = fields.CharField(max_length=255, unique=True)
+    auth_type = fields.CharField(max_length=12, default="web")
     auth_header = fields.CharField(max_length=20, default="Authorization")
     auth_prefix = fields.CharField(max_length=10, default="Bearer")
     api_format = fields.CharField(max_length=10, default="openai")
     env_key = fields.CharField(max_length=40)
-    is_free = fields.BooleanField(default=False)
+    is_free = fields.BooleanField(default=False, null=True, index=True, description="Whether this service is free to use (no API key required).")
     enabled = fields.BooleanField(default=True)
     max_retries = fields.IntField(default=3)
     timeout_seconds = fields.IntField(default=60)

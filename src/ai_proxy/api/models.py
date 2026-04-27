@@ -5,7 +5,7 @@ Routes:
   GET /v1/models/live               — list all models from Anthropic's API
   GET /v1/models/live/{model_id}    — retrieve a specific model's metadata
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any

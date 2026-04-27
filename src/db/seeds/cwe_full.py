@@ -5,7 +5,7 @@ CWE API: https://cwe.mitre.org/data/json/
 Downloads full CWE list as JSON.  Results are cached to data/fixtures/cwe_full.json
 so subsequent runs skip the network request.
 """
-from __future__ import annotations
+
 
 import json
 import logging

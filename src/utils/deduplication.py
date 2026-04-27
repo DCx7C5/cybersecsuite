@@ -10,7 +10,7 @@ Patterns:
   - `deduplicate_by_key()` — Remove duplicates based on a comparison key
   - `are_messages_similar()` — Check if two messages are similar (content-based)
 """
-from __future__ import annotations
+
 
 from typing import Any, Callable, Iterable, Sequence, TypeVar
 

@@ -7,7 +7,7 @@ Logs all scope-related permission checks to audit_log table:
 - No PII logged (IDs only, no usernames)
 - Async writes with minimal latency (< 1ms)
 """
-from __future__ import annotations
+
 
 import logging
 import asyncio

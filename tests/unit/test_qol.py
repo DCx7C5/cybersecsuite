@@ -5,7 +5,7 @@ Referenz:
     src/ai_proxy/qol_controls/models.py
     src/ai_proxy/qol_controls/prompts.py
     src/ai_proxy/qol_controls/manager.py
-    src/csmcp/cybersec/qol_tools.py
+    src/cssmcp/cybersec/qol_tools.py
     src/dashboard/api/qol.py
 """
 from __future__ import annotations

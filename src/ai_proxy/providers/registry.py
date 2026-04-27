@@ -6,7 +6,7 @@ auth scheme, API format, model list, and cost metadata.
 Supports custom providers loaded from YAML config or environment,
 including Playwright-based browser automation providers.
 """
-from __future__ import annotations
+
 
 import logging
 import os

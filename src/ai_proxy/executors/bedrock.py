@@ -6,7 +6,7 @@ Env vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION (or BEDRO
 
 Register as a provider with api_format=ApiFormat.BEDROCK.
 """
-from __future__ import annotations
+
 
 import json
 import logging

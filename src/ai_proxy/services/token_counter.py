@@ -4,7 +4,7 @@ Token Counter Service — pre-request token estimation via Anthropic SDK.
 Wraps client.messages.count_tokens() to count tokens before sending,
 enabling smarter routing decisions and pre-flight budget checks.
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any

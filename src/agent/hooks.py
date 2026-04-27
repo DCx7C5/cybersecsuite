@@ -4,7 +4,7 @@ Provides four hooks for use in ClaudeAgentOptions.hooks:
   - security_hook   (PreToolUse)   — block dangerous commands
   - audit_hook      (PreToolUse)   — log every tool call
 """
-from __future__ import annotations
+
 
 import re
 from typing import Any
@@ -118,9 +118,9 @@ async def ioc_hook(
 
     if iocs:
         logger.info("ioc_hook found: %s", {k: len(v) for k, v in iocs.items()})
-        # Best-effort store to csmcp add_ioc
+        # Best-effort store to cssmcp add_ioc
         try:
-            from csmcp.cybersec.findings import add_ioc
+            from cssmcp.cybersec.findings import add_ioc
             for ioc_type, values in iocs.items():
                 for value in values[:5]:  # cap at 5 per type
                     await add_ioc.handler({

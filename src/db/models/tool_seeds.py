@@ -4,7 +4,7 @@ Seed helpers for ToolRegistry and ApiServiceModel tables.
 seed_tool_registry()  — populate ToolRegistry from live MCP tools + known SDK builtins
 seed_api_service_models() — populate ApiServiceModel from API service registry / pricing data
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any
@@ -93,7 +93,7 @@ async def seed_tool_registry() -> dict[str, Any]:
 
     # ── 1. MCP tools from live servers ───────────────────────────────────────
     try:
-        from csmcp.cybersec import _ALL_CYBERSEC_TOOLS
+        from cssmcp.cybersec import _ALL_CYBERSEC_TOOLS
         for tool_fn in _ALL_CYBERSEC_TOOLS:
             name = getattr(tool_fn, "_sdk_tool_name", None) or getattr(tool_fn, "__name__", None)
             if not name:
@@ -122,7 +122,7 @@ async def seed_tool_registry() -> dict[str, Any]:
         logger.warning("Could not load cybersec tools: %s", e)
 
     try:
-        from csmcp.dystopian import _ALL_DYSTOPIAN_TOOLS
+        from cssmcp.dystopian import _ALL_DYSTOPIAN_TOOLS
         for tool_fn in _ALL_DYSTOPIAN_TOOLS:
             name = getattr(tool_fn, "_sdk_tool_name", None) or getattr(tool_fn, "__name__", None)
             if not name:

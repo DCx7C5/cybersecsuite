@@ -7,6 +7,6 @@ Placeholder for future implementation:
 - Verify security constraints
 - Check coverage requirements
 """
-from __future__ import annotations
+
 
 __all__ = []

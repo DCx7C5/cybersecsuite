@@ -3,7 +3,7 @@
 Provides a high-level interface for running forensic agent queries
 with session persistence, mode switching, and streaming support.
 """
-from __future__ import annotations
+
 
 from agent import getLogger
 from collections.abc import AsyncGenerator

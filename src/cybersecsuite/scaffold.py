@@ -3,7 +3,7 @@
 Usage (standalone):
     python -m cybersecsuite.scaffold [project_dir]
 """
-from __future__ import annotations
+
 
 import importlib.resources as _res
 import logging

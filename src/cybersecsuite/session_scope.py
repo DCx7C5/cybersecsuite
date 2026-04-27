@@ -5,7 +5,7 @@ SDK sessions live under:
 
 The scope name is controlled by CYBERSEC_SESSION_SCOPE.
 """
-from __future__ import annotations
+
 
 import os
 import re

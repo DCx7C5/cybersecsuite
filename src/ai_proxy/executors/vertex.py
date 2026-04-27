@@ -7,7 +7,7 @@ Env vars: VERTEX_PROJECT_ID, VERTEX_REGION (default: us-east5)
 
 Register as a provider with api_format=ApiFormat.VERTEX.
 """
-from __future__ import annotations
+
 
 import json
 import logging

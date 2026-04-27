@@ -7,7 +7,7 @@ SID resolution order:
   4. ``.worktree-session`` file walk (current dir → repo root)
   5. ``"global"`` fallback
 """
-from __future__ import annotations
+
 
 import logging
 import os

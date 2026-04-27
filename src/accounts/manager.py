@@ -1,7 +1,4 @@
 """AccountManager singleton for persisted provider/account credential management."""
-
-from __future__ import annotations
-
 import json
 import os
 from typing import Any
@@ -14,18 +11,18 @@ from crypto.vault import SecretNotFoundError, Vault
 class AccountManager:
     """Singleton for managing provider accounts with vault-backed secrets."""
 
-    _instance: "AccountManager | None" = None
+    _instance: AccountManager | None = None
 
     def __init__(self) -> None:
         self._vault: Vault | None = None
         self._env_mode: bool = False
 
     @classmethod
-    def instance(cls) -> "AccountManager | None":
+    def instance(cls) -> AccountManager | None:
         return cls._instance
 
     @classmethod
-    def initialize(cls, vault_dir: str | None = None, env_only: bool = False) -> "AccountManager":
+    def initialize(cls, vault_dir: str | None = None, env_only: bool = False) -> AccountManager | None:
         if cls._instance is None:
             cls._instance = cls()
             cls._instance._vault = Vault(vault_dir) if vault_dir else Vault()

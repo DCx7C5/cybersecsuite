@@ -160,7 +160,7 @@ class TestBootstrapIntegration:
     def test_bootstrap_core_installation(self) -> None:
         """Verify core SDK mode is available."""
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode; print(get_sdk_mode())"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode; print(get_sdk_mode())"],
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
@@ -178,7 +178,7 @@ class TestBootstrapIntegration:
                 sys.executable,
                 "-c",
                 """
-from csmcp import all_servers
+from cssmcp import all_servers
 import json
 servers = all_servers()
 print(json.dumps(list(servers.keys())))
@@ -195,7 +195,7 @@ print(json.dumps(list(servers.keys())))
     def test_bootstrap_verification_summary(self) -> None:
         """Verify bootstrap generates verification summary."""
         result = subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_external_mcps_status; print(get_external_mcps_status())"],
+            [sys.executable, "-c", "from cssmcp import get_external_mcps_status; print(get_external_mcps_status())"],
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
@@ -210,7 +210,7 @@ print(json.dumps(list(servers.keys())))
         start = time.time()
         
         subprocess.run(
-            [sys.executable, "-c", "from csmcp import get_sdk_mode"],
+            [sys.executable, "-c", "from cssmcp import get_sdk_mode"],
             capture_output=True,
             text=True,
             cwd=str(PROJECT_ROOT),
@@ -227,7 +227,7 @@ print(json.dumps(list(servers.keys())))
                 sys.executable,
                 "-c",
                 """
-from csmcp import get_sdk_mode, all_servers
+from cssmcp import get_sdk_mode, all_servers
 mode = get_sdk_mode()
 servers = all_servers()
 print(f"Mode: {mode}, Servers: {len(servers)}")
@@ -485,7 +485,7 @@ class TestIntegrationHealthChecks:
                 sys.executable,
                 "-c",
                 """
-from csmcp import get_sdk_mode, all_servers
+from cssmcp import get_sdk_mode, all_servers
 mode = get_sdk_mode()
 servers = all_servers()
 print(f"OK:{mode}:{len(servers)}")

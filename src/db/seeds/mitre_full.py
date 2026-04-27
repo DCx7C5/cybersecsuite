@@ -5,7 +5,7 @@ Results are cached to data/fixtures/mitre_techniques_full.json,
 data/fixtures/mitre_actors_full.json, and data/fixtures/mitre_software_full.json
 so subsequent runs skip the network request.
 """
-from __future__ import annotations
+
 
 import json
 import logging

@@ -1,5 +1,5 @@
 """Built-in provider registrations — imported for side-effects by registry."""
-from __future__ import annotations
+
 
 import os
 from pathlib import Path

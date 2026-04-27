@@ -5,7 +5,7 @@ Supports all .claude agent frontmatter fields:
   name, description, model, maxTurns, tools, disallowedTools,
   role (orchestrator, team-mode), default, effort, alias, loaded-by
 """
-from __future__ import annotations
+
 
 import re
 from pathlib import Path

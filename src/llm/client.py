@@ -11,7 +11,7 @@ Usage::
     # Non-streaming (returns anthropic.types.Message)
     msg = await client.chat(messages, stream=False)
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

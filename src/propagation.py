@@ -8,7 +8,7 @@ Provides trace context propagation across services:
 
 Service Name: cybersecsuite-propagation
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Dict, Optional, Callable

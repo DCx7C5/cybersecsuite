@@ -10,7 +10,7 @@ Implements:
 
 Uses WorkerSessionManager & ExecutionHistoryManager from Phase 5C.
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Optional

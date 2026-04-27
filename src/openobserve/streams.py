@@ -1,6 +1,6 @@
 """Stream management for CyberSecSuite OpenObserve."""
 
-from __future__ import annotations
+
 
 from openobserve.client import get_client, OPENOBSERVE_ORG
 

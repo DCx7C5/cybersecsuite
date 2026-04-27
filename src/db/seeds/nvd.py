@@ -13,7 +13,7 @@ Supports:
 Full-fetch results are cached to data/fixtures/nvd_full.json (as ISO datetime strings)
 so subsequent runs skip the network request.
 """
-from __future__ import annotations
+
 
 import asyncio
 import json

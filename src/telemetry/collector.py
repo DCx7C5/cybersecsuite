@@ -1,5 +1,5 @@
 """Background task that snapshots MetricsStore every 15 s and keeps history."""
-from __future__ import annotations
+
 
 import asyncio
 from collections import deque

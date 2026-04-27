@@ -3,7 +3,7 @@
 Bridges claude_agent_sdk session functions to the forensic investigation
 workflow: maps session IDs to cases, agents, and modes.
 """
-from __future__ import annotations
+
 
 from agent import getLogger
 from dataclasses import dataclass, field

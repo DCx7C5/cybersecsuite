@@ -13,7 +13,7 @@ Reference:
     src/db/models/plan.py — Task model
     src/hooks/agent_hooks.py — Ruff scoping and dry-run mode
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

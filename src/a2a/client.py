@@ -2,7 +2,7 @@
 A2A Client — send tasks to remote A2A agents over HTTP.
 Supports both request/response and SSE streaming.
 """
-from __future__ import annotations
+
 
 import json
 import uuid

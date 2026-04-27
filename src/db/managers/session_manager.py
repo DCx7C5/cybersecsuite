@@ -6,7 +6,7 @@ Implements session state save/restore:
 - Restore on restart with integrity verification
 - BLAKE2b hashing for integrity checks
 """
-from __future__ import annotations
+
 
 import logging
 from datetime import datetime

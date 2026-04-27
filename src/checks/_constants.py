@@ -1,5 +1,5 @@
 """Shared constants for all integrity-check sub-modules."""
-from __future__ import annotations
+
 
 import ast  # noqa: F401 — imported here so sub-modules can rely on it via star-import
 from pathlib import Path

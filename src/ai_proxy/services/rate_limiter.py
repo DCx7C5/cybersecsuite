@@ -4,7 +4,7 @@ Rate Limiter — async token-bucket implementation.
 Enforces per-provider rate limits (RPM/TPM) and learns from upstream
 x-ratelimit-* headers.
 """
-from __future__ import annotations
+
 
 import asyncio
 import time

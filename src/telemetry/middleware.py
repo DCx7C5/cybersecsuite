@@ -1,5 +1,5 @@
 """Starlette ASGI middleware that records HTTP request latency per endpoint."""
-from __future__ import annotations
+
 
 import re
 import time

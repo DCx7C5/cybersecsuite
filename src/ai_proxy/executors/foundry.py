@@ -8,7 +8,7 @@ Required env vars:
   AZURE_ENDPOINT    — Azure AI Foundry endpoint URL (set as provider base_url)
   AZURE_RESOURCE    — Azure resource name (optional, for resource-scoped routing)
 """
-from __future__ import annotations
+
 
 import logging
 import os

@@ -9,7 +9,7 @@ Implements:
 - Task classification: Pause on unknown/unclassified tasks
 - Event logging: Full audit trail with metadata
 """
-from __future__ import annotations
+
 
 import logging
 from dataclasses import dataclass, field

@@ -1,225 +1,241 @@
-# Phase 12 Session Handoff Briefing
+# Phase 14-15 Session Handoff Briefing
 
-**Date:** 2026-04-27 | **Session:** Parallel Investigation Complete  
-**Status:** 🟢 Ready for Implementation | **Time Spent:** Investigation + Planning
+**Date:** 2026-04-27 | **Session:** Registry Consolidation + Hooks Improvement Planning  
+**Status:** 🟡 Planning → Ready for Implementation | **Phases:** 14 (Registry) + 15 (Hooks)
 
 ---
 
 ## 📊 Current State
 
-**Project:** CyberSecSuite v0.1 (23K LOC, 920+ tests at 95.3%)  
-**Phase:** 11 Complete → **Phase 12 Ready**  
-**Focus:** Quick fixes (9 min) + Documentation (90 min) + OTEL Instrumentation (4-week roadmap)
+**Project:** CyberSecSuite v0.1 (23K LOC, 766+ tests collectable)  
+**Completed:** Phase 13 (OTEL Foundation) + BaseRegistry (Phase 14, Session 3)
+**Active:** Phase 14 (Registry Consolidation) + Phase 15 (Hooks Improvement - Just Planned)  
+**Focus:** Registry/Marketplace consolidation + Hook system modernization
 
 ---
 
-## 🔥 Critical Findings (Requires Fixes)
+## 🔥 Active Phases
 
-### 1. Test Collection Blocked — 7 Tests Failing ⚠️
-**File:** `tests/legacy/test_agent_discovery.py` + `test_agent_streaming_backend.py`  
-**Root Cause:** `src/dashboard/` deleted (commit 931d1490); tests still import from it  
-**Functions Needed:**
-- `dashboard.api.team_builder._scan_agents()`
-- `dashboard.routes.create_dashboard_router()`
+### Phase 14: Registry & Marketplace Consolidation (5.5 hours total)
+**Status:** ✅ Comprehensive plan created; foundation complete
 
-**Fix Location:** Create `/tests/legacy/conftest.py` with stub implementations  
-**Effort:** 5 minutes  
-**Status:** ⚠️ BLOCKED — Must fix before running full test suite
+**What's Done:**
+- BaseRegistry foundation built (Session 3)
+- All analysis complete (which registries to move, where, how)
+- All 14 todos created in SQL database
+- Phase 14 plan covers 4 major tasks
 
-**Stub Template:**
-```python
-from starlette.routing import Router, Route
-from pathlib import Path
+**What's Pending:**
+1. Phase 1 (30 min): csmcp → cssmcp rename + 26 import updates
+2. Phase 2 (3 hrs): Registry consolidation + marketplace enhancement + installer merge
+3. Phase 3 (1.5 hrs): API relocation (marketplace/api.py → routes/) + backward compat
+4. Phase 4 (1 hr): Testing + linting + commit
 
-def _scan_agents() -> list[dict]:
-    """Stub: Parse frontmatter from .claude/agents/**/*.md files."""
-    agents = []
-    agents_dir = Path(__file__).resolve().parent.parent.parent / ".claude" / "agents"
-    if not agents_dir.exists():
-        return []
-    return agents
-
-def create_dashboard_router() -> Router:
-    """Stub: Create minimal router with agent stream endpoints."""
-    return Router(
-        routes=[
-            Route("/api/agent-run", methods=["POST"]),
-            Route("/api/agent-run/{task_id}", methods=["DELETE"]),
-            Route("/sse/agent-run/{task_id}", methods=["GET"]),
-        ]
-    )
-```
-
-Then update test imports: `from conftest import _scan_agents` (and `create_dashboard_router`)
+**Start Trigger:** "proceed" command (will execute Phase 1 immediately)
 
 ---
 
-### 2. Worker API Runtime Failures — Import Path Errors 🔴
-**Files:**
-- `src/api/routes/worker_lifecycle.py:26`
-- `src/api/routes/worker_batch.py:28`
+### Phase 15: Hooks Improvement with anthropic-sdk (MVP: 4-5 hours)
+**Status:** ✅ MVP plan finalized with rubber-duck feedback applied
 
-**Current (WRONG):**
-```python
-from db.worker_manager import WorkerStateMachine
-```
+**Rubber-Duck Critique Applied:**
+- ✅ Narrowed MVP scope (was overscoped at 10.5 hrs)
+- ✅ Added upfront contract testing (not implementation)
+- ✅ Fixed context leakage risk (stateless design)
+- ✅ Separated SDK hooks from CLI script hooks
+- ✅ Changed from Pydantic to TypedDict (performance)
+- ✅ Added absolute performance budgets (2–10ms, not %)
+- ✅ Made backward compatibility explicit
 
-**Should Be (RIGHT):**
-```python
-from db.managers.worker_manager import WorkerStateMachine, InvalidStateTransitionError
-```
+**MVP Scope (NARROWED - 4-5 hours):**
+1. **Phase 15.1 (1 hr):** Map + contract test setup
+   - Inventory 38 hooks (SDK callbacks vs CLI scripts)
+   - Write regression tests (NOT implementation)
+   - Document SDK event I/O contracts
 
-**Impact:** Tests pass (118+ tests passing), but state transitions will crash at runtime  
-**Effort:** 2 minutes (fix 2 import lines)  
-**Status:** ⚠️ BLOCKER — Will cause production failures
+2. **Phase 15.2 (1.5 hrs):** Type-safe wrapper
+   - Create src/hooks/core.py (120L) — TypedDict, HookContext
+   - Create src/hooks/registry.py (150L) — TypedRegistry (stateless)
+   - NO behavioral changes, backward compatible
 
----
+3. **Phase 15.3 (1.5 hrs):** Instrumentation
+   - Create src/hooks/instrumentation.py (100L) — Timing + metrics
+   - Hook execution timing (<2ms for no-op, <10ms validated)
+   - Error/exception logging
 
-### 3. Documentation Missing Critical Routes 📚
-**ASGI Mount Table Missing:**
-- File: `docs/architecture/asgi-proxy.md` (lines 9-13)
-- Missing: `/api/workers/*` routes not documented
-- Fix: Add 1 row to mount table with worker API description
-- Effort: 5 minutes
+4. **Phase 15.4 (1 hr):** Integration + testing
+   - Update a2a/agent_sdk.py (stateless)
+   - Run regression tests
+   - Verify all 38 hooks unchanged
 
-**Architecture Overview Missing Worker API Layer:**
-- File: `docs/architecture/overview.md` (lines 11-19)
-- Missing: Worker Management API not in 7-layer architecture
-- Fix: Add Worker API as Layer 8 or subsystem
-- Effort: 10 minutes
+**What's NOT in MVP (→ Phase 16):**
+- ❌ Streaming event hooks
+- ❌ Message pre/post interception
+- ❌ Error recovery hooks
+- ❌ YAML declarative config
+- ❌ Rich message history context
 
-**Total Docs Tier 1:** 30 minutes (critical gaps)
+**Why This Order:**
+- Stabilize existing hook contracts first (no surprises)
+- Add type safety incrementally (low risk)
+- Foundation ready for Phase 16 extensions
+- Deliverable in 4-5 hours without breaking changes
 
----
-
-## 📋 Immediate Action Items (Next Session)
-
-### Phase 1: Quick Fixes (9 minutes)
-- [ ] Create test stubs in `tests/legacy/conftest.py` (5 min)
-- [ ] Fix worker API imports in 2 files (2 min)
-- [ ] Add worker routes to ASGI mount table (2 min)
-
-### Phase 2: Validation (⏱️ varies)
-- [ ] Run full test suite: `uv run pytest tests/ --cov=src`
-- [ ] Verify 95%+ pass rate maintained
-- [ ] Document baseline metrics
-
-### Phase 3: Documentation (90 minutes, prioritized)
-**Tier 1 — CRITICAL (30 min):**
-- Update `/docs/architecture/asgi-proxy.md` — Add worker routes mount
-- Update `/docs/architecture/overview.md` — Add worker API to layers
-- Create `/docs/changelog/phase12_redundant_cleanup.md` — Document 23-25 MB cleanup
-
-**Tier 2 — IMPORTANT (40 min):**
-- Create `/docs/api/workers.md` — Worker API reference (21 routes across 5 routers)
-- Create `/docs/architecture/deprecation-status.md` — Integrate audit findings
-
-**Tier 3 — QUALITY (30 min):**
-- Update `/docs/bootstrap.md` — Document worker API availability
-- Create `/docs/testing-roadmap.md` — Phase 12 coverage targets
-
-### Phase 4: OTEL Instrumentation (4-week roadmap)
-**Week 1 (Phase 12 Week 1):**
-1. Create `src/a2a/otel.py` (copy from `src/llm/otel.py`)
-2. Create `src/csmcp/otel.py` (MCP instrumentation)
-3. Instrument A2A JSON-RPC dispatcher in `src/a2a/server.py`
-4. Add MCP tool execution spans in `src/csmcp/`
-
-**Week 2 (Phase 12 Week 2):**
-5. Database query instrumentation (Tortoise ORM hooks)
-6. Worker state machine tracing
-7. Create business metrics meters (tokens, cost, cache, tool latency)
-
-**Week 3-4:** Integration, sampling, baseline establishment
+**Start Trigger:** After Phase 14 complete (can run in parallel if needed)
 
 ---
 
-## 📊 Investigation Results Summary
+## 🎯 Next Orchestrator Instructions
 
-### Test Collection Investigation ✅
-- **Status:** Diagnosed and solution provided
-- **Root Cause:** `src/dashboard/` deleted; 50+ files removed
-- **Solution:** Stub functions in `tests/legacy/conftest.py`
-- **Expected Result:** 7 tests unblocked, test collection error resolved
+### For Phase 14 (Registry Consolidation)
+1. Read `/home/daen/Projects/cybersecsuite/plan.md` (created by Phase 14 planning)
+2. Execute Phase 1 (csmcp rename): `proceed`
+3. After each phase: test + commit incrementally
+4. Final: full test suite (766 tests) + ruff linting
 
-### Worker API Investigation ✅
-- **Status:** ASGI mounting correct; 118+ tests passing; import bugs found
-- **21 Routes Available:**
-  - 5 CRUD routes
-  - 5 lifecycle routes
-  - 4 history/bookmark routes
-  - 4 metrics routes
-  - 3 batch routes
-- **Import Bugs:** 2 files with wrong paths (critical)
-- **Expected Result:** After fix, all state transitions will work
+**Estimated Duration:** 5-6 hours (4 phases, ~1.5 hours each including testing)
 
-### Documentation Investigation ✅
-- **Status:** 5 critical gaps identified; solution plan created
-- **Effort:** 90 minutes total (Tier 1: 30 min critical, Tier 2-3: 60 min quality)
-- **Impact:** Brings docs in sync with Phase 12 fixes and worker API
+### For Phase 15 (Hooks Improvement)
+1. Read `/home/daen/Projects/cybersecsuite/PHASE_15_HOOKS_IMPROVEMENT.md` (comprehensive plan)
+2. Start Phase 15.1 (contract tests): `proceed mvp`
+3. This is a NEW phase, not blocking Phase 14
+4. Can run in parallel OR after Phase 14 complete
 
-### OTEL Instrumentation Investigation ✅
-- **Status:** Roadmap created; gaps identified; baseline strategy established
-- **Current:** LLM layer instrumented; HTTP middleware tracking
-- **Gaps:** A2A, MCP, Database layers not instrumented
-- **Phase 12 Focus:** Weeks 1-2 for foundation + depth
-- **Baseline:** P50/P95/P99 latencies for A2A, MCP, Database
+**Estimated Duration:** 4-5 hours (4 sub-phases, ~1 hour each)
 
 ---
 
-## 📈 Success Criteria for Phase 12
+## 📋 Work Items (Both Phases)
 
-- ✅ All 7 legacy tests passing collection and execution
-- ✅ Worker API state transitions operational (import fixes)
-- ✅ Full test suite running with ≥95% pass rate
-- ✅ Documentation reflects current system architecture
-- ✅ OTEL instrumentation foundation in place (Week 1-2)
-- ✅ Baseline metrics established for critical paths
+### Phase 14 (Registry Consolidation)
+| Item | Duration | Priority | Status |
+|------|----------|----------|--------|
+| Phase 1: csmcp rename + 26 imports | 30 min | 🔴 CRITICAL | Pending |
+| Phase 2: Move 4 registries + create 2 new | 3 hrs | 🔴 CRITICAL | Pending |
+| Phase 3: API relocation + imports | 1.5 hrs | 🟡 HIGH | Pending |
+| Phase 4: Testing + linting + commit | 1 hr | 🔴 CRITICAL | Pending |
 
----
-
-## 📁 Key Files for Next Session
-
-**Investigation Reports:**
-- `session-state/.../phase12-findings.md` — Detailed technical findings
-- `session-state/.../plan.md` — Phase 12 implementation plan
-
-**Work Items:**
-| File | Change | Status |
-|------|--------|--------|
-| `tests/legacy/conftest.py` | CREATE | 🔴 Pending |
-| `src/api/routes/worker_lifecycle.py` | Fix line 26 | 🔴 Pending |
-| `src/api/routes/worker_batch.py` | Fix line 28 | 🔴 Pending |
-| `docs/architecture/asgi-proxy.md` | Add worker mount | 🔴 Pending |
-| `docs/architecture/overview.md` | Add worker API layer | 🔴 Pending |
-| `docs/changelog/phase12_redundant_cleanup.md` | CREATE | 🔴 Pending |
-| `docs/api/workers.md` | CREATE | 🔴 Pending |
-| `src/a2a/otel.py` | CREATE | 🔴 Pending |
-| `src/csmcp/otel.py` | CREATE | 🔴 Pending |
+### Phase 15 (Hooks MVP)
+| Item | Duration | Priority | Status |
+|------|----------|----------|--------|
+| Phase 15.1: Map + contract tests | 1 hr | 🟡 HIGH | Pending (design complete) |
+| Phase 15.2: Type-safe wrapper | 1.5 hrs | 🟡 HIGH | Pending |
+| Phase 15.3: Instrumentation | 1.5 hrs | 🟡 HIGH | Pending |
+| Phase 15.4: Integration + verify | 1 hr | 🟡 HIGH | Pending |
 
 ---
 
-## 🎯 Recommended Starting Point
+## 📚 Planning Documents
 
-**Session 2 (Next Chat):**
-1. Fix the 3 critical blockers (9 minutes total)
-2. Run full test suite to verify baseline (time varies)
-3. Execute docs Tier 1 updates (30 minutes)
-4. Verify all changes working correctly
+**Phase 14 (Registry Consolidation):**
+- Main plan: `/home/daen/Projects/cybersecsuite/plan.md` (covers phases 1-4)
+- SQL todos: 18 todos in database (14 existing + 4 new for API/installer)
+- Status: Ready for execution
 
-**Target:** Complete all quick fixes + docs Tier 1 in ~90 minutes, unblocking OTEL instrumentation work.
-
----
-
-## 📞 Questions for Next Session
-
-- Should we proceed with all immediate fixes?
-- Preference on OTEL instrumentation schedule (compressed vs. 4-week)?
-- Any specific worker API endpoints to smoke-test first?
-- Should Phase 13 plan be drafted after Phase 12 baseline?
+**Phase 15 (Hooks Improvement):**
+- Main plan: `/home/daen/Projects/cybersecsuite/PHASE_15_HOOKS_IMPROVEMENT.md`
+- Session backup: `/home/daen/.copilot/session-state/.../files/hooks-improvement-plan.md` (full details)
+- Status: MVP scope finalized; ready for Phase 15.1
 
 ---
 
-**Last Updated:** 2026-04-27 11:30 UTC  
-**Investigation Method:** 4-agent parallel exploration  
-**Ready for:** Implementation phase
+## 🎓 Key Decisions (Rubber-Duck Feedback)
+
+## 🎓 Key Decisions (Rubber-Duck Feedback)
+
+1. **Two Hook Models, Not One**
+   - SDK callbacks (src/hooks/sdk_hooks.py) → wrap in typed registry
+   - CLI scripts (src/hooks/*.py) → leave untouched in MVP
+   - Adapter pattern: registry wraps SDK path only
+
+2. **Backward Compatibility is Explicit**
+   - All 38 hooks MUST work unchanged (not assumed)
+   - Contract tests FIRST (before implementation)
+   - Verify via regression test suite
+
+3. **Stateless Registry Prevents Context Leakage**
+   - No per-run state stored on cached registry
+   - Timing/context: local scope only
+   - ClaudeAgentOptions caching unaffected
+
+4. **TypedDict Over Pydantic**
+   - Internal: TypedDict/dataclasses (zero overhead)
+   - Validation: only at boundaries
+   - Performance goal: <2ms no-op, <10ms validated
+
+5. **Absolute Latency Budget**
+   - <2ms for no-op hooks
+   - <10ms for validated sync hooks
+   - Benchmark fast/slow tool scenarios separately
+
+6. **Stabilize Before Extending**
+   - Contract existing hooks first
+   - Type-safe wrapper second
+   - Defer streaming/interception/YAML to Phase 16
+
+---
+
+## 🚀 Recommended Execution Order
+
+**OPTION A: Sequential (Safest)**
+1. Complete Phase 14 (5-6 hrs)
+2. Then start Phase 15 (4-5 hrs)
+3. Total: ~10-11 hours
+
+**OPTION B: Overlapping (Faster)**
+1. Phase 14.1-14.2 (3-4 hrs) → commit
+2. Start Phase 15.1 (1 hr) in parallel
+3. Phase 14.3-14.4 (2 hrs) + Phase 15.2-15.4 (4 hrs)
+4. Total wall time: ~6-7 hours
+
+---
+
+## 📈 Success Criteria (Combined)
+
+### Phase 14 Complete ✅
+- /src/csmcp/ renamed; all 26 imports updated
+- 4 registries moved to registries/; 2 new created
+- MarketplaceRegistry: settings integration + installer merge
+- api.py relocated to routes/; installer.py merged
+- 766 tests passing, ruff clean
+
+### Phase 15 MVP Complete ✅
+- 38 existing hooks work unchanged
+- Type information available (TypedDict)
+- Contract tests verify I/O schemas
+- Hook timing captured (<2ms overhead)
+- Performance budget met (2–10ms per hook)
+- Foundation ready for Phase 16 (streaming/interception)
+
+---
+
+## 🔗 Cross-Reference
+
+**Phase 14 → Phase 15 Connection:**
+- Phase 14 creates clean registries/marketplace.py
+- Phase 15 adds type-safe hook registry (parallel concern)
+- No direct dependencies; can run sequentially or overlapped
+
+**Phase 15 → Phase 16 Roadmap:**
+- Phase 16 adds streaming events (2 hrs)
+- Phase 16 adds message interception (1.5 hrs)
+- Phase 16 adds error recovery (1.5 hrs)
+- Phase 16 adds YAML config (1 hr)
+- Total Phase 16: 6-7 hours
+
+---
+
+## 📁 Key Files for Next Orchestrator
+
+**Phase 14:**
+- Main plan: `plan.md` (5.5-hour detailed plan)
+- SQL todos: `sql` database (18 todos)
+
+**Phase 15:**
+- Main plan: `PHASE_15_HOOKS_IMPROVEMENT.md` (comprehensive)
+- Backup detail: `session-state/.../files/hooks-improvement-plan.md`
+
+**Status:**
+- ✅ All planning complete
+- ✅ Rubber-duck feedback incorporated
+- 🟡 Ready for implementation (either phase)

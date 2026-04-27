@@ -7,7 +7,7 @@ Provides:
 - Structured error logging and propagation
 - Context-aware error messages for frontend
 """
-from __future__ import annotations
+
 
 import asyncio
 import logging

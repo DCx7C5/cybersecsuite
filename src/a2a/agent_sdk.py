@@ -37,7 +37,7 @@ Usage:
     options = build_agent_options()
     result = await run_agent_query("cybersec-analyst", "Triage CVE-2024-1234")
 """
-from __future__ import annotations
+
 
 import asyncio
 import json
@@ -244,7 +244,7 @@ def _build_agent_options_uncached(
     include_mcp: bool,
 ) -> ClaudeAgentOptions:
     """Build ClaudeAgentOptions without consulting or populating the cache."""
-    from csmcp import all_servers, allowed_tools as mcp_tools
+    from cssmcp import all_servers, allowed_tools as mcp_tools
 
     agents = build_agent_definitions()
     builtin = ["Read", "Glob", "Grep", "Bash", "Agent", "WebSearch"]

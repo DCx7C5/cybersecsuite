@@ -6,15 +6,13 @@ This module provides reusable patterns for:
 - Exception handling in spans
 - Common metric recording patterns
 """
-from __future__ import annotations
+
 
 import time
 import logging
-from typing import Any, Callable, Optional, TypeVar, Generic
+from typing import Any, Callable, Optional, TypeVar
 from functools import wraps
-from contextlib import contextmanager
 
-from opentelemetry import trace
 from opentelemetry.trace import Status, StatusCode
 from opentelemetry.trace.span import Span
 

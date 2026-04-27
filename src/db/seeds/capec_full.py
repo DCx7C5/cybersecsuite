@@ -4,7 +4,7 @@ CAPEC (Common Attack Pattern Expression Language) full seeding — fetches from 
 Results are cached to data/fixtures/capec_full.json so subsequent runs skip the
 network request.
 """
-from __future__ import annotations
+
 
 import json
 import logging

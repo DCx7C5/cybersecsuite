@@ -9,7 +9,7 @@ Documents are auto-stamped with @timestamp and bulk-sent to the daily stream.
 Metrics are emitted with graceful degradation if OpenObserve unavailable (T020).
 """
 
-from __future__ import annotations
+
 
 import asyncio
 import json

@@ -130,3 +130,5 @@ src/dashboard/static/js/
 
 # Project-scope templates (scaffolded at first run from embedded package data)
 .claude/templates/
+**/*.json
+*.json

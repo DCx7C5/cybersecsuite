@@ -4,7 +4,7 @@ Scope utilities for 5-level scope management (T045).
 Provides scope resolution, configuration loading, and permission checking
 for the 5-level scope hierarchy: global, app, project, runtime, session.
 """
-from __future__ import annotations
+
 
 import os
 from enum import Enum

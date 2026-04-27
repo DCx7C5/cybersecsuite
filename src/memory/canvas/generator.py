@@ -10,7 +10,7 @@ Format: {"nodes": [...], "edges": [...]}
 Node types: text, file, link, group
 Edge fields: id, fromNode, toNode, label, toEnd (arrow|none)
 """
-from __future__ import annotations
+
 
 import json
 import math

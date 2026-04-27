@@ -1,5 +1,5 @@
 """Session I/O helpers — read/write session-manifest.json and .last_session pointer."""
-from __future__ import annotations
+
 
 import json
 import os

@@ -4,7 +4,7 @@ Usage Tracker — log token counts, costs, and latency per request.
 Stores usage in-memory with optional PostgreSQL persistence via
 the existing Tortoise ORM ApiUsageLog model.
 """
-from __future__ import annotations
+
 
 import logging
 import time

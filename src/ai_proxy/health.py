@@ -13,7 +13,7 @@ GPU Detection:
 - AMD: rocm-smi
 - Apple: system_profiler
 """
-from __future__ import annotations
+
 
 import asyncio
 import json

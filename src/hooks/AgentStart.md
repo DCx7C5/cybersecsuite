@@ -21,22 +21,3 @@ Track which agent is working, inject agent-specific context, and start the timin
 3. Appends `agent_start` entry to session `timeline.md`
 4. Logs to project `session_changes.log`
 5. Injects agent profile + recent findings/IOC summary as `additionalContext`
-
-## Known Agents
-
-| Agent             | Focus                                            |
-|-------------------|--------------------------------------------------|
-| Hunter            | General-purpose threat hunting across all layers |
-| Hunter_Elite      | APT-level persistence, rootkits, supply-chain    |
-| Layer2-Specialist | ARP, MAC, VLAN, switch-level attacks             |
-| Layer3-Specialist | IP, routing, ICMP, BGP hijack                    |
-| Layer4-Specialist | TCP/UDP, port scans, SYN floods                  |
-| Layer5-Specialist | TLS, session hijack, auth tokens                 |
-| Layer6-Specialist | Encoding, serialization, crypto                  |
-| Layer7-Specialist | HTTP, DNS, API, web app exploits                 |
-| Memory-Analyst    | Volatile memory forensics                        |
-| Firmware-Analyst  | Firmware extraction, UEFI/BIOS implants          |
-| Reverse-Engineer  | Binary analysis, malware RE                      |
-
-**Paired with AgentEnd hook for duration tracking and session stats.**
-

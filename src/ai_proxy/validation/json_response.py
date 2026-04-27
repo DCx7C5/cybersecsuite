@@ -6,7 +6,7 @@ Referenz:
     plan.md t144 — Few-shot examples
     src/ai_proxy/routing/qwen_triage.py — Triage router
 """
-from __future__ import annotations
+
 
 import json
 import logging

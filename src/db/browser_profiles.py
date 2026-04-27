@@ -4,7 +4,7 @@ Browser profile database abstraction — ORM-like wrapper for external browser S
 Treats browser profile DBs (Firefox, Chrome, Brave) as queryable data sources with
 ORM-style method names. Encapsulates all sqlite3 calls.
 """
-from __future__ import annotations
+
 
 import sqlite3
 from pathlib import Path

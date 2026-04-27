@@ -1,5 +1,5 @@
 """DBus integration for desktop notifications and signals."""
-from __future__ import annotations
+
 
 from logger import getLogger
 

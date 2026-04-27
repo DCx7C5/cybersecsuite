@@ -10,7 +10,7 @@ Implements:
 
 All endpoints enforce scope via request.state.scope_context
 """
-from __future__ import annotations
+
 
 import logging
 from datetime import datetime

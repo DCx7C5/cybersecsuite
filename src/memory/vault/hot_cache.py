@@ -6,7 +6,7 @@ this vault) can load recent context in ~500 tokens without crawling the full wik
 
 Adapted from the claude-obsidian hot cache pattern.
 """
-from __future__ import annotations
+
 
 import time
 from dataclasses import dataclass, field

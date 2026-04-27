@@ -24,7 +24,7 @@ Scope priority (lowest → highest — never change this order):
   3. Project $(pwd)/.claude/
   4. Session $(pwd)/.<scope>/sessions/<name>/  ← always wins for writes
 """
-from __future__ import annotations
+
 
 import contextlib
 import logging

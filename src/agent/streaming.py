@@ -3,7 +3,7 @@
 Converts the claude_agent_sdk async generator (query() with partial messages)
 into SSE-ready dicts consumed by dashboard /api/agent-query endpoint.
 """
-from __future__ import annotations
+
 
 from agent import getLogger
 from collections.abc import AsyncGenerator

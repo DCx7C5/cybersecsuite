@@ -8,7 +8,7 @@ Provides metrics endpoint returning:
 - VRAM usage if available
 - Error counts and recent errors
 """
-from __future__ import annotations
+
 
 import logging
 import time

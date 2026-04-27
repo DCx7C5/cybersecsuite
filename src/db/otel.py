@@ -8,7 +8,7 @@ Provides tracing for database operations:
 
 Service Name: cybersecsuite-db
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Optional, Callable
@@ -18,8 +18,6 @@ import re
 
 from opentelemetry import trace, metrics
 from opentelemetry.trace import Status, StatusCode
-from opentelemetry.trace.span import Span
-from opentelemetry.metrics import Counter, Histogram
 
 logger = logging.getLogger("db.otel")
 

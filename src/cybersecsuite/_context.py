@@ -1,5 +1,5 @@
 """Thin context wrapper — avoids circular imports between sdk.py and session_scope."""
-from __future__ import annotations
+
 
 import copy
 import json as _json

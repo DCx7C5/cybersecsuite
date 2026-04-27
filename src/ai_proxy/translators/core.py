@@ -4,7 +4,7 @@ API Format Translators — convert between OpenAI, Anthropic, and Gemini formats
 Bidirectional request/response
 translation so any client format can talk to any provider format.
 """
-from __future__ import annotations
+
 
 import json
 from typing import Any

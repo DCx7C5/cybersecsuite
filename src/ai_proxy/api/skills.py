@@ -12,7 +12,7 @@ Routes:
   GET    /v1/beta/skills/{skill_id}/versions               — list skill versions
   GET    /v1/beta/skills/{skill_id}/versions/{version_id}  — retrieve a specific version
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any

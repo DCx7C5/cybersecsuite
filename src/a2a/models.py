@@ -2,7 +2,7 @@
 A2A Protocol Pydantic models.
 Implements the Google Agent-to-Agent (A2A) protocol data structures.
 """
-from __future__ import annotations
+
 
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime, timezone

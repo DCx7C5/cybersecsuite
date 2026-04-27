@@ -5,7 +5,7 @@ Public API:
     from agent.hooks import security_hook, audit_hook, cost_hook
     from agent.streaming import StreamingAdapter
 """
-from __future__ import annotations
+
 
 from logger import getLogger
 

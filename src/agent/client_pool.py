@@ -1,5 +1,5 @@
 """Client pool for ClaudeSDKClient instances - enables multiple concurrent sessions."""
-from __future__ import annotations
+
 
 import asyncio
 import logging

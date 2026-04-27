@@ -53,3 +53,5 @@ coverage.xml
 # Large / binary assets
 *.js.map
 dump.rdb
+**/*.json
+*.json

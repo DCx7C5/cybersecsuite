@@ -11,7 +11,7 @@ Implements:
 Returns 409 Conflict for invalid state transitions.
 All transitions logged to AuditLog.
 """
-from __future__ import annotations
+
 
 import logging
 import json

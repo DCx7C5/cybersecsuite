@@ -14,7 +14,7 @@ Features:
 - Integrity verification via BLAKE2b hashing
 - Audit trail per scope
 """
-from __future__ import annotations
+
 
 import hashlib
 import json

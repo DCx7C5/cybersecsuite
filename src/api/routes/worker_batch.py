@@ -14,7 +14,7 @@ Features:
 - Scope enforcement (all workers must be in same project)
 - Comprehensive audit logging
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Optional

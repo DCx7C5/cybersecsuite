@@ -8,7 +8,7 @@ Implements:
 - No orphaned cache entries after parent deletion
 - Scope-aware cache invalidation cascade
 """
-from __future__ import annotations
+
 
 import logging
 from typing import Any, Optional

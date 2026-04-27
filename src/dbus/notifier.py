@@ -1,5 +1,5 @@
 """DBus notifier backend for desktop notifications and signals."""
-from __future__ import annotations
+
 
 import asyncio
 import sys

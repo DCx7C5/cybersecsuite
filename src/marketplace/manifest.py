@@ -8,7 +8,7 @@ Referenz:
     src/marketplace/models.py — ProviderMeta
     src/marketplace/installer.py — ManifestParser usage
 """
-from __future__ import annotations
+
 
 import json
 import logging

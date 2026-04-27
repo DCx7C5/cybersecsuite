@@ -5,8 +5,6 @@ Referenz:
     src/marketplace/models.py — MarketplaceItem, MarketplaceItemStatus
     src/marketplace/registry.py — MarketplaceRegistry
 """
-from __future__ import annotations
-
 import logging
 from typing import Any
 
@@ -14,7 +12,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from marketplace.models import MarketplaceItem, MarketplaceItemStatus
-from marketplace.registry import get_registry
+from marketplace.registry import get_registry, get_item, list_items
 
 logger = logging.getLogger("marketplace.api")
 
@@ -89,7 +87,7 @@ async def list_marketplace_items(
         )
 
     # Get all items and apply filters
-    all_items = registry.list_items()
+    all_items = list_items()
 
     filtered_items = all_items
     if kind:
@@ -136,7 +134,7 @@ async def get_marketplace_item(item_id: str) -> MarketplaceItem:
         HTTPException: 404 if item not found
     """
     registry = get_registry()
-    item = registry.get_item(item_id)
+    item = get_item(item_id)
 
     if not item:
         raise HTTPException(
@@ -170,7 +168,7 @@ async def install_marketplace_item(
         HTTPException: 404 if item not found, 400 if already installed, 500 if installation fails
     """
     registry = get_registry()
-    item = registry.get_item(item_id)
+    item = get_item(item_id)
 
     if not item:
         raise HTTPException(
@@ -223,7 +221,7 @@ async def uninstall_marketplace_item(item_id: str) -> MarketplaceItem:
         HTTPException: 404 if not found, 400 if not installed, 500 if uninstall fails
     """
     registry = get_registry()
-    item = registry.get_item(item_id)
+    item = get_item(item_id)
 
     if not item:
         raise HTTPException(

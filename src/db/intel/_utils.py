@@ -1,4 +1,4 @@
-from __future__ import annotations
+
 
 import hashlib
 import json
@@ -13,7 +13,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 _DEFAULT_INTEL_DIR = _PROJECT_ROOT / "data" / "cybersec-shared" / "intelligence"
 _JSON_DECODER = json.JSONDecoder()
 _UPDATE_LOG_PATTERN = re.compile(r"^\[(?P<run_id>[^]]+)]\s+(?P<category>[^:]+):\s+(?P<status>[^-]+)-\s+(?P<message>.+)$")
-_ATTACK_GROUP_RE = re.compile(r"https?://attack\.mitre\.org/groups/(?P<group_id>G\d{4,})")
+_ATTACK_GROUP_RE = re
 _ATTACK_TECHNIQUE_RE = re.compile(r"https?://attack\.mitre\.org/techniques/(?P<path>T\d{4}(?:/\d{3})?)/?")
 _CAPEC_EXTERNAL_ID_RE = re.compile(r"CAPEC-\d+")
 _STIX_PATTERN_VALUE_RE = re.compile(r"=\s*(?:'([^']+)'|\"([^\"]+)\")")

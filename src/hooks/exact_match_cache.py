@@ -14,7 +14,7 @@ Usage from hooks (standalone):
 Usage from project code:
     from hooks.exact_match_cache import cache_get, cache_put, compute_cache_key
 """
-from __future__ import annotations
+
 
 import hashlib
 import json

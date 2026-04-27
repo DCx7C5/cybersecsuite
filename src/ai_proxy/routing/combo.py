@@ -5,7 +5,7 @@ Routing Engine — multi-provider combo routing with 13 strategies,
 Resolve combo targets, apply strategy,
 execute with fallback on failure, circuit breaker per target.
 """
-from __future__ import annotations
+
 
 import logging
 import os
