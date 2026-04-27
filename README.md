@@ -24,7 +24,7 @@ A production-grade cybersecurity forensics suite with A2A agent orchestration, M
 | **Core MCPs** | ✅ 6/6 | csscore, canvas, memory, template, playwright, crypto |
 | **Marketplace** | ✅ Production | 1,064 skills + 38 agents in separate repository |
 | **Testing** | ✅ 920+ tests | 95.3% pass rate, Brave+Firefox browsers |
-| **Documentation** | ✅ Complete | Governance in `/plans/`, Phase 12 ready |
+| **Documentation** | ✅ Complete | Setup guide in `docs/setup.md`, design docs in `docs/` |
 | **Bootstrap** | ✅ <3.7s | Automated 6 MCP setup |
 
 ---
@@ -33,16 +33,16 @@ A production-grade cybersecurity forensics suite with A2A agent orchestration, M
 
 - ✅ **Phases 0.5-11** — Complete (7,920 lines of code, 6 MCPs consolidated)
 - 🚀 **Phase 12 Ready** — "Redundant File Cleanup" specification complete
-- 📖 **Planning Docs** — See [`/plans/`](plans/) for full governance model
+- 📖 **[Documentation Hub](docs/)** — Complete API reference, architecture, setup guide
 
 ---
 
 ## 📚 Documentation
 
 - **[Setup Guide](docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
-- **[Planning Hub](plans/README.md)** — Navigation, governance, Phase 12 specification
-- **[Orchestrator Quick Reference](plans/ORCHESTRATOR_QUICK_REFERENCE.md)** — Executor playbook
-- **[Architectural Decisions](plans/DECISIONS.md)** — 9 major design decisions
+- **[Setup Guide](docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
+- **[Documentation Hub](docs/)** — Complete API reference, architecture diagrams
+- **[Architecture Overview](docs/architecture/architecture-overview.md)** — System design
 - **[Full Docs](docs/README.md)** — Complete API reference, deployment guide
 - **[QoL Guide](docs/features/qol.md)** — Output controls: toggles, presets, use cases
 
@@ -121,7 +121,7 @@ See [`docs/architecture/overview.md`](docs/architecture/overview.md) for detaile
 
 ```
 cybersecsuite/
-├── plans/                      # Phase governance & documentation
+├── docs/                       # Complete documentation (setup, architecture, API reference)
 │   ├── README.md              # Navigation hub
 │   ├── plan.md                # Detailed phase specs
 │   ├── ORCHESTRATOR_QUICK_REFERENCE.md
