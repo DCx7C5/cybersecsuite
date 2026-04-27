@@ -168,7 +168,149 @@ class TestTodoManagement:
 
 @pytest.mark.anyio
 @_SKIP_TORTOISE
-class TestTaskClaiming:
+class TestDAGEnforcement:
+    """Tests for cycle detection and DAG validation in task dependencies."""
+    
+    async def test_add_dependency_valid(self, tortoise_ctx):
+        """Test adding a valid dependency (A depends on B)."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("DAG Test")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        
+        result = await mgr.add_dependency(task_a.id, task_b.id)
+        assert result is True
+        
+        refreshed = await Task.get(id=task_a.id).prefetch_related("depends_on")
+        deps = list(refreshed.depends_on)
+        assert len(deps) == 1
+        assert deps[0].id == task_b.id
+    
+    async def test_add_dependency_self_cycle(self, tortoise_ctx):
+        """Test that a task cannot depend on itself."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Self Cycle Test")
+        task = await mgr.add_task(plan.id, "Self Task")
+        
+        with pytest.raises(ValueError, match="Task cannot depend on itself"):
+            await mgr.add_dependency(task.id, task.id)
+    
+    async def test_add_dependency_indirect_cycle_abc(self, tortoise_ctx):
+        """Test cycle detection: A→B→C→A should be rejected."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Indirect Cycle Test")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        task_c = await mgr.add_task(plan.id, "Task C")
+        
+        await mgr.add_dependency(task_a.id, task_b.id)
+        await mgr.add_dependency(task_b.id, task_c.id)
+        
+        with pytest.raises(ValueError, match="Adding this dependency would create a cycle"):
+            await mgr.add_dependency(task_c.id, task_a.id)
+    
+    async def test_add_dependency_cycle_check_disabled(self, tortoise_ctx):
+        """Test that cycle check can be disabled with validate_dag=False."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("No Cycle Check Test")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        
+        await mgr.add_dependency(task_a.id, task_b.id)
+        
+        result = await mgr.add_dependency(task_b.id, task_a.id, validate_dag=False)
+        assert result is True
+    
+    async def test_add_dependency_cross_plan_not_allowed(self, tortoise_ctx):
+        """Test that cross-plan dependencies are rejected."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan1 = await mgr.create_plan("Plan 1")
+        plan2 = await mgr.create_plan("Plan 2")
+        task1 = await mgr.add_task(plan1.id, "Task 1")
+        task2 = await mgr.add_task(plan2.id, "Task 2")
+        
+        with pytest.raises(ValueError, match="Cross-plan dependencies not allowed"):
+            await mgr.add_dependency(task1.id, task2.id)
+    
+    async def test_validate_plan_dag_no_cycles(self, tortoise_ctx):
+        """Test validate_plan_dag returns empty list for valid DAG."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Valid DAG")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        task_c = await mgr.add_task(plan.id, "Task C")
+        
+        await mgr.add_dependency(task_b.id, task_a.id)
+        await mgr.add_dependency(task_c.id, task_a.id)
+        
+        errors = await mgr.validate_plan_dag(plan.id)
+        assert errors == []
+    
+    async def test_validate_plan_dag_with_cycle(self, tortoise_ctx):
+        """Test validate_plan_dag detects cycles."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Invalid DAG")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        task_c = await mgr.add_task(plan.id, "Task C")
+        
+        await mgr.add_dependency(task_a.id, task_b.id)
+        await mgr.add_dependency(task_b.id, task_c.id)
+        
+        await mgr.add_dependency(task_c.id, task_a.id, validate_dag=False)
+        
+        errors = await mgr.validate_plan_dag(plan.id)
+        assert len(errors) > 0
+        assert any("Cycle detected" in error for error in errors)
+    
+    async def test_add_dependency_two_level_cycle(self, tortoise_ctx):
+        """Test cycle detection with direct 2-level cycle: A→B→A."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Two Level Cycle")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        
+        await mgr.add_dependency(task_a.id, task_b.id)
+        
+        with pytest.raises(ValueError, match="Adding this dependency would create a cycle"):
+            await mgr.add_dependency(task_b.id, task_a.id)
+    
+    async def test_add_dependency_multiple_deps(self, tortoise_ctx):
+        """Test task with multiple dependencies, no cycles."""
+        from db.managers.plan_manager import PlanManager
+        
+        mgr = PlanManager()
+        plan = await mgr.create_plan("Multiple Deps")
+        task_a = await mgr.add_task(plan.id, "Task A")
+        task_b = await mgr.add_task(plan.id, "Task B")
+        task_c = await mgr.add_task(plan.id, "Task C")
+        
+        await mgr.add_dependency(task_a.id, task_b.id)
+        result = await mgr.add_dependency(task_a.id, task_c.id)
+        assert result is True
+        
+        refreshed = await Task.get(id=task_a.id).prefetch_related("depends_on")
+        deps = list(refreshed.depends_on)
+        assert len(deps) == 2
+        assert {d.id for d in deps} == {task_b.id, task_c.id}
+
+
     async def test_claim_task_success(self, tortoise_ctx):
         """Test successful atomic task claiming."""
         from db.managers.plan_manager import PlanManager

@@ -20,11 +20,97 @@ class PlanManager:
         task = await Task.get(id=task_id)
         return await Todo.create(task=task, content=content, assignee=assignee)
 
-    async def add_dependency(self, task_id: int, depends_on_id: int) -> None:
-        """Add a task dependency."""
+    async def add_dependency(self, task_id: int, depends_on_id: int, validate_dag: bool = True) -> bool:
+        """
+        Add a task dependency with optional cycle detection.
+        
+        Args:
+            task_id: Task that will depend on another
+            depends_on_id: Task that must be completed first
+            validate_dag: If True, check for cycles before adding dependency
+            
+        Returns:
+            True if dependency added successfully
+            
+        Raises:
+            ValueError: If self-dependency, cross-plan dependency, or cycle detected
+        """
+        if task_id == depends_on_id:
+            raise ValueError("Task cannot depend on itself")
+        
         task = await Task.get(id=task_id).prefetch_related("depends_on")
         dep = await Task.get(id=depends_on_id)
+        
+        if task.plan_id != dep.plan_id:
+            raise ValueError("Cross-plan dependencies not allowed")
+        
+        if validate_dag and await self._would_create_cycle(task_id, depends_on_id):
+            raise ValueError("Adding this dependency would create a cycle")
+        
         await task.depends_on.add(dep)
+        return True
+
+    async def _would_create_cycle(self, task_id: int, new_dep_id: int, memo: dict = None) -> bool:
+        """
+        Check if adding a dependency (task_id depends on new_dep_id) would create a cycle.
+        Uses DFS with memoization to detect cycles.
+        
+        A cycle exists if new_dep_id depends (directly or transitively) on task_id.
+        """
+        if memo is None:
+            memo = {}
+        
+        visited = set()
+        
+        async def has_path_to_target(current_id: int, target_id: int) -> bool:
+            if current_id == target_id:
+                return True
+            if current_id in visited:
+                return False
+            if current_id in memo:
+                return memo[current_id]
+            
+            visited.add(current_id)
+            current_task = await Task.get(id=current_id).prefetch_related("depends_on")
+            
+            for dep in current_task.depends_on:
+                if await has_path_to_target(dep.id, target_id):
+                    return True
+            
+            result = False
+            memo[current_id] = result
+            return result
+        
+        return await has_path_to_target(new_dep_id, task_id)
+
+    async def validate_plan_dag(self, plan_id: int) -> List[str]:
+        """
+        Validate that all tasks in a plan form a valid DAG (no cycles).
+        
+        Returns:
+            List of error messages (empty if valid DAG)
+        """
+        errors = []
+        tasks = await Task.filter(plan_id=plan_id).prefetch_related("depends_on")
+        
+        for task in tasks:
+            visited = set()
+            
+            async def has_cycle_from(current_id: int) -> bool:
+                if current_id in visited:
+                    return True
+                visited.add(current_id)
+                current_task = await Task.get(id=current_id).prefetch_related("depends_on")
+                for dep in current_task.depends_on:
+                    if await has_cycle_from(dep.id):
+                        return True
+                visited.discard(current_id)
+                return False
+            
+            if await has_cycle_from(task.id):
+                errors.append(f"Cycle detected involving task {task.id} ({task.title})")
+        
+        return errors
 
     async def get_ready_tasks(self, plan_id: int) -> List[Task]:
         """Return pending tasks whose dependencies are all done and not claimed."""
