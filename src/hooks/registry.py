@@ -20,6 +20,7 @@ from hooks.core import (
     ErrorStrategy,
     HookContext,
 )
+from hooks.instrumentation import HookInstrument
 
 if TYPE_CHECKING:
     pass
@@ -55,12 +56,18 @@ class HookRegistry:
         - Gradual typing: can wrap hooks incrementally
     """
     
-    def __init__(self, error_strategy: ErrorStrategy = ErrorStrategy.PRESERVE_EXISTING):
+    def __init__(
+        self,
+        error_strategy: ErrorStrategy = ErrorStrategy.PRESERVE_EXISTING,
+        instrumentation: Optional[HookInstrument] = None,
+    ):
         """Initialize registry with cached hook matchers.
         
         Args:
             error_strategy: How to handle hook execution errors.
                 Default PRESERVE_EXISTING means failures don't break execution.
+            instrumentation: Optional HookInstrument for performance tracking.
+                If None, timing is not collected. Pass HookInstrument() to enable.
         """
         # Import here to avoid circular dependency
         from hooks.sdk_hooks import build_python_hooks
@@ -68,6 +75,7 @@ class HookRegistry:
         # Cache the hook matcher registry once at init
         self._hooks: dict[str, list[HookMatcher]] = build_python_hooks()
         self._error_strategy = error_strategy
+        self._instrumentation = instrumentation
     
     async def execute(
         self,
@@ -90,6 +98,7 @@ class HookRegistry:
             - Type validation at boundaries only (input/output)
             - Errors handled per error_strategy
             - Backward compatible with existing hook returns
+            - If instrumentation enabled, timing is captured (zero behavioral change)
         
         Raises:
             Nothing (errors are logged and handled per strategy)
@@ -110,10 +119,17 @@ class HookRegistry:
                     
                     for hook_fn in hooks:
                         try:
-                            # Execute hook with event (old API)
-                            start_time = time.time()
-                            result = await hook_fn(event)  # type: ignore
-                            elapsed = time.time() - start_time
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    event_type,
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                # No instrumentation: execute directly
+                                result = await hook_fn(event)  # type: ignore
                             
                             # Validate result type (but accept any dict)
                             if not isinstance(result, dict):
@@ -122,16 +138,30 @@ class HookRegistry:
                                 )
                                 result = {}
                             
-                            # Log execution
-                            _audit({
+                            # Log execution (timing info if instrumented)
+                            log_data = {
                                 "event": "HookExecuted",
                                 "event_type": event_type,
                                 "hook": hook_fn.__name__,
                                 "correlation_id": context.correlation_id,
                                 "session_id": context.session_id,
-                                "elapsed_ms": round(elapsed * 1000),
                                 "has_output": bool(result),
-                            })
+                            }
+                            
+                            if self._instrumentation:
+                                # Timing already captured in metrics
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+                            else:
+                                # Legacy path: measure time for audit
+                                start_time = time.time()
+                                elapsed = time.time() - start_time
+                                log_data["elapsed_ms"] = round(elapsed * 1000)
+                            
+                            _audit(log_data)
                             
                             # Merge output (later hooks can override)
                             if result:
@@ -237,6 +267,14 @@ class HookRegistry:
         else:  # PRESERVE_EXISTING
             # Don't log at all, just silently preserve
             pass
+    
+    def get_instrumentation(self) -> Optional[HookInstrument]:
+        """Get the instrumentation instance for this registry.
+        
+        Returns:
+            HookInstrument instance if enabled, None otherwise
+        """
+        return self._instrumentation
 
 
 # ── Global Registry Singleton ─────────────────────────────────────────────

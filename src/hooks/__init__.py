@@ -8,6 +8,7 @@ Design Principles:
     - Type safety through TypedDicts and dataclasses
     - Stateless registry: HookContext passed per-call
     - Gradual typing: wrap hooks incrementally
+    - Performance instrumentation: optional, zero-cost when disabled
 
 Public API:
     - HookContext: Metadata for hook execution
@@ -16,6 +17,9 @@ Public API:
     - Event TypedDicts: Type contracts for each event
     - HookRegistry: Stateless hook executor
     - get_registry(): Get global registry singleton
+    - HookInstrument: Performance instrumentation for hooks
+    - HookMetrics: Individual hook timing metrics
+    - PERFORMANCE_BUDGETS: Performance thresholds
 """
 
 from hooks.core import (
@@ -32,6 +36,13 @@ from hooks.core import (
     SubagentStartEvent,
     SubagentStopEvent,
     UserPromptSubmitEvent,
+)
+from hooks.instrumentation import (
+    HookInstrument,
+    HookMetrics,
+    PERFORMANCE_BUDGETS,
+    get_instrumentation,
+    reset_instrumentation,
 )
 from hooks.registry import (
     HookRegistry,
@@ -59,4 +70,10 @@ __all__ = [
     "HookRegistry",
     "get_registry",
     "reset_registry",
+    # Instrumentation
+    "HookInstrument",
+    "HookMetrics",
+    "PERFORMANCE_BUDGETS",
+    "get_instrumentation",
+    "reset_instrumentation",
 ]
