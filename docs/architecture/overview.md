@@ -11,6 +11,7 @@ _Last updated: 2026-04_
 | Layer                | Purpose                                                   | Entry point                         |
 |----------------------|-----------------------------------------------------------|-------------------------------------|
 | **ASGI Application** | HTTP entry point, mounts all subsystems                   | `src/proxy/asgi.py`                 |
+| **Worker API**       | REST API for worker lifecycle (CRUD, metrics, transitions) | `src/api/`                          |
 | **AI Proxy**         | Multi-provider LLM routing (60 providers, 13 strategies)  | `src/ai_proxy/`                     |
 | **MCP Tools**        | 83 tools across 2 servers (stdio)                         | `src/csmcp/`                          |
 | **A2A Protocol**     | External agent-to-agent communication (JSON-RPC 2.0)      | `src/a2a/`                          |
@@ -32,6 +33,7 @@ External clients / Claude Code CLI
 │  GET /health          → DB health check (200/503)             │
 │  /                    → Dashboard UI                           │
 │  /api/* + /sse/*      → Dashboard REST/SSE endpoints           │
+│  /api/workers/*       → Worker management REST API             │
 │  /v1/*                → AI Proxy (OpenAI-compatible)           │
 │  /a2a                 → A2A JSON-RPC 2.0 server                │
 │  /.well-known/        → Agent card discovery                   │
@@ -39,9 +41,10 @@ External clients / Claude Code CLI
        │          │            │                │
        ▼          ▼            ▼                ▼
   ┌─────────┐ ┌──────────┐ ┌──────────┐  ┌──────────────┐
-  │Dashboard│ │ AI Proxy │ │   A2A    │  │   Health     │
-  │ 40+ APIs│ │ 13 strat │ │ JSON-RPC │  │   check      │
-  │ 4 SSE   │ │ 60 prov  │ │ SSE      │  └──────────────┘
+  │Dashboard│ │ Worker   │ │ AI Proxy │  │   Health     │
+  │ 40+ APIs│ │  API     │ │ 13 strat │  │   check      │
+  │ 4 SSE   │ │ Lifecycle│ │ 60 prov  │  └──────────────┘
+  │         │ │ Metrics  │ │          │
   └────┬────┘ └────┬─────┘ └────┬─────┘
        │           │            │
        ▼           ▼            ▼

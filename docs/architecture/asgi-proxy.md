@@ -67,7 +67,7 @@ curl http://localhost:8000/health
 # → {"status": "ok", "initialized": true, ...}
 ```
 
-Returns HTTP 200 when DB is healthy, 503 otherwise. Used by Docker Compose healthcheck.
+Returns HTTP 200 when DB is healthy, 503 otherwise. Used by Docker Compose health check.
 
 ## Files
 
