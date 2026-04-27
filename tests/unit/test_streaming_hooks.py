@@ -14,7 +14,7 @@ if str(SRC_PATH) not in sys.path:
 
 from hooks.core import HookContext
 from hooks.instrumentation import HookInstrument
-from hooks.registry import HookRegistry, reset_registry
+from src.registries.hooks import HookRegistry, reset_registry
 from hooks.streaming_hooks import (
     clear_token_aggregator,
     get_token_aggregator,

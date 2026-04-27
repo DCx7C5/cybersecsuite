@@ -14,7 +14,7 @@ The hook system consists of:
    - Provides HookContext passed to every hook call
    - Defines ErrorStrategy enum for error handling
 
-2. **registry.py** — Stateless HookRegistry wrapper
+2. **registries/hooks.py** — Stateless HookRegistry wrapper
    - Wraps build_python_hooks() output in type-safe interface
    - Caches hooks once at init, never mutates per-call
    - All per-call state passed via HookContext parameter
@@ -35,7 +35,7 @@ Integration with Agent SDK
 
 The agent SDK (src/a2a/agent_sdk.py) uses HookRegistry:
 
-    from hooks.registry import get_registry
+    from src.registries.hooks import get_registry
     
     # Get global singleton (created once, stateless)
     registry = get_registry()
@@ -101,7 +101,7 @@ Usage Patterns
 
 **Advanced: Use registry directly**
 
-    from hooks.registry import get_registry
+    from src.registries.hooks import get_registry
     from hooks.core import HookContext
     import time
     
@@ -118,7 +118,7 @@ Usage Patterns
 
 **Performance monitoring: Enable instrumentation**
 
-    from hooks.registry import HookRegistry
+    from src.registries.hooks import HookRegistry
     from hooks.instrumentation import HookInstrument
     
     instrument = HookInstrument()
@@ -208,7 +208,6 @@ Then add to build_python_hooks():
 See PHASE_15_HOOKS_IMPROVEMENT.md for full design details.
 """
 
-# For direct imports
 from hooks.core import (
     ErrorStrategy,
     HookContext,
@@ -231,11 +230,6 @@ from hooks.instrumentation import (
     get_instrumentation,
     reset_instrumentation,
 )
-from hooks.registry import (
-    HookRegistry,
-    get_registry,
-    reset_registry,
-)
 
 __all__ = [
     # Core types
@@ -253,15 +247,13 @@ __all__ = [
     "PreCompactEvent",
     "PermissionRequestEvent",
     "NotificationEvent",
-    # Registry
-    "HookRegistry",
-    "get_registry",
-    "reset_registry",
     # Instrumentation
     "HookInstrument",
     "HookMetrics",
     "PERFORMANCE_BUDGETS",
     "get_instrumentation",
     "reset_instrumentation",
+    # Note: HookRegistry, get_registry, reset_registry are now in src.registries.hooks
+    # Import directly from there: from src.registries.hooks import HookRegistry, get_registry
 ]
 
