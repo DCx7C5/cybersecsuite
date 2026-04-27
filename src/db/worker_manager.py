@@ -389,7 +389,7 @@ class WorkerStateQueryEngine:
         """
         from datetime import timedelta
         
-        threshold = datetime.utcnow() - timedelta(seconds=inactivity_seconds)
+        threshold = datetime.now() - timedelta(seconds=inactivity_seconds)
         
         query = WorkerSession.filter(last_activity_at__lt=threshold)
         

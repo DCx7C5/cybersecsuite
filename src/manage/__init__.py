@@ -68,21 +68,15 @@ def show_usage():
     print("               Flags: --open (open browser)  --serve (live HTTP server)  --port N")
     print("  case-open  - Open a new investigation case (Phase 0 — interactive intake)")
     print("  team-task  - Dispatch task to blue/red/purple team")
-    print(
-        '               Flags: --team blue|red|purple  --task "desc"  --agents a,b  --mode blue|red|purple'
-    )
+    print('               Flags: --team blue|red|purple  --task "desc"  --agents a,b  --mode blue|red|purple')
     print()
     print("SSL / Key Management:")
     print("  ssl create-ca   - Create CA keypair (Ed25519, password-protected)")
-    print(
-        "                    Flags: --name NAME --pass PASS.txt [--vault-pass VAULT.txt] [--overwrite]"
-    )
+    print("                    Flags: --name NAME --pass PASS.txt [--vault-pass VAULT.txt] [--overwrite]")
     print("  ssl create-key  - Create Ed25519 keypair (standalone or under CA)")
     print("                    Flags: --name NAME --pass PASS.txt [--ca CA_NAME] [--overwrite]")
     print("  ssl create-csr  - Generate Certificate Signing Request")
-    print(
-        "                    Flags: --name NAME --pass PASS.txt --cn CN [--org ORG] [--country CC]"
-    )
+    print("                    Flags: --name NAME --pass PASS.txt --cn CN [--org ORG] [--country CC]")
     print("  ssl list        - List all managed keys and metadata")
     print()
     print("Vault (encrypted secret storage):")

@@ -19,7 +19,7 @@ _PROJECT_ROOT_RESOLVED = PROJECT_ROOT.resolve()
 def _safe_json_size(value: Any) -> int:
     try:
         return len(json.dumps(value, ensure_ascii=True))
-    except Exception:
+    except Exception(BaseException):
         return len(str(value))
 
 
@@ -38,7 +38,7 @@ def _is_within_project(path: Path) -> bool:
         resolved = path.resolve()
         resolved.relative_to(_PROJECT_ROOT_RESOLVED)
         return True
-    except Exception:
+    except Exception(BaseException):
         return False
 
 
@@ -116,7 +116,7 @@ async def _user_prompt_context(event: dict[str, Any], *_: Any) -> dict[str, Any]
                     "additionalContext": f"Current scope context: {json.dumps(ctx, ensure_ascii=True)[:3000]}",
                 }
             }
-    except Exception:
+    except Exception(BaseException):
         pass
     return {}
 
@@ -187,7 +187,7 @@ async def _permission_auto_allow(event: dict[str, Any], *_: Any) -> dict[str, An
                 },
             }
         }
-    except Exception:
+    except Exception(BaseException):
         return {}
 
 

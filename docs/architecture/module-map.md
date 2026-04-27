@@ -192,3 +192,72 @@ src/
 | **Artifacts**          | 2     | Artifact (versioned + signed), ArtifactSignatureLog                            |
 | **Audit**              | 3     | AuditLog (immutable), ApiUsageLog (UUID PK), CaseIntake                        |
 | **Other**              | 4     | Vulnerability, POCIntel, Tag, YaraRule                                         |
+
+---
+
+## Verified Import Analysis (2026-04-27)
+
+### Critical Entrypoints (DO NOT REMOVE)
+
+**proxy/asgi.py** — ASGI application entrypoint
+- **Used by**:
+  - `Makefile`: `uvicorn proxy.asgi:app --port 8000`
+  - `src/ai_proxy/cli.py`: uvicorn entrypoint reference
+  - `tests/test_dashboard_routing.py`: `from proxy.asgi import app`
+  - Docker Compose: `cybersec-proxy` service
+- **Status**: ESSENTIAL. Removing breaks entire backend.
+
+**api/routes/*.py** — Worker management API endpoints
+- **Used by**:
+  - `tests/test_worker_api_crud.py`: `from api.routes.workers import router`
+  - `tests/test_worker_batch.py`: `from api.routes.worker_batch import router, _process_batch_operation`
+  - `tests/test_worker_metrics.py`: `from api.routes.worker_metrics import router`
+  - `tests/test_worker_lifecycle.py`: `from api.routes.worker_lifecycle import router`
+  - `tests/test_worker_history.py`: `from api.routes.worker_history import router`
+- **Status**: ACTIVE. Phase 5+ worker API implementation.
+
+### Active Dependencies (KEEP)
+
+**dbus/notifier.py** — Desktop notifications
+- **Used by**: `src/hooks/sdk_hooks.py` (optional import, fails gracefully if DBus unavailable)
+- **Status**: ACTIVE. Used for SDK hook notifications.
+
+**memory/* — Session state & vault storage**
+- **Used by**:
+  - `src/csmcp/cybersec/canvas_tool.py` (memory/vault, memory/canvas)
+  - `src/csmcp/cybersec/vault_tool.py` (memory/vault)
+- **Status**: ACTIVE. Canvas and vault tool integration.
+
+### Docker Compose Health Checks
+
+- **cybersec-proxy**: HTTP `/health` (8000)
+- **cybersec-dashboard**: HTTP root (8000)
+- **cybersec-postgres**: `pg_isready` check
+- **cybersec-redis**: `redis-cli ping`
+- **cybersec-ollama**: HTTP `/api/tags`
+- **cybersec-openobserve**: HTTP `/healthz`
+
+**Restart after code changes**:
+```bash
+# Python backend changes (proxy/*, api/*, db/*, ai_proxy/*)
+docker-compose restart cybersec-proxy
+
+# Frontend changes (src/frontend/*)
+docker-compose restart cybersec-dashboard
+
+# Full restart if needed
+docker-compose down && docker-compose up -d
+```
+
+### Size Inventory
+
+| Component | Size | Type |
+|-----------|------|------|
+| frontend/node_modules | 318MB | Reinstallable (npm ci) |
+| agent_ts/node_modules | 263MB | Reinstallable (npm ci) |
+| src/db | 2.1MB | Core database models |
+| src/ai_proxy | 516KB | Core routing engine |
+| src/hooks | 224KB | Lifecycle event system |
+| All other Python | ~50KB | Utilities, integration |
+
+**Total**: ~320MB (node_modules dominate; Python code is minimal)
