@@ -153,6 +153,83 @@
         "PYTHONPATH": "${workspaceFolder}/src"
       },
       "cwd": "${workspaceFolder}"
+    },
+    "canvas-mcp": {
+      "name": "Canvas MCP",
+      "description": "Obsidian Canvas creation \u2014 6 tools: canvas_create, canvas_list, canvas_layout, canvas_add_node, canvas_export, canvas_delete (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/ai-marketplace/mcps/canvas-mcp",
+        "run",
+        "python",
+        "-m",
+        "canvas_mcp"
+      ],
+      "cwd": "/home/daen/Projects/ai-marketplace/mcps/canvas-mcp"
+    },
+    "memory-mcp": {
+      "name": "Memory MCP",
+      "description": "Persistent memory store \u2014 3 tools: memory_search, memory_add, memory_clear (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/ai-marketplace/mcps/memory-mcp",
+        "run",
+        "python",
+        "-m",
+        "memory_mcp"
+      ],
+      "cwd": "/home/daen/Projects/ai-marketplace/mcps/memory-mcp"
+    },
+    "template-mcp": {
+      "name": "Template MCP",
+      "description": "Jinja2 template rendering \u2014 1 tool: render_template (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/ai-marketplace/mcps/template-mcp",
+        "run",
+        "python",
+        "-m",
+        "template_mcp"
+      ],
+      "cwd": "/home/daen/Projects/ai-marketplace/mcps/template-mcp"
+    },
+    "dystopian-crypto-mcp": {
+      "name": "Dystopian Crypto MCP",
+      "description": "Dystopian cryptographic utilities \u2014 Ed25519/Argon2id key management, sync_pricing (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/daen/Projects/ai-marketplace/mcps/dystopian-crypto-mcp",
+        "run",
+        "python",
+        "-m",
+        "dystopian_crypto_mcp"
+      ],
+      "env": {
+        "DYSTOPIAN_KEYS_DIR": "/etc/dystopian/crypto/cert/private",
+        "DYSTOPIAN_VAULT_PASSWORD_FILE": "/etc/dystopian/crypto/cert/private/.vault-password"
+      },
+      "cwd": "/home/daen/Projects/ai-marketplace/mcps/dystopian-crypto-mcp"
+    },
+    "custom-mcp": {
+      "name": "Custom MCP Bridge",
+      "description": "Custom MCP bridge for externalized MCPs in CyberSecSuite \u2014 stub, not yet implemented (stdio)",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "${workspaceFolder}/src/csmcp/mcps/custom-mcp",
+        "run",
+        "python",
+        "-m",
+        "custom_mcp"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "cwd": "${workspaceFolder}/src/csmcp/mcps/custom-mcp"
     }
   }
 }
