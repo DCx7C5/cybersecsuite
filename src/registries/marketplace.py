@@ -66,7 +66,7 @@ def load_catalog() -> None:
             item = MarketplaceItem.model_validate(entry)
             _ITEMS[item.id] = item
         logger.info("Loaded %d items from %s", len(raw), _CATALOG_PATH)
-    except Exception:
+    except Exception(BaseException):
         logger.exception("Failed to load catalog from %s", _CATALOG_PATH)
 
 
@@ -174,7 +174,7 @@ def _load_installed() -> None:
             if item.id in _ITEMS:
                 _ITEMS[item.id] = item
         logger.debug("Loaded %d installed items from %s", len(raw), _INSTALLED_PATH)
-    except Exception:
+    except Exception(BaseException):
         logger.exception("Failed to load installed items from %s", _INSTALLED_PATH)
 
 
@@ -269,7 +269,7 @@ class MarketplaceRegistry:
         save_installed()
         logger.info("Uninstalled marketplace item: %s", item_id)
         return True
-    
+
     def validate_all(self) -> dict:
         """Validate all installed items.
         

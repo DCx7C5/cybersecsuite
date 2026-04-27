@@ -8,8 +8,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from hooks.utils import get_session_dir, audit
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import get_session_dir, audit
 
 
 def main():
@@ -28,10 +29,6 @@ def main():
         except (json.JSONDecodeError, OSError):
             pass
 
-    audit("post_compact", {
-        "timestamp": now.isoformat(),
-        "pre_compact_state": pre_state,
-    })
 
 
 if __name__ == "__main__":

@@ -9,8 +9,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from hooks.utils import read_stdin, get_project_dir, get_session_dir, append_file, audit, emit
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import get_project_dir, get_session_dir, audit, append_file, emit, read_stdin
 
 # Tools that produced artifacts worth signing
 ARTIFACT_TOOLS = frozenset({

@@ -322,6 +322,51 @@ class PostStreamingEvent(TypedDict, total=False):
     hook_event_name: str
 
 
+class PreMessageEvent(TypedDict, total=False):
+    """PreMessage event: before message is added to conversation.
+    
+    Input fields:
+        message_content: The message text/content (str)
+        role: Message role (e.g., "user", "assistant", "system")
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with optional message transformation.
+    
+    Error handling: PRESERVE_EXISTING - message pre-processing failures don't block message.
+    
+    Use Cases:
+        - Message validation/sanitization
+        - Pre-processing transformations
+        - Content filtering
+        - Message enrichment
+    """
+    message_content: str
+    role: str
+    hook_event_name: str
+
+
+class PostMessageEvent(TypedDict, total=False):
+    """PostMessage event: after message processed by agent.
+    
+    Input fields:
+        message_content: The message that was processed (str)
+        role: Message role (e.g., "assistant", "user")
+        hook_event_name: Event name
+    
+    Expected output: HookOutput with processing results.
+    
+    Error handling: PRESERVE_EXISTING - post-message logging failures don't affect execution.
+    
+    Use Cases:
+        - Message logging/auditing
+        - Post-processing analytics
+        - Message archive/storage
+        - Notification triggers
+    """
+    message_content: str
+    role: str
+    hook_event_name: str
+
 
 class PlanStartEvent(TypedDict, total=False):
     """PlanStart event from SDK.
@@ -653,6 +698,8 @@ EventType = (
         PreStreamingEvent |
         StreamingTokenEvent |
         PostStreamingEvent |
+        PreMessageEvent |
+        PostMessageEvent |
         PreRetryEvent |
         OnRecoveryEvent |
         OnErrorEvent |
