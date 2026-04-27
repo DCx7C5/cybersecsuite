@@ -170,9 +170,9 @@ fmt:  ## Auto-format with ruff
 
 .PHONY: css-first-setup
 css-first-setup:  ## One-time app + DB setup (auto-triggered on first make run)
-	@echo "==> [1/4] Installing app home (CYBERSECSUITE_HOME=~/.cybersecsuite)..."
+	@echo "==> [1/5] Installing app home (CYBERSECSUITE_HOME=~/.cybersecsuite)..."
 	$(UV) run --no-project python src/manage.py install
-	@echo "==> [2/4] Patching ~/.claude/settings.json..."
+	@echo "==> [2/5] Patching ~/.claude/settings.json..."
 	@python3 -c "\
 import json, pathlib; \
 p = pathlib.Path.home() / '.claude' / 'settings.json'; \
@@ -182,10 +182,12 @@ env.setdefault('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS', '1'); \
 p.parent.mkdir(parents=True, exist_ok=True); \
 p.write_text(json.dumps(d, indent=2) + '\n'); \
 print('  OK: CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS set')"
-	@echo "==> [3/4] DB schema..."
+	@echo "==> [3/5] DB schema..."
 	$(UV) run --no-project python src/manage.py schema
-	@echo "==> [4/4] DB seed..."
+	@echo "==> [4/5] DB seed..."
 	$(UV) run --no-project python src/manage.py seed
+	@echo "==> [5/5] Scaffolding project templates..."
+	$(UV) run python -m cybersecsuite.scaffold
 	@touch .css-initialized
 	@echo ""
 	@echo "✅ css-first-setup complete. Run 'make serve' to start."

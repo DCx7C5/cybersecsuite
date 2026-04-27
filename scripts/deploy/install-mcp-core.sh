@@ -358,6 +358,9 @@ EOF
     
     log_info "Report saved to: /tmp/mcp_bootstrap_report.txt"
     
+    # Scaffold project templates
+    uv run python -m cybersecsuite.scaffold 2>/dev/null || true
+
     # Exit with appropriate code
     if [[ $installed -eq $total && $verified -eq $total ]]; then
         log_success "═══════════════════════════════════════════════════════════"
