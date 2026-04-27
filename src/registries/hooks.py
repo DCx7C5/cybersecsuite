@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from claude_agent_sdk import HookMatcher
 
+from hooks.config import HookConfig
 from hooks.core import (
     ErrorStrategy,
     HookContext,
@@ -60,6 +61,7 @@ class HookRegistry:
         self,
         error_strategy: ErrorStrategy = ErrorStrategy.PRESERVE_EXISTING,
         instrumentation: Optional[HookInstrument] = None,
+        config: Optional[HookConfig] = None,
     ):
         """Initialize registry with cached hook matchers.
         
@@ -68,6 +70,9 @@ class HookRegistry:
                 Default PRESERVE_EXISTING means failures don't break execution.
             instrumentation: Optional HookInstrument for performance tracking.
                 If None, timing is not collected. Pass HookInstrument() to enable.
+            config: Optional HookConfig for declarative hook configuration.
+                If provided, will filter enabled/disabled hooks and apply performance budgets.
+                Default None means all hooks are enabled (backward compat).
         """
         # Import here to avoid circular dependency
         from hooks.sdk_hooks import build_python_hooks
@@ -76,6 +81,14 @@ class HookRegistry:
         self._hooks: dict[str, list[HookMatcher]] = build_python_hooks()
         self._error_strategy = error_strategy
         self._instrumentation = instrumentation
+        self._config = config
+        
+        # If config provided, apply performance budgets to instrumentation
+        if self._config and self._instrumentation:
+            perf = self._config.performance
+            self._instrumentation.budget_no_op_ms = perf.budget_no_op_ms
+            self._instrumentation.budget_validated_ms = perf.budget_validated_ms
+            self._instrumentation.slow_hook_threshold_ms = perf.slow_hook_threshold_ms
     
     async def execute(
         self,
@@ -94,7 +107,9 @@ class HookRegistry:
             HookOutput with hookSpecificOutput (may be empty dict)
             
         Behavior:
+            - Checks config to see if event type is enabled
             - Delegates to existing matchers from build_python_hooks()
+            - Filters hooks based on config if provided
             - Type validation at boundaries only (input/output)
             - Errors handled per error_strategy
             - Backward compatible with existing hook returns
@@ -103,6 +118,11 @@ class HookRegistry:
         Raises:
             Nothing (errors are logged and handled per strategy)
         """
+        # Check if event type is enabled in config
+        if self._config and not self._config.is_event_enabled(event_type):
+            logger.debug(f"Event type disabled in config: {event_type}")
+            return {}
+        
         if event_type not in self._hooks:
             logger.warning(f"No hooks registered for event_type: {event_type}")
             return {}
@@ -276,6 +296,27 @@ class HookRegistry:
         """
         return self._instrumentation
     
+    def get_config(self) -> Optional[HookConfig]:
+        """Get the hook configuration for this registry.
+        
+        Returns:
+            HookConfig instance if provided, None otherwise
+        """
+        return self._config
+    
+    def is_event_enabled(self, event_type: str) -> bool:
+        """Check if an event type is enabled in the configuration.
+        
+        Args:
+            event_type: Event type name (e.g., "PreToolUse")
+        
+        Returns:
+            True if event is enabled (or no config), False if explicitly disabled
+        """
+        if not self._config:
+            return True
+        return self._config.is_event_enabled(event_type)
+    
     async def execute_streaming(
         self,
         event_type: str,
@@ -317,6 +358,11 @@ class HookRegistry:
             Use batch_size > 1 to amortize hook execution cost.
             Example: batch_size=10 reduces hook calls to 10% overhead.
         """
+        # Check if event type is enabled in config
+        if self._config and not self._config.is_event_enabled(event_type):
+            logger.debug(f"Event type disabled in config: {event_type}")
+            return {}
+        
         if event_type not in self._hooks:
             logger.warning(f"No hooks registered for event_type: {event_type}")
             return {}
