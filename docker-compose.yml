@@ -74,8 +74,8 @@ services:
     profiles:
       - default
     build:
-      context: src/frontend
-      dockerfile: ../../.docker/frontend/Dockerfile
+      context: .docker/frontend
+      dockerfile: Dockerfile
     image: cybersec-frontend
     container_name: cybersec-frontend
     <<: *common

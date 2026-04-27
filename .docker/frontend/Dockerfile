@@ -1,11 +1,8 @@
-FROM oven/bun:1 AS dev
+FROM oven/bun:1
 
 WORKDIR /app
 
-COPY package.json ./
-RUN bun install
-
-# Source is mounted at runtime via volume for HMR
+# Source is mounted at runtime (./src/frontend:/app) — install deps on start
 EXPOSE 5173
 
-CMD ["bun", "run", "dev", "--host"]
+CMD ["sh", "-c", "bun install && bun run dev --host"]
