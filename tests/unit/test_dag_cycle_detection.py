@@ -108,7 +108,8 @@ class TestDAGCycleDetection:
     def test_self_cycle_detected(self):
         """Test that self-cycle is always prevented by add_dependency logic."""
         t1 = MockTask(1, 1)
-        
+        t1.depends_on = {t1}
+
         assert DAGValidator.would_create_cycle(1, 1) is True
     
     def test_direct_cycle_two_tasks(self):
@@ -269,4 +270,6 @@ class TestDAGMemoization:
         # Add another independent test
         memo.clear()
         t6 = MockTask(6, 1)
+        t6.depends_on = {tasks[1]}
         assert DAGValidator.would_create_cycle(6, 2, memo) is False
+

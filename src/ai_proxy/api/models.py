@@ -14,7 +14,7 @@ import anthropic
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from ai_proxy.providers.registry import get_provider
+from src.registries.providers import get_provider
 
 logger = logging.getLogger("ai_proxy.models")
 

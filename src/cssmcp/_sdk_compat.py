@@ -51,7 +51,6 @@ class SdkMcpServer:
             check_tool_baseline,
         )
         import time
-        import json
         from opentelemetry.trace import Status, StatusCode
         
         tool = self._tools.get(tool_name)

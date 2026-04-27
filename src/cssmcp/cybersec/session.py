@@ -10,7 +10,7 @@ from cssmcp.cybersec.helpers import JsonDict, _get_current_scope, sdk_result, sd
 @tool("session_snapshot", "Return a full session state snapshot including scope, usage, budget, and circuit breakers.", {})
 async def session_snapshot(args: dict[str, Any]) -> JsonDict:
     try:
-        from ai_proxy.providers.registry import get_enabled_providers, get_free_providers
+        from src.registries.providers import get_enabled_providers, get_free_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts, budget_guard, Strategy
         from ai_proxy.services.usage_tracker import usage_tracker
     except ImportError:
@@ -36,7 +36,7 @@ async def session_snapshot(args: dict[str, Any]) -> JsonDict:
 @tool("agent_registry", "List all registered A2A agents with skills and metadata.", {})
 async def agent_registry(args: dict[str, Any]) -> JsonDict:
     try:
-        from a2a.registry import AgentRegistry
+        from src.registries.agents import AgentRegistry
         from a2a.agent_loader import load_cybersecsuite_agents
 
         registry = AgentRegistry()
@@ -46,7 +46,7 @@ async def agent_registry(args: dict[str, Any]) -> JsonDict:
 
         # Append installed marketplace agents (T036).
         try:
-            from marketplace.registry import get_registry as _get_mkt_registry
+            from src.registries.marketplace import get_registry as _get_mkt_registry
             for item in _get_mkt_registry().list_installed():
                 if item.kind == "agent":
                     agents.append({
@@ -84,7 +84,7 @@ async def agent_registry(args: dict[str, Any]) -> JsonDict:
 )
 async def best_provider(args: dict[str, Any]) -> JsonDict:
     try:
-        from ai_proxy.providers.registry import get_all_providers
+        from src.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status
     except ImportError:
         return sdk_error("ai_proxy not available")

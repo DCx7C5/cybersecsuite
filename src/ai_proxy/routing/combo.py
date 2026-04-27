@@ -16,7 +16,7 @@ from enum import Enum
 from typing import Any
 
 from ai_proxy.executors.base import BaseExecutor, ExecutorResult, get_executor
-from ai_proxy.providers.registry import (
+from src.registries.providers import (
     ApiFormat,
     AuthType,
     ProviderConfig,
@@ -485,7 +485,7 @@ async def route_request(
     fallback_targets: list[ResolvedTarget] = []
     
     if webllm_mode:
-        from ai_proxy.providers.registry import AuthType as _AT
+        from src.registries.providers import AuthType as _AT
         for t in ordered:
             if t.provider.auth_type == _AT.BROWSER:
                 webllm_targets.append(t)

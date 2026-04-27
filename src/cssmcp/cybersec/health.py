@@ -14,7 +14,7 @@ _START_TIME = time.time()
 @tool("get_health", "Health check: uptime, circuit breakers, provider status, rate limits, cache.", {})
 async def get_health(args: dict[str, Any]) -> JsonDict:
     try:
-        from ai_proxy.providers.registry import get_all_providers
+        from src.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status
         from ai_proxy.services.rate_limiter import rate_limiter
         from ai_proxy.services.usage_tracker import usage_tracker
@@ -64,7 +64,7 @@ async def get_health(args: dict[str, Any]) -> JsonDict:
 )
 async def get_provider_metrics(args: dict[str, Any]) -> JsonDict:
     try:
-        from ai_proxy.providers.registry import get_all_providers
+        from src.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts
         from ai_proxy.services.usage_tracker import usage_tracker
         from ai_proxy.services.rate_limiter import rate_limiter

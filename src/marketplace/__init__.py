@@ -7,7 +7,7 @@ Referenz:
 """
 
 
-from marketplace.registry import MarketplaceRegistry, get_registry
+from src.registries.marketplace import MarketplaceRegistry, get_registry
 from marketplace.models import MarketplaceItem, MarketplaceItemStatus
 
 __all__ = [

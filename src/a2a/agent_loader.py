@@ -19,7 +19,7 @@ except ImportError:
 
 from a2a.models import AgentCard, AgentCapabilities, AgentAuthentication, AgentSkill
 from a2a.enums import AuthScheme
-from a2a.registry import AgentRegistry, RemoteAgent
+from src.registries.agents import AgentRegistry, RemoteAgent
 
 
 # ── Frontmatter parsing ───────────────────────────────────────────────────────

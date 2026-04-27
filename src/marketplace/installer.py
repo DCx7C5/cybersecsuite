@@ -18,7 +18,7 @@ from typing import Any
 
 from marketplace.manifest import ManifestParser
 from marketplace.models import MarketplaceItem, MarketplaceItemStatus
-from marketplace.registry import get_registry, get_item, list_installed
+from src.registries.marketplace import get_registry, get_item, list_installed
 
 logger = logging.getLogger("marketplace.installer")
 

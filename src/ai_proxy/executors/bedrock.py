@@ -15,7 +15,7 @@ import time
 from typing import Any, AsyncIterator
 
 from ai_proxy.executors.base import BaseExecutor, ExecutorResult
-from ai_proxy.providers.registry import ProviderConfig
+from src.registries.providers import ProviderConfig
 
 logger = logging.getLogger("ai_proxy.executor.bedrock")
 

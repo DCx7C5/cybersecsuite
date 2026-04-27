@@ -42,7 +42,7 @@ from api.routes.worker_history import router as _worker_history_router
 from api.routes.worker_batch import router as _worker_batch_router
 from ai_proxy.routing.combo import cleanup_executors
 from ai_proxy.services.rate_limiter import rate_limiter, ProviderLimits
-from ai_proxy.providers.registry import get_enabled_providers
+from src.registries.providers import get_enabled_providers
 from telemetry.middleware import TelemetryMiddleware
 from telemetry.collector import collector as _telemetry_collector
 from logger import getLogger

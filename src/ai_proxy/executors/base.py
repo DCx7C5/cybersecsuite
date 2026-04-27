@@ -14,7 +14,7 @@ from typing import Any, AsyncIterator
 
 import httpx
 
-from ai_proxy.providers.registry import ProviderConfig, ApiFormat, AuthType
+from src.registries.providers import ProviderConfig, ApiFormat, AuthType
 
 logger = logging.getLogger("ai_proxy.executor")
 

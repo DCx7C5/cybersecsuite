@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 import pytest
 from tortoise.context import TortoiseContext
 
+from db.models import Task
+
 _SKIP_TORTOISE = pytest.mark.skipif(
     sys.version_info >= (3, 14),
     reason="Tortoise ORM SQLite backend incompatible with Python 3.14",

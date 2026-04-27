@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 
-from ai_proxy.providers.registry import (
+from src.registries.providers import (
     _register,
     ProviderConfig,
     ModelConfig,

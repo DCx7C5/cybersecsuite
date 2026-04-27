@@ -5,6 +5,7 @@ import json
 import tempfile
 from pathlib import Path
 
+from hooks import agent_hooks
 import pytest
 
 # Adjust path for imports
@@ -13,7 +14,6 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks import agent_hooks
 
 
 @pytest.fixture

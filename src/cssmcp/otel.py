@@ -17,7 +17,6 @@ from functools import wraps
 from opentelemetry import trace, metrics
 from opentelemetry.trace import Status, StatusCode
 from opentelemetry.trace.span import Span
-from opentelemetry.metrics import Counter, Histogram
 
 logger = logging.getLogger("csmcp.otel")
 

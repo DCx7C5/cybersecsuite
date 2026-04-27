@@ -8,8 +8,8 @@ import asyncio
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from a2a.client import A2AClient
-from a2a.models import AgentCard
+from src.a2a.client import A2AClient
+from src.a2a.models import AgentCard
 
 
 class RemoteAgent:
@@ -210,7 +210,7 @@ class AgentRegistry:
         Returns:
             Populated AgentRegistry
         """
-        from a2a.agent_loader import load_agents_from_dir
+        from src.a2a.agent_loader import load_agents_from_dir
         registry = cls()
         load_agents_from_dir(agents_dir, registry, base_url, recurse)
         return registry
@@ -231,7 +231,7 @@ class AgentRegistry:
         Returns:
             Populated AgentRegistry
         """
-        from a2a.agent_loader import load_cybersecsuite_agents
+        from src.a2a.agent_loader import load_cybersecsuite_agents
         registry = cls()
         load_cybersecsuite_agents(registry, project_root, base_url)
         return registry

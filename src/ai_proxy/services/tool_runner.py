@@ -22,7 +22,7 @@ from typing import Any, Callable
 
 import anthropic
 
-from ai_proxy.providers.registry import get_provider
+from src.registries.providers import get_provider
 
 logger = logging.getLogger("ai_proxy.tool_runner")
 
