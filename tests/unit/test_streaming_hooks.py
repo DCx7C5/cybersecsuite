@@ -3,7 +3,6 @@
 import sys
 import time
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -337,7 +336,6 @@ class TestStreamingBackwardCompatibility:
 
     def test_streaming_event_types_in_core_union(self):
         """Streaming event types should be in EventType union."""
-        from hooks.core import EventType
         
         # These should be valid event types (not raising type errors)
         pre_streaming_event: dict = {

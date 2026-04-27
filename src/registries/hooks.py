@@ -712,8 +712,324 @@ class HookRegistry:
         return combined_output
 
 
+    async def execute_pre_retry(
+        self,
+        event: dict[str, Any],
+        context: HookContext,
+    ) -> dict[str, Any]:
+        """Execute PreRetry hooks before retry attempt.
+        
+        PreRetry hooks can examine the error and potentially suppress the retry
+        or modify the retry delay. This is useful for:
+        - Detecting unretryable errors (e.g., auth failures)
+        - Logging retry attempts with context
+        - Implementing circuit breaker patterns
+        - Adjusting retry strategy dynamically
+        
+        Args:
+            event: PreRetryEvent with error_type, attempt_number, etc.
+            context: HookContext with correlation_id, session_id, etc.
+        
+        Returns:
+            Dictionary with optional "suppress_retry" and "delay_override_ms" keys.
+            If suppress_retry is True, the retry should be skipped.
+        
+        Behavior:
+            - Executes all registered PreRetry hooks in order
+            - Merges outputs from all hooks (last one wins for decisions)
+            - Returns combined output dict
+            - Errors are handled per error_strategy (default: PRESERVE_EXISTING)
+            - Fire-and-forget on error: retry proceeds normally if hook fails
+        
+        Raises:
+            Nothing (errors are logged and handled per strategy)
+        """
+        if "PreRetry" not in self._hooks:
+            logger.debug("No PreRetry hooks registered")
+            return {}
+        
+        matchers = self._hooks["PreRetry"]
+        combined_output: dict[str, Any] = {}
+        
+        try:
+            for matcher in matchers:
+                try:
+                    hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+                    
+                    for hook_fn in hooks:
+                        try:
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    "PreRetry",
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                result = await hook_fn(event)  # type: ignore
+                            
+                            # Validate result type
+                            if not isinstance(result, dict):
+                                logger.warning(
+                                    f"PreRetry hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                )
+                                result = {}
+                            
+                            # Log execution
+                            log_data = {
+                                "event": "PreRetryHookExecuted",
+                                "hook": hook_fn.__name__,
+                                "correlation_id": context.correlation_id,
+                                "session_id": context.session_id,
+                                "attempt_number": event.get("attempt_number"),
+                                "has_output": bool(result),
+                            }
+                            
+                            if self._instrumentation:
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+                            
+                            _audit(log_data)
+                            
+                            # Merge output (suppress_retry: any hook can suppress)
+                            if result:
+                                combined_output.update(result)
+                        
+                        except Exception as exc:
+                            self._handle_hook_error(
+                                hook_fn.__name__,
+                                "PreRetry",
+                                exc,
+                                context,
+                            )
+                
+                except Exception as exc:
+                    logger.error(f"Error processing matcher for PreRetry: {exc}")
+                    if self._error_strategy == ErrorStrategy.PRESERVE_EXISTING:
+                        pass
+                    else:
+                        raise
+        
+        except Exception as exc:
+            logger.error(f"Fatal error in PreRetry hook registry: {exc}")
+            if self._error_strategy != ErrorStrategy.PRESERVE_EXISTING:
+                raise
+        
+        return combined_output
+    
+    async def execute_on_recovery(
+        self,
+        event: dict[str, Any],
+        context: HookContext,
+    ) -> dict[str, Any]:
+        """Execute OnRecovery hooks after successful recovery from error.
+        
+        OnRecovery hooks are fire-and-forget (async) logging/monitoring hooks
+        that track when a system recovers from an error after retries.
+        
+        Use Cases:
+            - Log successful recovery for monitoring/alerting
+            - Update circuit breaker state (closed after recovery)
+            - Send recovery notifications
+            - Track MTTR (mean time to recovery)
+            - Update metrics/dashboards
+        
+        Args:
+            event: OnRecoveryEvent with error_type, recovered_after_attempts, etc.
+            context: HookContext with correlation_id, session_id, etc.
+        
+        Returns:
+            Dictionary with combined hook outputs (may be empty)
+        
+        Behavior:
+            - Executes all registered OnRecovery hooks in order
+            - Errors are logged but never raised (fire-and-forget semantics)
+            - Does not block caller (fully async)
+            - Multiple hooks can execute concurrently in future versions
+        
+        Raises:
+            Nothing (errors are logged and discarded)
+        """
+        if "OnRecovery" not in self._hooks:
+            logger.debug("No OnRecovery hooks registered")
+            return {}
+        
+        matchers = self._hooks["OnRecovery"]
+        combined_output: dict[str, Any] = {}
+        
+        try:
+            for matcher in matchers:
+                try:
+                    hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+                    
+                    for hook_fn in hooks:
+                        try:
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    "OnRecovery",
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                result = await hook_fn(event)  # type: ignore
+                            
+                            # Validate result type
+                            if not isinstance(result, dict):
+                                logger.warning(
+                                    f"OnRecovery hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                )
+                                result = {}
+                            
+                            # Log execution
+                            log_data = {
+                                "event": "OnRecoveryHookExecuted",
+                                "hook": hook_fn.__name__,
+                                "correlation_id": context.correlation_id,
+                                "session_id": context.session_id,
+                                "error_type": event.get("error_type"),
+                                "has_output": bool(result),
+                            }
+                            
+                            if self._instrumentation:
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+                            
+                            _audit(log_data)
+                            
+                            # Merge output
+                            if result:
+                                combined_output.update(result)
+                        
+                        except Exception as exc:
+                            # Fire-and-forget: log but don't raise
+                            logger.exception(
+                                f"OnRecovery hook {hook_fn.__name__} failed: {exc}",
+                                extra={"hook": hook_fn.__name__, "event": "OnRecovery"},
+                            )
+                
+                except Exception as exc:
+                    logger.error(f"Error processing matcher for OnRecovery: {exc}")
+        
+        except Exception as exc:
+            logger.error(f"Fatal error in OnRecovery hook registry: {exc}")
+        
+        return combined_output
+    
+    async def execute_on_error(
+        self,
+        event: dict[str, Any],
+        context: HookContext,
+    ) -> dict[str, Any]:
+        """Execute OnError hooks when error is final (non-recoverable).
+        
+        OnError hooks are fire-and-forget (async) logging/monitoring hooks
+        that track when a system encounters a fatal/permanent error.
+        
+        Use Cases:
+            - Log permanent failures for audit trail
+            - Send alerts for fatal errors
+            - Update monitoring dashboards
+            - Trigger fallback workflows
+            - Archive error context for investigation
+        
+        Args:
+            event: OnErrorEvent with error_type, error_message, is_fatal, etc.
+            context: HookContext with correlation_id, session_id, etc.
+        
+        Returns:
+            Dictionary with combined hook outputs (may be empty)
+        
+        Behavior:
+            - Executes all registered OnError hooks in order
+            - Errors are logged but never raised (fire-and-forget semantics)
+            - Does not block caller (fully async)
+            - Multiple hooks can execute concurrently in future versions
+        
+        Raises:
+            Nothing (errors are logged and discarded)
+        """
+        if "OnError" not in self._hooks:
+            logger.debug("No OnError hooks registered")
+            return {}
+        
+        matchers = self._hooks["OnError"]
+        combined_output: dict[str, Any] = {}
+        
+        try:
+            for matcher in matchers:
+                try:
+                    hooks = matcher.hooks if hasattr(matcher, 'hooks') else []
+                    
+                    for hook_fn in hooks:
+                        try:
+                            # Execute hook with optional instrumentation
+                            if self._instrumentation:
+                                result, metrics = await self._instrumentation.instrument_hook_call(
+                                    hook_fn.__name__,
+                                    "OnError",
+                                    hook_fn,
+                                    event,
+                                )
+                            else:
+                                result = await hook_fn(event)  # type: ignore
+                            
+                            # Validate result type
+                            if not isinstance(result, dict):
+                                logger.warning(
+                                    f"OnError hook {hook_fn.__name__} returned non-dict: {type(result)}"
+                                )
+                                result = {}
+                            
+                            # Log execution
+                            log_data = {
+                                "event": "OnErrorHookExecuted",
+                                "hook": hook_fn.__name__,
+                                "correlation_id": context.correlation_id,
+                                "session_id": context.session_id,
+                                "error_type": event.get("error_type"),
+                                "is_fatal": event.get("is_fatal"),
+                                "has_output": bool(result),
+                            }
+                            
+                            if self._instrumentation:
+                                recent_metrics = self._instrumentation.metrics
+                                if recent_metrics:
+                                    last_metric = recent_metrics[-1]
+                                    log_data["elapsed_ms"] = round(last_metric.duration_ms)
+                                    log_data["success"] = last_metric.success
+                            
+                            _audit(log_data)
+                            
+                            # Merge output
+                            if result:
+                                combined_output.update(result)
+                        
+                        except Exception as exc:
+                            # Fire-and-forget: log but don't raise
+                            logger.exception(
+                                f"OnError hook {hook_fn.__name__} failed: {exc}",
+                                extra={"hook": hook_fn.__name__, "event": "OnError"},
+                            )
+                
+                except Exception as exc:
+                    logger.error(f"Error processing matcher for OnError: {exc}")
+        
+        except Exception as exc:
+            logger.error(f"Fatal error in OnError hook registry: {exc}")
+        
+        return combined_output
 
-# ── Global Registry Singleton ─────────────────────────────────────────────
+
+
 
 _global_registry: Optional[HookRegistry] = None
 

@@ -219,8 +219,8 @@ from hooks.core import (
     PreCompactEvent,
     PreToolUseEvent,
     StopEvent,
-    SubagentStartEvent,
-    SubagentStopEvent,
+    AgentStartEvent,
+    AgentStopEvent,
     UserPromptSubmitEvent,
 )
 from hooks.instrumentation import (
@@ -242,8 +242,8 @@ __all__ = [
     "PostToolUseFailureEvent",
     "UserPromptSubmitEvent",
     "StopEvent",
-    "SubagentStartEvent",
-    "SubagentStopEvent",
+    "AgentStartEvent",
+    "AgentStopEvent",
     "PreCompactEvent",
     "PermissionRequestEvent",
     "NotificationEvent",

@@ -19,7 +19,7 @@ from hooks.core import (
     PostToolUseEvent,
     PreToolUseEvent,
     StopEvent,
-    SubagentStartEvent,
+    AgentStartEvent,
 )
 
 
@@ -143,7 +143,7 @@ class TestEventTypedDicts:
 
     def test_subagent_start_event_structure(self):
         """SubagentStartEvent should contain lifecycle info."""
-        event: SubagentStartEvent = {  # type: ignore
+        event: AgentStartEvent = {  # type: ignore
             "agent_name": "code-review",
             "agent_type": "code-review",
             "session_id": "sess-456",

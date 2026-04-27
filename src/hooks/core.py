@@ -146,7 +146,7 @@ class StopEvent(TypedDict, total=False):
     hook_event_name: str
 
 
-class SubagentStartEvent(TypedDict, total=False):
+class AgentStartEvent(TypedDict, total=False):
     """SubagentStart event from SDK.
     
     Input fields:
@@ -164,7 +164,7 @@ class SubagentStartEvent(TypedDict, total=False):
     hook_event_name: str
 
 
-class SubagentStopEvent(TypedDict, total=False):
+class AgentStopEvent(TypedDict, total=False):
     """SubagentStop event from SDK.
     
     Input fields:
@@ -322,95 +322,204 @@ class PostStreamingEvent(TypedDict, total=False):
     hook_event_name: str
 
 
-class PreMessageEvent(TypedDict, total=False):
-    """PreMessage event: before message is added to conversation.
-    
-    Input fields:
-        message_content: The message text/content (str)
-        role: Message role (e.g., "user", "assistant", "system")
-        message_id: Unique message identifier (str, optional)
-        correlation_id: Request correlation ID (str)
-        metadata: Additional message metadata dict (optional)
-        hook_event_name: Event name
-    
-    Expected output: HookOutput with optionally transformed message in hookSpecificOutput.
-        - If hookSpecificOutput contains "transformed_message", that value is used
-        - Otherwise, original message_content is preserved
-        - Can filter/redact/validate message before processing
-    
-    Error handling: PRESERVE_EXISTING - hook failure uses original message.
-    
-    Use Cases:
-        - Validate message content before processing
-        - Sanitize/redact sensitive information
-        - Transform message (e.g., language translation, PII masking)
-        - Filter spam or malicious content
-        - Track message correlation across systems
+
+class PlanStartEvent(TypedDict, total=False):
     """
-    message_content: str
-    role: str
-    message_id: Optional[str]
-    correlation_id: str
-    metadata: Optional[dict[str, Any]]
-    hook_event_name: str
+        PlanStart event from SDK.
+    """
 
 
-class PostMessageEvent(TypedDict, total=False):
-    """PostMessage event: after message processed by agent.
+class PlanStopEvent(TypedDict, total=False):
+    """
+        PlanStop event from SDK.
+    """
+
+
+
+class PlanCompleteEvent(TypedDict, total=False):
+    """
+        PlanComplete event from SDK.
+    """
+
+
+
+class PlanPhaseStartEvent(TypedDict, total=False):
+    """
+        PlanPhaseStart event from SDK.
+    """
+
+
+class PlanPhaseStopEvent(TypedDict, total=False):
+    """
+        PlanPhaseStop event from SDK.
+    """
+
+
+class PlanPhaseCompleteEvent(TypedDict, total=False):
+    """
+        PlanPhaseComplete event from SDK.
+    """
+
+
+class PlanTaskStartEvent(TypedDict, total=False):
+    """
+        PlanTaskStart event from SDK.
+    """
+
+
+class PlanTaskStopEvent(TypedDict, total=False):
+    """
+        PlanTaskStop event from SDK.
+    """
+
+
+class PlanTaskCompleteEvent(TypedDict, total=False):
+    """
+        PlanTaskComplete event from SDK.
+    """
+
+
+class PlanTodoStartEvent(TypedDict, total=False):
+    """
+        PlanTodoStart event from SDK.
+    """
+
+
+class PlanTodoStopEvent(TypedDict, total=False):
+    """
+        PlanTodoStop event from SDK.
+    """
+
+
+class PlanTodoCompleteEvent(TypedDict, total=False):
+    """
+        PlanTodoComplete event from SDK.
+    """
+
+
+class PreRetryEvent(TypedDict, total=False):
+    """PreRetry event: before retry attempt.
     
     Input fields:
-        message_content: The message that was processed (str)
-        role: Message role (e.g., "assistant", "user")
-        response_time_ms: Time to process message (float)
-        token_count: Number of tokens in message (int)
-        status: Processing status (str, e.g., "success", "filtered", "error")
-        correlation_id: Request correlation ID (str)
-        metadata: Additional context metadata dict (optional)
-        hook_event_name: Event name
+        error_type: Exception class name (e.g., "RateLimitError", "TimeoutError")
+        error_message: Human-readable error message
+        attempt_number: 1-based attempt number (1st, 2nd, 3rd, etc.)
+        max_attempts: Maximum allowed retry attempts
+        retry_delay_ms: Milliseconds to wait before retry
+        tool_name: Optional tool name that caused the error
+        correlation_id: Request correlation ID for tracking
     
-    Expected output: HookOutput with logging/metrics in hookSpecificOutput (read-only).
+    Expected output: HookOutput with optional suppress_retry decision.
     
-    Error handling: PRESERVE_EXISTING - logging failures don't affect processed message.
+    Error handling: PRESERVE_EXISTING - pre-retry decisions are best-effort.
     
     Use Cases:
-        - Log message processing metrics
-        - Audit message content and decisions
-        - Track message flow through system
-        - Collect statistics on response times
-        - Monitor token usage
-    
-    Note:
-        PostMessage hooks CANNOT modify the message (read-only).
-        Use PreMessage if message transformation is needed.
+        - Log retry attempts with context
+        - Suppress retry for certain error types
+        - Modify retry delay dynamically (future)
+        - Alert on repeated failures
     """
-    message_content: str
-    role: str
-    response_time_ms: float
-    token_count: int
-    status: str
+    error_type: str
+    error_message: str
+    attempt_number: int
+    max_attempts: int
+    retry_delay_ms: float
+    tool_name: Optional[str]
     correlation_id: str
-    metadata: Optional[dict[str, Any]]
-    hook_event_name: str
+
+
+class OnRecoveryEvent(TypedDict, total=False):
+    """OnRecovery event: after successful recovery from error.
+    
+    Input fields:
+        error_type: Exception class name that was recovered from
+        recovered_after_attempts: Number of attempts taken to recover
+        total_retry_duration_ms: Total milliseconds spent retrying
+        correlation_id: Request correlation ID for tracking
+    
+    Expected output: HookOutput (fire-and-forget logging).
+    
+    Error handling: PRESERVE_EXISTING - recovery logging is optional.
+    
+    Use Cases:
+        - Log successful recovery for monitoring
+        - Update circuit breaker state
+        - Send recovery notifications
+        - Track MTTR (mean time to recovery)
+    """
+    error_type: str
+    recovered_after_attempts: int
+    total_retry_duration_ms: float
+    correlation_id: str
+
+
+class OnErrorEvent(TypedDict, total=False):
+    """OnError event: when error is final (non-recoverable).
+    
+    Input fields:
+        error_type: Exception class name (e.g., "PermissionError", "ValueError")
+        error_message: Human-readable error message
+        is_fatal: True if operation cannot be retried
+        attempt_number: Number of attempts made (if retried)
+        correlation_id: Request correlation ID for tracking
+    
+    Expected output: HookOutput (fire-and-forget logging).
+    
+    Error handling: PRESERVE_EXISTING - error logging is optional.
+    
+    Use Cases:
+        - Log permanent failures for audit trail
+        - Send alerts for fatal errors
+        - Update monitoring dashboards
+        - Trigger fallback workflows
+    """
+    error_type: str
+    error_message: str
+    is_fatal: bool
+    attempt_number: int
+    correlation_id: str
+
 
 
 # Union of all event types for dispatch
 EventType = (
-    PreToolUseEvent |
-    PostToolUseEvent |
-    PostToolUseFailureEvent |
-    UserPromptSubmitEvent |
-    StopEvent |
-    SubagentStartEvent |
-    SubagentStopEvent |
-    PreCompactEvent |
-    PermissionRequestEvent |
-    NotificationEvent |
-    PreStreamingEvent |
-    StreamingTokenEvent |
-    PostStreamingEvent |
-    PreMessageEvent |
-    PostMessageEvent
+        PreToolUseEvent |
+        PostToolUseEvent |
+        PostToolUseFailureEvent |
+        UserPromptSubmitEvent |
+        StopEvent |
+        AgentStartEvent |
+        AgentStopEvent |
+        PreCompactEvent |
+        PermissionRequestEvent |
+        NotificationEvent |
+        PreStreamingEvent |
+        StreamingTokenEvent |
+        PostStreamingEvent |
+        PreRetryEvent |
+        OnRecoveryEvent |
+        OnErrorEvent
 )
+
+
+# ── Recovery Hook Output Types ─────────────────────────────────────────────
+
+class PreRetryOutput(TypedDict, total=False):
+    """Output from PreRetry hooks.
+    
+    Fields:
+        suppress_retry: If True, prevent the retry attempt (default False)
+        delay_override_ms: If provided, override the retry delay
+        metadata: Optional additional context
+    
+    Fire-and-forget semantics:
+        - Hooks that return empty {} are treated as "no change"
+        - Multiple PreRetry hooks may execute; last one wins for decisions
+        - If any hook returns suppress_retry=True, retry is suppressed
+    """
+    suppress_retry: bool
+    delay_override_ms: Optional[float]
+    metadata: Optional[dict[str, Any]]
 
 
 # ── Hook Output ────────────────────────────────────────────────────────────
