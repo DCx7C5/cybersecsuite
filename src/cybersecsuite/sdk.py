@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any, Generator, Literal
 
 from cybersecsuite._context import get_context
+from cybersecsuite.scaffold import get_embedded_template, scaffold_project_templates
 from cybersecsuite._session_io import (
     new_session_id,
     read_last_session,
@@ -102,6 +103,10 @@ def _render(
         candidate = d / template_name
         if candidate.exists():
             return _render_template_string(candidate.read_text(encoding="utf-8"), ctx)
+    # Fallback: embedded package data
+    embedded = get_embedded_template(template_name)
+    if embedded is not None:
+        return _render_template_string(embedded, ctx)
     raise FileNotFoundError(f"Template '{template_name}' not found in any scope")
 
 
@@ -149,6 +154,10 @@ class CyberSecSuiteSDK:
         self._session_id: str | None = None
         self._context_overlay: dict[str, Any] = {}
         self._scope: _SCOPE = "project"
+        try:
+            scaffold_project_templates(self.project_dir)
+        except Exception as exc:  # pragma: no cover
+            logger.debug("scaffold: skipped: %s", exc)
 
     # ── Session dir helpers ───────────────────────────────────────────────────
 

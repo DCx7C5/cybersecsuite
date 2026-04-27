@@ -41,7 +41,16 @@ class ArtifactTemplateRenderer:
     def template(self) -> str:
         """Load and cache template."""
         if self._template is None:
-            self._template = self.template_path.read_text()
+            if self.template_path.exists():
+                self._template = self.template_path.read_text()
+            else:
+                from cybersecsuite.scaffold import get_embedded_template
+                embedded = get_embedded_template("artifact.md")
+                if embedded is None:
+                    raise FileNotFoundError(
+                        f"Template not found at {self.template_path} and no embedded fallback"
+                    )
+                self._template = embedded
         return self._template
 
     def render(

@@ -82,9 +82,13 @@ async def render_template(args: dict[str, Any]) -> JsonDict:
     extra_vars = args.get("extra_vars", {})
     try:
         path = _resolve_template(name)
-        if path is None:
-            return sdk_error(f"Template '{name}' not found")
-        source = path.read_text(encoding="utf-8")
+        if path is not None:
+            source = path.read_text(encoding="utf-8")
+        else:
+            from cybersecsuite.scaffold import get_embedded_template
+            source = get_embedded_template(name)
+            if source is None:
+                return sdk_error(f"Template '{name}' not found")
         rendered = _render_template_string(source, extra_vars)
         return sdk_result({"name": name, "rendered": rendered})
     except Exception as e:
