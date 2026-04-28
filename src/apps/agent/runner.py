@@ -5,7 +5,7 @@ with session persistence, mode switching, and streaming support.
 """
 
 
-from agent import getLogger
+from logger import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any
 
@@ -27,7 +27,7 @@ class AgentRunner:
         session_id = runner.session_id  # resume later
 
     Or with pool:
-        from agent import get_pool
+        from apps.agent.client_pool import get_pool
         pool = get_pool()
         runner = AgentRunner(agent_name="cybersec-agent", pool=pool)
     """

@@ -5,7 +5,7 @@ into SSE-ready dicts consumed by dashboard /api/agent-query endpoint.
 """
 
 
-from agent import getLogger
+from logger import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any
 

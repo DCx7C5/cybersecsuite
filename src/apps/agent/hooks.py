@@ -9,7 +9,7 @@ Provides four hooks for use in ClaudeAgentOptions.hooks:
 import re
 from typing import Any
 
-from agent import getLogger
+from logger import getLogger
 
 
 logger = getLogger("agent.hooks")
