@@ -62,10 +62,21 @@ async def _handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWri
 async def _dispatch_event(data: dict) -> None:
     """Dispatch received event."""
     event_type = data.get("event", "unknown")
-    _payload = data.get("payload", {})
+    payload = data.get("payload", {})
     ts = data.get("ts", "")
 
     logger.info(f"IPC event: {event_type} at {ts}")
+
+    # Route to specific handlers based on event type
+    if event_type == "OnFirstSetupEvent":
+        try:
+            from hooks.on_first_setup_handler import handle_on_first_setup_event
+            result = await handle_on_first_setup_event(payload)
+            logger.info(f"OnFirstSetupEvent handler result: {result['status']}")
+        except Exception as e:
+            logger.error(f"OnFirstSetupEvent handler failed: {e}", exc_info=True)
+    else:
+        logger.debug(f"No handler for event type: {event_type}")
 
     # TODO: dispatch to SSE /sse/hooks + DB audit
 
