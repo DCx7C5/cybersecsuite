@@ -66,8 +66,14 @@ allow-direct-references = true
 packages = [
   # LEAF PACKAGES (migrated to core/)
   "src/core/checks",
+  "src/core/dbus",
+  "src/core/memory",
+  "src/core/openobserve",
+  "src/core/telemetry",
+  "src/core/utils",
+  "src/core/llm",
   
-  # NON-MIGRATED YET
+  # NON-MIGRATED YET (CIRCULAR CLUSTER)
   "src/a2a",
   "src/accounts",
   "src/agent",
@@ -79,18 +85,12 @@ packages = [
   "src/cybersecsuite/data",
   "src/cybersecsuite/data/marketplace",
   "src/db",
-  "src/dbus",
   "src/hooks",
-  "src/llm",
   "src/manage",
   "src/marketplace",
-  "src/memory",
-  "src/openobserve",
   "src/registries",
   "src/routes",
   "src/startup",
-  "src/telemetry",
-  "src/utils",
 ]
 
 [dependency-groups]
