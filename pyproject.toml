@@ -64,27 +64,30 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  "src/logger",
-  "src/llm",
   "src/a2a",
   "src/accounts",
   "src/agent",
   "src/ai_proxy",
-  "src/api",
+  "src/apps",
+  "src/checks",
+  "src/core",
   "src/crypto",
-  "src/csmcp",
   "src/cybersecsuite",
   "src/cybersecsuite/data",
   "src/cybersecsuite/data/marketplace",
-  "src/dashboard",
   "src/db",
+  "src/dbus",
   "src/hooks",
+  "src/llm",
   "src/manage",
+  "src/marketplace",
+  "src/memory",
   "src/openobserve",
-  "src/opensearch",
-  "src/proxy",
+  "src/registries",
+  "src/routes",
   "src/startup",
   "src/telemetry",
+  "src/utils",
 ]
 
 [dependency-groups]
