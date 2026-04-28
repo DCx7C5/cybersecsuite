@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from cybersec_mcp.sdk_compat import tool
+from ..sdk_compat import tool
 from ..helpers import JsonDict, sdk_result, sdk_error
 
 

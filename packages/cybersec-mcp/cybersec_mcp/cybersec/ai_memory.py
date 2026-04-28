@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from cybersec_mcp.sdk_compat import tool
+from ..sdk_compat import tool
 from ..helpers import JsonDict, _get_current_scope, sdk_result, sdk_error
 
 _DEFAULT_VAULT_PATH = str(

@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from cybersec_mcp.sdk_compat import tool
+from ..sdk_compat import tool
 from ..helpers import JsonDict, sdk_result, sdk_error
 
 # ── Lazy tool index ──────────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ def _build_tool_index() -> list[dict[str, str]]:
 
     try:
         from . import _ALL_CYBERSEC_TOOLS
-        from cybersec_mcp.dystopian import ALL_TOOLS as _DYSTOPIAN_TOOLS
+        from ..dystopian import ALL_TOOLS as _DYSTOPIAN_TOOLS
         all_tools = list(_ALL_CYBERSEC_TOOLS) + list(_DYSTOPIAN_TOOLS)
     except ImportError:
         try:

@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from cybersec_mcp.sdk_compat import tool
+from ..sdk_compat import tool
 from ..helpers import (
     JsonDict,
     _get_current_scope,

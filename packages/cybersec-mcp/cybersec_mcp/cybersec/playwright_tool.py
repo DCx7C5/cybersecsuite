@@ -31,7 +31,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from cybersec_mcp.sdk_compat import tool
+from ..sdk_compat import tool
 from ..helpers import sdk_result, sdk_error
 
 logger = logging.getLogger("csmcp.cybersec.playwright_tool")
