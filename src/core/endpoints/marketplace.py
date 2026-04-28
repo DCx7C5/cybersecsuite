@@ -202,16 +202,26 @@ async def toggle_item(request: ToggleRequest) -> ToggleResponse:
     - Makes it available to the application
     """
     try:
-        # Update item enabled status in database
-        # TODO: Implement item status toggle in DB
+        from core.marketplace.toggle import set_item_enabled
         
-        action = "enabled" if request.enabled else "disabled"
-        return ToggleResponse(
-            success=True,
-            item_id=request.item_id,
-            enabled=request.enabled,
-            message=f"Successfully {action} {request.item_id}",
-        )
+        result = await set_item_enabled(request.item_id, request.enabled)
+        
+        if result.get("success"):
+            action = "enabled" if request.enabled else "disabled"
+            return ToggleResponse(
+                success=True,
+                item_id=request.item_id,
+                enabled=request.enabled,
+                message=f"Successfully {action} {request.item_id}",
+            )
+        else:
+            return ToggleResponse(
+                success=False,
+                item_id=request.item_id,
+                enabled=request.enabled,
+                message="Toggle failed",
+                error=result.get("error", "Unknown error"),
+            )
     except Exception as e:
         log.exception(f"Toggle endpoint error: {e}")
         raise HTTPException(
