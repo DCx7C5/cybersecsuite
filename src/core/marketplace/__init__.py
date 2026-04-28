@@ -9,10 +9,12 @@ Referenz:
 
 from core.registries.marketplace import MarketplaceRegistry, get_registry
 from core.marketplace.models import MarketplaceItem, MarketplaceItemStatus
+from core.marketplace.seeder import seed_marketplace_index
 
 __all__ = [
     "MarketplaceRegistry",
     "get_registry",
     "MarketplaceItem",
     "MarketplaceItemStatus",
+    "seed_marketplace_index",
 ]
