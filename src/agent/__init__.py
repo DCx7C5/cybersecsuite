@@ -7,6 +7,6 @@ New code should import from apps.agent directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from apps.agent import *
+from src.apps.agent import *
 
 __all__ = []

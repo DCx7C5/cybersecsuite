@@ -7,6 +7,6 @@ New code should import from core.marketplace directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from core.marketplace import *
+from src.core.marketplace import *
 
 __all__ = []

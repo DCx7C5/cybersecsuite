@@ -12,7 +12,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from src.dashboard.api.proxy_memory_chat import (
+from core.dashboard.api.proxy_memory_chat import (
     SessionStorageManager,
     SessionContext,
     ConversationMessage,

@@ -7,6 +7,6 @@ New code should import from core.llm directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from core.llm import *
+from src.core.llm import *
 
 __all__ = []

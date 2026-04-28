@@ -73,7 +73,7 @@ class TestAgentSDKHooksIntegration:
     def test_hook_registry_singleton_in_options(self):
         """Agent options should use HookRegistry singleton."""
         from a2a.agent_sdk import build_agent_options
-        from src.registries.hooks import get_registry, reset_registry
+        from core.registries.hooks import get_registry, reset_registry
         
         # Reset to clean state
         reset_registry()
@@ -182,7 +182,7 @@ class TestAgentSDKHooksIntegration:
 
     def test_hook_registry_error_strategy(self):
         """Hook registry should have proper error strategy."""
-        from src.registries.hooks import HookRegistry
+        from core.registries.hooks import HookRegistry
         from hooks.events import ErrorStrategy
         
         # Default strategy
@@ -195,7 +195,7 @@ class TestAgentSDKHooksIntegration:
 
     def test_hook_registry_instrumentation_optional(self):
         """Hook instrumentation should be optional."""
-        from src.registries.hooks import HookRegistry
+        from core.registries.hooks import HookRegistry
         from hooks.instrumentation import HookInstrument
         
         # Without instrumentation
@@ -256,7 +256,7 @@ class TestHookCountValidation:
 
     def test_hook_registry_wraps_build_python_hooks(self):
         """HookRegistry should wrap build_python_hooks output."""
-        from src.registries.hooks import HookRegistry
+        from core.registries.hooks import HookRegistry
         from hooks.sdk_hooks import build_python_hooks
         
         # Get direct output

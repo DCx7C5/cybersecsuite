@@ -7,6 +7,6 @@ New code should import from core.memory directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from core.memory import *
+from src.core.memory import *
 
 __all__ = []

@@ -20,7 +20,7 @@ from hooks.events import (
     PlanTaskStartEvent,
     PlanTodoStartEvent,
 )
-from src.registries.hooks import HookRegistry
+from core.registries.hooks import HookRegistry
 
 
 class TestTypesDictFieldCoverage:

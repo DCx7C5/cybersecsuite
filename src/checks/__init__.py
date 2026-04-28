@@ -7,6 +7,6 @@ New code should import from core.checks directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from core.checks import *
+from src.core.checks import *
 
 __all__ = []

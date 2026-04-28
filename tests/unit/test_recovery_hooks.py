@@ -20,7 +20,7 @@ from hooks.recovery_hooks import (
     on_pre_retry,
     on_recovery,
 )
-from src.registries.hooks import HookRegistry, reset_registry
+from core.registries.hooks import HookRegistry, reset_registry
 
 
 class TestErrorClassification:

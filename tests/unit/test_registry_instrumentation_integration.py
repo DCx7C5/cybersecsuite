@@ -21,7 +21,7 @@ if str(SRC_PATH) not in sys.path:
 
 from hooks.events import ErrorStrategy, HookContext
 from hooks.instrumentation import HookInstrument
-from src.registries.hooks import HookRegistry, reset_registry
+from core.registries.hooks import HookRegistry, reset_registry
 
 
 class TestRegistryWithInstrumentation:

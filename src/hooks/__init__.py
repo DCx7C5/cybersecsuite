@@ -7,6 +7,6 @@ New code should import from core.hooks directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from core.hooks import *
+from src.core.hooks import *
 
 __all__ = []
