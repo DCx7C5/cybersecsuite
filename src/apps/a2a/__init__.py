@@ -1,4 +1,4 @@
-from .int_comms import RedisCommunicationGroup, RedisCommunicator
+from .int_comms import RedisCommunicator  # RedisCommunicationGroup doesn't exist
 from .a2a_comms import A2ACommunicator, A2ACommunicationGroup
 from .dispatcher import MessageDispatcher
 from .pydantic import Message
@@ -10,7 +10,6 @@ __all__ = [
     "MessageDispatcher",
     "Message",
     "RedisCommunicator",
-    "RedisCommunicationGroup",
     "A2ACommunicator",
     "A2ACommunicationGroup",
     "init_a2a_endpoints",

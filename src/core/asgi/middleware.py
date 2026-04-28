@@ -9,7 +9,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 
-from asgi.app import TLS_AVAILABLE, ASGI_TLS_PORT
+from .app import TLS_AVAILABLE, ASGI_TLS_PORT
 from telemetry import record_event
 
 PathPattern = Tuple[re.Pattern, str]

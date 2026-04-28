@@ -7,6 +7,6 @@ New code should import from core.endpoints directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.endpoints import *
+from core.endpoints import *
 
 __all__ = []

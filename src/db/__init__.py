@@ -7,6 +7,6 @@ New code should import from core.db directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.db import *
+from core.db import *
 
 __all__ = []

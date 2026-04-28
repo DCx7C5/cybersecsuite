@@ -7,6 +7,6 @@ New code should import from core.crypto directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.crypto import *
+from core.crypto import *
 
 __all__ = []

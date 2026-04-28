@@ -7,6 +7,6 @@ New code should import from core.ai_proxy directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.ai_proxy import *
+from core.ai_proxy import *
 
 __all__ = []

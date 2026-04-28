@@ -7,6 +7,6 @@ New code should import from core.communicators directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.communicators import *
+from core.communicators import *
 
 __all__ = []

@@ -7,6 +7,6 @@ New code should import from core.entities directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.entities import *
+from core.entities import *
 
 __all__ = []

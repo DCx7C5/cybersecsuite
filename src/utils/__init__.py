@@ -7,6 +7,6 @@ New code should import from core.utils directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.utils import *
+from core.utils import *
 
 __all__ = []

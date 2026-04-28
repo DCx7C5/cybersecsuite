@@ -7,6 +7,6 @@ New code should import from core.routes directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.routes import *
+from core.routes import *
 
 __all__ = []

@@ -7,6 +7,6 @@ New code should import from core.telemetry directly.
 Deprecation: This shim will be removed in v0.2.0
 """
 
-from src.core.telemetry import *
+from core.telemetry import *
 
 __all__ = []

@@ -20,7 +20,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
-from asgi.middleware_utils import should_skip_path
+from asgi.middleware import should_skip_path
 from db.scope_utils import ScopeLevel, check_scope_permission
 from db.exceptions import (
     ScopeError,
