@@ -93,7 +93,7 @@ packages = [
   
   # APP-LEVEL PACKAGES
   "src/apps",
-  "src/apps/agent",
+  "src/apps/streaming",
   
   # UTILITY PACKAGES
   "src/manage",

@@ -4,12 +4,11 @@ Converts the claude_agent_sdk async generator (query() with partial messages)
 into SSE-ready dicts consumed by dashboard /api/agent-query endpoint.
 """
 
-
-from logger import getLogger
+import logging
 from collections.abc import AsyncGenerator
 from typing import Any
 
-logger = getLogger("agent.streaming")
+logger = logging.getLogger("agent.streaming")
 
 
 async def stream_query(
