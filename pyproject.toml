@@ -85,10 +85,17 @@ packages = [
   "src/core/routes",
   "src/core/startup",
   
-  # NON-MIGRATED YET
-  "src/agent",
-  "src/apps",
+  # CORE ENTITIES & INFRASTRUCTURE
   "src/core",
+  "src/core/entities",
+  "src/core/communicators",
+  "src/core/redis",
+  
+  # APP-LEVEL PACKAGES
+  "src/apps",
+  "src/apps/agent",
+  
+  # UTILITY PACKAGES
   "src/manage",
   
   # DATA
