@@ -14,7 +14,7 @@ from core.cssmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
 )
 async def check_quota(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import get_all_providers
+        from core.registries.providers import get_all_providers
         from ai_proxy.services.rate_limiter import rate_limiter
         from ai_proxy.routing.combo import budget_guard
     except ImportError:
@@ -91,7 +91,7 @@ async def cost_report(args: dict[str, Any]) -> JsonDict:
 )
 async def list_models_catalog(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import list_all_models, get_all_providers
+        from core.registries.providers import list_all_models, get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 

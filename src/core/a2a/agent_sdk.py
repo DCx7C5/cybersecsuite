@@ -65,9 +65,9 @@ from a2a.agent_loader import (
     iter_agent_markdown_files,
 )
 try:
-    from src.hooks.sdk_hooks import build_python_hooks
-    from src.registries.hooks import HookRegistry, get_registry
-    from src.hooks.instrumentation import HookInstrument
+    from core.hooks.sdk_hooks import build_python_hooks
+    from core.registries.hooks import HookRegistry, get_registry
+    from core.hooks.instrumentation import HookInstrument
 except ImportError:  # optional during minimal/test installs
     build_python_hooks = None  # type: ignore[assignment]
     HookRegistry = None  # type: ignore[assignment]

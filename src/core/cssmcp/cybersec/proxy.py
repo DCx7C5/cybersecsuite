@@ -71,7 +71,7 @@ async def proxy_chat(args: dict[str, Any]) -> JsonDict:
 @tool("proxy_providers", "List all configured AI providers with status and rate limits.", {})
 async def proxy_providers(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import get_all_providers
+        from core.registries.providers import get_all_providers
         from ai_proxy.services.rate_limiter import rate_limiter
     except ImportError:
         return sdk_error("ai_proxy not available")
@@ -89,7 +89,7 @@ async def proxy_providers(args: dict[str, Any]) -> JsonDict:
 @tool("proxy_models", "List all available models across providers, optionally filtered by provider.", {"provider": {"type": "string", "nullable": True}})
 async def proxy_models(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import list_all_models
+        from core.registries.providers import list_all_models
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -140,7 +140,7 @@ async def proxy_cost(args: dict[str, Any]) -> JsonDict:
 )
 async def simulate_route(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import get_all_providers
+        from core.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts, budget_guard
     except ImportError:
         return sdk_error("ai_proxy not available")
@@ -227,7 +227,7 @@ async def get_circuit_breakers(args: dict[str, Any]) -> JsonDict:
 )
 async def explain_route(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import get_all_providers
+        from core.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts
         from ai_proxy.services.rate_limiter import rate_limiter  # noqa: F401
     except ImportError:

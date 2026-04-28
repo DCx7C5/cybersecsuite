@@ -9,7 +9,7 @@ translation so any client format can talk to any provider format.
 import json
 from typing import Any
 
-from src.registries.providers import ApiFormat
+from core.registries.providers import ApiFormat
 
 
 def _json_dumps(obj: Any) -> str:

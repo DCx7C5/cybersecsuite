@@ -16,9 +16,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from src.marketplace.manifest import ManifestParser
-from src.marketplace.models import MarketplaceItem, MarketplaceItemStatus
-from src.registries.marketplace import get_registry, get_item, list_installed
+from core.marketplace.manifest import ManifestParser
+from core.marketplace.models import MarketplaceItem, MarketplaceItemStatus
+from core.registries.marketplace import get_registry, get_item, list_installed
 
 logger = logging.getLogger("marketplace.installer")
 

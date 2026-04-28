@@ -14,7 +14,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Route, Router
 
-from src.registries.providers import (
+from core.registries.providers import (
     get_provider,
     get_enabled_providers,
     get_free_providers,

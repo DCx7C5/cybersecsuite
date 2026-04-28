@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 
-from src.registries.providers import (
+from core.registries.providers import (
     _register,
     ProviderConfig,
     ModelConfig,

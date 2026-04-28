@@ -11,8 +11,8 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from src.marketplace.models import MarketplaceItem, MarketplaceItemStatus
-from src.registries.marketplace import get_registry, get_item, list_items
+from core.marketplace.models import MarketplaceItem, MarketplaceItemStatus
+from core.registries.marketplace import get_registry, get_item, list_items
 
 logger = logging.getLogger("marketplace.api")
 

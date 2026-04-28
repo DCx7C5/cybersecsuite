@@ -35,7 +35,7 @@ Integration with Agent SDK
 
 The agent SDK (src/a2a/agent_sdk.py) uses HookRegistry:
 
-    from src.registries.hooks import get_registry
+    from core.registries.hooks import get_registry
     
     # Get global singleton (created once, stateless)
     registry = get_registry()
@@ -101,7 +101,7 @@ Usage Patterns
 
 **Advanced: Use registry directly**
 
-    from src.registries.hooks import get_registry
+    from core.registries.hooks import get_registry
     from hooks.core import HookContext
     import time
     
@@ -118,7 +118,7 @@ Usage Patterns
 
 **Performance monitoring: Enable instrumentation**
 
-    from src.registries.hooks import HookRegistry
+    from core.registries.hooks import HookRegistry
     from hooks.instrumentation import HookInstrument
     
     instrument = HookInstrument()
@@ -253,7 +253,7 @@ __all__ = [
     "PERFORMANCE_BUDGETS",
     "get_instrumentation",
     "reset_instrumentation",
-    # Note: HookRegistry, get_registry, reset_registry are now in src.registries.hooks
-    # Import directly from there: from src.registries.hooks import HookRegistry, get_registry
+    # Note: HookRegistry, get_registry, reset_registry are now in core.registries.hooks
+    # Import directly from there: from core.registries.hooks import HookRegistry, get_registry
 ]
 

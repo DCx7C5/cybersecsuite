@@ -16,7 +16,7 @@ from core.cssmcp.cybersec.helpers import JsonDict, sdk_result, sdk_error
 )
 async def sync_pricing(args: dict[str, Any]) -> JsonDict:
     try:
-        from src.registries.providers import load_custom_providers
+        from core.registries.providers import load_custom_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 

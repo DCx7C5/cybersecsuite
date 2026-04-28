@@ -22,7 +22,7 @@ from a2a.models import AgentCard, AgentCapabilities, AgentAuthentication, AgentS
 from a2a.enums import AuthScheme
 
 if TYPE_CHECKING:
-    from src.registries.agents import AgentRegistry, RemoteAgent
+    from core.registries.agents import AgentRegistry, RemoteAgent
 
 
 # ── Frontmatter parsing ───────────────────────────────────────────────────────

@@ -15,7 +15,7 @@ import time
 from typing import Any
 
 from ai_proxy.executors.base import BaseExecutor, ExecutorResult
-from src.registries.providers import ProviderConfig
+from core.registries.providers import ProviderConfig
 
 logger = logging.getLogger("ai_proxy.executor.playwright")
 

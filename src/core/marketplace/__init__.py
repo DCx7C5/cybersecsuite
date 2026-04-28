@@ -7,8 +7,8 @@ Referenz:
 """
 
 
-from src.registries.marketplace import MarketplaceRegistry, get_registry
-from src.marketplace.models import MarketplaceItem, MarketplaceItemStatus
+from core.registries.marketplace import MarketplaceRegistry, get_registry
+from core.marketplace.models import MarketplaceItem, MarketplaceItemStatus
 
 __all__ = [
     "MarketplaceRegistry",

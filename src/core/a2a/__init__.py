@@ -77,8 +77,8 @@ _MODULE_MAP: dict[str, tuple[str, str]] = {
     "A2AClient":        ("a2a.client", "A2AClient"),
     "A2AClientError":   ("a2a.client", "A2AClientError"),
     # Registry (lazy to break circular import with registries.agents)
-    "AgentRegistry":    ("src.registries.agents", "AgentRegistry"),
-    "RemoteAgent":      ("src.registries.agents", "RemoteAgent"),
+    "AgentRegistry":    ("core.registries.agents", "AgentRegistry"),
+    "RemoteAgent":      ("core.registries.agents", "RemoteAgent"),
     # Agent implementation (imports crypto + db — lazy)
     "CybersecA2AAgent": ("a2a.cybersec_agent", "CybersecA2AAgent"),
     # .claude agent loader (imports hooks — lazy)

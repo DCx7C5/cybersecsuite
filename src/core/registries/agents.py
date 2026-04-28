@@ -8,7 +8,7 @@ import asyncio
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from src.a2a.models import AgentCard
+from core.a2a.models import AgentCard
 
 
 class RemoteAgent:
@@ -43,7 +43,7 @@ class RemoteAgent:
 
     def client(self, **kwargs):  # type: ignore
         """Create an A2AClient for this agent."""
-        from src.a2a.client import A2AClient
+        from core.a2a.client import A2AClient
         return A2AClient(self.base_url, **kwargs)
 
     def __repr__(self) -> str:
@@ -80,7 +80,7 @@ class AgentRegistry:
         Returns:
             Registered RemoteAgent
         """
-        from src.a2a.client import A2AClient
+        from core.a2a.client import A2AClient
         async with A2AClient(base_url, **client_kwargs) as client:
             card = await client.get_agent_card()
         return self.register(base_url, card)
@@ -212,7 +212,7 @@ class AgentRegistry:
         Returns:
             Populated AgentRegistry
         """
-        from src.a2a.agent_loader import load_agents_from_dir
+        from core.a2a.agent_loader import load_agents_from_dir
         registry = cls()
         load_agents_from_dir(agents_dir, registry, base_url, recurse)
         return registry
@@ -233,7 +233,7 @@ class AgentRegistry:
         Returns:
             Populated AgentRegistry
         """
-        from src.a2a.agent_loader import load_cybersecsuite_agents
+        from core.a2a.agent_loader import load_cybersecsuite_agents
         registry = cls()
         load_cybersecsuite_agents(registry, project_root, base_url)
         return registry

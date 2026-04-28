@@ -22,7 +22,7 @@ from starlette.datastructures import UploadFile
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from src.registries.providers import get_provider
+from core.registries.providers import get_provider
 
 logger = logging.getLogger("ai_proxy.files")
 

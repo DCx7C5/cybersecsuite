@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
-from src.marketplace.models import MarketplaceItem, MarketplaceItemStatus
+from core.marketplace.models import MarketplaceItem, MarketplaceItemStatus
 
 logger = logging.getLogger("marketplace.registry")
 
@@ -202,7 +202,7 @@ class MarketplaceRegistry:
     def __init__(self) -> None:
         """Initialize marketplace registry with settings."""
         # Initialize settings for marketplace
-        from src.registries.settings import SettingsRegistry, SettingScope
+        from core.registries.settings import SettingsRegistry, SettingScope
         self.settings = SettingsRegistry()
         
         # Register default marketplace settings
@@ -330,7 +330,7 @@ def get_registry() -> MarketplaceRegistry | None:
 
 
 # ── Module-level seed (always executed on import) ──────────────────────────────
-from src.marketplace.seed import SEED_ITEMS as _SEED_ITEMS  # noqa: E402
+from core.marketplace.seed import SEED_ITEMS as _SEED_ITEMS  # noqa: E402
 
 _reg = get_registry()
 seed(_SEED_ITEMS)

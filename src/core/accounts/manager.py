@@ -4,7 +4,7 @@ import os
 from typing import Any
 
 from accounts.models import AccountEntry
-from src.registries.accounts import get_registry
+from core.registries.accounts import get_registry
 from crypto.vault import SecretNotFoundError, Vault
 
 

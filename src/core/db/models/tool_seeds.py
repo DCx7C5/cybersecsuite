@@ -281,7 +281,7 @@ async def seed_api_service_models(api_service_id: str | None = None) -> dict[str
     errors: list[str] = []
 
     try:
-        from src.registries.providers import get_provider_registry
+        from core.registries.providers import get_provider_registry
         registry = get_provider_registry()
         providers = registry.list_providers()
     except Exception as e:

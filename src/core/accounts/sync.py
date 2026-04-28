@@ -25,7 +25,7 @@ def _normalize_auth_method(entry):
 async def sync_providers_to_db() -> int:
     """Sync ProviderConfig registry to DB. Returns count of synced providers."""
     try:
-        from src.registries.providers import get_all_providers
+        from core.registries.providers import get_all_providers
     except ImportError:
         logger.warning("ai_proxy.providers.registry not available, skipping provider sync")
         return 0
@@ -71,7 +71,7 @@ async def sync_providers_to_db() -> int:
 async def sync_auth_methods(provider_id: str) -> None:
     """Sync auth methods for a specific API service."""
     try:
-        from src.registries.providers import get_provider
+        from core.registries.providers import get_provider
     except ImportError:
         return
     cfg = get_provider(provider_id)

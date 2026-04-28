@@ -1,7 +1,7 @@
 """In-memory registry for account index, synced with vault + DB."""
 
 
-from src.accounts.models import AccountEntry
+from core.accounts.models import AccountEntry
 
 
 class AccountRegistry:

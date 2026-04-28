@@ -48,7 +48,7 @@ def _print_table(rows: list[dict[str, Any]], columns: list[str]) -> None:
 
 
 async def cmd_providers(args: argparse.Namespace) -> None:
-    from src.registries.providers import get_all_providers
+    from core.registries.providers import get_all_providers
 
     providers = get_all_providers()
     rows = []
@@ -69,7 +69,7 @@ async def cmd_providers(args: argparse.Namespace) -> None:
 
 
 async def cmd_models(args: argparse.Namespace) -> None:
-    from src.registries.providers import list_all_models
+    from core.registries.providers import list_all_models
 
     models = list_all_models()
     if args.provider:
@@ -175,7 +175,7 @@ async def cmd_chat(args: argparse.Namespace) -> None:
 
 async def cmd_marketplace(args: argparse.Namespace) -> None:
     """Dispatch marketplace sub-commands."""
-    from src.registries.marketplace import get_registry
+    from core.registries.marketplace import get_registry
 
     reg = get_registry()
 

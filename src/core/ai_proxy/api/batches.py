@@ -23,7 +23,7 @@ from anthropic.types.messages.batch_create_params import Request as BatchRequest
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 
-from src.registries.providers import get_provider
+from core.registries.providers import get_provider
 
 logger = logging.getLogger("ai_proxy.batches")
 

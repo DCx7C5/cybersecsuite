@@ -11,7 +11,7 @@ from typing import Any
 
 import anthropic
 
-from src.registries.providers import get_provider
+from core.registries.providers import get_provider
 
 logger = logging.getLogger("ai_proxy.token_counter")
 
