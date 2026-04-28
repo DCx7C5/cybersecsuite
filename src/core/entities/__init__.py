@@ -1,6 +1,6 @@
 from core.communicators import BaseCommunicator
 from core.entities.base import BaseAgent, BaseEntity, BaseRole, BaseSkill, BaseTool
-from core.entities.headers.base import BaseAgentHeader, BaseHeader, BaseRoleHeader, BaseSkillHeader, BaseToolHeader
+from core.entities.headers.base import BaseAccountHeader, BaseAgentHeader, BaseHeader, BaseRoleHeader, BaseSkillHeader, BaseToolHeader
 from core.entities.headers.tool import ToolHeader
 from core.entities.role import Role, get as get_role
 from core.entities.tool import Tool
@@ -19,6 +19,7 @@ __all__ = [
     "BaseHeader",
     "BaseAgentHeader",
     "BaseSkillHeader",
+    "BaseAccountHeader",
     "BaseToolHeader",
     "BaseRoleHeader",
     "ToolHeader",

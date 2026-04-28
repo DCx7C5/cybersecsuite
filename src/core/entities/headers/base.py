@@ -24,6 +24,9 @@ class BaseAgentHeader(BaseHeader):
     alias: str | None = None
     tools: list[str] = field(default_factory=list)
     disallowed_tools: list[str] = field(default_factory=list)
+    base_url: str | None = None
+    streaming: bool = False
+    push_notifications: bool = False
 
 
 @dataclass
@@ -40,6 +43,21 @@ class BaseSkillHeader(BaseHeader):
     mitre_attack: list[str] = field(default_factory=list)
     capec: list[str] = field(default_factory=list)
     nist_csf: list[str] = field(default_factory=list)
+    source_url: str | None = None
+    marketplace_id: str | None = None
+    install_path: str | None = None
+
+
+@dataclass
+class BaseAccountHeader(BaseHeader):
+    """Metadata header for account entities.
+
+    Represents credentials and authentication state for an external provider.
+    """
+
+    provider_id: str = ""
+    auth_method: str = "api_key"
+    active: bool = False
 
 
 @dataclass
