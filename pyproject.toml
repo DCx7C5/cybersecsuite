@@ -48,8 +48,8 @@ dependencies = [
 
 [project.scripts]
 cybersecsuite      = "manage:main_sync"
-cybersec-mcp       = "csmcp.cybersec.server:main"
-cybersec-mcp-crypto = "csmcp.dystopian_server:main"
+cybersec-mcp       = "cssmcp.cybersec.server:main"
+cybersec-mcp-crypto = "cssmcp.dystopian_server:main"
 cybersec-proxy     = "ai_proxy.cli:main"
 
 [tool.uv]
@@ -64,7 +64,8 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  # LEAF PACKAGES (migrated to core/)
+  # CANONICAL PACKAGES (primary source of truth)
+  "src/core",
   "src/core/checks",
   "src/core/dbus",
   "src/core/memory",
@@ -72,8 +73,6 @@ packages = [
   "src/core/telemetry",
   "src/core/utils",
   "src/core/llm",
-  
-  # CIRCULAR CLUSTER (migrated to core/)
   "src/core/db",
   "src/core/registries",
   "src/core/hooks",
@@ -84,19 +83,50 @@ packages = [
   "src/core/crypto",
   "src/core/routes",
   "src/core/startup",
-  
-  # CORE ENTITIES & INFRASTRUCTURE
-  "src/core",
   "src/core/entities",
   "src/core/communicators",
   "src/core/redis",
+  "src/core/asgi",
+  "src/core/endpoints",
+  "src/core/tools",
+  "src/core/cssmcp",
+  "src/core/postgres",
   
   # APP-LEVEL PACKAGES
   "src/apps",
   "src/apps/streaming",
   
+  # BACKWARD COMPATIBILITY SHIMS (enable gradual migration)
+  "src/a2a",
+  "src/accounts",
+  "src/ai_proxy",
+  "src/asgi",
+  "src/checks",
+  "src/communicators",
+  "src/crypto",
+  "src/cssmcp",
+  "src/db",
+  "src/dbus",
+  "src/endpoints",
+  "src/entities",
+  "src/hooks",
+  "src/llm",
+  "src/marketplace",
+  "src/memory",
+  "src/openobserve",
+  "src/postgres",
+  "src/redis",
+  "src/registries",
+  "src/routes",
+  "src/startup",
+  "src/telemetry",
+  "src/tools",
+  "src/utils",
+  "src/agent",
+  
   # UTILITY PACKAGES
   "src/manage",
+  "src/logger",
   
   # DATA
   "src/cybersecsuite",

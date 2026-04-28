@@ -9,4 +9,8 @@ Deprecation: This shim will be removed in v0.2.0
 
 from core.utils import *
 
-__all__ = []
+# Get exports from canonical module
+try:
+    from core.utils import __all__
+except ImportError:
+    __all__ = []
