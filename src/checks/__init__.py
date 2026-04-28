@@ -1,6 +1,12 @@
-"""CyberSecSuite integrity checks — model, fixture, and config consistency."""
-from logger import getLogger
+"""
+Backward compatibility shim.
 
-from checks.integrity import check_models, check_fixtures, check_config, run_all_checks
+This module re-exports everything from core.checks.
+New code should import from core.checks directly.
 
-__all__ = ["check_models", "check_fixtures", "check_config", "run_all_checks", "getLogger"]
+Deprecation: This shim will be removed in v0.2.0
+"""
+
+from core.checks import *
+
+__all__ = []

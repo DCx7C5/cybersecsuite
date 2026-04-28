@@ -64,12 +64,15 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
+  # LEAF PACKAGES (migrated to core/)
+  "src/core/checks",
+  
+  # NON-MIGRATED YET
   "src/a2a",
   "src/accounts",
   "src/agent",
   "src/ai_proxy",
   "src/apps",
-  "src/checks",
   "src/core",
   "src/crypto",
   "src/cybersecsuite",
