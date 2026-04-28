@@ -263,13 +263,82 @@ async def list_marketplace_items(
     Returns paginated list of marketplace items with metadata.
     """
     try:
-        # TODO: Query marketplace registry/database
-        # For now, return stub response
+        from core.db.models.marketplace import (
+            Agent,
+            Skill,
+            MarketplaceMCP,
+            Plugin,
+            Workflow,
+            MarketplaceAsset,
+        )
+        
+        items = []
+        
+        # Query all models
+        agents = await Agent.all() if not kind or kind == "agent" else []
+        skills = await Skill.all() if not kind or kind == "skill" else []
+        mcps = await MarketplaceMCP.all() if not kind or kind == "mcp" else []
+        plugins = await Plugin.all() if not kind or kind == "plugin" else []
+        workflows = await Workflow.all() if not kind or kind == "workflow" else []
+        
+        # Combine all items
+        for agent in agents:
+            item_dict = {
+                "id": agent.name.lower().replace(" ", "-"),
+                "name": agent.name,
+                "description": agent.description,
+                "kind": "agent",
+                "status": agent.status,
+                "enabled": agent.status != "disabled",
+                "installed": agent.status == "installed",
+                "version": agent.version,
+                "category": agent.category,
+                "tags": agent.tags or [],
+            }
+            if not enabled_only or agent.status != "disabled":
+                if not installed_only or agent.status == "installed":
+                    items.append(item_dict)
+        
+        for skill in skills:
+            item_dict = {
+                "id": skill.name.lower().replace(" ", "-"),
+                "name": skill.name,
+                "description": skill.description,
+                "kind": "skill",
+                "status": skill.status,
+                "enabled": skill.status != "disabled",
+                "installed": skill.status == "installed",
+                "version": skill.version,
+                "category": skill.category,
+                "tags": skill.tags or [],
+            }
+            if not enabled_only or skill.status != "disabled":
+                if not installed_only or skill.status == "installed":
+                    items.append(item_dict)
+        
+        for mcp in mcps:
+            item_dict = {
+                "id": mcp.name.lower().replace(" ", "-"),
+                "name": mcp.name,
+                "description": mcp.description,
+                "kind": "mcp",
+                "status": mcp.status,
+                "enabled": mcp.status != "disabled",
+                "installed": mcp.status == "installed",
+                "version": mcp.version,
+                "category": mcp.category,
+                "tags": mcp.tags or [],
+                "tools_count": mcp.tools_count,
+            }
+            if not enabled_only or mcp.status != "disabled":
+                if not installed_only or mcp.status == "installed":
+                    items.append(item_dict)
+        
         return {
-            "items": [],
-            "total": 0,
+            "items": items,
+            "total": len(items),
             "page": 1,
-            "per_page": 20,
+            "per_page": len(items),
             "filters": {
                 "kind": kind,
                 "provider": provider,
@@ -292,7 +361,80 @@ async def get_marketplace_item(item_id: str) -> dict:
     Returns full metadata, installation status, version info, etc.
     """
     try:
-        # TODO: Fetch item from registry/database
+        from core.db.models.marketplace import (
+            Agent,
+            Skill,
+            MarketplaceMCP,
+            Plugin,
+            Workflow,
+        )
+        
+        # Convert kebab-case to title case for search
+        title_case = " ".join(w.capitalize() for w in item_id.split("-"))
+        
+        # Try to find in each model
+        agent = await Agent.get_or_none(name=title_case)
+        if agent:
+            return {
+                "item": {
+                    "id": item_id,
+                    "name": agent.name,
+                    "description": agent.description,
+                    "kind": "agent",
+                    "status": agent.status,
+                    "enabled": agent.status != "disabled",
+                    "installed": agent.status == "installed",
+                    "version": agent.version,
+                    "category": agent.category,
+                    "model": agent.model,
+                    "max_turns": agent.max_turns,
+                    "tags": agent.tags or [],
+                    "created_at": agent.created_at.isoformat() if agent.created_at else None,
+                },
+                "found": True,
+            }
+        
+        skill = await Skill.get_or_none(name=title_case)
+        if skill:
+            return {
+                "item": {
+                    "id": item_id,
+                    "name": skill.name,
+                    "description": skill.description,
+                    "kind": "skill",
+                    "status": skill.status,
+                    "enabled": skill.status != "disabled",
+                    "installed": skill.status == "installed",
+                    "version": skill.version,
+                    "category": skill.category,
+                    "tags": skill.tags or [],
+                    "created_at": skill.created_at.isoformat() if skill.created_at else None,
+                },
+                "found": True,
+            }
+        
+        mcp = await MarketplaceMCP.get_or_none(name=title_case)
+        if mcp:
+            return {
+                "item": {
+                    "id": item_id,
+                    "name": mcp.name,
+                    "description": mcp.description,
+                    "kind": "mcp",
+                    "status": mcp.status,
+                    "enabled": mcp.status != "disabled",
+                    "installed": mcp.status == "installed",
+                    "version": mcp.version,
+                    "category": mcp.category,
+                    "tags": mcp.tags or [],
+                    "tools_count": mcp.tools_count,
+                    "repository_url": mcp.repository_url,
+                    "documentation_url": mcp.documentation_url,
+                    "created_at": mcp.created_at.isoformat() if mcp.created_at else None,
+                },
+                "found": True,
+            }
+        
         return {
             "item": None,
             "found": False,
