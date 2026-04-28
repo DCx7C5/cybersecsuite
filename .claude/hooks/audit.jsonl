@@ -1255,3 +1255,58 @@
 {"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:21:34.243237+00:00"}
 {"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:21:34.243343+00:00"}
 {"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-28T16:21:34.243331+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session", "target_files": 2, "ts": "2026-04-28T16:27:29.282321+00:00"}
+{"event": "AgentStart", "agent": "test_agent", "session_id": "test_session2", "target_files": 0, "ts": "2026-04-28T16:27:29.284979+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session3", "target_files": 2, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-28T16:27:29.296171+00:00"}
+{"event": "AgentEnd", "agent": "test_agent", "session_id": "test_session4", "target_files": 3, "changed_files": 1, "ruff_dry_run": true, "ts": "2026-04-28T16:27:29.306965+00:00"}
+{"event": "AgentStart", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "ts": "2026-04-28T16:27:29.309753+00:00"}
+{"event": "AgentEnd", "agent": "lifecycle_agent", "session_id": "integration_test", "target_files": 3, "changed_files": 2, "ruff_dry_run": true, "ts": "2026-04-28T16:27:29.321755+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "Hook failed", "strategy": "preserve", "ts": "2026-04-28T16:27:31.378032+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "Setup failed", "strategy": "preserve", "ts": "2026-04-28T16:27:31.379424+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "Hook error", "strategy": "preserve", "ts": "2026-04-28T16:27:31.380802+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "First try failed", "strategy": "preserve", "ts": "2026-04-28T16:27:31.382162+00:00"}
+{"event": "OnFirstSetupHookExecuted", "hook": "success_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "ts": "2026-04-28T16:27:31.382428+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "Specific error message", "strategy": "preserve", "ts": "2026-04-28T16:27:31.383791+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "Hook failed", "strategy": "preserve", "ts": "2026-04-28T16:27:31.399085+00:00"}
+{"event": "OnFirstSetupHookExecuted", "hook": "hook_with_output", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "ts": "2026-04-28T16:27:31.400456+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "OnFirstSetup", "correlation_id": "test-corr", "error": "Setup failed", "strategy": "preserve", "ts": "2026-04-28T16:27:31.403039+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.482248+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.482353+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.482413+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.482472+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-28T16:27:31.482339+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-28T16:27:31.482462+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.484284+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.484368+00:00"}
+{"event": "PostToolUse", "tool": "Bash", "result_size": 4, "ts": "2026-04-28T16:27:31.484428+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "_post_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.484476+00:00"}
+{"event": "Stop", "agent": "", "last_session": null, "last_session_path": null, "ts": "2026-04-28T16:27:31.485200+00:00"}
+{"event": "HookExecuted", "event_type": "Stop", "hook": "_stop_snapshot", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.485258+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-28T16:27:31.484356+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.486670+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-1", "session_id": "sess-1", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.486752+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.486809+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-2", "session_id": "sess-2", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.486868+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-28T16:27:31.486859+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-28T16:27:31.486741+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "mock_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.488621+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.489551+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:31.489631+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "explore", "ts": "2026-04-28T16:27:31.489620+00:00"}
+{"event": "HookError", "hook": "failing_hook", "event_type": "PreToolUse", "correlation_id": "test", "error": "Test error", "strategy": "preserve", "ts": "2026-04-28T16:27:31.495572+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "corr-123", "session_id": "sess-456", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:32.393832+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "corr-123", "session_id": "sess-456", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:32.393941+00:00"}
+{"event": "PreToolUse", "tool": "Bash", "agent": "", "ts": "2026-04-28T16:27:32.393928+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "test_hook", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": true, "elapsed_ms": 0, "success": true, "ts": "2026-04-28T16:27:32.396855+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:32.397954+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:32.398053+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-28T16:27:32.398041+00:00"}
+{"event": "HookExecuted", "event_type": "PostToolUse", "hook": "failing_hook", "correlation_id": "test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": false, "ts": "2026-04-28T16:27:32.400120+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-28T16:27:32.401265+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-28T16:27:32.401348+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-28T16:27:32.401409+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-28T16:27:32.401462+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "no_op_hook", "correlation_id": "perf-test", "session_id": "test", "has_output": false, "elapsed_ms": 0, "success": true, "ts": "2026-04-28T16:27:32.401513+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_write_guard", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:32.411067+00:00"}
+{"event": "HookExecuted", "event_type": "PreToolUse", "hook": "_pre_tool_audit", "correlation_id": "test-corr", "session_id": "test-sess", "has_output": false, "elapsed_ms": 0, "ts": "2026-04-28T16:27:32.411166+00:00"}
+{"event": "PreToolUse", "tool": "", "agent": "", "ts": "2026-04-28T16:27:32.411154+00:00"}
