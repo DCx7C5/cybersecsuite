@@ -88,6 +88,14 @@ def create_app() -> FastAPI:
     async def health() -> JSONResponse:
         return JSONResponse({"status": "ok"})
 
+    # Mount core endpoints (marketplace API)
+    try:
+        from core.endpoints.marketplace import router as marketplace_router
+        _app.include_router(marketplace_router)
+        log.info("Mounted core endpoints: marketplace")
+    except Exception as e:
+        log.warning(f"Failed to mount marketplace endpoints: {e}")
+
     # Auto-discover and mount all apps/*/endpoints.py routers
     mounted = mount_app_routers(_app)
     log.info("App endpoints mounted: %s", mounted or ["(none)"])
