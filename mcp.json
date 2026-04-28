@@ -2,15 +2,15 @@
   "mcpServers": {
     "cybersec": {
       "name": "CyberSecSuite",
-      "description": "Main forensics SDK — 92 tools: findings, IOCs, cases, MITRE, intel, cache, AI proxy, crypto (Ed25519/Argon2id), memory, canvas, vault, agents, QoL output controls (stdio)",
+      "description": "Main forensics SDK — 98 tools: findings, IOCs, cases, MITRE, intel, cache, AI proxy, crypto (Ed25519/Argon2id), memory, canvas, vault, agents, QoL output controls (stdio)",
       "command": "uv",
       "args": [
         "--directory",
-        "${workspaceFolder}",
+        "${workspaceFolder}/packages/cybersec-mcp",
         "run",
         "python",
         "-m",
-        "csmcp.cybersec.server"
+        "cybersec_mcp"
       ],
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src",
@@ -21,7 +21,7 @@
         "DYSTOPIAN_KEYS_DIR": "/etc/dystopian/crypto/cert/private",
         "DYSTOPIAN_VAULT_PASSWORD_FILE": "/etc/dystopian/crypto/cert/private/.vault-password"
       },
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/packages/cybersec-mcp",
       "tools": {
         "qol_get": {
           "name": "qol_get",
