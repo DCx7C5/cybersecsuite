@@ -1,30 +1,15 @@
+"""RedisCommunicator — implements BaseCommunicator protocol for Redis-backed messaging."""
+
 from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 from .dispatcher import MessageDispatcher
 from .messaging import Message
 
 log = logging.getLogger(__name__)
-
-# Valid vault memory types
-_MEMORY_TYPES = {"factual", "episodic", "procedural", "semantic"}
-# Map generic category names to vault types
-_CATEGORY_MAP: dict[str, str] = {
-    "general": "factual",
-    "fact": "factual",
-    "event": "episodic",
-    "procedure": "procedural",
-    "concept": "semantic",
-}
-
-
-def _resolve_memory_type(category: str) -> str:
-    if category in _MEMORY_TYPES:
-        return category
-    return _CATEGORY_MAP.get(category, "factual")
 
 
 @dataclass
@@ -34,11 +19,24 @@ class RedisCommunicator:
     Wraps ``MessageDispatcher`` with a sender identity so callers never
     have to manually construct ``Message`` objects or remember their own ID.
 
+    Implements the BaseCommunicator protocol for inter-entity communication.
+
     ``entity_id`` is the canonical agent identifier (e.g. ``"research:analyst"``).
     """
 
-    entity_id: str
-    dispatcher: MessageDispatcher
+    _entity_id: str
+    _dispatcher: MessageDispatcher
+    _handlers: dict[str, list[Callable]] = field(default_factory=dict)
+
+    @property
+    def entity_id(self) -> str:
+        """Get the entity ID (as @property for protocol compliance)."""
+        return self._entity_id
+
+    @property
+    def dispatcher(self) -> MessageDispatcher:
+        """Get the message dispatcher (as @property for protocol compliance)."""
+        return self._dispatcher
 
     async def send(
         self,
@@ -66,11 +64,7 @@ class RedisCommunicator:
         msg_type: str = "task",
         routing_mode: Literal["direct", "shortest_path"] = "shortest_path",
     ) -> None:
-        """Post a plain-text message.
-
-        ``target="all"`` broadcasts globally; any other value is treated as
-        a recipient ``entity_id`` and routed via ``send()``.
-        """
+        """Post a plain-text message (broadcast or direct)."""
         if target == "all":
             msg = Message(
                 from_id=self.entity_id,
@@ -78,97 +72,36 @@ class RedisCommunicator:
                 type="broadcast",
                 payload={"content": content},
             )
-            await self.dispatcher.broadcast(msg, scope="global")
+            await self.dispatcher.send(msg)
         else:
             await self.send(to_id=target, payload={"content": content}, msg_type=msg_type, routing_mode=routing_mode)
 
-    async def save_to_memory(self, content: str, category: str = "general") -> None:
-        """Persist a memory entry to the vault.
-
-        ``category`` accepts vault types (``factual``, ``episodic``,
-        ``procedural``, ``semantic``) as well as common aliases
-        (``general`` → ``factual``, ``event`` → ``episodic``, etc.).
+    async def subscribe(
+        self, handler: Callable, message_types: list[str] | None = None
+    ) -> None:
+        """Subscribe to incoming messages (optionally filtered by type).
+        
+        Args:
+            handler: Async callable(message: Message) to invoke on new messages
+            message_types: Optional list of msg_type values to filter (None = all)
         """
-        from core.cssmcp.cybersec.ai_memory import memory_add
+        if message_types is None:
+            message_types = ["*"]
 
-        mem_type = _resolve_memory_type(category)
-        result = await memory_add({"content": content, "type": mem_type, "tags": [self.entity_id]})
-        log.debug("save_to_memory [%s]: %s", self.entity_id, result)
+        for msg_type in message_types:
+            if msg_type not in self._handlers:
+                self._handlers[msg_type] = []
+            if handler not in self._handlers[msg_type]:
+                self._handlers[msg_type].append(handler)
 
-
-@dataclass
-class RedisCommunicationGroup:
-    """A named group of agents that can be messaged collectively or individually.
-
-    ``members`` stores entity IDs (e.g. ``["research:researcher", "research:analyst"]``).
-    ``dispatcher`` is optional — set it before calling any messaging methods.
-    """
-
-    name: str
-    members: list[str] = field(default_factory=list)
-    dispatcher: MessageDispatcher | None = None
-
-    def _require_dispatcher(self) -> MessageDispatcher:
-        if self.dispatcher is None:
-            raise RuntimeError(f"CommunicationGroup {self.name!r} has no dispatcher set")
-        return self.dispatcher
-
-    async def add_member(self, entity_id: str) -> None:
-        """Add an agent to the group (idempotent)."""
-        if entity_id not in self.members:
-            self.members.append(entity_id)
-            log.debug("group [%s]: added member %r (%d total)", self.name, entity_id, len(self.members))
-
-    async def remove_member(self, entity_id: str) -> None:
-        """Remove an agent from the group (no-op if not present)."""
-        try:
-            self.members.remove(entity_id)
-            log.debug("group [%s]: removed member %r (%d remaining)", self.name, entity_id, len(self.members))
-        except ValueError:
-            pass
-
-    async def broadcast(
-        self,
-        payload: Any,
-        *,
-        from_id: str | None = None,
-        msg_type: str = "task",
-    ) -> None:
-        """Send a message to every member of the group."""
-        dispatcher = self._require_dispatcher()
-        sender = from_id or self.name
-        for member_id in list(self.members):
-            msg = Message(
-                from_id=sender,
-                to_id=member_id,
-                type=msg_type,
-                payload=payload,
-                routing_mode="direct",
-            )
-            await dispatcher.send(msg)
-
-    async def send_to_member(
-        self,
-        entity_id: str,
-        payload: Any,
-        *,
-        from_id: str | None = None,
-        msg_type: str = "task",
-    ) -> None:
-        """Send a message to one specific member of the group."""
-        if entity_id not in self.members:
-            raise ValueError(f"{entity_id!r} is not a member of group {self.name!r}")
-        dispatcher = self._require_dispatcher()
-        sender = from_id or self.name
-        msg = Message(
-            from_id=sender,
-            to_id=entity_id,
-            type=msg_type,
-            payload=payload,
-            routing_mode="direct",
-        )
-        await dispatcher.send(msg)
-
-    async def get_members(self) -> list[str]:
-        """Return a snapshot of current group members."""
-        return list(self.members)
+    async def unsubscribe(self, handler: Callable) -> None:
+        """Unsubscribe a handler from incoming messages.
+        
+        Args:
+            handler: Previously registered handler to remove
+        """
+        for msg_type in list(self._handlers.keys()):
+            if handler in self._handlers[msg_type]:
+                self._handlers[msg_type].remove(handler)
+            if not self._handlers[msg_type]:
+                del self._handlers[msg_type]

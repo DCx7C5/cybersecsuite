@@ -386,6 +386,98 @@ class OnFirstSetupEvent(TypedDict, total=False):
     hook_event_name: str
 
 
+class PlanStartEvent(TypedDict, total=False):
+    """PlanStart event: when a migration plan phase starts."""
+    phase: str
+    phase_id: str
+    hook_event_name: str
+
+
+class PlanStopEvent(TypedDict, total=False):
+    """PlanStop event: when a migration plan phase stops."""
+    phase: str
+    phase_id: str
+    hook_event_name: str
+
+
+class PlanCompleteEvent(TypedDict, total=False):
+    """PlanComplete event: when a migration plan completes."""
+    total_phases: int
+    completed_phases: int
+    hook_event_name: str
+
+
+class PlanPhaseStartEvent(TypedDict, total=False):
+    """PlanPhaseStart event: when a phase starts."""
+    phase: str
+    phase_id: str
+    hook_event_name: str
+
+
+class PlanPhaseStopEvent(TypedDict, total=False):
+    """PlanPhaseStop event: when a phase stops."""
+    phase: str
+    phase_id: str
+    hook_event_name: str
+
+
+class PlanPhaseCompleteEvent(TypedDict, total=False):
+    """PlanPhaseComplete event: when a phase completes."""
+    phase: str
+    phase_id: str
+    success: bool
+    hook_event_name: str
+
+
+class PlanTaskStartEvent(TypedDict, total=False):
+    """PlanTaskStart event: when a task starts."""
+    phase: str
+    task_id: str
+    task_title: str
+    hook_event_name: str
+
+
+class PlanTaskStopEvent(TypedDict, total=False):
+    """PlanTaskStop event: when a task stops."""
+    phase: str
+    task_id: str
+    hook_event_name: str
+
+
+class PlanTaskCompleteEvent(TypedDict, total=False):
+    """PlanTaskComplete event: when a task completes."""
+    phase: str
+    task_id: str
+    success: bool
+    hook_event_name: str
+
+
+class PlanTodoStartEvent(TypedDict, total=False):
+    """PlanTodoStart event: when a todo starts."""
+    phase: str
+    task_id: str
+    todo_id: str
+    todo_title: str
+    hook_event_name: str
+
+
+class PlanTodoStopEvent(TypedDict, total=False):
+    """PlanTodoStop event: when a todo stops."""
+    phase: str
+    task_id: str
+    todo_id: str
+    hook_event_name: str
+
+
+class PlanTodoCompleteEvent(TypedDict, total=False):
+    """PlanTodoComplete event: when a todo completes."""
+    phase: str
+    task_id: str
+    todo_id: str
+    success: bool
+    hook_event_name: str
+
+
 class PreRetryEvent(TypedDict, total=False):
     """PreRetry event: before retry attempt.
     
