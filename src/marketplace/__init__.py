@@ -1,18 +1,12 @@
-"""Marketplace — lazy-loading agent/skill registry with provider frontmatter standards.
+"""
+Backward compatibility shim.
 
-Referenz:
-    plan.md T033 — Marketplace module
-    src/marketplace/registry.py — MarketplaceRegistry, get_registry
-    src/marketplace/models.py — MarketplaceItem, MarketplaceItemStatus
+This module re-exports everything from core.marketplace.
+New code should import from core.marketplace directly.
+
+Deprecation: This shim will be removed in v0.2.0
 """
 
+from core.marketplace import *
 
-from src.registries.marketplace import MarketplaceRegistry, get_registry
-from src.marketplace.models import MarketplaceItem, MarketplaceItemStatus
-
-__all__ = [
-    "MarketplaceRegistry",
-    "get_registry",
-    "MarketplaceItem",
-    "MarketplaceItemStatus",
-]
+__all__ = []

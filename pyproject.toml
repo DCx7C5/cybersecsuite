@@ -73,24 +73,28 @@ packages = [
   "src/core/utils",
   "src/core/llm",
   
-  # NON-MIGRATED YET (CIRCULAR CLUSTER)
-  "src/a2a",
-  "src/accounts",
+  # CIRCULAR CLUSTER (migrated to core/)
+  "src/core/db",
+  "src/core/registries",
+  "src/core/hooks",
+  "src/core/a2a",
+  "src/core/accounts",
+  "src/core/ai_proxy",
+  "src/core/marketplace",
+  "src/core/crypto",
+  "src/core/routes",
+  "src/core/startup",
+  
+  # NON-MIGRATED YET
   "src/agent",
-  "src/ai_proxy",
   "src/apps",
   "src/core",
-  "src/crypto",
+  "src/manage",
+  
+  # DATA
   "src/cybersecsuite",
   "src/cybersecsuite/data",
   "src/cybersecsuite/data/marketplace",
-  "src/db",
-  "src/hooks",
-  "src/manage",
-  "src/marketplace",
-  "src/registries",
-  "src/routes",
-  "src/startup",
 ]
 
 [dependency-groups]

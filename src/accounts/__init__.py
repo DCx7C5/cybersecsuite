@@ -1,12 +1,12 @@
-"""Account management package for API provider keys.
-
-Exports:
-    AccountManager  — singleton for managing API accounts
-    AccountEntry    — Pydantic model for account metadata
-    getLogger       — module-level logger
 """
-from logger import getLogger
+Backward compatibility shim.
 
-from accounts.manager import AccountManager
+This module re-exports everything from core.accounts.
+New code should import from core.accounts directly.
 
-__all__ = ["AccountManager", "getLogger"]
+Deprecation: This shim will be removed in v0.2.0
+"""
+
+from core.accounts import *
+
+__all__ = []

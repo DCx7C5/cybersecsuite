@@ -1,25 +1,12 @@
 """
-Cryptography module for SSL/RSA-based artifact signing.
+Backward compatibility shim.
 
-Main Components:
-- SSLArtifactSigner: RSA-2048 signature generation/verification
-- KeyManager: Password-protected key lifecycle management
-- ArtifactManager: Artifact CRUD with automatic signing
-- Vault: File-based encrypted secret storage
+This module re-exports everything from core.crypto.
+New code should import from core.crypto directly.
+
+Deprecation: This shim will be removed in v0.2.0
 """
-from logger import getLogger
 
-from crypto.ssl_signer import SSLArtifactSigner
-from crypto.key_manager import KeyManager, PasswordManager
-from crypto.artifact_manager import ArtifactManager
-from crypto.vault import Vault
+from core.crypto import *
 
-__all__ = [
-    "SSLArtifactSigner",
-    "KeyManager",
-    "PasswordManager",
-    "ArtifactManager",
-    "Vault",
-    "getLogger",
-]
-
+__all__ = []

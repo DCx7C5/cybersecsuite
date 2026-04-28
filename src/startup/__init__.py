@@ -1,6 +1,12 @@
-"""Startup package for CyberSecSuite first-run detection and marketplace."""
-from logger import getLogger
+"""
+Backward compatibility shim.
 
-from startup.first_run import first_run_setup, get_marketplace, is_first_run
+This module re-exports everything from core.startup.
+New code should import from core.startup directly.
 
-__all__ = ["first_run_setup", "get_marketplace", "is_first_run", "getLogger"]
+Deprecation: This shim will be removed in v0.2.0
+"""
+
+from core.startup import *
+
+__all__ = []
