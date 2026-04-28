@@ -561,15 +561,13 @@ async def seed_marketplace_assets() -> Dict[str, Any]:
     }
 
 
-async def seed_marketplace_from_json() -> Dict[str, Any]:
+async def seed_marketplace_from_json(
+    source_url: str | None = None,
+) -> Dict[str, Any]:
     """
-    Idempotent seed of marketplace data from the bundled search-index.json.
+    Idempotent seed of marketplace data from bundled or remote index.json.
 
-    Reads src/cybersecsuite/data/marketplace/search-index.json via importlib.resources,
-    iterates ``documents``, and upserts into the appropriate model:
-    - doctype "tool"  → MarketplaceAsset (asset_type="tool")
-    - doctype "skill" → Skill model
-    - doctype "agent" → Agent model
+    Reads from bundled search-index.json by default, or downloads from remote URL if provided.
 
     Returns:
         {"created": int, "skipped": int, "total": int}
@@ -577,11 +575,25 @@ async def seed_marketplace_from_json() -> Dict[str, Any]:
     import importlib.resources
     from db.models.marketplace import MarketplaceAsset, Skill, Agent
 
-    raw = (
-        importlib.resources.files("cybersecsuite.data.marketplace")
-        .joinpath("search-index.json")
-        .read_text(encoding="utf-8")
-    )
+    # Load data from bundled or remote source
+    if source_url:
+        # Download from remote URL (e.g., GitHub marketplace index)
+        try:
+            import httpx
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(source_url, timeout=30.0)
+                resp.raise_for_status()
+                raw = resp.text
+        except ImportError:
+            raise ImportError("httpx required for remote seeding; install via 'uv add httpx'")
+    else:
+        # Use bundled fixture
+        raw = (
+            importlib.resources.files("cybersecsuite.data.marketplace")
+            .joinpath("search-index.json")
+            .read_text(encoding="utf-8")
+        )
+    
     data = json.loads(raw)
     documents = data.get("documents", [])
 
