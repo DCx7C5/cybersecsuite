@@ -2,13 +2,80 @@
 
 File-by-file breakdown of the CyberSecSuite source tree.
 
+**Updated:** 2026-04-28 (Phase 3 & 4 Migration)
+
+---
+
+## Architecture Update: Phase 3 Monorepo Reorganization
+
+As of Phase 3, the codebase has been reorganized into a canonical structure under `src/core/`. All packages have backward-compatible shims in `src/` for gradual migration.
+
+### Canonical Structure (src/core/)
+```
+src/core/
+├── db/                 Database ORM, models, migrations (canonical)
+├── registries/         Agent, skill, provider registries (canonical)
+├── hooks/              Event hooks and bootstrap events (canonical)
+├── a2a/                A2A protocol and agent orchestration (canonical)
+├── ai_proxy/           Multi-provider AI routing (canonical)
+├── marketplace/        Marketplace catalog and management (canonical)
+├── accounts/           Provider credentials management (canonical)
+├── startup/            Application startup utilities (canonical)
+├── routes/             REST API route handlers (canonical)
+├── crypto/             Cryptographic utilities (canonical)
+├── entities/           Entity framework and models (canonical)
+├── communicator/       IPC and communication layer (canonical)
+├── endpoints/          REST endpoint loaders (canonical)
+├── asgi/               ASGI application and middleware (canonical)
+├── checks/             Asset and inventory checks (canonical)
+├── dbus/               D-Bus communication utilities (canonical)
+├── memory/             Memory management (canonical)
+├── openobserve/        Observability integration (canonical)
+├── telemetry/          Telemetry collection (canonical)
+├── utils/              General utility functions (canonical)
+├── llm/                LLM client wrappers (canonical)
+└── tools/              Tool definitions and utilities (canonical)
+```
+
+### Backward-Compatible Shims (src/)
+```
+src/
+├── db → core/db (shim, deprecated in v0.3.0)
+├── registries → core/registries (shim)
+├── hooks → core/hooks (shim)
+├── a2a → core/a2a (shim)
+├── ai_proxy → core/ai_proxy (shim)
+├── marketplace → core/marketplace (shim)
+├── accounts → core/accounts (shim)
+├── startup → core/startup (shim)
+├── routes → core/routes (shim)
+├── crypto → core/crypto (shim)
+├── entities → core/entities (shim)
+├── communicator → core/communicator (shim)
+├── endpoints → core/endpoints (shim)
+├── asgi → core/asgi (shim)
+├── checks → core/checks (shim)
+├── dbus → core/dbus (shim)
+├── memory → core/memory (shim)
+├── openobserve → core/openobserve (shim)
+├── telemetry → core/telemetry (shim)
+├── utils → core/utils (shim)
+├── tools → core/tools (shim)
+└── [+6 more shims]
+```
+
+**Recommended Import Path:** `from core.X import Y` (canonical)  
+**Supported Path:** `from X import Y` (shim, deprecated)
+
 ---
 
 ## `src/` — Application Source
 
+**NOTE:** This section documents the canonical structure under `src/core/`. Shims exist in `src/` for backward compatibility.
+
 ```
-src/
-├── proxy/                  ASGI application
+src/core/
+├── proxy/                  ASGI application [DEPRECATED - moved to asgi/]
 │   └── asgi.py               Starlette app, mount map, startup/shutdown lifecycle
 │
 ├── a2a/                    A2A protocol + agent SDK bridge
