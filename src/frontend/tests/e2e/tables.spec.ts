@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Data Tables', () => {
-  test('table sorts on header click', async ({ page }) => {
+  test('table sorts on headers click', async ({ page }) => {
     await page.goto('/')
     await page.locator('[data-test="nav-item"][data-tab="cases"]').click()
     await page.waitForSelector('[data-test="table"]', { timeout: 5000 })
 
-    const headers = page.locator('[data-test="table-header"]')
+    const headers = page.locator('[data-test="table-headers"]')
     await headers.first().click()
     await page.waitForTimeout(500)
     const sorted = page.locator('[data-test="table-body-row"]')

@@ -20,10 +20,10 @@ Starlette ASGI application — entry point for all HTTP traffic.
 ```bash
 # Via Makefile (recommended)
 make serve
-# → uvicorn proxy.asgi:app --host 127.0.0.1 --port 8000 --reload
+# → uvicorn asgi.asgi:app --host 127.0.0.1 --port 8000 --reload
 
 # Direct uvicorn
-uvicorn proxy.asgi:app --host 0.0.0.0 --port 8000 --app-dir src
+uvicorn asgi.asgi:app --host 0.0.0.0 --port 8000 --app-dir src
 ```
 
 ## Port Configuration

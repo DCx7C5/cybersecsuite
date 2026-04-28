@@ -14,42 +14,14 @@ Usage:
         task = await client.send_task("analyze IOC: 192.168.1.100")
 
 All agent routing is handled by the Agent SDK which reads .claude/agents/*.md directly.
-Routing to 60 providers (DeepSeek, Gemini, Groq, …) is done via the AI proxy at
+Routing to 60 providers (DeepSeek, Gemini, Groq, …) is done via the AI asgi at
 ANTHROPIC_BASE_URL=http://localhost:8000/v1 using each agent's declared model.
+
+All top-level names are lazy-loaded to prevent import-time crashes from optional
+dependencies (hooks, crypto, agent SDK, DB models).
 """
 
 from __future__ import annotations
-
-from src.logger import getLogger  # noqa: F401
-
-from a2a.enums import TaskState, MessageRole, PartType, AuthScheme
-from a2a.models import (
-    AgentCard, AgentCapabilities, AgentSkill,
-    Task, TaskStatus, Message, TaskArtifact,
-    TextPart, FilePart, DataPart,
-    JSONRPCRequest, JSONRPCResponse, JSONRPCError,
-    A2AErrorCodes,
-)
-from a2a.task_store import TaskStore
-from a2a.agent import BaseA2AAgent
-from a2a.server import A2AServer
-from a2a.client import A2AClient, A2AClientError
-from a2a.cybersec_agent import CybersecA2AAgent
-
-# Agent SDK integration (optional — requires claude-agent-sdk)
-try:
-    from a2a.agent_sdk import (
-        build_agent_options,
-        build_agent_definitions,
-        clear_caches,
-        run_agent_query,
-        run_orchestrator_query,
-        run_agent_stream,
-        run_agent_stream_with_memory,
-    )
-    _HAS_AGENT_SDK = True
-except ImportError:
-    _HAS_AGENT_SDK = False
 
 __all__ = [
     # Enums
@@ -76,19 +48,62 @@ __all__ = [
     "run_agent_stream_with_memory",
 ]
 
+_MODULE_MAP: dict[str, tuple[str, str]] = {
+    # Enums
+    "TaskState":        ("a2a.enums", "TaskState"),
+    "MessageRole":      ("a2a.enums", "MessageRole"),
+    "PartType":         ("a2a.enums", "PartType"),
+    "AuthScheme":       ("a2a.enums", "AuthScheme"),
+    # Models
+    "AgentCard":        ("a2a.models", "AgentCard"),
+    "AgentCapabilities":("a2a.models", "AgentCapabilities"),
+    "AgentSkill":       ("a2a.models", "AgentSkill"),
+    "Task":             ("a2a.models", "Task"),
+    "TaskStatus":       ("a2a.models", "TaskStatus"),
+    "Message":          ("a2a.models", "Message"),
+    "TaskArtifact":     ("a2a.models", "TaskArtifact"),
+    "TextPart":         ("a2a.models", "TextPart"),
+    "FilePart":         ("a2a.models", "FilePart"),
+    "DataPart":         ("a2a.models", "DataPart"),
+    "JSONRPCRequest":   ("a2a.models", "JSONRPCRequest"),
+    "JSONRPCResponse":  ("a2a.models", "JSONRPCResponse"),
+    "JSONRPCError":     ("a2a.models", "JSONRPCError"),
+    "A2AErrorCodes":    ("a2a.models", "A2AErrorCodes"),
+    # Core
+    "TaskStore":        ("a2a.task_store", "TaskStore"),
+    "BaseA2AAgent":     ("a2a.agent", "BaseA2AAgent"),
+    # Server / Client
+    "A2AServer":        ("a2a.server", "A2AServer"),
+    "A2AClient":        ("a2a.client", "A2AClient"),
+    "A2AClientError":   ("a2a.client", "A2AClientError"),
+    # Registry (lazy to break circular import with registries.agents)
+    "AgentRegistry":    ("src.registries.agents", "AgentRegistry"),
+    "RemoteAgent":      ("src.registries.agents", "RemoteAgent"),
+    # Agent implementation (imports crypto + db — lazy)
+    "CybersecA2AAgent": ("a2a.cybersec_agent", "CybersecA2AAgent"),
+    # .claude agent loader (imports hooks — lazy)
+    "ClaudeAgentCard":          ("a2a.agent_loader", "ClaudeAgentCard"),
+    "frontmatter_to_claude_agent": ("a2a.agent_loader", "frontmatter_to_claude_agent"),
+    # Agent SDK (optional — requires claude-agent-sdk)
+    "build_agent_options":       ("a2a.agent_sdk", "build_agent_options"),
+    "build_agent_definitions":   ("a2a.agent_sdk", "build_agent_definitions"),
+    "clear_caches":              ("a2a.agent_sdk", "clear_caches"),
+    "run_agent_query":           ("a2a.agent_sdk", "run_agent_query"),
+    "run_orchestrator_query":    ("a2a.agent_sdk", "run_orchestrator_query"),
+    "run_agent_stream":          ("a2a.agent_sdk", "run_agent_stream"),
+    "run_agent_stream_with_memory": ("a2a.agent_sdk", "run_agent_stream_with_memory"),
+}
 
-def __getattr__(name):
-    """Lazy import to break circular dependency with src.registries.agents."""
-    if name == "AgentRegistry":
-        from src.registries.agents import AgentRegistry
-        return AgentRegistry
-    elif name == "RemoteAgent":
-        from src.registries.agents import RemoteAgent
-        return RemoteAgent
-    elif name == "ClaudeAgentCard":
-        from a2a.agent_loader import ClaudeAgentCard
-        return ClaudeAgentCard
-    elif name == "frontmatter_to_claude_agent":
-        from a2a.agent_loader import frontmatter_to_claude_agent
-        return frontmatter_to_claude_agent
+
+def __getattr__(name: str) -> object:
+    if name in _MODULE_MAP:
+        import importlib
+        mod_path, attr = _MODULE_MAP[name]
+        try:
+            mod = importlib.import_module(mod_path)
+            return getattr(mod, attr)
+        except (ImportError, AttributeError) as exc:
+            raise ImportError(
+                f"a2a.{name} could not be imported from {mod_path}: {exc}"
+            ) from exc
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

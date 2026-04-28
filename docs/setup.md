@@ -521,7 +521,7 @@ Requires `.css-initialized` to exist (auto-creates it if not). Runs `pytest` aga
 ### List configured AI providers
 
 ```bash
-make proxy-providers
+make asgi-providers
 ```
 
 ### Verify templates were scaffolded

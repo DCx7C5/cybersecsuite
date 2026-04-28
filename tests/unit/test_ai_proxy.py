@@ -1,4 +1,4 @@
-"""Tests for AI proxy — provider routing, combo strategies, rate limiter, usage tracker."""
+"""Tests for AI asgi — provider routing, combo strategies, rate limiter, usage tracker."""
 
 import pytest
 
@@ -9,7 +9,7 @@ try:
     AI_PROXY_AVAILABLE = True
 except ImportError:
     AI_PROXY_AVAILABLE = False
-    pytest.skip("AI proxy module not fully available", allow_module_level=True)
+    pytest.skip("AI asgi module not fully available", allow_module_level=True)
 
 
 class TestProviderRegistry:

@@ -3,8 +3,6 @@
 import sys
 import time
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -14,16 +12,12 @@ if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
 from hooks.config import HookConfig
-from hooks.core import (
-    ErrorStrategy,
+from hooks.events import (
     HookContext,
     PlanCompleteEvent,
-    PlanPhaseCompleteEvent,
     PlanPhaseStartEvent,
     PlanStartEvent,
-    PlanTaskCompleteEvent,
     PlanTaskStartEvent,
-    PlanTodoCompleteEvent,
     PlanTodoStartEvent,
 )
 from src.registries.hooks import HookRegistry

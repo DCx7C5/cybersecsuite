@@ -1,7 +1,7 @@
 """Context Propagation OpenTelemetry instrumentation.
 
 Provides trace context propagation across services:
-- HTTP header injection/extraction
+- HTTP headers injection/extraction
 - gRPC metadata propagation
 - Async task context preservation
 - Request ID correlation

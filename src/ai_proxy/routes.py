@@ -1,7 +1,7 @@
 """
 AI Proxy ASGI Routes — /v1/chat/completions, /v1/models, /v1/usage, /v1/tokens/count.
 
-Drop-in OpenAI-compatible proxy with multi-provider routing, format
+Drop-in OpenAI-compatible asgi with multi-provider routing, format
 translation, rate limiting, and cost tracking.
 """
 
@@ -76,16 +76,16 @@ async def chat_completions(request: Request) -> JSONResponse | StreamingResponse
 
     stream = body.get("stream", False)
 
-    # Check for X-Provider header to force a specific provider
+    # Check for X-Provider headers to force a specific provider
     force_provider = request.headers.get("x-provider")
-    # Check for cost optimization header
+    # Check for cost optimization headers
     prefer_free = request.headers.get("x-prefer-free", "").lower() in ("true", "1", "yes")
     max_cost_str = request.headers.get("x-max-cost-per-1k")
     max_cost = float(max_cost_str) if max_cost_str else None
     # T017/T018: session and agent context for QoL scope cascade + agent presets
     session_id: str | None = request.headers.get("x-session-id") or None
     agent_name: str | None = request.headers.get("x-agent-name") or None
-    # T026: webllm flag — prefer browser providers (header or body meta field)
+    # T026: webllm flag — prefer browser providers (headers or body meta field)
     webllm: bool = request.headers.get("x-webllm", "").lower() in ("true", "1", "yes") or bool(body.get("webllm"))
 
     start = time.monotonic()

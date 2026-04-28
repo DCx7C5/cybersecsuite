@@ -9,7 +9,7 @@ Architecture
 
 The hook system consists of:
 
-1. **core.py** — Type definitions (HookContext, ErrorStrategy, TypedDicts for events)
+1. **events.py** — Type definitions (HookContext, ErrorStrategy, TypedDicts for events)
    - No Pydantic, just Python typing
    - Provides HookContext passed to every hook call
    - Defines ErrorStrategy enum for error handling
@@ -186,7 +186,7 @@ Extending the System
 
 To add a new hook:
 
-1. Define event TypedDict in core.py (optional, for type hints)
+1. Define event TypedDict in events.py (optional, for type hints)
 2. Implement async hook function in sdk_hooks.py
 3. Register in build_python_hooks() dict
 4. Add unit tests in tests/unit/
@@ -208,7 +208,7 @@ Then add to build_python_hooks():
 See PHASE_15_HOOKS_IMPROVEMENT.md for full design details.
 """
 
-from hooks.core import (
+from hooks.events import (
     ErrorStrategy,
     HookContext,
     HookOutput,

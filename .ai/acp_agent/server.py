@@ -3,7 +3,7 @@ CyberSecSuite ACP Agent Server
 
 JSON-RPC 2.0 over stdio with Content-Length framing (LSP-style).
 Implements the Agent Client Protocol (ACP) so JetBrains AI Assistant
-can delegate to the CyberSecSuite AI proxy.
+can delegate to the CyberSecSuite AI asgi.
 
 Supported methods:
   initialize              — negotiate protocol version + capabilities
@@ -441,7 +441,7 @@ def _extract_user_text(params: dict) -> str:
 
 
 async def _call_ai_proxy(session: Session, writer: asyncio.StreamWriter) -> str:
-    """Stream a completion from the AI proxy and emit session/update notifications."""
+    """Stream a completion from the AI asgi and emit session/update notifications."""
     full_text = ""
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(180.0)) as client:
@@ -502,14 +502,14 @@ async def _call_ai_proxy(session: Session, writer: asyncio.StreamWriter) -> str:
                     await _flush(writer)
 
     except httpx.ConnectError:
-        log.warning("AI proxy unavailable at %s", PROXY_URL)
+        log.warning("AI asgi unavailable at %s", PROXY_URL)
         full_text = (
-            "⚠️ CyberSecSuite AI proxy is offline. "
+            "⚠️ CyberSecSuite AI asgi is offline. "
             "Start it with `docker-compose up -d` at "
             f"`{_PROJECT_ROOT}`."
         )
     except Exception as exc:  # noqa: BLE001
-        log.exception("Unexpected error calling AI proxy")
+        log.exception("Unexpected error calling AI asgi")
         full_text = f"[Error: {exc}]"
 
     return full_text
@@ -541,7 +541,7 @@ async def run() -> None:
     writer = asyncio.StreamWriter(w_transport, w_proto, reader, loop)  # type: ignore[arg-type]
 
     log.info(
-        "%s v%s started — proxy=%s default=(model=%s agent=%s reasoning_effort=%s)",
+        "%s v%s started — asgi=%s default=(model=%s agent=%s reasoning_effort=%s)",
         AGENT_NAME, AGENT_VERSION, PROXY_URL,
         DEFAULT_MODEL, DEFAULT_AGENT, DEFAULT_REASONING_EFFORT,
     )

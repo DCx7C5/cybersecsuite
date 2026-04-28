@@ -183,7 +183,7 @@ class TestAgentSDKHooksIntegration:
     def test_hook_registry_error_strategy(self):
         """Hook registry should have proper error strategy."""
         from src.registries.hooks import HookRegistry
-        from hooks.core import ErrorStrategy
+        from hooks.events import ErrorStrategy
         
         # Default strategy
         registry = HookRegistry()

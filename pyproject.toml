@@ -17,7 +17,7 @@ dependencies = [
     "tortoise-orm>=1.1.5",
     "tortoise-orm[asyncpg]>=0.22",
     "asyncpg>=0.30",
-    # A2A agent networking + AI proxy HTTP client
+    # A2A agent networking + AI asgi HTTP client
     "httpx[http2]>=0.28",
     # Data validation
     "pydantic>=2.10",

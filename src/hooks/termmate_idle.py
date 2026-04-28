@@ -14,8 +14,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from hooks.utils import get_session_dir, get_project_dir
 from uvloop_integration import run_with_uvloop
-from utils import get_project_dir, get_session_dir
 
 
 # Map agent roles to the artifact patterns they are responsible for

@@ -40,7 +40,7 @@ class ApplicationScope(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
-        table = "applications"
+        table = "apps"
         table_description_singular = "Application Scope"
         indexes = [
             models.Index(fields=["name"]),

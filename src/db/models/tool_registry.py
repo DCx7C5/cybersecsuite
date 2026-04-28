@@ -41,7 +41,7 @@ class ToolRegistry(Model):
     # e.g. "computer_use_20250124", "web_search_20250305", "memory_20250818"
     sdk_type_string = fields.CharField(max_length=128, null=True)
 
-    # For sdk_beta: the beta header required to unlock it
+    # For sdk_beta: the beta headers required to unlock it
     # e.g. "computer-use-2025-01-24", "memory-2025-08-18"
     required_beta = fields.CharField(max_length=128, null=True)
 

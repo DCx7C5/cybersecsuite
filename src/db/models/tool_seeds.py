@@ -368,7 +368,7 @@ def _infer_tags(tool_name: str, tool_type: str) -> list[str]:
         "finding": ["findings", "forensics"],
         "ioc": ["ioc", "forensics"],
         "case": ["cases"],
-        "proxy": ["proxy", "routing"],
+        "asgi": ["asgi", "routing"],
         "cache": ["cache"],
         "route": ["routing"],
         "combo": ["routing"],

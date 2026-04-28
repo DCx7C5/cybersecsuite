@@ -20,7 +20,7 @@ class Artifact(Model):
     body_hash = fields.CharField(max_length=64, default="")  # Computed by signer
 
     # SSL/RSA Signature
-    signature = fields.TextField()  # JWT-like: header.payload.signature
+    signature = fields.TextField()  # JWT-like: headers.payload.signature
     signature_valid = fields.BooleanField(default=False, db_index=True)
     signed_at = fields.DatetimeField(auto_now_add=True)
     signature_expires_at = fields.DatetimeField(null=True)

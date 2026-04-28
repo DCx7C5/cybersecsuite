@@ -41,7 +41,7 @@ services:
       context: .
       dockerfile: .docker/proxy/Dockerfile
     image: cybersec-proxy
-    container_name: cybersec-proxy
+    container_name: cybersec-asgi
     <<: *common
     tty: true
     stdin_open: true

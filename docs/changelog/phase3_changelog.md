@@ -501,7 +501,7 @@ rendered = template.render({
     "severity": "HIGH"
 })
 
-# Execute through AI proxy
+# Execute through AI asgi
 response = await ai_proxy.analyze(
     prompt=rendered,
     model="qwen:1.5b",

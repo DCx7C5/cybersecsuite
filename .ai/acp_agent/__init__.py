@@ -1,1 +1,1 @@
-"""CyberSecSuite ACP Agent — wraps the AI proxy as an ACP-compatible stdio agent."""
+"""CyberSecSuite ACP Agent — wraps the AI asgi as an ACP-compatible stdio agent."""

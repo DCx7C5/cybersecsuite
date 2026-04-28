@@ -239,8 +239,8 @@ src/
 
 **Restart after code changes**:
 ```bash
-# Python backend changes (proxy/*, api/*, db/*, ai_proxy/*)
-docker-compose restart cybersec-proxy
+# Python backend changes (asgi/*, api/*, db/*, ai_proxy/*)
+docker-compose restart cybersec-asgi
 
 # Frontend changes (src/frontend/*)
 docker-compose restart cybersec-dashboard

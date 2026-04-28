@@ -1,4 +1,4 @@
-# cybersecsuite — proxy service (uv-based)
+# cybersecsuite — asgi service (uv-based)
 FROM python:3.14-slim AS base
 
 ARG BUILD_DATE

@@ -53,7 +53,7 @@ HTTPS_PORT="${ASGI_TLS_PORT:-8443}"
 if [[ -f "$TLS_CERT" && -f "$TLS_KEY" ]]; then
     echo "[proxy-init] TLS certificates detected - starting HTTPS on port $HTTPS_PORT"
     echo "[proxy-init] Starting ASGI server with TLS..."
-    exec uv run uvicorn proxy.asgi:app \
+    exec uv run uvicorn asgi.asgi:app \
         --host "${ASGI_HOST:-0.0.0.0}" \
         --port "$HTTP_PORT" \
         --ssl-keyfile "$TLS_KEY" \
@@ -63,7 +63,7 @@ else
     echo "[proxy-init] No TLS certificates found - serving HTTP only on port $HTTP_PORT"
     echo "[proxy-init] Redirect from port $HTTPS_PORT is handled by docker-compose (not exposed)"
     echo "[proxy-init] Starting ASGI server..."
-    exec uv run uvicorn proxy.asgi:app \
+    exec uv run uvicorn asgi.asgi:app \
         --host "${ASGI_HOST:-0.0.0.0}" \
         --port "$HTTP_PORT" \
         --log-level info

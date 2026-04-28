@@ -12,7 +12,7 @@ if str(SRC_PATH) not in sys.path:
 
 import pytest
 
-from hooks.core import (
+from hooks.events import (
     HookContext,
     PostMessageEvent,
     PreMessageEvent,

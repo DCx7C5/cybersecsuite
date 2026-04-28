@@ -8,7 +8,7 @@ export default function Topbar() {
 
   return (
     <header style={{
-      height: 'var(--header-h)',
+      height: 'var(--headers-h)',
       background: 'var(--bg-deep)',
       borderBottom: '1px solid var(--border)',
       display: 'flex',

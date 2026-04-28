@@ -1,4 +1,4 @@
-"""Prompt model — stores reusable prompts for agents and the proxy."""
+"""Prompt model — stores reusable prompts for agents and the asgi."""
 from tortoise import fields
 from tortoise.models import Model
 

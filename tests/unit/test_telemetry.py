@@ -8,7 +8,7 @@ from telemetry import (
     TelemetryEvent,
 )
 from telemetry.store import MetricsStore
-from proxy.middleware import _normalise
+from asgi.middleware import _normalise
 
 
 @pytest.mark.anyio

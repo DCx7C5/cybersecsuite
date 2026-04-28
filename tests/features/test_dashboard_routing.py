@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from starlette.testclient import TestClient
 
-from proxy.asgi import app
+from asgi.app import app
 
 
 @pytest.fixture
@@ -51,8 +51,8 @@ class TestDashboardAPIEndpoints:
         assert response.status_code == 200
         assert response.headers["content-type"].startswith("application/json")
         data = response.json()
-        # Health endpoint returns nested structure with database and proxy keys
-        assert "database" in data or "proxy" in data
+        # Health endpoint returns nested structure with database and asgi keys
+        assert "database" in data or "asgi" in data
 
     def test_get_api_providers(self, client: TestClient) -> None:
         """GET /api/providers should return provider list."""
@@ -120,7 +120,7 @@ class TestRoutePrecedence:
         assert isinstance(data, dict)
 
     def test_v1_proxy_routes_not_captured(self, client: TestClient) -> None:
-        """GET /v1/models should be handled by AI proxy, not dashboard."""
+        """GET /v1/models should be handled by AI asgi, not dashboard."""
         response = client.get("/v1/models")
         assert response.status_code == 200
         # Proxy returns JSON list or dict, not HTML

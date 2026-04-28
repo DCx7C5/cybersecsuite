@@ -57,7 +57,7 @@ test.describe('Visual Regression Tests', () => {
   test('3. Topbar with controls', async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
-    const topbar = page.locator('header, [role="banner"]').first()
+    const topbar = page.locator('headers, [role="banner"]').first()
     await expect(topbar).toBeVisible()
     await page.waitForTimeout(300)
     await expect(topbar).toHaveScreenshot('topbar-controls.png')

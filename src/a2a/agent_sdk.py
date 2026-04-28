@@ -335,7 +335,7 @@ async def run_agent_query(
     to adopt, without relying on fragile subagent-dispatch wording.
 
     If the agent's ``.md`` frontmatter declares a ``model:`` field, that model is
-    passed to the AI proxy so the request is routed to the correct provider
+    passed to the AI asgi so the request is routed to the correct provider
     (e.g. ``deepseek-v3`` → DeepSeek, ``gemini-2.0-flash`` → Google Gemini).
 
     Args:
@@ -414,7 +414,7 @@ async def run_orchestrator_query(
 ) -> dict[str, Any]:
     """Run a full orchestrator query (CYBERSEC-AGENT style).
 
-    Routes through the AI proxy at ANTHROPIC_BASE_URL. Returns session_id
+    Routes through the AI asgi at ANTHROPIC_BASE_URL. Returns session_id
     and result for chaining into subsequent calls.
     """
     overrides: dict[str, Any] = {"extra_tools": ["Write", "Edit"]}

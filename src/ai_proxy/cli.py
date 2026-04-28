@@ -5,14 +5,14 @@ Provides commands for provider management, usage reporting, cost tracking,
 and ad-hoc chat completions.
 
 Usage:
-    cybersec-proxy providers         # List configured providers
-    cybersec-proxy models            # List available models
-    cybersec-proxy usage             # Show usage summary
-    cybersec-proxy cost              # Show cost breakdown
-    cybersec-proxy chat "prompt"     # Send a chat completion
-    cybersec-proxy chat "prompt" --model gpt-4o --provider openai
-    cybersec-proxy chat "prompt" --free          # Use free providers only
-    cybersec-proxy serve             # Start the proxy server
+    cybersec-asgi providers         # List configured providers
+    cybersec-asgi models            # List available models
+    cybersec-asgi usage             # Show usage summary
+    cybersec-asgi cost              # Show cost breakdown
+    cybersec-asgi chat "prompt"     # Send a chat completion
+    cybersec-asgi chat "prompt" --model gpt-4o --provider openai
+    cybersec-asgi chat "prompt" --free          # Use free providers only
+    cybersec-asgi serve             # Start the asgi server
 """
 
 
@@ -241,7 +241,7 @@ async def cmd_marketplace(args: argparse.Namespace) -> None:
 
 async def cmd_serve(args: argparse.Namespace) -> None:
     import uvicorn
-    print(f"Starting AI proxy on {args.host}:{args.port}")
+    print(f"Starting AI asgi on {args.host}:{args.port}")
     print(f"  OpenAI-compatible: http://{args.host}:{args.port}/v1/chat/completions")
     print(f"  Models:            http://{args.host}:{args.port}/v1/models")
     print(f"  Providers:         http://{args.host}:{args.port}/v1/providers")
@@ -249,7 +249,7 @@ async def cmd_serve(args: argparse.Namespace) -> None:
     print(f"  Health:            http://{args.host}:{args.port}/health")
 
     config = uvicorn.Config(
-        "proxy.asgi:app",
+        "asgi.asgi:app",
         host=args.host,
         port=args.port,
         reload=args.reload,
@@ -261,7 +261,7 @@ async def cmd_serve(args: argparse.Namespace) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="cybersec-proxy",
+        prog="cybersec-asgi",
         description="CyberSec AI Proxy — multi-provider LLM router with cost optimization",
     )
     sub = parser.add_subparsers(dest="command", help="Available commands")
@@ -293,7 +293,7 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("-v", "--verbose", action="store_true", help="Show routing metadata")
 
     # serve
-    s = sub.add_parser("serve", help="Start the proxy server")
+    s = sub.add_parser("serve", help="Start the asgi server")
     s.add_argument("--host", default="0.0.0.0", help="Bind host (default: 0.0.0.0)")
     s.add_argument("--port", type=int, default=8000, help="Bind port (default: 8000)")
     s.add_argument("--reload", action="store_true", help="Enable auto-reload")
@@ -355,7 +355,7 @@ async def _main() -> None:
 
 
 def main() -> None:
-    """Entry point for `cybersec-proxy` script."""
+    """Entry point for `cybersec-asgi` script."""
     try:
         asyncio.run(_main())
     except KeyboardInterrupt:

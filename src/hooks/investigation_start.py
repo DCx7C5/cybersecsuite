@@ -55,7 +55,7 @@ async def main():
             "## Planned Phases\n- Rapid Recon\n- Deep Scan\n- IOC Correlation\n- Threat Attribution\n"
         )
 
-        # Timeline header
+        # Timeline headers
         timeline = inv_dir / "timeline" / "investigation_timeline.md"
         timeline.write_text(
             f"# Investigation Timeline: {investigation_id}\n\n"

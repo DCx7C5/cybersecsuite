@@ -342,7 +342,7 @@ from crypto.ssl_signer import SSLArtifactSigner
 
 signer = SSLArtifactSigner(public_key_path="/etc/dystopian/crypto/cert/private/agent-public.pem")
 
-# In middleware: verify the Authorization header contains a valid Ed25519 token
+# In middleware: verify the Authorization headers contains a valid Ed25519 token
 is_valid, payload = signer.verify_artifact(request.headers.get("Authorization", ""))
 if not is_valid:
     return JSONResponse({"error": "Unauthorized"}, status_code=401)

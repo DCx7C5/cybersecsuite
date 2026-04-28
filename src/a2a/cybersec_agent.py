@@ -358,7 +358,7 @@ class CybersecA2AAgent(BaseA2AAgent):
         """Generic fallback — routes unrecognised tasks to the cybersec-analyst via SDK.
 
         The SDK loads .claude/agents/cybersec-analyst.md and uses its declared model
-        (routed through the AI proxy) to respond. Session continuity is preserved.
+        (routed through the AI asgi) to respond. Session continuity is preserved.
         """
         from a2a.agent_sdk import run_agent_query
         session_out: dict[str, Any] = {}

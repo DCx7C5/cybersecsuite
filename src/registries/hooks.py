@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from claude_agent_sdk import HookMatcher
 
 from hooks.config import HookConfig
-from hooks.core import (
+from hooks.events import (
     ErrorStrategy,
     HookContext,
 )

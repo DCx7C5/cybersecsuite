@@ -310,7 +310,7 @@ class ArtifactManager:
         artifact_id: int
     ) -> Optional[Dict[str, Any]]:
         """
-        Extract signature header metadata without verification.
+        Extract signature headers metadata without verification.
 
         Args:
             artifact_id: Artifact to inspect

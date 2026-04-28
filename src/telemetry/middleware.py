@@ -1,15 +1,15 @@
-"""Deprecated: TelemetryMiddleware moved to proxy.middleware.
+"""Deprecated: TelemetryMiddleware moved to asgi.middleware.
 
 This module is maintained for backward compatibility only.
-New code should import from proxy.middleware instead.
+New code should import from asgi.middleware instead.
 """
 
 import warnings
 
-from proxy.middleware import TelemetryMiddleware, _normalise
+from asgi.middleware import TelemetryMiddleware, _normalise
 
 warnings.warn(
-    "telemetry.middleware is deprecated; use proxy.middleware instead",
+    "telemetry.middleware is deprecated; use asgi.middleware instead",
     DeprecationWarning,
     stacklevel=2,
 )

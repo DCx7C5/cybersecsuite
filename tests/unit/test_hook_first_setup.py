@@ -4,7 +4,7 @@ import asyncio
 import sys
 import time
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -13,7 +13,7 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks.core import ErrorStrategy, HookContext
+from hooks.events import HookContext
 from src.registries.hooks import HookRegistry
 
 

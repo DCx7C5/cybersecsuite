@@ -138,7 +138,7 @@ Configure in `mcp.json` (already present in repo root). Claude Code auto-detects
 
 ```bash
 # Via Makefile
-make proxy-chat PROMPT="Analyze this IOC: 192.168.1.100"
+make asgi-chat PROMPT="Analyze this IOC: 192.168.1.100"
 
 # Via curl
 curl http://localhost:8000/v1/chat/completions \

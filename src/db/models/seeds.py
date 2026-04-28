@@ -436,11 +436,11 @@ async def seed_marketplace_assets() -> Dict[str, Any]:
         },
         {
             "name": "utility-tools",
-            "description": "Cache, proxy, and utility functions",
+            "description": "Cache, asgi, and utility functions",
             "category": "operational",
             "tools_count": 11,
             "size_mb": 1.4,
-            "tags": ["utilities", "cache", "proxy"],
+            "tags": ["utilities", "cache", "asgi"],
         },
         {
             "name": "business-tools",

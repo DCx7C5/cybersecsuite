@@ -64,7 +64,7 @@ class AnthropicSdkExecutor(BaseExecutor):
                     write=30.0,
                 ),
             }
-            # Optional aiohttp backend for high-concurrency proxy deployments
+            # Optional aiohttp backend for high-concurrency asgi deployments
             if os.getenv("CCS_AIOHTTP"):
                 try:
                     from anthropic import DefaultAioHttpClient  # type: ignore[attr-defined]

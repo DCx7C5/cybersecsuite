@@ -104,7 +104,7 @@ The platform uses Docker Compose for orchestration:
 docker-compose ps
 
 # Restart specific services
-docker-compose restart cybersec-proxy      # ASGI backend
+docker-compose restart cybersec-asgi      # ASGI backend
 docker-compose restart cybersec-dashboard  # Frontend
 docker-compose restart cybersec-postgres   # Database
 docker-compose restart cybersec-redis      # Cache
@@ -116,7 +116,7 @@ docker-compose down
 docker-compose up -d
 
 # View logs for a service
-docker-compose logs -f cybersec-proxy
+docker-compose logs -f cybersec-asgi
 docker-compose logs -f cybersec-dashboard
 ```
 
@@ -124,15 +124,15 @@ docker-compose logs -f cybersec-dashboard
 
 ### After Code Changes to Python Backend
 ```bash
-# Edit src/proxy/asgi.py, src/ai_proxy/*, src/db/*, etc.
-docker-compose restart cybersec-proxy
+# Edit src/asgi/app.py, src/ai_proxy/*, src/db/*, etc.
+docker-compose restart cybersec-asgi
 
 # Verify health
 docker-compose ps
-# cybersec-proxy should show "healthy" status
+# cybersec-asgi should show "healthy" status
 
 # Check logs if unhealthy
-docker-compose logs cybersec-proxy
+docker-compose logs cybersec-asgi
 ```
 
 ### After Code Changes to Frontend
@@ -152,7 +152,7 @@ python src/manage.py schema
 
 # Restart postgres to reload
 docker-compose restart cybersec-postgres
-docker-compose restart cybersec-proxy  # Depends on postgres
+docker-compose restart cybersec-asgi  # Depends on postgres
 ```
 
 ### Full System Restart (After Major Changes)

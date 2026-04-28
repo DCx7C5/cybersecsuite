@@ -48,7 +48,7 @@ class SSLArtifactSigner:
         Args:
             private_key_path: Path to PEM-encoded private key
             public_key_path: Path to PEM-encoded public key
-            key_id: Key identifier for token header
+            key_id: Key identifier for token headers
             key_manager: Optional KeyManager for password-protected keys
             password_file: Path to password file for encrypted keys
         """
@@ -190,7 +190,7 @@ class SSLArtifactSigner:
         signature = self._private_key.sign(payload_encoded.encode())
         signature_encoded = self._base64_encode(signature)
 
-        # Create frontmatter/header with signature included
+        # Create frontmatter/headers with signature included
         frontmatter = {
             "alg": "Ed25519",
             "typ": "ARTIFACT",

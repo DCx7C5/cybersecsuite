@@ -8,7 +8,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from hooks.utils import get_session_dir, audit
+from hooks.utils import get_session_dir
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 

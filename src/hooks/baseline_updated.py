@@ -10,8 +10,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from hooks.utils import ensure_structure, read_stdin, get_project_dir, get_app_home, get_session_dir, append_file, \
+    audit, emit, hook_context
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import ensure_structure, get_app_home, get_project_dir, get_session_dir, audit, append_file, emit, hook_context, read_stdin
 
 
 async def main():

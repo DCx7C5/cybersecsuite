@@ -10,13 +10,13 @@ The AI proxy provides a single OpenAI-compatible endpoint that routes requests a
 
 ```bash
 # List all configured providers
-make proxy-providers
+make asgi-providers
 
 # List all available models
-make proxy-models
+make asgi-models
 
 # Chat via CLI
-make proxy-chat PROMPT="Explain ARP poisoning"
+make asgi-chat PROMPT="Explain ARP poisoning"
 
 # Via curl (OpenAI-compatible)
 curl http://localhost:8000/v1/chat/completions \

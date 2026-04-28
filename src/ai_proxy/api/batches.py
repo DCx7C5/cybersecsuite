@@ -47,7 +47,7 @@ async def create_batch(request: Request) -> JSONResponse:
     POST /v1/messages/batches
 
     Body: {"requests": [{"custom_id": "req-1", "params": {<messages create params>}}]}
-    Optional header X-Provider (default: anthropic).
+    Optional headers X-Provider (default: anthropic).
     """
     try:
         body = await request.json()

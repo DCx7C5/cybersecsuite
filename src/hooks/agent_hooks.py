@@ -20,17 +20,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+from hooks.utils import get_project_dir, ensure_structure, get_session_dir, append_file, audit, emit, hook_context, \
+    read_stdin
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import (
-    ensure_structure,
-    get_project_dir,
-    get_session_dir,
-    audit,
-    append_file,
-    emit,
-    hook_context,
-    read_stdin,
-)
+
 
 logger = logging.getLogger(__name__)
 

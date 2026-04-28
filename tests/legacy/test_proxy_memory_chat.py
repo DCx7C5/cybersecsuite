@@ -1,5 +1,5 @@
 """
-Test suite for WebLLM memory chat proxy endpoint.
+Test suite for WebLLM memory chat asgi endpoint.
 
 Covers session management, message handling, persistence, streaming,
 and error cases with comprehensive integration testing.

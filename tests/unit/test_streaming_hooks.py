@@ -11,7 +11,7 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks.core import HookContext
+from hooks.events import HookContext
 from hooks.instrumentation import HookInstrument
 from src.registries.hooks import HookRegistry, reset_registry
 from hooks.streaming_hooks import (
@@ -391,7 +391,7 @@ class TestStreamingEventContracts:
 
     def test_pre_streaming_event_contract(self):
         """PreStreamingEvent should have expected fields."""
-        from hooks.core import PreStreamingEvent
+        from hooks.events import PreStreamingEvent
         
         event: PreStreamingEvent = {
             "correlation_id": "corr1",
@@ -406,7 +406,7 @@ class TestStreamingEventContracts:
 
     def test_streaming_token_event_contract(self):
         """StreamingTokenEvent should have expected fields."""
-        from hooks.core import StreamingTokenEvent
+        from hooks.events import StreamingTokenEvent
         
         timestamp = time.time()
         event: StreamingTokenEvent = {
@@ -424,7 +424,7 @@ class TestStreamingEventContracts:
 
     def test_post_streaming_event_contract(self):
         """PostStreamingEvent should have expected fields."""
-        from hooks.core import PostStreamingEvent
+        from hooks.events import PostStreamingEvent
         
         event: PostStreamingEvent = {
             "total_tokens": 100,
@@ -445,7 +445,7 @@ class TestStreamingErrorHandling:
     @pytest.mark.asyncio
     async def test_streaming_hook_with_error_strategy_preserve(self):
         """Streaming hooks with PRESERVE_EXISTING should not raise on hook failure."""
-        from hooks.core import ErrorStrategy
+        from hooks.events import ErrorStrategy
         
         registry = HookRegistry(error_strategy=ErrorStrategy.PRESERVE_EXISTING)
         context = HookContext(

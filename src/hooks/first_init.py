@@ -3,11 +3,12 @@
 FirstInit Hook — one-time bootstrap for cybersecsuite.
 Creates directory structure, writes system baseline, registers agent card.
 """
+import sys
 import asyncio
 import json
-import platform
 import socket
-import sys
+import platform
+
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -18,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 MARKER = get_project_dir() / ".claude" / ".initialized"
 
 
-async def main(SESSIONS_DIR=None):
+async def main(SESSIONS_DIR= None):
     project_dir = get_project_dir()
     app_home = get_app_home()
 

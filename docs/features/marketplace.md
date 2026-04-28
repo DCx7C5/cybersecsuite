@@ -52,25 +52,25 @@ The `cybersec-proxy marketplace` command provides full catalog management.
 
 ```bash
 # List all catalog items
-cybersec-proxy marketplace list
+cybersec-asgi marketplace list
 
 # Filter by kind and/or provider
-cybersec-proxy marketplace list --kind agent
-cybersec-proxy marketplace list --provider claude
-cybersec-proxy marketplace list --kind skill --provider universal
+cybersec-asgi marketplace list --kind agent
+cybersec-asgi marketplace list --provider claude
+cybersec-asgi marketplace list --kind skill --provider universal
 
 # Search (substring, case-insensitive across name, description, tags)
-cybersec-proxy marketplace search "forensics"
-cybersec-proxy marketplace search "osint"
+cybersec-asgi marketplace search "forensics"
+cybersec-asgi marketplace search "osint"
 
 # Show full details for an item
-cybersec-proxy marketplace info claude-forensic-analyst
+cybersec-asgi marketplace info claude-forensic-analyst
 
 # Install an item
-cybersec-proxy marketplace install claude-forensic-analyst
+cybersec-asgi marketplace install claude-forensic-analyst
 
 # Uninstall an item
-cybersec-proxy marketplace uninstall claude-forensic-analyst
+cybersec-asgi marketplace uninstall claude-forensic-analyst
 ```
 
 ---
