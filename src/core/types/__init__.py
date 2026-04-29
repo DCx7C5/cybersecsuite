@@ -45,6 +45,7 @@ from .headers import (
     BaseToolHeader,
 )
 from .hook_events import HookContext, HookErrorStrategy
+from .local_sdk_base import LocalSDKBase
 from .ollama import (
     OllamaCapabilities,
     OllamaConfig,
@@ -97,6 +98,8 @@ __all__ = [
     # Hook events
     "HookContext",
     "HookErrorStrategy",
+    # LocalSDK base (Issue #5)
+    "LocalSDKBase",
     # Ollama
     "OllamaCapabilities",
     "OllamaConfig",
