@@ -162,7 +162,7 @@ ios keychain dump
 # Check protection class attributes
 # kSecAttrAccessibleWhenUnlocked - OK for most data
 # kSecAttrAccessibleAlways - VULNERABLE: accessible even when locked
-# kSecAttrAccessibleAfterFirstUnlock - acceptable for background apps
+# kSecAttrAccessibleAfterFirstUnlock - acceptable for background modules
 ```
 
 ### Step 5: Assess External Storage and Backup Exposure

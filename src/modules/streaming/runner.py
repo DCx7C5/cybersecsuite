@@ -27,7 +27,7 @@ class AgentRunner:
         session_id = runner.session_id  # resume later
 
     Or with pool:
-        from apps.agent.client_pool import get_pool
+        from modules.agent.client_pool import get_pool
         pool = get_pool()
         runner = AgentRunner(agent_name="cybersec-agent", pool=pool)
     """

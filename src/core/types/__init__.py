@@ -1,6 +1,15 @@
 """Core types for CyberSecSuite — base classes, enums, data models."""
 
-from .api_service_models import (
+from .a2a_streaming import (
+    A2AConfig,
+    PauseRequest,
+    ResponseInjection,
+    ResponseInjectionStrategy,
+    StreamingController,
+    StreamingState,
+    StreamState,
+)
+from .api_services import (
     BaseApiServiceClient,
     ErrorStrategy,
     ExecutorResult,
@@ -14,7 +23,20 @@ from .api_service_models import (
     Tool,
 )
 from .base_protocols import BaseCommunicator
-from .entity_headers import (
+from .capabilities import (
+    Capability,
+    CapabilityRegistry,
+    CapabilityType,
+    DEFAULT_CAPABILITIES,
+    ModelCapabilities,
+)
+from .context import (
+    ConversationContext,
+    ContextConfig,
+    ExecutionContext,
+    ModelContext,
+)
+from .headers import (
     BaseAccountHeader,
     BaseAgentHeader,
     BaseHeader,
@@ -23,8 +45,23 @@ from .entity_headers import (
     BaseToolHeader,
 )
 from .hook_events import HookContext, HookErrorStrategy
+from .ollama import (
+    OllamaCapabilities,
+    OllamaConfig,
+    OllamaExecutionContext,
+    OllamaHealthCheck,
+    OllamaModel,
+)
 
 __all__ = [
+    # A2A Streaming
+    "A2AConfig",
+    "PauseRequest",
+    "ResponseInjection",
+    "ResponseInjectionStrategy",
+    "StreamingController",
+    "StreamingState",
+    "StreamState",
     # Base protocols
     "BaseCommunicator",
     # API Service models
@@ -39,6 +76,17 @@ __all__ = [
     "StreamChunk",
     "StreamingHandler",
     "Tool",
+    # Capabilities
+    "Capability",
+    "CapabilityRegistry",
+    "CapabilityType",
+    "DEFAULT_CAPABILITIES",
+    "ModelCapabilities",
+    # Context
+    "ConversationContext",
+    "ContextConfig",
+    "ExecutionContext",
+    "ModelContext",
     # Entity headers
     "BaseAccountHeader",
     "BaseAgentHeader",
@@ -49,4 +97,10 @@ __all__ = [
     # Hook events
     "HookContext",
     "HookErrorStrategy",
+    # Ollama
+    "OllamaCapabilities",
+    "OllamaConfig",
+    "OllamaExecutionContext",
+    "OllamaHealthCheck",
+    "OllamaModel",
 ]

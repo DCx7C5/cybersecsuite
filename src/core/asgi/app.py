@@ -1,6 +1,6 @@
 """
 ASGI application — combines:
-  - App endpoint auto-discovery (apps/*/endpoints.py)  at app-defined prefixes
+  - App endpoint auto-discovery (modules/*/endpoints.py)  at app-defined prefixes
   - A2A agent server (JSON-RPC)                        at /a2a/*
   - Agent card discovery                               at /.well-known/agent.json
   - AI proxy routes (OpenAI-compatible)                at /v1/*
@@ -64,7 +64,7 @@ def get_ssl_context() -> ssl.SSLContext | None:
 def create_app() -> FastAPI:
     """Construct and return the fully configured FastAPI application.
 
-    Auto-discovers all ``apps/*/endpoints.py`` modules and mounts their
+    Auto-discovers all ``modules/*/endpoints.py`` modules and mounts their
     routers.  Additional startup initialization (e.g. Redis clients,
     A2A communicator) is wired via ``@app.on_event("startup")`` or
     the ``lifespan`` context in each app's ``setup()`` if provided.
@@ -96,7 +96,7 @@ def create_app() -> FastAPI:
     except Exception as e:
         log.warning(f"Failed to mount marketplace endpoints: {e}")
 
-    # Auto-discover and mount all apps/*/endpoints.py routers
+    # Auto-discover and mount all modules/*/endpoints.py routers
     mounted = mount_app_routers(_app)
     log.info("App endpoints mounted: %s", mounted or ["(none)"])
 

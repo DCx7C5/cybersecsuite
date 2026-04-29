@@ -7,8 +7,8 @@ Registers A2A JSON-RPC endpoints:
 
 Usage:
     from fastapi import FastAPI
-    from apps.a2a.a2a_comms import A2ACommunicator
-    from apps.a2a.urls import init_a2a_routes
+    from modules.a2a.a2a_comms import A2ACommunicator
+    from modules.a2a.urls import init_a2a_routes
 
     app = FastAPI()
     comm = A2ACommunicator(agent_id="research:analyst", dispatcher=dispatcher)

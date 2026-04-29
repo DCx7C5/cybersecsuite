@@ -1,5 +1,33 @@
 """CyberSecSuite core — agent framework, entity system, databases, and infrastructure."""
 
+# Custom exceptions
+from .exceptions import (
+    CSSException,
+    LLMApiServiceError,
+    ApiKeyMissingError,
+    ApiKeyInvalidError,
+    ProviderConnectionError,
+    RateLimitError,
+    ModelNotFoundError,
+    FeatureNotSupportedError,
+    InvalidParameterError,
+    StreamingError,
+    ProviderTimeoutError,
+    LLMHarnessError,
+    ContextError,
+    CapabilityDiscoveryError,
+    ProviderRegistryError,
+    A2AStreamingError,
+    ResponseInjectionError,
+    ModelExecutionError,
+    ConfigurationError,
+    ValidationError,
+    OllamaError,
+    OllamaConnectionError,
+    OllamaModelNotFoundError,
+    OllamaModelLoadError,
+)
+
 # Entity framework & base classes
 from .entities import (
     Account,

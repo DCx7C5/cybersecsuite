@@ -41,9 +41,6 @@ class BaseSkillHeader(BaseHeader):
     domain: str | None = None
     tags: list[str] = field(default_factory=list)
     allowed_tools: list[str] = field(default_factory=list)
-    mitre_attack: list[str] = field(default_factory=list)
-    capec: list[str] = field(default_factory=list)
-    nist_csf: list[str] = field(default_factory=list)
     source_url: str | None = None
     marketplace_id: str | None = None
     install_path: str | None = None

@@ -1,12 +1,12 @@
 """Base types and models for API services — LLM providers, messages, tools, streaming."""
-
 import logging
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, AsyncIterator, Optional
+from aiohttp import ClientSession
 
-import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -151,17 +151,17 @@ class BaseApiServiceClient(ABC):
         self.base_url = base_url or self._default_base_url()
         self.timeout_seconds = timeout_seconds
         self.max_retries = max_retries
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: Optional[ClientSession] = None
     
     def _default_base_url(self) -> str:
         """Override in subclass to provide default base URL."""
         raise NotImplementedError(f"{self.__class__.__name__} must implement _default_base_url()")
     
     @property
-    def session(self) -> aiohttp.ClientSession:
+    def session(self) -> ClientSession | None:
         """Lazy-initialize aiohttp session."""
         if self._session is None:
-            self._session = aiohttp.ClientSession()
+            self._session = ClientSession()
         return self._session
     
     async def __aenter__(self):
@@ -189,13 +189,12 @@ class BaseApiServiceClient(ABC):
         system_prompt: Optional[str] = None,
         streaming: bool = True,
         **kwargs,
-    ) -> AsyncIterator[StreamChunk] | LLMResponse:
+    ) -> AsyncIterator[StreamChunk]:
         """
         Call LLM with streaming support.
         
-        Returns:
-        - If streaming=True: AsyncIterator[StreamChunk]
-        - If streaming=False: LLMResponse
+        Always returns an async iterator of chunks. For buffered responses,
+        yields a single complete chunk instead of streaming multiple chunks.
         """
         pass
     
@@ -231,8 +230,8 @@ class BaseApiServiceClient(ABC):
                 )
         return LLMResponse(text="".join(chunks), stop_reason="eof")
     
+    @staticmethod
     def _ensure_auth_header(
-        self,
         headers: dict[str, str],
         api_key: str,
         header_name: str = "Authorization",

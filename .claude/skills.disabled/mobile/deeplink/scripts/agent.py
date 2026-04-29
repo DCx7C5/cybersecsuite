@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Agent for testing deep link / custom URL scheme vulnerabilities in mobile apps."""
+"""Agent for testing deep link / custom URL scheme vulnerabilities in mobile modules."""
 
 import argparse
 import json

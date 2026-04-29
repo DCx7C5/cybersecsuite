@@ -135,7 +135,7 @@ ObjC.classes.UIApplication.sharedApplication()
 #   <data android:scheme="myapp" />
 # </intent-filter>
 
-# When both apps are installed, Android shows a chooser dialog
+# When both modules are installed, Android shows a chooser dialog
 # On older Android versions, the first-installed app may handle the link
 
 # Check App Links verification (prevents hijacking)

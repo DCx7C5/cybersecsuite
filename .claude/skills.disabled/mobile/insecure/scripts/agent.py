@@ -140,7 +140,7 @@ def adb_pull_app_data(package_name, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Detect insecure data storage in mobile apps (authorized testing only)"
+        description="Detect insecure data storage in mobile modules (authorized testing only)"
     )
     parser.add_argument("--scan-dir", help="Directory containing app data to scan")
     parser.add_argument("--package", help="Android package name for ADB pull")

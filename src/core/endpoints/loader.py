@@ -1,13 +1,13 @@
 """
-Auto-discovery loader for apps/<app>/endpoints.py modules.
+Auto-discovery loader for modules/<app>/endpoints.py modules.
 
-Convention — each ``apps/<app>/endpoints.py`` may expose:
+Convention — each ``modules/<app>/endpoints.py`` may expose:
 
 ``router: APIRouter``       (required)  — app-scoped routes, typically with a prefix
 ``root_router: APIRouter``  (optional)  — root-level routes (e.g. /.well-known/...)
 
-The loader discovers all sub-packages of the ``apps`` package, attempts to
-import ``apps.<app>.endpoints``, collects the routers, and mounts them onto
+The loader discovers all sub-packages of the ``modules`` package, attempts to
+import ``modules.<app>.endpoints``, collects the routers, and mounts them onto
 a FastAPI application.
 
 Errors from app sub-packages that have no ``endpoints.py`` are silently
@@ -26,7 +26,7 @@ from typing import NamedTuple
 
 from fastapi import APIRouter, FastAPI
 
-import apps as apps_pkg
+import modules as apps_pkg
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class AppRouters(NamedTuple):
 
 
 def iter_app_routers() -> Iterator[AppRouters]:
-    """Yield ``AppRouters`` for every sub-package of ``apps`` that has an
+    """Yield ``AppRouters`` for every sub-package of ``modules`` that has an
     ``endpoints.py`` exposing a ``router`` or ``root_router``.
 
     Raises:
@@ -46,19 +46,19 @@ def iter_app_routers() -> Iterator[AppRouters]:
         missing routes are never silently dropped in production.
     """
     for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
-        module_name = f"apps.{app_name}.endpoints"
+        module_name = f"modules.{app_name}.endpoints"
 
         try:
             mod = importlib.import_module(module_name)
         except ModuleNotFoundError as exc:
             # Only suppress "no endpoints.py" — re-raise internal import failures
             if exc.name == module_name:
-                log.debug("apps/%s: no endpoints module — skipped", app_name)
+                log.debug("modules/%s: no endpoints module — skipped", app_name)
                 continue
-            log.error("apps/%s: endpoints import failed: %s", app_name, exc)
+            log.error("modules/%s: endpoints import failed: %s", app_name, exc)
             raise
         except Exception as exc:
-            log.error("apps/%s: endpoints import crashed: %s", app_name, exc)
+            log.error("modules/%s: endpoints import crashed: %s", app_name, exc)
             raise
 
         router = getattr(mod, "router", None)
@@ -66,13 +66,13 @@ def iter_app_routers() -> Iterator[AppRouters]:
 
         if router is None and root_router is None:
             log.warning(
-                "apps/%s/endpoints.py has neither `router` nor `root_router` — skipped",
+                "modules/%s/endpoints.py has neither `router` nor `root_router` — skipped",
                 app_name,
             )
             continue
 
         route_count = len(getattr(router, "routes", [])) + len(getattr(root_router, "routes", []))
-        log.info("Discovered endpoints: apps/%s (%d routes)", app_name, route_count)
+        log.info("Discovered endpoints: modules/%s (%d routes)", app_name, route_count)
         yield AppRouters(app_name=app_name, router=router, root_router=root_router)
 
 
@@ -93,6 +93,6 @@ def mount_app_routers(app: FastAPI) -> list[str]:
     if mounted:
         log.info("Mounted app endpoints: %s", ", ".join(mounted))
     else:
-        log.warning("No app endpoints discovered — check apps/ sub-packages")
+        log.warning("No app endpoints discovered — check modules/ sub-packages")
 
     return mounted

@@ -41,6 +41,16 @@ from .opencode import OpencodeApiService
 # Local providers
 from .ollama import OllamaApiService
 
+# Error mapping (Issue #3)
+from .error_mappers import (
+    map_provider_error,
+    AnthropicErrorMapper,
+    OpenAIErrorMapper,
+    OllamaErrorMapper,
+    GeminiErrorMapper,
+    GroqErrorMapper,
+)
+
 # Provider registry
 PROVIDERS = {
     "anthropic": AnthropicApiService,
@@ -105,4 +115,11 @@ __all__ = [
     "LambdaApiService",
     "PROVIDERS",
     "get_service",
+    # Error mapping (Issue #3)
+    "map_provider_error",
+    "AnthropicErrorMapper",
+    "OpenAIErrorMapper",
+    "OllamaErrorMapper",
+    "GeminiErrorMapper",
+    "GroqErrorMapper",
 ]

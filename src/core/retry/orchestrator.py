@@ -6,7 +6,7 @@ from typing import Callable, Any, Optional, AsyncIterator
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from core.types import ProviderType
+from core.types.api_services import ProviderType
 from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
 
@@ -117,6 +117,30 @@ class RetryOrchestrator:
         
         # Default: treat as non-retryable (safe default)
         return RetryableErrorType.INVALID_REQUEST
+    
+    def map_error_to_unified(self, error: Exception, provider_id: ProviderType) -> Exception:
+        """
+        Map provider-specific error to unified 5-type hierarchy (Issue #3).
+        
+        Unified types: AuthError, RateLimitError, TimeoutError, GatewayError, UnknownError
+        
+        Args:
+            error: Original exception from SDK
+            provider_id: Provider type
+        
+        Returns:
+            Mapped exception (unified error subclass) with provider metadata
+        
+        Note:
+            This enables uniform error handling across all 25+ providers.
+            Use isinstance() to detect error type, regardless of provider.
+        """
+        try:
+            from api_services.error_mappers import map_provider_error
+            return map_provider_error(provider_id, error)
+        except ImportError:
+            logger.warning("error_mappers not available, returning original error")
+            return error
     
     def is_retryable(self, error: Exception) -> bool:
         """

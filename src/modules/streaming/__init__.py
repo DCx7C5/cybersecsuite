@@ -2,15 +2,15 @@
 
 Public API:
     from agent import AgentRunner, SessionManager, getLogger, ClientPool, get_pool
-    from apps.streaming.hooks import security_hook, audit_hook, cost_hook
-    from apps.streaming.streaming import StreamingAdapter
+    from modules.streaming.hooks import security_hook, audit_hook, cost_hook
+    from modules.streaming.streaming import StreamingAdapter
 """
 
 
 from logger import getLogger
 
-from apps.streaming.runner import AgentRunner
-from apps.streaming.sessions import SessionManager
-from apps.streaming.client_pool import ClientPool, get_pool
+from modules.streaming.runner import AgentRunner
+from modules.streaming.sessions import SessionManager
+from modules.streaming.client_pool import ClientPool, get_pool
 
 __all__ = ["AgentRunner", "SessionManager", "ClientPool", "get_pool", "getLogger"]

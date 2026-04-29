@@ -140,7 +140,7 @@ Test each policy control on both platforms:
 
 # Verify selective wipe
 1. Enroll test device with MAM
-2. Access corporate data in managed apps
+2. Access corporate data in managed modules
 3. Trigger selective wipe from Intune portal
 4. Verify corporate data removed, personal data intact
 
