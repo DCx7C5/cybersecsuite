@@ -45,7 +45,7 @@ from .headers import (
     BaseToolHeader,
 )
 from .hook_events import HookContext, HookErrorStrategy
-from .local_sdk_base import LocalSDKBase
+from .sdk_local import LocalSDKBase
 from .ollama import (
     OllamaCapabilities,
     OllamaConfig,

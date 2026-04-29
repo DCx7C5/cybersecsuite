@@ -117,33 +117,6 @@ class ProviderConnectionError(LLMApiServiceError):
     pass
 
 
-class RateLimitError(LLMApiServiceError):
-    """Raised when rate limit is exceeded."""
-    
-    def __init__(
-        self,
-        provider_name: str,
-        retry_after_seconds: Optional[int] = None,
-        capture_traceback: bool = False,
-        context: Optional[dict] = None,
-    ):
-        """Initialize RateLimitError with retry info."""
-        ctx = context or {}
-        if retry_after_seconds:
-            ctx["retry_after_seconds"] = retry_after_seconds
-        
-        message = f"Rate limit exceeded for '{provider_name}'"
-        if retry_after_seconds:
-            message += f" (retry after {retry_after_seconds}s)"
-        
-        super().__init__(
-            message,
-            provider_name=provider_name,
-            capture_traceback=capture_traceback,
-            context=ctx,
-        )
-        self.retry_after_seconds = retry_after_seconds
-
 
 class ModelNotFoundError(LLMApiServiceError):
     """Raised when requested model is not found."""

@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import Callable, Any, Optional, AsyncIterator
+from typing import Callable, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 

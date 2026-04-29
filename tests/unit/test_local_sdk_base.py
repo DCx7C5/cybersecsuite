@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from core.types.api_services import ProviderType, StreamChunk, Message, MessageRole, LLMResponse
 from core.exceptions import GatewayError, TimeoutError, AuthError, UnknownError
-from core.types.local_sdk_base import LocalSDKBase
+from core.types.sdk_local import LocalSDKBase
 
 
 class MockLocalSDK(LocalSDKBase):
