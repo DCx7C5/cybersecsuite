@@ -39,7 +39,7 @@ from .fireworks import FireworksApiService
 from .opencode import OpencodeApiService
 
 # Local providers
-from .ollama import OllamaApiService
+from .ollama import OllamaApiService, OllamaClientCompat
 
 # Error mapping (Issue #3)
 from .error_mappers import (
@@ -111,6 +111,7 @@ __all__ = [
     "AI21ApiService",
     "HuggingfaceApiService",
     "OllamaApiService",
+    "OllamaClientCompat",
     "NscaleApiService",
     "LambdaApiService",
     "PROVIDERS",
