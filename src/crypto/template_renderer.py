@@ -1,6 +1,7 @@
 """
 Template renderer for artifact Markdown files.
 Renders artifact.md template with Ed25519 signatures in frontmatter.
+Uses StateRegistry for unified path management.
 """
 import hashlib
 import json
@@ -8,6 +9,22 @@ import re
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
+
+
+def _get_state_registry():
+    """Get StateRegistry singleton (lazy import to avoid circular deps)."""
+    try:
+        from src.state import get_state_registry as _get_registry
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        return loop.run_until_complete(_get_registry())
+    except Exception:
+        # Fallback if StateRegistry not available
+        return None
 
 
 def _render_template_string(source: str, ctx: dict) -> str:
@@ -18,22 +35,31 @@ def _render_template_string(source: str, ctx: dict) -> str:
     return re.sub(r'\{\{\s*(\w+)\s*\}\}', replace, source)
 
 
+def _get_template_path() -> Path:
+    """Get template path via StateRegistry, fallback to hardcoded."""
+    registry = _get_state_registry()
+    if registry:
+        # Template lives in ~/.cybersecsuite/templates/
+        return registry.cybersecsuite_dir() / "templates" / "artifact.md"
+    else:
+        # Fallback to project root .claude/templates/
+        return Path(__file__).parent.parent.parent / ".claude" / "templates" / "artifact.md"
+
+
 class ArtifactTemplateRenderer:
     """Render artifact plugins with signature data."""
-
-    TEMPLATE_PATH = Path(__file__).parent.parent.parent / ".claude" / "templates" / "artifact.md"
 
     def __init__(self, template_path: Optional[str] = None):
         """
         Initialize renderer.
 
         Args:
-            template_path: Custom template path (default: plugins/artifact.md)
+            template_path: Custom template path (default: templates/artifact.md)
         """
         if template_path:
             self.template_path = Path(template_path)
         else:
-            self.template_path = self.TEMPLATE_PATH
+            self.template_path = _get_template_path()
 
         self._template: Optional[str] = None
 
