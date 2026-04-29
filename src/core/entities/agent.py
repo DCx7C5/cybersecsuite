@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from core.entities.base import BaseAgent
-from core.entities.headers.base import BaseAgentHeader
+from core.types import BaseAgentHeader
 
 
 @dataclass

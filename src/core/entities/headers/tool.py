@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from core.entities.headers.base import BaseToolHeader
+from core.types import BaseToolHeader
 
 
 @dataclass

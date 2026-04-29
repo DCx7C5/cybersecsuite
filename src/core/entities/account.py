@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any
 
 from core.entities.base import BaseEntity
-from core.entities.headers.base import BaseAccountHeader
+from core.types import BaseAccountHeader
 
 
 @dataclass

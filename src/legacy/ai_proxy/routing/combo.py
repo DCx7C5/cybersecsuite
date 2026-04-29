@@ -15,7 +15,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from ai_proxy.executors.base import BaseExecutor, ExecutorResult, get_executor
+from ai_proxy.executors.base import BaseExecutor, get_executor
+from core.types import ExecutorResult
 from core.registries.providers import (
     ApiFormat,
     AuthType,

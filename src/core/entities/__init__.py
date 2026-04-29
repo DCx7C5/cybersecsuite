@@ -1,8 +1,7 @@
-from core.communicators import BaseCommunicator
+from core.types import BaseCommunicator, BaseAccountHeader, BaseAgentHeader, BaseHeader, BaseRoleHeader, BaseSkillHeader, BaseToolHeader
 from core.entities.account import Account
 from core.entities.agent import Agent
 from core.entities.base import BaseAgent, BaseEntity, BaseRole, BaseSkill, BaseTool
-from core.entities.headers.base import BaseAccountHeader, BaseAgentHeader, BaseHeader, BaseRoleHeader, BaseSkillHeader, BaseToolHeader
 from core.entities.headers.tool import ToolHeader
 from core.entities.role import Role, get as get_role
 from core.entities.skill import Skill

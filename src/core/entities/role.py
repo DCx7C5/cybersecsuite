@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from core.entities.base import BaseRole
-from core.entities.headers.base import BaseRoleHeader
+from core.types import BaseRoleHeader
 
 
 @dataclass

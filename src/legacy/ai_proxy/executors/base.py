@@ -1,20 +1,20 @@
 """
 Executor layer — dispatch requests to upstream LLM providers.
 
-Base class with retry logic,
-provider-specific subclasses for auth/URL differences.
+This module now re-exports core types from core.types for consistency.
+The BaseExecutor and get_executor implementations remain here.
 """
-
 
 import asyncio
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterator
+from typing import Any
 
 import httpx
 
 from core.registries.providers import ProviderConfig, ApiFormat, AuthType
+from core.types import ExecutorResult
 
 logger = logging.getLogger("ai_proxy.executor")
 
@@ -23,38 +23,6 @@ MAX_RETRIES = 3
 RETRY_BASE_DELAY = 1.0
 RETRY_MAX_DELAY = 30.0
 RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
-
-
-class ExecutorResult:
-    """Result from an executor call."""
-
-    __slots__ = ("status_code", "headers", "body", "stream", "error", "latency_ms", "provider_id", "model_id", "request_id")
-
-    def __init__(
-        self,
-        status_code: int = 200,
-        headers: dict[str, str] | None = None,
-        body: dict[str, Any] | None = None,
-        stream: AsyncIterator[bytes] | None = None,
-        error: str | None = None,
-        latency_ms: float = 0,
-        provider_id: str = "",
-        model_id: str = "",
-        request_id: str | None = None,
-    ):
-        self.status_code = status_code
-        self.headers = headers or {}
-        self.body = body
-        self.stream = stream
-        self.error = error
-        self.latency_ms = latency_ms
-        self.provider_id = provider_id
-        self.model_id = model_id
-        self.request_id = request_id
-
-    @property
-    def ok(self) -> bool:
-        return 200 <= self.status_code < 300
 
 
 class BaseExecutor(ABC):
@@ -195,7 +163,7 @@ class BaseExecutor(ABC):
                 model_id=model,
             )
 
-        async def _stream_lines() -> AsyncIterator[bytes]:
+        async def _stream_lines():
             try:
                 async for line in resp.aiter_lines():
                     yield (line + "\n").encode("utf-8")
@@ -265,4 +233,3 @@ def get_executor(provider: ProviderConfig) -> BaseExecutor:
         from ai_proxy.executors.foundry import FoundrySdkExecutor
         return FoundrySdkExecutor(provider)
     return DefaultExecutor(provider)
-

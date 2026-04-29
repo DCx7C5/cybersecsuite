@@ -13,6 +13,7 @@ from .api_service_models import (
     StreamingHandler,
     Tool,
 )
+from .base_protocols import BaseCommunicator
 from .entity_headers import (
     BaseAccountHeader,
     BaseAgentHeader,
@@ -21,8 +22,11 @@ from .entity_headers import (
     BaseSkillHeader,
     BaseToolHeader,
 )
+from .hook_events import HookContext, HookErrorStrategy
 
 __all__ = [
+    # Base protocols
+    "BaseCommunicator",
     # API Service models
     "BaseApiServiceClient",
     "ErrorStrategy",
@@ -42,4 +46,7 @@ __all__ = [
     "BaseRoleHeader",
     "BaseSkillHeader",
     "BaseToolHeader",
+    # Hook events
+    "HookContext",
+    "HookErrorStrategy",
 ]

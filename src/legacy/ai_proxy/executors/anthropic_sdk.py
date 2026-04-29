@@ -16,7 +16,8 @@ from typing import Any, AsyncIterator
 
 import anthropic
 
-from ai_proxy.executors.base import BaseExecutor, ExecutorResult
+from ai_proxy.executors.base import BaseExecutor
+from core.types import ExecutorResult
 from core.registries.providers import ProviderConfig
 
 logger = logging.getLogger("ai_proxy.executor.anthropic_sdk")

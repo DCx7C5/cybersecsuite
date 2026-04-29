@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Literal
 
 from core.entities.base import BaseSkill
-from core.entities.headers.base import BaseSkillHeader
+from core.types import BaseSkillHeader
 
 
 @dataclass

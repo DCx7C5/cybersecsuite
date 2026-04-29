@@ -2,50 +2,21 @@
 
 This module provides the type contracts for the hook system WITHOUT changing
 any hook behavior. It defines:
-- HookContext: contextual metadata passed to every hook
-- ErrorStrategy: error handling semantics
+- HookContext: contextual metadata passed to every hook (re-exported from core.types)
+- ErrorStrategy: error handling semantics (re-exported from core.types)
 - Event TypedDicts: input/output schemas for each event type
 - HookOutput: standardized hook response type
 
 NO Pydantic. NO runtime validation (yet). Pure typing annotations.
 """
 
-from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Optional, TypedDict
 
+# Re-export from canonical location in core.types
+from core.types import HookContext, HookErrorStrategy
 
-# ── HookContext ───────────────────────────────────────────────────────────
-@dataclass
-class HookContext:
-    """Metadata passed to every hook execution.
-    
-    Attributes:
-        correlation_id: Unique request correlation ID (links logs across services)
-        session_id: CyberSecSuite session ID
-        timestamp: Hook execution start timestamp (seconds since epoch)
-        tool_use_id: Claude SDK tool_use_id (optional, may not apply to all hooks)
-        agent_id: Agent identifier (optional, may not apply to all hooks)
-    """
-    correlation_id: str
-    session_id: str
-    timestamp: float
-    tool_use_id: Optional[str] = None
-    agent_id: Optional[str] = None
-
-
-# ── Error Handling Strategy ────────────────────────────────────────────────
-class ErrorStrategy(Enum):
-    """How to handle errors in hook execution.
-    
-    Values:
-        PRESERVE_EXISTING: Don't break on hook failure (default, safest)
-        LOG: Log errors to audit but don't propagate
-        WARN: Log warnings to audit but don't propagate
-    """
-    PRESERVE_EXISTING = "preserve"
-    LOG = "log"
-    WARN = "warn"
+# Alias for backward compatibility (legacy code may use ErrorStrategy)
+ErrorStrategy = HookErrorStrategy
 
 
 # ── Event TypedDicts ──────────────────────────────────────────────────────
@@ -368,7 +339,6 @@ class PostMessageEvent(TypedDict, total=False):
     hook_event_name: str
 
 
-
 class OnFirstSetupEvent(TypedDict, total=False):
     """OnFirstSetup event: when CyberSecSuite runs for the first time.
     
@@ -561,8 +531,6 @@ class OnErrorEvent(TypedDict, total=False):
     correlation_id: str
 
 
-
-
 # ── Recovery Hook Output Types ─────────────────────────────────────────────
 
 class PreRetryOutput(TypedDict, total=False):
@@ -602,7 +570,6 @@ class HookOutput(TypedDict, total=False):
     hookSpecificOutput: dict[str, Any]
     message: str
     success: bool
-
 
 
 # Union of all event types for dispatch
