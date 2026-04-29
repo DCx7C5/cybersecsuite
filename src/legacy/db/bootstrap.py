@@ -41,7 +41,7 @@ def get_tortoise_config() -> dict:
                 "credentials": get_database_config(),
             }
         },
-        "apps": {
+        "modules": {
             "models": {
                 "models": MODEL_MODULES,
                 "default_connection": "default",

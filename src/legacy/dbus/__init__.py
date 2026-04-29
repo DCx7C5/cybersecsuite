@@ -1,16 +1,8 @@
-"""
-Backward compatibility shim.
+"""DBus integration for desktop notifications and signals."""
 
-This module re-exports everything from core.dbus.
-New code should import from core.dbus directly.
 
-Deprecation: This shim will be removed in v0.2.0
-"""
+from logger import getLogger
 
-from core.dbus import *
+from .notifier import DbusNotifier, get_notifier
 
-# Get exports from canonical module
-try:
-    from core.dbus import __all__
-except ImportError:
-    __all__ = []
+__all__ = ["DbusNotifier", "get_notifier", "getLogger"]

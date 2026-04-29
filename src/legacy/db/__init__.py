@@ -1,16 +1,33 @@
-"""
-Backward compatibility shim.
+"""Database layer — ORM models, managers, utilities, audit logging, and scope management."""
 
-This module re-exports everything from core.db.
-New code should import from core.db directly.
+# Core exception types
+from core.db.exceptions import (
+    ScopeError,
+    ScopePermissionError,
+    ScopeValidationError,
+)
 
-Deprecation: This shim will be removed in v0.2.0
-"""
+# Scope utilities
+from core.db.scope_utils import (
+    ScopeLevel,
+    check_scope_permission,
+    validate_scope_fields,
+)
 
-from core.db import *
+# Audit logging
+from core.db.audit_logger import get_audit_logger
 
-# Get exports from canonical module
-try:
-    from core.db import __all__
-except ImportError:
-    __all__ = []
+__all__ = [
+    "ScopeError",
+    "ScopePermissionError",
+    "ScopeValidationError",
+    "ScopeLevel",
+    "check_scope_permission",
+    "validate_scope_fields",
+    "get_audit_logger",
+]
+
+# Note: ORM models are available via:
+#   from core.db.models import X  (specific models)
+#   from core.db.managers import XManager (model managers)
+#   from core.db.settings import TORTOISE_ORM (ORM config)
