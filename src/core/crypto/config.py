@@ -1,28 +1,11 @@
 """
 Configuration loader for the cybersec standalone app.
 Loads settings from settings.json and provides typed access.
-Uses StateRegistry for unified path management.
 """
 import json
 from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional
-
-
-def _get_state_registry():
-    """Get StateRegistry singleton (lazy import to avoid circular deps)."""
-    try:
-        from src.state import get_state_registry as _get_registry
-        import asyncio
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        return loop.run_until_complete(_get_registry())
-    except Exception:
-        # Fallback if StateRegistry not available
-        return None
 
 
 @dataclass
@@ -164,20 +147,14 @@ class AppSettings:
         Load settings from JSON file.
 
         Args:
-            path: Path to settings.json (default: use StateRegistry)
+            path: Path to settings.json (default: project root)
 
         Returns:
             Loaded AppSettings instance
         """
         if path is None:
-            # Try to use StateRegistry to get the path
-            registry = _get_state_registry()
-            if registry:
-                # Use StateRegistry's cybersecsuite_dir
-                path = registry.cybersecsuite_dir() / "settings.json"
-            else:
-                # Fallback to project root .claude/settings.json
-                path = Path(__file__).parent.parent.parent / ".claude" / "settings.json"
+            # Default to project .claude/settings.json
+            path = Path(__file__).parent.parent.parent / ".claude" / "settings.json"
         else:
             path = Path(path)
 

@@ -1,11 +1,16 @@
 """
-Backward compatibility shim (deprecated).
+Backward compatibility shim.
 
-This module previously re-exported from core.db, but core has been removed
-as part of Phase 17 refactoring. src/db is the canonical location.
+This module re-exports everything from core.db.
+New code should import from core.db directly.
 
-Migration: Import directly from src.db or src.db.models instead.
+Deprecation: This shim will be removed in v0.2.0
 """
 
-# This file is now a no-op. All imports should come from src.db directly.
-__all__ = []
+from core.db import *
+
+# Get exports from canonical module
+try:
+    from core.db import __all__
+except ImportError:
+    __all__ = []
