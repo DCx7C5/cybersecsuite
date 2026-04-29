@@ -1,7 +1,7 @@
 """CyberSecSuite core — agent framework, entity system, databases, and infrastructure."""
 
 # Entity framework & base classes
-from core.entities import (
+from .entities import (
     Account,
     Agent,
     BaseEntity,
@@ -16,21 +16,21 @@ from core.entities import (
 )
 
 # Communication protocol
-from core.communicators import BaseCommunicator
+from .communicators import BaseCommunicator
 
 # Core database (once exported by core.db)
-# from core.db import DB
+# from .db import DB
 
 # Registry system
-from core.registries import BaseRegistry, get_registry
+# from .registries import BaseRegistry, get_registry
 
 # Hooks & execution context
-from core.hooks import (
-    HookContext,
-    HookOutput,
-    PostToolUseEvent,
-    PreToolUseEvent,
-)
+# from .hooks import (
+#     HookContext,
+#     HookOutput,
+#     PostToolUseEvent,
+#     PreToolUseEvent,
+# )
 
 __all__ = [
     # Entity framework
@@ -48,11 +48,11 @@ __all__ = [
     # Infrastructure
     "BaseCommunicator",
     # Registries
-    "BaseRegistry",
-    "get_registry",
+    # "BaseRegistry",
+    # "get_registry",
     # Hooks
-    "HookContext",
-    "HookOutput",
-    "PreToolUseEvent",
-    "PostToolUseEvent",
+    # "HookContext",
+    # "HookOutput",
+    # "PreToolUseEvent",
+    # "PostToolUseEvent",
 ]

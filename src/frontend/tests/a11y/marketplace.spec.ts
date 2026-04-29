@@ -214,11 +214,11 @@ test.describe('WCAG 2.1 Level AA Accessibility Audit', () => {
     
     // Try multiple paths for documentation
     const docPaths = [
-      '/docs',
+      '/legacy_docs',
       '/documentation',
       '/mcp',
-      '/mcp-docs',
-      '/marketplace/docs',
+      '/mcp-legacy_docs',
+      '/marketplace/legacy_docs',
       '/tools',
     ];
 
@@ -233,7 +233,7 @@ test.describe('WCAG 2.1 Level AA Accessibility Audit', () => {
     }
 
     if (!found) {
-      console.log('⏭️  MCP docs path not found, skipping');
+      console.log('⏭️  MCP legacy_docs path not found, skipping');
       test.skip();
     }
   });

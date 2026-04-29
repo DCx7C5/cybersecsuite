@@ -419,8 +419,8 @@ class TestScopeMiddlewarePathSkipping:
         assert middleware._should_skip("/health") is True
     
     def test_docs_path_is_skipped(self, middleware: ScopeMiddleware) -> None:
-        """Test that /docs path is skipped."""
-        assert middleware._should_skip("/docs") is True
+        """Test that /legacy_docs path is skipped."""
+        assert middleware._should_skip("/legacy_docs") is True
     
     def test_openapi_path_is_skipped(self, middleware: ScopeMiddleware) -> None:
         """Test that /openapi.json path is skipped."""

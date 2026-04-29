@@ -33,18 +33,18 @@ A production-grade cybersecurity forensics suite with A2A agent orchestration, M
 
 - ✅ **Phases 0.5-11** — Complete (7,920 lines of code, 6 MCPs consolidated)
 - 🚀 **Phase 12 Ready** — "Redundant File Cleanup" specification complete
-- 📖 **[Documentation Hub](docs/)** — Complete API reference, architecture, setup guide
+- 📖 **[Documentation Hub](legacy_docs/)** — Complete API reference, architecture, setup guide
 
 ---
 
 ## 📚 Documentation
 
-- **[Setup Guide](docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
-- **[Setup Guide](docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
-- **[Documentation Hub](docs/)** — Complete API reference, architecture diagrams
-- **[Architecture Overview](docs/architecture/architecture-overview.md)** — System design
-- **[Full Docs](docs/README.md)** — Complete API reference, deployment guide
-- **[QoL Guide](docs/features/qol.md)** — Output controls: toggles, presets, use cases
+- **[Setup Guide](legacy_docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
+- **[Setup Guide](legacy_docs/setup.md)** — Step-by-step setup walkthrough, env vars, troubleshooting
+- **[Documentation Hub](legacy_docs/)** — Complete API reference, architecture diagrams
+- **[Architecture Overview](legacy_docs/architecture/architecture-overview.md)** — System design
+- **[Full Docs](legacy_docs/README.md)** — Complete API reference, deployment guide
+- **[QoL Guide](legacy_docs/features/qol.md)** — Output controls: toggles, presets, use cases
 
 ---
 
@@ -113,7 +113,7 @@ uv run pytest tests/integration/
 6. Data Layer (SQLite, vector memory)
 7. Storage Layer (artifacts, configurations)
 
-See [`docs/architecture/overview.md`](docs/architecture/overview.md) for detailed architecture.
+See [`docs/architecture/overview.md`](legacy_docs/architecture/overview.md) for detailed architecture.
 
 ---
 

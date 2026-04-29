@@ -1,7 +1,5 @@
 """BaseCommunicator protocol — interface for entity-to-entity async messaging."""
 
-from __future__ import annotations
-
 from typing import Any, Literal, Protocol, runtime_checkable
 
 

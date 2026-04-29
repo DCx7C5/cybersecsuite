@@ -5,11 +5,11 @@ Regression tests for the src/ cleanup changes:
 
   • scripts/fix_skills.py and worktree-session-manager.py moved to scripts/
   • src/dashboard/api/opensearch_stats.py renamed to openobserve_stats.py
-  • src/hooks/*.md (6 hook docs) moved to docs/hooks/
+  • src/hooks/*.md (6 hook legacy_docs) moved to legacy_docs/hooks/
   • Dead code removed: src/db/opensearch/, src/a2a/checks/, llm/db::persist_call(),
     src/llm/schema.sql, src/dashboard/templates/_panels.py.bak
   • src/manage/_commands.py import updated to `from checks.integrity import …`
-  • docs/architecture/flowchart.md created
+  • legacy_docs/architecture/flowchart.md created
 
 All tests are fast (no DB, no Docker, no network calls).
 """
@@ -89,7 +89,7 @@ class TestDashboardApiRename:
 
 @pytest.mark.integrity
 class TestHookDocsMoved:
-    """Six hook Markdown docs must be under docs/hooks/, NOT src/hooks/."""
+    """Six hook Markdown legacy_docs must be under legacy_docs/hooks/, NOT src/hooks/."""
 
     _HOOK_DOCS: tuple[str, ...] = (
         "RootCommandExecuted.md",
@@ -102,16 +102,16 @@ class TestHookDocsMoved:
 
     @pytest.mark.parametrize("filename", _HOOK_DOCS)
     def test_hook_doc_exists_in_docs_hooks(self, filename: str) -> None:
-        """docs/hooks/<filename> must exist."""
-        target = PROJECT_ROOT / "docs" / "hooks" / filename
+        """legacy_docs/hooks/<filename> must exist."""
+        target = PROJECT_ROOT / "legacy_docs" / "hooks" / filename
         assert target.exists(), f"Hook doc not found at {target}"
 
     @pytest.mark.parametrize("filename", _HOOK_DOCS)
     def test_hook_doc_absent_from_src_hooks(self, filename: str) -> None:
-        """src/hooks/<filename> must NOT exist (was moved to docs/hooks/)."""
+        """src/hooks/<filename> must NOT exist (was moved to legacy_docs/hooks/)."""
         stale = SRC_ROOT / "hooks" / filename
         assert not stale.exists(), (
-            f"Stale hook doc still at {stale}; should have been moved to docs/hooks/"
+            f"Stale hook doc still at {stale}; should have been moved to legacy_docs/hooks/"
         )
 
 
@@ -153,8 +153,8 @@ class TestArchitectureDocCreated:
     """The Mermaid architecture flowchart must be present."""
 
     def test_flowchart_md_exists(self) -> None:
-        """docs/architecture/flowchart.md must exist."""
-        target = PROJECT_ROOT / "docs" / "architecture" / "flowchart.md"
+        """legacy_docs/architecture/flowchart.md must exist."""
+        target = PROJECT_ROOT / "legacy_docs" / "architecture" / "flowchart.md"
         assert target.exists(), f"Architecture flowchart not found at {target}"
 
 
@@ -342,7 +342,7 @@ class TestManageCommandsImport:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# §5  docs/architecture/flowchart.md — MERMAID COMPLETENESS
+# §5  legacy_docs/architecture/flowchart.md — MERMAID COMPLETENESS
 # ══════════════════════════════════════════════════════════════════════════════
 
 
@@ -353,7 +353,7 @@ class TestFlowchartCompleteness:
     @pytest.fixture(scope="class")
     def flowchart(self) -> str:
         """Read flowchart.md once for the whole class."""
-        path = PROJECT_ROOT / "docs" / "architecture" / "flowchart.md"
+        path = PROJECT_ROOT / "legacy_docs" / "architecture" / "flowchart.md"
         assert path.exists(), f"Flowchart not found at {path}"
         return path.read_text(encoding="utf-8")
 
@@ -469,21 +469,21 @@ class TestGwtAliasesPathUpdate:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# §7  docs/hooks/ — CONTENT COMPLETENESS
+# §7  legacy_docs/hooks/ — CONTENT COMPLETENESS
 # ══════════════════════════════════════════════════════════════════════════════
 
 
 @pytest.mark.integrity
 class TestHookDocsContent:
-    """Every .md file in docs/hooks/ must be non-empty and have meaningful content."""
+    """Every .md file in legacy_docs/hooks/ must be non-empty and have meaningful content."""
 
     @pytest.fixture(scope="class")
     def hook_doc_paths(self) -> list[Path]:
-        """Return all .md paths under docs/hooks/."""
-        hooks_dir = PROJECT_ROOT / "docs" / "hooks"
-        assert hooks_dir.exists(), f"docs/hooks/ directory not found at {hooks_dir}"
+        """Return all .md paths under legacy_docs/hooks/."""
+        hooks_dir = PROJECT_ROOT / "legacy_docs" / "hooks"
+        assert hooks_dir.exists(), f"legacy_docs/hooks/ directory not found at {hooks_dir}"
         paths = sorted(hooks_dir.glob("*.md"))
-        assert paths, "docs/hooks/ contains no .md files"
+        assert paths, "legacy_docs/hooks/ contains no .md files"
         return paths
 
     def test_all_expected_hook_docs_present(self, hook_doc_paths: list[Path]) -> None:
@@ -499,7 +499,7 @@ class TestHookDocsContent:
         found = {p.name for p in hook_doc_paths}
         missing = expected - found
         assert not missing, (
-            f"Missing hook doc(s) in docs/hooks/: {missing}"
+            f"Missing hook doc(s) in legacy_docs/hooks/: {missing}"
         )
 
     @pytest.mark.parametrize(
@@ -515,10 +515,10 @@ class TestHookDocsContent:
     )
     def test_hook_doc_is_non_empty(self, filename: str) -> None:
         """Each hook doc must have actual text content (not a zero-byte placeholder)."""
-        path = PROJECT_ROOT / "docs" / "hooks" / filename
+        path = PROJECT_ROOT / "legacy_docs" / "hooks" / filename
         assert path.exists(), f"Hook doc not found: {path}"
         content = path.read_text(encoding="utf-8").strip()
-        assert content, f"docs/hooks/{filename} is empty"
+        assert content, f"legacy_docs/hooks/{filename} is empty"
 
     @pytest.mark.parametrize(
         "filename",
@@ -533,11 +533,11 @@ class TestHookDocsContent:
     )
     def test_hook_doc_has_heading(self, filename: str) -> None:
         """Each hook doc must contain at least one Markdown heading (# …)."""
-        path = PROJECT_ROOT / "docs" / "hooks" / filename
+        path = PROJECT_ROOT / "legacy_docs" / "hooks" / filename
         content = path.read_text(encoding="utf-8")
         has_heading = any(line.startswith("#") for line in content.splitlines())
         assert has_heading, (
-            f"docs/hooks/{filename} has no Markdown heading; "
+            f"legacy_docs/hooks/{filename} has no Markdown heading; "
             "expected at least one '# …' line"
         )
 
@@ -554,10 +554,10 @@ class TestHookDocsContent:
     )
     def test_hook_doc_min_length(self, filename: str) -> None:
         """Each hook doc must have at least 5 non-blank lines (sanity check)."""
-        path = PROJECT_ROOT / "docs" / "hooks" / filename
+        path = PROJECT_ROOT / "legacy_docs" / "hooks" / filename
         content = path.read_text(encoding="utf-8")
         non_blank = [ln for ln in content.splitlines() if ln.strip()]
         assert len(non_blank) >= 5, (
-            f"docs/hooks/{filename} has only {len(non_blank)} non-blank lines; "
+            f"legacy_docs/hooks/{filename} has only {len(non_blank)} non-blank lines; "
             "expected ≥ 5 (content may be a stub)"
         )

@@ -1,8 +1,7 @@
-"""API routes package — consolidates all backend API routes.
+"""Routes module — API routers organized by domain.
 
-Subpackages:
-    workers — Worker CRUD, lifecycle, metrics, history, and batch operations
-              now live in core/endpoints/workers/.
+Referenz:
+    src/routes/marketplace.py — Marketplace API routes
 """
 
-__all__: list[str] = []
+__all__ = []

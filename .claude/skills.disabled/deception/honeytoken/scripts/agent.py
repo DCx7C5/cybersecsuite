@@ -138,7 +138,7 @@ def create_deployment_plan(target_environment):
             {"type": "database", "location": "users table",
              "description": "Honeytoken admin accounts"},
             {"type": "web_bug", "location": "internal wiki",
-             "description": "Image beacon in sensitive docs"},
+             "description": "Image beacon in sensitive legacy_docs"},
             {"type": "dns", "location": "/root/.ssh/config",
              "description": "DNS canary in SSH config"},
         ],

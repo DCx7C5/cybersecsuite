@@ -157,7 +157,7 @@ lint-ts:  ## Type-check TypeScript without emitting
 	cd src/dashboard && npx tsc -p tsconfig.json --noEmit
 
 # DEPRECATED: ts_api is unused — planned for deletion in Phase 13.
-# See docs/TS_API_ANALYSIS.md for rationale.
+# See legacy_docs/TS_API_ANALYSIS.md for rationale.
 .PHONY: ts-api-start
 ts-api-start:  ## [DEPRECATED] Start TypeScript SDK API server (port 8765)
 	cd src/ts_api && npm start
