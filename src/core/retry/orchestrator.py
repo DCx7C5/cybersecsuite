@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import Callable, Any, Optional
+from typing import Callable, Optional, TypeVar, Generic, Awaitable
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -11,6 +11,8 @@ from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
 
 logger = logging.getLogger(__name__)
+
+T = TypeVar('T')  # Generic type variable for return values
 
 
 @dataclass
@@ -32,10 +34,10 @@ class RetryAttempt:
 
 
 @dataclass
-class RetryResult:
+class RetryResult(Generic[T]):
     """Result of retry attempt(s)."""
     success: bool
-    result: Optional[Any] = None
+    result: Optional[T] = None
     error: Optional[Exception] = None
     attempts: list[RetryAttempt] = field(default_factory=list)
     total_retries: int = 0
@@ -157,11 +159,11 @@ class RetryOrchestrator:
     
     async def execute_with_retry(
         self,
-        api_call: Callable,
+        api_call: Callable[..., Awaitable[T]],
         provider_id: ProviderType,
         *args,
         **kwargs
-    ) -> RetryResult:
+    ) -> RetryResult[T]:
         """
         Execute API call with retry logic.
         

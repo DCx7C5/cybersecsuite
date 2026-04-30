@@ -30,8 +30,8 @@ class RetryableErrorType(str, Enum):
 class RetryConfig:
     """Configuration for retry behavior across all providers."""
     max_retries: int = 3
-    base_delay_seconds: float = 1.0
-    max_delay_seconds: float = 60.0
+    base_delay_ms: float = 1000.0  # 1 second in milliseconds
+    max_delay_ms: float = 60000.0  # 60 seconds in milliseconds
     exponential_base: float = 2.0
     
     # Jitter: random multiplier 0.9-1.1 to avoid thundering herd
@@ -51,20 +51,20 @@ class RetryConfig:
     
     def backoff_for_attempt(self, attempt: int) -> float:
         """
-        Calculate backoff time (seconds) for this attempt.
+        Calculate backoff time (milliseconds) for this attempt.
         
         Uses exponential backoff with jitter:
-          delay = base_delay * (exponential_base ** attempt) * jitter
+          delay = base_delay_ms * (exponential_base ** attempt) * jitter
         
         Args:
             attempt: Attempt number (0-indexed)
         
         Returns:
-            Backoff time in seconds
+            Backoff time in milliseconds
         """
         # Calculate exponential delay
-        delay = self.base_delay_seconds * (self.exponential_base ** attempt)
-        delay = min(delay, self.max_delay_seconds)
+        delay = self.base_delay_ms * (self.exponential_base ** attempt)
+        delay = min(delay, self.max_delay_ms)
         
         # Add jitter to avoid thundering herd
         jitter = random.uniform(self.jitter_min, self.jitter_max)
