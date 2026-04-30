@@ -256,7 +256,7 @@ class UnifiedLLMError(CSSException):
         Args:
             message: Human-readable message
             error_code: Provider-specific error code
-            provider: Provider name (anthropic, openai, ollama, etc)
+            provider: Provider name (anthropic, openai, ollama, etc.)
             original_error: Original exception from SDK
             capture_traceback: If True, capture full traceback
             context: Additional context dict
@@ -304,7 +304,7 @@ class RateLimitError(UnifiedLLMError):
 
 
 class TimeoutError(UnifiedLLMError):
-    """Request timed out (connection timeout, read timeout, etc)."""
+    """Request timed out (connection timeout, read timeout, etc.)."""
     pass
 
 
