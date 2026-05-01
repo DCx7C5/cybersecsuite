@@ -90,7 +90,7 @@ def all_servers() -> dict[str, Any]:
     
     # Always load local cybersec server unless in external-only mode
     if SDK_MODE != "external":
-        from core.cssmcp.cybersec import cybersec_server
+        from .cybersec import cybersec_server
         servers["cybersec"] = cybersec_server
     
     # Load external MCPs if enabled
@@ -111,7 +111,7 @@ def allowed_tools() -> list[str]:
     
     # Local cybersec tools (always included unless external-only mode)
     if SDK_MODE != "external":
-        from core.cssmcp.cybersec import _ALL_CYBERSEC_TOOLS
+        from .cybersec import _ALL_CYBERSEC_TOOLS
         tools.extend([
             f"mcp__cybersec__{t._sdk_tool_name}"
             for t in _ALL_CYBERSEC_TOOLS

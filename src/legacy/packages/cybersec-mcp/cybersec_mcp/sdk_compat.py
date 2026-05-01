@@ -12,7 +12,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from core.cssmcp.otel import tool_errors, _tracer, tool_execution_duration, tool_input_size, tool_output_size, \
+from .otel import tool_errors, _tracer, tool_execution_duration, tool_input_size, tool_output_size, \
     tool_invocations, check_tool_baseline
 
 try:
