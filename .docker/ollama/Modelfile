@@ -1,4 +1,4 @@
-FROM qwen3.5:0.8b-q4_K_M
+FROM qwen:0.6b
 
 PARAMETER num_gpu_layers 999
 PARAMETER num_ctx 8192

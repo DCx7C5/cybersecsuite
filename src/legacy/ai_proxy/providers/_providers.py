@@ -325,7 +325,7 @@ _register(ProviderConfig(
     is_free=True,
     rate_limit_rpm=120,
     models=[
-        ModelConfig(id="qwen0.8b", name="Qwen 0.8B (Local)", context_window=8_192, max_output=1_024),
+        ModelConfig(id="qwen3:0.6b", name="Qwen3 0.6B (Local)", context_window=8_192, max_output=1_024),
         ModelConfig(id="llama3.3", name="Llama 3.3 (Ollama)", context_window=128_000, max_output=8_192),
         ModelConfig(id="qwen2.5:72b", name="Qwen 2.5 72B (Ollama)", context_window=128_000, max_output=8_192),
         ModelConfig(id="deepseek-r1:70b", name="DeepSeek R1 70B (Ollama)", context_window=64_000, max_output=8_192),

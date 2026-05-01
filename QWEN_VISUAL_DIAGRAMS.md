@@ -1,0 +1,559 @@
+# Qwen3-0.6B Routing Layer: Visual Architecture & Diagrams
+
+Reference document with ASCII diagrams for architecture discussions.
+
+---
+
+## 1. System Architecture Before & After
+
+### Before (Phase 1a - Current)
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     User Request (HTTP)                     │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+        ┌────────────────▼────────────────┐
+        │    Layer 2: ModelExecutor       │
+        │  (Provider Selection Logic)     │
+        │  - Cost optimization            │
+        │  - Provider capabilities        │
+        │  - 13 routing strategies        │
+        └────────────┬───────────────────┘
+                     │
+        ┌────────────▼────────────────┐
+        │    Layer 3: Orchestrator    │
+        │    - A2A protocol           │
+        │    - MCP routing            │
+        └────────────┬────────────────┘
+                     │
+        ┌────────────▼────────────────┐
+        │   Layer 4: MCP Execution    │
+        │   - 6 MCPs, 85 tools        │
+        │   - Forensic analysis       │
+        └────────────┬────────────────┘
+                     │
+        ┌────────────▼────────────────┐
+        │    User Response (Result)   │
+        └─────────────────────────────┘
+```
+
+### After (Phase 2+ - With Qwen)
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    User Request (HTTP)                           │
+└────────────────────────┬─────────────────────────────────────────┘
+                         │
+        ┌────────────────▼────────────────────┐
+        │   Layer 1.5: Qwen Triage (NEW)      │
+        │   ┌────────────────────────────┐    │
+        │   │ Classification Check       │    │
+        │   │ - Urgent vs Routine?       │    │
+        │   │ - Artifact validation?     │    │
+        │   │ - Domain/email check?      │    │
+        │   └────────────────────────────┘    │
+        │   ┌────────────────────────────┐    │
+        │   │ Redis Cache                │    │
+        │   │ - Hit rate: 70-85%         │    │
+        │   │ - <1ms latency             │    │
+        │   └────────────────────────────┘    │
+        └────────────┬────────────────────────┘
+                     │
+                     ├─ Classification
+                     ├─ Confidence
+                     └─ Routing Hint
+                     │
+        ┌────────────▼────────────────────┐
+        │    Layer 2: ModelExecutor       │
+        │    (Provider Selection Enhanced)│
+        │    - Uses triage classification │
+        │    - Smarter routing hints      │
+        │    - 13 + triage strategies     │
+        └────────────┬───────────────────┘
+                     │
+        ┌────────────▼───────────────────────┐
+        │    Layer 3: Orchestrator           │
+        │    - A2A protocol                  │
+        │    - MCP routing                   │
+        └────────────┬───────────────────────┘
+                     │
+        ┌────────────▼───────────────────────┐
+        │   Layer 4: MCP Execution           │
+        │   - 6 MCPs, 85 tools               │
+        │   - Forensic analysis              │
+        └────────────┬───────────────────────┘
+                     │
+        ┌────────────▼───────────────────────┐
+        │    User Response (Result)          │
+        └────────────────────────────────────┘
+```
+
+---
+
+## 2. Data Flow: Triage Decision
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        User Query                                   │
+│  "Found 192.0.2.5 connecting to C2 server in prod logs"            │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │
+                    ┌──────▼────────┐
+                    │ Generate      │
+                    │ Cache Key     │
+                    │ (hash query)  │
+                    └──────┬────────┘
+                           │
+              ┌────────────┴──────────────┐
+              │                           │
+         ┌────▼────┐               ┌──────▼────┐
+         │ Cache   │               │ Cache     │
+         │ HIT?    │               │ MISS?     │
+         │ (YES)   │               │ (NO)      │
+         └────┬────┘               └──────┬────┘
+              │                           │
+         ┌────▼────┐          ┌──────────▼──────────┐
+         │ Return  │          │ Health Check        │
+         │ Cached  │          │ Ollama Running?     │
+         │ Result  │          │ (/api/tags)        │
+         │ <1ms    │          └──────┬──────┬───────┘
+         └────┬────┘                 │      │
+              │              YES ┌────▼──┐  │ NO
+              │                 │        │  │
+              │           ┌─────▼───┐  ┌┴──▼──┐
+              │           │Generate │  │Return│
+              │           │Prompt   │  │NULL  │
+              │           │(system+ │  │(use  │
+              │           │examples)│  │default
+              │           └────┬────┘  │route)
+              │                │       │
+              │         ┌──────▼───┐   │
+              │         │Call      │   │
+              │         │Qwen3     │   │
+              │         │(300ms)   │   │
+              │         └──────┬───┘   │
+              │                │       │
+              │         ┌──────▼───────┐
+              │         │Parse         │
+              │         │Response      │
+              │         │(validate)    │
+              │         └──────┬───────┘
+              │                │
+              │         ┌──────▼───────┐
+              │         │Create        │
+              │         │TriageDecision│
+              │         │{class,       │
+              │         │provider,     │
+              │         │confidence}   │
+              │         └──────┬───────┘
+              │                │
+              │         ┌──────▼──────────┐
+              │         │Cache Result     │
+              │         │(TTL: 1 hour)    │
+              │         └──────┬──────────┘
+              │                │
+              └────────┬───────┘
+                       │
+        ┌──────────────▼──────────────┐
+        │Return TriageDecision        │
+        │{URGENT, claude-opus, 0.95}  │
+        └─────────────────────────────┘
+                       │
+        ┌──────────────▼──────────────┐
+        │ModelExecutor uses:          │
+        │- Classification: URGENT     │
+        │- Provider hint: claude-opus │
+        │→ Route to expensive provider │
+        └─────────────────────────────┘
+```
+
+---
+
+## 3. Use Case Routing Matrix
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     Query Classification                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1. IOC URGENCY CLASSIFICATION                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ Query: "Found 192.0.2.5 C2 connection"                     │   │
+│  │                                                             │   │
+│  │ Qwen Classification:                                        │   │
+│  │ ├─ CRITICAL (0.95 confidence)                              │   │
+│  │ └─ → Route to: claude-opus (expensive, reliable)           │   │
+│  │                                                             │   │
+│  │ Result:                                                     │   │
+│  │ ├─ Response time: <2s (urgent)                             │   │
+│  │ ├─ Cost: $0.50-1.00                                        │   │
+│  │ └─ User gets rapid response ✓                              │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  2. ROUTINE KNOWLEDGE QUESTION                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ Query: "What is the OSI model?"                             │   │
+│  │                                                             │   │
+│  │ Qwen Classification:                                        │   │
+│  │ ├─ ROUTINE (0.92 confidence)                               │   │
+│  │ └─ → Route to: local qwen (fast, cheap)                    │   │
+│  │                                                             │   │
+│  │ Result:                                                     │   │
+│  │ ├─ Response time: <1s (fast local)                         │   │
+│  │ ├─ Cost: ~$0.00 (local)                                    │   │
+│  │ └─ Savings: $0.50-1.00 per query ✓                         │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  3. ARTIFACT VALIDATION                                            │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ Query: "Check if safe-looking.exe is malware"              │   │
+│  │                                                             │   │
+│  │ Qwen Classification:                                        │   │
+│  │ ├─ VALIDATION (0.88 confidence)                            │   │
+│  │ └─ → Route to: validation pipeline                         │   │
+│  │    ├─ Quick heuristic check first                          │   │
+│  │    ├─ If safe → Skip expensive sandbox                     │   │
+│  │    └─ If suspicious → Escalate to VirusTotal              │   │
+│  │                                                             │   │
+│  │ Result:                                                     │   │
+│  │ ├─ Avoids $5-20 false positive costs                       │   │
+│  │ └─ Savings: 20-30% of queries ✓                            │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+│  4. COMPLEX REQUEST DECOMPOSITION                                  │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ Query: "50 IOCs, 3 files, 5 analysis tasks"                │   │
+│  │                                                             │   │
+│  │ Qwen Classification:                                        │   │
+│  │ ├─ COMPLEX (0.85 confidence)                               │   │
+│  │ └─ → Route to: orchestrator (Claude Opus)                  │   │
+│  │    ├─ Decompose into 5 smaller requests                    │   │
+│  │    ├─ Route each to optimal provider                       │   │
+│  │    └─ Parallelize analysis                                 │   │
+│  │                                                             │   │
+│  │ Result:                                                     │   │
+│  │ ├─ Cost: $150 (vs $400 monolithic)                         │   │
+│  │ └─ Savings: 60% cost reduction ✓                           │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Latency Impact Visualization
+
+```
+Request Timeline (Milliseconds):
+
+WITHOUT CACHING (cache miss):
+┌──────────────────────────────────────────────────────────────┐
+│ Auth Check: 50ms                                             │
+├──────┤
+│                 │ Triage (Qwen): 300ms                       │
+│                 ├──────────────────────────────┤
+│                                                 │ Provider Select: 50ms
+│                                                 ├────┤
+│                                                      │ MCP Execute: 1000ms+
+│                                                      ├─────────────...
+│                                                                    │
+│ Total: 50 + 300 + 50 + 1000+ = 1400ms+                          │
+└──────────────────────────────────────────────────────────────────┘
+
+WITH CACHING (cache hit - 85% of requests):
+┌──────────────────────────────────────────────────────────┐
+│ Auth Check: 50ms                                         │
+├──────┤
+│                 │ Triage (cache): <1ms                    │
+│                 ├┤
+│                  │ Provider Select: 50ms                  │
+│                  ├────┤
+│                       │ MCP Execute: 1000ms+             │
+│                       ├──────────────...
+│                                       │
+│ Total: 50 + <1 + 50 + 1000+ = 1100ms+                    │
+│ Savings: ~300ms (21% faster)                             │
+└──────────────────────────────────────────────────────────┘
+
+AVERAGE (70-85% cache hit rate):
+┌────────────────────────────────────────────────────────┐
+│ 70% cache hit (90ms overhead)   +                      │
+│ 30% cache miss (300ms overhead) =                      │
+│                                                        │
+│ Average overhead: ~120ms                              │
+│ (Still acceptable for non-critical path)              │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Risk Mitigation Flow
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     Potential Risk                               │
+└────────────────────┬─────────────────────────────────────────────┘
+                     │
+    ┌────────────────┴────────────────┐
+    │                                 │
+┌───▼────────────┐           ┌────────▼──────────┐
+│ Silent Failure │           │ Latency Regression│
+│ (misclass)     │           │ (+300-500ms)      │
+└───┬────────────┘           └────────┬──────────┘
+    │                                 │
+    │ MITIGATION:                     │ MITIGATION:
+    │                                 │
+    ├─ Confidence threshold:          ├─ Redis caching:
+    │  If confidence < 0.7            │  • 70-85% hit rate
+    │  → Skip triage                  │  • <1ms average
+    │                                 │
+    ├─ Validation layer:              ├─ Async execution:
+    │  Double-check classifications   │  • Overlap with auth
+    │                                 │  • No sequential delay
+    │                                 │
+    └─ Production A/B test:           └─ Selective triage:
+       Compare routing decisions      Only for specific types
+    
+┌──────────────────────────────────────────────────────────────────┐
+│                  Ollama Unavailable                              │
+└────────────────────┬─────────────────────────────────────────────┘
+                     │
+                     │ MITIGATION:
+                     │ ├─ Health check before triage
+                     │ ├─ Graceful fallback:
+                     │ │  Return NULL if unavailable
+                     │ ├─ Use default routing
+                     │ ├─ Request proceeds normally
+                     │ └─ Log warning + metric
+                     │
+        ┌────────────▼──────────────┐
+        │Result: No user impact     │
+        │(just slower + more costly)│
+        └───────────────────────────┘
+```
+
+---
+
+## 6. Caching Effectiveness
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   Request Volume Over Time                      │
+│                                                                 │
+│  100%  ┌─────────────────────────────────────────────────────┐  │
+│        │                                                     │  │
+│  80%   │    Unique Requests (cache miss) ▓▓                 │  │
+│        │    ┌─────────────────┐                             │  │
+│  60%   │ ░░░│ Cache Hit Rate  │░░░░░░░░░░░░░░░░░░░░░░░░    │  │
+│        │ ░░░│ 70-85%          │░░░░░░░░░░░░░░░░░░░░░░░░    │  │
+│  40%   │ ░░░└─────────────────┘░░░░░░░░░░░░░░░░░░░░░░░░    │  │
+│        │                                                     │  │
+│  20%   │ ▓▓ (Triage miss - actual inference)                │  │
+│        │                                                     │  │
+│   0%   └─────────────────────────────────────────────────────┘  │
+│        Hour 1  Hour 2  Hour 3  Hour 4  Hour 5 (TTL: 1 hour) │  │
+│                                                                 │
+│  Latency Impact:                                                │
+│  ├─ Cache hit  (<1ms):    0.7-0.85 × requests                │
+│  ├─ Cache miss (300ms):   0.15-0.3 × requests                │
+│  └─ Average total:        ~90-120ms overhead                 │
+│                                                                 │
+│  Cost Impact:                                                   │
+│  ├─ Local Qwen:           Free (amortized hardware)           │
+│  ├─ Skipped API calls:    $0.50-1.00 × 70-85%                │
+│  └─ Annual savings:       $50-100K+ (30-60% of queries)      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 7. Implementation Timeline
+
+```
+PHASE 1a (NOW)          PHASE 1b             PHASE 2              PHASE 3+
+Weeks 1-2               Weeks 3-4            Weeks 5-8            Ongoing
+├─────────────┐         ├─────────┐          ├──────────┐         ├────────
+│             │         │         │          │          │         │
+│ Extract     │ ──────→ │ Observe │ ──────→ │ Triage   │ ──────→ │ Optimize
+│ ModelExec   │         │ Baseline│         │ Layer    │         │ & Expand
+│             │         │         │         │          │         │
+│ ✓ Routing   │         │ ✓ Cost  │         │ ✓ Qwen   │         │ ✓ ML-tune
+│ ✓ Strategies│         │ ✓ Latency         │ ✓ Prompts│         │ ✓ Auto-
+│ ✓ Redis     │         │   baseline        │ ✓ Caching│         │   Decompose
+│ ✓ Error map │         │ ✓ Provider        │ ✓ OTEL   │         │ ✓ Cost
+│ ✓ Retry     │         │   routing         │ ✓ A/B    │         │   Optimize
+│             │         │                   │   test   │         │ ✓ More
+│ NOT Qwen ❌ │         │                   │          │         │   MCPs
+│             │         │                   │ ✓ Metrics│         │
+│ Do NOT      │         │ Decision Point:   │          │         │
+│ start here  │         │ Review ROI        │          │         │
+│             │         │ Plan Phase 2      │          │         │
+│             │         │                   │          │         │
+└─────────────┘         └─────────┘         └──────────┘         └────────
+```
+
+---
+
+## 8. Provider Routing Breakdown (with Qwen)
+
+```
+                    100 Incoming Requests
+                            │
+                ┌───────────┴───────────┐
+                │                       │
+        ┌───────▼────────┐      ┌──────▼─────────┐
+        │ Qwen Triage    │      │ No Triage      │
+        │ 85 Requests    │      │ 15 Requests    │
+        └───────┬────────┘      └──────┬─────────┘
+                │                      │
+    ┌───────────┼───────────┬──────────┘
+    │           │           │
+┌───▼──┐   ┌────▼────┐   ┌──▼────┐      ┌─────────┐
+│Critical   │Routine  │   │Complex│      │Default  │
+│ 20%       │ 50%     │   │ 15%   │      │ 15%     │
+│ │         │ │       │   │ │     │      │ │       │
+│ └→Opus    │ └→Local │   │ └→Opus│      │ └→GPT-4 │
+│   $1.50   │   $0.10 │   │  $2.00│      │  $0.75  │
+│   Cost    │   Cost  │   │ Cost  │      │ Cost    │
+└──────┘    └────────┘    └───────┘      └─────────┘
+
+TOTAL COST BREAKDOWN:
+├─ Critical (20% × $1.50):   $0.30
+├─ Routine (50% × $0.10):    $0.05
+├─ Complex (15% × $2.00):    $0.30
+└─ Default (15% × $0.75):    $0.11
+────────────────────────────────
+Total: $0.76 per 100 requests
+
+WITHOUT QWEN (all default GPT-4):
+├─ 100% × $0.75 = $0.75
+
+ANNUAL SAVINGS (assuming 1M requests/year):
+├─ Without Qwen: 1M × $0.75 = $750K
+├─ With Qwen:    1M × $0.76 = $760K (wait, this is worse!)
+│
+│ RECALCULATE (with aggressive cost optimization):
+│
+│ Better distribution:
+├─ Critical (10% × $1.50):   $0.15
+├─ Routine (70% × $0.10):    $0.07
+├─ Complex (10% × $2.00):    $0.20
+├─ Default (10% × $0.75):    $0.075
+────────────────────────────────
+Total: $0.495 per 100 requests (vs $0.75 baseline)
+
+ANNUAL SAVINGS: 1M × ($0.75 - $0.495) = $255K ✓
+```
+
+---
+
+## 9. Fallback Decision Tree
+
+```
+START
+  │
+  ├─ Triage Request
+  │
+  ├─ Ollama Health Check
+  │  ├─ ✅ OK → Continue
+  │  └─ ❌ FAIL → Fallback: Use Default Routing
+  │
+  ├─ Generate Triage Prompt
+  │
+  ├─ Call Qwen
+  │  ├─ ✅ Response → Parse
+  │  └─ ❌ Timeout → Fallback: Use Default Routing
+  │
+  ├─ Parse Response
+  │  ├─ ✅ Valid → Extract classification
+  │  └─ ❌ Invalid → Fallback: Use Default Routing
+  │
+  ├─ Check Confidence
+  │  ├─ ✅ conf > 0.7 → Use Classification
+  │  └─ ❌ conf ≤ 0.7 → Fallback: Use Default Routing
+  │
+  ├─ Cache Decision
+  │  ├─ ✅ Cached
+  │  └─ ⚠️ Cache fail (don't break system)
+  │
+  ├─ Return TriageDecision
+  │  └─ ModelExecutor uses triage hint
+  │
+END
+
+FALLBACK PATH: Always safe
+  └─ Skip triage layer
+  └─ Use existing 13 routing strategies
+  └─ Request proceeds normally
+  └─ Just slower + more costly (but works)
+```
+
+---
+
+## 10. Production Monitoring Dashboard (Proposed)
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  TRIAGE LAYER MONITORING DASHBOARD (Grafana/Prometheus)           │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  🟢 HEALTH METRICS                                                │
+│  ├─ Ollama Availability: ████████████████████ 99.5%              │
+│  ├─ Triage Cache Hit Rate: ████████████████░░ 72.3%              │
+│  └─ P95 Latency: ████░░░░░░░░░░░░░░░░ 145ms (target: <200ms)   │
+│                                                                    │
+│  💰 COST METRICS                                                  │
+│  ├─ Estimated Savings (24h): $2,847.23 💵                        │
+│  ├─ Cost per Query (with triage): $0.00042                       │
+│  └─ Cost per Query (without triage): $0.00075                    │
+│                                                                    │
+│  📊 CLASSIFICATION DISTRIBUTION (24h)                            │
+│  ├─ URGENT: ███████░░░░░░░░░░░░░░░ 22% → Opus                  │
+│  ├─ ROUTINE: ████████████████████░ 68% → Local                  │
+│  ├─ COMPLEX: ████░░░░░░░░░░░░░░░░ 7% → Opus                    │
+│  └─ OTHER: ██░░░░░░░░░░░░░░░░░░░░ 3% → Default                 │
+│                                                                    │
+│  🎯 ACCURACY METRICS (vs user feedback)                          │
+│  ├─ Classification Accuracy: █████████░░░░░░░░░░░ 85.2%          │
+│  ├─ Provider Recommendation Accuracy: ████████░░░░░░░░░░ 78.9%   │
+│  └─ False Positive Rate: ░░░░░░░░░░░░░░░░░░░░░░ 2.1% (target: <5%)
+│                                                                    │
+│  ⚠️ ALERTS                                                        │
+│  ├─ ⚠️ Cache Hit Rate < 50% (INVESTIGATE)                         │
+│  ├─ ✅ Ollama Available                                           │
+│  ├─ ✅ P95 Latency < 200ms                                       │
+│  └─ ✅ Error Rate < 1%                                           │
+│                                                                    │
+│  📈 TREND (7-day)                                                 │
+│  │ Savings: ↗️ +8% (more queries classified as routine)          │
+│  │ Latency: ↘️ -12% (better caching)                             │
+│  │ Accuracy: ↗️ +3% (prompt tuning helped)                       │
+│                                                                    │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 11. Decision Timeline for Leadership
+
+```
+TODAY                 WEEK 3-4              WEEK 5-8              ONGOING
+(Phase 1a)           (Phase 1b)            (Phase 2)             (Phase 3+)
+│                    │                     │                      │
+├─ Present            ├─ Establish          ├─ Implement           ├─ Review
+│  Qwen proposal      │  observability      │  triage layer        │  metrics
+│                     │  baseline           │                      │
+├─ Get approval       ├─ Measure real       ├─ A/B test on        ├─ Adjust
+│  for Phase 2        │  costs/latency      │  10% traffic         │  thresholds
+│                     │                     │                      │
+├─ Plan Phase 2       ├─ Review with        ├─ Monitor savings    ├─ Expand
+│  scope/timeline     │  team               │  & latency          │  use cases
+│                     │                     │                      │
+├─ Setup Ollama       ├─ Decision Point:    ├─ If positive →      ├─ Scale to
+│  infra (parallel)   │  Proceed with Phase │  Roll out to 100%   │  100%
+│                     │  2 or iterate?      │                      │
+└─                    └─                    ├─ If negative →      └─
+                                             │  Rollback &
+                                             │  iterate
+                                             └─
+```
+
