@@ -2,12 +2,7 @@
 
 from dataclasses import dataclass, field
 
-
-@dataclass
-class BaseHeader:
-    """Root metadata header for all domain entities."""
-    name: str
-    description: str
+from .base import BaseHeader
 
 
 @dataclass
@@ -110,3 +105,4 @@ __all__ = [
     "BaseToolHeader",
     "BaseRoleHeader",
 ]
+

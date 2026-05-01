@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-from ..base_protocols import BaseCommunicator
+from ..base import BaseCommunicator
 from ..headers import (
 
     BaseAgentHeader,

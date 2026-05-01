@@ -9,8 +9,10 @@ from .a2a_streaming import (
     StreamingState,
     StreamState,
 )
-from .api_services import (
+from .base import (
     BaseApiServiceClient,
+    BaseCommunicator,
+    BaseContext,
     ErrorStrategy,
     ExecutorResult,
     LLMResponse,
@@ -22,7 +24,6 @@ from .api_services import (
     StreamingHandler,
     Tool,
 )
-from .base_protocols import BaseCommunicator
 from .capabilities import (
     Capability,
     CapabilityRegistry,
@@ -67,7 +68,9 @@ from .ollama import (
     OllamaHealthCheck,
     OllamaModel,
 )
-from .endpoints import mount_app_routers, router as marketplace_router
+
+# Note: loader is in core/loader.py, marketplace router is in modules/marketplace/endpoints.py
+# These are accessible via core.loader and modules.marketplace respectively
 
 __all__ = [
     # A2A Streaming
@@ -78,8 +81,9 @@ __all__ = [
     "StreamingController",
     "StreamingState",
     "StreamState",
-    # Base protocols
+    # Base layer (abstract)
     "BaseCommunicator",
+    "BaseContext",
     # API Service models
     "BaseApiServiceClient",
     "ErrorStrategy",
@@ -134,7 +138,4 @@ __all__ = [
     "OllamaExecutionContext",
     "OllamaHealthCheck",
     "OllamaModel",
-    # Endpoints
-    "mount_app_routers",
-    "marketplace_router",
 ]
