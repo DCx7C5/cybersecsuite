@@ -18,30 +18,11 @@ router = APIRouter(prefix="/api/v1/marketplace", tags=["marketplace"])
 # ============================================================================
 
 
-class MarketplaceItemResponse(BaseModel):
-    """Response for a marketplace item."""
-
-    id: str
-    name: str
-    description: str
-    kind: str
-    provider: str
-    version: str = "0.1.0"
-    status: str = "available"
-    enabled: bool = True
-    installed: bool = False
-
-
 class InstallRequest(BaseModel):
-    """Request to install a marketplace item."""
-
-    item_id: str = Field(..., description="Kebab-case item ID")
-    source_url: Optional[str] = Field(default=None, description="Override source URL")
+    item_id: str = Field(..., description="Marketplace item ID (kebab-case)")
 
 
 class InstallResponse(BaseModel):
-    """Response for install operation."""
-
     success: bool
     item_id: str
     message: str
@@ -50,15 +31,10 @@ class InstallResponse(BaseModel):
 
 
 class UninstallRequest(BaseModel):
-    """Request to uninstall a marketplace item."""
-
-    item_id: str = Field(..., description="Kebab-case item ID")
-    purge_config: bool = Field(default=False, description="Remove item configuration")
+    item_id: str = Field(..., description="Marketplace item ID (kebab-case)")
 
 
 class UninstallResponse(BaseModel):
-    """Response for uninstall operation."""
-
     success: bool
     item_id: str
     message: str
@@ -66,15 +42,11 @@ class UninstallResponse(BaseModel):
 
 
 class ToggleRequest(BaseModel):
-    """Request to enable/disable a marketplace item."""
-
-    item_id: str = Field(..., description="Kebab-case item ID")
-    enabled: bool = Field(..., description="Enable (True) or disable (False)")
+    item_id: str = Field(..., description="Marketplace item ID (kebab-case)")
+    enabled: bool = Field(..., description="True to enable, False to disable")
 
 
 class ToggleResponse(BaseModel):
-    """Response for toggle operation."""
-
     success: bool
     item_id: str
     enabled: bool
@@ -83,22 +55,16 @@ class ToggleResponse(BaseModel):
 
 
 class UpgradeRequest(BaseModel):
-    """Request to upgrade a marketplace item."""
-
-    item_id: str = Field(..., description="Kebab-case item ID")
-    target_version: Optional[str] = Field(default=None, description="Specific version to upgrade to")
-    backup: bool = Field(default=True, description="Create backup before upgrade")
+    item_id: str = Field(..., description="Marketplace item ID (kebab-case)")
+    version: Optional[str] = Field(None, description="Target version (None for latest)")
 
 
 class UpgradeResponse(BaseModel):
-    """Response for upgrade operation."""
-
     success: bool
     item_id: str
-    old_version: str
-    new_version: str
     message: str
-    backup_path: Optional[str] = None
+    old_version: Optional[str] = None
+    new_version: Optional[str] = None
     error: Optional[str] = None
 
 
