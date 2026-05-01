@@ -4,8 +4,16 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from modules.marketplace.pydantic import InstallRequest, InstallResponse, UninstallResponse, UninstallRequest, \
-    ToggleRequest, ToggleResponse
+from modules.marketplace.types import (
+    InstallRequest,
+    InstallResponse,
+    ToggleRequest,
+    ToggleResponse,
+    UninstallRequest,
+    UninstallResponse,
+    UpgradeRequest,
+    UpgradeResponse,
+)
 
 log = logging.getLogger(__name__)
 

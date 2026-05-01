@@ -1,20 +1,25 @@
-from .int_comms import RedisCommunicator  # RedisCommunicationGroup doesn't exist
-from .a2a_comms import A2ACommunicator, A2ACommunicationGroup
-from .dispatcher import MessageDispatcher
-from .pydantic import Message
-from .tools import get_all_tools, register_tool
-from .endpoints import init_a2a_endpoints, a2a_rpc_handler
-from .urls import init_a2a_routes
+"""A2A (Model-to-Model) collaboration module.
+
+Enables pause/resume streaming with external context injection between models.
+Uses PREPEND strategy for highest priority context incorporation.
+"""
+
+from .types import (
+    A2AConfig,
+    PauseRequest,
+    ResponseInjection,
+    ResponseInjectionStrategy,
+    StreamingController,
+    StreamingState,
+    StreamState,
+)
 
 __all__ = [
-    "MessageDispatcher",
-    "Message",
-    "RedisCommunicator",
-    "A2ACommunicator",
-    "A2ACommunicationGroup",
-    "init_a2a_endpoints",
-    "init_a2a_routes",
-    "a2a_rpc_handler",
-    "register_tool",
-    "get_all_tools",
+    "A2AConfig",
+    "StreamState",
+    "ResponseInjectionStrategy",
+    "PauseRequest",
+    "ResponseInjection",
+    "StreamingState",
+    "StreamingController",
 ]

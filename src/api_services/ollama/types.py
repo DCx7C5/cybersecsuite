@@ -2,16 +2,17 @@
 
 Ollama is treated as a special case in Phase 0.0+ to ensure feature parity
 with cloud LLM providers (streaming, vision, tools, etc.).
+
+This module is part of the Ollama provider package and should be imported from:
+  from api_services.ollama import OllamaConfig, OllamaModel, OllamaCapabilities
 """
 
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
 
-@dataclass
 class OllamaModel(BaseModel):
     """Metadata for a local Ollama model."""
 
@@ -29,7 +30,6 @@ class OllamaModel(BaseModel):
         use_enum_values = False
 
 
-@dataclass
 class OllamaCapabilities(BaseModel):
     """Capabilities supported by a specific Ollama model."""
 
@@ -49,7 +49,6 @@ class OllamaCapabilities(BaseModel):
         use_enum_values = False
 
 
-@dataclass
 class OllamaConfig(BaseModel):
     """Configuration for connecting to local Ollama instance."""
 
@@ -93,7 +92,6 @@ class OllamaConfig(BaseModel):
         extra = "allow"  # Allow forward-compatible fields
 
 
-@dataclass
 class OllamaExecutionContext(BaseModel):
     """Execution context specific to Ollama models.
 
@@ -141,7 +139,6 @@ class OllamaExecutionContext(BaseModel):
         return (self.eval_count / self.total_duration_ms) * 1000
 
 
-@dataclass
 class OllamaHealthCheck(BaseModel):
     """Health check result for Ollama instance."""
 
@@ -156,3 +153,12 @@ class OllamaHealthCheck(BaseModel):
         """Pydantic config."""
 
         use_enum_values = False
+
+
+__all__ = [
+    "OllamaModel",
+    "OllamaConfig",
+    "OllamaCapabilities",
+    "OllamaExecutionContext",
+    "OllamaHealthCheck",
+]

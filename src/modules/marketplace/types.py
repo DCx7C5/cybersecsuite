@@ -1,3 +1,9 @@
+"""Marketplace module types for install/uninstall/toggle/upgrade operations.
+
+This module contains all Pydantic types used by the marketplace API.
+It is the canonical location for marketplace data models.
+"""
+
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -72,7 +78,9 @@ class UpgradeRequest(BaseModel):
     """Request to upgrade a marketplace item."""
 
     item_id: str = Field(..., description="Kebab-case item ID")
-    target_version: Optional[str] = Field(default=None, description="Specific version to upgrade to")
+    target_version: Optional[str] = Field(
+        default=None, description="Specific version to upgrade to"
+    )
     backup: bool = Field(default=True, description="Create backup before upgrade")
 
 
@@ -86,3 +94,16 @@ class UpgradeResponse(BaseModel):
     message: str
     backup_path: Optional[str] = None
     error: Optional[str] = None
+
+
+__all__ = [
+    "MarketplaceItemResponse",
+    "InstallRequest",
+    "InstallResponse",
+    "UninstallRequest",
+    "UninstallResponse",
+    "ToggleRequest",
+    "ToggleResponse",
+    "UpgradeRequest",
+    "UpgradeResponse",
+]

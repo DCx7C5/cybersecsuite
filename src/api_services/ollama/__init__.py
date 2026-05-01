@@ -1,7 +1,19 @@
 """Ollama API Service."""
 
-from .service import OllamaApiService
-from .compat import OllamaClientCompat
+from .client import OllamaClient
+from .types import (
+    OllamaCapabilities,
+    OllamaConfig,
+    OllamaExecutionContext,
+    OllamaHealthCheck,
+    OllamaModel,
+)
 
-__all__ = ["OllamaApiService", "OllamaClientCompat"]
-
+__all__ = [
+    "OllamaClient",
+    "OllamaConfig",
+    "OllamaModel",
+    "OllamaCapabilities",
+    "OllamaExecutionContext",
+    "OllamaHealthCheck",
+]

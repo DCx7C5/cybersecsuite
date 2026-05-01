@@ -5,7 +5,8 @@ Decides PREPEND vs INJECT vs CHAIN based on query complexity using local LLM.
 
 from enum import Enum
 from typing import Optional
-from core.types import ResponseInjectionStrategy
+
+from modules.a2a import ResponseInjectionStrategy
 
 
 class QueryComplexity(str, Enum):
@@ -31,17 +32,17 @@ class ResponseStrategyRouter:
     ) -> ResponseInjectionStrategy:
         """
         Decide injection strategy. If complexity not provided, defaults to PREPEND.
-        
+
         Args:
             query: User query or request
             complexity: Pre-classified complexity (if from Qwen triage)
-        
+
         Returns:
             Best ResponseInjectionStrategy for this query
         """
         if complexity is None:
             return ResponseInjectionStrategy.PREPEND
-        
+
         return ResponseStrategyRouter.STRATEGY_MAP.get(
             complexity, ResponseInjectionStrategy.PREPEND
         )
@@ -50,7 +51,7 @@ class ResponseStrategyRouter:
     def qwen_classify_complexity(query_text: str) -> QueryComplexity:
         """
         Classify query complexity using heuristics (placeholder for Qwen integration).
-        
+
         TODO (Phase 2): Replace with actual Qwen call when triage layer added.
         For now: simple heuristics.
         """

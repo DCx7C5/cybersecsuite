@@ -2,6 +2,9 @@
 
 Handles pausing ModelA, requesting context from ModelB, and resuming with injected response.
 Supports bidirectional streaming with external context injection via PREPEND strategy.
+
+This module is part of the A2A module package and should be imported from:
+  from modules.a2a import A2AConfig, StreamState, ResponseInjection, etc.
 """
 
 from dataclasses import dataclass, field
@@ -42,7 +45,6 @@ class PauseRequest:
     timeout_seconds: int = 30
 
 
-@dataclass
 class ResponseInjection(BaseModel):
     """External response to inject into ModelA's stream.
 
@@ -53,7 +55,9 @@ class ResponseInjection(BaseModel):
     response_text: str = Field(..., description="ModelB's response to inject")
     source_model: str = Field(..., description="Which model answered")
     priority: int = Field(default=100, description="Context priority (higher = more attention)")
-    request_id: str = Field(default_factory=lambda: str(uuid4()), description="Links to PauseRequest")
+    request_id: str = Field(
+        default_factory=lambda: str(uuid4()), description="Links to PauseRequest"
+    )
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     strategy: ResponseInjectionStrategy = Field(
         default=ResponseInjectionStrategy.PREPEND,
@@ -160,3 +164,14 @@ class A2AConfig:
         """Allow extra fields for forward compatibility."""
 
         extra = "allow"
+
+
+__all__ = [
+    "StreamState",
+    "ResponseInjectionStrategy",
+    "PauseRequest",
+    "ResponseInjection",
+    "StreamingState",
+    "StreamingController",
+    "A2AConfig",
+]

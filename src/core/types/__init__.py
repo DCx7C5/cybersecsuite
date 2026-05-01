@@ -1,14 +1,7 @@
 """Core types for CyberSecSuite — base classes, enums, data models."""
 
-from .a2a_streaming import (
-    A2AConfig,
-    PauseRequest,
-    ResponseInjection,
-    ResponseInjectionStrategy,
-    StreamingController,
-    StreamingState,
-    StreamState,
-)
+# Note: A2A types moved to modules.a2a.types in Phase 2
+# Import from there: from modules.a2a import A2AConfig, StreamState, ResponseInjection, etc.
 from .base import (
     BaseApiServiceClient,
     BaseCommunicator,
@@ -61,26 +54,15 @@ from .headers import (
 )
 from .hook_events import HookContext, HookErrorStrategy
 from .sdk_local import LocalSDKBase
-from .ollama import (
-    OllamaCapabilities,
-    OllamaConfig,
-    OllamaExecutionContext,
-    OllamaHealthCheck,
-    OllamaModel,
-)
+
+# Note: Ollama types moved to api_services.ollama.types in Phase 2
+# Import from there: from api_services.ollama import OllamaConfig, OllamaModel, etc.
 
 # Note: loader is in core/loader.py, marketplace router is in modules/marketplace/endpoints.py
 # These are accessible via core.loader and modules.marketplace respectively
 
 __all__ = [
-    # A2A Streaming
-    "A2AConfig",
-    "PauseRequest",
-    "ResponseInjection",
-    "ResponseInjectionStrategy",
-    "StreamingController",
-    "StreamingState",
-    "StreamState",
+    # Note: A2A types moved to modules.a2a.types (Phase 2 migration)
     # Base layer (abstract)
     "BaseCommunicator",
     "BaseContext",
@@ -132,10 +114,5 @@ __all__ = [
     "HookErrorStrategy",
     # LocalSDK base (Issue #5)
     "LocalSDKBase",
-    # Ollama
-    "OllamaCapabilities",
-    "OllamaConfig",
-    "OllamaExecutionContext",
-    "OllamaHealthCheck",
-    "OllamaModel",
+    # Note: Ollama types moved to api_services.ollama (Phase 2 migration)
 ]
