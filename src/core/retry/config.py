@@ -30,8 +30,8 @@ class RetryableErrorType(str, Enum):
 class RetryConfig:
     """Configuration for retry behavior across all providers."""
     max_retries: int = 3
-    base_delay_ms: float = 1000.0  # 1 second in milliseconds
-    max_delay_ms: float = 60000.0  # 60 seconds in milliseconds
+    base_delay_ms: float = 1000.0
+    max_delay_ms: float = 60000.0
     exponential_base: float = 2.0
     
     # Jitter: random multiplier 0.9-1.1 to avoid thundering herd

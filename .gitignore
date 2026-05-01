@@ -132,3 +132,5 @@ src/dashboard/static/js/
 .claude/templates/
 **/*.json
 *.json
+
+resume

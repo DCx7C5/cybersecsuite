@@ -55,3 +55,6 @@ coverage.xml
 dump.rdb
 **/*.json
 *.json
+
+resume
+legacy_docs/
