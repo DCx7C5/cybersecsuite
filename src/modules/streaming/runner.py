@@ -5,7 +5,7 @@ with session persistence, mode switching, and streaming support.
 """
 
 
-from logger import getLogger
+from legacy.logger import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any
 

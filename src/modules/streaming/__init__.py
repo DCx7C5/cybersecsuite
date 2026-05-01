@@ -7,7 +7,7 @@ Public API:
 """
 
 
-from logger import getLogger
+from legacy.logger import getLogger
 
 from modules.streaming.runner import AgentRunner
 from modules.streaming.sessions import SessionManager
