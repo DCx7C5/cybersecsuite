@@ -2,8 +2,8 @@ import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
 
+from core.types.entities import Agent, Skill
 from modules.marketplace.types import (
     InstallRequest,
     InstallResponse,
@@ -270,11 +270,7 @@ async def get_marketplace_item(item_id: str) -> dict:
     """
     try:
         from models import (
-            MarketplaceAgent,
-            MarketplaceSkill,
             MarketplaceMCP,
-            MarketplacePrompt,
-            MarketplaceTemplate,
         )
 
         # Convert kebab-case to title case for search
