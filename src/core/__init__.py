@@ -44,7 +44,7 @@ from .entities import (
 )
 
 # Communication protocol
-from .communicators import BaseCommunicator
+from .types.base_protocols import BaseCommunicator
 
 # Core database (once exported by core.db)
 # from .db import DB
