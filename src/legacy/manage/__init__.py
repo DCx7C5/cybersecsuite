@@ -1,5 +1,5 @@
 """manage package — async CLI dispatcher for CyberSecSuite."""
-from logger import getLogger  # noqa: F401
+from legacy.logger import getLogger  # noqa: F401
 
 import asyncio
 import sys

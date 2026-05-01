@@ -1,7 +1,7 @@
 """DBus integration for desktop notifications and signals."""
 
 
-from logger import getLogger
+from legacy.logger import getLogger
 
 from .notifier import DbusNotifier, get_notifier
 

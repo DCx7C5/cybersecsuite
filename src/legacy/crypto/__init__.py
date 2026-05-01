@@ -7,7 +7,7 @@ Main Components:
 - ArtifactManager: Artifact CRUD with automatic signing
 - Vault: File-based encrypted secret storage
 """
-from logger import getLogger
+from legacy.logger import getLogger
 
 from crypto.ssl_signer import SSLArtifactSigner
 from crypto.key_manager import KeyManager, PasswordManager

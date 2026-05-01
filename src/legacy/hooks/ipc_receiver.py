@@ -4,7 +4,7 @@ import asyncio
 import json
 from pathlib import Path
 
-from logger import getLogger
+from legacy.logger import getLogger
 
 logger = getLogger(__name__)
 

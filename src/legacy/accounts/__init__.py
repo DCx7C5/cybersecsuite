@@ -5,7 +5,7 @@ Exports:
     AccountEntry    — Pydantic model for account metadata
     getLogger       — module-level logger
 """
-from logger import getLogger
+from legacy.logger import getLogger
 
 from accounts.manager import AccountManager
 

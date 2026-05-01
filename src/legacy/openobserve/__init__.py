@@ -7,7 +7,7 @@ Exports:
   close_client()    — graceful shutdown
   getLogger          — module-level logger
 """
-from logger import getLogger
+from legacy.logger import getLogger
 
 from openobserve.client import close_client, get_client
 from openobserve.streams import ensure_streams

@@ -1,5 +1,8 @@
 """CyberSecSuite core — agent framework, entity system, databases, and infrastructure."""
 
+# Import a2a compatibility module first (registers sys.modules['a2a'] → legacy.a2a)
+import a2a  # noqa: F401
+
 # Custom exceptions
 from .exceptions import (
     CSSException,

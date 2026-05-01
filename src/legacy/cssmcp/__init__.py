@@ -15,7 +15,7 @@ SDK Mode Features:
 """
 from __future__ import annotations
 
-from logger import getLogger  # noqa: F401
+from legacy.logger import getLogger  # noqa: F401
 
 import os
 from typing import Any
