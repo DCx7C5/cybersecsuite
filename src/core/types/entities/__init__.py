@@ -1,4 +1,5 @@
-from ..types import BaseCommunicator, BaseAccountHeader, BaseAgentHeader, BaseHeader, BaseRoleHeader, BaseSkillHeader, BaseToolHeader
+"""Entity types — domain entities, headers, and protocols."""
+
 from .account import Account
 from .agent import Agent
 from .base import BaseAgent, BaseEntity, BaseRole, BaseSkill, BaseTool
@@ -23,12 +24,4 @@ __all__ = [
     "ToolHeader",
     # Factory functions
     "get_role",
-    # Base protocol/header classes
-    "BaseCommunicator",
-    "BaseHeader",
-    "BaseAccountHeader",
-    "BaseAgentHeader",
-    "BaseRoleHeader",
-    "BaseSkillHeader",
-    "BaseToolHeader",
 ]

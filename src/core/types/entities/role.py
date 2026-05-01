@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from core.entities.base import BaseRole
-from core.types import BaseRoleHeader
+from .base import BaseRole
+from ..headers import BaseRoleHeader
 
 
 @dataclass

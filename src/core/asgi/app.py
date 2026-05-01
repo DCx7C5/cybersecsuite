@@ -27,8 +27,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from core.endpoints import mount_app_routers
-from logger import getLogger
+from core.types.endpoints import mount_app_routers
+from legacy.logger import getLogger
 
 log = getLogger(__name__)
 
@@ -90,7 +90,7 @@ def create_app() -> FastAPI:
 
     # Mount core endpoints (marketplace API)
     try:
-        from core.endpoints.marketplace import router as marketplace_router
+        from core.types.endpoints.marketplace import router as marketplace_router
         _app.include_router(marketplace_router)
         log.info("Mounted core endpoints: marketplace")
     except Exception as e:

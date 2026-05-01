@@ -5,8 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
-from core.entities.base import BaseEntity
-from core.types import BaseAccountHeader
+from .base import BaseEntity
+from ..headers import BaseAccountHeader
 
 
 @dataclass

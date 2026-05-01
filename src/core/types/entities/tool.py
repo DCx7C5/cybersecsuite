@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from core.entities.base import BaseTool, BaseSkill
-from core.entities.headers.tool import ToolHeader
+from .base import BaseTool, BaseSkill
+from .headers.tool import ToolHeader
 
 
 @dataclass

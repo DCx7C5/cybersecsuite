@@ -5,8 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from core.entities.base import BaseAgent
-from core.types import BaseAgentHeader
+from .base import BaseAgent
+from ..headers import BaseAgentHeader
 
 
 @dataclass

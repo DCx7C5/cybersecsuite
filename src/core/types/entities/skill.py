@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-from core.entities.base import BaseSkill
-from core.types import BaseSkillHeader
+from .base import BaseSkill
+from ..headers import BaseSkillHeader
 
 
 @dataclass

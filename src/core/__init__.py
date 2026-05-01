@@ -29,7 +29,7 @@ from .exceptions import (
 )
 
 # Entity framework & base classes
-from .entities import (
+from .types.entities import (
     Account,
     Agent,
     BaseEntity,

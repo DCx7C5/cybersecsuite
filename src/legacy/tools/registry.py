@@ -3,8 +3,8 @@ import redis.asyncio as aioredis
 
 from typing import Dict, List, Optional
 
-from core.entities import BaseTool
-from core.entities.headers.tool import ToolHeader
+from core.types.entities import BaseTool
+from core.types.entities.headers.tool import ToolHeader
 
 
 class ToolRegistry:

@@ -1,7 +1,6 @@
 """Entity metadata headers — re-exported from core.types for backward compatibility."""
 
-# Backward compatibility: import from canonical location in types/
-from core.types import (
+from ...headers import (
     BaseAccountHeader,
     BaseAgentHeader,
     BaseHeader,

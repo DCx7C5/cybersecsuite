@@ -36,6 +36,20 @@ from .context import (
     ExecutionContext,
     ModelContext,
 )
+from .entities import (
+    Account,
+    Agent,
+    BaseAgent,
+    BaseEntity,
+    BaseRole,
+    BaseSkill,
+    BaseTool,
+    Role,
+    Skill,
+    Tool as ToolEntity,
+    ToolHeader,
+    get_role,
+)
 from .headers import (
     BaseAccountHeader,
     BaseAgentHeader,
@@ -53,6 +67,7 @@ from .ollama import (
     OllamaHealthCheck,
     OllamaModel,
 )
+from .endpoints import mount_app_routers, router as marketplace_router
 
 __all__ = [
     # A2A Streaming
@@ -88,6 +103,19 @@ __all__ = [
     "ContextConfig",
     "ExecutionContext",
     "ModelContext",
+    # Entities
+    "Account",
+    "Agent",
+    "BaseAgent",
+    "BaseEntity",
+    "BaseRole",
+    "BaseSkill",
+    "BaseTool",
+    "Role",
+    "Skill",
+    "ToolEntity",
+    "ToolHeader",
+    "get_role",
     # Entity headers
     "BaseAccountHeader",
     "BaseAgentHeader",
@@ -106,4 +134,7 @@ __all__ = [
     "OllamaExecutionContext",
     "OllamaHealthCheck",
     "OllamaModel",
+    # Endpoints
+    "mount_app_routers",
+    "marketplace_router",
 ]
