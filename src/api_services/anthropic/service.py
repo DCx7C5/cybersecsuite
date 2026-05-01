@@ -1,6 +1,5 @@
 """Anthropic API service provider."""
 
-import json
 import logging
 import os
 from typing import Any, AsyncIterator, Optional

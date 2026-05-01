@@ -1,11 +1,10 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
 from typing import Dict, List, Optional, Set
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 
-from src.core.types.capabilities import CapabilityType, CapabilityRegistry as CapabilityRegistryType
-from src.core.types.api_services import BaseApiServiceClient
+from src.core.types.capabilities import CapabilityType
 
 
 logger = logging.getLogger(__name__)

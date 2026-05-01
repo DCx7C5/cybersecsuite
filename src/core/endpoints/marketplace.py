@@ -267,9 +267,6 @@ async def list_marketplace_items(
             Agent,
             Skill,
             MarketplaceMCP,
-            Plugin,
-            Workflow,
-            MarketplaceAsset,
         )
         
         items = []
@@ -278,8 +275,6 @@ async def list_marketplace_items(
         agents = await Agent.all() if not kind or kind == "agent" else []
         skills = await Skill.all() if not kind or kind == "skill" else []
         mcps = await MarketplaceMCP.all() if not kind or kind == "mcp" else []
-        plugins = await Plugin.all() if not kind or kind == "plugin" else []
-        workflows = await Workflow.all() if not kind or kind == "workflow" else []
         
         # Combine all items
         for agent in agents:
@@ -365,8 +360,6 @@ async def get_marketplace_item(item_id: str) -> dict:
             Agent,
             Skill,
             MarketplaceMCP,
-            Plugin,
-            Workflow,
         )
         
         # Convert kebab-case to title case for search

@@ -4,7 +4,7 @@ Separates user/conversation context (what we're talking about)
 from model context (what the model can do).
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional
 

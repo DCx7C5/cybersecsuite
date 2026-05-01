@@ -4,9 +4,9 @@ Ollama is treated as a special case in Phase 0.0+ to ensure feature parity
 with cloud LLM providers (streaming, vision, tools, etc.).
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 

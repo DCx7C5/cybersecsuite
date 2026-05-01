@@ -45,7 +45,6 @@ class AnthropicErrorMapper(ErrorMapper):
     def map_error(error: Exception) -> Exception:
         """Map Anthropic error to unified type."""
         error_str = str(error).lower()
-        error_type = type(error).__name__
         
         # Extract status code if present
         status_code = AnthropicErrorMapper.extract_status_code(str(error))
@@ -108,7 +107,6 @@ class OpenAIErrorMapper(ErrorMapper):
     def map_error(error: Exception) -> Exception:
         """Map OpenAI error to unified type."""
         error_str = str(error).lower()
-        error_type = type(error).__name__
         
         # Extract status code if present
         status_code = OpenAIErrorMapper.extract_status_code(str(error))
@@ -171,7 +169,6 @@ class OllamaErrorMapper(ErrorMapper):
     def map_error(error: Exception) -> Exception:
         """Map Ollama error to unified type."""
         error_str = str(error).lower()
-        error_type = type(error).__name__
         
         # Extract status code if present
         status_code = OllamaErrorMapper.extract_status_code(str(error))

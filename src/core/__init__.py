@@ -61,6 +61,31 @@ from .types.base_protocols import BaseCommunicator
 # )
 
 __all__ = [
+    # Exceptions (Layer 1-2-3)
+    "CSSException",
+    "LLMApiServiceError",
+    "ApiKeyMissingError",
+    "ApiKeyInvalidError",
+    "ProviderConnectionError",
+    "RateLimitError",
+    "ModelNotFoundError",
+    "FeatureNotSupportedError",
+    "InvalidParameterError",
+    "StreamingError",
+    "ProviderTimeoutError",
+    "LLMHarnessError",
+    "ContextError",
+    "CapabilityDiscoveryError",
+    "ProviderRegistryError",
+    "A2AStreamingError",
+    "ResponseInjectionError",
+    "ModelExecutionError",
+    "ConfigurationError",
+    "ValidationError",
+    "OllamaError",
+    "OllamaConnectionError",
+    "OllamaModelNotFoundError",
+    "OllamaModelLoadError",
     # Entity framework
     "Account",
     "Agent",

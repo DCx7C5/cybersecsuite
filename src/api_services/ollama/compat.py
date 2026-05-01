@@ -24,7 +24,6 @@ from core.types.api_services import (
 from core.exceptions import (
     OllamaConnectionError,
     OllamaModelNotFoundError,
-    OllamaModelLoadError,
     GatewayError,
     AuthError,
 )
@@ -275,7 +274,6 @@ class OllamaClientCompat(BaseApiServiceClient):
     
     async def _stream_chunks(self, resp) -> AsyncIterator[StreamChunk]:
         """Parse streaming response."""
-        import json
         
         try:
             async for line in resp.content:
@@ -326,7 +324,6 @@ class OllamaClientCompat(BaseApiServiceClient):
     
     def _parse_buffered_response(self, data: dict) -> StreamChunk:
         """Parse buffered response to complete StreamChunk."""
-        import json
         
         text = ""
         for choice in data.get("choices", []):

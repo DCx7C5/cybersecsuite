@@ -12,7 +12,7 @@ from core.types import (
     LLMResponse,
     ProviderType,
 )
-from core.retry import RetryOrchestrator, RetryConfig
+from core.retry import RetryOrchestrator
 
 logger = logging.getLogger(__name__)
 

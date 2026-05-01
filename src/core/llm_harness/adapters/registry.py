@@ -1,7 +1,6 @@
 """Provider Registry — lazy-loads 24 LLM providers without circular imports."""
 
-from typing import Optional, Dict, Type
-from abc import ABC
+from typing import Dict
 
 from src.core.types.api_services import BaseApiServiceClient
 

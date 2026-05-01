@@ -4,7 +4,7 @@ from typing import Optional, List, AsyncIterator
 import logging
 
 from src.core.types.api_services import BaseApiServiceClient, StreamChunk, Message, Tool, ModelMetadata
-from src.core.types.ollama import OllamaModel, OllamaConfig, OllamaExecutionContext
+from src.core.types.ollama import OllamaConfig, OllamaExecutionContext
 
 
 logger = logging.getLogger(__name__)

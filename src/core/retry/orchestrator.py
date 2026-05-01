@@ -83,7 +83,6 @@ class RetryOrchestrator:
             RetryableErrorType indicating error category
         """
         error_str = str(error).lower()
-        error_type = type(error).__name__.lower()
         
         # Timeout errors
         if any(word in error_str for word in ['timeout', 'timed out', 'read timed out']):
