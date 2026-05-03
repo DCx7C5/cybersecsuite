@@ -1,1 +1,37 @@
-# Module for Qwen3-0.6B via ollama docker compose service as Triage, Routing and Binary Decision Background Process
+"""Triage: Background LLM for classification and routing."""
+
+import logging
+from css.core.logger import getLogger
+
+logger = getLogger(__name__)
+
+from .engine import TriageEngine
+from .models import TriageRequest, TriageResult
+from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
+from .exceptions import (
+    BaseTriageException,
+    TriageExecutionError,
+    TriageClassificationError,
+)
+
+__all__ = [
+    # Engine
+    "TriageEngine",
+    
+    # Models
+    "TriageRequest",
+    "TriageResult",
+    
+    # Enums
+    "TriageStatus",
+    "TriageCategory",
+    "TriageDecision",
+    "SeverityLevel",
+    
+    # Exceptions
+    "BaseTriageException",
+    "TriageExecutionError",
+    "TriageClassificationError",
+]
+
+logger.info("Triage module loaded")
