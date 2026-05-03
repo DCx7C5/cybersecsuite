@@ -16,6 +16,7 @@ from .enums import (
     ForensicIOCStatus,
 )
 from .scope import ProjectScope, SessionScope
+from .team import Team
 
 __all__ = [
     "RedBlueMode",
@@ -29,4 +30,5 @@ __all__ = [
     "ForensicIOCStatus",
     "ProjectScope",
     "SessionScope",
+    "Team",
 ]
