@@ -1,17 +1,12 @@
 """Integration test: Retry orchestrator + error mapping (Issues #2 + #3)."""
 
 import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock, patch
 
 from core.types.api_services import ProviderType
 from core.retry import RetryOrchestrator, RetryConfig
 from core.exceptions import (
     AuthError,
     RateLimitError,
-    TimeoutError,
-    GatewayError,
-    UnknownError,
 )
 
 

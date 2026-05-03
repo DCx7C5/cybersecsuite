@@ -116,11 +116,11 @@ The following agents are defined in templates and available via A2A routing, eve
 
 ```yaml
 ---
-name: agent-name          # matches filename (kebab-case)
+name: agents-name          # matches filename (kebab-case)
 description: "..."        # single-line trigger description for routing
 model: sonnet             # haiku | sonnet | opus | deepseek-v3 | gemini-2.0-flash | ...
 maxTurns: 30              # conversation turn limit
-tools:                    # tools this agent may use
+tools:                    # tools this agents may use
   - Read
   - Bash
 disallowedTools:          # optional — read-only analysts
@@ -136,7 +136,7 @@ Model can be any provider-specific model ID (routed through AI Proxy). See [sdk-
 ## A2A Invocation
 
 ```bash
-# Route to specific agent
+# Route to specific agents
 @cybersec-analyst CVE-2024-1234
 
 # Route to orchestrator (auto-routes to best specialist)

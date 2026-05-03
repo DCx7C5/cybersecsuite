@@ -58,7 +58,7 @@
 **Task:** Update worker test fixtures to load full model graph
 ```python
 # Current (broken):
-modules_to_load = ["db.models.scope", "db.models.worker"]
+modules_to_load = ["db.models.scopes", "db.models.worker"]
 
 # Needed:
 modules_to_load = ["db.models"]  # Load ALL models

@@ -9,8 +9,8 @@ from __future__ import annotations
 import os
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 _VAULT_PATH = os.getenv("CYBERSEC_VAULT_PATH", "./data/vault")
 
@@ -77,8 +77,8 @@ async def vault_ingest(args: dict[str, Any]) -> JsonDict:
         return sdk_error("'source' is required")
 
     try:
-        from pathlib import Path
         import time
+        from pathlib import Path
 
         vm = _get_vault()
 

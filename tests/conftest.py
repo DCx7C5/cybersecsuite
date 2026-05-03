@@ -16,7 +16,7 @@ if str(SRC_PATH) not in sys.path:
 import pytest  # noqa: E402 — must come after sys.path manipulation
 import pytest_asyncio  # noqa: E402
 from tortoise import Tortoise  # noqa: E402
-from core.db.models import ProjectScope, SessionScope  # noqa: E402
+from css.core.db.models.scope import ProjectScope, SessionScope  # noqa: E402
 
 
 @pytest.fixture(scope="session")
@@ -81,7 +81,7 @@ async def db():
     
     # Only load the minimal models needed for worker tests
     modules_to_load = [
-        "db.models.scope",  # Project and Session
+        "db.models.scopes",  # Project and Session
         "db.models.worker",  # Our new worker models
     ]
     

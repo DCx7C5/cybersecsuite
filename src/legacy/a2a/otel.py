@@ -6,7 +6,7 @@ Provides tracing for A2A server operations:
 - SSE streaming
 - Performance baselines
 
-Service Name: cybersecsuite-a2a
+Service Name: cybersecsuite-google_a2a
 """
 
 
@@ -18,7 +18,7 @@ from opentelemetry import trace, metrics
 from opentelemetry.trace import Status, StatusCode
 from opentelemetry.trace.span import Span
 
-logger = logging.getLogger("a2a.otel")
+logger = logging.getLogger("google_a2a.otel")
 
 # Initialize tracer and meter
 _tracer = trace.get_tracer(__name__)
@@ -32,47 +32,47 @@ BASELINE_SSE_STREAM_P95_MS = 100
 
 # Create metrics
 jsonrpc_method_duration = _meter.create_histogram(
-    name="a2a.jsonrpc.duration",
+    name="google_a2a.jsonrpc.duration",
     description="JSON-RPC method execution time (ms)",
     unit="ms",
 )
 
 task_send_duration = _meter.create_histogram(
-    name="a2a.task.send.duration",
+    name="google_a2a.task.send.duration",
     description="Task send operation duration (ms)",
     unit="ms",
 )
 
 task_get_duration = _meter.create_histogram(
-    name="a2a.task.get.duration",
+    name="google_a2a.task.get.duration",
     description="Task get operation duration (ms)",
     unit="ms",
 )
 
 task_cancel_duration = _meter.create_histogram(
-    name="a2a.task.cancel.duration",
+    name="google_a2a.task.cancel.duration",
     description="Task cancel operation duration (ms)",
     unit="ms",
 )
 
 sse_stream_duration = _meter.create_histogram(
-    name="a2a.sse.stream.duration",
+    name="google_a2a.sse.stream.duration",
     description="SSE stream connection duration (ms)",
     unit="ms",
 )
 
 jsonrpc_errors = _meter.create_counter(
-    name="a2a.jsonrpc.errors",
+    name="google_a2a.jsonrpc.errors",
     description="Total JSON-RPC errors",
 )
 
 task_counter = _meter.create_counter(
-    name="a2a.task.total",
+    name="google_a2a.task.total",
     description="Total tasks processed by action",
 )
 
 active_sessions = _meter.create_gauge(
-    name="a2a.sessions.active",
+    name="google_a2a.sessions.active",
     description="Active A2A sessions",
 )
 
@@ -87,7 +87,7 @@ class A2ATracingContext:
     
     def __enter__(self) -> Span:
         """Start a span for this operation."""
-        self.span = _tracer.start_span(f"a2a.{self.method}")
+        self.span = _tracer.start_span(f"google_a2a.{self.method}")
         if self.request_id:
             self.span.set_attribute("request_id", self.request_id)
         self.span.set_attribute("method", self.method)

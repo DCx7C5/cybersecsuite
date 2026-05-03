@@ -1,4 +1,4 @@
-"""Integration tests for agent SDK with typed hook system."""
+"""Integration tests for agents SDK with typed hook system."""
 
 import sys
 import time
@@ -12,7 +12,7 @@ if str(SRC_PATH) not in sys.path:
 
 
 class TestAgentSDKHooksIntegration:
-    """Test agent SDK integration with typed hook registry."""
+    """Test agents SDK integration with typed hook registry."""
 
     def test_agent_sdk_build_options_with_typed_hooks(self):
         """Agent SDK should build options with typed hook registry."""
@@ -93,7 +93,7 @@ class TestAgentSDKHooksIntegration:
         assert opts1.hooks == registry._hooks
 
     def test_pre_tool_write_guard_in_hooks(self):
-        """Pre-tool write guard should be in PreToolUse hooks."""
+        """Pre-tools write guard should be in PreToolUse hooks."""
         from a2a.agent_sdk import build_agent_options
         
         options = build_agent_options()

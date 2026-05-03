@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 
 @tool(
@@ -14,9 +14,9 @@ from ..helpers import JsonDict, sdk_result, sdk_error
 )
 async def check_quota(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_all_providers
-        from ai_proxy.services.rate_limiter import rate_limiter
         from ai_proxy.routing.combo import budget_guard
+        from ai_proxy.services.rate_limiter import rate_limiter
+        from core.registries.providers import get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -91,7 +91,7 @@ async def cost_report(args: dict[str, Any]) -> JsonDict:
 )
 async def list_models_catalog(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import list_all_models, get_all_providers
+        from core.registries.providers import get_all_providers, list_all_models
     except ImportError:
         return sdk_error("ai_proxy not available")
 

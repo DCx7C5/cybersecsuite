@@ -5,8 +5,8 @@ import os
 import time
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 _START_TIME = time.time()
 
@@ -14,10 +14,10 @@ _START_TIME = time.time()
 @tool("get_health", "Health check: uptime, circuit breakers, provider status, rate limits, cache.", {})
 async def get_health(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status
         from ai_proxy.services.rate_limiter import rate_limiter
         from ai_proxy.services.usage_tracker import usage_tracker
+        from core.registries.providers import get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -64,10 +64,10 @@ async def get_health(args: dict[str, Any]) -> JsonDict:
 )
 async def get_provider_metrics(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts
-        from ai_proxy.services.usage_tracker import usage_tracker
         from ai_proxy.services.rate_limiter import rate_limiter
+        from ai_proxy.services.usage_tracker import usage_tracker
+        from core.registries.providers import get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -110,8 +110,8 @@ async def get_provider_metrics(args: dict[str, Any]) -> JsonDict:
 @tool("get_session_snapshot", "Full session snapshot: cost, tokens, recent requests, budget, circuit breakers.", {})
 async def get_session_snapshot(args: dict[str, Any]) -> JsonDict:
     try:
+        from ai_proxy.routing.combo import budget_guard, get_circuit_breaker_status
         from ai_proxy.services.usage_tracker import usage_tracker
-        from ai_proxy.routing.combo import get_circuit_breaker_status, budget_guard
     except ImportError:
         return sdk_error("ai_proxy not available")
 

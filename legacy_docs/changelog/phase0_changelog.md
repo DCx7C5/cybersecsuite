@@ -314,7 +314,7 @@ awareness = WorkerContextAwareness(worker_id="worker_1", session_id=123)
 awareness.architecture.current_layer = "Layer 3"
 awareness.architecture.current_component = "ai_proxy"
 
-# Track scope
+# Track scopes
 awareness.scope.scope_level = "session"
 awareness.scope.session_id = 123
 
@@ -330,7 +330,7 @@ awareness.api.record_endpoint_call("/v1/models", latency_ms=12.5)
 summary = awareness.get_context_summary()
 # {
 #   "architecture": {"current_layer": "Layer 3", "recent_components": ["ai_proxy"]},
-#   "scope": {"scope_level": "session"},
+#   "scopes": {"scope_level": "session"},
 #   "hot_patterns": ["rate_limiting", "provider_fallback"],
 #   "hot_endpoints": ["/v1/chat/completions", "/v1/models"]
 # }
@@ -401,7 +401,7 @@ awareness = await WorkerContextAwareness.load_from_db(worker_id, session_id)
   "architecture": {
     "current_layer": "Layer 3",
     "current_component": "ai_proxy",
-    "recent_components": ["a2a", "ai_proxy"]
+    "recent_components": ["google_a2a", "ai_proxy"]
   },
   "scope": {
     "scope_level": "session",

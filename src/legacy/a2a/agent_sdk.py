@@ -32,7 +32,7 @@ Memory-enhanced streaming
 across sessions. Enable via ``use_memory_runner=True`` in ``run_agent_stream``.
 
 Usage:
-    from a2a.agent_sdk import build_agent_options, run_agent_query
+    from google_a2a.agent_sdk import build_agent_options, run_agent_query
 
     options = build_agent_options()
     result = await run_agent_query("cybersec-analyst", "Triage CVE-2024-1234")
@@ -74,7 +74,7 @@ except ImportError:  # optional during minimal/test installs
     get_registry = None  # type: ignore[assignment]
     HookInstrument = None  # type: ignore[assignment]
 
-logger = logging.getLogger("a2a.agent_sdk")
+logger = logging.getLogger("google_a2a.agent_sdk")
 
 
 # ── Module-level caches ──────────────────────────────────────────────────────

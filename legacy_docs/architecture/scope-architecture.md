@@ -53,7 +53,7 @@ $(pwd)/.css/                                     PROJECT SCOPE (read-write)
 
 **Database Link**:
 ```python
-# src/db/models/scope.py → Application model
+# src/db/models/scopes.py → Application model
 class Application(Model):
     id = fields.IntField(primary_key=True)
     name = fields.CharField(max_length=256, unique=True)      # e.g., "claude"
@@ -132,7 +132,7 @@ $(pwd)/.css/
 
 **Database Link**:
 ```python
-# src/db/models/scope.py → Project model
+# src/db/models/scopes.py → Project model
 class Project(Model):
     id = fields.IntField(primary_key=True)
     name = fields.CharField(max_length=256, unique=True)
@@ -220,7 +220,7 @@ $(pwd)/.css/runtime-abc123/worktree-xyz789/
 
 **Database Link**:
 ```python
-# src/db/models/scope.py → Session model (forensic root)
+# src/db/models/scopes.py → Session model (forensic root)
 class Session(Model):
     project = fields.ForeignKeyField("models.Project", ...)
     session_id = fields.CharField(max_length=128, unique=True, db_index=True)  # ← 'xyz789'
@@ -264,10 +264,10 @@ class ScopedEntry(Model):
 ### Scope Access Rules
 
 ```python
-# Pseudo-code for scope permission checking
+# Pseudo-code for scopes permission checking
 def can_access(user_context, scope_level, resource):
     """
-    Determine if user can read/write in scope.
+    Determine if user can read/write in scopes.
     
     Read permissions:
       - Global: all authenticated users (cascade down)
@@ -325,7 +325,7 @@ class ScopedEntry(Model):
     project = fields.ForeignKeyField("models.Project", null=True, on_delete=CASCADE)
     session = fields.ForeignKeyField("models.Session", null=True, on_delete=CASCADE)
     
-    # 5-level scope columns (filesystem-backed)
+    # 5-level scopes columns (filesystem-backed)
     runtime_id = fields.CharField(max_length=64, null=True, db_index=True)  # runtime-<rid>
     worktree_path = fields.CharField(max_length=1024, null=True)             # Full path
     scope_level = fields.CharField(max_length=16, default="session")         # Level name
@@ -396,7 +396,7 @@ class WorkerContext(Model):
 ```python
 def resolve_scope_path(scope_level: str, context: Dict) -> str:
     """
-    Resolve filesystem path for scope level.
+    Resolve filesystem path for scopes level.
     
     Args:
         scope_level: 'global', 'app', 'project', 'runtime', 'session'
@@ -433,7 +433,7 @@ def resolve_scope_path(scope_level: str, context: Dict) -> str:
             f"worktree-{context['session_id']}"
         )
     
-    raise ValueError(f"Unknown scope level: {scope_level}")
+    raise ValueError(f"Unknown scopes level: {scope_level}")
 ```
 
 ### Load Scope Configuration
@@ -441,7 +441,7 @@ def resolve_scope_path(scope_level: str, context: Dict) -> str:
 ```python
 async def load_scope_config(scope_level: str, context: Dict) -> Dict:
     """
-    Load configuration for scope level from filesystem + database.
+    Load configuration for scopes level from filesystem + database.
     
     Cascades: session → runtime → project → app → global
     """
@@ -464,7 +464,7 @@ async def load_scope_config(scope_level: str, context: Dict) -> Dict:
     elif scope_level == "session":
         session = await Session.get(path=scope_path)
         config["session_id"] = session.session_id
-        config["agent"] = session.agent
+        config["agents"] = session.agent
         config["mode"] = session.mode
     
     return config
@@ -484,7 +484,7 @@ async def check_scope_permission(
     resource_id: str
 ) -> bool:
     """
-    Check if user can perform action on resource in scope.
+    Check if user can perform action on resource in scopes.
     """
     
     if action == "read":
@@ -501,7 +501,7 @@ async def check_scope_permission(
             return resource.session.user == user
     
     elif action == "write":
-        # Write requires ownership at that scope
+        # Write requires ownership at that scopes
         if scope_level == "global":
             return user.is_system_admin()
         elif scope_level == "app":

@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.app.json",
-  "compilerOptions": {
-    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
-  },
-  "include": ["tests/**/*.test.tsx", "tests/**/*.test.ts", "tests/**/*.spec.ts", "test-types.ts"]
-}

@@ -1,9 +1,9 @@
 """
-Comprehensive tests for scope-aware cache invalidation (t363).
+Comprehensive tests for scopes-aware cache invalidation (t363).
 
 Tests:
 - Scope-aware cache key generation
-- Cascade invalidation on parent scope change
+- Cascade invalidation on parent scopes change
 - Cache consistency verification
 - 100% coverage of invalidation logic
 """
@@ -16,10 +16,10 @@ from db.managers.cache_manager import (
 
 
 class TestCacheKeyGeneration:
-    """Test scope-aware cache key generation."""
+    """Test scopes-aware cache key generation."""
     
     def test_cache_scope_enum_values(self) -> None:
-        """Test that cache scope enum has all required values."""
+        """Test that cache scopes enum has all required values."""
         assert CacheScope.GLOBAL.value == "global"
         assert CacheScope.APP.value == "app"
         assert CacheScope.PROJECT.value == "project"
@@ -35,7 +35,7 @@ class TestCacheKeyGeneration:
 
 
 class TestCacheManager:
-    """Test cache manager with scope awareness."""
+    """Test cache manager with scopes awareness."""
     
     @pytest.fixture
     def cache_manager(self) -> CacheManager:
@@ -48,7 +48,7 @@ class TestCacheManager:
         assert hasattr(cache_manager, 'SCOPE_HIERARCHY')
     
     def test_scope_hierarchy_order(self, cache_manager: CacheManager) -> None:
-        """Test that scope hierarchy is in correct order."""
+        """Test that scopes hierarchy is in correct order."""
         hierarchy = cache_manager.SCOPE_HIERARCHY
         assert hierarchy[0] == CacheScope.GLOBAL
         assert hierarchy[1] == CacheScope.APP
@@ -58,7 +58,7 @@ class TestCacheManager:
 
 
 class TestCacheInvalidation:
-    """Test scope-aware cache invalidation."""
+    """Test scopes-aware cache invalidation."""
     
     @pytest.fixture
     def cache_manager(self) -> CacheManager:
@@ -66,11 +66,11 @@ class TestCacheInvalidation:
         return CacheManager()
     
     def test_cache_manager_has_scope_hierarchy(self, cache_manager: CacheManager) -> None:
-        """Test that cache manager has scope hierarchy."""
+        """Test that cache manager has scopes hierarchy."""
         assert hasattr(cache_manager, 'SCOPE_HIERARCHY')
         assert len(cache_manager.SCOPE_HIERARCHY) == 5
         
-        # Verify hierarchy order (higher to lower scope)
+        # Verify hierarchy order (higher to lower scopes)
         levels = [scope.value for scope in cache_manager.SCOPE_HIERARCHY]
         assert levels == ["global", "app", "project", "runtime", "session"]
 
@@ -87,7 +87,7 @@ class TestCacheConsistency:
         self,
         cache_manager: CacheManager,
     ) -> None:
-        """Test that scope hierarchy is well-defined."""
+        """Test that scopes hierarchy is well-defined."""
         hierarchy = cache_manager.SCOPE_HIERARCHY
         
         # All scopes should be unique

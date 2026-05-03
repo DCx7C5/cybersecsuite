@@ -228,7 +228,7 @@ def run_ruff_fix(files: List[str]) -> Tuple[int, str]:
         log.debug(f"Ruff fix completed with code {result.returncode}")
         
         # Parse output for file count
-        fixed_count = output.count("fixed")
+        output.count("fixed")
         return len(files), output
     except subprocess.TimeoutExpired:
         log.error("Ruff fix timed out")
@@ -296,7 +296,6 @@ async def on_agent_start(
     
     audit({"event": "AgentStart", "agent": agent_name, "session_id": session_id, "target_files": len(target_files or [])})
     
-    profile = f"Agent: {agent_name}"
     emit(hook_context(f"""🕵️ **AGENT STARTED: {agent_name}**
 ⏱  {start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}
 🎯 Target files: {len(target_files or [])}

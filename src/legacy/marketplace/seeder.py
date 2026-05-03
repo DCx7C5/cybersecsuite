@@ -31,7 +31,6 @@ async def seed_marketplace_index(
             "total_created": int,
         }
     """
-    from core.marketplace.models import MarketplaceItem
 
     # Import DB models dynamically to avoid circular imports
     try:

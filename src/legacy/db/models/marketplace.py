@@ -62,7 +62,7 @@ class MarketplaceMCP(Model):
         indexes = [("category", "status"), ("category", "version")]
 
 
-class Skill(Model):
+class MarketplaceSkill(Model):
     """Model for marketplace skills."""
 
     id = fields.BigIntField(primary_key=True)
@@ -84,11 +84,12 @@ class Skill(Model):
 
     class Meta:
         table = "marketplace_skills"
+        table_description = "Marketplace skills"
         ordering = ["category", "name"]
         indexes = [("category", "status"), ("category", "version")]
 
 
-class Agent(Model):
+class MarketplaceAgent(Model):
     """Model for marketplace agents."""
 
     id = fields.BigIntField(primary_key=True)
@@ -116,7 +117,7 @@ class Agent(Model):
         indexes = [("category", "status"), ("category", "model")]
 
 
-class Plugin(Model):
+class MarketplacePlugin(Model):
     """Model for marketplace browser plugins."""
 
     id = fields.BigIntField(primary_key=True)
@@ -143,7 +144,7 @@ class Plugin(Model):
         indexes = [("category", "status"), ("category", "browser_types")]
 
 
-class Workflow(Model):
+class MarketplaceWorkflow(Model):
     """Model for marketplace workflows."""
 
     id = fields.BigIntField(primary_key=True)

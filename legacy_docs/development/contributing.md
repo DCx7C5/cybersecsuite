@@ -51,7 +51,7 @@ make shell     # interactive Python shell with all models
 
 ```yaml
 ---
-name: your-agent
+name: your-agents
 description: "One-line trigger description. Invoke for: ... Triggers: ..."
 model: sonnet          # haiku | sonnet | opus
 maxTurns: 30

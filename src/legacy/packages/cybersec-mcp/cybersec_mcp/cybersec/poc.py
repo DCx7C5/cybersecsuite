@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 
 @tool(
@@ -76,9 +76,9 @@ async def query_pocs(args: dict[str, Any]) -> JsonDict:
 )
 async def add_poc(args: dict[str, Any]) -> JsonDict:
     try:
-        from db.models.poc import ProofOfConcept
         from db.models.cve import CVEIntel
         from db.models.enums import PocStatus
+        from db.models.poc import ProofOfConcept
     except ImportError:
         return sdk_error("db.models.poc not available — ensure src/ is in PYTHONPATH")
 

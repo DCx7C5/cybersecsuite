@@ -4,33 +4,33 @@ Assembles all 92+ tools into a single SdkMcpServer instance.
 """
 from __future__ import annotations
 
+from ..dystopian import _ALL_DYSTOPIAN_TOOLS as _dystopian_tools
 from ..sdk_compat import create_sdk_mcp_server
-from .findings import ALL_TOOLS as _findings_tools
+from .agents_beta import ALL_TOOLS as _agents_beta_tools
+from .ai_memory import ALL_TOOLS as _ai_memory_tools
+from .cache import ALL_TOOLS as _cache_tools
+from .canvas_tool import ALL_TOOLS as _canvas_tools
+from .cases import ALL_TOOLS as _cases_tools
 from .db import ALL_TOOLS as _db_tools
+from .findings import ALL_TOOLS as _findings_tools
+from .health import ALL_TOOLS as _health_tools
 from .intelligence import ALL_TOOLS as _intelligence_tools
 from .layers import ALL_TOOLS as _layers_tools
-from .cache import ALL_TOOLS as _cache_tools
-from .proxy import ALL_TOOLS as _proxy_tools
-from .session import ALL_TOOLS as _session_tools
-from .cases import ALL_TOOLS as _cases_tools
+from .playwright_tool import ALL_TOOLS as _playwright_tools
 from .poc import ALL_TOOLS as _poc_tools
+from .proxy import ALL_TOOLS as _proxy_tools
+from .qol_tools import ALL_TOOLS as _qol_tools
 from .quo_pricing import ALL_TOOLS as _quo_pricing_tools
-from .ai_memory import ALL_TOOLS as _ai_memory_tools
-from .web_search import ALL_TOOLS as _web_search_tools
-from .sync import ALL_TOOLS as _sync_tools
-from .health import ALL_TOOLS as _health_tools
-from .template import ALL_TOOLS as _template_tools
+from .session import ALL_TOOLS as _session_tools
 from .skill_manager import ALL_TOOLS as _skill_tools
-from .vault_tool import ALL_TOOLS as _vault_tools
-from .canvas_tool import ALL_TOOLS as _canvas_tools
-from .tool_toggles import ALL_TOOLS as _toggle_tools
 from .structured_extract import ALL_TOOLS as _structured_tools
+from .sync import ALL_TOOLS as _sync_tools
+from .template import ALL_TOOLS as _template_tools
 from .thinking_tool import ALL_TOOLS as _thinking_tools
 from .tool_search import ALL_TOOLS as _tool_search_tools
-from .agents_beta import ALL_TOOLS as _agents_beta_tools
-from .qol_tools import ALL_TOOLS as _qol_tools
-from .playwright_tool import ALL_TOOLS as _playwright_tools
-from ..dystopian import _ALL_DYSTOPIAN_TOOLS as _dystopian_tools
+from .tool_toggles import ALL_TOOLS as _toggle_tools
+from .vault_tool import ALL_TOOLS as _vault_tools
+from .web_search import ALL_TOOLS as _web_search_tools
 
 _ALL_CYBERSEC_TOOLS = (
     _findings_tools

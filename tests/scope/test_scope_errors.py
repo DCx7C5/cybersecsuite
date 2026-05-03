@@ -1,5 +1,5 @@
 """
-Comprehensive tests for scope error handling (t365).
+Comprehensive tests for scopes error handling (t365).
 
 Tests:
 - ScopeError/ScopePermissionError exception classes
@@ -180,12 +180,12 @@ class TestScopeHierarchyError:
     def test_create_hierarchy_error(self) -> None:
         """Test creating hierarchy error."""
         error = ScopeHierarchyError(
-            message="Cannot access child scope",
+            message="Cannot access child scopes",
             source_scope="session",
             target_scope="runtime",
         )
         
-        assert error.message == "Cannot access child scope"
+        assert error.message == "Cannot access child scopes"
         assert error.error_code == "SCOPE_HIERARCHY_ERROR"
         assert error.context.get("source_scope") == "session"
         assert error.context.get("target_scope") == "runtime"

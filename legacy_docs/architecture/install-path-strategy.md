@@ -78,9 +78,9 @@ def get_install_path(item_id: str, item_type: str) -> Path:
     """Return unified install path for an item."""
     if item_type == "mcp":
         return MCP_PATH / item_id
-    elif item_type == "agent":
+    elif item_type == "agents":
         return AGENT_PATH / item_id
-    elif item_type == "skill":
+    elif item_type == "skills":
         return SKILL_PATH / item_id
     else:
         raise ValueError(f"Unknown item type: {item_type}")

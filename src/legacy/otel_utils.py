@@ -130,7 +130,7 @@ def make_async_span_wrapper(
             span_name = span_name_fn(*args, **kwargs)
             attributes = attributes_fn(*args, **kwargs) if attributes_fn else {}
             
-            with SyncSpanContext(tracer, span_name, attributes) as span:
+            with SyncSpanContext(tracer, span_name, attributes):
                 try:
                     result = await func(*args, **kwargs)
                     return result
@@ -162,7 +162,7 @@ def make_sync_span_wrapper(
             span_name = span_name_fn(*args, **kwargs)
             attributes = attributes_fn(*args, **kwargs) if attributes_fn else {}
             
-            with SyncSpanContext(tracer, span_name, attributes) as span:
+            with SyncSpanContext(tracer, span_name, attributes):
                 try:
                     result = func(*args, **kwargs)
                     return result

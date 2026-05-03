@@ -49,7 +49,7 @@ to call these routes, `SdkLabPanel.tsx`, was later refactored:
 ```ts
 // SdkLabPanel.tsx — current code
 const res = await fetchApi<unknown>('/api/agent-query', { ... })
-// ↑ Python a2a endpoint, not /ts/* at all
+// ↑ Python google_a2a endpoint, not /ts/* at all
 ```
 
 ### Git History

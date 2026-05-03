@@ -6,7 +6,6 @@ Referenz:
     src/marketplace/registry.py — MarketplaceRegistry
 """
 import logging
-from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field

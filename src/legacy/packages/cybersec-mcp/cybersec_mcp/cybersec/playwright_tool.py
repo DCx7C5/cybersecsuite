@@ -31,8 +31,8 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
+from ..helpers import sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import sdk_result, sdk_error
 
 logger = logging.getLogger("csmcp.cybersec.playwright_tool")
 
@@ -289,30 +289,30 @@ ALL_TOOLS = [
 async def _select_element(args: dict[str, Any]) -> dict:
     """
     Select an element on the page by CSS selector or XPath.
-    
+
     Returns element properties (tag name, classes, id, visible text) for validation
     before performing actions like fill or click.
     """
     selector = args.get("selector", "")
     strategy = args.get("strategy", "css").lower()
     wait_ms = int(args.get("wait_ms", 5000))
-    
+
     if not selector:
         return sdk_error("selector is required")
     if strategy not in ("css", "xpath"):
         return sdk_error(f"strategy must be 'css' or 'xpath', got '{strategy}'")
-    
+
     try:
         page = await _ensure_page()
-        
+
         # Wait for element to be present
         if strategy == "css":
             locator = page.locator(selector)
         else:
             locator = page.locator(f"xpath={selector}")
-        
+
         await locator.first.wait_for(timeout=wait_ms)
-        
+
         # Extract element properties
         tag_name = await locator.first.evaluate("el => el.tagName.toLowerCase()")
         classes = await locator.first.evaluate("el => el.className")
@@ -320,7 +320,7 @@ async def _select_element(args: dict[str, Any]) -> dict:
         visible_text = await locator.first.inner_text()
         is_visible = await locator.first.is_visible()
         is_enabled = await locator.first.is_enabled()
-        
+
         return sdk_result({
             "selector": selector,
             "strategy": strategy,
@@ -362,35 +362,35 @@ async def _select_element(args: dict[str, Any]) -> dict:
 async def _fill_form(args: dict[str, Any]) -> dict:
     """
     Fill multiple form fields identified by CSS selectors.
-    
+
     Useful for login forms, search boxes, or multi-field inputs.
     Returns success count and any errors encountered.
     """
     elements = args.get("elements", {})
     clear_first = bool(args.get("clear_first", True))
     wait_ms = int(args.get("wait_ms", 3000))
-    
+
     if not elements or not isinstance(elements, dict):
         return sdk_error("elements must be a non-empty dict mapping selectors to values")
-    
+
     try:
         page = await _ensure_page()
         results = {"filled": 0, "failed": 0, "errors": []}
-        
+
         for selector, value in elements.items():
             try:
                 locator = page.locator(selector)
                 await locator.first.wait_for(timeout=wait_ms)
-                
+
                 if clear_first:
                     await locator.first.clear()
-                
+
                 await locator.first.fill(str(value))
                 results["filled"] += 1
             except Exception as exc:
                 results["failed"] += 1
                 results["errors"].append(f"{selector}: {str(exc)[:100]}")
-        
+
         return sdk_result({
             "filled": results["filled"],
             "failed": results["failed"],
@@ -420,28 +420,28 @@ async def _fill_form(args: dict[str, Any]) -> dict:
 async def _click_element(args: dict[str, Any]) -> dict:
     """
     Click an element on the page and optionally wait for navigation/load.
-    
+
     Useful for form submission, button clicks, or link navigation.
     """
     selector = args.get("selector", "")
     wait_ms = int(args.get("wait_ms", 3000))
     wait_after_click_ms = int(args.get("wait_after_click_ms", 500))
-    
+
     if not selector:
         return sdk_error("selector is required")
-    
+
     try:
         page = await _ensure_page()
         locator = page.locator(selector)
-        
+
         # Wait for element and click
         await locator.first.wait_for(timeout=wait_ms)
         await locator.first.click()
-        
+
         # Wait for potential navigation
         if wait_after_click_ms > 0:
             await asyncio.sleep(wait_after_click_ms / 1000.0)
-        
+
         return sdk_result({
             "selector": selector,
             "clicked": True,
@@ -467,16 +467,16 @@ async def _click_element(args: dict[str, Any]) -> dict:
 async def _screenshot_operation(args: dict[str, Any]) -> dict:
     """
     Capture a screenshot of the page or a specific element.
-    
+
     Returns base64-encoded PNG data suitable for embedding in dashboards.
     """
     full_page = bool(args.get("full_page", False))
     selector = args.get("selector")
     timeout_ms = int(args.get("timeout_ms", 5000))
-    
+
     try:
         page = await _ensure_page()
-        
+
         if selector:
             # Screenshot specific element
             locator = page.locator(selector)
@@ -485,7 +485,7 @@ async def _screenshot_operation(args: dict[str, Any]) -> dict:
         else:
             # Screenshot entire page or viewport
             png = await page.screenshot(full_page=full_page, type="png")
-        
+
         return sdk_result({
             "url": page.url,
             "title": await page.title(),
@@ -518,15 +518,15 @@ async def _screenshot_operation(args: dict[str, Any]) -> dict:
 async def _get_page_content(args: dict[str, Any]) -> dict:
     """
     Retrieve page HTML or element HTML content.
-    
+
     Useful for parsing page structure, finding elements, or validating page state.
     """
     selector = args.get("selector")
     max_chars = int(args.get("max_chars", 50000))
-    
+
     try:
         page = await _ensure_page()
-        
+
         if selector:
             # Get specific element HTML
             locator = page.locator(selector)
@@ -536,12 +536,12 @@ async def _get_page_content(args: dict[str, Any]) -> dict:
             # Get full page HTML
             html_content = await page.content()
             content_type = "full_page_html"
-        
+
         # Truncate if necessary
         truncated = len(html_content) > max_chars
         if truncated:
             html_content = html_content[:max_chars]
-        
+
         return sdk_result({
             "url": page.url,
             "selector": selector or "full_page",
@@ -581,16 +581,16 @@ _console_buffer_lock = asyncio.Lock()
 async def _console_handler(msg: Any) -> None:
     """Handle console.log, console.error, etc. from page context."""
     global _console_buffer
-    
+
     msg_type = msg.type or "log"
     text = msg.text or ""
     args = msg.args or []
-    
+
     # Extract stack trace if available (for errors)
     stack_trace = None
     if msg_type == "error" and hasattr(msg, 'stack_trace'):
         stack_trace = str(msg.stack_trace)
-    
+
     async with _console_buffer_lock:
         console_msg = _ConsoleMessage(
             timestamp=time.time(),
@@ -601,7 +601,7 @@ async def _console_handler(msg: Any) -> None:
             url=_page.url if _page else "",
         )
         _console_buffer.append(console_msg)
-        
+
         # Maintain circular buffer
         if len(_console_buffer) > _console_buffer_max:
             _console_buffer = _console_buffer[-_console_buffer_max:]
@@ -636,11 +636,11 @@ async def _setup_console_logging() -> None:
 async def _get_console_logs(args: dict[str, Any]) -> dict:
     """
     Retrieve JavaScript console output from the browser page.
-    
+
     Supports filtering by message type and returns timestamped output
     with error stack traces when available. Useful for debugging
     JavaScript errors during web LLM interaction or form automation.
-    
+
     Returns:
         - timestamp: Unix timestamp when message was logged
         - type: 'log', 'error', 'warning', 'info'
@@ -651,28 +651,28 @@ async def _get_console_logs(args: dict[str, Any]) -> dict:
     """
     message_type = args.get("message_type", "all").lower()
     limit = max(1, min(int(args.get("limit", 50)), 500))
-    
+
     if message_type not in ("log", "error", "warning", "info", "all"):
         return sdk_error(
             f"message_type must be 'log'|'error'|'warning'|'info'|'all', got '{message_type}'"
         )
-    
+
     try:
         # Ensure page exists and console logging is setup
         await _ensure_page()
         if not any(cb for cb in _page._listeners.get("console", []) if callable(cb)):
             await _setup_console_logging()
-        
+
         async with _console_buffer_lock:
             # Filter messages
             if message_type == "all":
                 filtered = _console_buffer
             else:
                 filtered = [m for m in _console_buffer if m.message_type == message_type]
-            
+
             # Get last N messages
             recent = filtered[-limit:] if filtered else []
-            
+
             # Format for output
             formatted_logs = []
             for msg in recent:
@@ -684,7 +684,7 @@ async def _get_console_logs(args: dict[str, Any]) -> dict:
                     "stack_trace": msg.stack_trace,
                     "url": msg.url,
                 })
-            
+
             return sdk_result({
                 "message_type": message_type,
                 "count": len(formatted_logs),

@@ -58,3 +58,7 @@ dump.rdb
 
 resume
 legacy_docs/
+!src/css/modules/cache/
+!src/css/modules/cache/*.py
+!.plan/*.md
+!.plan/session.db

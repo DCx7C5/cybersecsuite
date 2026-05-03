@@ -1,9 +1,9 @@
 """
 A2A JSON-RPC server router (ASGI/Starlette-compatible).
-Mounts at /a2a and serves:
+Mounts at /google_a2a and serves:
   GET  /.well-known/agent.json  → AgentCard
-  POST /a2a                     → JSON-RPC dispatch
-  GET  /a2a/stream/{task_id}    → SSE streaming
+  POST /google_a2a                     → JSON-RPC dispatch
+  GET  /google_a2a/stream/{task_id}    → SSE streaming
 """
 
 
@@ -51,8 +51,8 @@ class A2AServer:
         self.agent = agent
         self.router = Router(routes=[
             Route("/.well-known/agent.json", self._agent_card, methods=["GET"]),
-            Route("/a2a", self._jsonrpc, methods=["POST"]),
-            Route("/a2a/stream/{task_id}", self._sse_stream, methods=["GET"]),
+            Route("/google_a2a", self._jsonrpc, methods=["POST"]),
+            Route("/google_a2a/stream/{task_id}", self._sse_stream, methods=["GET"]),
         ])
 
     # ── Agent Card ────────────────────────────────────────────────────────────

@@ -37,7 +37,7 @@ async def handle_on_first_setup_event(event: OnFirstSetupEvent) -> dict:
         try:
             from core.db.models.scope import ProjectScope
             # Use app_home as project identifier
-            app_home = event.get("app_home", str(Path.home() / ".cybersecsuite"))
+            event.get("app_home", str(Path.home() / ".cybersecsuite"))
             project = await ProjectScope.get_or_create(
                 name="default",
                 defaults={"description": "Default project scope for marketplace items"}

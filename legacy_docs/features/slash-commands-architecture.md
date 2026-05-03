@@ -70,7 +70,7 @@ export interface Command {
   label: string                 // "Analyze IOC"
   description: string           // "Analyze selected IOC (type auto-detected)"
   icon: string                  // 'lucide' icon name
-  category: 'tool' | 'action' | 'nav' | 'help'
+  category: 'tools' | 'action' | 'nav' | 'help'
   template?: string             // "Analyze:\n{context}"
   requiresSelection?: boolean    // If true, user must have text selected
   shortcut?: string             // 'Ctrl+Shift+A' for display

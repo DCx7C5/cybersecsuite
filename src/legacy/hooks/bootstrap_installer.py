@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from hooks.bootstrap_status import BootstrapStatus
 from hooks.sha512_checker import get_core_items

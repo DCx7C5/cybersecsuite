@@ -138,8 +138,8 @@ Two complementary hook systems:
 All agents automatically receive 93 in-process MCP tools (88 cybersec + 5 dystopian):
 
 ```python
-# src/a2a/agent_sdk.py
-mcp_server = create_sdk_mcp_server()  # wraps SdkMcpServer with all @tool-decorated fns
+# src/google_a2a/agent_sdk.py
+mcp_server = create_sdk_mcp_server()  # wraps SdkMcpServer with all @tools-decorated fns
 options = ClaudeAgentOptions(
     mcp_servers=[mcp_server],
     ...

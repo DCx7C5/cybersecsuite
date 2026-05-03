@@ -56,17 +56,17 @@ In `src/registries/settings.py`:
 
 ```python
 def resolve_setting(key: str, global_settings: dict, app_settings: dict) -> Any:
-    """Resolve a setting with app scope taking precedence."""
+    """Resolve a setting with app scopes taking precedence."""
     if key in app_settings:
         return app_settings[key]
     return global_settings.get(key)
 
 def is_item_enabled(item_id: str, global_scope: dict, app_scope: dict) -> bool:
-    """Check if an item (MCP/skill/agent) is enabled."""
-    # If explicitly configured in app scope, use that
+    """Check if an item (MCP/skills/agents) is enabled."""
+    # If explicitly configured in app scopes, use that
     if item_id in app_scope:
         return app_scope[item_id].get("enabled", False)
-    # Fall back to global scope
+    # Fall back to global scopes
     if item_id in global_scope:
         return global_scope[item_id].get("enabled", True)
     return False

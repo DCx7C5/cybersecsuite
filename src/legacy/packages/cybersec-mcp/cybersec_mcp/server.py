@@ -17,8 +17,9 @@ logger = logging.getLogger("cybersec_mcp.server")
 def _build_mcp_server():
     """Build a real mcp.server.Server backed by the SdkMcpServer shim."""
     from mcp.server import Server
-    from mcp.types import Tool, TextContent
-    from cybersec_mcp.cybersec import cybersec_server, _ALL_CYBERSEC_TOOLS
+    from mcp.types import TextContent, Tool
+
+    from cybersec_mcp.cybersec import _ALL_CYBERSEC_TOOLS, cybersec_server
 
     app = Server("cybersec")
 

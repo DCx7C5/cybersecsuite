@@ -2,7 +2,7 @@
 Comprehensive integration tests for MCPs, bootstrap, and marketplace.
 
 Tests 24 total integration points:
-- 6 MCP tests (SDK mode startup, tool discovery)
+- 6 MCP tests (SDK mode startup, tools discovery)
 - 6 Bootstrap tests (existing, verified)
 - 12 Marketplace tests (catalog, search, filtering, database, indexing)
 
@@ -47,7 +47,7 @@ MCPS_TO_TEST = [
 
 
 class TestMCPStartupAndDiscovery:
-    """Test MCP startup and tool discovery (6 tests)."""
+    """Test MCP startup and tools discovery (6 tests)."""
 
     @pytest.mark.parametrize("mcp_name,mcp_module", MCPS_TO_TEST)
     def test_mcp_startup_and_availability(self, mcp_name: str, mcp_module: str) -> None:
@@ -385,11 +385,11 @@ class TestMarketplaceCatalog:
         """Test marketplace metadata has proper schema."""
         skills_dir = MARKETPLACE_ROOT / "skills"
         
-        # Find at least one skill with metadata
+        # Find at least one skills with metadata
         skill_files = list(skills_dir.glob("**/metadata.json")) if skills_dir.exists() else []
         
         if not skill_files:
-            pytest.skip("No skill metadata files found")
+            pytest.skip("No skills metadata files found")
         
         try:
             with open(skill_files[0]) as f:
@@ -433,7 +433,7 @@ class TestMCPToolsDocumentation:
                 """
 try:
     import csscore_mcp
-    # Should be able to get tool descriptions
+    # Should be able to get tools descriptions
     print("DOCUMENTED")
 except:
     print("NOT_FOUND")

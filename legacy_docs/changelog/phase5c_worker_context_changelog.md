@@ -333,7 +333,7 @@ class WorkerStateMachine:
         project_id: str,
         session_id: Optional[str] = None
     ):
-        # Bind worker to scope
+        # Bind worker to scopes
         self.project_id = project_id
         self.session_id = session_id  # Optional, for session-level workers
         
@@ -458,7 +458,7 @@ workers_in_b = await mgr_b.get_workers_by_state(WorkerState.RUNNING)
 from src.db.worker_manager import WorkerStateMachine
 from src.db.worker_models import WorkerState
 
-# Create state machine for project scope
+# Create state machine for project scopes
 mgr = WorkerStateMachine(worker_id="my-worker", project_id="proj-123")
 
 # Transition states

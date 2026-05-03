@@ -43,9 +43,9 @@ async def db_healthcheck(args: dict[str, Any]) -> JsonDict:
 async def bootstrap_intelligence(args: dict[str, Any]) -> JsonDict:
     try:
         from db.bootstrap import (
-            init_tortoise_async,
-            get_database_health_async,
             bootstrap_intelligence_async,
+            get_database_health_async,
+            init_tortoise_async,
         )
     except ImportError:
         return sdk_error("db.bootstrap not available — ensure src/ is in PYTHONPATH")

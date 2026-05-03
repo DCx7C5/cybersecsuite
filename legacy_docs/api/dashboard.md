@@ -97,7 +97,7 @@ The static HTML can also be generated with `make dashboard` (produces `skills/da
 ## Example: get system health
 
 ```bash
-curl http://localhost:8000/api/health | python -m json.tool
+curl http://localhost:8000/api/health | python -m json.tools
 ```
 
 Example response:

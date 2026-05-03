@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..helpers import JsonDict, _get_current_scope, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, _get_current_scope, sdk_result, sdk_error
 
 
 @tool(
@@ -33,8 +33,8 @@ async def case_open(args: dict[str, Any]) -> JsonDict:
         from db.bootstrap import init_tortoise_async
         await init_tortoise_async()
         from db.models.case_intake import CaseIntake
-        from db.models.scope import SessionScope, ProjectScope
         from db.models.layers import SessionLayer
+        from db.models.scope import ProjectScope, SessionScope
     except ImportError as exc:
         return sdk_error(f"db models not available: {exc}")
 

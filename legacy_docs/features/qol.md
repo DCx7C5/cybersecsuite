@@ -394,7 +394,7 @@ List all builtin presets.
 curl -X POST http://localhost:8000/api/qol \
   -H "Content-Type: application/json" \
   -d '{
-    "scope": "project",
+    "scopes": "project",
     "preset": "silent"
   }'
 ```
@@ -413,7 +413,7 @@ curl -X POST http://localhost:8000/api/qol \
 curl -X POST http://localhost:8000/api/qol \
   -H "Content-Type: application/json" \
   -d '{
-    "scope": "session",
+    "scopes": "session",
     "preset": "audit",
     "enabled_toggles": ["AUDIT_MODE", "PLAIN_TEXT_ONLY"]
   }'
@@ -463,7 +463,7 @@ Now I'll provide only code artifacts for parsing...
 ```json
 {
   "jsonrpc": "2.0",
-  "method": "agent.query",
+  "method": "agents.query",
   "params": {
     "agent_id": "apt-analyst",
     "query": "Analyze APT28 IOCs",

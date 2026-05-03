@@ -54,7 +54,7 @@ The marketplace index (`index.json` from GitHub) categorizes items into tiers to
           "name": {"type": "string"},
           "version": {"type": "string"},
           "tier": {"enum": ["core", "recommended", "optional"]},
-          "type": {"enum": ["mcp", "agent", "skill"]},
+          "type": {"enum": ["mcp", "agents", "skills"]},
           "source": {"type": "string", "format": "uri"},
           "description": {"type": "string"},
           "tags": {"type": "array", "items": {"type": "string"}}

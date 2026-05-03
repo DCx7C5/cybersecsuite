@@ -3,12 +3,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..sdk_compat import tool
 from ..helpers import (
-    JsonDict, _get_current_scope, get_project_dir,
-    get_session_dir, sdk_result, sdk_error,
+    JsonDict,
+    _get_current_scope,
+    get_project_dir,
+    get_session_dir,
+    sdk_error,
+    sdk_result,
 )
-
+from ..sdk_compat import tool
 
 _KEYWORDS_TO_MITRE: dict[str, list[str]] = {
     "screenshot": ["T1113 - Screen Capture"],
@@ -69,7 +72,7 @@ def suggest_mitre(args: dict[str, Any]) -> JsonDict:
 )
 async def get_project_memory(args: dict[str, Any]) -> JsonDict:
     try:
-        from hooks.database import get_recent_entries_async, get_scoped_entries_async, ScopeContext
+        from hooks.database import ScopeContext, get_recent_entries_async, get_scoped_entries_async
     except ImportError:
         return sdk_error("hooks.database not available")
 

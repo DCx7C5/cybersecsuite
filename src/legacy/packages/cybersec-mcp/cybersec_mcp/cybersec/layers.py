@@ -3,11 +3,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..sdk_compat import tool
 from ..helpers import (
-    JsonDict, _get_current_scope, _normalize_target_scopes, _normalize_scope_level,
-    _coerce_limit, sdk_result, sdk_error,
+    JsonDict,
+    _coerce_limit,
+    _get_current_scope,
+    _normalize_scope_level,
+    _normalize_target_scopes,
+    sdk_error,
+    sdk_result,
 )
+from ..sdk_compat import tool
 
 
 @tool(
@@ -75,7 +80,7 @@ async def share_to_layers(args: dict[str, Any]) -> JsonDict:
 )
 async def get_layer_value(args: dict[str, Any]) -> JsonDict:
     try:
-        from hooks.database import get_scoped_entries_async, ScopeContext
+        from hooks.database import ScopeContext, get_scoped_entries_async
     except ImportError:
         return sdk_error("hooks.database not available")
 

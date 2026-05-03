@@ -73,8 +73,8 @@ class TestDashboardAPIEndpoints:
         assert response.headers["content-type"].startswith("application/json")
 
     def test_get_api_a2a(self, client: TestClient) -> None:
-        """GET /api/a2a should return A2A server status."""
-        response = client.get("/api/a2a")
+        """GET /api/google_a2a should return A2A server status."""
+        response = client.get("/api/google_a2a")
         assert response.status_code == 200
         assert response.headers["content-type"].startswith("application/json")
 
@@ -127,14 +127,14 @@ class TestRoutePrecedence:
         assert response.headers["content-type"].startswith("application/json")
 
     def test_a2a_route_not_captured(self, client: TestClient) -> None:
-        """POST /a2a with invalid JSON should fail at A2A layer, not dashboard."""
-        response = client.post("/a2a", json={})
+        """POST /google_a2a with invalid JSON should fail at A2A layer, not dashboard."""
+        response = client.post("/google_a2a", json={})
         # A2A server will validate the JSON-RPC envelope and reject; not 404
         assert response.status_code in (200, 400)  # Valid A2A response or RPC error
 
     def test_agent_card_route_not_captured(self, client: TestClient) -> None:
-        """GET /.well-known/agent.json should be handled by A2A, not dashboard."""
-        response = client.get("/.well-known/agent.json")
+        """GET /.well-known/agents.json should be handled by A2A, not dashboard."""
+        response = client.get("/.well-known/agents.json")
         assert response.status_code == 200
         assert response.headers["content-type"].startswith("application/json")
 

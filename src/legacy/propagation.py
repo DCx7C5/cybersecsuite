@@ -73,7 +73,7 @@ class TraceContextManager:
                 extracted = _jaeger_propagator.extract(headers)
                 if extracted:
                     ctx['jaeger'] = extracted
-            except:
+            except Exception:
                 pass
         
         # Try B3 format
@@ -82,7 +82,7 @@ class TraceContextManager:
                 extracted = _b3_propagator.extract(headers)
                 if extracted:
                     ctx['b3'] = extracted
-            except:
+            except Exception:
                 pass
         
         return ctx
@@ -101,7 +101,7 @@ class TraceContextManager:
         if _jaeger_propagator and current_span:
             try:
                 _jaeger_propagator.inject(headers)
-            except:
+            except Exception:
                 pass
         
         # Also inject request ID for application-level correlation
@@ -162,7 +162,7 @@ def extract_trace_context_from_request(request: Any) -> Dict[str, Any]:
             # Handle headers as list of tuples or MutableHeaders
             try:
                 headers = dict(request.headers)
-            except:
+            except Exception:
                 pass
     
     # Extract trace context

@@ -90,6 +90,9 @@ logs/
 *.sqlite3
 /data/
 
+# EXCEPTION: .plan/session.db is tracked for todo management
+!.plan/session.db
+
 # Dependencies (using uv, not pip freeze)
 node_modules/
 
@@ -128,9 +131,11 @@ mcps/brave_stealth_profile/
 src/dashboard/static/js/
 *.js.map
 
-# Project-scope templates (scaffolded at first run from embedded package data)
+# Project-scopes templates (scaffolded at first run from embedded package data)
 .claude/templates/
 **/*.json
 *.json
 
 resume
+!src/css/modules/cache/
+!src/css/modules/cache/*.py

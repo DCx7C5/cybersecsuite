@@ -296,7 +296,7 @@ class TestAgentStopHook:
 
 
 class TestIntegration:
-    """Integration tests for full agent lifecycle."""
+    """Integration tests for full agents lifecycle."""
     
     @pytest.mark.asyncio
     async def test_agent_lifecycle_snapshot_to_change_detection(self, temp_project, baseline_dir, monkeypatch):
@@ -320,7 +320,7 @@ class TestIntegration:
         baseline = json.loads(baseline_file.read_text())
         assert len(baseline) == 3
         
-        # Simulate agent modifying files
+        # Simulate agents modifying files
         (temp_project / "file1.py").write_text("def modified1():\n    pass\n")
         (temp_project / "file2.py").write_text("def modified2():\n    pass\n")
         

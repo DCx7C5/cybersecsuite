@@ -1,6 +1,6 @@
 """Marketplace-aware agent loader — respects enabled toggle.
 
-Wraps core.a2a.agent_loader to filter out disabled agents.
+Wraps core.google_a2a.agent_loader to filter out disabled agents.
 """
 
 from __future__ import annotations

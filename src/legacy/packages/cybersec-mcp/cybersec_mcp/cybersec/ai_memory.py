@@ -10,8 +10,8 @@ import os
 from pathlib import Path
 from typing import Any
 
+from ..helpers import JsonDict, _get_current_scope, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, _get_current_scope, sdk_result, sdk_error
 
 _DEFAULT_VAULT_PATH = str(
     Path(os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))).expanduser()

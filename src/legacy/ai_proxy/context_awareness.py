@@ -30,7 +30,7 @@ class ArchitectureContext:
 
     def __init__(self):
         self.current_layer: Optional[str] = None  # Layer 0-6 from architecture
-        self.current_component: Optional[str] = None  # e.g., "ai_proxy", "a2a", "mcp"
+        self.current_component: Optional[str] = None  # e.g., "ai_proxy", "google_a2a", "mcp"
         self.current_module: Optional[str] = None  # e.g., "routing", "providers", "health"
         self.accessed_layers: list[str] = []  # Layers visited this session
         self.accessed_components: list[str] = []  # Components visited this session

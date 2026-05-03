@@ -229,7 +229,7 @@ def test_architecture_context_from_dict():
         "current_component": "ai_proxy",
         "current_module": "routing",
         "accessed_layers": ["Layer 1", "Layer 2"],
-        "accessed_components": ["a2a", "ai_proxy"],
+        "accessed_components": ["google_a2a", "ai_proxy"],
     }
     ctx = ArchitectureContext.from_dict(data)
     assert ctx.current_layer == "Layer 3"
@@ -311,7 +311,7 @@ def test_worker_context_awareness_get_summary():
     assert summary["worker_id"] == "worker_1"
     assert summary["session_id"] == 123
     assert summary["architecture"]["current_layer"] == "Layer 3"
-    assert summary["scope"]["scope_level"] == "session"
+    assert summary["scopes"]["scope_level"] == "session"
 
 
 # ── Integration Tests ────────────────────────────────────────────────────────

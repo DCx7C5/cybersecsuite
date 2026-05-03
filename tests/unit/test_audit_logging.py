@@ -185,11 +185,11 @@ class TestAuditLogging:
 
 
 class TestAuditLoggerScopes:
-    """Test logging across different scope levels."""
+    """Test logging across different scopes levels."""
     
     @pytest.mark.asyncio
     async def test_log_global_scope(self) -> None:
-        """Test logging at global scope."""
+        """Test logging at global scopes."""
         logger = AuditLogger()
         await logger.start()
         
@@ -206,7 +206,7 @@ class TestAuditLoggerScopes:
     
     @pytest.mark.asyncio
     async def test_log_project_scope(self) -> None:
-        """Test logging at project scope."""
+        """Test logging at project scopes."""
         logger = AuditLogger()
         await logger.start()
         
@@ -223,7 +223,7 @@ class TestAuditLoggerScopes:
     
     @pytest.mark.asyncio
     async def test_log_session_scope(self) -> None:
-        """Test logging at session scope."""
+        """Test logging at session scopes."""
         logger = AuditLogger()
         await logger.start()
         

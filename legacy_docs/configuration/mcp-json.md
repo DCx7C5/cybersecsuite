@@ -53,7 +53,7 @@ Project-level Claude Code config (does **not** affect the running application):
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "agent": "cybersec-agent",
+  "agent": "cybersec-agents",
   "mcp": {
     "tool_prefix": "mcp__"
   }

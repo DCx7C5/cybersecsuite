@@ -1,10 +1,9 @@
 """Tests for Ollama backward compatibility layer (Issue #4)."""
 
 import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 
-from core.types.api_services import ProviderType, StreamChunk, Message, MessageRole, Tool, ModelMetadata
+from core.types.api_services import ProviderType, BaseMessage, MessageRole, Tool
 from core.exceptions import (
     OllamaConnectionError,
     OllamaModelNotFoundError,
@@ -129,7 +128,7 @@ class TestOllamaClientCompatCallLLM:
         """Test streaming LLM call."""
         client = OllamaClientCompat()
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         # Mock streaming response
         mock_chunks = [
@@ -163,7 +162,7 @@ class TestOllamaClientCompatCallLLM:
         """Test error when model not found."""
         client = OllamaClientCompat()
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(client, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
             mock_load.return_value = False  # Model not found
@@ -177,7 +176,7 @@ class TestOllamaClientCompatCallLLM:
         """Test 401 authentication error."""
         client = OllamaClientCompat()
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(client, 'session') as mock_session, \
              patch.object(client, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
@@ -203,7 +202,7 @@ class TestOllamaClientCompatErrorHandling:
         """Test 5xx errors map to GatewayError."""
         client = OllamaClientCompat()
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(client, 'session') as mock_session, \
              patch.object(client, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
@@ -225,7 +224,7 @@ class TestOllamaClientCompatErrorHandling:
         """Test 404 errors map to OllamaModelNotFoundError."""
         client = OllamaClientCompat()
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(client, 'session') as mock_session, \
              patch.object(client, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
@@ -251,7 +250,7 @@ class TestOllamaClientCompatRetryIntegration:
         """Test that transient errors trigger retries."""
         client = OllamaClientCompat(max_retries=2)
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         call_count = 0
         
@@ -280,12 +279,12 @@ class TestOllamaClientCompatRetryIntegration:
 
 
 class TestOllamaClientCompatFormatting:
-    """Test message and tool formatting."""
+    """Test message and tools formatting."""
     
     def test_format_messages_with_system_prompt(self):
         """Test message formatting includes system prompt."""
         messages = [
-            Message(role=MessageRole.USER, content="Hello"),
+            BaseMessage(role=MessageRole.USER, content="Hello"),
         ]
         system_prompt = "You are helpful"
         
@@ -300,8 +299,8 @@ class TestOllamaClientCompatFormatting:
     def test_format_messages_without_system_prompt(self):
         """Test message formatting without system prompt."""
         messages = [
-            Message(role=MessageRole.USER, content="Hello"),
-            Message(role=MessageRole.ASSISTANT, content="Hi"),
+            BaseMessage(role=MessageRole.USER, content="Hello"),
+            BaseMessage(role=MessageRole.ASSISTANT, content="Hi"),
         ]
         
         formatted = OllamaClientCompat._format_messages(messages, None)
@@ -311,7 +310,7 @@ class TestOllamaClientCompatFormatting:
         assert formatted[1]["role"] == "assistant"
     
     def test_format_tools(self):
-        """Test tool formatting."""
+        """Test tools formatting."""
         tools = [
             Tool(
                 name="search",

@@ -3,16 +3,21 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..helpers import JsonDict, _get_current_scope, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, _get_current_scope, sdk_result, sdk_error
 
 
 @tool("session_snapshot", "Return a full session state snapshot including scope, usage, budget, and circuit breakers.", {})
 async def session_snapshot(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_enabled_providers, get_free_providers
-        from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts, budget_guard, Strategy
+        from ai_proxy.routing.combo import (
+            Strategy,
+            budget_guard,
+            get_circuit_breaker_status,
+            get_usage_counts,
+        )
         from ai_proxy.services.usage_tracker import usage_tracker
+        from core.registries.providers import get_enabled_providers, get_free_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -36,8 +41,8 @@ async def session_snapshot(args: dict[str, Any]) -> JsonDict:
 @tool("agent_registry", "List all registered A2A agents with skills and metadata.", {})
 async def agent_registry(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.agents import AgentRegistry
         from a2a.agent_loader import load_cybersecsuite_agents
+        from core.registries.agents import AgentRegistry
 
         registry = AgentRegistry()
         load_cybersecsuite_agents(registry)
@@ -84,8 +89,8 @@ async def agent_registry(args: dict[str, Any]) -> JsonDict:
 )
 async def best_provider(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status
+        from core.registries.providers import get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 

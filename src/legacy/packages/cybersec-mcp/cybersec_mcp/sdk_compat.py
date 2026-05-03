@@ -12,11 +12,20 @@ import json
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from .otel import tool_errors, _tracer, tool_execution_duration, tool_input_size, tool_output_size, \
-    tool_invocations, check_tool_baseline
+from .otel import (
+    _tracer,
+    check_tool_baseline,
+    tool_errors,
+    tool_execution_duration,
+    tool_input_size,
+    tool_invocations,
+    tool_output_size,
+)
 
 try:
-    from claude_agent_sdk import tool as sdk_tool, create_sdk_mcp_server as sdk_create_server, McpSdkServerConfig
+    from claude_agent_sdk import McpSdkServerConfig
+    from claude_agent_sdk import create_sdk_mcp_server as sdk_create_server
+    from claude_agent_sdk import tool as sdk_tool
 
     _SDK_AVAILABLE = True
 except ImportError:
@@ -46,24 +55,25 @@ class SdkMcpServer:
     async def call_tool(self, tool_name: str, args: dict[str, Any]) -> dict[str, Any]:
 
         import time
+
         from opentelemetry.trace import Status, StatusCode
-        
+
         tool = self._tools.get(tool_name)
         if tool is None:
             error_msg = f"Unknown tool: {tool_name}"
             tool_errors.add(1, {"tool": tool_name, "error": "unknown"})
             return {"content": [{"type": "text", "text": json.dumps({"error": error_msg})}], "isError": True}
-        
+
         # Calculate input size
         try:
             input_bytes = len(json.dumps(args).encode("utf-8"))
-        except:
+        except Exception:
             input_bytes = 0
-        
+
         with _tracer.start_as_current_span(f"mcp.tool.{tool_name}") as span:
             span.set_attribute("tool.name", tool_name)
             span.set_attribute("tool.input_size_bytes", input_bytes)
-            
+
             start_ms = time.time() * 1000
             try:
                 import inspect
@@ -71,46 +81,46 @@ class SdkMcpServer:
                     result = await tool.fn(args)
                 else:
                     result = tool.fn(args)
-                
+
                 end_ms = time.time() * 1000
                 duration = end_ms - start_ms
-                
+
                 # Calculate output size
                 try:
                     output_bytes = len(json.dumps(result).encode("utf-8"))
-                except:
+                except Exception:
                     output_bytes = 0
-                
+
                 span.set_attribute("tool.status", "success")
                 span.set_attribute("tool.duration_ms", duration)
                 span.set_attribute("tool.output_size_bytes", output_bytes)
                 span.set_status(Status(StatusCode.OK))
-                
+
                 tool_execution_duration.record(duration, {"tool": tool_name})
                 tool_input_size.record(input_bytes, {"tool": tool_name})
                 tool_output_size.record(output_bytes, {"tool": tool_name})
                 tool_invocations.add(1, {"tool": tool_name, "status": "success"})
-                
+
                 check_tool_baseline(duration, tool_name)
-                
+
                 return result
             except Exception as exc:
                 end_ms = time.time() * 1000
                 duration = end_ms - start_ms
-                
+
                 span.record_exception(exc)
                 span.set_status(Status(StatusCode.ERROR, str(exc)))
                 span.set_attribute("tool.status", "error")
                 span.set_attribute("tool.duration_ms", duration)
                 span.set_attribute("tool.error", str(exc))
-                
+
                 tool_execution_duration.record(duration, {"tool": tool_name})
                 tool_input_size.record(input_bytes, {"tool": tool_name})
                 tool_errors.add(1, {"tool": tool_name, "error": exc.__class__.__name__})
                 tool_invocations.add(1, {"tool": tool_name, "status": "error"})
-                
+
                 check_tool_baseline(duration, tool_name)
-                
+
                 return {"content": [{"type": "text", "text": json.dumps({"error": str(exc)})}], "isError": True}
 
     def __repr__(self) -> str:

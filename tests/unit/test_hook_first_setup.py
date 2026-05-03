@@ -289,7 +289,7 @@ class TestPartialFailure:
             "hook_event_name": "OnFirstSetup",
         }
 
-        result = await registry.execute_on_first_setup(event, context)
+        await registry.execute_on_first_setup(event, context)
 
         # Marker should be deleted after error
         assert not marker_path.exists()
@@ -429,7 +429,7 @@ class TestPathResolution:
             "hook_event_name": "OnFirstSetup",
         }
 
-        result = await registry.execute_on_first_setup(event, context)
+        await registry.execute_on_first_setup(event, context)
 
         # Check that marker was created in custom location
         marker_path = custom_home / ".initialized"
@@ -685,7 +685,7 @@ class TestCleanup:
             "hook_event_name": "OnFirstSetup",
         }
 
-        result = await registry.execute_on_first_setup(event, context)
+        await registry.execute_on_first_setup(event, context)
 
         # Marker should be deleted
         marker_path = app_home / ".initialized"

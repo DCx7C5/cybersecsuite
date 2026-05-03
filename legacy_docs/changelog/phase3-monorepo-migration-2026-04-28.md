@@ -209,7 +209,7 @@ from core.marketplace import seed_marketplace_index
 ```python
 from db import Database              # → core.db
 from registries import AgentRegistry # → core.registries
-from a2a import CommunicationGroup   # → core.a2a
+from a2a import CommunicationGroup   # → core.google_a2a
 from marketplace import seed_marketplace_index  # → core.marketplace
 ```
 

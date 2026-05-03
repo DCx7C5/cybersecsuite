@@ -17,8 +17,6 @@ dependencies = [
     "tortoise-orm>=1.1.5",
     "tortoise-orm[asyncpg]>=0.22",
     "asyncpg>=0.30",
-    # A2A agent networking + AI asgi HTTP client
-    "httpx[http2]>=0.28",
     # Data validation
     "pydantic>=2.10",
     # Type hints (used in memory backends)
@@ -45,10 +43,26 @@ dependencies = [
     "opentelemetry-semantic-conventions>=0.49",
     "click>=8.3.1",
     "aiohttp>=3.13.3",
+    # API Provider SDKs
+    "anthropic>=0.84.0",
+    "anthropic[aiohttp]",
+    "openai>=1.80.0",
+    "ai21>=2.0.0",
+    "cohere>=5.0.0",
+    "mistralai>=0.0.19",
+    "groq>=0.4.0",
+    "google-generativeai>=0.3.0",
+    "together>=1.0.0",
+    "fireworks-ai>=0.11.0",
+    "ollama>=0.1.0",
+    "deepinfra>=0.1.0",
+    "huggingface_hub>=0.20.0",
+    "openrouter>=0.1.0",
+
 ]
 
 [project.scripts]
-cybersecsuite      = "manage:main_sync"
+cybersecsuite      = "css.manager:main_sync"
 cybersec-mcp       = "cssmcp.cybersec.server:main"
 cybersec-mcp-crypto = "cssmcp.dystopian_server:main"
 cybersec-proxy     = "ai_proxy.cli:main"
@@ -66,6 +80,7 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = [
   # CANONICAL PACKAGES (primary source of truth)
+  "src/css",
   "src/core",
   "src/core/checks",
   "src/core/dbus",

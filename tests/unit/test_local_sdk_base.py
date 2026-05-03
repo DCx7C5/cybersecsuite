@@ -3,8 +3,8 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from core.types.api_services import ProviderType, StreamChunk, Message, MessageRole, LLMResponse
-from core.exceptions import GatewayError, TimeoutError, AuthError, UnknownError
+from core.types.api_services import ProviderType, StreamChunk, BaseMessage, MessageRole, LLMResponse
+from core.exceptions import GatewayError
 from core.types.sdk_local import LocalSDKBase
 
 
@@ -118,7 +118,7 @@ class TestLocalSDKBaseCallLLM:
             base_url="http://localhost:11434",
         )
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         chunks = []
         async for chunk in sdk.call_llm("llama2", messages, streaming=True):
@@ -136,7 +136,7 @@ class TestLocalSDKBaseCallLLM:
             base_url="http://localhost:11434",
         )
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         response = await sdk.call_llm("llama2", messages, streaming=False)
         
@@ -153,7 +153,7 @@ class TestLocalSDKBaseCallLLM:
             enable_model_auto_load=True,
         )
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(sdk, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
             mock_load.return_value = True
@@ -173,7 +173,7 @@ class TestLocalSDKBaseCallLLM:
             enable_model_auto_load=True,
         )
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(sdk, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
             mock_load.return_value = False  # Cannot load
@@ -191,7 +191,7 @@ class TestLocalSDKBaseCallLLM:
             enable_model_auto_load=False,
         )
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         with patch.object(sdk, '_ensure_model_loaded', new_callable=AsyncMock) as mock_load:
             chunks = []
@@ -213,7 +213,7 @@ class TestLocalSDKBaseErrorHandling:
             base_url="http://localhost:11434",
         )
         
-        messages = [Message(role=MessageRole.USER, content="Hello")]
+        messages = [BaseMessage(role=MessageRole.USER, content="Hello")]
         
         # Mock execute_with_retry to return error
         with patch.object(sdk.retry_orchestrator, 'execute_with_retry', new_callable=AsyncMock) as mock_retry:

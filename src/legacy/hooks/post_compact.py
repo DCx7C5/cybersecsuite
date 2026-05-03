@@ -18,14 +18,13 @@ def main():
     if not session_dir:
         return
 
-    now = datetime.now(timezone.utc)
+    datetime.now(timezone.utc)
 
     # Read pre-compact checkpoint if it exists
     checkpoint_file = session_dir / "compaction_checkpoint.json"
-    pre_state = {}
     if checkpoint_file.exists():
         try:
-            pre_state = json.loads(checkpoint_file.read_text())
+            json.loads(checkpoint_file.read_text())
         except (json.JSONDecodeError, OSError):
             pass
 

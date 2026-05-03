@@ -50,8 +50,8 @@ app.mount("/", A2AServer(agent).router)
 ```python
 from a2a.agent_sdk import run_agent_query
 
-# Route to any .claude/agents/*.md agent by name
-# Model is read from the agent's frontmatter and routed via AI Proxy
+# Route to any .claude/agents/*.md agents by name
+# Model is read from the agents's frontmatter and routed via AI Proxy
 result = await run_agent_query("cybersec-analyst", "Analyze CVE-2024-1234")
 result = await run_agent_query("python-developer", "Write a BLAKE2b hasher")
 result = await run_agent_query("threat-modeler", "Model attack surface for SSH")
@@ -71,7 +71,7 @@ registry = AgentRegistry.from_agents_dir(
     Path("/path/to/.claude/agents"), recurse=True
 )
 
-# Find the default agent (hunter)
+# Find the default agents (hunter)
 default = registry.find_default()
 orchestrator = registry.find_orchestrator()
 
@@ -149,7 +149,7 @@ For per-agent model routing, see [docs/agent-sdk-integration.md](../agents/sdk-i
 
 ```python
 class Message:
-    role: MessageRole          # "user" | "agent"
+    role: MessageRole          # "user" | "agents"
     parts: List[Part]          # TextPart | FilePart | DataPart
     metadata: dict | None
 
@@ -340,7 +340,7 @@ To verify incoming requests, add middleware to `A2AServer`:
 ```python
 from crypto.ssl_signer import SSLArtifactSigner
 
-signer = SSLArtifactSigner(public_key_path="/etc/dystopian/crypto/cert/private/agent-public.pem")
+signer = SSLArtifactSigner(public_key_path="/etc/dystopian/crypto/cert/private/agents-public.pem")
 
 # In middleware: verify the Authorization headers contains a valid Ed25519 token
 is_valid, payload = signer.verify_artifact(request.headers.get("Authorization", ""))

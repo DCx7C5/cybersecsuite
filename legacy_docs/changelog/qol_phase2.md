@@ -586,7 +586,7 @@ subscriber.on_toggle_changed(on_toggle_changed)
 curl -X POST http://localhost:8000/api/qol \
   -H "Content-Type: application/json" \
   -d '{
-    "scope": "session",
+    "scopes": "session",
     "preset": "silent"
   }'
 ```

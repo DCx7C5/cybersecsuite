@@ -219,7 +219,7 @@ class TestSDKModeConfiguration:
             pass
 
     def test_allowed_tools_function(self) -> None:
-        """Test allowed_tools function returns tool list."""
+        """Test allowed_tools function returns tools list."""
         result = subprocess.run(
             [
                 sys.executable,

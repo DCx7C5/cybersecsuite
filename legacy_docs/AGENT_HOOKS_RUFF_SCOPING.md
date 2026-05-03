@@ -89,7 +89,7 @@ task.set_target_files(["src/auth.py", "src/utils.py"])
 await task.save()
 
 # Later, when delegating:
-agent_name = "my-agent"
+agent_name = "my-agents"
 target_files = task.get_target_files()
 await on_agent_start(agent_name, session_id, target_files)
 ```
@@ -99,11 +99,11 @@ await on_agent_start(agent_name, session_id, target_files)
 **CLI:**
 ```bash
 # Start hook
-echo '{"agent_name":"my-agent", "session_id":"s123", "target_files":["file1.py"]}' | \
+echo '{"agent_name":"my-agents", "session_id":"s123", "target_files":["file1.py"]}' | \
   python src/hooks/agent_start.py
 
 # Stop hook (dry-run by default)
-echo '{"agent_name":"my-agent", "session_id":"s123", "target_files":["file1.py"], "dry_run":true}' | \
+echo '{"agent_name":"my-agents", "session_id":"s123", "target_files":["file1.py"], "dry_run":true}' | \
   python src/hooks/agent_end.py stop
 ```
 
@@ -111,9 +111,9 @@ echo '{"agent_name":"my-agent", "session_id":"s123", "target_files":["file1.py"]
 ```python
 from hooks.agent_hooks import on_agent_start, on_agent_stop
 
-await on_agent_start("my-agent", "s123", ["src/main.py"])
-# ... agent does work ...
-await on_agent_stop("my-agent", "s123", ["src/main.py"], dry_run=True)
+await on_agent_start("my-agents", "s123", ["src/main.py"])
+# ... agents does work ...
+await on_agent_stop("my-agents", "s123", ["src/main.py"], dry_run=True)
 ```
 
 ## Testing
@@ -168,13 +168,13 @@ task = await pm.add_task(
 )
 
 # Agent starts
-await on_agent_start("refactor-agent", "session123", task.get_target_files())
+await on_agent_start("refactor-agents", "session123", task.get_target_files())
 
 # [Agent modifies files src/auth.py and src/utils.py]
 
 # Agent stops (dry-run by default)
 await on_agent_stop(
-    "refactor-agent",
+    "refactor-agents",
     "session123",
     task.get_target_files(),
     dry_run=True,  # Show diffs only
@@ -182,7 +182,7 @@ await on_agent_stop(
 
 # Or with fixes applied:
 await on_agent_stop(
-    "refactor-agent",
+    "refactor-agents",
     "session123",
     task.get_target_files(),
     dry_run=False,  # Apply fixes

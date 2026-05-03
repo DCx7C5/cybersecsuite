@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 
 def _discover_skills(domain: str | None = None, project_dir: Path | None = None) -> list[dict]:

@@ -292,10 +292,10 @@ class TestRetryOrchestrator:
         mock_call = AsyncMock(return_value="success")
         
         result = await orchestrator.execute_with_retry(
-            api_call=mock_call,
-            provider_id=ProviderType.OLLAMA,
             "arg1",
             "arg2",
+            api_call=mock_call,
+            provider_id=ProviderType.OLLAMA,
             kwarg1="value1",
             kwarg2="value2",
         )

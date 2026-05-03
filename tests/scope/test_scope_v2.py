@@ -8,7 +8,7 @@ Tests cover:
 - Permission checking across scopes
 - Scope context creation and validation
 - ScopedEntry model updates with composite indexes
-- Query filtering by scope
+- Query filtering by scopes
 """
 import pytest
 from unittest.mock import patch, MagicMock
@@ -31,7 +31,7 @@ class TestScopeLevel:
     """Test ScopeLevel enum."""
     
     def test_scope_level_values(self) -> None:
-        """Test all scope level values are defined."""
+        """Test all scopes level values are defined."""
         assert ScopeLevel.GLOBAL.value == "global"
         assert ScopeLevel.APP.value == "app"
         assert ScopeLevel.PROJECT.value == "project"
@@ -62,26 +62,26 @@ class TestScopeContext:
     """Test ScopeContext creation and validation."""
     
     def test_create_global_scope(self) -> None:
-        """Test creating global scope context."""
+        """Test creating global scopes context."""
         ctx = ScopeContext(scope_level="global", user_id="admin")
         assert ctx.scope_level == ScopeLevel.GLOBAL
         assert ctx.user_id == "admin"
         assert ctx.project_id is None
     
     def test_create_app_scope(self) -> None:
-        """Test creating app scope context."""
+        """Test creating app scopes context."""
         ctx = ScopeContext(scope_level="app", user_id="analyst")
         assert ctx.scope_level == ScopeLevel.APP
         assert ctx.user_id == "analyst"
     
     def test_create_project_scope(self) -> None:
-        """Test creating project scope context."""
+        """Test creating project scopes context."""
         ctx = ScopeContext(scope_level="project", project_id=123, user_id="analyst")
         assert ctx.scope_level == ScopeLevel.PROJECT
         assert ctx.project_id == 123
     
     def test_create_runtime_scope(self) -> None:
-        """Test creating runtime scope context."""
+        """Test creating runtime scopes context."""
         ctx = ScopeContext(
             scope_level="runtime",
             runtime_id="container-abc123",
@@ -93,7 +93,7 @@ class TestScopeContext:
         assert ctx.worktree_path == "/var/css/container-abc123/worktree-sess1"
     
     def test_create_session_scope(self) -> None:
-        """Test creating session scope context."""
+        """Test creating session scopes context."""
         ctx = ScopeContext(
             scope_level="session",
             project_id=123,
@@ -105,24 +105,24 @@ class TestScopeContext:
         assert ctx.project_id == 123
     
     def test_project_scope_requires_project_id(self) -> None:
-        """Test PROJECT scope validation requires project_id."""
-        with pytest.raises(ValueError, match="PROJECT scope requires project_id"):
+        """Test PROJECT scopes validation requires project_id."""
+        with pytest.raises(ValueError, match="PROJECT scopes requires project_id"):
             ScopeContext(scope_level="project")
     
     def test_runtime_scope_requires_fields(self) -> None:
-        """Test RUNTIME scope validation requires runtime_id and worktree_path."""
-        with pytest.raises(ValueError, match="RUNTIME scope requires runtime_id"):
+        """Test RUNTIME scopes validation requires runtime_id and worktree_path."""
+        with pytest.raises(ValueError, match="RUNTIME scopes requires runtime_id"):
             ScopeContext(scope_level="runtime")
         
-        with pytest.raises(ValueError, match="RUNTIME scope requires worktree_path"):
+        with pytest.raises(ValueError, match="RUNTIME scopes requires worktree_path"):
             ScopeContext(scope_level="runtime", runtime_id="abc123")
     
     def test_session_scope_requires_fields(self) -> None:
-        """Test SESSION scope validation requires session_id and project_id."""
-        with pytest.raises(ValueError, match="SESSION scope requires session_id"):
+        """Test SESSION scopes validation requires session_id and project_id."""
+        with pytest.raises(ValueError, match="SESSION scopes requires session_id"):
             ScopeContext(scope_level="session")
         
-        with pytest.raises(ValueError, match="SESSION scope requires project_id"):
+        with pytest.raises(ValueError, match="SESSION scopes requires project_id"):
             ScopeContext(scope_level="session", session_id="sess1")
     
     def test_context_to_dict(self) -> None:
@@ -146,25 +146,25 @@ class TestResolveScopePath:
     """Test resolve_scope_path function."""
     
     def test_resolve_global_path(self) -> None:
-        """Test resolving global scope path."""
+        """Test resolving global scopes path."""
         ctx = ScopeContext(scope_level="global")
         path = resolve_scope_path("global", ctx, base_path="/var/css")
         assert path == "/var/css/global"
     
     def test_resolve_app_path(self) -> None:
-        """Test resolving app scope path."""
+        """Test resolving app scopes path."""
         ctx = ScopeContext(scope_level="app")
         path = resolve_scope_path("app", ctx, base_path="/var/css")
         assert path == "/var/css/app"
     
     def test_resolve_project_path(self) -> None:
-        """Test resolving project scope path."""
+        """Test resolving project scopes path."""
         ctx = ScopeContext(scope_level="project", project_id=456)
         path = resolve_scope_path("project", ctx, base_path="/var/css")
         assert path == "/var/css/projects/456"
     
     def test_resolve_runtime_path(self) -> None:
-        """Test resolving runtime scope path."""
+        """Test resolving runtime scopes path."""
         ctx = ScopeContext(
             scope_level="runtime",
             runtime_id="pod-xyz",
@@ -175,7 +175,7 @@ class TestResolveScopePath:
         assert path == "/var/css/pod-xyz/worktree-sess-123"
     
     def test_resolve_session_path(self) -> None:
-        """Test resolving session scope path."""
+        """Test resolving session scopes path."""
         ctx = ScopeContext(
             scope_level="session",
             project_id=789,
@@ -194,10 +194,10 @@ class TestResolveScopePath:
         """Test path resolution fails with missing context fields."""
         ctx = ScopeContext(scope_level="global")
         
-        with pytest.raises(ValueError, match="PROJECT scope requires project_id"):
+        with pytest.raises(ValueError, match="PROJECT scopes requires project_id"):
             resolve_scope_path("project", ctx)
         
-        with pytest.raises(ValueError, match="RUNTIME scope requires"):
+        with pytest.raises(ValueError, match="RUNTIME scopes requires"):
             resolve_scope_path("runtime", ctx)
 
 
@@ -215,7 +215,7 @@ class TestLoadScopeConfig:
         assert "retention" in config
     
     def test_default_config_global_scope(self) -> None:
-        """Test default config for global scope has full permissions."""
+        """Test default config for global scopes has full permissions."""
         ctx = ScopeContext(scope_level="global", user_id="admin", user_role="admin")
         config = _get_default_scope_config(ScopeLevel.GLOBAL, ctx)
         
@@ -225,7 +225,7 @@ class TestLoadScopeConfig:
         assert "delete" in config["permissions"]["findings"]
     
     def test_default_config_project_scope(self) -> None:
-        """Test default config for project scope has limited permissions."""
+        """Test default config for project scopes has limited permissions."""
         ctx = ScopeContext(
             scope_level="project",
             project_id=123,
@@ -235,11 +235,11 @@ class TestLoadScopeConfig:
         config = _get_default_scope_config(ScopeLevel.PROJECT, ctx)
         
         assert config["scope_level"] == "project"
-        # Project scope should not have DELETE permission
+        # Project scopes should not have DELETE permission
         assert "delete" not in config["permissions"].get("findings", [])
     
     def test_default_config_session_scope(self) -> None:
-        """Test default config for session scope has minimal permissions."""
+        """Test default config for session scopes has minimal permissions."""
         ctx = ScopeContext(
             scope_level="session",
             session_id="sess1",
@@ -250,7 +250,7 @@ class TestLoadScopeConfig:
         config = _get_default_scope_config(ScopeLevel.SESSION, ctx)
         
         assert config["scope_level"] == "session"
-        # Session scope has only read and create
+        # Session scopes has only read and create
         permissions = config["permissions"].get("findings", [])
         assert "read" in permissions
         assert "create" in permissions
@@ -274,7 +274,7 @@ class TestCheckScopePermission:
     """Test check_scope_permission function."""
     
     def test_permission_allowed_for_global_scope(self) -> None:
-        """Test permission is allowed for global scope."""
+        """Test permission is allowed for global scopes."""
         ctx = ScopeContext(scope_level="global", user_role="admin")
         result = check_scope_permission(
             user_id="admin",
@@ -313,7 +313,7 @@ class TestCheckScopePermission:
             session_id="sess1",
             project_id=123,
         )
-        # Session scope doesn't have delete permission for findings
+        # Session scopes doesn't have delete permission for findings
         result = check_scope_permission(
             user_id="analyst",
             scope=ctx,
@@ -327,7 +327,7 @@ class TestCheckScopeHierarchy:
     """Test check_scope_hierarchy function."""
     
     def test_global_contains_all_scopes(self) -> None:
-        """Test global scope contains all other scopes."""
+        """Test global scopes contains all other scopes."""
         global_ctx = ScopeContext(scope_level="global")
         
         project_ctx = ScopeContext(scope_level="project", project_id=123)
@@ -341,13 +341,13 @@ class TestCheckScopeHierarchy:
         assert check_scope_hierarchy(global_ctx, session_ctx) is True
     
     def test_app_contains_lower_scopes(self) -> None:
-        """Test app scope contains lower scopes."""
+        """Test app scopes contains lower scopes."""
         app_ctx = ScopeContext(scope_level="app")
         project_ctx = ScopeContext(scope_level="project", project_id=123)
         assert check_scope_hierarchy(app_ctx, project_ctx) is True
     
     def test_project_contains_lower_scopes(self) -> None:
-        """Test project scope contains lower scopes."""
+        """Test project scopes contains lower scopes."""
         project_ctx = ScopeContext(scope_level="project", project_id=123)
         
         session_ctx = ScopeContext(
@@ -358,14 +358,14 @@ class TestCheckScopeHierarchy:
         assert check_scope_hierarchy(project_ctx, session_ctx) is True
     
     def test_project_does_not_contain_different_project(self) -> None:
-        """Test project scope does not contain different project."""
+        """Test project scopes does not contain different project."""
         project_ctx1 = ScopeContext(scope_level="project", project_id=123)
         project_ctx2 = ScopeContext(scope_level="project", project_id=456)
         
         assert check_scope_hierarchy(project_ctx1, project_ctx2) is False
     
     def test_runtime_contains_only_same_runtime(self) -> None:
-        """Test runtime scope contains only same runtime and session."""
+        """Test runtime scopes contains only same runtime and session."""
         _ = ScopeContext(
             scope_level="runtime",
             runtime_id="pod-1",
@@ -378,7 +378,7 @@ class TestCheckScopeHierarchy:
             project_id=123,
             session_id="sess1",
         )
-        # Different scope types but hierarchically contained if IDs match
+        # Different scopes types but hierarchically contained if IDs match
         # (simplified test)
         
         _ = ScopeContext(
@@ -393,25 +393,25 @@ class TestValidateScopeFields:
     """Test validate_scope_fields function."""
     
     def test_valid_global_scope_fields(self) -> None:
-        """Test validating global scope fields."""
+        """Test validating global scopes fields."""
         is_valid, error = validate_scope_fields(scope_level="global")
         assert is_valid is True
         assert error is None
     
     def test_valid_project_scope_fields(self) -> None:
-        """Test validating project scope fields."""
+        """Test validating project scopes fields."""
         is_valid, error = validate_scope_fields(scope_level="project", project_id=123)
         assert is_valid is True
         assert error is None
     
     def test_invalid_project_scope_missing_id(self) -> None:
-        """Test invalid project scope without project_id."""
+        """Test invalid project scopes without project_id."""
         is_valid, error = validate_scope_fields(scope_level="project")
         assert is_valid is False
-        assert "PROJECT scope requires project_id" in error
+        assert "PROJECT scopes requires project_id" in error
     
     def test_valid_runtime_scope_fields(self) -> None:
-        """Test validating runtime scope fields."""
+        """Test validating runtime scopes fields."""
         is_valid, error = validate_scope_fields(
             scope_level="runtime",
             runtime_id="pod-123",
@@ -421,16 +421,16 @@ class TestValidateScopeFields:
         assert error is None
     
     def test_invalid_runtime_scope_missing_path(self) -> None:
-        """Test invalid runtime scope without worktree_path."""
+        """Test invalid runtime scopes without worktree_path."""
         is_valid, error = validate_scope_fields(
             scope_level="runtime",
             runtime_id="pod-123",
         )
         assert is_valid is False
-        assert "RUNTIME scope requires worktree_path" in error
+        assert "RUNTIME scopes requires worktree_path" in error
     
     def test_valid_session_scope_fields(self) -> None:
-        """Test validating session scope fields."""
+        """Test validating session scopes fields."""
         is_valid, error = validate_scope_fields(
             scope_level="session",
             session_id="sess1",
@@ -440,16 +440,16 @@ class TestValidateScopeFields:
         assert error is None
     
     def test_invalid_session_scope_missing_project(self) -> None:
-        """Test invalid session scope without project_id."""
+        """Test invalid session scopes without project_id."""
         is_valid, error = validate_scope_fields(
             scope_level="session",
             session_id="sess1",
         )
         assert is_valid is False
-        assert "SESSION scope requires project_id" in error
+        assert "SESSION scopes requires project_id" in error
     
     def test_invalid_scope_level(self) -> None:
-        """Test invalid scope level."""
+        """Test invalid scopes level."""
         is_valid, error = validate_scope_fields(scope_level="invalid")
         assert is_valid is False
         assert "Invalid scope_level" in error
@@ -459,7 +459,7 @@ class TestGetScopedQueryset:
     """Test get_scoped_queryset helper function."""
     
     def test_queryset_for_session_scope(self) -> None:
-        """Test queryset building for session scope."""
+        """Test queryset building for session scopes."""
         ctx = ScopeContext(
             scope_level="session",
             project_id=123,
@@ -476,7 +476,7 @@ class TestGetScopedQueryset:
         mock_model.filter.assert_called_with(session_id="sess1")
     
     def test_queryset_for_project_scope(self) -> None:
-        """Test queryset building for project scope."""
+        """Test queryset building for project scopes."""
         ctx = ScopeContext(scope_level="project", project_id=456)
         
         mock_model = MagicMock()
@@ -505,10 +505,10 @@ class TestGetScopedQueryset:
 
 
 class TestScopeIntegration:
-    """Integration tests for complete scope workflow."""
+    """Integration tests for complete scopes workflow."""
     
     def test_complete_scope_workflow_global(self) -> None:
-        """Test complete workflow for global scope."""
+        """Test complete workflow for global scopes."""
         ctx = ScopeContext(scope_level="global", user_id="admin", user_role="admin")
         
         # Validate fields
@@ -533,7 +533,7 @@ class TestScopeIntegration:
         assert has_perm is True
     
     def test_complete_scope_workflow_session(self) -> None:
-        """Test complete workflow for session scope."""
+        """Test complete workflow for session scopes."""
         ctx = ScopeContext(
             scope_level="session",
             project_id=123,
@@ -568,7 +568,7 @@ class TestScopeIntegration:
         )
         assert has_read is True
         
-        # Session scope should not allow delete
+        # Session scopes should not allow delete
         has_delete = check_scope_permission(
             user_id="analyst",
             scope=ctx,
@@ -578,7 +578,7 @@ class TestScopeIntegration:
         assert has_delete is False
     
     def test_scope_hierarchy_traversal(self) -> None:
-        """Test traversing scope hierarchy."""
+        """Test traversing scopes hierarchy."""
         global_ctx = ScopeContext(scope_level="global")
         project_ctx = ScopeContext(scope_level="project", project_id=123)
         session_ctx = ScopeContext(
@@ -606,7 +606,7 @@ class TestScopeEdgeCases:
         assert ctx.scope_level == ScopeLevel.APP
     
     def test_invalid_scope_level_string(self) -> None:
-        """Test invalid scope level string raises error."""
+        """Test invalid scopes level string raises error."""
         with pytest.raises(ValueError):
             ScopeContext(scope_level="invalid_level")
     

@@ -6,8 +6,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 
 def _render_template_string(source: str, ctx: dict) -> str:
@@ -20,7 +20,7 @@ def _render_template_string(source: str, ctx: dict) -> str:
 
 def _resolve_template(name: str) -> Path | None:
     """Find template file across session → project → app → global scopes."""
-    from cybersecsuite.session_scope import project_sessions_dir, legacy_project_sessions_dir
+    from cybersecsuite.session_scope import legacy_project_sessions_dir, project_sessions_dir
 
     project_dir = Path.cwd()
     global_dir = Path("~/.claude").expanduser()

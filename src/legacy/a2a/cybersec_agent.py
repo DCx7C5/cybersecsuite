@@ -290,10 +290,10 @@ class CybersecA2AAgent(BaseA2AAgent):
             # Sign a new artifact
             payload = {"task_id": task.id, "content": text, "timestamp": datetime.now(timezone.utc).isoformat()}
             artifact = await mgr.create_artifact(
-                name=f"a2a-task-{task.id[:8]}",
+                name=f"google_a2a-task-{task.id[:8]}",
                 content=payload,
                 description=f"Signed via A2A task {task.id}",
-                created_by="a2a-agent",
+                created_by="google_a2a-agent",
                 reason="A2A artifact-sign skill",
             )
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+
 from cssmcp import getLogger
 
 logger = getLogger("csmcp.cybersec.server")
@@ -22,8 +23,9 @@ logger = getLogger("csmcp.cybersec.server")
 def _build_mcp_server():
     """Build a real mcp.server.Server backed by the SdkMcpServer shim."""
     from mcp.server import Server
-    from mcp.types import Tool, TextContent
-    from . import cybersec_server, _ALL_CYBERSEC_TOOLS
+    from mcp.types import TextContent, Tool
+
+    from . import _ALL_CYBERSEC_TOOLS, cybersec_server
 
     app = Server("cybersec")
 

@@ -31,11 +31,11 @@ Global (~/.claude/)               RBAC: read-only
 
 ```python
 class ScopeMiddleware(BaseHTTPMiddleware):
-    """Validate scope context and enforce permissions at request boundary."""
+    """Validate scopes context and enforce permissions at request boundary."""
     
     async def dispatch(self, request: Request, call_next) -> Response:
-        # Extract scope from headers, JWT, or path parameters
-        # Inject into request.state.scope
+        # Extract scopes from headers, JWT, or path parameters
+        # Inject into request.state.scopes
         # Check permissions before route execution
         # Log to audit trail
         # Return with X-Scope-Level, X-Request-ID headers
@@ -103,7 +103,7 @@ class CacheManager:
         # Check Redis or in-memory cache
         
     async def set(self, scope_level: CacheScope, key: str, value: Any, ttl: int):
-        # Store with scope level in metadata
+        # Store with scopes level in metadata
         # Track parent/child relationships
         
     async def invalidate_scope(self, scope_level: CacheScope, resource_id: str):
@@ -162,7 +162,7 @@ class CacheManager:
 
 ```python
 class AuditLogger:
-    """Async audit logging for scope permission checks."""
+    """Async audit logging for scopes permission checks."""
     
     async def log_permission_check(
         self,
@@ -251,21 +251,21 @@ class AuditLog(ScopedEntry):
 
 ```python
 class ScopeError(Exception):
-    """Base scope error."""
+    """Base scopes error."""
     error_code: str
     http_status: int
     context: dict[str, Any]
 
 class ScopePermissionError(ScopeError):
-    """User lacks permission for scope."""
+    """User lacks permission for scopes."""
     http_status = 403  # Forbidden
 
 class ScopeResourceNotFoundError(ScopeError):
-    """Resource not found in requested scope."""
+    """Resource not found in requested scopes."""
     http_status = 404  # Not Found
 
 class ScopeValidationError(ScopeError):
-    """Invalid scope parameters."""
+    """Invalid scopes parameters."""
     http_status = 422  # Unprocessable Entity
 ```
 

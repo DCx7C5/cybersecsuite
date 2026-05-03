@@ -377,7 +377,7 @@ class TestMessageHooksIntegration:
         # Create a copy to compare
         original_content = original_event["message_content"]
         
-        result = await on_pre_message(original_event)
+        await on_pre_message(original_event)
         
         # Original event should be unchanged
         assert original_event["message_content"] == original_content

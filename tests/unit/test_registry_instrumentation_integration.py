@@ -49,7 +49,7 @@ class TestRegistryWithInstrumentation:
     async def test_instrumented_registry_integration(self):
         """Instrumented registry should collect metrics."""
         instrument = HookInstrument()
-        registry = HookRegistry(instrumentation=instrument)
+        HookRegistry(instrumentation=instrument)
         
         context = HookContext(
             correlation_id="test-corr",
@@ -70,7 +70,7 @@ class TestRegistryWithInstrumentation:
             registry2 = HookRegistry(instrumentation=instrument)
             
             # Execute hook
-            output = await registry2.execute("PreToolUse", {"tool": "Bash"}, context)
+            await registry2.execute("PreToolUse", {"tools": "Bash"}, context)
             
             # Verify metrics collected
             assert len(instrument.metrics) > 0
@@ -90,14 +90,14 @@ class TestRegistryWithInstrumentation:
         )
         
         # Should execute without errors
-        output = await registry.execute("PreToolUse", {"tool": "Bash"}, context)
+        output = await registry.execute("PreToolUse", {"tools": "Bash"}, context)
         assert isinstance(output, dict)
     
     @pytest.mark.asyncio
     async def test_instrumentation_error_handling_integration(self):
         """Registry should instrument failed hooks correctly."""
         instrument = HookInstrument()
-        registry = HookRegistry(instrumentation=instrument)
+        HookRegistry(instrumentation=instrument)
         
         context = HookContext(
             correlation_id="test",
@@ -120,7 +120,7 @@ class TestRegistryWithInstrumentation:
             )
             
             # Should not raise despite hook failure
-            output = await registry2.execute("PostToolUse", {"tool": "Bash"}, context)
+            await registry2.execute("PostToolUse", {"tools": "Bash"}, context)
             
             # Metrics should show failure
             assert len(instrument.metrics) > 0
@@ -140,7 +140,7 @@ class TestRegistryInstrumentationPerformance:
     async def test_no_op_hook_performance_budget(self):
         """No-op hooks should execute in <2ms."""
         instrument = HookInstrument()
-        registry = HookRegistry(instrumentation=instrument)
+        HookRegistry(instrumentation=instrument)
         
         context = HookContext(
             correlation_id="perf-test",
@@ -161,7 +161,7 @@ class TestRegistryInstrumentationPerformance:
             
             # Execute multiple times
             for _ in range(5):
-                await registry2.execute("PreToolUse", {"tool": "Bash"}, context)
+                await registry2.execute("PreToolUse", {"tools": "Bash"}, context)
             
             # Check performance
             report = instrument.generate_report()

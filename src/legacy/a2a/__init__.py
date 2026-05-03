@@ -3,12 +3,12 @@ A2A package — Google Agent-to-Agent protocol implementation.
 
 Usage:
     # Single agent server (default — .claude/agents/ as source of truth)
-    from a2a import CybersecA2AAgent, A2AServer
+    from google_a2a import CybersecA2AAgent, A2AServer
     agent = CybersecA2AAgent(base_url="http://localhost:8000")
     server = A2AServer(agent)
 
     # Client
-    from a2a import A2AClient
+    from google_a2a import A2AClient
     async with A2AClient("http://localhost:8000") as client:
         task = await client.send_task("CVE-2024-1234 analysis")
         task = await client.send_task("analyze IOC: 192.168.1.100")
@@ -50,48 +50,48 @@ __all__ = [
 
 _MODULE_MAP: dict[str, tuple[str, str]] = {
     # Enums
-    "TaskState":        ("a2a.enums", "TaskState"),
-    "MessageRole":      ("a2a.enums", "MessageRole"),
-    "PartType":         ("a2a.enums", "PartType"),
-    "AuthScheme":       ("a2a.enums", "AuthScheme"),
+    "TaskState":        ("google_a2a.enums", "TaskState"),
+    "MessageRole":      ("google_a2a.enums", "MessageRole"),
+    "PartType":         ("google_a2a.enums", "PartType"),
+    "AuthScheme":       ("google_a2a.enums", "AuthScheme"),
     # Models
-    "AgentCard":        ("a2a.models", "AgentCard"),
-    "AgentCapabilities":("a2a.models", "AgentCapabilities"),
-    "AgentSkill":       ("a2a.models", "AgentSkill"),
-    "Task":             ("a2a.models", "Task"),
-    "TaskStatus":       ("a2a.models", "TaskStatus"),
-    "Message":          ("a2a.models", "Message"),
-    "TaskArtifact":     ("a2a.models", "TaskArtifact"),
-    "TextPart":         ("a2a.models", "TextPart"),
-    "FilePart":         ("a2a.models", "FilePart"),
-    "DataPart":         ("a2a.models", "DataPart"),
-    "JSONRPCRequest":   ("a2a.models", "JSONRPCRequest"),
-    "JSONRPCResponse":  ("a2a.models", "JSONRPCResponse"),
-    "JSONRPCError":     ("a2a.models", "JSONRPCError"),
-    "A2AErrorCodes":    ("a2a.models", "A2AErrorCodes"),
+    "AgentCard":        ("google_a2a.models", "AgentCard"),
+    "AgentCapabilities":("google_a2a.models", "AgentCapabilities"),
+    "AgentSkill":       ("google_a2a.models", "AgentSkill"),
+    "Task":             ("google_a2a.models", "Task"),
+    "TaskStatus":       ("google_a2a.models", "TaskStatus"),
+    "Message":          ("google_a2a.models", "Message"),
+    "TaskArtifact":     ("google_a2a.models", "TaskArtifact"),
+    "TextPart":         ("google_a2a.models", "TextPart"),
+    "FilePart":         ("google_a2a.models", "FilePart"),
+    "DataPart":         ("google_a2a.models", "DataPart"),
+    "JSONRPCRequest":   ("google_a2a.models", "JSONRPCRequest"),
+    "JSONRPCResponse":  ("google_a2a.models", "JSONRPCResponse"),
+    "JSONRPCError":     ("google_a2a.models", "JSONRPCError"),
+    "A2AErrorCodes":    ("google_a2a.models", "A2AErrorCodes"),
     # Core
-    "TaskStore":        ("a2a.task_store", "TaskStore"),
-    "BaseA2AAgent":     ("a2a.agent", "BaseA2AAgent"),
+    "TaskStore":        ("google_a2a.task_store", "TaskStore"),
+    "BaseA2AAgent":     ("google_a2a.agent", "BaseA2AAgent"),
     # Server / Client
-    "A2AServer":        ("a2a.server", "A2AServer"),
-    "A2AClient":        ("a2a.client", "A2AClient"),
-    "A2AClientError":   ("a2a.client", "A2AClientError"),
+    "A2AServer":        ("google_a2a.server", "A2AServer"),
+    "A2AClient":        ("google_a2a.client", "A2AClient"),
+    "A2AClientError":   ("google_a2a.client", "A2AClientError"),
     # Registry (lazy to break circular import with registries.agents)
     "AgentRegistry":    ("core.registries.agents", "AgentRegistry"),
     "RemoteAgent":      ("core.registries.agents", "RemoteAgent"),
     # Agent implementation (imports crypto + db — lazy)
-    "CybersecA2AAgent": ("a2a.cybersec_agent", "CybersecA2AAgent"),
+    "CybersecA2AAgent": ("google_a2a.cybersec_agent", "CybersecA2AAgent"),
     # .claude agent loader (imports hooks — lazy)
-    "ClaudeAgentCard":          ("a2a.agent_loader", "ClaudeAgentCard"),
-    "frontmatter_to_claude_agent": ("a2a.agent_loader", "frontmatter_to_claude_agent"),
+    "ClaudeAgentCard":          ("google_a2a.agent_loader", "ClaudeAgentCard"),
+    "frontmatter_to_claude_agent": ("google_a2a.agent_loader", "frontmatter_to_claude_agent"),
     # Agent SDK (optional — requires claude-agent-sdk)
-    "build_agent_options":       ("a2a.agent_sdk", "build_agent_options"),
-    "build_agent_definitions":   ("a2a.agent_sdk", "build_agent_definitions"),
-    "clear_caches":              ("a2a.agent_sdk", "clear_caches"),
-    "run_agent_query":           ("a2a.agent_sdk", "run_agent_query"),
-    "run_orchestrator_query":    ("a2a.agent_sdk", "run_orchestrator_query"),
-    "run_agent_stream":          ("a2a.agent_sdk", "run_agent_stream"),
-    "run_agent_stream_with_memory": ("a2a.agent_sdk", "run_agent_stream_with_memory"),
+    "build_agent_options":       ("google_a2a.agent_sdk", "build_agent_options"),
+    "build_agent_definitions":   ("google_a2a.agent_sdk", "build_agent_definitions"),
+    "clear_caches":              ("google_a2a.agent_sdk", "clear_caches"),
+    "run_agent_query":           ("google_a2a.agent_sdk", "run_agent_query"),
+    "run_orchestrator_query":    ("google_a2a.agent_sdk", "run_orchestrator_query"),
+    "run_agent_stream":          ("google_a2a.agent_sdk", "run_agent_stream"),
+    "run_agent_stream_with_memory": ("google_a2a.agent_sdk", "run_agent_stream_with_memory"),
 }
 
 
@@ -104,6 +104,6 @@ def __getattr__(name: str) -> object:
             return getattr(mod, attr)
         except (ImportError, AttributeError) as exc:
             raise ImportError(
-                f"a2a.{name} could not be imported from {mod_path}: {exc}"
+                f"google_a2a.{name} could not be imported from {mod_path}: {exc}"
             ) from exc
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -54,12 +54,12 @@ HTTP Response
 ```python
 class ScopeMiddleware(BaseHTTPMiddleware):
     """
-    Extracts scope context from request and enforces permissions.
+    Extracts scopes context from request and enforces permissions.
     Runs on every request, adds < 5ms overhead.
     """
     
     async def dispatch(self, request: Request, call_next):
-        # 1. Extract scope
+        # 1. Extract scopes
         scope = await self._extract_scope_context(request)
         request.state.scope = scope
         
@@ -93,8 +93,8 @@ class ScopeMiddleware(BaseHTTPMiddleware):
 ```python
 class CacheManager:
     """
-    Cache with scope-aware keys and cascade invalidation.
-    Parent scope change automatically invalidates child scopes.
+    Cache with scopes-aware keys and cascade invalidation.
+    Parent scopes change automatically invalidates child scopes.
     """
     
     # Scope hierarchy (strict parent → child order)
@@ -205,7 +205,7 @@ ScopeError (HTTP 500)
 ```json
 {
   "error_code": "PERMISSION_DENIED",
-  "message": "User lacks permission for this scope",
+  "message": "User lacks permission for this scopes",
   "context": {
     "scope_level": "project",
     "user_id": "user123",
@@ -519,14 +519,14 @@ bookmarks = {
 **Purpose**: Tie workers to scope hierarchy, enable scope-based queries
 
 ```python
-# Worker creation at project scope
+# Worker creation at project scopes
 mgr = WorkerStateMachine(
     worker_id="my-worker",
     project_id="proj-123",      # Required
     session_id=None             # Optional
 )
 
-# Worker creation at session scope
+# Worker creation at session scopes
 mgr = WorkerStateMachine(
     worker_id="my-worker",
     project_id="proj-123",      # Required

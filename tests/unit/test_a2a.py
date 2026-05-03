@@ -1,4 +1,4 @@
-"""Tests for A2A protocol — task store, agent registry, models."""
+"""Tests for A2A protocol — task store, agents registry, models."""
 
 import pytest
 
@@ -94,7 +94,7 @@ class TestTaskStore:
 
 
 class TestAgentRegistry:
-    """Test A2A agent registry."""
+    """Test A2A agents registry."""
 
     @pytest.fixture
     def registry(self):
@@ -104,7 +104,7 @@ class TestAgentRegistry:
         from a2a.models import AgentCard, AgentCapabilities, AgentAuthentication
         return AgentCard(
             name=name,
-            description=f"{name} agent",
+            description=f"{name} agents",
             url=f"http://localhost:9000/{name}",
             version="1.0",
             capabilities=AgentCapabilities(),
@@ -113,9 +113,9 @@ class TestAgentRegistry:
         )
 
     def test_register_agent(self, registry):
-        card = self._make_card("test-agent")
+        card = self._make_card("test-agents")
         agent = registry.register("http://localhost:9000", card)
-        assert agent.card.name == "test-agent"
+        assert agent.card.name == "test-agents"
         assert len(registry.all()) == 1
 
     def test_find_by_name(self, registry):

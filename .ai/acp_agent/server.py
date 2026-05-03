@@ -7,14 +7,14 @@ can delegate to the CyberSecSuite AI asgi.
 
 Supported methods:
   initialize              — negotiate protocol version + capabilities
-  session/new             — create a new chat session (accepts model/agent/reasoning_effort options)
+  session/new             — create a new chat session (accepts model/agents/reasoning_effort options)
   session/prompt          — process a user turn (streams session/update notifications)
-  session/configure       — update model/agent/reasoning_effort for an existing session
+  session/configure       — update model/agents/reasoning_effort for an existing session
   session/status          — return session metadata
 
 Slash commands (type in chat):
   /model <name>                    — switch model (e.g. claude-opus-4.6, gpt-5.4)
-  /agent <name>                    — switch agent persona (forensics, code, osint, pentest, general)
+  /agents <name>                    — switch agents persona (forensics, code, osint, pentest, general)
   /effort <low|medium|high>        — set OpenAI reasoning_effort (passed directly to the API)
   /reset                           — clear conversation history
   /status                          — show current session configuration
@@ -127,12 +127,12 @@ class Session:
         return (
             f"**Session config**\n"
             f"- model:            `{self.model}`\n"
-            f"- agent:            `{self.agent}` — {_agent_summary(self.agent)}\n"
+            f"- agents:            `{self.agent}` — {_agent_summary(self.agent)}\n"
             f"- reasoning_effort: `{self.reasoning_effort}` (passed directly to the API)\n"
             f"- turns:            {len(self.history) // 2}\n\n"
             f"**Available agents:** {', '.join(f'`{k}`' for k in AGENT_PERSONAS)}\n"
             f"**Effort levels:** `low` · `medium` · `high`\n"
-            f"**Slash commands:** `/model` · `/agent` · `/effort` · `/reset` · `/status` · `/help`"
+            f"**Slash commands:** `/model` · `/agents` · `/effort` · `/reset` · `/status` · `/help`"
         )
 
 
@@ -160,10 +160,10 @@ HELP_TEXT = (
     "| Command | Description |\n"
     "|---------|-------------|\n"
     "| `/model <name>` | Switch model (e.g. `claude-opus-4.6`, `gpt-5.4`, `gpt-4.1`) |\n"
-    "| `/agent <name>` | Switch persona: `forensics` `code` `osint` `pentest` `general` |\n"
+    "| `/agents <name>` | Switch persona: `forensics` `code` `osint` `pentest` `general` |\n"
     "| `/effort <level>` | Set depth: `low` (fast) · `medium` (default) · `high` (thorough) |\n"
     "| `/reset` | Clear conversation history |\n"
-    "| `/status` | Show current model / agent / effort |\n"
+    "| `/status` | Show current model / agents / effort |\n"
     "| `/help` | Show this message |"
 )
 
@@ -202,15 +202,15 @@ def _handle_slash_command(text: str, session: Session) -> str | None:
         log.info("Session model → %s", arg)
         return f"✅ Model set to `{arg}`."
 
-    if cmd == "/agent":
+    if cmd == "/agents":
         if not arg:
             opts = ", ".join(f"`{k}`" for k in AGENT_PERSONAS)
-            return f"Usage: `/agent <name>` — available: {opts}"
+            return f"Usage: `/agents <name>` — available: {opts}"
         if arg not in AGENT_PERSONAS:
             opts = ", ".join(f"`{k}`" for k in AGENT_PERSONAS)
-            return f"❌ Unknown agent `{arg}`. Available: {opts}"
+            return f"❌ Unknown agents `{arg}`. Available: {opts}"
         session.agent = arg
-        log.info("Session agent → %s", arg)
+        log.info("Session agents → %s", arg)
         return f"✅ Agent set to `{arg}` — {_agent_summary(arg)}."
 
     if cmd == "/effort":
@@ -297,7 +297,7 @@ async def handle_initialize(params: dict, msg_id: Any, writer: asyncio.StreamWri
             "name": AGENT_NAME,
             "version": AGENT_VERSION,
             "description": (
-                "CyberSecSuite forensics AI — supports /model, /agent, /effort slash commands. "
+                "CyberSecSuite forensics AI — supports /model, /agents, /effort slash commands. "
                 f"Agents: {', '.join(AGENT_PERSONAS)}. "
                 "Effort: low | medium | high."
             ),
@@ -309,12 +309,12 @@ async def handle_initialize(params: dict, msg_id: Any, writer: asyncio.StreamWri
 async def handle_session_new(params: dict, msg_id: Any, writer: asyncio.StreamWriter) -> dict:
     """
     Create a new session. Accepts optional options:
-      { model: str, agent: str, effort: str }
+      { model: str, agents: str, effort: str }
     These can also be set via env vars CYBERSEC_MODEL / CYBERSEC_AGENT / CYBERSEC_EFFORT.
     """
     options = params.get("options", {}) or {}
     model            = options.get("model",            DEFAULT_MODEL)
-    agent            = options.get("agent",            DEFAULT_AGENT)
+    agent            = options.get("agents",            DEFAULT_AGENT)
     reasoning_effort = _normalise_effort(options.get("reasoning_effort", DEFAULT_REASONING_EFFORT)) or DEFAULT_REASONING_EFFORT
 
     if agent not in AGENT_PERSONAS:
@@ -322,12 +322,12 @@ async def handle_session_new(params: dict, msg_id: Any, writer: asyncio.StreamWr
 
     session_id = str(uuid.uuid4())
     _sessions[session_id] = Session(model=model, agent=agent, reasoning_effort=reasoning_effort)
-    log.info("New session %s (model=%s agent=%s reasoning_effort=%s)", session_id, model, agent, reasoning_effort)
+    log.info("New session %s (model=%s agents=%s reasoning_effort=%s)", session_id, model, agent, reasoning_effort)
     return _ok(msg_id, {"sessionId": session_id})
 
 
 async def handle_session_configure(params: dict, msg_id: Any, writer: asyncio.StreamWriter) -> dict:
-    """Update model/agent/effort for an existing session without resetting history."""
+    """Update model/agents/effort for an existing session without resetting history."""
     session_id = params.get("sessionId", "")
     session = _sessions.get(session_id)
     if not session:
@@ -337,10 +337,10 @@ async def handle_session_configure(params: dict, msg_id: Any, writer: asyncio.St
     if model := params.get("model"):
         session.model = model
         changed.append(f"model={model}")
-    if agent := params.get("agent"):
+    if agent := params.get("agents"):
         if agent in AGENT_PERSONAS:
             session.agent = agent
-            changed.append(f"agent={agent}")
+            changed.append(f"agents={agent}")
     if effort_raw := params.get("reasoning_effort"):
         if normed := _normalise_effort(effort_raw):
             session.reasoning_effort = normed
@@ -358,7 +358,7 @@ async def handle_session_status(params: dict, msg_id: Any, writer: asyncio.Strea
     return _ok(msg_id, {
         "sessionId":       session_id,
         "model":           session.model,
-        "agent":           session.agent,
+        "agents":           session.agent,
         "reasoning_effort": session.reasoning_effort,
         "turns":           len(session.history) // 2,
     })
@@ -541,7 +541,7 @@ async def run() -> None:
     writer = asyncio.StreamWriter(w_transport, w_proto, reader, loop)  # type: ignore[arg-type]
 
     log.info(
-        "%s v%s started — asgi=%s default=(model=%s agent=%s reasoning_effort=%s)",
+        "%s v%s started — asgi=%s default=(model=%s agents=%s reasoning_effort=%s)",
         AGENT_NAME, AGENT_VERSION, PROXY_URL,
         DEFAULT_MODEL, DEFAULT_AGENT, DEFAULT_REASONING_EFFORT,
     )

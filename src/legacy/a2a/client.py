@@ -151,7 +151,7 @@ class A2AClient:
         """
         task = await self.send_task(text, task_id=task_id, session_id=session_id)
 
-        url = f"{self.base_url}/a2a/stream/{task.id}"
+        url = f"{self.base_url}/google_a2a/stream/{task.id}"
         async with httpx.AsyncClient(timeout=None) as stream_client:
             async with stream_client.stream("GET", url, headers=self._extra_headers) as resp:
                 async for line in resp.aiter_lines():
@@ -171,7 +171,7 @@ class A2AClient:
             params=params,
         ).model_dump(mode="json", exclude_none=True)
 
-        raw = await self._post("/a2a", payload)
+        raw = await self._post("/google_a2a", payload)
         rpc_resp = JSONRPCResponse(**raw)
 
         if rpc_resp.error:

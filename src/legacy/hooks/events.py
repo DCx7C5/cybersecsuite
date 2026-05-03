@@ -13,7 +13,7 @@ NO Pydantic. NO runtime validation (yet). Pure typing annotations.
 from typing import Any, Optional, TypedDict
 
 # Re-export from canonical location in core.types
-from core.types import HookContext, HookErrorStrategy
+from core.types import HookErrorStrategy
 
 # Alias for backward compatibility (legacy code may use ErrorStrategy)
 ErrorStrategy = HookErrorStrategy

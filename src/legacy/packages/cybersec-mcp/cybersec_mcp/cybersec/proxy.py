@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 
 @tool(
@@ -26,7 +26,13 @@ from ..helpers import JsonDict, sdk_result, sdk_error
 )
 async def proxy_chat(args: dict[str, Any]) -> JsonDict:
     try:
-        from ai_proxy.routing.combo import smart_route, route_request, ComboConfig, ComboTarget, Strategy
+        from ai_proxy.routing.combo import (
+            ComboConfig,
+            ComboTarget,
+            Strategy,
+            route_request,
+            smart_route,
+        )
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -71,8 +77,8 @@ async def proxy_chat(args: dict[str, Any]) -> JsonDict:
 @tool("proxy_providers", "List all configured AI providers with status and rate limits.", {})
 async def proxy_providers(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_all_providers
         from ai_proxy.services.rate_limiter import rate_limiter
+        from core.registries.providers import get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -140,8 +146,12 @@ async def proxy_cost(args: dict[str, Any]) -> JsonDict:
 )
 async def simulate_route(args: dict[str, Any]) -> JsonDict:
     try:
+        from ai_proxy.routing.combo import (
+            budget_guard,
+            get_circuit_breaker_status,
+            get_usage_counts,
+        )
         from core.registries.providers import get_all_providers
-        from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts, budget_guard
     except ImportError:
         return sdk_error("ai_proxy not available")
 
@@ -227,9 +237,9 @@ async def get_circuit_breakers(args: dict[str, Any]) -> JsonDict:
 )
 async def explain_route(args: dict[str, Any]) -> JsonDict:
     try:
-        from core.registries.providers import get_all_providers
         from ai_proxy.routing.combo import get_circuit_breaker_status, get_usage_counts
         from ai_proxy.services.rate_limiter import rate_limiter  # noqa: F401
+        from core.registries.providers import get_all_providers
     except ImportError:
         return sdk_error("ai_proxy not available")
 

@@ -11,8 +11,8 @@ import json
 import os
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 
 def _get_client():
@@ -121,8 +121,8 @@ async def agent_vault_add_credential(args: dict[str, Any]) -> JsonDict:
     },
 )
 async def agent_skill_upload(args: dict[str, Any]) -> JsonDict:
-    from pathlib import Path
     import time
+    from pathlib import Path
 
     skill_path = str(args.get("skill_path", "")).strip()
     if not skill_path:

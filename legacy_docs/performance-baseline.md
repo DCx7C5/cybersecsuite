@@ -347,7 +347,7 @@ All performance targets have been met. Baseline metrics are established for regr
       "status_codes": {"404": 100}
     },
     {
-      "endpoint": "/api/v1/marketplace/items?kind=skill",
+      "endpoint": "/api/v1/marketplace/items?kind=skills",
       "status": "PASS",
       "num_requests": 100,
       "concurrency": 10,

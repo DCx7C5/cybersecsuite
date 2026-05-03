@@ -1,12 +1,11 @@
 """
-Unit tests for StateRegistry — scope merging, atomicity, concurrency, null/missing fallthrough.
+Unit tests for StateRegistry — scopes merging, atomicity, concurrency, null/missing fallthrough.
 """
 
 import asyncio
 import json
 import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 import tempfile
 
 from src.state import StateRegistry, ScopeLevel
@@ -68,11 +67,11 @@ class TestPathResolution:
 
 
 class TestScopeLoading:
-    """Test loading of each scope."""
+    """Test loading of each scopes."""
 
     @pytest.mark.asyncio
     async def test_load_global_defaults(self, registry):
-        """Test GLOBAL scope defaults."""
+        """Test GLOBAL scopes defaults."""
         await registry._load_all_scopes()
         global_data = registry._cache[ScopeLevel.GLOBAL]
         assert "env" in global_data
@@ -82,7 +81,7 @@ class TestScopeLoading:
 
     @pytest.mark.asyncio
     async def test_load_app_scope_empty(self, registry):
-        """Test loading APP scope when no files exist."""
+        """Test loading APP scopes when no files exist."""
         await registry._load_all_scopes()
         app_data = registry._cache[ScopeLevel.APP]
         # Should have GLOBAL defaults
@@ -144,7 +143,7 @@ class TestScopeLoading:
 
 
 class TestMergeSemantics:
-    """Test null/missing fallthrough and scope merging."""
+    """Test null/missing fallthrough and scopes merging."""
 
     @pytest.mark.asyncio
     async def test_cascade_missing_key_from_project_to_app(self, registry, temp_homes):
@@ -172,7 +171,7 @@ class TestMergeSemantics:
 
     @pytest.mark.asyncio
     async def test_project_overrides_app(self, registry, temp_homes):
-        """Test that PROJECT scope overrides APP."""
+        """Test that PROJECT scopes overrides APP."""
         _, cybersecsuite_home = temp_homes
 
         # Write APP setting
@@ -231,7 +230,7 @@ class TestGetSet:
 
     @pytest.mark.asyncio
     async def test_get_app_scope(self, registry, temp_homes):
-        """Test get() from APP scope."""
+        """Test get() from APP scopes."""
         _, cybersecsuite_home = temp_homes
         app_settings_path = cybersecsuite_home / "settings.json"
         app_settings_path.parent.mkdir(parents=True, exist_ok=True)
@@ -252,7 +251,7 @@ class TestGetSet:
 
     @pytest.mark.asyncio
     async def test_set_app_scope(self, registry, temp_homes):
-        """Test set() to APP scope."""
+        """Test set() to APP scopes."""
         _, cybersecsuite_home = temp_homes
         await registry._load_all_scopes()
 
@@ -266,7 +265,7 @@ class TestGetSet:
 
     @pytest.mark.asyncio
     async def test_set_project_scope(self, registry, temp_homes):
-        """Test set() to PROJECT scope."""
+        """Test set() to PROJECT scopes."""
         _, cybersecsuite_home = temp_homes
         await registry._load_all_scopes()
 
@@ -283,14 +282,14 @@ class TestGetSet:
 
     @pytest.mark.asyncio
     async def test_set_global_raises_error(self, registry):
-        """Test that set() to GLOBAL scope raises ValueError."""
+        """Test that set() to GLOBAL scopes raises ValueError."""
         await registry._load_all_scopes()
-        with pytest.raises(ValueError, match="Cannot write to GLOBAL scope"):
+        with pytest.raises(ValueError, match="Cannot write to GLOBAL scopes"):
             await registry.set("any_key", "value", scope=ScopeLevel.GLOBAL)
 
     @pytest.mark.asyncio
     async def test_delete_app_scope(self, registry, temp_homes):
-        """Test delete() from APP scope."""
+        """Test delete() from APP scopes."""
         _, cybersecsuite_home = temp_homes
 
         # Write initial data
@@ -311,7 +310,7 @@ class TestGetSet:
 
     @pytest.mark.asyncio
     async def test_project_id_required_for_project_scope(self, registry):
-        """Test that project_id is required for PROJECT scope operations."""
+        """Test that project_id is required for PROJECT scopes operations."""
         await registry._load_all_scopes()
 
         with pytest.raises(ValueError, match="project_id required"):

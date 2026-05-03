@@ -19,10 +19,10 @@ Enabled by `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json`.
 ## Invocation
 
 ```bash
-# Via cybersec-agent orchestrator
-@cybersec-agent blue    # Blue-team investigation
-@cybersec-agent red     # Red-team simulation
-@cybersec-agent purple  # Purple-team exercise
+# Via cybersec-agents orchestrator
+@cybersec-agents blue    # Blue-team investigation
+@cybersec-agents red     # Red-team simulation
+@cybersec-agents purple  # Purple-team exercise
 
 # Direct team invocation
 @blue-team [prompt]

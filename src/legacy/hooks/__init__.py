@@ -33,7 +33,7 @@ The hook system consists of:
 Integration with Agent SDK
 ==========================
 
-The agent SDK (src/a2a/agent_sdk.py) uses HookRegistry:
+The agent SDK (src/google_a2a/agent_sdk.py) uses HookRegistry:
 
     from core.registries.hooks import get_registry
     
@@ -94,7 +94,7 @@ Usage Patterns
 
 **Basic: Just use SDK (transparent integration)**
 
-    from a2a.agent_sdk import build_agent_options
+    from google_a2a.agent_sdk import build_agent_options
     
     # Hooks are automatically initialized and wrapped
     options = build_agent_options()

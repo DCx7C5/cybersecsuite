@@ -1,5 +1,5 @@
 """
-Comprehensive tests for FastAPI scope middleware (t362).
+Comprehensive tests for FastAPI scopes middleware (t362).
 
 Tests:
 - Scope context extraction from headers and path
@@ -22,10 +22,10 @@ from db.exceptions import (
 
 
 class TestScopeContextCreation:
-    """Test scope context creation and initialization."""
+    """Test scopes context creation and initialization."""
     
     def test_create_global_scope_context(self) -> None:
-        """Test creating global scope context."""
+        """Test creating global scopes context."""
         ctx = ScopeContext(
             request_id="req-123",
             scope_level="global",
@@ -39,7 +39,7 @@ class TestScopeContextCreation:
         assert ctx.start_time is not None
     
     def test_create_session_scope_context(self) -> None:
-        """Test creating session scope context."""
+        """Test creating session scopes context."""
         ctx = ScopeContext(
             request_id="req-789",
             scope_level="session",
@@ -67,7 +67,7 @@ class TestScopeContextCreation:
         assert 0 <= elapsed < 100  # Less than 100ms
     
     def test_scope_context_to_dict(self) -> None:
-        """Test converting scope context to dictionary."""
+        """Test converting scopes context to dictionary."""
         ctx = ScopeContext(
             request_id="req-123",
             scope_level="project",
@@ -87,14 +87,14 @@ class TestScopeContextCreation:
 
 
 class TestScopeMiddlewareIntegration:
-    """Integration tests for scope middleware with FastAPI."""
+    """Integration tests for scopes middleware with FastAPI."""
     
     @pytest.fixture
     def app(self) -> FastAPI:
         """Create test FastAPI application with middleware."""
         app = FastAPI()
         
-        # Add scope middleware
+        # Add scopes middleware
         app.add_middleware(
             ScopeMiddleware,
             permission_check_enabled=False,  # Disable permission checks for these tests
@@ -104,7 +104,7 @@ class TestScopeMiddlewareIntegration:
         # Add test route
         @app.get("/test/project/{project_id}/resources/{resource_id}")
         async def get_resource(request: Request, project_id: int, resource_id: str):
-            """Test endpoint that uses scope context."""
+            """Test endpoint that uses scopes context."""
             scope_ctx = getattr(request.state, "scope_context", None)
             if scope_ctx:
                 return {
@@ -126,7 +126,7 @@ class TestScopeMiddlewareIntegration:
         return TestClient(app)
     
     def test_scope_extraction_from_headers(self, client: TestClient) -> None:
-        """Test scope context extraction from headers."""
+        """Test scopes context extraction from headers."""
         response = client.get(
             "/test/project/5/resources/inv-123",
             headers={
@@ -145,7 +145,7 @@ class TestScopeMiddlewareIntegration:
         assert data["scope_context"]["project_id"] == 5
     
     def test_scope_extraction_from_path_params(self, client: TestClient) -> None:
-        """Test scope context extraction from path parameters."""
+        """Test scopes context extraction from path parameters."""
         response = client.get(
             "/test/project/10/resources/finding-456",
             headers={"X-User-ID": "user-789"},
@@ -157,7 +157,7 @@ class TestScopeMiddlewareIntegration:
         assert "scope_context" in data
     
     def test_scope_context_attached_to_request(self, client: TestClient) -> None:
-        """Test that scope context is attached to request state."""
+        """Test that scopes context is attached to request state."""
         response = client.get(
             "/test/project/7/resources/artifact-888",
             headers={
@@ -172,13 +172,13 @@ class TestScopeMiddlewareIntegration:
         assert "request_id" in data["scope_context"]
     
     def test_health_check_skips_middleware(self, client: TestClient) -> None:
-        """Test that health checks skip scope enforcement."""
+        """Test that health checks skip scopes enforcement."""
         response = client.get("/health")
         assert response.status_code == 200
         assert response.json()["status"] == "ok"
     
     def test_response_includes_scope_headers(self, client: TestClient) -> None:
-        """Test that response includes scope tracking headers."""
+        """Test that response includes scopes tracking headers."""
         response = client.get(
             "/test/project/3/resources/ioc-999",
             headers={"X-Scope-Level": "project"},
@@ -203,7 +203,7 @@ class TestScopeMiddlewareIntegration:
 
 
 class TestScopeValidation:
-    """Test scope context validation."""
+    """Test scopes context validation."""
     
     @pytest.fixture
     def middleware(self) -> ScopeMiddleware:
@@ -212,7 +212,7 @@ class TestScopeValidation:
         return ScopeMiddleware(app, permission_check_enabled=False, audit_enabled=False)
     
     def test_validate_valid_scope_context(self, middleware: ScopeMiddleware) -> None:
-        """Test validation of valid scope context."""
+        """Test validation of valid scopes context."""
         ctx = ScopeContext(
             request_id="req-123",
             scope_level="project",
@@ -224,7 +224,7 @@ class TestScopeValidation:
         middleware._validate_scope_context(ctx)
     
     def test_validate_invalid_scope_level(self, middleware: ScopeMiddleware) -> None:
-        """Test validation with invalid scope level."""
+        """Test validation with invalid scopes level."""
         ctx = ScopeContext(
             request_id="req-123",
             scope_level="INVALID_SCOPE",
@@ -237,7 +237,7 @@ class TestScopeValidation:
         assert "INVALID_SCOPE" in str(exc_info.value)
     
     def test_validate_project_scope_requires_project_id(self, middleware: ScopeMiddleware) -> None:
-        """Test that PROJECT scope requires project_id."""
+        """Test that PROJECT scopes requires project_id."""
         ctx = ScopeContext(
             request_id="req-123",
             scope_level="project",
@@ -251,7 +251,7 @@ class TestScopeValidation:
         assert "project_id" in str(exc_info.value)
     
     def test_validate_session_scope_requires_both_ids(self, middleware: ScopeMiddleware) -> None:
-        """Test that SESSION scope requires project_id and session_id."""
+        """Test that SESSION scopes requires project_id and session_id."""
         ctx = ScopeContext(
             request_id="req-123",
             scope_level="session",
@@ -300,7 +300,7 @@ class TestScopeErrorHandling:
         
         client = TestClient(app)
         
-        # Invalid scope level should return 422
+        # Invalid scopes level should return 422
         response = client.get(
             "/test",
             headers={"X-Scope-Level": "INVALID"},
@@ -312,7 +312,7 @@ class TestScopeErrorHandling:
 
 
 class TestScopePermissionChecking:
-    """Test scope permission checking integration."""
+    """Test scopes permission checking integration."""
     
     @pytest.mark.asyncio
     async def test_permission_check_called_when_enabled(self) -> None:
@@ -370,7 +370,7 @@ class TestAuditLoggingIntegration:
     
     @pytest.mark.asyncio
     async def test_audit_logging_on_access(self, client_with_audit: TestClient) -> None:
-        """Test that scope access is logged to audit trail."""
+        """Test that scopes access is logged to audit trail."""
         with patch('db.audit_logger.get_audit_logger') as mock_get_logger:
             mock_logger = AsyncMock()
             mock_get_logger.return_value = mock_logger
@@ -384,7 +384,7 @@ class TestAuditLoggingIntegration:
 
 
 class TestScopeMiddlewareHTTPMethodMapping:
-    """Test HTTP method to scope action mapping."""
+    """Test HTTP method to scopes action mapping."""
     
     @pytest.fixture
     def middleware(self) -> ScopeMiddleware:
@@ -392,7 +392,7 @@ class TestScopeMiddlewareHTTPMethodMapping:
         return ScopeMiddleware(FastAPI(), permission_check_enabled=False, audit_enabled=False)
     
     def test_http_method_to_action_mapping(self, middleware: ScopeMiddleware) -> None:
-        """Test HTTP method to scope action conversion."""
+        """Test HTTP method to scopes action conversion."""
         assert middleware._http_method_to_action("GET") == "read"
         assert middleware._http_method_to_action("HEAD") == "read"
         assert middleware._http_method_to_action("POST") == "create"
@@ -403,7 +403,7 @@ class TestScopeMiddlewareHTTPMethodMapping:
 
 
 class TestScopeMiddlewarePathSkipping:
-    """Test that certain paths skip scope enforcement."""
+    """Test that certain paths skip scopes enforcement."""
     
     @pytest.fixture
     def middleware(self) -> ScopeMiddleware:

@@ -55,9 +55,9 @@ The `cybersec-proxy marketplace` command provides full catalog management.
 cybersec-asgi marketplace list
 
 # Filter by kind and/or provider
-cybersec-asgi marketplace list --kind agent
+cybersec-asgi marketplace list --kind agents
 cybersec-asgi marketplace list --provider claude
-cybersec-asgi marketplace list --kind skill --provider universal
+cybersec-asgi marketplace list --kind skills --provider universal
 
 # Search (substring, case-insensitive across name, description, tags)
 cybersec-asgi marketplace search "forensics"
@@ -94,7 +94,7 @@ List catalog items with optional query parameters.
 **Response** `200 OK`:
 ```json
 {
-  "items": [ { "id": "...", "name": "...", "kind": "agent", ... } ],
+  "items": [ { "id": "...", "name": "...", "kind": "agents", ... } ],
   "count": 8
 }
 ```
@@ -142,7 +142,7 @@ Agent Factory generation endpoint. Returns `501 Not Implemented` until the `agen
 ```json
 {
   "status": "not_implemented",
-  "message": "Agent Factory generation requires the agent-factory skill"
+  "message": "Agent Factory generation requires the agents-factory skills"
 }
 ```
 

@@ -96,7 +96,7 @@ class TestQoLSettings:
         assert s.enabled_toggles == s2.enabled_toggles
 
     def test_from_dict_ignores_unknown_toggles(self):
-        d = {"enabled_toggles": ["no_thinking", "obsolete_toggle_xyz"], "scope": "project"}
+        d = {"enabled_toggles": ["no_thinking", "obsolete_toggle_xyz"], "scopes": "project"}
         s = QoLSettings.from_dict(d)
         assert QoLToggle.NO_THINKING in s.enabled_toggles
         assert len(s.enabled_toggles) == 1  # unknown silently dropped
@@ -198,7 +198,7 @@ class TestQoLManager:
 
     def test_status_returns_expected_keys(self, tmp_manager: QoLManager):
         status = tmp_manager.status("session")
-        assert "scope" in status
+        assert "scopes" in status
         assert "active_toggles" in status
         assert "estimated_tokens" in status
         assert "toggle_hash" in status
@@ -292,7 +292,7 @@ class TestQoLManagerAdvanced:
     """T010 test group: Manager functions with edge cases."""
 
     def test_manager_inject_respects_scope_cascade(self, tmp_manager: QoLManager):
-        """T017: session scope with no toggles should cascade to project scope."""
+        """T017: session scopes with no toggles should cascade to project scopes."""
         project_settings = QoLSettings(scope="project")
         project_settings.activate(QoLToggle.NO_THINKING)
         tmp_manager.save_settings(project_settings)
@@ -304,55 +304,55 @@ class TestQoLManagerAdvanced:
         assert "[OUTPUT-CONTROLS]" in modified["messages"][0]["content"]
 
     def test_manager_agent_preset_binding(self, tmp_manager: QoLManager):
-        """T018: agent preset binding and retrieval."""
+        """T018: agents preset binding and retrieval."""
         # Create a preset
         preset = QoLSettings()
         preset.activate(QoLToggle.MINIMAL, QoLToggle.NO_CHAT)
         tmp_manager.save_preset("test-preset", preset)
-        # Bind agent to preset
-        tmp_manager.set_agent_preset("my-agent", "test-preset")
+        # Bind agents to preset
+        tmp_manager.set_agent_preset("my-agents", "test-preset")
         # Retrieve and verify
-        bound_preset = tmp_manager.get_agent_preset("my-agent")
+        bound_preset = tmp_manager.get_agent_preset("my-agents")
         assert bound_preset == "test-preset"
 
     def test_manager_agent_preset_clear(self, tmp_manager: QoLManager):
-        """T018: clearing agent preset binding."""
-        tmp_manager.set_agent_preset("my-agent", "silent")
-        tmp_manager.set_agent_preset("my-agent", None)
-        bound = tmp_manager.get_agent_preset("my-agent")
+        """T018: clearing agents preset binding."""
+        tmp_manager.set_agent_preset("my-agents", "silent")
+        tmp_manager.set_agent_preset("my-agents", None)
+        bound = tmp_manager.get_agent_preset("my-agents")
         assert bound is None
 
     def test_manager_load_agent_settings_returns_none_when_unbound(self, tmp_manager: QoLManager):
-        """T018: load_agent_settings returns None if agent has no binding."""
-        result = tmp_manager.load_agent_settings("unbound-agent")
+        """T018: load_agent_settings returns None if agents has no binding."""
+        result = tmp_manager.load_agent_settings("unbound-agents")
         assert result is None
 
     def test_manager_load_agent_settings_with_binding(self, tmp_manager: QoLManager):
-        """T018: load_agent_settings returns resolved settings for bound agent."""
-        tmp_manager.set_agent_preset("agent-x", "code-only")
-        settings = tmp_manager.load_agent_settings("agent-x")
+        """T018: load_agent_settings returns resolved settings for bound agents."""
+        tmp_manager.set_agent_preset("agents-x", "code-only")
+        settings = tmp_manager.load_agent_settings("agents-x")
         assert settings is not None
         assert QoLToggle.FILE_ONLY in settings.enabled_toggles
 
     def test_manager_inject_respects_agent_preset_override(self, tmp_manager: QoLManager):
-        """T018: agent preset overrides scope settings in inject_into_request."""
+        """T018: agents preset overrides scopes settings in inject_into_request."""
         session_settings = QoLSettings(scope="session")
         session_settings.activate(QoLToggle.MINIMAL)
         tmp_manager.save_settings(session_settings)
 
         # Agent has different preset
-        tmp_manager.set_agent_preset("my-agent", "code-only")
+        tmp_manager.set_agent_preset("my-agents", "code-only")
 
         body = {"messages": [{"role": "user", "content": "test"}]}
         modified = tmp_manager.inject_into_request(
-            body, scope="session", agent_name="my-agent"
+            body, scope="session", agent_name="my-agents"
         )
-        # Should use agent preset (FILE_ONLY), not session (MINIMAL)
+        # Should use agents preset (FILE_ONLY), not session (MINIMAL)
         fragment = modified["messages"][0]["content"]
         assert "NOTHING ELSE MAY APPEAR" in fragment
 
     def test_manager_inject_with_explicit_settings_parameter(self, tmp_manager: QoLManager):
-        """Inject respects explicit settings parameter over scope/agent."""
+        """Inject respects explicit settings parameter over scopes/agents."""
         explicit = QoLSettings()
         explicit.activate(QoLToggle.NO_MARKDOWN)
 
@@ -442,7 +442,7 @@ class TestQoLPresetManagement:
         tmp_manager.save_preset("bad-preset", bad)
         # Binding it should raise
         with pytest.raises(QoLSecurityError):
-            tmp_manager.set_agent_preset("agent", "bad-preset")
+            tmp_manager.set_agent_preset("agents", "bad-preset")
 
 
 class TestQoLFragmentGeneration:
@@ -505,7 +505,7 @@ class TestQoLStatusDiagnostics:
         tmp_manager.save_settings(s)
 
         status = tmp_manager.status("session")
-        assert "scope" in status
+        assert "scopes" in status
         assert "active_toggles" in status
         assert "preset_name" in status
         assert "fragment_preview" in status

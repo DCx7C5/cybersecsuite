@@ -160,7 +160,7 @@ class TestRegistryBackwardCompatibility:
     @pytest.mark.asyncio
     async def test_backward_compat_empty_dict_output(self):
         """Hooks returning {} should still work."""
-        registry = HookRegistry()
+        HookRegistry()
         context = HookContext(
             correlation_id="test",
             session_id="test",
@@ -275,7 +275,7 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_handle_hook_error_called_on_failure(self):
         """_handle_hook_error should be called on hook failure."""
-        registry = HookRegistry()
+        HookRegistry()
         
         # Mock a failing hook
         async def failing_hook(event):

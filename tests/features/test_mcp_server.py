@@ -12,7 +12,7 @@ except ImportError:
 
 
 class TestMcpServerTools:
-    """Test MCP server initialization and tool registry."""
+    """Test MCP server initialization and tools registry."""
 
     def test_all_servers_callable(self):
         """Test that all_servers() is callable."""
@@ -31,7 +31,7 @@ class TestMcpServerTools:
 @pytest.mark.skip(reason="Sub-module tools not yet verified")
 @pytest.mark.asyncio
 async def test_case_open_tool_callable():
-    """Test that case_open tool can be imported and is callable."""
+    """Test that case_open tools can be imported and is callable."""
     pass
 
 

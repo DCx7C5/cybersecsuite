@@ -54,11 +54,11 @@ class TestHookContext:
             correlation_id="corr-123",
             session_id="sess-456",
             timestamp=ts,
-            tool_use_id="tool-789",
-            agent_id="agent-999",
+            tool_use_id="tools-789",
+            agent_id="agents-999",
         )
-        assert ctx.tool_use_id == "tool-789"
-        assert ctx.agent_id == "agent-999"
+        assert ctx.tool_use_id == "tools-789"
+        assert ctx.agent_id == "agents-999"
 
     def test_hook_context_dataclass_fields(self):
         """HookContext should be convertible to dict."""
@@ -67,12 +67,12 @@ class TestHookContext:
             correlation_id="corr-123",
             session_id="sess-456",
             timestamp=ts,
-            tool_use_id="tool-789",
+            tool_use_id="tools-789",
         )
         ctx_dict = asdict(ctx)
         assert isinstance(ctx_dict, dict)
         assert ctx_dict["correlation_id"] == "corr-123"
-        assert ctx_dict["tool_use_id"] == "tool-789"
+        assert ctx_dict["tool_use_id"] == "tools-789"
 
     def test_hook_context_immutable_intent(self):
         """HookContext instances should be created, not mutated."""
@@ -121,7 +121,7 @@ class TestEventTypedDicts:
             "tool_name": "Bash",
             "tool_input": {"command": "ls -la"},
             "agent_type": "explore",
-            "agent_id": "agent-123",
+            "agent_id": "agents-123",
         }
         assert event["tool_name"] == "Bash"
         assert event["tool_input"]["command"] == "ls -la"

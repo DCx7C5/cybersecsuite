@@ -14,7 +14,7 @@ import json
 import logging
 import tempfile
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
@@ -40,7 +40,7 @@ class TestBootstrapGitHubIndex:
 
     async def test_download_github_index_sha512(self, temp_marketplace_dir):
         """Test downloading SHA512 checksum from GitHub."""
-        from core.hooks.sha512_checker import download_file, compute_sha512
+        from core.hooks.sha512_checker import download_file
 
         try:
             # Real network call to GitHub
@@ -65,7 +65,7 @@ class TestBootstrapGitHubIndex:
             assert "agents" in index, "Index should have 'agents' key"
             assert "skills" in index, "Index should have 'skills' key"
             
-            log.info(f"✓ Downloaded index.json from GitHub")
+            log.info("✓ Downloaded index.json from GitHub")
             log.info(f"  - MCPs: {len(index.get('mcps', []))}")
             log.info(f"  - Agents: {len(index.get('agents', []))}")
             log.info(f"  - Skills: {len(index.get('skills', []))}")
@@ -92,7 +92,7 @@ class TestBootstrapGitHubIndex:
     async def db(self):
         """Initialize test database with marketplace models."""
         db_path = ":memory:"
-        modules_to_load = ["core.db.models.scope", "core.marketplace"]
+        modules_to_load = ["core.db.models.scopes", "core.marketplace"]
 
         await Tortoise.init(
             db_url=f"sqlite://{db_path}",
@@ -126,10 +126,10 @@ class TestBootstrapGitHubIndex:
             result = await seed_marketplace_index(index, project)
             
             assert result["mcps_created"] > 0, "Should create MCP entries"
-            assert result["agents_created"] >= 0, "Should create agent entries"
-            assert result["skills_created"] >= 0, "Should create skill entries"
+            assert result["agents_created"] >= 0, "Should create agents entries"
+            assert result["skills_created"] >= 0, "Should create skills entries"
             
-            log.info(f"✓ Seeded marketplace index")
+            log.info("✓ Seeded marketplace index")
             log.info(f"  - MCPs: {result['mcps_created']}")
             log.info(f"  - Agents: {result['agents_created']}")
             log.info(f"  - Skills: {result['skills_created']}")
@@ -153,9 +153,9 @@ class TestBootstrapGitHubIndex:
                 
                 if has_update:
                     assert index_data is not None, "Should return index data if updated"
-                    log.info(f"✓ Index update detected")
+                    log.info("✓ Index update detected")
                 else:
-                    log.info(f"✓ Index is current (no update)")
+                    log.info("✓ Index is current (no update)")
             except Exception as e:
                 if "GitHub" in str(e):
                     pytest.skip(f"GitHub not accessible: {e}")
@@ -203,7 +203,7 @@ class TestBootstrapGitHubIndex:
                         assert result["total"] > 0, "Should have core items to install"
                         assert result["installed"] >= 0, "Should record installations"
                         
-                        log.info(f"✓ Bootstrap complete:")
+                        log.info("✓ Bootstrap complete:")
                         log.info(f"  - Total: {result['total']}")
                         log.info(f"  - Installed: {result['installed']}")
                         log.info(f"  - Failed: {result['failed']}")
@@ -251,7 +251,7 @@ class TestBootstrapErrorHandling:
                 assert status2 is not None
                 assert "mcp-test" in status2.installed_items
                 
-                log.info(f"✓ Bootstrap status persisted and loaded")
+                log.info("✓ Bootstrap status persisted and loaded")
 
     async def test_bootstrap_sha512_cache_invalidation(self, tmp_path):
         """Test that SHA512 cache detects changes."""
@@ -262,4 +262,4 @@ class TestBootstrapErrorHandling:
         new_sha = compute_sha512(b"new index content updated")
         
         assert old_sha != new_sha, "Different content should have different SHA512"
-        log.info(f"✓ SHA512 cache invalidation works")
+        log.info("✓ SHA512 cache invalidation works")

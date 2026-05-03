@@ -59,7 +59,7 @@ from core import Agent, Tool
 from core.types import BaseApiServiceClient
 from core.db import ScopeError
 
-# a2a compatibility imports
+# google_a2a compatibility imports
 import a2a
 from a2a.models import AgentCard
 from a2a.enums import TaskState

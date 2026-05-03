@@ -99,12 +99,12 @@ List all available models across active providers.
 
 **`POST /api/agent-query` body:**
 ```json
-{"agent": "cybersec-agent", "prompt": "Analyze IOC 10.0.0.5"}
+{"agent": "cybersec-agents", "prompt": "Analyze IOC 10.0.0.5"}
 ```
 
 **`POST /api/agent-run` body:**
 ```json
-{"agent": "cybersec-agent", "prompt": "Analyze IOC 10.0.0.5", "stream": true}
+{"agent": "cybersec-agents", "prompt": "Analyze IOC 10.0.0.5", "stream": true}
 ```
 
 Returns `{"task_id": "uuid"}`. Read events via `GET /sse/agent-run/{task_id}`.
@@ -270,7 +270,7 @@ Returns `{"task_id": "uuid"}`. Read events via `GET /sse/agent-run/{task_id}`.
 # Stream health events
 curl -N http://localhost:8000/sse/health
 
-# Stream agent output
+# Stream agents output
 curl -N http://localhost:8000/sse/agent-run/{task_id}
 ```
 

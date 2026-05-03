@@ -4,11 +4,16 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from ..sdk_compat import tool
 from ..helpers import (
-    JsonDict, _get_current_scope, _coerce_limit, get_project_dir, get_session_dir,
-    sdk_result, sdk_error,
+    JsonDict,
+    _coerce_limit,
+    _get_current_scope,
+    get_project_dir,
+    get_session_dir,
+    sdk_error,
+    sdk_result,
 )
+from ..sdk_compat import tool
 
 
 @tool(
@@ -132,7 +137,7 @@ async def add_ioc(args: dict[str, Any]) -> JsonDict:
 )
 async def query_findings(args: dict[str, Any]) -> JsonDict:
     try:
-        from hooks.database import query_findings_db_async, ScopeContext
+        from hooks.database import ScopeContext, query_findings_db_async
     except ImportError:
         return sdk_error("hooks.database not available")
 

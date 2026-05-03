@@ -89,7 +89,7 @@ Referenz:
     src/ai_proxy/qol_controls/models.py  — QoLSettings / BUILTIN_PRESETS
     src/ai_proxy/qol_controls/prompts.py — build_fragment_block
     src/openobserve/writer.py           — emit_event, emit_metric
-    src/a2a/models.py                   — A2A message types
+    src/google_a2a/models.py                   — A2A message types
 
 Thread safety:
     - Safe for concurrent async use

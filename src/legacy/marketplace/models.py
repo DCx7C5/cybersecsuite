@@ -53,9 +53,7 @@ class MarketplaceItem(BaseModel):
     name: str
     description: str
     kind: Literal["agent", "skill", "combo", "template"]
-    provider: Literal[
-        "claude", "copilot", "cursor", "openai", "gemini", "grok", "universal"
-    ]
+
     version: str = "0.1.0"
     status: MarketplaceItemStatus = MarketplaceItemStatus.available
     tags: list[str] = Field(default_factory=list)

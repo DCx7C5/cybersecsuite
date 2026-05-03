@@ -9,8 +9,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from ..helpers import JsonDict, sdk_error, sdk_result
 from ..sdk_compat import tool
-from ..helpers import JsonDict, sdk_result, sdk_error
 
 # ── Lazy tool index ──────────────────────────────────────────────────────────
 
@@ -24,8 +24,8 @@ def _build_tool_index() -> list[dict[str, str]]:
         return _TOOL_INDEX
 
     try:
-        from . import _ALL_CYBERSEC_TOOLS
         from ..dystopian import ALL_TOOLS as _DYSTOPIAN_TOOLS
+        from . import _ALL_CYBERSEC_TOOLS
         all_tools = list(_ALL_CYBERSEC_TOOLS) + list(_DYSTOPIAN_TOOLS)
     except ImportError:
         try:

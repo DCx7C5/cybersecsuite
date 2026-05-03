@@ -184,7 +184,7 @@ make setup
 ```bash
 docker compose up -d
 python src/manage.py seed   # first run only
-claude                       # opens Claude Code with cybersec-agent
+claude                       # opens Claude Code with cybersec-agents
 ```
 
 ---
