@@ -130,3 +130,9 @@ For new providers in `src/css/api_services/{provider}/`:
 1. Create `tools.py` with `BUILTIN_TOOLS` constant
 2. Follow ToolSchema format in `src/css/modules/tools/models.py`
 3. Registry auto-discovers on startup (add to `ToolRegistry._load_builtin_tools()`)
+---
+## Audit (2025-05-03)
+**Status**: Complete | **Files**: 2/5 | **Pattern**: ✅
+**Findings**: Complete. OpenAI-compatible: Yes. Models: 5+ supported.
+**Last Audited**: 2025-05-03
+
