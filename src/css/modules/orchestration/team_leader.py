@@ -49,7 +49,9 @@ class TeamLeader:
         self._members[member_id] = member
     
     async def delegate(self, query: Query) -> dict[str, Any]:
-        """Delegate query to best available TeamMember (B4+B6+B8).
+        """Delegate query to best available TeamMember with retry loop (B7).
+        
+        Implements exponential backoff for retries up to max_retries.
         
         Args:
             query: Query object from QueryExecutor
@@ -63,6 +65,54 @@ class TeamLeader:
         # Create Task from Query (B4)
         task = self._create_task_from_query(query)
         
+        # Retry loop with exponential backoff (B7)
+        while True:
+            try:
+                result = await self._execute_task_once(task)
+                
+                # Success path
+                if result.get("status") == "completed":
+                    return result
+                
+                # Failed path - check if we can retry
+                if task.can_retry():
+                    # Reset task to queued for retry (B7)
+                    await TaskLifecycle.retry_task(task)
+                    
+                    # Exponential backoff: 2^retry_count seconds (capped at 30s)
+                    backoff_seconds = min(2 ** task.retry_count, 30)
+                    await asyncio.sleep(backoff_seconds)
+                    
+                    # Continue loop to retry
+                    continue
+                else:
+                    # Max retries exceeded
+                    return result
+            
+            except Exception as e:
+                # Unexpected error - fail without retry
+                error_msg = f"TeamLeader error: {str(e)}"
+                try:
+                    await TaskLifecycle.fail_task(task, error_msg)
+                except Exception:
+                    pass
+                
+                return {
+                    "status": "failed",
+                    "task_id": task.id,
+                    "error": error_msg,
+                    "execution_time_ms": 0,
+                }
+    
+    async def _execute_task_once(self, task: Task) -> dict[str, Any]:
+        """Execute task once without retry (helper for B7).
+        
+        Args:
+            task: Task to execute
+            
+        Returns:
+            dict with status, result, error, execution_time_ms
+        """
         try:
             # Transition to queued (TaskLifecycle)
             await TaskLifecycle.queue_task(task)
@@ -113,12 +163,12 @@ class TeamLeader:
                 }
         
         except Exception as e:
-            # Exception handling (B8): update state and propagate
-            error_msg = f"TeamLeader error: {str(e)}"
+            # Exception handling (B8): update state and return error
+            error_msg = f"Execution error: {str(e)}"
             try:
                 await TaskLifecycle.fail_task(task, error_msg)
             except Exception:
-                pass  # Already in error state
+                pass
             
             return {
                 "status": "failed",
