@@ -108,6 +108,43 @@ class MCPToolServer:
   - [ ] Normalize across 26 providers
   - [ ] Handle provider-specific tool patterns
 
+### Phase 1.5: App Startup Integration ⭐ **NEW**
+
+**Requirement**: Initialize all tools from provider SDKs on application start
+
+- [ ] **Startup Hook** — Call ToolRegistry on ASGI app initialization
+  - [ ] Add ToolRegistry singleton to core startup sequence
+  - [ ] Load all tools before first request handled
+  - [ ] Cache tools for duration of app session
+  
+- [ ] **Provider Tool Discovery** — Auto-discover tools from 26 SDK providers
+  - [ ] OpenAI: code_interpreter, file_search, retrieval
+  - [ ] Anthropic: computer_use (vision-based)
+  - [ ] All other providers: function calling support
+  - [ ] Normalize across different SDK APIs
+
+- [ ] **Initialization Flow**:
+  ```
+  app.startup() 
+    → core/startup.py imports ToolRegistry
+    → ToolRegistry().get_instance() [singleton]
+    → _load_builtin_tools() scans api_services/*/
+    → Extract tool definitions from each provider
+    → Normalize to ToolSchema format
+    → Cache in registry for endpoint access
+    → Log: "Loaded N tools from M providers"
+  ```
+
+- [ ] **Logging & Metrics**
+  - [ ] Log tool count per provider
+  - [ ] Track startup latency (tool discovery time)
+  - [ ] Report any provider tools that fail to load
+
+- [ ] **Caching Strategy**
+  - [ ] Tools cached in memory for app lifetime
+  - [ ] Optional: Reload endpoint for dynamic refresh
+  - [ ] Consider: Redis fallback for distributed setups
+
 ### Phase 2: FastAPI Endpoints (Week 2)
 
 - [ ] Create endpoints.py with REST API:

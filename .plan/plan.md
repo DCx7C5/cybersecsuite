@@ -76,6 +76,7 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
    - `audit-tools-registry` → Scan api_services, normalize ToolSchema, auto-discover
    - `audit-tools-schema` → Define ToolSchema dataclass
    - Blocks: Tool discovery, MCP server, REST endpoints
+    - ⭐ **NEW**: Initialize all tools from SDKs on app startup (before first request)
 
 ---
 
