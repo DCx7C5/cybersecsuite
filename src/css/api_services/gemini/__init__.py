@@ -1,5 +1,5 @@
 """Gemini API Service."""
 
-from css.api_services.service import GeminiApiService
+from .service import GeminiApiService
 
 __all__ = ["GeminiApiService"]

@@ -11,10 +11,10 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks.events import HookContext
-from hooks.instrumentation import HookInstrument
-from core.registries.hooks import HookRegistry, reset_registry
-from hooks.streaming_hooks import (
+from legacy.hooks.events import HookContext
+from legacy.hooks.instrumentation import HookInstrument
+from css.core.registries.hooks import HookRegistry, reset_registry
+from legacy.hooks.streaming_hooks import (
     clear_token_aggregator,
     get_token_aggregator,
     on_streaming_complete,

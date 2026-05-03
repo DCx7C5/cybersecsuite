@@ -3,8 +3,8 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 
-from core.types.api_services import ProviderType, BaseMessage, MessageRole, Tool
-from core.exceptions import (
+from css.core.types.api_services import ProviderType, BaseMessage, MessageRole, Tool
+from css.core.exceptions import (
     OllamaConnectionError,
     OllamaModelNotFoundError,
     GatewayError,

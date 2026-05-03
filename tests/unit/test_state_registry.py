@@ -8,7 +8,7 @@ import pytest
 from pathlib import Path
 import tempfile
 
-from src.state import StateRegistry, ScopeLevel
+from legacy.state import StateRegistry, ScopeLevel
 
 
 @pytest.fixture

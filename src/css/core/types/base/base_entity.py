@@ -13,14 +13,12 @@ from ..headers import (
 )
 
 
+@dataclass
 class BaseEntity(BaseHeader, ABC):
     """Root domain entity — identity + descriptive header + arbitrary metadata bag."""
 
-    def __init__(self, id: str, name: str, description: str, metadata: Dict[str, Any] | None = None):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.metadata = metadata or {}
+    id: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Initialize non-dataclass communicator after instantiation."""

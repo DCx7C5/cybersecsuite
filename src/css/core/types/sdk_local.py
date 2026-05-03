@@ -11,7 +11,7 @@ import logging
 from typing import AsyncIterator, Optional, List
 from abc import ABC, abstractmethod
 
-from ...api_services import (
+from css.core.types.base import (
     BaseApiServiceClient,
     StreamChunk,
     BaseMessage,

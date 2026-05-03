@@ -3,9 +3,9 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from core.types.api_services import ProviderType, StreamChunk, BaseMessage, MessageRole, LLMResponse
-from core.exceptions import GatewayError
-from core.types.sdk_local import LocalSDKBase
+from css.core.types.api_services import ProviderType, StreamChunk, BaseMessage, MessageRole, LLMResponse
+from css.core.exceptions import GatewayError
+from css.core.types.sdk_local import LocalSDKBase
 
 
 class MockLocalSDK(LocalSDKBase):

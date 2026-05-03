@@ -1,5 +1,5 @@
 """GitHub API Service."""
 
-from css.api_services.service import GITHUBApiService
+from .service import GITHUBApiService
 
 __all__ = ["GITHUBApiService"]

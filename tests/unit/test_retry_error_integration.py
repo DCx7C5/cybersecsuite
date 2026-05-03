@@ -2,9 +2,9 @@
 
 import pytest
 
-from core.types.api_services import ProviderType
-from core.retry import RetryOrchestrator, RetryConfig
-from core.exceptions import (
+from css.core.types.api_services import ProviderType
+from css.core.retry import RetryOrchestrator, RetryConfig
+from css.core.exceptions import (
     AuthError,
     RateLimitError,
 )

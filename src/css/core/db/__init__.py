@@ -7,9 +7,11 @@ from .exceptions import (
     ScopeValidationError,
 )
 
+# Enums (import before scope_utils to avoid circular import)
+from .enums import ScopeLevel
+
 # Scope utilities
 from .scope_utils import (
-    ScopeLevel,
     check_scope_permission,
     validate_scope_fields,
 )

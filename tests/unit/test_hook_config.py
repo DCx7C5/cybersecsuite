@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from hooks.config import (
+from legacy.hooks.config import (
     HookConfig,
     HookEventConfig,
     HookHandlerConfig,

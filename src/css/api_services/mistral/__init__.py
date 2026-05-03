@@ -1,5 +1,5 @@
 """Mistral API Service."""
 
-from css.api_services.service import MistralApiService
+from .service import MistralApiService
 
 __all__ = ["MistralApiService"]

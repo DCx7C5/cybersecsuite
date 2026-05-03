@@ -4,12 +4,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
+@dataclass
 class BaseHeader(ABC):
     """Root metadata header for all domain entities."""
     
-    def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
+    name: str = ""
+    description: str = ""
 
 
 @dataclass

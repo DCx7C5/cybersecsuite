@@ -1,7 +1,9 @@
 """Ollama API Service."""
 
-from css.api_services.client import OllamaClient
-from css.api_services.types import (
+from .client import OllamaClient
+from .service import OllamaApiService
+from .compat import OllamaClientCompat
+from .types import (
     OllamaCapabilities,
     OllamaConfig,
     OllamaExecutionContext,
@@ -10,6 +12,8 @@ from css.api_services.types import (
 )
 
 __all__ = [
+    "OllamaApiService",
+    "OllamaClientCompat",
     "OllamaClient",
     "OllamaConfig",
     "OllamaModel",

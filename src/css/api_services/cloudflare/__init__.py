@@ -1,5 +1,5 @@
 """Cloudflare API Service."""
 
-from css.api_services.service import CloudflareApiService
+from .service import CloudflareApiService
 
 __all__ = ["CloudflareApiService"]

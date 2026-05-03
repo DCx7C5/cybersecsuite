@@ -13,8 +13,8 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks.events import HookContext
-from core.registries.hooks import HookRegistry
+from legacy.hooks.events import HookContext
+from css.core.registries.hooks import HookRegistry
 
 
 class TestIdempotency:

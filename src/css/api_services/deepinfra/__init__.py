@@ -1,5 +1,5 @@
 """DeepInfra API Service."""
 
-from css.api_services.service import DeepInfraApiService
+from .service import DeepInfraApiService
 
 __all__ = ["DeepInfraApiService"]

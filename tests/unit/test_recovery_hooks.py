@@ -12,15 +12,15 @@ SRC_PATH = Path(__file__).resolve().parent.parent.parent / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from hooks.events import ErrorStrategy, HookContext, OnErrorEvent, OnRecoveryEvent, PreRetryEvent
-from hooks.recovery_hooks import (
+from legacy.hooks.events import ErrorStrategy, HookContext, OnErrorEvent, OnRecoveryEvent, PreRetryEvent
+from legacy.hooks.recovery_hooks import (
     is_permanent_error,
     is_transient_error,
     on_error,
     on_pre_retry,
     on_recovery,
 )
-from core.registries.hooks import HookRegistry, reset_registry
+from css.core.registries.hooks import HookRegistry, reset_registry
 
 
 class TestErrorClassification:

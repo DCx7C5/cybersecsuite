@@ -3,8 +3,8 @@
 from typing import Optional, List, AsyncIterator
 import logging
 
-from src.core.types.api_services import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
-from css.api_services.types import OllamaConfig, OllamaExecutionContext
+from css.core.types.base import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
+from .types import OllamaConfig, OllamaExecutionContext
 
 
 logger = logging.getLogger(__name__)

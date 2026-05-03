@@ -208,7 +208,7 @@ Then add to build_python_hooks():
 See PHASE_15_HOOKS_IMPROVEMENT.md for full design details.
 """
 
-from hooks.events import (
+from .events import (
     ErrorStrategy,
     HookContext,
     HookOutput,
@@ -223,7 +223,7 @@ from hooks.events import (
     AgentStopEvent,
     UserPromptSubmitEvent,
 )
-from hooks.instrumentation import (
+from .instrumentation import (
     HookInstrument,
     HookMetrics,
     PERFORMANCE_BUDGETS,

@@ -1,5 +1,5 @@
 """Openai API Service."""
 
-from css.api_services.service import OpenAIApiService
+from .service import OpenAIApiService
 
 __all__ = ["OpenAIApiService"]

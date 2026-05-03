@@ -22,10 +22,10 @@ from css.api_services.perplexity import PerplexityApiService
 from css.api_services.openrouter import OpenRouterApiService
 
 # Tier 2.5: Specialized services
-from css.api_services.nvidia import NvidiaApiService
+from css.api_services.nvidia import NVIDIAApiService
 from css.api_services.cerebras import CerebrasApiService
-from css.api_services.sambanova import SambanovaApiService
-from css.api_services.deepinfra import DeepinfraApiService
+from css.api_services.sambanova import SambaNovaApiService
+from css.api_services.deepinfra import DeepInfraApiService
 from css.api_services.cohere import CohereApiService
 from css.api_services.ai21 import AI21ApiService
 from css.api_services.huggingface import HuggingfaceApiService
@@ -33,10 +33,10 @@ from css.api_services.nscale import NscaleApiService
 from css.api_services.lambda_api import LambdaApiService
 
 # Tier 3: Utility services
-from css.api_services.github import GithubApiService
+from css.api_services.github import GITHUBApiService
 from css.api_services.cloudflare import CloudflareApiService
-from css.api_services.fireworks import FireworksApiService
-from css.api_services.opencode import OpencodeApiService
+from css.api_services.fireworks import FIREWORKSApiService
+from css.api_services.opencode import OpenCodeApiService
 
 # Local providers
 from css.api_services.ollama import OllamaApiService, OllamaClientCompat
@@ -61,18 +61,18 @@ PROVIDERS = {
     "gemini": GeminiApiService,
     "mistral": MistralApiService,
     "xai": xAIApiService,
-    "nvidia": NvidiaApiService,
+    "nvidia": NVIDIAApiService,
     "openrouter": OpenRouterApiService,
     "cerebras": CerebrasApiService,
     "together": TogetherApiService,
-    "github": GithubApiService,
+    "github": GITHUBApiService,
     "cloudflare": CloudflareApiService,
-    "fireworks": FireworksApiService,
-    "opencode": OpencodeApiService,
+    "fireworks": FIREWORKSApiService,
+    "opencode": OpenCodeApiService,
     "cohere": CohereApiService,
     "perplexity": PerplexityApiService,
-    "sambanova": SambanovaApiService,
-    "deepinfra": DeepinfraApiService,
+    "sambanova": SambaNovaApiService,
+    "deepinfra": DeepInfraApiService,
     "ai21": AI21ApiService,
     "huggingface": HuggingfaceApiService,
     "ollama": OllamaApiService,
@@ -97,18 +97,18 @@ __all__ = [
     "GeminiApiService",
     "MistralApiService",
     "xAIApiService",
-    "NvidiaApiService",
+    "NVIDIAApiService",
     "OpenRouterApiService",
     "CerebrasApiService",
     "TogetherApiService",
-    "GithubApiService",
+    "GITHUBApiService",
     "CloudflareApiService",
-    "FireworksApiService",
-    "OpencodeApiService",
+    "FIREWORKSApiService",
+    "OpenCodeApiService",
     "CohereApiService",
     "PerplexityApiService",
-    "SambanovaApiService",
-    "DeepinfraApiService",
+    "SambaNovaApiService",
+    "DeepInfraApiService",
     "AI21ApiService",
     "HuggingfaceApiService",
     "OllamaApiService",

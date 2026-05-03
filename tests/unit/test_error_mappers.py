@@ -1,8 +1,8 @@
 """Comprehensive tests for error code mapping (Issue #3)."""
 
 import pytest
-from core.types.api_services import ProviderType
-from core.exceptions import (
+from css.core.types.api_services import ProviderType
+from css.core.exceptions import (
     AuthError,
     RateLimitError,
     TimeoutError,

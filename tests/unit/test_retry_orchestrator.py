@@ -5,8 +5,8 @@ import asyncio
 from unittest.mock import Mock, AsyncMock, MagicMock
 from datetime import datetime
 
-from core.types import ProviderType
-from core.retry import (
+from css.core.types import ProviderType
+from css.core.retry import (
     RetryOrchestrator,
     RetryConfig,
     RetryStrategy,
