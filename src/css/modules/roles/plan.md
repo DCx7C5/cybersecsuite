@@ -28,12 +28,24 @@
 
 ## Implementation Checklist
 
-- [ ] Role definition classes
-- [ ] Role registry
-- [ ] Role assignment storage
-- [ ] Role inheritance resolution
-- [ ] Role-to-permission mapping
-- [ ] Add logger initialization in `__init__.py`
+- [x] Role definition classes — OrchestrationRole base with 3 subclasses
+- [x] Role registry — REGISTRY dict + get() lookup function
+- [x] Role enums — RoleType (3 roles) and Permission (16+ permissions)
+- [x] Role exceptions — RoleNotFoundError, PermissionDeniedError, InvalidRoleError
+- [x] Role inheritance resolution — Via dataclass defaults and field factories
+- [x] Role-to-permission mapping — permissions list on each role
+- [x] Add logger initialization in `__init__.py` — Full logging setup
+
+**Completed (Phase 2 Foundation)**:
+✅ OrchestrationRole base dataclass with standard fields
+✅ OrchestratorRole (process-level, 60s heartbeat, 7 permissions)
+✅ TeamLeaderRole (in-process, 30s heartbeat, 7 permissions)
+✅ TeamMemberRole (executor, 15s heartbeat, 4 permissions)
+✅ Built-in role singletons (ORCHESTRATOR, TEAM_LEADER, TEAM_MEMBER)
+✅ RoleType enum (3 orchestration roles)
+✅ Permission enum (16 permissions)
+✅ Exception hierarchy (RoleNotFoundError, PermissionDeniedError)
+✅ Full __init__.py exports and logging
 
 ---
 
