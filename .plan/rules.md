@@ -5,8 +5,9 @@
 ---
 
 ## CRITICAL OUTPUT MINIMIZATION FOR TOKEN SAVING
-- minimize your thinking chat to only essentials
-- minimize your chat to only essentials
+- **no Co-authored-by: Copilot**
+- **minimize your thinking chat to only essentials**
+- **minimize your chat to only essentials**
 - keep normal summaries in the end
 - `.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.
 - no hallucinations, ask the user if unsure
