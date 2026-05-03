@@ -331,5 +331,4 @@ class ToggleScopeType(str, Enum):
     PROJECT = "project"
     SESSION = "session"
     TEAM = "team"
-    NONE = None
 
