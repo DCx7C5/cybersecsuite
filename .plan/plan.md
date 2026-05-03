@@ -413,3 +413,23 @@ AND NOT EXISTS (
 
 **Last Updated**: 2026-05-03  
 **Next Review**: After Phase 0 completion
+
+### Integration Blockers Resolved (2026-05-03)
+
+**12 Critical Blockers Fixed** ✅ [BLOCKER-FIX]
+- B1: Removed duplicate Task type from core/types/query.py
+- B2: Enhanced TaskAssignment ORM with task_payload (JSON), priority, timeout_seconds  
+- B3: Created TaskResult ORM model (1:1 FK → TaskAssignment)
+- B4: Wired TaskLifecycle → TeamMember execution chain
+- B5: Type-safe QueryExecutor → TeamLeader pipeline (Query objects)
+- B6: Added asyncio.timeout() enforcement
+- B7: Retry loop with exponential backoff (2^N capped @30s)
+- B8: Exception handling with TaskLifecycle.fail_task() updates
+- B9: ORM persistence in create_task() → TaskAssignment.create()
+- B10: team_id/orchestrator_id validation in QueryExecutor
+- B11: get_task() deserialization from TaskAssignment.task_payload
+- B12: TeamMember.execute() accepts Task objects, returns Result
+
+**Status**: All resolved, integration chain verified  
+**Verification**: 3-pass syntax check CLEAN ✅  
+**Impact**: Unlocks Phase 2 (Config Integration & SDK Architecture)
