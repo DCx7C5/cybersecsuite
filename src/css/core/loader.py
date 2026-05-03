@@ -84,7 +84,7 @@ def iter_app_routers() -> Iterator[AppRouters]:
         missing routes are never silently dropped in production.
     """
     for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
-        module_name = f"modules.{app_name}.endpoints"
+        module_name = f"css.modules.{app_name}.endpoints"
 
         try:
             mod = importlib.import_module(module_name)
@@ -127,12 +127,12 @@ def iter_model_modules() -> Iterator[ModelModule]:
     """
     # Search modules/*/models.py
     for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
-        module_name = f"modules.{app_name}.models"
+        module_name = f"css.modules.{app_name}.models"
         try:
             importlib.import_module(module_name)
             yield ModelModule(
                 module_name=app_name,
-                model_path=f"modules.{app_name}.models",
+                model_path=f"css.modules.{app_name}.models",
             )
             log.info("Discovered model: %s", module_name)
         except ModuleNotFoundError:
@@ -144,12 +144,12 @@ def iter_model_modules() -> Iterator[ModelModule]:
 
     # Search api_services/*/models.py
     for finder, svc_name, ispkg in pkgutil.iter_modules(api_services_pkg.__path__):
-        module_name = f"api_services.{svc_name}.models"
+        module_name = f"css.api_services.{svc_name}.models"
         try:
             importlib.import_module(module_name)
             yield ModelModule(
                 module_name=svc_name,
-                model_path=f"api_services.{svc_name}.models",
+                model_path=f"css.api_services.{svc_name}.models",
             )
             log.info("Discovered model: %s", module_name)
         except ModuleNotFoundError:
@@ -165,7 +165,7 @@ def iter_model_modules() -> Iterator[ModelModule]:
             if model_file.name.startswith("_"):
                 continue
             model_name = model_file.stem
-            module_name = f"core.db.models.{model_name}"
+            module_name = f"css.core.db.models.{model_name}"
             try:
                 importlib.import_module(module_name)
                 yield ModelModule(

@@ -52,7 +52,7 @@ def _discover_modules() -> None:
             continue
 
         module_name = item.name
-        full_module_name = f"modules.{module_name}"
+        full_module_name = f"css.modules.{module_name}"
 
         try:
             # Dynamically import the module
