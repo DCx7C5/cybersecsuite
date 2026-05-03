@@ -1,12 +1,13 @@
-"""Query and Task types — normalized execution units.
+"""Query types — normalized user-facing execution request.
 
 Query = user-facing execution request (prompt + metadata)
-Task = internal assignment to TeamMember (query + team/orchestrator context)
+
+Note: Task types are in modules.tasks.types (internal TeamMember assignment).
 """
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseHeader
 
@@ -51,33 +52,4 @@ class Query:
         }
 
 
-@dataclass
-class Task:
-    """Internal task assignment to TeamMember.
-    
-    Query + team/orchestrator context. Assigned by TeamLeader.
-    """
-    id: str
-    query: Query
-    team_id: int
-    orchestrator_id: str
-    assigned_at: datetime = field(default_factory=datetime.now)
-    status: str = "pending"  # pending, executing, completed, failed
-    result: Optional[Any] = None
-    error: Optional[str] = None
-    
-    def to_dict(self) -> dict[str, Any]:
-        """Serialize to dict."""
-        return {
-            "id": self.id,
-            "query": self.query.to_dict(),
-            "team_id": self.team_id,
-            "orchestrator_id": self.orchestrator_id,
-            "assigned_at": self.assigned_at.isoformat(),
-            "status": self.status,
-            "result": self.result,
-            "error": self.error,
-        }
-
-
-__all__ = ["QueryHeader", "Query", "Task"]
+__all__ = ["QueryHeader", "Query"]

@@ -2,9 +2,8 @@
 
 from .enums import TaskPriority, TaskRoutingStrategy, TaskStatus
 from .lifecycle import TaskLifecycle
-from .models import (
-    Task,
-    TaskScope,
+from .types import Task, TaskScope
+from .endpoints import (
     cancel_task,
     create_task,
     get_task,
@@ -12,7 +11,6 @@ from .models import (
     retry_task,
     update_task_status,
 )
-from .types import Task, TaskScope
 
 __all__ = [
     # Enums
