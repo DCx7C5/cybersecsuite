@@ -54,6 +54,26 @@ from .headers import (
 from .hook_events import HookContext, HookErrorStrategy
 from .query import Query, QueryHeader
 from .sdk_local import LocalSDKBase
+from .providers import (
+    APIHeader,
+    APIProviderBase,
+    AnthropicHeader,
+    AuthRefreshStrategy,
+    CohereHeader,
+    GeminiHeader,
+    GroqHeader,
+    LocalHeader,
+    LocalProviderBase,
+    MistralHeader,
+    NScaleLocalHeader,
+    OllamaHeader,
+    OllamaLocalHeader,
+    OllamaProviderBase,
+    OpenAIHeader,
+    PerplexityHeader,
+    RateLimitConfig,
+    VLLMLocalHeader,
+)
 
 # Note: Ollama types moved to api_services.ollama.types in Phase 2
 # Import from there: from api_services.ollama import OllamaConfig, OllamaModel, etc.
@@ -117,5 +137,28 @@ __all__ = [
     "QueryHeader",
     # LocalSDK base (Issue #5)
     "LocalSDKBase",
+    # Provider base classes (Phase 2)
+    "APIProviderBase",
+    "LocalProviderBase",
+    "OllamaProviderBase",
+    # Provider utilities (Phase 2)
+    "RateLimitConfig",
+    "AuthRefreshStrategy",
+    # API headers (Phase 2)
+    "APIHeader",
+    "OpenAIHeader",
+    "AnthropicHeader",
+    "GeminiHeader",
+    "GroqHeader",
+    "MistralHeader",
+    "CohereHeader",
+    "PerplexityHeader",
+    # Local headers (Phase 2)
+    "LocalHeader",
+    "OllamaLocalHeader",
+    "NScaleLocalHeader",
+    "VLLMLocalHeader",
+    # Ollama-specific (Phase 2)
+    "OllamaHeader",
     # Note: Ollama types moved to api_services.ollama (Phase 2 migration)
 ]
