@@ -139,3 +139,7 @@ src/dashboard/static/js/
 resume
 !src/css/modules/cache/
 !src/css/modules/cache/*.py
+# Plan files (architecture docs, local use only)
+# Keep in working directory but don't commit to git
+**/plan.md
+plan.md
