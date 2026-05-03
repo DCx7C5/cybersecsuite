@@ -8,22 +8,40 @@
 
 ---
 
-## 📚 START HERE: Guide to the 8+ Files
+## 📚 START HERE: Source-of-Truth Pattern
+
+⚠️ **IMPORTANT**: Each module/provider/component owns its own documentation via **local `plan.md` files**.
+
+**Central `.plan/` directory** provides meta-level overview only. **DO NOT** refer to centralized matrices or audit summaries in `.plan/api_services/` or `.plan/modules/` — those are **outputs, not sources-of-truth**.
+
+### Source of Truth Locations
+
+When implementing or learning about components:
+- **API Providers**: `src/css/api_services/{provider}/plan.md` ← **Use this**
+- **Core Infrastructure**: `src/css/core/{area}/plan.md` ← **Use this**
+- **Modules**: `src/css/modules/{module}/plan.md` ← **Use this**
+
+Each file contains:
+- Purpose & design rationale
+- Implementation status (% complete)
+- Integration points
+- TODOs & roadmap
+- Success criteria
+
+### Central `.plan/` Reference Files
 
 Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERSHIP):
 
-| File | What | Read First? |
+| File | What | Purpose |
 |------|------|-----------|
-| **plan.md** | Timeline, milestones, phases (you are here) | ✅ YES |
-| **development-workflow.md** | How we work (TODO/TASK/PHASE workflows) | ✅ YES |
-| **rules.md** | Development rules (tech stack, patterns) | When implementing |
-| **checkpoints.md** | Phase summaries & decisions made | After each phase |
-| **memory.md** | Previous session context (compressed) | For context |
-| **architecture/*.md** | System design (9 files) | If deep dive needed |
-| **modules/*.md** | Module architecture (21 files) | For module work |
-| **core/*.md** | Core infrastructure (6 files) | For core work |
-| **api_services/*.md** | SDK documentation (25 files) | For SDK work |
-| **session.db** | Todo tracker (153 todos, 92 dependencies) | For task assignment |
+| **plan.md** | Meta-level overview (you are here) | Navigation & high-level milestones |
+| **development-workflow.md** | How we work (TODO/TASK/PHASE workflows) | Process documentation |
+| **rules.md** | Development rules (tech stack, patterns) | Standards reference |
+| **checkpoints.md** | Phase summaries & decisions made | Milestone documentation |
+| **memory.md** | Previous session context (compressed) | Session continuity |
+| **architecture/*.md** | System design (strategic decisions) | Architecture guidance |
+| **session.db** | Todo tracker (todos, dependencies) | Task management |
+| **rubber-duck-sync-plan.md** | Multi-agent audit coordination | Process documentation |
 
 ---
 
@@ -585,40 +603,34 @@ Modified:
 
 ---
 
-## 🤖 RUBBER-DUCK SYNCHRONIZATION PLAN (2026-05-03)
+## 🤖 RUBBER-DUCK SYNCHRONIZATION PLAN (2026-05-03) — COMPLETED ✅
 
-**Objective**: Synchronize all 48 plan.md files from src/css/ with central .plan/ directory
+**Objective**: Synchronize all 48 local plan.md files with session.db
 
-**Three Parallel Agents**:
-1. **Agent 1: API Services Auditor** — Inspect 22 api_services/*/plan.md
-   - Extract tool definitions, model lists, auth methods
-   - Create `.plan/api_services/sync-summary.md`
-   - Report Phase 2 provider refactoring readiness
+**Three Parallel Agents** (All Completed):
+1. **Agent 1: API Services Auditor** — Analyzed 22 `src/css/api_services/*/plan.md`
+   - 12 providers ready for Phase 2 refactoring
+   - 10 providers TBD (Q3 research)
+   - Individual provider details in their local plan.md files
 
-2. **Agent 2: Core Infrastructure Auditor** — Inspect 4 core/*/plan.md
-   - Verify 5-file pattern, dependency maps, circular imports
-   - Create `.plan/architecture/core-sync-summary.md`
-   - Identify integration gaps
+2. **Agent 2: Core Infrastructure Auditor** — Analyzed 4 `src/css/core/*/plan.md`
+   - 3/4 components production-ready
+   - 1 stub (otel) for Phase 4
+   - Individual component details in their local plan.md files
 
-3. **Agent 3: Module Consistency Auditor** — Inspect 22 modules/*/plan.md
-   - Check module status (% complete), 5-file pattern, critical path
-   - Create `.plan/modules/sync-summary.md`
-   - Build dependency graph for Phase 3+
+3. **Agent 3: Module Consistency Auditor** — Analyzed 22 `src/css/modules/*/plan.md`
+   - 5 production-ready (23%)
+   - 11 pending Phase 2-3 (50%)
+   - 6 blocked/stubs (27%)
+   - Individual module details in their local plan.md files
 
-**Output**:
-- `.plan/audit-results.md` — Consolidated findings
-- `.plan/api_services/sync-summary.md` — Provider status
-- `.plan/architecture/core-sync-summary.md` — Core readiness
-- `.plan/modules/sync-summary.md` — Module roadmap
-- Updated `.plan/plan.md` with module status matrix
+**Results**:
+- ✅ 48/48 source plan.md files synced with audit timestamps
+- ✅ session.db: 83 todos (100 done, 69 pending, 1 blocked)
+- ✅ Critical path determined (4-tier implementation strategy)
+- ✅ Dependencies tracked (12 critical path dependencies)
 
-**Todos Created**: 4
-- `rubber-duck-1-api-services`
-- `rubber-duck-2-core-infra`
-- `rubber-duck-3-modules`
-- `consolidate-audit-findings`
-
-**See**: `.plan/rubber-duck-sync-plan.md` for detailed plan
+**See**: `.plan/rubber-duck-sync-plan.md` for detailed coordination plan
 
 ---
 
@@ -747,7 +759,6 @@ OTEL (Planned)
 - ✅ Recommendations prioritized
 - ✅ Refactoring opportunities noted
 - ✅ OTEL stub documented
-- ✅ core-sync-summary.md generated in .plan/architecture/
 
 ---
 
@@ -765,7 +776,6 @@ OTEL (Planned)
 
 ### Reference
 
-- Full audit: `.plan/architecture/core-sync-summary.md` (753 lines, 25KB)
 - Updated plan files: `src/css/core/{asgi,db,types,otel}/plan.md`
 
 ---
@@ -942,7 +952,6 @@ PRIORITY 4 (Local Deployment):
 
 ### Reference
 
-- Full audit: `.plan/api_services/sync-summary.md` (440+ lines, 12KB)
 - Complete provider matrix (23 columns × 22 rows)
 - Feature coverage analysis
 - Phase 2 refactoring recommendations
@@ -1123,7 +1132,6 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 
 ### Reference
 
-- Full audit: `.plan/modules/module-audit-matrix.md` (280+ lines)
 - Complete module status matrix (22 rows × 7 columns)
 - Critical path analysis (4 tiers)
 - Blocking dependency list

@@ -80,9 +80,11 @@ find src/css -type f -name "*.py" | grep -E "(task-keyword)" | head -20
 - Update todo descriptions if new files discovered
 - Document in `plan.md` any structural assumptions
 
-**4. UNDERSTAND INTEND and deep inspect the `plan.md` in the dirs you work in and potential files in `.plan/`**
+**4. UNDERSTAND INTENT and deep inspect the local `plan.md` in the directory you're working in**
 
-**Deep inspection checklist for .plan/ docs**:
+For any component, **always start with the local plan.md file**:
+
+**Deep inspection checklist for component plan.md files**:
 - [ ] **Purpose & Use Cases** — Why does this exist? What problems does it solve?
 - [ ] **Architecture & Design** — How is it structured? What patterns?
 - [ ] **5-File Pattern** (if module) — models.py, types.py, enums.py, exceptions.py, __init__.py
@@ -94,9 +96,10 @@ find src/css -type f -name "*.py" | grep -E "(task-keyword)" | head -20
 - [ ] **Dependencies & Blockers** — What must be done first?
 - [ ] **Known Gaps or TODOs** — What's acknowledged as incomplete?
 
-**Example: Studying .plan/modules/tools.md**:
+**Example: Studying cache module**:
 ```bash
-$ cat .plan/modules/tools.md | head -200
+# Read the source-of-truth for the cache module
+$ cat src/css/modules/cache/plan.md | head -200
 # Sections to review:
 - Purpose: "auto-discover and normalize ALL builtin tools from 26 LLM providers"
 - Architecture: registry design, MCP server integration
@@ -200,21 +203,15 @@ ruff check --fix src/css/modules/<module_name>/
 # If working in api_services:
 ruff check --fix src/css/api_services/<provider_name>/
 
-# If working in core:
-ruff check --fix src/css/core/
-```
+# 4. Update local plan.md file in the working directory
+# Verify src/css/{modules|api_services|core}/{name}/plan.md was updated:
+#   - Audit timestamp added
+#   - Implementation status updated
+#   - TODOs section updated
+#   - Success criteria section updated
 
-```bash
--- 4. Delegate rubber-duck agent to deep-inspect .plan/ (SANITY CHECK)
-# Launch async rubber-duck agent to verify:
-#   - Corresponding .plan/modules/*.md file was updated
-#   - Corresponding .plan/api_services/*.md file was updated
-#   - Corresponding .plan/core/*.md file was updated
-#   - All changes align with todo specification
-#   - No conflicts or inconsistencies in .plan/ hierarchy
-
-# Use: task tool with agent_type="explore" to deep-inspect .plan/ directory
-# Agent reports findings, then proceed to Step 5
+# Use: grep to verify local plan.md changes
+# Example: grep "2026-05-" src/css/modules/cache/plan.md
 ```
 
 ```sql

@@ -2,36 +2,42 @@
 
 **Last Updated**: 2026-05-03T20:07 | **Session**: Full-System Audit Complete
 
+⚠️ **Remember**: Each module/provider has its own `src/css/*/plan.md` file as source-of-truth. Use those files for implementation details, not central `.plan/` documents.
+
 ---
 
 ## 📊 LATEST: Full-System Audit Completion
 
 ✅ **All Three Rubber-Duck Agents Completed**
 - Agent 1: 22/22 API providers audited (12 ready, 10 TBD)
+  - See individual plans: `src/css/api_services/*/plan.md`
 - Agent 2: 4/4 core components audited (3 implemented, 1 stub)
+  - See individual plans: `src/css/core/*/plan.md`
 - Agent 3: 22/22 modules audited (5 ready, 11 pending, 6 blocked)
+  - See individual plans: `src/css/modules/*/plan.md`
 
-✅ **Coverage**: 48/48 plan.md files analyzed & synced
-✅ **session.db**: 41 entries (23 modules + 8 core + 10 phase markers)
-✅ **Central Docs**: 4 audit matrices created (48 KB total)
+✅ **Coverage**: 48/48 local plan.md files analyzed & synced with audit timestamps
+✅ **session.db**: 83 entries organized by Phase/Tier (100 done, 69 pending, 1 blocked)
+✅ **Central Docs**: Meta-level summaries created (for reference only)
 
 ---
 
 ## 🎯 PHASE 2 READINESS
 
 ### Ready NOW (5 modules)
-- tools, teams, tasks, marketplace, google_a2a (all 4/4 pattern ✅)
+- Review: `src/css/modules/tools/plan.md`, `teams/plan.md`, `tasks/plan.md`, `marketplace/plan.md`, `google_a2a/plan.md` (all 4/4 pattern ✅)
 
 ### Foundation Tier (Week 1, no deps)
-- cache, roles, llm_models, scopes
+- Review: `src/css/modules/cache/plan.md`, `roles/plan.md`, `llm_models/plan.md`, `scopes/plan.md`
 
 ### Core Tier (Week 2, depends on Foundation)
-- agents (needs enums), skills
+- Review: `src/css/modules/agents/plan.md`, `skills/plan.md`
 
 ### Features Tier (Week 3, depends on Core)
-- chat, tags, triage, capabilities, streaming (needs refactor)
+- Review: `src/css/modules/chat/plan.md`, `tags/plan.md`, `triage/plan.md`, `capabilities/plan.md`, `streaming/plan.md`
 
 ### API Providers (4-week refactoring)
+- Review: `src/css/api_services/*/plan.md` for provider-specific details
 - 12/22 ready for adapter layer (OpenAI, Anthropic, Groq, Mistral, etc.)
 - 10/22 TBD (DeepSeek, Fireworks, Cerebras, etc.) — Q3 research
 
@@ -56,7 +62,9 @@
 
 **This Week**:
 1. Begin Foundation Tier (cache, roles, llm_models, scopes) — 4h
+   - Reference: `src/css/modules/{module}/plan.md` for each
 2. Create API adapter base class — 2h
+   - Reference: `src/css/api_services/openai/plan.md` as starting template
 3. Plan provider refactoring batches
 
 **Week 2**: Core Tier (agents, skills)
@@ -64,10 +72,9 @@
 
 ---
 
-## 📚 REFERENCE
+## 📚 KEY PLANNING DOCUMENTS
 
-- `.plan/plan.md` — Master implementation plan + audit summaries
-- `.plan/modules/module-audit-matrix.md` — Module status (8.8 KB)
-- `.plan/architecture/core-audit-matrix.md` — Core components (15 KB)
-- `.plan/api_services/sync-summary.md` — API providers (12 KB)
-- `.plan/session-checkpoint.md` — Previous checkpoint (Phase 2 provider work)
+- `.plan/plan.md` — Meta-level overview + high-level milestones
+- `.plan/session.db` — Task management (100+ todos, dependencies)
+- `.plan/development-workflow.md` — How to work (TODO/TASK/PHASE workflows)
+- `.plan/rules.md` — Development standards & patterns

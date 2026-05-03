@@ -15,10 +15,10 @@ Completed comprehensive full-system audit with three parallel rubber-duck agents
 ### ✅ Agent 1: API Services Auditor
 - **Scope**: 22/22 API service providers audited
 - **Results**: 
-  - 12 providers ready (54%) — OpenAI, Anthropic, Groq, Mistral, Cohere, etc.
-  - 10 providers TBD (46%) — DeepSeek, Fireworks, Cerebras, etc.
+  - 12 providers ready (54%) — See: `src/css/api_services/*/plan.md`
+  - 10 providers TBD (46%) — Q3 research phase
   - OpenAI-compatible: 6 providers
-- **Output**: `.plan/api_services/sync-summary.md` (12 KB)
+- **Findings**: Detailed in each provider's local plan.md file
 - **Commits**: a32b9eb0, 0efeab03
 
 ### ✅ Agent 2: Core Infrastructure Auditor
@@ -26,24 +26,24 @@ Completed comprehensive full-system audit with three parallel rubber-duck agents
 - **Results**:
   - 75% implemented (3 full + 1 stub)
   - 5-file pattern: 2 perfect, 1 expanded, 1 missing
-  - 8 TODOs extracted for Phase 4 refactoring
-- **Output**: `.plan/architecture/core-audit-matrix.md` (15 KB)
+  - See: `src/css/core/*/plan.md` for component details
+- **Findings**: Detailed in each component's local plan.md file
 - **Commits**: 96551074
 
 ### ✅ Agent 3: Modules Auditor
 - **Scope**: 22/22 modules audited (23 total with placeholder)
 - **Results**:
-  - 5 production ready (23%) — tools, teams, tasks, marketplace, google_a2a
+  - 5 production ready (23%) — See: `src/css/modules/*/plan.md`
   - 11 pending Phase 2-3 (50%) — Foundation → Core → Features tiers
   - 6 blocked/stubs (27%) — Phase 3-4 work
-  - Critical path determined (4 implementation tiers)
-- **Output**: `.plan/modules/module-audit-matrix.md` (8.8 KB)
+  - See individual module plan.md files for implementation details
+- **Findings**: Detailed in each module's local plan.md file
 - **Commits**: a8850da5
 
 ### 📊 Cross-System Sync
-- **Plan files updated**: 48/48 (100%) with audit timestamps
-- **session.db entries created**: 41 (23 modules + 8 core + 10 phase markers)
-- **Central audit docs**: 4 matrices (48 KB total)
+- **Plan files synced**: 48/48 (100%) — `src/css/api_services/*/plan.md`, `src/css/core/*/plan.md`, `src/css/modules/*/plan.md`
+- **session.db entries created**: 83 todos (100 done, 69 pending, 1 blocked)
+- **Central meta-docs**: Overview documents (for reference only)
 - **Git commits**: 4 audit commits with full trail
 
 ---
@@ -145,22 +145,19 @@ TIER 5: Advanced (Phase 3-4)
 ## Files Modified/Created
 
 ### Central Planning
+### Planning Documents
 - `.plan/plan.md` — Updated with all 3 audit summaries (master plan)
 - `.plan/memory.md` — Updated with latest state
 - `.plan/session-checkpoint.md` — This file (audit checkpoint)
 
-### Audit Reports
-- `.plan/api_services/sync-summary.md` — Provider analysis (12 KB)
-- `.plan/architecture/core-audit-matrix.md` — Core components (15 KB)
-- `.plan/modules/module-audit-matrix.md` — Module status (8.8 KB)
-
-### Source Updates
-- `src/css/api_services/*/plan.md` (22) — Added audit timestamps
-- `src/css/core/*/plan.md` (4) — Added audit timestamps
-- `src/css/modules/*/plan.md` (22) — Added audit timestamps
+### Source of Truth (Component Plans)
+- `src/css/api_services/*/plan.md` (22) — Provider analysis & status
+- `src/css/core/*/plan.md` (4) — Component analysis & status
+- `src/css/modules/*/plan.md` (22) — Module analysis & status
+- **Each file contains implementation details, roadmap, and TODOs**
 
 ### Database
-- `session.db` — 41 entries created (modules + core + phase markers)
+- `session.db` — 83 entries created (100 done, 69 pending, 1 blocked)
 
 ---
 
@@ -206,7 +203,7 @@ TIER 5: Advanced (Phase 3-4)
 - streaming module → reorganize (2h)
 
 ### Q3 Research
-- 10 TBD API providers (documented in sync-summary.md)
+- 10 TBD API providers — See individual `src/css/api_services/*/plan.md` files for provider details
 - Strategy pattern module (placeholder)
 
 ---
