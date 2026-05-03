@@ -31,7 +31,7 @@ class QueryExecutor:
         session_id = runner.session_id  # resume later
 
     Or with client pool:
-        from core.orchestration.client_pool import get_pool
+        from css.core.orchestration.client_pool import get_pool
         pool = get_pool()
         runner = AgentRunner(agent_name="cybersec-agents", pool=pool)
 

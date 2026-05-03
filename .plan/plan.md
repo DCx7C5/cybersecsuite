@@ -8,20 +8,22 @@
 
 ---
 
-## 📚 START HERE: Guide to the 8 Files
+## 📚 START HERE: Guide to the 8+ Files
 
-Only 8 files allowed in `.plan/` (see rules.md § FILE OWNERSHIP):
+Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERSHIP):
 
 | File | What | Read First? |
 |------|------|-----------|
 | **plan.md** | Timeline, milestones, phases (you are here) | ✅ YES |
-| **features_overview.md** | What we're building (6 features) | ✅ YES |
 | **development-workflow.md** | How we work (TODO/TASK/PHASE workflows) | ✅ YES |
-| **architecture.md** | System design (scope hierarchy, database) | If deep dive needed |
 | **rules.md** | Development rules (tech stack, patterns) | When implementing |
-| **frontend.md** | Frontend architecture & UI/UX patterns | When building UI |
 | **checkpoints.md** | Phase summaries & decisions made | After each phase |
-| **session.db** | Todo tracker (133 todos, 36 tasks, 7 phases) | For task assignment |
+| **memory.md** | Previous session context (compressed) | For context |
+| **architecture/*.md** | System design (9 files) | If deep dive needed |
+| **modules/*.md** | Module architecture (21 files) | For module work |
+| **core/*.md** | Core infrastructure (6 files) | For core work |
+| **api_services/*.md** | SDK documentation (25 files) | For SDK work |
+| **session.db** | Todo tracker (153 todos, 92 dependencies) | For task assignment |
 
 ---
 
@@ -29,38 +31,77 @@ Only 8 files allowed in `.plan/` (see rules.md § FILE OWNERSHIP):
 
 **Project**: Multi-Orchestrator + TeamScope + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 7 sequential (Phase 0-6)  
-**Tasks**: 36 total (4-7 per phase)  
-**Todos**: 135 total (all Phase 0-1 done, Phase 2 started)  
-**Last Phase**: ✅ Phase 0-1 complete (22 todos)  
-**Current Phase**: ✅ **Phase 2 COMPLETE** (5 todos) [2026-05-03]
-**Next Action**: Phase 3 — SDK Integration & Query Execution
+**Todos**: 164 total (76 done, 88 pending)  
+**Ready to start**: 11 new audit todos (no dependencies)  
+**Last Phase**: ✅ Phase 2 complete (Config Integration & SDK)  
+**Current Phase**: 🔴 **Phase 3 BLOCKED** (waiting for blocker fixes) → 4-agent audit found critical issues
+**Next Action**: Fix 3 critical blockers, then continue Phase 3
 
-### ⚠️ CRITICAL BLOCKING ISSUES
+## ⚠️ CRITICAL BLOCKERS (Phase 3 Readiness)
 
-1. **ABC + @dataclass violations** ✅ FIXED [TRACK-0]
-   - ~~`core/types/base/base_entity.py:16`~~
-   - ~~`core/types/base/base_header.py:7`~~
-   - ~~`modules/marketplace/base.py:11, 35, 62`~~
-   - **Fix applied**: Removed @dataclass from ABC classes, converted to __init__-based pattern (5 violations resolved)
+**Found by 4-Agent Audit (2026-05-03)**
 
-2. **Hardcoded config defaults** ✅ FIXED [TRACK-0]
-   - ~~Lines 58-60: db-user, db-password, db-name hardcoded~~
-   - ~~Line 97: log-level hardcoded~~
-   - **Fix applied**: Updated manager.py to use config.py constants (POSTGRES_DATABASE, LOG_LEVEL)
+### 🔴 Blocker #1: Phase Status Mismatch (BLOCKING ALL)
+- **Issue**: checkpoints.md claims Phase 0-1 complete but session.db shows todos as pending
+- **Impact**: Cannot continue Phase 3 without knowing actual completion status
+- **Todo**: `audit-blocker-1` — Reconcile checkpoints.md vs session.db
 
-3. **Cross-module import violation** ✅ FIXED [TRACK-0]
-   - ~~`modules/streaming/runner.py` imports from `modules/agents`~~
-   - **Fix applied**: Moved client_pool.py to core/orchestration, updated imports in streaming module
+### 🔴 Blocker #2: CSS A2A Code Location (ORGANIZATIONAL DEBT)
+- **Issue**: A2A code in `src/css/modules/google_a2a/a2a_comms.py` (256 lines) instead of `css_a2a/`
+- **Impact**: A2A module appears "implemented" but code is trapped, imports broken
+- **Todo**: `audit-blocker-2` — Move 3 files (a2a_comms.py, dispatcher.py, int_comms.py) + fix imports
 
-4. **Dangling references to forbidden files** ✅ FIXED
-   - ~~development-workflow.md lines 184, 270-272~~
-   - Updated to reference only allowed files
-
-5. **Module count inconsistencies** ✅ FIXED
-   - ~~plan.md, development-workflow.md, features_overview.md~~
-   - Updated 15 → 19 modules across all references
+### 🔴 Blocker #3: Permissions Module Missing (SECURITY CRITICAL)
+- **Issue**: `src/css/modules/permissions/__init__.py` is empty (0 bytes)
+- **Impact**: Zero RBAC, no role enforcement, scope isolation broken
+- **Todo**: `audit-blocker-3` — Implement decorators, middleware, scope enforcement
 
 ---
+
+## 🟠 HIGH PRIORITY (Week 1)
+
+1. **Events Module** — 0% implemented, HIGH PRIORITY in docs
+   - `audit-hp-events` → Implement EventBus, @on_event decorator
+   - Blocks: Agent notifications, marketplace events, task events
+
+2. **Cache L1-L4** — 5% implemented, 95% gap
+   - `audit-hp-cache` → Implement memory/redis/postgres/sqlite backends
+   - Blocks: Caching layer, resilience, fallback chain
+
+3. **Memory Module** — 1491 lines in 1 file
+   - `audit-hp-memory` → Split to 5-file pattern (models, types, enums, exceptions, __init__)
+   - Blocks: Maintainability, consistency
+
+4. **Tools Registry** — 0 lines, needs to scan 26 providers
+   - `audit-tools-registry` → Scan api_services, normalize ToolSchema, auto-discover
+   - `audit-tools-schema` → Define ToolSchema dataclass
+   - Blocks: Tool discovery, MCP server, REST endpoints
+
+---
+
+## 📝 TODOS CREATED (11 New)
+
+From 4-agent audit + findings:
+
+| Todo ID | Title | Status | Impact |
+|---------|-------|--------|--------|
+| `audit-blocker-1` | Reconcile phase status | pending | 🔴 CRITICAL |
+| `audit-blocker-2` | Move CSS A2A code | pending | 🔴 CRITICAL |
+| `audit-blocker-3` | Implement permissions | pending | 🔴 CRITICAL |
+| `audit-hp-events` | Implement events module | pending | 🟠 HIGH |
+| `audit-hp-cache` | Implement cache backends | pending | 🟠 HIGH |
+| `audit-hp-memory` | Consolidate memory module | pending | 🟠 HIGH |
+| `audit-tools-registry` | Implement tools registry | pending | 🟠 HIGH |
+| `audit-tools-schema` | Create ToolSchema | pending | 🟠 HIGH |
+| `audit-api-tools-sync` | Sync api_services docs | pending | 🟡 MED |
+| `plan-update-status` | Update plan.md status | pending | 🟡 MED |
+| `plan-populate-memory` | Populate memory.md | pending | 🟡 MED |
+
+**Database**: session.db updated with 11 new todos (164 total: 76 done, 88 pending)
+
+---
+
+
 
 ## 🔍 AUDIT FINDINGS (2026-05-03)
 
@@ -198,7 +239,7 @@ TeamScope (NEW) ← Multiple teams per session
 3. Scope Hierarchy Extension (add TeamScope to scope.py) — 3 days
 4. TeamScope API Endpoints (REST + CLI) — 3 days
 
-🔗 **See**: features_overview.md § FEATURE 2: TeamScope
+🔗 **See**: [architecture/system-overview.md](./architecture/system-overview.md) for detailed architecture
 
 ---
 
@@ -215,7 +256,7 @@ TeamScope (NEW) ← Multiple teams per session
 4. Redundancy & Failover (crash detection, auto-recovery) — 3 days
 5. Orchestrator Health Checks (periodic polling, metrics) — 2 days
 
-🔗 **See**: features_overview.md § FEATURE 1: Multi-Orchestrator
+🔗 **See**: [architecture/multi-orchestrator.md](./architecture/multi-orchestrator.md) for detailed architecture
 
 ---
 
@@ -232,7 +273,7 @@ TeamScope (NEW) ← Multiple teams per session
 4. Error Handling & Retry (exponential backoff, rate limits) — 2 days
 5. SDK Tools Registry (discovery, capability matrix) — 3 days
 
-🔗 **See**: features_overview.md § FEATURE 4: SDK Architecture
+🔗 **See**: [modules/orchestration.md](./modules/orchestration.md) for SDK routing details
 
 ---
 
@@ -250,7 +291,7 @@ TeamScope (NEW) ← Multiple teams per session
 5. Modules: exceptions.py Pattern — 1 day
 6. Module Loader Validation — 2 days
 
-🔗 **See**: features_overview.md § FEATURE 5: Module Consistency
+🔗 **See**: [development-workflow.md](./development-workflow.md) for completion patterns
 
 ---
 
@@ -269,7 +310,7 @@ TeamScope (NEW) ← Multiple teams per session
 6. Core Loader Validation — 2 days
 7. ABC & @dataclass Consistency Fix — 2 days
 
-🔗 **See**: features_overview.md § FEATURE 6: Core Consistency
+🔗 **See**: [core/types.md](./core/types.md) for core type patterns
 
 ---
 
@@ -285,7 +326,7 @@ TeamScope (NEW) ← Multiple teams per session
 3. Runtime Config Loading — 2 days
 4. Manager.py Integration — 1 day
 
-🔗 **See**: features_overview.md § FEATURE 3: Config Integration
+🔗 **See**: [core/db.md](./core/db.md) for database patterns
 
 ---
 
@@ -304,7 +345,7 @@ TeamScope (NEW) ← Multiple teams per session
 
 ---
 
-## 🎯 FEATURES (See features_overview.md for Details)
+## 🎯 FEATURES (See [architecture/](./architecture/) docs for Details)
 
 1. **Multi-Orchestrator** — Parallel execution with task queue
 2. **TeamScope** — Team isolation & resource quotas
@@ -342,8 +383,8 @@ All 3 critical blockers completed via TASK workflow (3x syntax verification + gi
 
 Next action: Execute Phase 0 (TeamScope Foundation, 10 days)
 
-1. ✅ **Read features_overview.md** — Understand what we're building
-2. ✅ **Read development-workflow.md** — Understand how to work
+1. ✅ **Read [development-workflow.md](./development-workflow.md)** — Understand how to work
+2. ✅ **Read [checkpoints.md](./checkpoints.md)** — See what was done
 3. ✅ **Check session.db** — See Phase 0 tasks and todos
 4. ✅ **Start Phase 0** — Create TeamScope model (Task 0-1)
 
@@ -392,35 +433,42 @@ SELECT * FROM todos WHERE id LIKE 'teamscope-%' ORDER BY id;
 
 ## ⏳ NEXT: Phase 2 — Config Integration & SDK
 
+See [checkpoints.md#phase-2](./checkpoints.md) for details
+
 ## 📈 PROGRESS TRACKING
 
-Use SQL queries to track progress:
+Use SQL queries in session.db to track progress:
 
 ```sql
--- Current phase status
-SELECT p.id, p.title, COUNT(t.id) as tasks, 
-  SUM(CASE WHEN t.status = 'done' THEN 1 ELSE 0 END) as tasks_done
-FROM phases p LEFT JOIN tasks t ON p.id = t.phase_id
-GROUP BY p.id ORDER BY p.id;
-
--- Ready tasks (all todos done)
-SELECT t.* FROM tasks t
-WHERE t.status = 'pending'
+-- Ready todos (no pending dependencies)
+SELECT id, title FROM todos 
+WHERE status = 'pending'
 AND NOT EXISTS (
-  SELECT 1 FROM todos td WHERE td.task_id = t.id AND td.status != 'done'
-);
+  SELECT 1 FROM todo_deps td
+  JOIN todos dep ON td.depends_on = dep.id
+  WHERE td.todo_id = todos.id AND dep.status != 'done'
+)
+LIMIT 10;
+
+-- Phase progress
+SELECT status, COUNT(*) FROM todos GROUP BY status;
 ```
+
+See [development-workflow.md](./development-workflow.md) for completion workflows.
 
 ---
 
 **Last Updated**: 2026-05-03  
-**Next Review**: Before Phase 3 kickoff
+**Working Directory**: [.plan/](file:///home/daen/Projects/cybersecsuite/.plan/)  
+**Next Review**: Before Phase 3 completion
 
 ---
 
 ## ✅ PHASE 2 COMPLETION SUMMARY (2026-05-03)
 
 **Phase 2: Config Integration & SDK Architecture — COMPLETE**
+
+See [checkpoints.md#phase-2](./checkpoints.md) for full details
 
 ### Deliverables (5 todos completed):
 

@@ -13,7 +13,7 @@ Architecture:
 import logging
 from typing import AsyncIterator, Optional, List
 
-from core.types.api_services import (
+from css.core.types.api_services import (
     BaseApiServiceClient,
     StreamChunk,
     BaseMessage,
@@ -21,13 +21,13 @@ from core.types.api_services import (
     ModelMetadata,
     ProviderType,
 )
-from core.exceptions import (
+from css.core.exceptions import (
     OllamaConnectionError,
     OllamaModelNotFoundError,
     GatewayError,
     AuthError,
 )
-from core.retry import RetryOrchestrator, RetryConfig
+from css.core.retry import RetryOrchestrator, RetryConfig
 
 logger = logging.getLogger(__name__)
 

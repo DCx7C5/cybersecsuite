@@ -1,7 +1,6 @@
 """Task CRUD endpoints."""
 
 from typing import Any, Optional
-import json
 
 from .enums import TaskStatus, TaskPriority
 from .types import Task, TaskScope

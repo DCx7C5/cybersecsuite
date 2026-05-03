@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Optional
 
-from core.types.query import Query
+from css.core.types.query import Query
 from .enums import TaskStatus, TaskPriority
 
 

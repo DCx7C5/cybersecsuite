@@ -4,30 +4,42 @@
 
 ---
 
-## CRITICAL
+## CRITICAL MOST IMPORTANT RULES TO STICK TO
 - **no Co-authored-by: Copilot**
 - **minimize your thinking chat to only essentials**
 - **minimize your chat to only essentials**
 - keep normal summaries in the end
 - `.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.
 - no hallucinations, ask the user if unsure
-- read the different workflows in [Rules](rules.md)
+- read the different workflows in [development-workflow.md](development-workflow.md)
 - you have access to `.venv/bin/` here in the cybersecsuite Project
-- dont ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.
-Confirm after reading this!
+- don't ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.
+- **you follow existing directory, documentary and code patterns for consistency**
+- **WHEN WORKING IN PLAN MODE ALWAYS UPDATE EVERY .md UNDER `.plan/` and keep in sync with `.plan/session.db`!**
+- **YOU HAVE OVERVIEW OF ARCHITECTURE for everything in `src/css/core/` -> `.plan/core/*.md`**
+- **YOU HAVE OVERVIEW OF ARCHITECTURE for everything in `src/css/modules/` -> `.plan/modules/*.md`**
+- **YOU HAVE OVERVIEW OF ARCHITECTURE for everything in `src/css/api_services/` -> `.plan/api_services/*.md`**
+- **GENERAL ARCHITECTURE IN `.plan/architecture/*.md`**
+- **TELL WHEN A SESSION IS ABOUT TO END OR A NEW ONE TO START**
+- you are aware of analogy between `.plan/{core,modules,api_services}/` and `src/css/{core,modules,api_servies}`}`
+
+# CRITICAL RULES ABOVE: VERIFY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
 ## ✅ .plan/ WHITELIST (8 Files Only)
 
-| File | Purpose |
-|------|---------|
-| **plan.md** | Project overview, milestones, timeline |
-| **architecture.md** | System design, scopes, orchestrators |
-| **features_overview.md** | Feature specifications |
-| **development-workflow.md** | Development process, git strategy |
-| **rules.md** | THIS FILE — development rules |
-| **checkpoints.md** | Phase summaries, history |
-| **frontend.md** | Frontend architecture, UI/UX patterns |
-| **session.db** | Todo tracker (SQLite) |
+| File                         | Purpose                                               |
+|------------------------------|-------------------------------------------------------|
+| **plan.md**                  | Project overview, milestones, timeline                |
+| **architecture/*.md**        | System design                                         |
+| **api_services/*.md**        | Corresponding plan to src/css/api_services/<provider> |
+| **modules/*.md**             | Corresponding plan to src/css/modules/<module>        |
+| **core/*.md**                | Corresponding plan to src/css/core/<module>           |
+| **memory.md**                | Highly compressed previous session context            |
+| **development-workflow.md**  | Development process, git strategy                     |
+| **rules.md**                 | THIS FILE — development rules                         |
+| **checkpoints.md**           | Phase summaries, history                              |
+| **archtiecture/frontend.md** | Frontend architecture, UI/UX patterns                 |
+| **session.db**               | Todo tracker (SQLite)    ALWAYS KEEP IN SYNC!!!!!     |
 
 **❌ FORBIDDEN**: Other .md files, subdirectories, staging files. if rule is broken, files content must be moved into white listed files and file deleted
 **CONSOLIDATE**: If you need a new file, merge content into one of the 8 above.

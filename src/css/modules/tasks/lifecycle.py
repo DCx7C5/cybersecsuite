@@ -1,6 +1,5 @@
 """Task lifecycle management — state transitions + validation."""
 
-from typing import Optional
 
 from .enums import TaskStatus
 from .types import Task

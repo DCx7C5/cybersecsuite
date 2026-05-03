@@ -1,3 +1,3 @@
-"""DEPRECATED: Use core.redis.dispatcher instead."""
+"""DEPRECATED: Use css.core.redis.dispatcher instead."""
 
-from core.redis.dispatcher import *  # noqa: F401, F403
+from css.core.redis.dispatcher import *  # noqa: F401, F403

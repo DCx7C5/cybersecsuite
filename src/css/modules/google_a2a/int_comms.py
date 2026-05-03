@@ -1,3 +1,3 @@
-"""DEPRECATED: Use core.redis.communicator instead."""
+"""DEPRECATED: Use css.core.redis.communicator instead."""
 
-from core.redis.communicator import *  # noqa: F401, F403
+from css.core.redis.communicator import *  # noqa: F401, F403

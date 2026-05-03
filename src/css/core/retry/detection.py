@@ -1,7 +1,7 @@
 """Detect SDK retry capabilities."""
 
 import inspect
-from core.types import ProviderType
+from css.core.types import ProviderType
 from .config import RetryStrategy
 
 
