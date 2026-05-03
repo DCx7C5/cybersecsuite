@@ -46,12 +46,21 @@ L4 (Archive):  Disk SQLite (50-500ms) — fallback when all above fail
 
 ## Implementation Checklist
 
-- [ ] Implement base cache interface with async/await support
-- [ ] Implement L1 backend (asyncio.Cache)
-- [ ] Implement L2 backend (aioredis)
-- [ ] Implement L3 backend (asyncpg)
-- [ ] Implement L4 backend (aiosqlite)
-- [ ] Add logger initialization in `__init__.py`
+- [x] Implement base cache interface with async/await support
+- [x] Implement L1 backend (asyncio.Cache) — L1MemoryCache class
+- [x] Implement L2 backend (aioredis) — L2RedisCache class
+- [ ] Implement L3 backend (asyncpg) — PostgreSQL backend (Phase 2.5)
+- [ ] Implement L4 backend (aiosqlite) — SQLite archive (Phase 3)
+- [x] Add logger initialization in `__init__.py`
+
+**Completed (Phase 2 Foundation)**:
+✅ CacheBackend abstract base class
+✅ L1MemoryCache with TTL support, eviction, stats
+✅ L2RedisCache with lazy connection, namespace support
+✅ CacheDecorator for async function result caching
+✅ CacheEntry and CacheStats models
+✅ Exception hierarchy (CacheNotFoundError, CacheExecutionError, CacheSerializationError)
+✅ Module exports and logging
 
 ---
 
