@@ -21,15 +21,15 @@ The `@tools` module provides:
 
 ### Files (Total: 86 lines)
 
-| File | Lines | Status | Purpose |
-|------|-------|--------|---------|
-| `base.py` | 19 | ✅ Defined | BaseToolRegistry ABC + interface methods |
-| `enums.py` | 18 | ✅ Defined | ToolStatus (available/unavailable/disabled), ToolType (builtin/custom/external/mcp) |
-| `exceptions.py` | 49 | ✅ Defined | BaseToolException, ToolNotFoundError, ToolExecutionError, ToolConfigurationError |
-| `registry.py` | 0 | ❌ EMPTY | **Should map all provider tools** — NEEDS IMPLEMENTATION |
-| `models.py` | ❌ MISSING | Need types for Tool, ToolSchema, ToolResult |
-| `endpoints.py` | ❌ MISSING | Need FastAPI routes (/api/tools/list, /api/tools/{id}, etc) |
-| `__init__.py` | 0 | ⚠️ Empty | Should initialize logger + exports |
+| File            | Lines     | Status                                                      | Purpose                                                                             |
+|-----------------|-----------|-------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| `base.py`       | 19        | ✅ Defined                                                   | BaseToolRegistry ABC + interface methods                                            |
+| `enums.py`      | 18        | ✅ Defined                                                   | ToolStatus (available/unavailable/disabled), ToolType (builtin/custom/external/mcp) |
+| `exceptions.py` | 49        | ✅ Defined                                                   | BaseToolException, ToolNotFoundError, ToolExecutionError, ToolConfigurationError    |
+| `registry.py`   | 0         | ❌ EMPTY                                                     | **Should map all provider tools** — NEEDS IMPLEMENTATION                            |
+| `models.py`     | ❌ MISSING | Need types for Tool, ToolSchema, ToolResult                 |
+| `endpoints.py`  | ❌ MISSING | Need FastAPI routes (/api/tools/list, /api/tools/{id}, etc) |
+| `__init__.py`   | 0         | ⚠️ Empty                                                    | Should initialize logger + exports                                                  |
 
 ---
 
@@ -210,14 +210,14 @@ For new provider in api_services/{provider}/:
 
 ## Current Sync Status with API Services
 
-| Provider | SDK Status | Tools Status | Sync Status |
-|----------|-----------|--------------|------------|
-| OpenAI | PARTIAL | ✅ Documented (code_interpreter, retrieval, file_search) | ❌ NOT IN REGISTRY |
-| Anthropic | PARTIAL | ✅ Documented (computer_use) | ❌ NOT IN REGISTRY |
-| Mistral | STUB | ⚠️ Partially documented (function calling) | ❌ NOT IN REGISTRY |
-| Google | STUB | ⚠️ Partially documented (function calling) | ❌ NOT IN REGISTRY |
-| Groq | STUB | ⚠️ Documented (OpenAI compat) | ❌ NOT IN REGISTRY |
-| All others | STUB | ⚠️ Partial/incomplete | ❌ NOT IN REGISTRY |
+| Provider   | SDK Status | Tools Status                                            | Sync Status       |
+|------------|------------|---------------------------------------------------------|-------------------|
+| OpenAI     | PARTIAL    | ✅ Documented (code_interpreter, retrieval, file_search) | ❌ NOT IN REGISTRY |
+| Anthropic  | PARTIAL    | ✅ Documented (computer_use)                             | ❌ NOT IN REGISTRY |
+| Mistral    | STUB       | ⚠️ Partially documented (function calling)              | ❌ NOT IN REGISTRY |
+| Google     | STUB       | ⚠️ Partially documented (function calling)              | ❌ NOT IN REGISTRY |
+| Groq       | STUB       | ⚠️ Documented (OpenAI compat)                           | ❌ NOT IN REGISTRY |
+| All others | STUB       | ⚠️ Partial/incomplete                                   | ❌ NOT IN REGISTRY |
 
 **Gap**: registry.py is **EMPTY** — no tools actually loaded from api_services
 
@@ -265,3 +265,7 @@ tools/
 
 **Status**: 🔴 Priority (Medium-High) | **Implementation**: 0% (registry empty)  
 **Last Updated**: 2026-05-03 | **Ready for**: Phase 4 (Module Consistency)
+## Audit (2026-05-03)
+
+**Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
+**Details**: See .plan/modules/module-audit-matrix.md for full audit results.
