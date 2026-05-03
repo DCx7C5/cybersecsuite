@@ -269,6 +269,55 @@ class ToolRegistry(BaseToolRegistry):
             "available": managed_tool.is_available,
         }
 
+    # Implement abstract methods from BaseRegistry
+    async def register(self, tool_id: str, tool_schema: ToolSchema) -> None:
+        """Register a tool (async wrapper for register_tool).
+        
+        Args:
+            tool_id: Tool identifier
+            tool_schema: ToolSchema instance
+        """
+        self.register_tool(tool_schema)
+
+    async def unregister(self, tool_id: str) -> None:
+        """Unregister a tool (remove from registry).
+        
+        Args:
+            tool_id: Tool identifier
+            
+        Raises:
+            ToolNotFoundError: If tool not found
+        """
+        if tool_id not in self.tools:
+            raise ToolNotFoundError(f"Tool not found: {tool_id}")
+        del self.tools[tool_id]
+        logger.info(f"Unregistered tool: {tool_id}")
+
+    async def get(self, tool_id: str) -> ToolSchema:
+        """Get a tool (async wrapper for get_tool).
+        
+        Args:
+            tool_id: Tool identifier
+            
+        Returns:
+            ToolSchema instance
+            
+        Raises:
+            ToolNotFoundError: If tool not found
+        """
+        return self.get_tool(tool_id)
+
+    async def list_all(self, filter_by_provider: Optional[str] = None) -> list[ToolSchema]:
+        """List all tools (async wrapper for list_tools).
+        
+        Args:
+            filter_by_provider: Optional provider filter
+            
+        Returns:
+            List of ToolSchema instances
+        """
+        return self.list_tools(filter_by_provider=filter_by_provider, enabled_only=False)
+
 
 # Global registry instance (singleton)
 _registry: Optional[ToolRegistry] = None
