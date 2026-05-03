@@ -72,3 +72,61 @@
 ---
 
 **Status**: ✅ Complete | **Last Updated**: 2026-05-03
+
+---
+
+## Builtin Tools
+
+### Available Tools (3)
+
+1. **code_interpreter** — Execute Python code and get results (in Code Interpreter mode)
+   - Parameters: `code` (string, required) — Python code to execute
+   - Returns: object with stdout, stderr, and artifacts
+   - Timeout: 60 seconds
+   - Tags: code, execution, python
+
+2. **file_search** — Search through files and retrieve relevant content
+   - Parameters: `query` (string, required) — Search query
+   - Returns: array of matching files and excerpts
+   - Timeout: 30 seconds
+   - Tags: search, retrieval
+
+3. **retrieval** — Retrieve documents from uploaded files
+   - Parameters: `query` (string, required) — Retrieval query
+   - Returns: array of document chunks
+   - Timeout: 30 seconds
+   - Tags: retrieval, knowledge_base
+
+### Tool Schema Format (ToolSchema)
+
+All tools are normalized to:
+
+```python
+@dataclass
+class ToolSchema:
+    provider: str = "openai"
+    name: str  # e.g., "code_interpreter"
+    description: str
+    parameters: list[ToolParameter]
+    returns: ToolReturnType
+    version: str = "1.0"
+    enabled: bool = True
+    tags: list[str]
+    requires_auth: bool = False
+    rate_limit: Optional[int] = None
+    timeout_seconds: int = 30
+```
+
+### Registration
+
+Tools are auto-registered with @tools registry on startup:
+- See: `src/css/modules/tools/registry.py`
+- Access: `from css.modules.tools.registry import get_tool_registry`
+
+### How to Add Provider Tools
+
+For new providers in `src/css/api_services/{provider}/`:
+
+1. Create `tools.py` with `BUILTIN_TOOLS` constant
+2. Follow ToolSchema format in `src/css/modules/tools/models.py`
+3. Registry auto-discovers on startup (add to `ToolRegistry._load_builtin_tools()`)

@@ -8,7 +8,8 @@ import logging
 from typing import Optional
 
 from css.modules.tools.base import BaseToolRegistry
-from css.modules.tools.models import ToolSchema, ManagedTool, ToolParameter, ToolReturnType, ParameterType
+from css.modules.tools.types import ToolSchema, ManagedTool, ToolParameter, ToolReturnType
+from css.modules.tools.enums import ParameterType
 from css.modules.tools.exceptions import ToolNotFoundError
 
 logger = logging.getLogger(__name__)

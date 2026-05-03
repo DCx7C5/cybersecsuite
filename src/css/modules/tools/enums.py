@@ -1,4 +1,24 @@
+"""Enumeration types for tool definitions and configuration.
+
+Defines all enum classes used across the tools module for type safety
+and standardized value constraints.
+"""
+
 from enum import Enum
+
+
+class ParameterType(str, Enum):
+    """Parameter type enumeration for tool parameter definitions.
+    
+    Represents JSON Schema-compatible types for tool parameters.
+    """
+    STRING = "string"
+    INTEGER = "integer"
+    NUMBER = "number"
+    BOOLEAN = "boolean"
+    ARRAY = "array"
+    OBJECT = "object"
+    NULL = "null"
 
 
 class ToolStatus(str, Enum):

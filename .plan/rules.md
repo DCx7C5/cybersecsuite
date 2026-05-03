@@ -16,12 +16,9 @@
 - don't ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.
 - **you follow existing directory, documentary and code patterns for consistency**
 - **WHEN WORKING IN PLAN MODE ALWAYS UPDATE EVERY .md UNDER `.plan/` and keep in sync with `.plan/session.db`!**
-- **YOU HAVE OVERVIEW OF ARCHITECTURE for everything in `src/css/core/` -> `.plan/core/*.md`**
-- **YOU HAVE OVERVIEW OF ARCHITECTURE for everything in `src/css/modules/` -> `.plan/modules/*.md`**
-- **YOU HAVE OVERVIEW OF ARCHITECTURE for everything in `src/css/api_services/` -> `.plan/api_services/*.md`**
 - **GENERAL ARCHITECTURE IN `.plan/architecture/*.md`**
+- **EVERY PROVIDER IN `src/css/{core,modules,api_services}/` DIRECTORY HAS A `plan.md` FILE TO DEEPINSPECT WHEN WORKING IN DIR** 
 - **TELL WHEN A SESSION IS ABOUT TO END OR A NEW ONE TO START**
-- you are aware of analogy between `.plan/{core,modules,api_services}/` and `src/css/{core,modules,api_servies}`}`
 
 # CRITICAL RULES ABOVE: VERIFY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 

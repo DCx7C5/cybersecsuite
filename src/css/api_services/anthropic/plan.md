@@ -112,3 +112,51 @@ response = client.messages.create(
 ---
 
 **Status**: ✅ Complete | **Last Updated**: 2026-05-03
+
+---
+
+## Builtin Tools
+
+### Available Tools (1)
+
+1. **computer_use** — Use computer vision and interaction tools to accomplish tasks
+   - Parameters:
+     - `action` (string, required, enum) — Screenshot, click, type, scroll, key_press
+     - `coordinates` (array, optional) — [x, y] for mouse actions
+     - `text` (string, optional) — Text to type
+   - Returns: object with action result (screenshot data, click result, etc.)
+   - Timeout: 30 seconds
+   - Tags: computer_vision, interaction
+   - Requires Auth: False
+
+### Tool Schema Format (ToolSchema)
+
+All tools are normalized to canonical format in `src/css/modules/tools/models.py`:
+
+```python
+@dataclass
+class ToolSchema:
+    provider: str = "anthropic"
+    name: str  # e.g., "computer_use"
+    description: str
+    parameters: list[ToolParameter]
+    returns: ToolReturnType
+    version: str = "1.0"
+    enabled: bool = True
+    tags: list[str]
+    requires_auth: bool = False
+    timeout_seconds: int = 30
+```
+
+### Registration
+
+Auto-registered with @tools registry:
+- Location: `src/css/modules/tools/registry.py`
+- Usage: `from css.modules.tools.registry import get_tool_registry; registry = get_tool_registry()`
+
+### Extending Tool Support
+
+To add more Anthropic tools:
+1. Define in `src/css/api_services/anthropic/tools.py`
+2. Follow ToolSchema in `src/css/modules/tools/models.py`
+3. Update `ToolRegistry._load_builtin_tools()` to include
