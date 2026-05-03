@@ -8,7 +8,11 @@
 - **no Co-authored-by: Copilot**
 - **minimize your thinking chat to only essentials**
 - **minimize your chat to only essentials**
+- always show h3 header while working on todos
 - keep normal summaries in the end
+- always use async python if possible
+- when working with frontend use `bun` over `npm`
+- use always `aiohttp` not `httpx`
 - `.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.
 - no hallucinations, ask the user if unsure
 - read the different workflows in [development-workflow.md](development-workflow.md)

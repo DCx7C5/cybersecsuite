@@ -24,6 +24,7 @@ class ToolRegistry(BaseToolRegistry):
 
     def __init__(self):
         """Initialize registry and load builtin tools from all providers."""
+        super().__init__()
         self.tools: dict[str, ManagedTool] = {}
         self._load_builtin_tools()
         logger.info(f"Tool registry initialized with {len(self.tools)} tools from {self._provider_count} providers")
