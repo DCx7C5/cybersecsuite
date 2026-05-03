@@ -42,9 +42,40 @@ class MistralApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.mistral.ai/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Mistral models from API."""
-        # TODO: Call Mistral models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="mistral-large-latest",
+                provider=ProviderType.MISTRAL,
+                display_name="Mistral Large",
+                context_window=32000,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="mistral-medium-latest",
+                provider=ProviderType.MISTRAL,
+                display_name="Mistral Medium",
+                context_window=32000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="mistral-small-latest",
+                provider=ProviderType.MISTRAL,
+                display_name="Mistral Small",
+                context_window=32000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

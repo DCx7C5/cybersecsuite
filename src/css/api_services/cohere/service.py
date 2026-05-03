@@ -42,9 +42,47 @@ class CohereApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.cohere.com/v2"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Cohere models from API."""
-        # TODO: Call Cohere models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="command-r-plus",
+                provider=ProviderType.COHERE,
+                display_name="Command R Plus",
+                context_window=128000,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                batch_api=True,
+                structured_output=True,
+                input_cost_per_mtok=3.0,
+                output_cost_per_mtok=15.0,
+            ),
+            ModelMetadata(
+                id="command-r",
+                provider=ProviderType.COHERE,
+                display_name="Command R",
+                context_window=128000,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                batch_api=True,
+                structured_output=True,
+                input_cost_per_mtok=1.0,
+                output_cost_per_mtok=5.0,
+            ),
+            ModelMetadata(
+                id="command-light",
+                provider=ProviderType.COHERE,
+                display_name="Command Light",
+                context_window=128000,
+                max_output_tokens=2048,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+                input_cost_per_mtok=0.5,
+                output_cost_per_mtok=2.5,
+            ),
+        ]
     
     async def call_llm(
         self,

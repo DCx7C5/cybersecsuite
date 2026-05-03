@@ -42,9 +42,20 @@ class HuggingfaceApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api-inference.huggingface.co/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available HuggingFace models from API."""
-        # TODO: Call HuggingFace models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="meta-llama/Llama-3-70b-instruct",
+                provider=ProviderType.HUGGINGFACE,
+                display_name="Llama 3 70B",
+                context_window=8192,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

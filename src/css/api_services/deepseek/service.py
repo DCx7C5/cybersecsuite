@@ -42,9 +42,30 @@ class DeepSeekApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.deepseek.com/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available DeepSeek models from API."""
-        # TODO: Call DeepSeek models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="deepseek-chat",
+                provider=ProviderType.DEEPSEEK,
+                display_name="DeepSeek Chat",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="deepseek-coder",
+                provider=ProviderType.DEEPSEEK,
+                display_name="DeepSeek Coder",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

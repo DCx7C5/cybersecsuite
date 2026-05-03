@@ -42,9 +42,19 @@ class OpenCodeApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.opencode.ai/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available OpenCode models from API."""
-        # TODO: Call OpenCode models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="starcoder-1b",
+                provider=ProviderType.OPENCODE,
+                display_name="StarCoder 1B",
+                context_window=8192,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

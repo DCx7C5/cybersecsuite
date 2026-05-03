@@ -42,9 +42,20 @@ class LambdaApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.lambdalabs.com/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Lambda models from API."""
-        # TODO: Call Lambda models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="meta-llama/Llama-2-70b-chat-hf",
+                provider=ProviderType.LAMBDA,
+                display_name="Llama 2 70B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                batch_api=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

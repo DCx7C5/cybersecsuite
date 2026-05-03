@@ -42,9 +42,20 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.x.ai/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available xAI models from API."""
-        # TODO: Call xAI models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="grok-vision-beta",
+                provider=ProviderType.XAI,
+                display_name="Grok Vision",
+                context_window=131072,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

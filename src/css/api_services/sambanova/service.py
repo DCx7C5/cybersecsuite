@@ -42,9 +42,19 @@ class SambaNovaApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.sambanova.ai/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available SambaNova models from API."""
-        # TODO: Call SambaNova models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="Meta-Llama-3-70B-Instruct",
+                provider=ProviderType.SAMBANOVA,
+                display_name="Llama 3 70B",
+                context_window=8192,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

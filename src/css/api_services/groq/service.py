@@ -42,9 +42,39 @@ class GroqApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.groq.com/openai/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Groq models from API."""
-        # TODO: Call Groq models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="mixtral-8x7b-32768",
+                provider=ProviderType.GROQ,
+                display_name="Mixtral 8x7B",
+                context_window=32768,
+                max_output_tokens=32768,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="llama-3-70b-8192",
+                provider=ProviderType.GROQ,
+                display_name="Llama 3 70B",
+                context_window=8192,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="llama-2-70b-4096",
+                provider=ProviderType.GROQ,
+                display_name="Llama 2 70B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

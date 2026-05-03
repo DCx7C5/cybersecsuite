@@ -42,9 +42,20 @@ class NVIDIAApiService(BaseApiServiceClient, StreamingHandler):
         return "https://integrate.api.nvidia.com/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Nvidia models from API."""
-        # TODO: Call Nvidia models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="meta/llama2-70b",
+                provider=ProviderType.NVIDIA,
+                display_name="Llama 2 70B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

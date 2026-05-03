@@ -42,9 +42,41 @@ class TogetherApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.together.xyz/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Together models from API."""
-        # TODO: Call Together models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="meta-llama/Llama-3-70b-chat-hf",
+                provider=ProviderType.TOGETHER,
+                display_name="Llama 3 70B",
+                context_window=8192,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                batch_api=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="meta-llama/Llama-2-70b-chat-hf",
+                provider=ProviderType.TOGETHER,
+                display_name="Llama 2 70B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="mistralai/Mistral-7B-Instruct-v0.2",
+                provider=ProviderType.TOGETHER,
+                display_name="Mistral 7B",
+                context_window=32000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

@@ -42,9 +42,21 @@ class GITHUBApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.github.com/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available GitHub models from API."""
-        # TODO: Call GitHub models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="gpt-4o",
+                provider=ProviderType.GITHUB,
+                display_name="GPT-4o",
+                context_window=128000,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+                files_api=True,
+            ),
+        ]
     
     async def call_llm(
         self,

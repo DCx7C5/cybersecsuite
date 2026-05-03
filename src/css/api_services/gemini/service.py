@@ -42,9 +42,42 @@ class GeminiApiService(BaseApiServiceClient, StreamingHandler):
         return "https://generativelanguage.googleapis.com"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Gemini models from API."""
-        # TODO: Call Google models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="gemini-2.0-flash",
+                provider=ProviderType.GEMINI,
+                display_name="Gemini 2.0 Flash",
+                context_window=1000000,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="gemini-1.5-pro",
+                provider=ProviderType.GEMINI,
+                display_name="Gemini 1.5 Pro",
+                context_window=2000000,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="gemini-1.5-flash",
+                provider=ProviderType.GEMINI,
+                display_name="Gemini 1.5 Flash",
+                context_window=1000000,
+                max_output_tokens=8192,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

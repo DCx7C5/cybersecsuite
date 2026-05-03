@@ -42,9 +42,19 @@ class CloudflareApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.cloudflare.com/client/v4"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Cloudflare models from API."""
-        # TODO: Call Cloudflare models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="@cf/meta/llama-2-7b-chat-int8",
+                provider=ProviderType.CLOUDFLARE,
+                display_name="Llama 2 7B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

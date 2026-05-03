@@ -42,9 +42,47 @@ class AI21ApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.ai21.com/studio/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available AI21 Labs models from API."""
-        # TODO: Call AI21 Labs models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="j2-ultra",
+                provider=ProviderType.AI21,
+                display_name="J2 Ultra",
+                context_window=8191,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                batch_api=True,
+                structured_output=True,
+                input_cost_per_mtok=8.0,
+                output_cost_per_mtok=24.0,
+            ),
+            ModelMetadata(
+                id="j2-mid",
+                provider=ProviderType.AI21,
+                display_name="J2 Mid",
+                context_window=8191,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                batch_api=True,
+                structured_output=True,
+                input_cost_per_mtok=4.0,
+                output_cost_per_mtok=12.0,
+            ),
+            ModelMetadata(
+                id="j2-light",
+                provider=ProviderType.AI21,
+                display_name="J2 Light",
+                context_window=8191,
+                max_output_tokens=2048,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+                input_cost_per_mtok=1.0,
+                output_cost_per_mtok=3.0,
+            ),
+        ]
     
     async def call_llm(
         self,

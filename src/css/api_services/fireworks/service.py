@@ -42,9 +42,29 @@ class FIREWORKSApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.fireworks.ai/inference/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Fireworks models from API."""
-        # TODO: Call Fireworks models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="accounts/fireworks/models/llama-v2-7b-chat",
+                provider=ProviderType.FIREWORKS,
+                display_name="Llama 2 7B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="accounts/fireworks/models/llama-v2-13b-chat",
+                provider=ProviderType.FIREWORKS,
+                display_name="Llama 2 13B",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

@@ -40,11 +40,67 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
     def _default_base_url(self) -> str:
         return "https://api.anthropic.com/v1"
     
-    async def get_models(self) -> List[ModelMetadata]:
-        """Fetch available Anthropic models from API."""
-        # TODO: Call Anthropic API endpoint (if available) or use models endpoint
-        # For now: placeholder that will be populated at integration test time
-        return []
+    async def get_models(self) -> list[ModelMetadata]:
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="claude-3-5-sonnet-20241022",
+                provider=ProviderType.ANTHROPIC,
+                display_name="Claude 3.5 Sonnet",
+                context_window=200000,
+                max_output_tokens=16384,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                prompt_caching=True,
+                structured_output=True,
+                input_cost_per_mtok=3.0,
+                output_cost_per_mtok=15.0,
+            ),
+            ModelMetadata(
+                id="claude-3-opus-20250219",
+                provider=ProviderType.ANTHROPIC,
+                display_name="Claude 3 Opus",
+                context_window=200000,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                prompt_caching=True,
+                structured_output=True,
+                extended_thinking=True,
+                input_cost_per_mtok=15.0,
+                output_cost_per_mtok=75.0,
+            ),
+            ModelMetadata(
+                id="claude-3-sonnet-20240229",
+                provider=ProviderType.ANTHROPIC,
+                display_name="Claude 3 Sonnet",
+                context_window=200000,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                prompt_caching=True,
+                structured_output=True,
+                input_cost_per_mtok=3.0,
+                output_cost_per_mtok=15.0,
+            ),
+            ModelMetadata(
+                id="claude-3-haiku-20240307",
+                provider=ProviderType.ANTHROPIC,
+                display_name="Claude 3 Haiku",
+                context_window=200000,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                prompt_caching=True,
+                structured_output=True,
+                input_cost_per_mtok=0.25,
+                output_cost_per_mtok=1.25,
+            ),
+        ]
     
     async def call_llm(
         self,

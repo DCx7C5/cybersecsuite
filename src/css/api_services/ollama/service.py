@@ -42,9 +42,39 @@ class OllamaApiService(BaseApiServiceClient, StreamingHandler):
         return "http://localhost:11434/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Ollama models from API."""
-        # TODO: Call Ollama models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="llama2",
+                provider=ProviderType.OLLAMA,
+                display_name="Llama 2",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="mistral",
+                provider=ProviderType.OLLAMA,
+                display_name="Mistral",
+                context_window=32000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="neural-chat",
+                provider=ProviderType.OLLAMA,
+                display_name="Neural Chat",
+                context_window=4096,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

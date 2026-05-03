@@ -42,9 +42,27 @@ class PerplexityApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.perplexity.ai"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Perplexity models from API."""
-        # TODO: Call Perplexity models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="pplx-7b-online",
+                provider=ProviderType.PERPLEXITY,
+                display_name="Perplexity 7B Online",
+                context_window=8192,
+                max_output_tokens=4096,
+                streaming=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="pplx-70b-online",
+                provider=ProviderType.PERPLEXITY,
+                display_name="Perplexity 70B Online",
+                context_window=8192,
+                max_output_tokens=4096,
+                streaming=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

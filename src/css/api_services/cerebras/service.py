@@ -42,9 +42,19 @@ class CerebrasApiService(BaseApiServiceClient, StreamingHandler):
         return "https://api.cerebras.ai/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available Cerebras models from API."""
-        # TODO: Call Cerebras models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="llama-3-70b",
+                provider=ProviderType.CEREBRAS,
+                display_name="Llama 3 70B",
+                context_window=8192,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,

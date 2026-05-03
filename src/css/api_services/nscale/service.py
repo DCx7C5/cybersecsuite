@@ -42,9 +42,18 @@ class NscaleApiService(BaseApiServiceClient, StreamingHandler):
         return "https://inference.api.nscale.com/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available nScale models from API."""
-        # TODO: Call nScale models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="nscale-1",
+                provider=ProviderType.NSCALE,
+                display_name="NScale 1",
+                context_window=8192,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+            ),
+        ]
     
     async def call_llm(
         self,

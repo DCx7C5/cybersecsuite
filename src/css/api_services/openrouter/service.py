@@ -42,9 +42,31 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
         return "https://openrouter.ai/api/v1"
     
     async def get_models(self) -> list[ModelMetadata]:
-        """Fetch available OpenRouter models from API."""
-        # TODO: Call OpenRouter models endpoint
-        return []
+        """Get available models for this provider."""
+        return [
+            ModelMetadata(
+                id="openai/gpt-4-turbo",
+                provider=ProviderType.OPENROUTER,
+                display_name="GPT-4 Turbo",
+                context_window=128000,
+                max_output_tokens=4096,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="anthropic/claude-3-5-sonnet",
+                provider=ProviderType.OPENROUTER,
+                display_name="Claude 3.5 Sonnet",
+                context_window=200000,
+                max_output_tokens=16384,
+                streaming=True,
+                vision=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+        ]
     
     async def call_llm(
         self,
