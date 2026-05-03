@@ -38,229 +38,154 @@ class ErrorMapper:
         return float(match.group(1)) if match else None
 
 
-class AnthropicErrorMapper(ErrorMapper):
-    """Map Anthropic SDK errors to unified types."""
+class BaseErrorMapper(ErrorMapper):
+    """Generic error mapper for aiohttp and REST-based providers.
+    
+    Maps HTTP status codes and common error patterns to 5 unified error types:
+    - AuthError: 401, 403, authentication failures
+    - RateLimitError: 429, quota exceeded
+    - TimeoutError: Connection timeouts, read timeouts
+    - GatewayError: 5xx errors, service unavailable
+    - UnknownError: All other errors (fallback)
+    
+    Used by all 19 REST providers as a fallback when provider-specific mappers
+    aren't available or for consistent error handling across the platform.
+    """
+    
+    # Pattern keywords for each error type (provider-agnostic)
+    AUTH_PATTERNS = {
+        'authentication', 'unauthorized', 'forbidden', 'invalid_api_key',
+        'invalid api key', 'auth', 'api key', 'token invalid', 'credentials'
+    }
+    
+    RATE_LIMIT_PATTERNS = {
+        'rate limit', 'rate-limited', 'rate_limited', 'quota', 'quota_exceeded',
+        'quota exceeded', 'throttle', 'too many requests', 'rate_limit'
+    }
+    
+    TIMEOUT_PATTERNS = {
+        'timeout', 'timed out', 'read timed out', 'connection timeout',
+        'connect timeout', 'deadline', 'econnreset', 'etimedout'
+    }
+    
+    GATEWAY_PATTERNS = {
+        'service unavailable', 'service down', 'bad gateway', 'gateway',
+        'connection refused', 'connection error', 'econnrefused', 'unreachable',
+        'unavailable', 'temporarily unavailable', 'maintenance'
+    }
+    
+    @staticmethod
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
+        """Map any provider error to unified type using generic patterns.
+        
+        Args:
+            error: Original exception from aiohttp or provider SDK
+            provider: Provider name for error context (optional)
+        
+        Returns:
+            Mapped exception (UnifiedLLMError subclass)
+        """
+        error_str = str(error).lower()
+        status_code = BaseErrorMapper.extract_status_code(str(error))
+        
+        # 401/403 → AuthError
+        if status_code in [401, 403] or any(
+            pattern in error_str for pattern in BaseErrorMapper.AUTH_PATTERNS
+        ):
+            return AuthError(
+                str(error),
+                provider=provider,
+                original_error=error,
+            )
+        
+        # 429 → RateLimitError
+        if status_code == 429 or any(
+            pattern in error_str for pattern in BaseErrorMapper.RATE_LIMIT_PATTERNS
+        ):
+            retry_after = BaseErrorMapper.extract_retry_after(str(error))
+            return RateLimitError(
+                str(error),
+                provider=provider,
+                retry_after_seconds=retry_after,
+                original_error=error,
+            )
+        
+        # Timeout → TimeoutError
+        if any(pattern in error_str for pattern in BaseErrorMapper.TIMEOUT_PATTERNS):
+            return TimeoutError(
+                str(error),
+                provider=provider,
+                original_error=error,
+            )
+        
+        # 5xx → GatewayError
+        if status_code and 500 <= status_code < 600:
+            return GatewayError(
+                str(error),
+                provider=provider,
+                original_error=error,
+            )
+        
+        # Gateway patterns → GatewayError
+        if any(pattern in error_str for pattern in BaseErrorMapper.GATEWAY_PATTERNS):
+            return GatewayError(
+                str(error),
+                provider=provider,
+                original_error=error,
+            )
+        
+        # Default → UnknownError
+        return UnknownError(
+            str(error),
+            provider=provider,
+            original_error=error,
+        )
+
+
+class AnthropicErrorMapper(BaseErrorMapper):
+    """Map Anthropic SDK errors to unified types using provider-specific patterns."""
     
     @staticmethod
     def map_error(error: Exception) -> Exception:
         """Map Anthropic error to unified type."""
-        error_str = str(error).lower()
-        
-        # Extract status code if present
-        status_code = AnthropicErrorMapper.extract_status_code(str(error))
-        
-        # 401/403 → AuthError
-        if status_code in [401, 403] or any(word in error_str for word in 
-            ['authentication', 'unauthorized', 'invalid_api_key', 'forbidden']):
-            return AuthError(
-                str(error),
-                provider="anthropic",
-                original_error=error,
-            )
-        
-        # 429 → RateLimitError
-        if status_code == 429 or any(word in error_str for word in ['rate limit', 'rate-limited', 'quota']):
-            retry_after = AnthropicErrorMapper.extract_retry_after(str(error))
-            return RateLimitError(
-                str(error),
-                provider="anthropic",
-                retry_after_seconds=retry_after,
-                original_error=error,
-            )
-        
-        # Timeout → TimeoutError
-        if any(word in error_str for word in ['timeout', 'timed out', 'read timed out']):
-            return TimeoutError(
-                str(error),
-                provider="anthropic",
-                original_error=error,
-            )
-        
-        # 5xx → GatewayError
-        if status_code and 500 <= status_code < 600:
-            return GatewayError(
-                str(error),
-                provider="anthropic",
-                original_error=error,
-            )
-        
-        # Service unavailable → GatewayError
-        if any(word in error_str for word in ['503', '502', '504', 'unavailable', 'service down', 'gateway']):
-            return GatewayError(
-                str(error),
-                provider="anthropic",
-                original_error=error,
-            )
-        
-        # Default → UnknownError
-        return UnknownError(
-            str(error),
-            provider="anthropic",
-            original_error=error,
-        )
+        # Use generic mapping (BaseErrorMapper.map_error)
+        return BaseErrorMapper.map_error(error, provider="anthropic")
 
 
-class OpenAIErrorMapper(ErrorMapper):
-    """Map OpenAI SDK errors to unified types."""
+class OpenAIErrorMapper(BaseErrorMapper):
+    """Map OpenAI SDK errors to unified types using provider-specific patterns."""
     
     @staticmethod
     def map_error(error: Exception) -> Exception:
         """Map OpenAI error to unified type."""
-        error_str = str(error).lower()
-        
-        # Extract status code if present
-        status_code = OpenAIErrorMapper.extract_status_code(str(error))
-        
-        # 401/403 → AuthError
-        if status_code in [401, 403] or any(word in error_str for word in 
-            ['authentication', 'unauthorized', 'invalid_api_key', 'forbidden', 'invalid api key']):
-            return AuthError(
-                str(error),
-                provider="openai",
-                original_error=error,
-            )
-        
-        # 429 → RateLimitError
-        if status_code == 429 or any(word in error_str for word in ['rate limit', 'rate-limited', 'quota']):
-            retry_after = OpenAIErrorMapper.extract_retry_after(str(error))
-            return RateLimitError(
-                str(error),
-                provider="openai",
-                retry_after_seconds=retry_after,
-                original_error=error,
-            )
-        
-        # Timeout → TimeoutError
-        if any(word in error_str for word in ['timeout', 'timed out', 'read timed out', 'connection timeout']):
-            return TimeoutError(
-                str(error),
-                provider="openai",
-                original_error=error,
-            )
-        
-        # 5xx → GatewayError
-        if status_code and 500 <= status_code < 600:
-            return GatewayError(
-                str(error),
-                provider="openai",
-                original_error=error,
-            )
-        
-        # Service unavailable → GatewayError
-        if any(word in error_str for word in ['503', '502', '504', 'unavailable', 'service unavailable']):
-            return GatewayError(
-                str(error),
-                provider="openai",
-                original_error=error,
-            )
-        
-        # Default → UnknownError
-        return UnknownError(
-            str(error),
-            provider="openai",
-            original_error=error,
-        )
+        return BaseErrorMapper.map_error(error, provider="openai")
 
 
-class OllamaErrorMapper(ErrorMapper):
+class OllamaErrorMapper(BaseErrorMapper):
     """Map Ollama errors (usually aiohttp exceptions) to unified types."""
     
     @staticmethod
     def map_error(error: Exception) -> Exception:
         """Map Ollama error to unified type."""
-        error_str = str(error).lower()
-        
-        # Extract status code if present
-        status_code = OllamaErrorMapper.extract_status_code(str(error))
-        
-        # 401/403 → AuthError
-        if status_code in [401, 403]:
-            return AuthError(
-                str(error),
-                provider="ollama",
-                original_error=error,
-            )
-        
-        # 429 → RateLimitError
-        if status_code == 429:
-            return RateLimitError(
-                str(error),
-                provider="ollama",
-                original_error=error,
-            )
-        
-        # Connection errors → TimeoutError or GatewayError
-        if any(word in error_str for word in ['connection', 'refused', 'unreachable', 'econnrefused', 'no such file']):
-            return GatewayError(
-                str(error),
-                provider="ollama",
-                original_error=error,
-            )
-        
-        # Timeout → TimeoutError
-        if any(word in error_str for word in ['timeout', 'timed out']):
-            return TimeoutError(
-                str(error),
-                provider="ollama",
-                original_error=error,
-            )
-        
-        # 5xx → GatewayError
-        if status_code and 500 <= status_code < 600:
-            return GatewayError(
-                str(error),
-                provider="ollama",
-                original_error=error,
-            )
-        
-        # Default → UnknownError
-        return UnknownError(
-            str(error),
-            provider="ollama",
-            original_error=error,
-        )
+        return BaseErrorMapper.map_error(error, provider="ollama")
 
 
-class GeminiErrorMapper(ErrorMapper):
+class GeminiErrorMapper(BaseErrorMapper):
     """Map Google Gemini errors to unified types."""
     
     @staticmethod
     def map_error(error: Exception) -> Exception:
         """Map Gemini error to unified type."""
-        error_str = str(error).lower()
-        status_code = GeminiErrorMapper.extract_status_code(str(error))
-        
-        if status_code in [401, 403]:
-            return AuthError(str(error), provider="gemini", original_error=error)
-        if status_code == 429:
-            return RateLimitError(str(error), provider="gemini", original_error=error)
-        if any(w in error_str for w in ['timeout', 'timed out']):
-            return TimeoutError(str(error), provider="gemini", original_error=error)
-        if status_code and 500 <= status_code < 600:
-            return GatewayError(str(error), provider="gemini", original_error=error)
-        
-        return UnknownError(str(error), provider="gemini", original_error=error)
+        return BaseErrorMapper.map_error(error, provider="gemini")
 
 
-class GroqErrorMapper(ErrorMapper):
+class GroqErrorMapper(BaseErrorMapper):
     """Map Groq errors to unified types."""
     
     @staticmethod
     def map_error(error: Exception) -> Exception:
         """Map Groq error to unified type."""
-        error_str = str(error).lower()
-        status_code = GroqErrorMapper.extract_status_code(str(error))
-        
-        if status_code in [401, 403]:
-            return AuthError(str(error), provider="groq", original_error=error)
-        if status_code == 429:
-            return RateLimitError(str(error), provider="groq", original_error=error)
-        if any(w in error_str for w in ['timeout', 'timed out']):
-            return TimeoutError(str(error), provider="groq", original_error=error)
-        if status_code and 500 <= status_code < 600:
-            return GatewayError(str(error), provider="groq", original_error=error)
-        
-        return UnknownError(str(error), provider="groq", original_error=error)
+        return BaseErrorMapper.map_error(error, provider="groq")
 
 
 # Dispatcher: maps provider → mapper function
@@ -277,6 +202,9 @@ ERROR_MAPPERS: dict[ProviderType, Callable[[Exception], Exception]] = {
 def map_provider_error(provider_id: ProviderType, error: Exception) -> Exception:
     """
     Map any provider error to unified type.
+    
+    Uses provider-specific mappers when available, falls back to BaseErrorMapper
+    for consistent error handling across all REST providers.
     
     Args:
         provider_id: Provider type
@@ -301,9 +229,6 @@ def map_provider_error(provider_id: ProviderType, error: Exception) -> Exception
     if mapper:
         return mapper(error)
     
-    # Default: wrap unknown providers in UnknownError
-    return UnknownError(
-        str(error),
-        provider=provider_id.value if provider_id else "unknown",
-        original_error=error,
-    )
+    # Fallback: use BaseErrorMapper for unknown providers (generic REST providers)
+    provider_name = provider_id.value if provider_id else "unknown"
+    return BaseErrorMapper.map_error(error, provider=provider_name)

@@ -42,8 +42,9 @@ from css.api_services.opencode import OpencodeApiService
 from css.api_services.ollama import OllamaApiService, OllamaClientCompat
 
 # Error mapping (Issue #3)
-from css.api_services.error_mappers import (
+from css.core.types.error_mappers import (
     map_provider_error,
+    BaseErrorMapper,
     AnthropicErrorMapper,
     OpenAIErrorMapper,
     OllamaErrorMapper,
@@ -118,6 +119,7 @@ __all__ = [
     "get_service",
     # Error mapping (Issue #3)
     "map_provider_error",
+    "BaseErrorMapper",
     "AnthropicErrorMapper",
     "OpenAIErrorMapper",
     "OllamaErrorMapper",
