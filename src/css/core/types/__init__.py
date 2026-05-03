@@ -52,6 +52,7 @@ from .headers import (
     BaseSkillHeader,
 )
 from .hook_events import HookContext, HookErrorStrategy
+from .query import Query, QueryHeader, Task
 from .sdk_local import LocalSDKBase
 
 # Note: Ollama types moved to api_services.ollama.types in Phase 2
@@ -111,6 +112,10 @@ __all__ = [
     # Hook events
     "HookContext",
     "HookErrorStrategy",
+    # Query/Task types
+    "Query",
+    "QueryHeader",
+    "Task",
     # LocalSDK base (Issue #5)
     "LocalSDKBase",
     # Note: Ollama types moved to api_services.ollama (Phase 2 migration)
