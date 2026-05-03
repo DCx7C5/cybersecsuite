@@ -319,12 +319,25 @@ WHERE id = 'phase-X-task-Y';
 SELECT * FROM todos WHERE task_id = 'phase-X-task-Y' AND status != 'done';
 ```
 
-**3. Update plan.md**
+**3. Update plan.md & {core,modules,api_services}/<module or provider or core subdir>/plan.md**
 
 - Add task completion summary
 - Mark task as DONE
 
-**4. Commit Work**
+
+**4. Update session.db status**
+
+```sql
+-- Mark task completed
+UPDATE tasks SET status = 'done' 
+WHERE id = 'phase-X-task-Y';
+```
+
+**5. Delegate agent "rubber-duck"**
+- create task with rubber-duck agent that lets him analyze every plan.md in project and .plan/session.db and generally .plan/ 
+
+
+**6. Commit Work**
 
 ```bash
 git add -A
@@ -334,54 +347,7 @@ git commit -m "[PHASE-X] Task Y: Brief title
 - 3-pass ruff: clean"
 ```
 
-**5. Show changed files**
 
-```bash
-git diff HEAD~1 --stat
-```
-
-**6. Update session.db status**
-
-```sql
--- Mark task completed
-UPDATE tasks SET status = 'done' 
-WHERE id = 'phase-X-task-Y';
-```
-
-**7. Task Checklist**
-
-- ✅ All child todos marked `done`
-- ✅ 3-pass ruff: clean
-- ✅ .plan/ updated
-- ✅ Git commit made
-- ✅ Task marked `done` in session.db
-
----
-
-**Infobox Output** (displayed after step 7):
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ ✅ Done — [PHASE-X] Task Y: Brief title    [Rollback]      │
-│                                                             │
-│ Changed Files                                               │
-│ ────────────────────────────────────────────────────────── │
-│                                                             │
-│   src/css/modules/name/file1.py         +45 -12            │
-│   src/css/modules/name/file2.py         +23 -8             │
-│   src/css/core/utils.py                 +10 -3             │
-│                                                             │
-│   Total: 3 files changed, 78 insertions(+), 23 deletions(-) │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-**8. Next Steps**
-
-Ready for next task or phase completion workflow.
-
----
 
 ### 🚀 PHASE COMPLETION WORKFLOW (~2-4 weeks, 4-7 tasks)
 
@@ -456,16 +422,16 @@ git commit -m "[PHASE-X] Phase Name: Summary
 
 ### File Responsibilities
 
-| File | When to Update |
-|------|---|
-| **plan.md** | Each task/phase completion |
-| **development-workflow.md** | New workflows discovered |
-| **architecture.md** | New design patterns |
-| **rules.md** | New rules or patterns |
-| **features_overview.md** | Features marked complete |
-| **checkpoints.md** | Phase complete |
-| **frontend.md** | UI changes |
-| **session.db** | Every todo completion |
+| File                        | When to Update             |
+|-----------------------------|----------------------------|
+| **plan.md**                 | Each task/phase completion |
+| **development-workflow.md** | New workflows discovered   |
+| **architecture.md**         | New design patterns        |
+| **rules.md**                | New rules or patterns      |
+| **features_overview.md**    | Features marked complete   |
+| **checkpoints.md**          | Phase complete             |
+| **frontend.md**             | UI changes                 |
+| **session.db**              | Every todo completion      |
 
 ---
 

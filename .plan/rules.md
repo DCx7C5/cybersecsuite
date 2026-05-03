@@ -22,20 +22,16 @@
 
 # CRITICAL RULES ABOVE: VERIFY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
-## ✅ .plan/ WHITELIST (8 Files Only)
+## ✅ .plan/ WHITELIST 
 
 | File                         | Purpose                                               |
 |------------------------------|-------------------------------------------------------|
 | **plan.md**                  | Project overview, milestones, timeline                |
 | **architecture/*.md**        | System design                                         |
-| **api_services/*.md**        | Corresponding plan to src/css/api_services/<provider> |
-| **modules/*.md**             | Corresponding plan to src/css/modules/<module>        |
-| **core/*.md**                | Corresponding plan to src/css/core/<module>           |
 | **memory.md**                | Highly compressed previous session context            |
 | **development-workflow.md**  | Development process, git strategy                     |
 | **rules.md**                 | THIS FILE — development rules                         |
 | **checkpoints.md**           | Phase summaries, history                              |
-| **archtiecture/frontend.md** | Frontend architecture, UI/UX patterns                 |
 | **session.db**               | Todo tracker (SQLite)    ALWAYS KEEP IN SYNC!!!!!     |
 
 **❌ FORBIDDEN**: Other .md files, subdirectories, staging files. if rule is broken, files content must be moved into white listed files and file deleted
@@ -259,7 +255,7 @@ Tool       → modules/tools/types.py
 
 **Format**:
 ```
-[TRACK-X] Feature: Description
+[TASK-X] Feature: Description
 ```
 
 **Rules**:
