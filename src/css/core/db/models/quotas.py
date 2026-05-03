@@ -1,4 +1,4 @@
-"""Task assignment and team quota models."""
+"""Task assignment, team quota, and task result models."""
 
 from tortoise import fields, models
 
@@ -13,20 +13,55 @@ class TaskAssignment(models.Model):
         db_index=True,
     )
     orchestrator_id = fields.BigIntField(db_index=True)
-    task_id = fields.CharField(max_length=256, db_index=True)
+    task_id = fields.CharField(max_length=256, db_index=True, unique=True)
     status = fields.CharField(
         max_length=32,
         default="pending",
         db_index=True,
     )
+    priority = fields.CharField(
+        max_length=32,
+        default="normal",
+    )
+    timeout_seconds = fields.IntField(default=300)
+    retry_count = fields.IntField(default=0)
+    max_retries = fields.IntField(default=3)
+    task_payload = fields.JSONField(
+        null=True,
+        description="Full task data (Query, metadata, etc.) for deserialization",
+    )
     assigned_at = fields.DatetimeField(auto_now_add=True)
+    started_at = fields.DatetimeField(null=True)
     completed_at = fields.DatetimeField(null=True)
+    assigned_member_id = fields.CharField(max_length=256, null=True)
 
     class Meta:
         table = "task_assignments"
         indexes = [
             models.Index(fields=["team_id", "status"]),
             models.Index(fields=["orchestrator_id", "status"]),
+            models.Index(fields=["task_id"]),
+        ]
+
+
+class TaskResult(models.Model):
+    """Task execution result storage."""
+    id = fields.BigIntField(primary_key=True)
+    task_assignment = fields.OneToOneField(
+        "models.TaskAssignment",
+        related_name="result",
+        on_delete=fields.CASCADE,
+    )
+    result_text = fields.TextField(null=True)
+    result_metadata = fields.JSONField(null=True)
+    error_message = fields.TextField(null=True)
+    execution_time_ms = fields.IntField(null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    class Meta:
+        table = "task_results"
+        indexes = [
+            models.Index(fields=["task_assignment_id"]),
         ]
 
 

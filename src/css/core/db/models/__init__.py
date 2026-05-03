@@ -17,7 +17,8 @@ from .enums import (
 )
 from .scope import ProjectScope, SessionScope
 from .team import Team
-from .quotas import TaskAssignment, TeamQuota
+from .orchestrator import OrchestratorInstance
+from .quotas import TaskAssignment, TaskResult, TeamQuota
 
 __all__ = [
     "RedBlueMode",
@@ -32,6 +33,8 @@ __all__ = [
     "ProjectScope",
     "SessionScope",
     "Team",
+    "OrchestratorInstance",
     "TaskAssignment",
+    "TaskResult",
     "TeamQuota",
 ]
