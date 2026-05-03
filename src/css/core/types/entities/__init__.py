@@ -15,6 +15,7 @@ __all__ = [
     "BaseAgent",
     "BaseSkill",
     "BaseRole",
+    "BaseTool",
     # Concrete entities
     "Tool",
     "Skill",

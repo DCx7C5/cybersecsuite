@@ -1,5 +1,6 @@
 """Abstract base header — minimal metadata for all domain entities."""
 from abc import ABC
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -35,4 +36,4 @@ class BaseToolHeader(BaseHeader):
 
 
 
-__all__ = ["BaseHeader"]
+__all__ = ["BaseHeader", "BaseToolHeader"]

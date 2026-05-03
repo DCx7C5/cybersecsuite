@@ -50,7 +50,6 @@ from .headers import (
     BaseHeader,
     BaseRoleHeader,
     BaseSkillHeader,
-    BaseToolHeader,
 )
 from .hook_events import HookContext, HookErrorStrategy
 from .sdk_local import LocalSDKBase

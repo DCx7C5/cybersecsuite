@@ -1,6 +1,6 @@
 """Team types — dataclass entities for team scope and lifecycle."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 from .enums import TeamStatus, OrchestratorMode
 

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from css.core.db import ScopeLevel
 
@@ -64,7 +64,7 @@ class ScopeContext:
             if not self.project_id:
                 raise ValueError("SESSION scopes requires project_id")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert context to dictionary."""
         return {
             "scope_level": self.scope_level.value,

@@ -12,6 +12,20 @@ from aiohttp import ClientSession
 logger = logging.getLogger(__name__)
 
 
+class MessageRole(str, Enum):
+    """Message roles."""
+    USER = "user"
+    ASSISTANT = "assistant"
+    SYSTEM = "system"
+
+
+class ProviderType(str, Enum):
+    """Provider types for LLM services."""
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    LOCAL = "local"
+
 
 @dataclass
 class BaseMessage:

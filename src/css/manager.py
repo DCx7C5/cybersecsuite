@@ -99,7 +99,7 @@ def init_db(db_host, db_port, db_user, db_password, db_name, generate_schemas):
 @click.option("--log-level", default=None, help="Log level (default: from config)")
 def run(host, port, reload, log_level):
     """Start the CyberSecSuite FastAPI server."""
-    from css.config import A2A_SERVER, LOG_LEVEL
+    from css.config import LOG_LEVEL
     from css.core.asgi.app import create_app
 
     app = create_app()

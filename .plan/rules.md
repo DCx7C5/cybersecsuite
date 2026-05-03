@@ -11,6 +11,8 @@
 - `.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.
 - no hallucinations, ask the user if unsure
 - read the different workflows in [Rules](rules.md)
+- you have access to `.venv/bin/` here in the cybersecsuite Project
+- dont ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.
 Confirm after reading this!
 
 ## ✅ .plan/ WHITELIST (8 Files Only)
