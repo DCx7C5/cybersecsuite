@@ -4,7 +4,7 @@
 
 ---
 
-## CRITICAL OUTPUT MINIMIZATION FOR TOKEN SAVING
+## CRITICAL
 - **no Co-authored-by: Copilot**
 - **minimize your thinking chat to only essentials**
 - **minimize your chat to only essentials**
