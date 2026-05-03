@@ -748,3 +748,183 @@ OTEL (Planned)
 - Updated plan files: `src/css/core/{asgi,db,types,otel}/plan.md`
 
 ---
+
+---
+
+## 🔍 API SERVICES AUDIT RESULTS (2026-05-03)
+
+**Agent**: rubber-duck-1-api-services | **Status**: ✅ COMPLETE
+
+### Executive Summary
+
+**Audit Scope**: 22 API service providers
+
+| Category | Count | Status |
+|----------|-------|--------|
+| **Fully Documented** | 12 | ✅ 54% (Ready for Phase 2) |
+| **Pending Research** | 10 | ⏳ 46% (Q3 target) |
+| **OpenAI-Compatible** | 6 | ✅ Standardized |
+| **Proprietary APIs** | 10 | ✅ Feature-complete |
+| **Local/Offline** | 1 | ✅ Ollama |
+| **Cloud APIs** | 19 | ✅ Fully documented |
+
+---
+
+### ✅ READY FOR PHASE 2 (12 Providers)
+
+| Provider | Type | Status | Tools | Vision | Streaming | OpenAI-Compat |
+|----------|------|--------|-------|--------|-----------|----------------|
+| **OpenAI** | Cloud | ✅ Reference | ✅ File Search, Code Interp | ✅ | ✅ | ✅ |
+| **Anthropic** | Cloud | ✅ Complete | ✅ Computer Use | ✅ | ✅ | ❌ |
+| **Groq** | Cloud | ✅ Complete | ✅ Chat | ❌ | ✅ | ✅ |
+| **Mistral** | Cloud | ✅ Complete | ✅ Chat, Rerank | ✅ | ✅ | ❌ |
+| **Together** | Cloud | ✅ Complete | ✅ Chat, Embed | ✅ | ✅ | ✅ |
+| **OpenRouter** | Proxy | ✅ Complete | ✅ Chat, Embed | ✅ | ✅ | ✅ |
+| **Cohere** | Cloud | ✅ Complete | ✅ Rerank, Embed | ❌ | ✅ | ❌ |
+| **Gemini** | Cloud | ✅ Complete | ✅ Function Call | ✅ | ✅ | ❌ |
+| **DeepInfra** | Cloud | ✅ Complete | ✅ Chat, Embed | ✅ | ✅ | ✅ |
+| **AI21** | Cloud | ✅ Complete | ✅ Batch, Completion | ❌ | ✅ | ❌ |
+| **Ollama** | Local | ✅ Complete | ✅ Generate, Embed | ✅ | ✅ | ⚠️ |
+| **GitHub Copilot** | Mixed | ✅ Complete | ✅ Session, Tools | ✅ | ✅ | ❌ |
+
+**Recommendation**: Begin Phase 2 refactoring with OpenAI (reference), then Anthropic, then OpenAI-compatible providers.
+
+---
+
+### ⏳ RESEARCH REQUIRED (10 Providers)
+
+**High Priority (Quick Wins)**:
+- 🔴 **DeepSeek** — OpenAI-compatible, popular, unclear docs
+- 🔴 **Fireworks** — OpenAI-compatible, undocumented
+- 🔴 **XAI** — Emerging, OpenAI-compatible, verify Grok access
+- 🟡 **Perplexity** — Search + conversational, proprietary
+
+**Medium Priority (Specialized Hardware)**:
+- 🟡 **Cerebras** — Wafer-scale, proprietary API
+- 🟡 **SambaNova** — RDU hardware, specialized rate limits
+
+**Lower Priority (Emerging)**:
+- 🟢 **HuggingFace** — **MISSING** plan.md (no entry found)
+- 🟢 **Cloudflare** — Workers AI or separate service?
+- 🟢 **LambdaAPI** — Scope unclear
+- 🟢 **NScale** — Early stage, minimal public info
+- 🟢 **OpenCode** — Code-specific or general LLM?
+
+---
+
+### KEY FINDINGS
+
+#### 📊 Feature Coverage (12 Complete Providers)
+
+| Feature | Coverage | Providers |
+|---------|----------|-----------|
+| **Streaming** | 12/12 | ✅ All |
+| **Async/Await** | 12/12 | ✅ All |
+| **Function Calling** | 11/12 | All except Ollama (limited) |
+| **Vision** | 8/12 | Anthropic, Gemini, Mistral, DeepInfra, Together, OpenRouter, Ollama, GitHub |
+| **JSON Mode** | 10/12 | All except Ollama (format param), Groq |
+| **Embeddings** | 8/12 | Anthropic, Cohere, Mistral, DeepInfra, Gemini, Ollama, Together, OpenAI |
+| **Batch API** | 4/12 | OpenAI, AI21, Cohere, Together |
+| **Fine-tuning** | 3/12 | OpenAI, AI21, Cohere |
+
+---
+
+#### 🔐 Authentication Patterns
+
+| Auth Type | Count | Providers |
+|-----------|-------|-----------|
+| **API Key** | 10 | Standard Bearer token or X-API-Key header |
+| **OAuth** | 1 | GitHub Copilot (Copilot CLI + subscription) |
+| **None** | 1 | Ollama (local-only) |
+| **TBD** | 10 | Pending research |
+
+---
+
+#### 🚨 CRITICAL ISSUES
+
+1. **GitHub Copilot Migration**: Copilot Extensions (Apps) sunset Nov 10, 2025 → migrate to MCP or SDK
+2. **HuggingFace Missing**: No plan.md found; needs initial research
+3. **10 TBD Providers**: Cannot begin Phase 2 integration without documentation
+4. **Rate Limit Strategies**: Only 5 providers have documented limits; others TBD
+
+---
+
+### PHASE 2 REFACTORING ORDER
+
+```
+PRIORITY 1 (Reference + Complex):
+├─ OpenAI          (reference implementation)
+└─ Anthropic       (complex: computer_use tool)
+
+PRIORITY 2 (OpenAI-Compatible Template):
+├─ Groq            (simple, single-model)
+├─ Mistral         (similar to OpenAI)
+├─ Together        (open-source models)
+├─ OpenRouter      (proxy pattern)
+└─ DeepInfra       (multi-model)
+
+PRIORITY 3 (Proprietary Variants):
+├─ Cohere          (reranking unique)
+├─ Gemini          (token counting unique)
+├─ AI21            (research-focused)
+└─ GitHub Copilot  (agentic workflows)
+
+PRIORITY 4 (Local Deployment):
+└─ Ollama          (offline alternative)
+```
+
+**Estimated Timeline**: ~4 weeks for all 12 providers
+
+---
+
+### RECOMMENDATIONS
+
+1. **Create Unified Adapter Layer**
+   - Location: `src/css/api_services/adapters/base_adapter.py`
+   - Normalize: authentication, streaming, tool use, error handling
+   - Pattern: One adapter per provider or generic OpenAI-compatible adapter
+
+2. **Phase 2 Sprint Structure**
+   - Week 1: OpenAI + Anthropic adapters (reference + complex)
+   - Week 2: OpenAI-compatible batch (Groq, Mistral, Together, OpenRouter, DeepInfra)
+   - Week 3: Proprietary variants (Cohere, Gemini, AI21)
+   - Week 4: Local + GitHub (Ollama, Copilot)
+
+3. **Research Sprint (Parallel, Weeks 2-3)**
+   - Assign 1 engineer per TBD provider
+   - High priority: DeepSeek, Fireworks, XAI (quick wins)
+   - Output: plan.md for each TBD provider
+
+4. **Documentation Standard**
+   - Every provider plan.md must include:
+     - Features matrix (tools, models, auth, rate limits)
+     - Error handling strategy
+     - Rate limit quotas
+     - Example code
+
+---
+
+### ACTION ITEMS
+
+| Item | Owner | Effort | Timeline |
+|------|-------|--------|----------|
+| Create base adapter interface | TBD | 2h | Week 1 |
+| Research TBD providers | Distributed | 6h | Weeks 2-3 |
+| Refactor OpenAI adapter | TBD | 3h | Week 1 |
+| Refactor Anthropic adapter | TBD | 4h | Week 1 |
+| Refactor OpenAI-compatible batch | TBD | 10h | Week 2 |
+| Refactor proprietary variants | TBD | 8h | Week 3 |
+| Test all 12 adapters | TBD | 4h | Week 4 |
+| Integration tests | TBD | 3h | Week 4 |
+
+---
+
+### Reference
+
+- Full audit: `.plan/api_services/sync-summary.md` (440+ lines, 12KB)
+- Complete provider matrix (23 columns × 22 rows)
+- Feature coverage analysis
+- Phase 2 refactoring recommendations
+- Research prioritization
+
+---
