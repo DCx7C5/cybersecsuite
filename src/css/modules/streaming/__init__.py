@@ -6,11 +6,12 @@ Public API:
     from modules.streaming.streaming import StreamingAdapter
 """
 
+from css.core.logger import getLogger
 
-from legacy.logger import getLogger
+logger = getLogger(__name__)
 
-from modules.streaming.runner import QueryExecutor
-from modules.streaming.sessions import SessionManager
-from core.orchestration.client_pool import ClientPool, get_pool
+from css.modules.streaming.runner import QueryExecutor
+from css.modules.streaming.sessions import SessionManager
+from css.core.orchestration.client_pool import ClientPool, get_pool
 
-__all__ = ["QueryExecutor", "SessionManager", "ClientPool", "get_pool", "getLogger"]
+__all__ = ["QueryExecutor", "SessionManager", "ClientPool", "get_pool", "logger"]

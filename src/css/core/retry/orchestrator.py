@@ -137,7 +137,7 @@ class RetryOrchestrator:
             Use isinstance() to detect error type, regardless of provider.
         """
         try:
-            from api_services.error_mappers import map_provider_error
+            from css.core.types.error_mappers import map_provider_error
             return map_provider_error(provider_id, error)
         except ImportError:
             logger.warning("error_mappers not available, returning original error")

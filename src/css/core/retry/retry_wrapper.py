@@ -3,7 +3,7 @@
 import logging
 from typing import AsyncIterator, Optional
 
-from css.types import (
+from css.core.types import (
     BaseApiServiceClient,
     BaseMessage,
     Tool,
@@ -12,7 +12,7 @@ from css.types import (
     LLMResponse,
     ProviderType,
 )
-from core.retry import RetryOrchestrator
+from css.core.retry import RetryOrchestrator
 
 logger = logging.getLogger(__name__)
 

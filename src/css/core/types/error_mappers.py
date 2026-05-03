@@ -11,8 +11,8 @@ Issue #3: Error Code Mapping — Map all SDK errors to standard types:
 
 import re
 from typing import Optional, Callable
-from core.types.api_services import ProviderType
-from core.exceptions import (
+from css.core.types.api_services import ProviderType
+from css.core.exceptions import (
     AuthError,
     RateLimitError,
     TimeoutError,
