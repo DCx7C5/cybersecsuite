@@ -1,4 +1,4 @@
-"""agents.runner — AgentRunner: multi-turn ClaudeSDKClient wrapper.
+"""agents.runner — QueryExecutor: multi-turn ClaudeSDKClient wrapper.
 
 Provides a high-level interface for running forensic agents queries
 with session persistence, mode switching, and streaming support.
@@ -10,6 +10,8 @@ Enhanced to support TeamLeader delegation (Team-based orchestration).
 from legacy.logger import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any, Optional
+import uuid
+from datetime import datetime
 
 logger = getLogger("agents.runner")
 
@@ -57,6 +59,20 @@ class QueryExecutor:
         self.team_id = team_id
         self.orchestrator_id = orchestrator_id
         self._team_leader: Any | None = None  # TeamLeader (lazy-loaded)
+        
+        # Validate team context (B10)
+        self._validate_team_context()
+    
+    def _validate_team_context(self) -> None:
+        """Validate that team_id and orchestrator_id are both provided or both None."""
+        has_team = self.team_id is not None
+        has_orch = self.orchestrator_id is not None
+        
+        if has_team != has_orch:
+            raise ValueError(
+                "Both team_id and orchestrator_id must be provided together "
+                f"(team_id={self.team_id}, orchestrator_id={self.orchestrator_id})"
+            )
 
     # ── Internal helpers ─────────────────────────────────────────────────────
 
@@ -98,14 +114,22 @@ class QueryExecutor:
         If team_id + orchestrator_id provided: delegates to TeamLeader
         Otherwise: uses ClaudeSDKClient directly
         """
+        from css.core.types import Query
+        
         # Try Team-based delegation first
         team_leader = await self._get_team_leader()
         if team_leader is not None:
-            result = await team_leader.delegate({
-                "prompt": prompt,
-                "mode": self.mode,
-                "agent_name": self.agent_name,
-            })
+            # Create typed Query object (B5)
+            query_obj = Query(
+                id=str(uuid.uuid4()),
+                prompt=prompt,
+                mode=self.mode,
+                agent_name=self.agent_name,
+                metadata={"created_at": datetime.now().isoformat()},
+            )
+            
+            # Delegate to TeamLeader with typed Query
+            result = await team_leader.delegate(query_obj)
             return result.get("result", "") if isinstance(result, dict) else str(result)
         
         # Fallback: direct ClaudeSDKClient
