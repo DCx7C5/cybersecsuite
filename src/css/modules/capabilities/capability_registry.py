@@ -1,11 +1,10 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
 from typing import Dict, List, Optional, Set
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 from css.core.types.capabilities import CapabilityType
-
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +88,29 @@ class DynamicCapabilityRegistry:
             await registry.discover()  # Runs full discovery
             await registry.discover()  # Skips if cache still valid
         """
-        pass
+        # Skip if already discovering or cache is still valid
+        if self._discovery_in_progress:
+            return
+        
+        if not self.needs_discovery():
+            logger.debug("Capability cache still valid, skipping discovery")
+            return
+        
+        self._discovery_in_progress = True
+        
+        try:
+            # Run discovery sequence
+            await self._load_defaults()
+            await self._load_env_overrides()
+            await self._load_yaml_config()
+            # Note: _query_provider_endpoints requires provider registry, skip for now
+            
+            self._last_discovery = datetime.utcnow()
+            logger.info(f"Capability discovery completed, cached {len(self._capabilities)} providers")
+        except Exception as e:
+            logger.error(f"Capability discovery failed: {e}")
+        finally:
+            self._discovery_in_progress = False
     
     def get_capabilities(
         self,
@@ -107,7 +128,9 @@ class DynamicCapabilityRegistry:
             List of CapabilityType enums supported by model
             Empty list if model not found or discovery failed
         """
-        pass
+        provider_caps = self._capabilities.get(provider_name, {})
+        model_caps = provider_caps.get(model_id, set())
+        return list(model_caps)
     
     def has_capability(
         self,
@@ -126,7 +149,9 @@ class DynamicCapabilityRegistry:
         Returns:
             True if capability is supported, False otherwise
         """
-        pass
+        provider_caps = self._capabilities.get(provider_name, {})
+        model_caps = provider_caps.get(model_id, set())
+        return capability in model_caps
     
     def is_cache_stale(self) -> bool:
         """
@@ -135,7 +160,12 @@ class DynamicCapabilityRegistry:
         Returns:
             True if cache is stale, False if still valid
         """
-        pass
+        if self._last_discovery is None:
+            return True
+        
+        ttl_seconds = self.CACHE_TTL_HOURS * 3600
+        elapsed = (datetime.utcnow() - self._last_discovery).total_seconds()
+        return elapsed > ttl_seconds
     
     def needs_discovery(self) -> bool:
         """
@@ -144,11 +174,13 @@ class DynamicCapabilityRegistry:
         Returns:
             True if discovery not run yet or cache is stale
         """
-        pass
+        return self._last_discovery is None or self.is_cache_stale()
     
     def clear_cache(self) -> None:
         """Clear all cached capabilities and reset discovery timestamp."""
-        pass
+        self._capabilities.clear()
+        self._last_discovery = None
+        logger.info("Cleared capability cache")
     
     async def _load_defaults(self) -> None:
         """
@@ -156,7 +188,14 @@ class DynamicCapabilityRegistry:
         
         Fast path, no I/O. Called first in discovery sequence.
         """
-        pass
+        for provider, models in self.DEFAULT_CAPABILITIES.items():
+            if provider not in self._capabilities:
+                self._capabilities[provider] = {}
+            
+            for model_id, capabilities in models.items():
+                self._capabilities[provider][model_id] = set(capabilities)
+        
+        logger.debug(f"Loaded hardcoded defaults for {len(self.DEFAULT_CAPABILITIES)} providers")
     
     async def _load_env_overrides(self) -> None:
         """
@@ -165,7 +204,37 @@ class DynamicCapabilityRegistry:
         Example format:
             CAPABILITY_OPENAI_GPT4=streaming,vision,tool_use
         """
-        pass
+        import os
+        
+        for key, value in os.environ.items():
+            if not key.startswith('CAPABILITY_'):
+                continue
+            
+            # Parse key: CAPABILITY_PROVIDER_MODEL
+            parts = key.split('_')[1:]
+            if len(parts) < 2:
+                continue
+            
+            provider = parts[0].lower()
+            model = '_'.join(parts[1:]).lower()
+            
+            # Parse capabilities
+            cap_strs = value.split(',')
+            capabilities = []
+            
+            for cap_str in cap_strs:
+                cap_str = cap_str.strip().upper()
+                try:
+                    capabilities.append(CapabilityType[cap_str])
+                except KeyError:
+                    logger.warning(f"Unknown capability: {cap_str}")
+            
+            if provider not in self._capabilities:
+                self._capabilities[provider] = {}
+            
+            self._capabilities[provider][model] = set(capabilities)
+        
+        logger.debug("Loaded environment variable overrides")
     
     async def _load_yaml_config(self) -> None:
         """
@@ -173,7 +242,8 @@ class DynamicCapabilityRegistry:
         
         File path: config/capabilities.yaml (or env var CAPABILITY_CONFIG_PATH)
         """
-        pass
+        # TODO: Implement YAML loading when config system is ready
+        logger.debug("YAML config loading not yet implemented")
     
     async def _query_provider_endpoints(self, provider_registry) -> None:
         """
@@ -185,4 +255,6 @@ class DynamicCapabilityRegistry:
         Args:
             provider_registry: ProviderRegistry instance for loading providers
         """
-        pass
+        # TODO: Implement provider endpoint querying
+        logger.debug("Provider endpoint querying not yet implemented")
+
