@@ -1,5 +1,9 @@
 # @permissions — Permission Management & Access Control
 
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+
+---
+
 **Location**: `src/css/modules/permissions/`
 
 **Responsibility**: Role-based access control, scope-based permissions, and permission enforcement.

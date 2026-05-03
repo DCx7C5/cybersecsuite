@@ -1,5 +1,9 @@
 # @db — Database Layer (Tortoise ORM)
 
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+
+---
+
 **Location**: `src/css/core/db/`
 
 **Responsibility**: Tortoise ORM configuration, model auto-discovery, scope/team/quota management, database enums.

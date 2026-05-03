@@ -1,5 +1,9 @@
 # AI21 Labs SDK (`ai21`)
 
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+
+---
+
 **Provider**: AI21 Labs  
 **SDK Package**: `ai21>=2.0.0`  
 **Documentation**: https://github.com/AI21Labs/ai21-python  

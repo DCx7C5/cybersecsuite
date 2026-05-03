@@ -1,5 +1,9 @@
 # @tools — Tool Registry & MCP Server
 
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+
+---
+
 **Location**: `src/css/modules/tools/`  
 **Status**: ⚠️ **Partial** (86 lines: 3 files + empty registry.py)  
 **5-File Pattern**: ❌ 1/5 (has base.py, enums.py, exceptions.py; missing models.py, endpoints.py)

@@ -1,5 +1,9 @@
 # Google Generative AI SDK (`google-generativeai`)
 
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+
+---
+
 **Provider**: Google Gemini  
 **SDK Package**: `google-generativeai>=0.3.0`  
 **Documentation**: https://github.com/google/generative-ai-python  

@@ -1,5 +1,9 @@
 # GitHub Copilot SDK & Management APIs
 
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+
+---
+
 **Provider**: GitHub (Copilot + Management APIs)  
 **Status**: ✅ Production (Copilot SDK: Public Preview April 2026) | **Last Updated**: 2026-05-03  
 **OpenAPI Compatible**: ❌ No (JSON-RPC + Proprietary APIs)
