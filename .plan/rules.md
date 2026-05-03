@@ -4,27 +4,27 @@
 
 ---
 
-## CRITICAL MOST IMPORTANT RULES TO STICK TO
+## CRITICAL MOST IMPORTANT RULES NEVER FORGET
 - **no Co-authored-by: Copilot**
 - **minimize your thinking chat to only essentials**
 - **minimize your chat to only essentials**
-- always show h3 header while working on todos
-- keep normal summaries in the end
-- always use async python if possible
-- when working with frontend use `bun` over `npm`
-- use always `aiohttp` not `httpx`
-- `.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.
-- no hallucinations, ask the user if unsure
-- read the different workflows in [development-workflow.md](development-workflow.md)
-- you have access to `.venv/bin/` here in the cybersecsuite Project
-- don't ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.
+- **always show h3 header while working on todos**
+- **keep normal summaries in the end**
+- **always use async python if possible**
+- **when working with frontend use `bun` over `npm`**
+- **use always `aiohttp` not `httpx`**
+- **`.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.**
+- **no hallucinations, ask the user if unsure**
+- **read the different workflows in [development-workflow.md](development-workflow.md)**
+- **you have access to `.venv/bin/` here in the cybersecsuite Project**
+- **don't ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.**
 - **you follow existing directory, documentary and code patterns for consistency**
 - **WHEN WORKING IN PLAN MODE ALWAYS UPDATE EVERY .md UNDER `.plan/` and keep in sync with `.plan/session.db`!**
 - **GENERAL ARCHITECTURE IN `.plan/architecture/*.md`**
 - **EVERY PROVIDER IN `src/css/{core,modules,api_services}/` DIRECTORY HAS A `plan.md` FILE TO DEEPINSPECT WHEN WORKING IN DIR** 
 - **TELL WHEN A SESSION IS ABOUT TO END OR A NEW ONE TO START**
 
-# CRITICAL RULES ABOVE: VERIFY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
+# CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
 ## ✅ .plan/ WHITELIST 
 
