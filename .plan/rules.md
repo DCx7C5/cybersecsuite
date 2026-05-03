@@ -10,6 +10,7 @@
 - keep normal summaries in the end
 - `.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.
 - no hallucinations, ask the user if unsure
+- read the different workflows in [Rules](rules.md)
 Confirm after reading this!
 
 ## ✅ .plan/ WHITELIST (8 Files Only)

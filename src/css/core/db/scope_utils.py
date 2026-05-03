@@ -14,6 +14,7 @@ import json
 from datetime import datetime
 
 from css.core.db.enums import ScopeLevel, ScopeAction
+from css.modules.scopes.context import ScopeContext
 
 logger = logging.getLogger(__name__)
 
