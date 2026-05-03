@@ -80,30 +80,7 @@ find src/css -type f -name "*.py" | grep -E "(task-keyword)" | head -20
 - Update todo descriptions if new files discovered
 - Document in `plan.md` any structural assumptions
 
-**4. Deep inspect the PLANNED implementation in .plan/ (UNDERSTANDING INTENT)**
-
-Before looking at actual code, deeply study the PLANNED design in the corresponding .plan/ documentation:
-
-```bash
-# Identify task scope (which module/service/area?)
-# Example: working on @tools module
-
-# Find corresponding .plan/ documentation:
-# Pattern: src/css/{area}/{name}/ → .plan/{area}/{name}.md
-
-# For modules:
-cat .plan/modules/tools.md       # Study planned @tools architecture
-cat .plan/modules/triage.md      # Study planned @triage architecture
-cat .plan/modules/cache.md       # Study planned @cache architecture
-
-# For API services:
-cat .plan/api_services/ollama-sdk.md    # Study planned Ollama provider
-cat .plan/api_services/openai-sdk.md    # Study planned OpenAI provider
-
-# For core infrastructure:
-cat .plan/core/orchestration.md  # Study planned orchestration
-cat .plan/core/types.md          # Study planned type system
-```
+**4. UNDERSTAND INTEND and deep inspect the `plan.md` in the dirs you work in and potential files in `.plan/`**
 
 **Deep inspection checklist for .plan/ docs**:
 - [ ] **Purpose & Use Cases** — Why does this exist? What problems does it solve?
