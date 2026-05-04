@@ -170,25 +170,3 @@ class UpgradeResponse(BaseModel):
     message: str
     backup_path: Optional[str] = None
     error: Optional[str] = None
-
-
-__all__ = [
-    # Base classes
-    "MarketplaceBase",
-    "MarketplaceMetaBase",
-    "MarketplaceMetaResponse",
-    "MarketplaceItemBase",
-    "MarketplaceItemCreate",
-    "MarketplaceItemUpdate",
-    # API responses
-    "MarketplaceItemResponse",
-    # Request/Response models
-    "InstallRequest",
-    "InstallResponse",
-    "UninstallRequest",
-    "UninstallResponse",
-    "ToggleRequest",
-    "ToggleResponse",
-    "UpgradeRequest",
-    "UpgradeResponse",
-]
