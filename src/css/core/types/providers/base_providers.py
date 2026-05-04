@@ -1,5 +1,5 @@
 """Base provider classes for API and Local LLM providers."""
-
+from abc import ABC
 from typing import Optional
 
 
@@ -80,7 +80,7 @@ class APIProviderBase(BaseApiServiceClient):
         )
 
 
-class LocalProviderBase(BaseApiServiceClient):
+class LocalProviderBase(BaseApiServiceClient, ABC):
     """Base class for local LLM providers (Ollama, local Llama.cpp, etc.)."""
 
     def __init__(

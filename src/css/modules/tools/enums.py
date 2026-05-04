@@ -36,3 +36,15 @@ class ToolType(str, Enum):
     CUSTOM = "custom"
     EXTERNAL = "external"
     MCP = "mcp"
+
+
+class CompositionStrategy(str, Enum):
+    """Strategy for composing hybrid tools across multiple providers.
+    
+    Defines how component tools are combined and executed in a hybrid tool.
+    """
+    SEQUENTIAL = "sequential"
+    PARALLEL = "parallel"
+    CONDITIONAL = "conditional"
+    FALLBACK = "fallback"
+    LOAD_BALANCED = "load_balanced"

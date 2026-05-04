@@ -26,6 +26,7 @@ class ToolRegistry(BaseToolRegistry):
         """Initialize registry and load builtin tools from all providers."""
         super().__init__()
         self.tools: dict[str, ManagedTool] = {}
+        self.hybrid_tools: dict[str, ManagedTool] = {}
         self._load_builtin_tools()
         logger.info(f"Tool registry initialized with {len(self.tools)} tools from {self._provider_count} providers")
 
@@ -40,6 +41,9 @@ class ToolRegistry(BaseToolRegistry):
         For each provider, extract available tools and normalize to ToolSchema.
         Handles provider-specific tool naming/structure conventions.
         """
+        # Load hybrid tools from database (async call deferred to app startup)
+        # Call _load_hybrid_tools_from_db() during app initialization
+        
         # Provider-specific tool definitions (hardcoded for now, can be migrated to provider plugins)
         builtin_tools_map = {
             # OpenAI: code_interpreter, file_search, retrieval
@@ -144,7 +148,7 @@ class ToolRegistry(BaseToolRegistry):
 
         logger.info(f"Loaded {loaded} builtin tools from {len(builtin_tools_map)} providers")
 
-    def register_tool(self, tool_schema: ToolSchema) -> None:
+    def register_tool(self, tool_schema: ToolSchema, **kwargs) -> None:
         """Register a new tool in the registry.
         
         Args:
@@ -152,6 +156,8 @@ class ToolRegistry(BaseToolRegistry):
             
         Raises:
             ValueError: If tool already exists
+            :param tool_schema:
+            :param **kwargs:
         """
         if tool_schema.tool_id in self.tools:
             raise ValueError(f"Tool {tool_schema.tool_id} already registered")
@@ -159,6 +165,45 @@ class ToolRegistry(BaseToolRegistry):
         managed_tool = ManagedTool(schema=tool_schema)
         self.tools[tool_schema.tool_id] = managed_tool
         logger.info(f"Registered tool: {tool_schema.tool_id}")
+
+    def register_hybrid_tool(self, hybrid_schema) -> None:
+        """Register a new hybrid tool in the registry.
+        
+        Validates that all component tools exist before registration.
+        
+        Args:
+            hybrid_schema: HybridToolSchema instance to register
+            
+        Raises:
+            ValueError: If hybrid tool already exists or component tools missing
+        """
+        from css.modules.tools.enums import CompositionStrategy
+        
+        if hybrid_schema.tool_id in self.hybrid_tools:
+            raise ValueError(f"Hybrid tool {hybrid_schema.tool_id} already registered")
+        
+        # Validate composition strategy
+        valid_strategies = {s.value for s in CompositionStrategy}
+        if hybrid_schema.composition_strategy not in valid_strategies:
+            raise ValueError(f"Invalid composition_strategy: {hybrid_schema.composition_strategy}")
+        
+        # Validate all component tools exist
+        for tool_id in hybrid_schema.component_tools:
+            if tool_id not in self.tools:
+                raise ValueError(f"Component tool not found: {tool_id}")
+        
+        # Validate fallback provider if specified
+        if hybrid_schema.fallback_provider:
+            fallback_found = any(
+                t.schema.provider == hybrid_schema.fallback_provider
+                for t in self.tools.values()
+            )
+            if not fallback_found:
+                raise ValueError(f"Fallback provider not available: {hybrid_schema.fallback_provider}")
+        
+        managed_tool = ManagedTool(schema=hybrid_schema)
+        self.hybrid_tools[hybrid_schema.tool_id] = managed_tool
+        logger.info(f"Registered hybrid tool: {hybrid_schema.tool_id}")
 
     def get_tool(self, tool_id: str) -> ToolSchema:
         """Get a specific tool by ID.
@@ -176,6 +221,43 @@ class ToolRegistry(BaseToolRegistry):
             raise ToolNotFoundError(f"Tool not found: {tool_id}")
         
         return self.tools[tool_id].schema
+
+    def get_hybrid_tool(self, tool_id: str):
+        """Get a specific hybrid tool by ID.
+        
+        Args:
+            tool_id: Hybrid tool identifier in format "hybrid:name"
+            
+        Returns:
+            HybridToolSchema instance
+            
+        Raises:
+            ToolNotFoundError: If hybrid tool not found
+        """
+        if tool_id not in self.hybrid_tools:
+            raise ToolNotFoundError(f"Hybrid tool not found: {tool_id}")
+        
+        return self.hybrid_tools[tool_id].schema
+
+    def list_hybrid_tools(self, filter_by_strategy: Optional[str] = None, enabled_only: bool = True) -> list:
+        """List all registered hybrid tools.
+        
+        Args:
+            filter_by_strategy: Optional strategy filter (sequential, parallel, etc.)
+            enabled_only: If True, only return enabled hybrid tools
+            
+        Returns:
+            List of HybridToolSchema instances
+        """
+        tools = list(self.hybrid_tools.values())
+        
+        if filter_by_strategy:
+            tools = [t for t in tools if t.schema.composition_strategy == filter_by_strategy]
+        
+        if enabled_only:
+            tools = [t for t in tools if t.schema.enabled]
+        
+        return [t.schema for t in tools]
 
     def get_provider_tools(self, provider: str) -> list[ToolSchema]:
         """Get all tools available for a specific provider.
@@ -210,6 +292,27 @@ class ToolRegistry(BaseToolRegistry):
             tools = [t for t in tools if t.schema.enabled]
         
         return [t.schema for t in tools]
+
+    def resolve_tool(self, tool_id: str):
+        """Smart resolver: returns either ToolSchema or HybridToolSchema.
+        
+        Checks both regular and hybrid tools to find a tool by ID.
+        
+        Args:
+            tool_id: Tool identifier (format: "provider:name" or "hybrid:name")
+            
+        Returns:
+            ToolSchema or HybridToolSchema instance
+            
+        Raises:
+            ToolNotFoundError: If tool not found in either registry
+        """
+        if tool_id in self.tools:
+            return self.tools[tool_id].schema
+        elif tool_id in self.hybrid_tools:
+            return self.hybrid_tools[tool_id].schema
+        else:
+            raise ToolNotFoundError(f"Tool not found: {tool_id} (checked regular and hybrid)")
 
     def disable_tool(self, tool_id: str, reason: Optional[str] = None) -> None:
         """Disable a tool (prevent execution but keep registration).
@@ -270,6 +373,42 @@ class ToolRegistry(BaseToolRegistry):
             "available": managed_tool.is_available,
         }
 
+    async def _load_hybrid_tools_from_db(self) -> None:
+        """Load persisted hybrid tools from database on startup (async).
+        
+        Called during app initialization to restore hybrid tool definitions.
+        """
+        try:
+            from css.modules.tools.models import HybridToolDefinition
+            
+            hybrids = await HybridToolDefinition.all()
+            for hybrid_orm in hybrids:
+                hybrid_schema = hybrid_orm.to_schema()
+                try:
+                    self.register_hybrid_tool(hybrid_schema)
+                except ValueError as e:
+                    logger.warning(f"Failed to load hybrid tool {hybrid_orm.name}: {e}")
+            
+            logger.info(f"Loaded {len(hybrids)} hybrid tools from database")
+        except Exception as e:
+            logger.error(f"Failed to load hybrid tools from database: {e}")
+
+    async def save_hybrid_tool(self, hybrid_schema) -> None:
+        """Persist hybrid tool to database (async).
+        
+        Args:
+            hybrid_schema: HybridToolSchema instance to persist
+        """
+        try:
+            from css.modules.tools.models import HybridToolDefinition
+            
+            hybrid_orm = HybridToolDefinition.from_schema(hybrid_schema)
+            await hybrid_orm.save()
+            logger.info(f"Persisted hybrid tool: {hybrid_schema.tool_id}")
+        except Exception as e:
+            logger.error(f"Failed to persist hybrid tool {hybrid_schema.name}: {e}")
+            raise
+
     # Implement abstract methods from BaseRegistry
     async def register(self, tool_id: str, tool_schema: ToolSchema) -> None:
         """Register a tool (async wrapper for register_tool).
@@ -324,7 +463,7 @@ class ToolRegistry(BaseToolRegistry):
 _registry: Optional[ToolRegistry] = None
 
 
-def get_tool_registry() -> ToolRegistry:
+def get_tool_registry() -> ToolRegistry | None:
     """Get the global tool registry instance.
     
     Returns:

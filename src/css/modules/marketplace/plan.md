@@ -359,3 +359,11 @@ MARKETPLACE_CONFIG = {
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
 **Details**: See .plan/modules/module-audit-matrix.md for full audit results.
+
+## Audit (2026-05-04)
+
+**Status**: TODO phase4-models-create completed | **Timestamp**: 2026-05-04T09:45
+**Changes**:
+- Updated MarketplaceMeta ORM: added 4 fields (remote_index_hash, local_index_hash, update_available, last_index_check)
+- Created MarketplaceMetaBase + MarketplaceMetaResponse Pydantic models
+- Updated __all__ exports to include new models

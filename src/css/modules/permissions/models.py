@@ -50,3 +50,21 @@ class RolePermissionCache(Model):
 
     class Meta:
         table = "role_permission_cache"
+
+
+class PermissionGrantTag(Model):
+    """M2M junction table linking PermissionGrant to Tag for security classification."""
+    id = fields.BigIntField(primary_key=True)
+    permission_grant = fields.ForeignKeyField(
+        "css.PermissionGrant",
+        related_name="tags_m2m"
+    )
+    tag = fields.ForeignKeyField(
+        "css.Tag",
+        related_name="permission_grants"
+    )
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    class Meta:
+        table = "permission_grant_tag"
+        unique_together = [("permission_grant", "tag")]

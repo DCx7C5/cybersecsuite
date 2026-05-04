@@ -124,19 +124,69 @@ class ToolSchema:
 
 
 @dataclass
+class HybridToolSchema:
+    """Composite tool combining capabilities from multiple LLM providers.
+    
+    Enables hybrid workflows: combine OpenAI code execution + Anthropic vision,
+    or route to different providers based on capability/availability.
+    
+    Attributes:
+        name: Unique hybrid tool identifier
+        description: What this hybrid tool does
+        component_tools: List of tool_ids (format: "provider:name")
+        composition_strategy: How to blend tools (sequential, parallel, conditional, fallback, load_balanced)
+        fallback_provider: Optional fallback provider if primary fails
+        requires_coordination: Whether component tools need sequential execution
+        metadata: Additional configuration (serialized to JSON in DB)
+        enabled: Whether tool is currently enabled
+        tags: Categorization tags
+    """
+    name: str
+    description: str
+    component_tools: list[str]
+    composition_strategy: str
+    fallback_provider: Optional[str] = None
+    requires_coordination: bool = False
+    metadata: dict[str, Any] = field(default_factory=dict)
+    enabled: bool = True
+    tags: list[str] = field(default_factory=list)
+
+    @property
+    def tool_id(self) -> str:
+        """Unique identifier for this hybrid tool."""
+        return f"hybrid:{self.name}"
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary representation."""
+        return {
+            "tool_id": self.tool_id,
+            "name": self.name,
+            "description": self.description,
+            "component_tools": self.component_tools,
+            "composition_strategy": self.composition_strategy,
+            "fallback_provider": self.fallback_provider,
+            "requires_coordination": self.requires_coordination,
+            "metadata": self.metadata,
+            "enabled": self.enabled,
+            "tags": self.tags,
+        }
+
+
+@dataclass
 class ManagedTool:
     """Runtime wrapper for a tool with execution state and metadata.
     
     Used by ToolRegistry to track tool status, execution history, and configuration.
+    Works with both ToolSchema and HybridToolSchema.
     
     Attributes:
-        schema: The canonical ToolSchema definition
+        schema: The canonical ToolSchema or HybridToolSchema definition
         last_called: Timestamp of last execution
         call_count: Total number of times tool was called
         last_error: Last error message if any
         disabled_reason: If disabled, the reason why
     """
-    schema: ToolSchema
+    schema: Any
     last_called: Optional[float] = None
     call_count: int = 0
     last_error: Optional[str] = None

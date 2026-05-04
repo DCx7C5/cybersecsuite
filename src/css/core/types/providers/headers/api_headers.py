@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from ..base_header import BaseHeader
+from ...base.base_header import BaseHeader
 
 
 @dataclass

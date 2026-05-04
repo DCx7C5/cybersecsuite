@@ -10,6 +10,10 @@ class MarketplaceMeta(Model):
     version = fields.CharField(max_length=20, default="0.1.0")
     sha512 = fields.CharField(max_length=255, null=True)
     status = fields.CharEnumField(MarketplaceStatus, default=MarketplaceStatus.active)
+    remote_index_hash = fields.CharField(max_length=512, null=True)
+    local_index_hash = fields.CharField(max_length=512, null=True)
+    update_available = fields.BooleanField(default=False)
+    last_index_check = fields.DatetimeField(null=True)
 
     class Meta:
         table = "marketplace_meta"
@@ -28,7 +32,6 @@ class MarketplaceItem(Model):
     status = fields.CharEnumField(MarketplaceItemStatus, default=MarketplaceItemStatus.disabled)
     sha512 = fields.CharField(max_length=255, null=True)
 
-    tags = fields.JSONField(default=list)
     meta = fields.JSONField(default=dict)
     install_path = fields.CharField(max_length=512, null=True)
     source_url = fields.CharField(max_length=512, null=True)
@@ -44,4 +47,23 @@ class MarketplaceItem(Model):
         indexes = [("kind", "status"), ("kind", "version")]
         unique_together = [("kind", "name")]
 
+
+class MarketplaceItemTag(Model):
+    """M2M junction table linking MarketplaceItem to Tag."""
+    id = fields.BigIntField(primary_key=True)
+    marketplace_item = fields.ForeignKeyField(
+        "css.MarketplaceItem",
+        related_name="tags_m2m"
+    )
+    tag = fields.ForeignKeyField(
+        "css.Tag",
+        related_name="marketplace_items"
+    )
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    class Meta:
+        table = "marketplace_item_tag"
+        table_description = "M2M relationship between marketplace items and tags"
+        unique_together = [("marketplace_item", "tag")]
+        indexes = [("marketplace_item", "tag")]
 

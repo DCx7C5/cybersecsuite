@@ -6,14 +6,14 @@
 
 ## CRITICAL MOST IMPORTANT RULES NEVER FORGET
 - **no Co-authored-by: Copilot**
-- **minimize your thinking chat to only essentials**
-- **minimize your chat to only essentials**
+- **minimize your thinking chat to only essentials** — No reasoning bloat
+- **minimize your chat response to <100 words max** — Keep it concise, unless unavoidable
 - **always show h3 header while working on todos**
 - **keep normal summaries in the end**
 - **always use async python if possible**
 - **when working with frontend use `bun` over `npm`**
 - **use always `aiohttp` not `httpx`**
-- **`.plan/` is now your working directory. Not `~/.copilot/` or `~/.claude` anymore. Or whatever else it was.**
+- **`.plan/` is now your WORKING DIRECTORY. Not `~/.copilot/` or `~/.claude` anymore. THIS IS IMPORTANT**
 - **no hallucinations, ask the user if unsure**
 - **read the different workflows in [development-workflow.md](development-workflow.md)**
 - **you have access to `.venv/bin/` here in the cybersecsuite Project**
@@ -45,29 +45,29 @@
 
 ## 📊 Tech Stack Rules
 
-| Area | Decision |
-|------|----------|
-| **Python** | 3.14+ (async-first, no sync wrappers except CLI) |
-| **Package Manager** | `uv` (Python), `bun` (Node/JS) |
-| **ORM** | Tortoise ORM (PostgreSQL) + asyncpg (async driver) |
-| **Database** | PostgreSQL (primary OLTP) |
-| **Cache** | Redis (rate limiter, token cache) |
-| **Observability** | OpenObserve (time-series: telemetry, audit, API usage, LLM calls) |
-| **Frontend** | React 19.2+, TypeScript |
-| **API** | FastAPI (async), Pydantic v2 |
-| **Testing** | pytest (unit/integration), only after phase complete |
+| Area                 | Decision                                                                             |
+|----------------------|--------------------------------------------------------------------------------------|
+| **Python**           | 3.14+ (async-first, no sync wrappers except CLI)                                     |
+| **Package Manager**  | `uv` (Python), `bun` (Node/JS)                                                       |
+| **ORM**              | Tortoise ORM (PostgreSQL) + asyncpg (async driver)                                   |
+| **Database**         | PostgreSQL (primary OLTP)                                                            |
+| **Cache**            | Redis (rate limiter, token cache)                                                    |
+| **Observability**    | OpenObserve (time-series: telemetry, audit, API usage, LLM calls)                    |
+| **Frontend**         | React 19.2+, TypeScript                                                              |
+| **API**              | FastAPI (async), Pydantic v2                                                         |
+| **Testing**          | pytest (unit/integration), only after phase complete                                 |
 | **Containerization** | Docker Compose (6 services: ASGI, Dashboard, PostgreSQL, Redis, Ollama, OpenObserve) |
 
 ### Service Ports (docker-compose)
-| Port | Service | Container |
-|------|---------|-----------|
-| 8765 | Backend ASGI (direct) | cybersec-proxy |
-| 8000 | Dashboard HTTP | cybersec-dashboard |
-| 8443 | Dashboard TLS | cybersec-dashboard |
-| 5432 | PostgreSQL (Unix socket) | cybersec-postgres |
-| 6379 | Redis | cybersec-redis |
-| 11434 | Ollama (local LLM) | cybersec-ollama |
-| 5080 | OpenObserve (metrics/UI) | cybersec-openobserve |
+| Port  | Service                  | Container            |
+|-------|--------------------------|----------------------|
+| 8765  | Backend ASGI (direct)    | cybersec-proxy       |
+| 8000  | Dashboard HTTP           | cybersec-dashboard   |
+| 8443  | Dashboard TLS            | cybersec-dashboard   |
+| 5432  | PostgreSQL (Unix socket) | cybersec-postgres    |
+| 6379  | Redis                    | cybersec-redis       |
+| 11434 | Ollama (local LLM)       | cybersec-ollama      |
+| 5080  | OpenObserve (metrics/UI) | cybersec-openobserve |
 
 ### ⚠️ Frontend Changes Require Service Restart
 After editing React/TypeScript frontend code in `src/frontend/`:
@@ -109,27 +109,27 @@ modules/<name>/
 
 ### Current Modules (19 total)
 
-| Module | Purpose |
-|--------|---------|
-| agents | Agent orchestration & execution |
-| cache | Caching layer (Redis, local) |
-| capabilities | Capability definitions & registry |
-| chat | Chat session management |
-| events | Event bus & streaming |
-| google_a2a | Google Auth2App integration |
-| llm_models | LLM model registry & metadata |
-| llm_proxy | LLM provider abstraction layer |
-| marketplace | Marketplace (plugins, integrations) |
-| memory | Memory & context management |
-| permissions | Role-based access control |
-| roles | Role definitions & assignment |
-| scopes | Scope hierarchy (Project, App, Session, Team) |
-| skills | Skill definitions & execution |
-| streaming | Streaming & SSE support |
-| tags | Tag management & categorization |
-| teams | Team management & isolation |
-| tools | Tool registry & execution |
-| working_dir | Working directory & file management |
+| Module       | Purpose                                       |
+|--------------|-----------------------------------------------|
+| agents       | Agent orchestration & execution               |
+| cache        | Caching layer (Redis, local)                  |
+| capabilities | Capability definitions & registry             |
+| chat         | Chat session management                       |
+| events       | Event bus & streaming                         |
+| google_a2a   | Google Auth2App integration                   |
+| llm_models   | LLM model registry & metadata                 |
+| llm_proxy    | LLM provider abstraction layer                |
+| marketplace  | Marketplace (plugins, integrations)           |
+| memory       | Memory & context management                   |
+| permissions  | Role-based access control                     |
+| roles        | Role definitions & assignment                 |
+| scopes       | Scope hierarchy (Project, App, Session, Team) |
+| skills       | Skill definitions & execution                 |
+| streaming    | Streaming & SSE support                       |
+| tags         | Tag management & categorization               |
+| teams        | Team management & isolation                   |
+| tools        | Tool registry & execution                     |
+| working_dir  | Working directory & file management           |
 
 **Loader.py auto-discovers**:
 - `endpoints.py` — FastAPI routers (if present, module is skipped silently if missing)
@@ -160,32 +160,32 @@ config.py loads from .env (overrides defaults)
 
 Provider implementations in `api_services/`:
 
-| Provider | Type | Status |
-|----------|------|--------|
-| ai21 | Cloud API | ⏳ Pending refactor |
-| anthropic | Cloud API | ⏳ Pending refactor |
-| cerebras | Cloud API | ⏳ Pending refactor |
-| cloudflare | Cloud API | ⏳ Pending refactor |
-| cohere | Cloud API | ⏳ Pending refactor |
-| deepinfra | Cloud API | ⏳ Pending refactor |
-| deepseek | Cloud API | ⏳ Pending refactor |
-| fireworks | Cloud API | ⏳ Pending refactor |
-| gemini | Cloud API | ⏳ Pending refactor |
-| github | Cloud API | ⏳ Pending refactor |
-| groq | Cloud API | ⏳ Pending refactor |
+| Provider    | Type      | Status             |
+|-------------|-----------|--------------------|
+| ai21        | Cloud API | ⏳ Pending refactor |
+| anthropic   | Cloud API | ⏳ Pending refactor |
+| cerebras    | Cloud API | ⏳ Pending refactor |
+| cloudflare  | Cloud API | ⏳ Pending refactor |
+| cohere      | Cloud API | ⏳ Pending refactor |
+| deepinfra   | Cloud API | ⏳ Pending refactor |
+| deepseek    | Cloud API | ⏳ Pending refactor |
+| fireworks   | Cloud API | ⏳ Pending refactor |
+| gemini      | Cloud API | ⏳ Pending refactor |
+| github      | Cloud API | ⏳ Pending refactor |
+| groq        | Cloud API | ⏳ Pending refactor |
 | huggingface | Cloud API | ⏳ Pending refactor |
-| lambda_api | Cloud API | ⏳ Pending refactor |
-| mistral | Cloud API | ⏳ Pending refactor |
-| nscale | Cloud API | ⏳ Pending refactor |
-| nvidia | Cloud API | ⏳ Pending refactor |
-| ollama | Local | ⏳ Pending refactor |
-| openai | Cloud API | ⏳ Pending refactor |
-| opencode | Cloud API | ⏳ Pending refactor |
-| openrouter | Cloud API | ⏳ Pending refactor |
-| perplexity | Cloud API | ⏳ Pending refactor |
-| sambanova | Cloud API | ⏳ Pending refactor |
-| together | Cloud API | ⏳ Pending refactor |
-| xai | Cloud API | ⏳ Pending refactor |
+| lambda_api  | Cloud API | ⏳ Pending refactor |
+| mistral     | Cloud API | ⏳ Pending refactor |
+| nscale      | Cloud API | ⏳ Pending refactor |
+| nvidia      | Cloud API | ⏳ Pending refactor |
+| ollama      | Local     | ⏳ Pending refactor |
+| openai      | Cloud API | ⏳ Pending refactor |
+| opencode    | Cloud API | ⏳ Pending refactor |
+| openrouter  | Cloud API | ⏳ Pending refactor |
+| perplexity  | Cloud API | ⏳ Pending refactor |
+| sambanova   | Cloud API | ⏳ Pending refactor |
+| together    | Cloud API | ⏳ Pending refactor |
+| xai         | Cloud API | ⏳ Pending refactor |
 
 **Pattern**: Each provider should follow 5-file structure (models, endpoints, types, enums, exceptions)
 
@@ -288,27 +288,27 @@ Tool       → modules/tools/types.py
 
 ## 📋 When to Update .plan/ Files
 
-| Change | File | Action |
-|--------|------|--------|
-| New feature | features_overview.md + session.db | Add + create todo |
-| Phase milestone | plan.md | Update CURRENT STATUS |
-| System design | architecture.md | Add decision |
-| Process change | development-workflow.md | Update section |
-| New rule | rules.md | Add section |
-| Progress | session.db | Update todo status |
-| Phase summary | checkpoints.md | Add entry |
+| Change          | File                              | Action                |
+|-----------------|-----------------------------------|-----------------------|
+| New feature     | features_overview.md + session.db | Add + create todo     |
+| Phase milestone | plan.md                           | Update CURRENT STATUS |
+| System design   | architecture.md                   | Add decision          |
+| Process change  | development-workflow.md           | Update section        |
+| New rule        | rules.md                          | Add section           |
+| Progress        | session.db                        | Update todo status    |
+| Phase summary   | checkpoints.md                    | Add entry             |
 
 ---
 
 ## 🚫 Anti-Patterns (NEVER)
 
-| Anti-Pattern | Fix |
-|--------------|-----|
-| Create .md outside whitelist | Consolidate to 7 files |
-| Manual .env.example edits | Regenerate from CONFIG_SPEC |
-| Mix ABC + @dataclass | Choose pure abstract OR pure concrete |
-| Test during phase | Test only after phase complete |
-| Cross-module imports (non-core) | Import only from core |
-| Hardcoded manager.py defaults | Use CONFIG object |
-| Missing 5-file pattern | Ensure all 5 files |
-| Skip commit validation | Run validation checklist |
+| Anti-Pattern                    | Fix                                   |
+|---------------------------------|---------------------------------------|
+| Create .md outside whitelist    | Consolidate to 7 files                |
+| Manual .env.example edits       | Regenerate from CONFIG_SPEC           |
+| Mix ABC + @dataclass            | Choose pure abstract OR pure concrete |
+| Test during phase               | Test only after phase complete        |
+| Cross-module imports (non-core) | Import only from core                 |
+| Hardcoded manager.py defaults   | Use CONFIG object                     |
+| Missing 5-file pattern          | Ensure all 5 files                    |
+| Skip commit validation          | Run validation checklist              |

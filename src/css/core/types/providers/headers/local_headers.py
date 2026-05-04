@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 
-from ..base_header import BaseHeader
+from ...base.base_header import BaseHeader
 
 
 @dataclass

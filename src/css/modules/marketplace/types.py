@@ -9,6 +9,7 @@ Includes:
 - CRUD schemas (create/update)
 """
 
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -25,6 +26,32 @@ class MarketplaceBase(BaseModel):
     class Config:
         from_attributes = True  # ORM mode
         arbitrary_types_allowed = True
+
+
+# ── Marketplace Meta Models ──────────────────────────────────────────────────────
+
+
+class MarketplaceMetaBase(MarketplaceBase):
+    """Base fields for marketplace metadata."""
+
+    name: str
+    description: str
+    version: str = "0.1.0"
+    sha512: Optional[str] = None
+    remote_index_hash: Optional[str] = None
+    local_index_hash: Optional[str] = None
+    update_available: bool = False
+    last_index_check: Optional[datetime] = None
+
+
+class MarketplaceMetaResponse(MarketplaceMetaBase):
+    """Response model for marketplace metadata."""
+
+    id: int
+    status: str
+
+
+# ── Marketplace Item Models ──────────────────────────────────────────────────────
 
 
 class MarketplaceItemBase(MarketplaceBase):
@@ -148,6 +175,8 @@ class UpgradeResponse(BaseModel):
 __all__ = [
     # Base classes
     "MarketplaceBase",
+    "MarketplaceMetaBase",
+    "MarketplaceMetaResponse",
     "MarketplaceItemBase",
     "MarketplaceItemCreate",
     "MarketplaceItemUpdate",

@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Optional, Dict, Set
+from typing import List, Optional, Dict, Set, Any
 from datetime import datetime
 
 from .models import Tag
@@ -162,7 +162,7 @@ class TagManager:
         logger.info(f"Deleted tag: {tag.name}")
         return True
     
-    async def get_stats(self) -> Dict[str, any]:
+    async def get_stats(self) -> Dict[str, Any]:
         """Get tag statistics."""
         total_tags = len(self._tags)
         

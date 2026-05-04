@@ -1,10 +1,10 @@
 # CyberSecSuite: Implementation Plan
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
-**Status**: ✅ All Blockers Fixed | 🎯 Phase 0 Ready  
-**Updated**: 2026-05-03  
-**Last Commit**: [TRACK-0] Blocker fixes  
-**Timeline**: 84 days (7 phases, ~12 weeks)
+**Status**: 🔴 3 Rubber-Duck Audits Complete | Critical Gaps Identified  
+**Updated**: 2026-05-03 (22:06 UTC+2)  
+**Last Audit**: Rubber-duck provider/core/module audits synced to session.db  
+**Todos**: 274 total (186 done, 87 pending, 1 blocked)
 
 ---
 
@@ -45,15 +45,74 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ---
 
-## 📊 CURRENT STATUS
+## 📊 CURRENT STATUS (2026-05-04 09:35 UTC+2)
 
 **Project**: Multi-Orchestrator + TeamScope + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 7 sequential (Phase 0-6)  
-**Todos**: 164 total (76 done, 88 pending)  
-**Ready to start**: 11 new audit todos (no dependencies)  
-**Last Phase**: ✅ Phase 2 complete (Config Integration & SDK)  
-**Current Phase**: 🔴 **Phase 3 BLOCKED** (waiting for blocker fixes) → 4-agent audit found critical issues
-**Next Action**: Fix 3 critical blockers, then continue Phase 3
+**Todos**: **281 total (187 done, 93 pending, 1 blocked)**  
+**5-File Pattern Compliance**: 3/48 components (6.25%) — google_a2a, marketplace, tools (but registry empty)
+**Test Status**: 106 passed, 67 failed, 79 skipped (252 tests)
+**Last Update**: Seed & test baseline run complete
+**Next**: Fix import paths to unblock test suite
+
+### 🧪 Test Baseline Results (2026-05-04 09:35)
+
+**Overall: 106 ✅ / 67 ❌ / 79 ⏭️ (252 total)**
+
+**Passing Tests (106)**:
+- Scope tests: core scope operations
+- QoL (Quality of Life) injection: 54 tests collected
+- Bootstrap GitHub index: 6 tests (marketplace seeder working)
+- State registry tests: partial pass
+
+**Failing Tests (67 failures)**:
+- 23 import errors (collection phase) — legacy code paths
+- 33 ModuleNotFoundError — cssmcp, a2a, core, accounts, hooks, db
+- 8 TypeError — API mismatches in retry orchestrator
+- 3 AttributeError — mock property deleters
+
+**Skipped Tests (79)**:
+- Markers/conditions applied (pytest.skip)
+
+**Critical Blockers**:
+1. **Import paths mismatch** — Tests reference `src/db`, `src/accounts` but project moved to `src/css/{db,accounts}/`
+2. **cssmcp module missing** — Integration tests expect cssmcp module; create or alias
+3. **Tortoise models path** — conftest.py uses `core.db.models.scopes` instead of `css.core.db.models.scopes`
+4. **Legacy hooks system** — HookContext missing from legacy.hooks.events
+
+### ✅ Seeding Status
+
+**Marketplace**: Ready to seed
+- MarketplaceSeeder class implemented (474 LOC)
+- Remote index fetching + SHA512 verification working
+- Can seed from GitHub marketplace on startup
+
+**API Providers**: Ready for hardcoded seed
+- 24 providers audited
+- ModelMetadata patterns defined
+- Phase 2 todo: add get_models() implementations
+
+**Test Database**: Tortoise fixtures present
+- conftest.py has db, test_project, test_session fixtures
+- In-memory SQLite for tests
+- Models auto-discovery configured
+
+### Ready Todos (No Dependencies)
+- 11 tag M2M junction table implementations ✅ **DONE**
+- Tag endpoint implementations ✅ **DONE**
+- 9 cross-module integration todos **READY**
+
+### Integration Points Identified (Phase 4+)
+1. **Tools ↔ Marketplace** — Package tools in marketplace items
+2. **Tags (Hub)** — Central filtering across all entities
+3. **Permissions ↔ Tools** — Access control for tool execution
+4. **Marketplace ↔ Cache** — Cached metadata layer
+5. **Tools ↔ LLM Models** — Provider reference validation
+6. **Agents ↔ Tools** — Tool execution integration
+7. **Skills ↔ Marketplace** — Skill packaging
+8. **Events ↔ Tool Execution** — Audit trail
+
+**Architecture Doc**: See `.plan/architecture/module-relationships.md` for data flow diagram
 
 ### Core Infrastructure Audit Summary (2026-05-03)
 
@@ -76,7 +135,39 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 See `.plan/architecture/core-components-matrix.md` for detailed analysis.
 
-## ⚠️ CRITICAL BLOCKERS (Phase 3 Readiness)
+---
+
+## 🚨 CRITICAL BLOCKERS (From Rubber-Duck Audit 2026-05-03)
+
+### 🔴 BLOCKER #1: Tool Registry Empty (35 TODOs)
+- **Impact**: No tool discovery, MCP server incomplete, REST endpoints broken
+- **Location**: `src/css/modules/tools/registry.py` — 0 LOC
+- **Fix**: Implement auto-discovery from api_services, normalize ToolSchema
+- **Dependency**: Core types need ToolSchema dataclass
+
+### 🔴 BLOCKER #2: Permissions Not Implemented (47 TODOs)
+- **Impact**: RBAC broken, scope isolation missing, security critical
+- **Location**: `src/css/modules/permissions/` — 4/5 files present but logic missing
+- **Fix**: Implement role decorators, middleware, scope enforcement
+- **Dependency**: Blocks access control across all modules
+
+### 🔴 BLOCKER #3: Events Module Missing (6 TODOs)
+- **Impact**: Notifications broken, audit trail missing, agent updates blocked
+- **Location**: `src/css/modules/events/` — 0/5 files
+- **Fix**: Create EventBus, @on_event decorator, streaming layer
+- **Dependency**: Blocks marketplace events, task events, agent notifications
+
+### 🟠 BLOCKER #4: 5-File Pattern Inconsistency (45+ pending tasks)
+- **Impact**: 21/24 providers + 19/22 modules missing proper structure
+- **Current**: Only ollama (provider) + google_a2a, marketplace (modules) compliant
+- **Fix**: Add models.py, endpoints.py, types.py, enums.py, exceptions.py to each
+- **Timeline**: Must complete Phase 1-2
+
+### 🟠 BLOCKER #5: Core/Types Oversized (1 pending todo)
+- **Impact**: 31 files vs 5-file target, maintenance burden
+- **Status**: Functional but needs Phase 3 refactoring
+
+## ⚠️ LEGACY BLOCKERS (Phase 3 Readiness)
 
 **Found by 4-Agent Audit (2026-05-03)**
 
@@ -1138,3 +1229,79 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 - Implementation order for Phase 2-3
 
 ---
+
+---
+
+## 📋 SESSION SUMMARY (2026-05-04 09:35 UTC+2)
+
+**Session Start**: Deep study of rules.md, plan.md, session.db
+**Session Work**: 3 rubber-duck audits + seed & test baseline
+**Time**: ~30 minutes
+
+### ✅ Work Completed
+
+1. **Deep Study** (22:00-22:06)
+   - Read rules.md: 315 lines of development standards
+   - Read plan.md: 39.9 KB project overview
+   - Queried session.db: 215 todos (→ 274 after audits)
+   - Identified critical blockers and status gaps
+
+2. **3 Rubber-Duck Audits** (22:06)
+   - 24 API providers: 12 complete, 12 pending, 11 todos extracted
+   - 4 core components: 3 complete, 1 future, 9 todos extracted
+   - 22 modules: 3 compliant, 19 pending pattern, 48 todos extracted
+   - **Result**: session.db synced from 215 → 274 todos
+
+3. **Plan.md Synchronized** (22:07)
+   - Updated status section: audit findings + blocker list
+   - Added 5 critical blockers (tools, permissions, events, pattern, types)
+   - Added module compliance matrix summary
+
+4. **Seed & Test Baseline** (09:35)
+   - Fixed 2 import errors (api_headers.py, local_headers.py)
+   - Ran full test suite: 252 tests collected
+   - Result: 106 passed, 67 failed, 79 skipped
+   - Identified 4 primary blockers (import paths, cssmcp, models path, hooks)
+   - Added 6 seed/test tracking todos
+
+### 📊 Database State
+
+**session.db**:
+- Total: 281 todos
+- Done: 187 (67%)
+- Pending: 93 (33%)
+- Blocked: 1 (rubber-duck-3-modules → now ready)
+
+**Plan files**:
+- plan.md: Updated with audit findings + test status
+- rules.md: Confirmed as source-of-truth
+- architecture/: Referenced for system design
+- development-workflow.md: Not yet reviewed
+
+### 🚨 NEXT IMMEDIATE PRIORITIES
+
+**P0 - Unblock Tests** (→ enables Phase 1-2):
+1. Fix import paths: src/db → src/css/core/db (conftest.py + test files)
+2. Create/alias cssmcp module
+3. Fix Tortoise models path in conftest.py
+4. → Once fixed: should see 150-170 tests passing
+
+**P1 - Seed Database** (→ enables integration tests):
+1. Seed marketplace from remote index
+2. Seed API provider metadata (24 providers)
+3. Create test fixtures (projects, sessions, teams)
+
+**P2 - Module Consistency** (→ Phase 1-2):
+1. Implement 5-file pattern for 21/24 providers
+2. Implement 5-file pattern for 19/22 modules
+3. Sync tools registry (35 TODOs)
+4. Implement permissions (47 TODOs)
+
+---
+
+### Files Modified (This Session)
+
+- ✏️ `.plan/plan.md` — Updated status + blockers + test findings
+- ✏️ `.plan/session.db` — Added 65 new todos (274 total)
+- ✏️ `src/css/core/types/providers/headers/api_headers.py` — Fixed import
+- ✏️ `src/css/core/types/providers/headers/local_headers.py` — Fixed import
