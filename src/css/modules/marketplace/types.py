@@ -1,12 +1,7 @@
-"""Marketplace module types for install/uninstall/toggle/upgrade operations.
+"""Marketplace module types — install/uninstall/toggle/upgrade operations.
 
-This module contains all Pydantic types used by the marketplace API.
-It is the canonical location for marketplace data models.
-
-Includes:
-- API request/response models
-- Pydantic base classes for ORM integration
-- CRUD schemas (create/update)
+Flat DTO models for marketplace API endpoints.
+No inheritance chains. Each class = one API endpoint response or request.
 """
 
 from datetime import datetime
@@ -17,94 +12,56 @@ from pydantic import BaseModel, Field
 from .enums import MarketplaceItemType, MarketplaceItemStatus
 
 
-# ── Pydantic Base Classes ────────────────────────────────────────────────────────
+# ── Marketplace Status ────────────────────────────────────────────
 
 
-class MarketplaceBase(BaseModel):
-    """Base for all marketplace Pydantic models."""
+class MarketplaceMetaResponse(BaseModel):
+    """Marketplace status response."""
 
-    class Config:
-        from_attributes = True  # ORM mode
-        arbitrary_types_allowed = True
-
-
-# ── Marketplace Meta Models ──────────────────────────────────────────────────────
-
-
-class MarketplaceMetaBase(MarketplaceBase):
-    """Base fields for marketplace metadata."""
-
+    id: int
     name: str
-    description: str
-    version: str = "0.1.0"
-    sha512: Optional[str] = None
-    remote_index_hash: Optional[str] = None
-    local_index_hash: Optional[str] = None
-    update_available: bool = False
+    version: str
+    update_available: bool
     last_index_check: Optional[datetime] = None
 
 
-class MarketplaceMetaResponse(MarketplaceMetaBase):
-    """Response model for marketplace metadata."""
-
-    id: int
-    status: str
+# ── Item List/Detail ──────────────────────────────────────────────
 
 
-# ── Marketplace Item Models ──────────────────────────────────────────────────────
+class ItemListResponse(BaseModel):
+    """Item summary for list endpoints."""
+
+    id: str
+    name: str
+    kind: MarketplaceItemType
+    version: str
+    installed: bool
 
 
-class MarketplaceItemBase(MarketplaceBase):
-    """Base fields shared by all marketplace item Pydantic models."""
+class ItemDetailResponse(BaseModel):
+    """Full item details."""
 
     id: str
     name: str
     description: str
     kind: MarketplaceItemType
-    version: str = "0.1.0"
-    tags: list[str] = Field(default_factory=list)
-    status: MarketplaceItemStatus = MarketplaceItemStatus.disabled
+    version: str
+    status: MarketplaceItemStatus
+    installed: bool
+    installed_at: Optional[datetime] = None
     meta: dict = Field(default_factory=dict)
 
 
-class MarketplaceItemCreate(MarketplaceItemBase):
-    """Schema for creating a new marketplace item."""
-
-    source_url: Optional[str] = None
-
-
-class MarketplaceItemUpdate(MarketplaceBase):
-    """Schema for updating an existing marketplace item."""
-
-    name: Optional[str] = None
-    description: Optional[str] = None
-    version: Optional[str] = None
-    kind: Optional[MarketplaceItemType] = None
-    tags: Optional[list[str]] = None
-    status: Optional[MarketplaceItemStatus] = None
-    meta: Optional[dict] = None
-
-
-# ── API Response Models ───────────────────────────────────────────────────────────
-
-
-class MarketplaceItemResponse(MarketplaceItemBase):
-    """Response for a marketplace item (extends base with API-specific fields)."""
-
-    provider: str
-    chksum: str
-    enabled: bool = True
-    installed: bool = False
-
-
-# ── API Request/Response Models ─────────────────────────────────────────────────
+# ── Install/Uninstall ────────────────────────────────────────────
 
 
 class InstallRequest(BaseModel):
     """Request to install a marketplace item."""
 
     item_id: str = Field(..., description="Kebab-case item ID")
-    source_url: Optional[str] = Field(default=None, description="Override source URL")
+    source_url: Optional[str] = Field(
+        default=None, description="Override source URL"
+    )
 
 
 class InstallResponse(BaseModel):
@@ -121,7 +78,9 @@ class UninstallRequest(BaseModel):
     """Request to uninstall a marketplace item."""
 
     item_id: str = Field(..., description="Kebab-case item ID")
-    purge_config: bool = Field(default=False, description="Remove item configuration")
+    purge_config: bool = Field(
+        default=False, description="Remove item configuration"
+    )
 
 
 class UninstallResponse(BaseModel):
@@ -131,6 +90,9 @@ class UninstallResponse(BaseModel):
     item_id: str
     message: str
     error: Optional[str] = None
+
+
+# ── Toggle Enable/Disable ────────────────────────────────────────
 
 
 class ToggleRequest(BaseModel):
@@ -148,6 +110,9 @@ class ToggleResponse(BaseModel):
     enabled: bool
     message: str
     error: Optional[str] = None
+
+
+# ── Upgrade Version ──────────────────────────────────────────────
 
 
 class UpgradeRequest(BaseModel):
