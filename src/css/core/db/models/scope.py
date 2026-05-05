@@ -4,7 +4,7 @@
 from tortoise.models import Model
 from tortoise import fields, models
 
-from css.core.db.enums import RedBlueMode
+from css.core.db.enums import RedBlueMode, ScopeLevel
 
 
 class ProjectScope(Model):
@@ -64,7 +64,7 @@ class SessionScope(Model):
       between this ``Session`` and a :class:`ForensicProject`
     """
     project = fields.ForeignKeyField(
-        "models.Project",
+        "css.ProjectScope",
         related_name="sessions",
         on_delete=fields.CASCADE,
     )
@@ -113,14 +113,14 @@ class ScopedEntry(Model):
         - (is_active, deleted_at) — soft-delete queries
     """
     project = fields.ForeignKeyField(
-        "models.Project",
+        "css.ProjectScope",
         related_name=False,
         null=True,
         on_delete=fields.CASCADE,
         db_index=True,
     )
     session = fields.ForeignKeyField(
-        "models.Session",
+        "css.SessionScope",
         related_name=False,
         null=True,
         on_delete=fields.CASCADE,
@@ -143,13 +143,12 @@ class ScopedEntry(Model):
         null=True,
         description="Absolute path to .css/<runtime-id>/worktree-<SID>/",
     )
-    scope_level = fields.CharField(
-        max_length=16,
-        default="session",
+    scope_level = fields.CharEnumField(
+        ScopeLevel,
+        default=ScopeLevel.SESSION,
         db_index=True,
         description="One of: global, app, project, runtime, session",
     )
 
     class Meta:
         abstract = True
-

@@ -13,7 +13,7 @@
 | **tags** | Tag | Hub (connects to 6 modules) | Classification, categorization |
 | **marketplace** | MarketplaceItem, MarketplaceMeta | M2M: Tag | Marketplace item registry |
 | **tools** | HybridToolDefinition | M2M: Tag | Tool registry & composition |
-| **cache** | CacheEntry, CacheStats | M2M: Tag (planned) | Caching layer |
+| **core/cache** | CacheEntry, CacheStats | M2M: Tag (planned) | KV caching layer (moved to core — infrastructure) |
 | **permissions** | PermissionGrant, ScopeSession | M2M: Tag | Security & access control |
 | **teams** | TeamModel | M2M: Tag | Team management |
 | **llm_models** | ModelMetadata, ModelPricing | M2M: Tag (planned) | LLM provider models |
@@ -27,7 +27,7 @@ Tag (HUB)
 ├── MarketplaceItem (M2M: MarketplaceItemTag)
 ├── HybridToolDefinition (M2M: HybridToolDefinitionTag)
 ├── PermissionGrant (M2M: PermissionGrantTag)
-├── CacheEntry (M2M: CacheEntryTag — planned)
+├── CacheEntry (M2M: CacheEntryTag — planned) [model lives in core/cache/]
 ├── ModelMetadata (M2M: ModelMetadataTag — planned)
 └── TeamModel (M2M: TeamTag — planned)
 ```
@@ -87,12 +87,12 @@ PermissionGrant
 
 ---
 
-### 4. Marketplace ↔ Cache
+### 4. Marketplace ↔ Cache (core/cache)
 
-**Relationship**: Cached marketplace metadata
+**Relationship**: Cached marketplace metadata — `CacheEntry` ORM model lives in `core/cache/` (infrastructure)
 
 ```
-CacheEntry
+CacheEntry  [core/cache/models.py]
 ├── key: "marketplace:items:{kind}"
 ├── value: Serialized MarketplaceItem list
 └── Tags: Cache classification (e.g., "hot", "cold")
@@ -162,7 +162,7 @@ HybridToolDefinition
 - [ ] Skills → Marketplace integration  
 - [ ] Capabilities → Tools mapping
 - [ ] Events → Tool execution tracking
-- [ ] Triage → Tool/Agent selection
+- [ ] Triage → Intelligence module rename (todo: triage-rename-module)
 
 ---
 

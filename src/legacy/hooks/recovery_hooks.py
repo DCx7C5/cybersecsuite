@@ -15,7 +15,7 @@ Key Design:
 import logging
 from typing import Any
 
-from hooks.events import (
+from .events import (
     OnErrorEvent,
     OnRecoveryEvent,
     PreRetryEvent,

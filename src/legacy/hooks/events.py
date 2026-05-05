@@ -14,6 +14,7 @@ from typing import Any, Optional, TypedDict
 
 # Re-export from canonical location in core.types
 from css.core.types import HookErrorStrategy
+from css.core.types.hook_events import HookContext  # noqa: F401 — re-export for legacy consumers
 
 # Alias for backward compatibility (legacy code may use ErrorStrategy)
 ErrorStrategy = HookErrorStrategy

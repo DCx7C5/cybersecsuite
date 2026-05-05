@@ -34,7 +34,7 @@ fi
 
 # Initialise database: create schemas + seed all fixtures
 echo "[proxy-init] Running database initialisation (schema + seed fixtures)..."
-if uv run python -m manage init-db; then
+if uv run python manage.py init-db; then
     echo "[proxy-init] ✓ Database initialisation complete"
 else
     echo "[proxy-init] ⚠ Database initialisation encountered issues (check logs above)"
@@ -53,19 +53,14 @@ HTTPS_PORT="${ASGI_TLS_PORT:-8443}"
 if [[ -f "$TLS_CERT" && -f "$TLS_KEY" ]]; then
     echo "[proxy-init] TLS certificates detected - starting HTTPS on port $HTTPS_PORT"
     echo "[proxy-init] Starting ASGI server with TLS..."
-    exec uv run uvicorn asgi.asgi:app \
+    exec uv run python manage.py serve \
         --host "${ASGI_HOST:-0.0.0.0}" \
-        --port "$HTTP_PORT" \
-        --ssl-keyfile "$TLS_KEY" \
-        --ssl-certfile "$TLS_CERT" \
-        --log-level info
+        --port "$HTTP_PORT"
 else
     echo "[proxy-init] No TLS certificates found - serving HTTP only on port $HTTP_PORT"
-    echo "[proxy-init] Redirect from port $HTTPS_PORT is handled by docker-compose (not exposed)"
     echo "[proxy-init] Starting ASGI server..."
-    exec uv run uvicorn asgi.asgi:app \
+    exec uv run python manage.py serve \
         --host "${ASGI_HOST:-0.0.0.0}" \
-        --port "$HTTP_PORT" \
-        --log-level info
+        --port "$HTTP_PORT"
 fi
 

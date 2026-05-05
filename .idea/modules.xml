@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$USER_HOME$/.copilot/.idea/.copilot.iml" filepath="$USER_HOME$/.copilot/.idea/.copilot.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/browser-plugin/.idea/browser-plugin.iml" filepath="$PROJECT_DIR$/src/browser-plugin/.idea/browser-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cybersecsuite@1.iml" filepath="$PROJECT_DIR$/.idea/cybersecsuite@1.iml" />

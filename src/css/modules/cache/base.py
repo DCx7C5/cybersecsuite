@@ -1,11 +1,15 @@
 """Abstract cache backend interface and implementations."""
 
-from abc import ABC, abstractmethod
-from typing import Any, Optional, Dict
 import asyncio
+import json
 import logging
+import time
+from abc import ABC, abstractmethod
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any, Optional
 
-from .exceptions import CacheNotFoundError, CacheExecutionError, CacheSerializationError
+from .exceptions import CacheExecutionError, CacheSerializationError
 from .models import CacheEntry, CacheStats
 
 logger = logging.getLogger(__name__)
@@ -48,7 +52,7 @@ class CacheBackend(ABC):
         """Create namespaced cache key."""
         return f"{self.namespace}:{key}"
     
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         return {
             "namespace": self.namespace,
@@ -68,7 +72,7 @@ class L1MemoryCache(CacheBackend):
         """Initialize L1 memory cache."""
         super().__init__(namespace)
         self.max_size = max_size
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: dict[str, CacheEntry] = {}
     
     async def get(self, key: str) -> Optional[Any]:
         """Get value from memory cache."""
@@ -262,6 +266,281 @@ class L2RedisCache(CacheBackend):
             return bool(result)
         except Exception as e:
             logger.warning(f"L2 cache exists error: {e}")
+            self.stats.errors += 1
+            return False
+
+
+class L3PostgresCache(CacheBackend):
+    """L3: PostgreSQL-backed persistent cache via Tortoise ORM."""
+
+    @staticmethod
+    def _is_expired(ttl_seconds: Optional[int], created_at: datetime) -> bool:
+        if ttl_seconds is None:
+            return False
+        now = datetime.now(UTC)
+        created = created_at.astimezone(UTC) if created_at.tzinfo else created_at.replace(tzinfo=UTC)
+        return (now - created).total_seconds() > ttl_seconds
+
+    async def get(self, key: str) -> Optional[Any]:
+        """Get value from PostgreSQL cache."""
+        try:
+            from .models import CacheEntryModel
+
+            entry = await CacheEntryModel.filter(namespace=self.namespace, key=key).first()
+            if entry is None:
+                self.stats.misses += 1
+                return None
+            if self._is_expired(entry.ttl_seconds, entry.created_at):
+                await entry.delete()
+                self.stats.misses += 1
+                return None
+            self.stats.hits += 1
+            return entry.value
+        except Exception as e:
+            logger.error(f"L3 cache get error: {e}")
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L3 get failed: {e}", operation="get")
+
+    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+        """Set value in PostgreSQL cache."""
+        try:
+            from .models import CacheEntryModel
+
+            await CacheEntryModel.update_or_create(
+                defaults={"value": value, "ttl_seconds": ttl_seconds},
+                namespace=self.namespace,
+                key=key,
+            )
+            self.stats.sets += 1
+            return True
+        except Exception as e:
+            logger.error(f"L3 cache set error: {e}")
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L3 set failed: {e}", operation="set")
+
+    async def delete(self, key: str) -> bool:
+        """Delete value from PostgreSQL cache."""
+        try:
+            from .models import CacheEntryModel
+
+            deleted = await CacheEntryModel.filter(namespace=self.namespace, key=key).delete()
+            if deleted:
+                self.stats.deletes += 1
+            return bool(deleted)
+        except Exception as e:
+            logger.error(f"L3 cache delete error: {e}")
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L3 delete failed: {e}", operation="delete")
+
+    async def clear(self) -> bool:
+        """Clear all entries in namespace from PostgreSQL cache."""
+        try:
+            from .models import CacheEntryModel
+
+            await CacheEntryModel.filter(namespace=self.namespace).delete()
+            return True
+        except Exception as e:
+            logger.error(f"L3 cache clear error: {e}")
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L3 clear failed: {e}", operation="clear")
+
+    async def exists(self, key: str) -> bool:
+        """Check if key exists in PostgreSQL cache."""
+        try:
+            from .models import CacheEntryModel
+
+            entry = await CacheEntryModel.filter(namespace=self.namespace, key=key).first()
+            if entry is None:
+                return False
+            if self._is_expired(entry.ttl_seconds, entry.created_at):
+                await entry.delete()
+                return False
+            return True
+        except Exception as e:
+            logger.error(f"L3 cache exists error: {e}")
+            self.stats.errors += 1
+            return False
+
+
+class L4SQLiteCache(CacheBackend):
+    """L4: SQLite disk-backed archive cache for fallback durability."""
+
+    def __init__(self, namespace: str = "default", sqlite_path: str = "/tmp/css-cache/archive.sqlite"):
+        super().__init__(namespace)
+        self.sqlite_path = sqlite_path
+        self._lock = asyncio.Lock()
+        self._initialized = False
+
+    async def _ensure_table(self) -> None:
+        if self._initialized:
+            return
+        async with self._lock:
+            if self._initialized:
+                return
+            try:
+                import aiosqlite
+
+                Path(self.sqlite_path).parent.mkdir(parents=True, exist_ok=True)
+                async with aiosqlite.connect(self.sqlite_path) as db:
+                    await db.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS cache_archive (
+                            namespace TEXT NOT NULL,
+                            key TEXT NOT NULL,
+                            value TEXT NOT NULL,
+                            ttl_seconds INTEGER NULL,
+                            created_at REAL NOT NULL,
+                            PRIMARY KEY(namespace, key)
+                        )
+                        """
+                    )
+                    await db.execute(
+                        "CREATE INDEX IF NOT EXISTS idx_cache_archive_ns_key ON cache_archive(namespace, key)"
+                    )
+                    await db.commit()
+                self._initialized = True
+            except Exception as e:
+                raise CacheExecutionError(f"L4 initialize failed: {e}", operation="initialize") from e
+
+    @staticmethod
+    def _is_expired(ttl_seconds: Optional[int], created_at: float) -> bool:
+        return ttl_seconds is not None and (time.time() - created_at) > ttl_seconds
+
+    @staticmethod
+    def _serialize(value: Any) -> str:
+        try:
+            return json.dumps(value)
+        except TypeError as e:
+            raise CacheSerializationError(str(e), data_type=type(value).__name__) from e
+
+    @staticmethod
+    def _deserialize(raw: str) -> Any:
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError as e:
+            raise CacheSerializationError(str(e), data_type="json") from e
+
+    async def get(self, key: str) -> Optional[Any]:
+        """Get value from SQLite archive cache."""
+        await self._ensure_table()
+        try:
+            import aiosqlite
+
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                async with db.execute(
+                    "SELECT value, ttl_seconds, created_at FROM cache_archive WHERE namespace=? AND key=?",
+                    (self.namespace, key),
+                ) as cursor:
+                    row = await cursor.fetchone()
+                if row is None:
+                    self.stats.misses += 1
+                    return None
+                value, ttl_seconds, created_at = row
+                if self._is_expired(ttl_seconds, created_at):
+                    await db.execute(
+                        "DELETE FROM cache_archive WHERE namespace=? AND key=?",
+                        (self.namespace, key),
+                    )
+                    await db.commit()
+                    self.stats.misses += 1
+                    return None
+                self.stats.hits += 1
+                return self._deserialize(value)
+        except CacheSerializationError:
+            self.stats.errors += 1
+            raise
+        except Exception as e:
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L4 get failed: {e}", operation="get") from e
+
+    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+        """Set value in SQLite archive cache."""
+        await self._ensure_table()
+        try:
+            import aiosqlite
+
+            payload = self._serialize(value)
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                await db.execute(
+                    """
+                    INSERT INTO cache_archive(namespace, key, value, ttl_seconds, created_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(namespace, key) DO UPDATE SET
+                        value=excluded.value,
+                        ttl_seconds=excluded.ttl_seconds,
+                        created_at=excluded.created_at
+                    """,
+                    (self.namespace, key, payload, ttl_seconds, time.time()),
+                )
+                await db.commit()
+            self.stats.sets += 1
+            return True
+        except CacheSerializationError:
+            self.stats.errors += 1
+            raise
+        except Exception as e:
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L4 set failed: {e}", operation="set") from e
+
+    async def delete(self, key: str) -> bool:
+        """Delete value from SQLite archive cache."""
+        await self._ensure_table()
+        try:
+            import aiosqlite
+
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                cursor = await db.execute(
+                    "DELETE FROM cache_archive WHERE namespace=? AND key=?",
+                    (self.namespace, key),
+                )
+                await db.commit()
+            deleted = cursor.rowcount > 0
+            if deleted:
+                self.stats.deletes += 1
+            return deleted
+        except Exception as e:
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L4 delete failed: {e}", operation="delete") from e
+
+    async def clear(self) -> bool:
+        """Clear all entries in namespace from SQLite archive cache."""
+        await self._ensure_table()
+        try:
+            import aiosqlite
+
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                await db.execute("DELETE FROM cache_archive WHERE namespace=?", (self.namespace,))
+                await db.commit()
+            return True
+        except Exception as e:
+            self.stats.errors += 1
+            raise CacheExecutionError(f"L4 clear failed: {e}", operation="clear") from e
+
+    async def exists(self, key: str) -> bool:
+        """Check if key exists in SQLite archive cache."""
+        await self._ensure_table()
+        try:
+            import aiosqlite
+
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                async with db.execute(
+                    "SELECT ttl_seconds, created_at FROM cache_archive WHERE namespace=? AND key=?",
+                    (self.namespace, key),
+                ) as cursor:
+                    row = await cursor.fetchone()
+                if row is None:
+                    return False
+                ttl_seconds, created_at = row
+                if self._is_expired(ttl_seconds, created_at):
+                    await db.execute(
+                        "DELETE FROM cache_archive WHERE namespace=? AND key=?",
+                        (self.namespace, key),
+                    )
+                    await db.commit()
+                    return False
+                return True
+        except Exception as e:
+            logger.warning(f"L4 cache exists error: {e}")
             self.stats.errors += 1
             return False
 

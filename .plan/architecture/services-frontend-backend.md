@@ -26,18 +26,17 @@ PYTHONUNBUFFERED=1
 ENVIRONMENT=production
 DATABASE_URL=postgresql://user:pass@cybersec-postgres:5432/cybersec
 REDIS_URL=redis://cybersec-redis:6379/1
-CACHE_BACKENDS=redis,postgres,disk
-OLLAMA_API_URL=http://cybersec-ollama:11434
+CACHE_BACKENDS=redis,postgres
+OLLAMA_API_URL=http://localhost:11434
 ```
 
 **Dependencies**:
 - `cybersec-postgres` (database)
 - `cybersec-redis` (cache L2)
-- `cybersec-ollama` (local LLM fallback)
+- Ollama native process (managed by `core/ollama/OllamaProcessManager` — not Docker)
 
 **Volumes**:
 - `/app/src/css/` (read-only, app code)
-- `/var/cache/css/` (writable, disk cache L4)
 - `/var/log/css/` (writable, application logs)
 
 **Healthcheck**:
@@ -53,7 +52,6 @@ healthcheck:
 **Role in Caching**:
 - Orchestrator processes run here (in-memory L1 cache)
 - Access to Redis (L2) and PostgreSQL (L3) backends
-- Reads from disk cache (L4) on Redis/PostgreSQL failure
 
 ---
 
@@ -184,27 +182,20 @@ healthcheck:
 
 ---
 
-### 5. **cybersec-ollama** (Local LLM)
+### 5. **Ollama** (Local LLM — Native Process)
 
-**Purpose**: Fallback LLM when external APIs (Claude, OpenAI) unavailable
+> ⚠️ **Docker container removed** — Ollama is now managed natively by `core/ollama/OllamaProcessManager`.
 
-**Container**: `ollama/ollama:latest`
+**Purpose**: Local LLM for Intelligence module (offline fallback, triage, quality gates)
 
-**Port**: `11434` (HTTPS, internal)
+**Managed by**: `core/ollama/OllamaProcessManager` — `asyncio.create_subprocess_exec("ollama", "serve")`
 
-**Environment**:
-```bash
-OLLAMA_MODELS_PATH=/models
-OLLAMA_KEEP_ALIVE=5m
-```
+**Port**: `11434` (localhost only)
 
-**Volumes**:
-- `/models/` (model storage, 40GB+)
-
-**Models Preloaded**:
-- `qwen3:0.6b` (lightweight, used by Triage role)
-- `neural-chat:7b` (general-purpose)
-- `mistral:7b` (optional, high-quality)
+**Dev models** (pull manually — see `ollama pull` hint in `OllamaInstallChecker`):
+- `qwen3:0.6b` (lightweight, Intelligence layer)
+- `phi4-mini:3.8b-q4_K_M` (quality gate, reasoning)
+- `qwen3:4b-q4_K_M` (general intelligence)
 
 **Healthcheck**:
 ```yaml
@@ -289,11 +280,10 @@ services:
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=postgresql://cybersec:${DB_PASSWORD}@cybersec-postgres:5432/cybersec
       - REDIS_URL=redis://cybersec-redis:6379/1
-      - CACHE_BACKENDS=redis,postgres,disk
-      - OLLAMA_API_URL=http://cybersec-ollama:11434
+      - CACHE_BACKENDS=redis,postgres
+      - OLLAMA_API_URL=http://localhost:11434
     volumes:
       - ./src/css:/app/src/css:ro
-      - cache_disk:/var/cache/css
       - logs:/var/log/css
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8765/health"]
@@ -364,22 +354,8 @@ services:
       - cybersec-net
     restart: unless-stopped
 
-  cybersec-ollama:
-    image: ollama/ollama:latest
-    container_name: cybersec-ollama
-    environment:
-      - OLLAMA_MODELS_PATH=/models
-      - OLLAMA_KEEP_ALIVE=5m
-    volumes:
-      - ollama_models:/models
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - cybersec-net
-    restart: unless-stopped
+  # cybersec-ollama REMOVED — Ollama runs natively via core/ollama/OllamaProcessManager
+  # (Phase 33: ollama-docker-remove)
 
   cybersec-openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest
@@ -406,7 +382,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  cache_disk:
+  ollama_models:
     driver: local
   logs:
     driver: local
@@ -428,11 +404,11 @@ networks:
 
 ### How Modules Integrate in Services
 
-All modules (`@cache`, `@capabilities`, `@chat`, `@css_a2a`, `@events`, `@google_a2a`, `@llm_models`) run inside **cybersec-proxy** (FastAPI backend, port 8765):
+All modules (`@capabilities`, `@chat`, `@css_a2a`, `@events`, `@google_a2a`, `@llm_models`) run inside **cybersec-proxy** (FastAPI backend, port 8765):
 
 **Module Startup** (initialization sequence):
 
-1. **@cache** — Initialize 4-level backends (Redis + PostgreSQL pools)
+1. **core/cache** — Initialize 3-layer KV backends (L1 memory, L2 Redis, L3 PostgreSQL)
 2. **@capabilities** — Discover model capabilities from 12 LLM providers (via config.py API_KEYS)
 3. **@llm_models** — Load model registry & metadata
 4. **@events** — Start UniversalSDK event bus
@@ -449,7 +425,7 @@ cybersec-proxy (FastAPI)
     ├─→ @chat (QoL injection, provider selection)
     ├─→ @capabilities (model capability check)
     ├─→ api_services/* (LLM API call)
-    ├─→ @cache (store response)
+    ├─→ core/cache (store response)
     ├─→ @events (emit 'provider.used' event)
     └─→ Frontend response
 ```
@@ -486,7 +462,7 @@ Orchestrator Agent
 Redis (cybersec-redis:6379, db=3)
     ↓ MessageDispatcher
 Team Member Agent
-    ├─→ @cache (store task state)
+    ├─→ core/cache (store task state)
     ├─→ @events (emit 'task.started', 'task.completed')
     └─→ Results back to Orchestrator
 ```
@@ -495,7 +471,7 @@ Team Member Agent
 
 ```
 Orchestrator Process (in cybersec-proxy pod)
-├─ @cache (L1 in-memory + Redis L2 + PostgreSQL L3 + Disk L4)
+├─ core/cache (L1 in-memory + Redis L2 + PostgreSQL L3)
 ├─ @capabilities (queries Redis cache db=1 for LLM models)
 ├─ @css_a2a (uses Redis db=3 for A2A messages)
 ├─ @events (broadcasts events, optional UniversalSDK forwarding)
@@ -504,14 +480,14 @@ Orchestrator Process (in cybersec-proxy pod)
 Frontend Chat
 ├─ @chat (QoL injections)
 ├─ @capabilities (provider selection)
-└─ @cache (chat history storage)
+└─ core/cache (chat history storage)
 ```
 
 ---
 
 ## CACHING LAYER INTEGRATION
 
-### Multi-Level Cache via Docker Services
+### 3-Layer Cache via Docker Services
 
 ```
 Application (L1)
@@ -519,8 +495,6 @@ Application (L1)
 Redis (L2: cybersec-redis:6379)
     ↓ [if Redis down]
 PostgreSQL (L3: cybersec-postgres:5432)
-    ↓ [if both down]
-Disk (L4: /var/cache/css/)
 ```
 
 ### How It Works
@@ -590,7 +564,7 @@ cp .env.example .env
 # 2. Build custom images
 docker-compose build
 
-# 3. Start services (with dependency checks)
+# 3. Start infra services (postgres, redis, openobserve)
 docker-compose up -d
 
 # 4. Verify health
@@ -599,12 +573,15 @@ docker-compose ps
 # 5. Initialize database (first run)
 docker-compose exec cybersec-postgres psql -U cybersec cybersec < init-db.sql
 
-# 6. Pre-load Ollama models
-docker-compose exec cybersec-ollama ollama pull qwen3:0.6b
-docker-compose exec cybersec-ollama ollama pull neural-chat:7b
+# 6. Start app (Ollama managed by OllamaProcessManager in lifespan)
+CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload
+# Ollama pulls: see OllamaInstallChecker hint, or manually:
+#   ollama pull qwen3:0.6b
+#   ollama pull phi4-mini:3.8b-q4_K_M
+#   ollama pull qwen3:4b-q4_K_M
 
 # 7. Access services
-# Frontend:     http://localhost:8000
+# Frontend:     http://localhost:8000  (bun run dev)
 # Backend:      http://localhost:8765
 # Observability: http://localhost:5080
 ```

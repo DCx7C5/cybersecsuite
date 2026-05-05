@@ -56,22 +56,7 @@ class Severity(str, Enum):
     CRITICAL = "critical"
 
 
-class SeverityLevel(str, Enum):
-    INFO = "info"
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
-
-
 class Confidence(str, Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CONFIRMED = "confirmed"
-
-
-class ConfidenceLevel(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -93,13 +78,6 @@ class IOCStatus(str, Enum):
     INVESTIGATING = "investigating"
     RESOLVED = "resolved"
     CLEARED = "cleared"
-
-
-class ForensicIOCStatus(str, Enum):
-    ACTIVE = "active"
-    WATCHING = "watching"
-    RESOLVED = "resolved"
-    FALSE_POSITIVE = "false_positive"
 
 
 class IOCType(str, Enum):
@@ -148,6 +126,47 @@ class ModuleStatus(str, Enum):
     UNLOADED = "unloaded"
     ERROR = "error"
     LOADING = "loading"
+
+
+class TeamStatus(str, Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    PAUSED = "paused"
+    COMPLETED = "completed"
+
+
+class OrchestratorStatus(str, Enum):
+    STARTING = "starting"
+    IDLE = "idle"
+    BUSY = "busy"
+    PAUSED = "paused"
+    STOPPED = "stopped"
+    CRASHED = "crashed"
+
+
+class TaskAssignmentStatus(str, Enum):
+    PENDING = "pending"
+    QUEUED = "queued"
+    EXECUTING = "executing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    PAUSED = "paused"
+
+
+class TaskPriority(str, Enum):
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class CompositionStrategy(str, Enum):
+    SEQUENTIAL = "sequential"
+    PARALLEL = "parallel"
+    CONDITIONAL = "conditional"
+    FALLBACK = "fallback"
+    LOAD_BALANCED = "load_balanced"
 
 
 
@@ -323,6 +342,10 @@ class ModelStatus(str, Enum):
 
 class ToolType(str, Enum):
     """Source / category of a tools entry in the unified tools registry."""
+    BUILTIN = "builtin"
+    CUSTOM = "custom"
+    EXTERNAL = "external"
+    MCP = "mcp"
 
 
 class ToggleScopeType(str, Enum):
@@ -331,4 +354,3 @@ class ToggleScopeType(str, Enum):
     PROJECT = "project"
     SESSION = "session"
     TEAM = "team"
-

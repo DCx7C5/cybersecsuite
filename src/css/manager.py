@@ -93,29 +93,43 @@ def init_db(db_host, db_port, db_user, db_password, db_name, generate_schemas):
 
 
 @cli.command()
-@click.option("--host", default=None, help="Server host")
-@click.option("--port", default=None, help="Server port")
-@click.option("--reload/--no-reload", default=False, help="Enable auto-reload")
-@click.option("--log-level", default=None, help="Log level (default: from config)")
-def run(host, port, reload, log_level):
-    """Start the CyberSecSuite FastAPI server."""
+@click.option("--host", default=None, help="Bind host (default: from config / ASGI_HOST env)")
+@click.option("--port", default=None, type=int, help="Bind port (default: from config / ASGI_PORT env)")
+@click.option("--reload", is_flag=True, default=False, help="Enable hot-reload (dev only)")
+@click.option("--workers", default=1, type=int, help="Number of worker processes (prod, no reload)")
+@click.option("--log-level", default=None, help="Log level: debug|info|warning|error|critical")
+def serve(host, port, reload, workers, log_level):
+    """Start the CyberSecSuite ASGI server."""
+    import os
     from css.config import LOG_LEVEL
-    from css.core.asgi.app import create_app
 
-    app = create_app()
-
-    server_host = host or A2A_SERVER.get("host", "127.0.0.1")
-    server_port = int(port or A2A_SERVER.get("port", 8000))
+    server_host = host or os.environ.get("ASGI_HOST", A2A_SERVER.get("host", "127.0.0.1"))
+    server_port = int(port or os.environ.get("ASGI_PORT", A2A_SERVER.get("port", 8000)))
     effective_log_level = log_level or LOG_LEVEL
 
     click.echo(f"Starting CyberSecSuite on http://{server_host}:{server_port}")
+    if reload:
+        click.echo("  Hot-reload enabled (dev mode)")
+    elif workers > 1:
+        click.echo(f"  Workers: {workers}")
+
     uvicorn.run(
-        app,
+        # String import required for --reload; fine for normal start too
+        "css.core.asgi.app:app",
         host=server_host,
         port=server_port,
         reload=reload,
+        workers=workers if not reload else 1,
         log_level=effective_log_level,
     )
+
+
+@cli.command(name="run")
+@click.pass_context
+def run_alias(ctx):
+    """Alias for 'serve'."""
+    ctx.invoke(serve)
+
 
 
 @cli.command()
@@ -145,14 +159,7 @@ def check():
 
 
 def main():
-    """Main async entry point."""
-    from css.modules.marketplace.seeder import seed_marketplace_on_startup
-    
-    # Seed marketplace on startup if empty
-    result = asyncio.run(seed_marketplace_on_startup())
-    if result:
-        print(f"Marketplace seeding: {result}")
-    
+    """Main entry point."""
     cli()
 
 

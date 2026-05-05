@@ -148,3 +148,37 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 - **Audit Matrix**: .plan/architecture/core-audit-matrix.md
 - **Effort Estimate**: 8-12 hours for full implementation
 - **Action**: Schedule for Phase 4 backlog
+
+---
+
+## Phase 14 — OtelBridge
+
+The `otel/` directory is the **SDK config layer** only. The bridge connecting `@events` to OTel lives elsewhere:
+
+- **Bridge location**: `css/core/events/otel_bridge.py`
+- **Bridge responsibility**: `OtelBridge.run()` groups all events sharing the same `correlation_id` into one OTel trace tree
+- `DomainEvent`, `EventStore`, and `OtelBridge` live in `css/core/events/` (Phase 6 T6.3), NOT in `otel/`
+- `otel/` provides SDK setup (exporters, resource, tracer/meter providers) consumed by the bridge
+
+```
+css/core/events/otel_bridge.py  ← consumes @events + css/core/otel/
+css/core/otel/                  ← SDK config: exporters, tracer, meter
+```
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

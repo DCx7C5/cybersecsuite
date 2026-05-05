@@ -1,22 +1,35 @@
-# @cache — Unified Caching Layer (L1-L4)
+# @cache — KV Caching Layer
+
+> ⚠️ **MOVED TO `core/cache/`** — This module is infrastructure, not business logic.
+> Active location: `src/css/core/cache/`
+> Todo tracking: `cache-move-to-core` in session.db (Phase 3)
+> This plan.md remains as a redirect until the move is complete.
+
+---
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
 ---
 
-**Location**: `src/css/modules/cache/`
+## 🔗 Integration Points
 
-**Responsibility**: Multi-level cache fallback (Memory → Redis → PostgreSQL → Disk).
+| Component | Direction | Relationship |
+|-----------|-----------|--------------|
+| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.db` | → consumes | ORM models (if applicable) |
+| *(fill in module-specific relationships)* | | |
 
 ---
 
 ## Current State
 
-🟡 **Skeleton** (method signatures with docstrings, bodies marked `pass`)
+🟡 **Partial Implementation** (L1-L4 backends implemented; orchestration/wiring still pending)
 
 **Files**:
-- `base.py` — Base cache interface (abstract methods)
+- `base.py` — Base interface + L1/L2/L3/L4 backends + decorator
+- `models.py` — Runtime + ORM cache models
 - `exceptions.py` — Custom cache exceptions
+- `__init__.py` — Public exports
 
 ---
 
@@ -49,8 +62,8 @@ L4 (Archive):  Disk SQLite (50-500ms) — fallback when all above fail
 - [x] Implement base cache interface with async/await support
 - [x] Implement L1 backend (asyncio.Cache) — L1MemoryCache class
 - [x] Implement L2 backend (aioredis) — L2RedisCache class
-- [ ] Implement L3 backend (asyncpg) — PostgreSQL backend (Phase 2.5)
-- [ ] Implement L4 backend (aiosqlite) — SQLite archive (Phase 3)
+- [x] Implement L3 backend (PostgreSQL) — `L3PostgresCache` via Tortoise ORM
+- [x] Implement L4 backend (aiosqlite) — `L4SQLiteCache` archive fallback
 - [x] Add logger initialization in `__init__.py`
 
 **Completed (Phase 2 Foundation)**:
@@ -83,8 +96,49 @@ __all__ = ['CacheBackend', 'CacheError']
 
 ---
 
-**Status**: 🔴 Priority (High) | **Last Updated**: 2026-05-03
+**Status**: 🔴 Priority (High) | **Last Updated**: 2026-05-04
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
 **Details**: See .plan/modules/module-audit-matrix.md for full audit results.
+
+## Audit (2026-05-04)
+
+**Status**: TODO `db-fix-index-tuple-syntax` synchronized
+**Changes**:
+- Converted `CacheEntryModel.Meta.indexes` to `models.Index(fields=["namespace", "key"])`
+
+---
+
+## Prompt Caching (L5 — Provider-Native)
+
+L5 sits above the L1-L4 cache stack and is handled at the provider SDK level, not in `@cache`.
+
+| Provider | Caching | Implementation |
+|----------|---------|----------------|
+| Anthropic | Native `cache_control` param (up to 90% savings) | In `api_services/anthropic/` wrapper |
+| OpenAI | Automatic server-side (no params needed) | Nothing to do |
+| Gemini | Automatic server-side (no params needed) | Nothing to do |
+| All others | No native caching | `@cache` L4 semantic cache is the fallback |
+
+- `@cache` module's role: provide **L4 semantic cache** for providers WITHOUT native prompt caching
+- `@cache` exposes `CacheablePrompt` type that provider wrappers can mark for semantic matching
+- L4 uses Redis + semantic similarity (see `@semantic-token-caching` skill for strategy)
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

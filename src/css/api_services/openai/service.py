@@ -8,7 +8,6 @@ from typing import Any, AsyncIterator, Optional
 import aiohttp
 
 from css.core.types import (
-    BaseApiServiceClient,
     BaseMessage,
     MessageRole,
     ModelMetadata,
@@ -18,11 +17,12 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
+from css.core.types.providers import APIProviderBase
 
 logger = logging.getLogger(__name__)
 
 
-class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
+class OpenAIApiService(APIProviderBase, StreamingHandler):
     """OpenAI API service with streaming support."""
     
     def __init__(

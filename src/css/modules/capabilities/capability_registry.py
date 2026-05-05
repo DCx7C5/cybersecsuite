@@ -164,7 +164,7 @@ class DynamicCapabilityRegistry:
             return True
         
         ttl_seconds = self.CACHE_TTL_HOURS * 3600
-        elapsed = (datetime.utcnow() - self._last_discovery).total_seconds()
+        elapsed = (datetime.now() - self._last_discovery).total_seconds()
         return elapsed > ttl_seconds
     
     def needs_discovery(self) -> bool:
@@ -225,7 +225,7 @@ class DynamicCapabilityRegistry:
             for cap_str in cap_strs:
                 cap_str = cap_str.strip().upper()
                 try:
-                    capabilities.append(CapabilityType[cap_str])
+                    capabilities.append(cap_str)
                 except KeyError:
                     logger.warning(f"Unknown capability: {cap_str}")
             

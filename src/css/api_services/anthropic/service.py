@@ -5,21 +5,21 @@ import os
 from typing import Any, AsyncIterator, Optional, List
 
 from css.core.types import (
-    BaseApiServiceClient,
-    StreamingHandler,
-    ProviderType,
-    ModelMetadata,
     BaseMessage,
-    Tool,
+    MessageRole,
+    ModelMetadata,
+    ProviderType,
     StreamChunk,
+    StreamingHandler,
+    Tool,
     LLMResponse,
-    MessageRole
 )
+from css.core.types.providers import APIProviderBase
 
 logger = logging.getLogger(__name__)
 
 
-class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
+class AnthropicApiService(APIProviderBase, StreamingHandler):
     """Anthropic API service with streaming support."""
     
     def __init__(

@@ -93,6 +93,11 @@ logs/
 # EXCEPTION: .plan/session.db is tracked for todo management
 !.plan/session.db
 
+# Plan files — local only, not for version control
+.plan/plan.md
+.plan/memory.md
+.plan/checkpoints/
+
 # Dependencies (using uv, not pip freeze)
 node_modules/
 
@@ -122,9 +127,7 @@ docker-compose.override.yml
 dump.rdb
 
 # Playwright stealth profile
-mcps/brave_stealth_profile/
-/plan.md
-/plan0.md
+
 .css-initialized
 
 # TypeScript compiled output
@@ -137,9 +140,3 @@ src/dashboard/static/js/
 *.json
 
 resume
-!src/css/modules/cache/
-!src/css/modules/cache/*.py
-# Plan files (architecture docs, local use only)
-# Keep in working directory but don't commit to git
-**/plan.md
-plan.md

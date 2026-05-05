@@ -95,14 +95,14 @@ asgi
 | `__init__.py` | Module exports | 56 | ✅ Exports |
 | `enums.py` | DB-level enums (RedBlueMode, Severity, etc.) | 334 | ✅ Enums |
 | `exceptions.py` | Database-specific exceptions | 184 | ✅ Exceptions |
-| `scope_utils.py` | Scope management utilities | 395 | ✅ Utils |
+| `scope_utils.py` | ~~✅~~ ⛔ | Scope management utilities | 395 | **DEPRECATED** — deletion target Phase 15 |
 | `utils.py` | General utility functions | 0 | ⚠️ Empty |
 | **models/** | Subdirectory | - | ℹ️ See below |
 | **TOTAL** | **5+1 files** | **969 LOC** | ⚠️ Partial |
 
 **Models Subdirectory** (4 files):
 - `__init__.py` (40 lines)
-- `scope.py` (155 lines) - ProjectScope, SessionScope
+- `scope.py` (155 lines) - ProjectScope, SessionScope **(DEPRECATED — Phase 15 deletion target)**
 - `team.py` (57 lines) - Team, Agent, Role models
 - `quotas.py` (88 lines) - TaskAssignment, TaskResult, TeamQuota
 - `orchestrator.py` (16 lines) - OrchestratorInstance
@@ -112,7 +112,7 @@ asgi
 db
 ├─ core.enums                     (Shared enums)
 ├─ core.types                     (BaseEntity)
-├─ core.modules.scopes            (ScopeContext)
+├─ core.modules.scopes            (ScopeContext — DEPRECATED)
 ├─ tortoise                        (ORM engine)
 └─ asyncpg                         (PostgreSQL driver)
 ```
@@ -133,9 +133,9 @@ db
 
 #### **Current Implementation Status**
 - ✅ Tortoise ORM configured
-- ✅ Core models (ProjectScope, SessionScope, Team, etc.)
+- ✅ Core models (ProjectScope, SessionScope, Team, etc.) — **scope.py deprecated, Phase 15**
 - ✅ Database enums complete
-- ✅ Scope utilities for lifecycle management
+- ✅ Scope utilities for lifecycle management — **scope_utils.py deprecated, Phase 15**
 - ✅ Connection pooling (asyncpg)
 - ⚠️ Migrations strategy (Alembic vs Tortoise TBD)
 - ❌ TODO: Quota enforcement
@@ -481,7 +481,7 @@ Average Compliance: 81% (excl. OTEL: 97%)
 ### DB Component
 - [ ] Migration strategy finalization (Alembic vs Tortoise)
 - [ ] Quota enforcement in TaskAssignment
-- [ ] Archive utilities for SessionScope
+- [ ] ~~Archive utilities for SessionScope~~ → **delete scope_utils.py + scope.py (Phase 15, T15.7)**
 - [ ] Soft delete implementation for compliance
 
 ### TYPES Component
@@ -596,18 +596,16 @@ Estimated effort: 8 hours (design + implementation)
 
 ### Priority 3: Resolve TYPES ↔ RETRY Cycle (Medium)
 **Issue**: Indirect circular dependency via sdk_local
-**Recommendation**: Extract retry logic to separate module
+**Decision**: Option A chosen — `core/retry/` renamed to `core/resilience/`
 ```
-Option A: Create core.resilience module
-  ├─ Move retry.* to resilience.*
+✅ CHOSEN: Option A — core.resilience module
+  ├─ Move retry.* to resilience.*  (todo: rename core/retry/ → core/resilience/)
   ├─ Break types → retry dependency
-  ├─ types imports from resilience (OK)
+  └─ types imports from resilience (OK)
 
 Option B: Lazy import in sdk_local.py
-  ✅ Already implemented
-  └─ No action needed
-
-Recommendation: Keep Option B (already mitigated)
+  ✅ Already implemented as interim
+  └─ Will remain until resilience rename is done
 ```
 
 ---

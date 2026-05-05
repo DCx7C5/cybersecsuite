@@ -1,4 +1,16 @@
-# Triage Module: Background LLM for Classification & Routing
+# Triage → Intelligence Module: Local AI Assistance Layer
+
+> ⚠️ **RENAMED TO `modules/intelligence/`** — Module does far more than routing/classification.
+> New location: `src/css/modules/intelligence/`
+> Todo: `triage-rename-module` in session.db (Phase 19)
+> Scope: quality gates, conversation health, cost analysis, memory tagging, tone adaptation.
+>
+> **Ollama Docker removed** — Ollama now managed by `core/ollama/OllamaProcessManager` (Phase 33).
+> Models (pull manually via `ollama pull` — see `core/ollama/installer.py` for dev hint):
+>   - `qwen3:0.6b`
+>   - `phi4-mini:3.8b-q4_K_M`
+>   - `qwen3:4b-q4_K_M`
+
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
@@ -610,3 +622,58 @@ logger.error(f"Triage inference failed: {error}")
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
 **Details**: See .plan/modules/module-audit-matrix.md for full audit results.
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`
+
+
+---
+
+## ⚠️ Tier Design Updated (Phase 13 — 2026-05-04)
+
+The original 5-tier system (`tier0_simple` → `tier4_critical`) has been **replaced**
+by a 11-tier `PROVIDER_TIER_LIST` (rank 0–10). See `.plan/plan.md` Phase 13.
+
+**New tiers (lowest → highest):**
+
+| Rank | Label | Models | Hardware |
+|------|-------|--------|----------|
+| 0 | LOCAL_MINIMAL | qwen3:0.6b, llama3.2:1b | CPU only (works on any PC) |
+| 1 | LOCAL_LIGHT | qwen3:1.7b, phi3:mini | 4GB VRAM |
+| 2 | LOCAL_STANDARD | qwen3:4b, llama3.1:8b | 8GB VRAM |
+| 3 | LOCAL_CAPABLE | qwen3:8b, deepseek-r1:8b | 16GB VRAM |
+| 4 | FREE_CLOUD | gemini-2.0-flash-lite, groq/llama | None (API, free) |
+| 5 | BUDGET_CLOUD | gemini-2.0-flash, deepseek-chat, grok-3-mini | None |
+| 6 | STANDARD_CLOUD | gpt-4o-mini, claude-3-haiku | None |
+| 7 | ADVANCED_CLOUD | gpt-4o, claude-3-5-sonnet | None |
+| 8 | PREMIUM_CLOUD | gpt-4.5, claude-3-7-sonnet, o3-mini | None |
+| 9 | ELITE_CLOUD | claude-opus-4-5, gpt-5, o3 | None |
+| 10 | **S_PLUS** ← always last | claude-opus-4-7, o3-pro | None |
+
+`PROVIDER_TIER_LIST[-1]` is **always** S+. Insert new tiers above it, never after.
+
+**Complexity → minimum tier:**
+
+| Complexity | Min Rank | Notes |
+|------------|----------|-------|
+| TRIVIAL | 0 | Qwen3 0.6B handles it |
+| SIMPLE | 0 | Local preferred, free cloud fallback |
+| MODERATE | 1 | Light local or free cloud |
+| COMPLEX | 5 | Budget cloud minimum |
+| CRITICAL | 7 | Advanced cloud minimum |
+| security_level≥9 | 9 | Elite or S+ only |

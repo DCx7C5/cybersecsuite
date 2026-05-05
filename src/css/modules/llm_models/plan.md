@@ -4,9 +4,16 @@
 
 ---
 
-**Location**: `src/css/modules/llm_models/`
+## 🔗 Integration Points
 
-**Responsibility**: Model metadata, validation, and fine-tuning support (TBD).
+| Component | Direction | Relationship |
+|-----------|-----------|--------------|
+| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.db` | → consumes | ORM models (if applicable) |
+| `css.api_services.*` | ← consumed by | All 22 provider SDKs registered in this registry |
+| `css.modules.events` | → consumes | `@instrument("llm.call.{provider}.{model}")` — Phase 14 |
+| `UnifiedLLMClient` (Phase 10) | ← provides to | Registry drives provider SDK selection |
+| `css.modules.triage` | ← provides to | Triage module reads routing tier metadata |
 
 ---
 
@@ -94,3 +101,65 @@ __all__ = ['ModelRegistry']
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
 **Details**: See .plan/modules/module-audit-matrix.md for full audit results.
+
+---
+
+## SDK Architecture
+
+This module is the **model registry**. `UnifiedLLMClient` (Phase 10) uses this registry to select the correct provider SDK and routing tier.
+
+### Three SDK Tiers
+
+| Tier | Providers | Pattern |
+|------|-----------|---------|
+| **A — Native SDK** | anthropic, openai, gemini, mistral, cohere | Use provider's own Python SDK (best feature access, prompt caching, etc.) |
+| **B — OpenAI-compatible** | groq, together, deepinfra, fireworks, perplexity, sambanova, deepseek, openrouter, lambda_api, nscale, cerebras, cloudflare, ai21, xai | openai SDK with `base_url` override OR custom `aiohttp` client |
+| **C — Local/Custom** | ollama (custom in-house SDK), opencode (custom CLI integration) | Bespoke aiohttp clients; NOT the pip `ollama` package |
+
+---
+
+## 10-Tier Routing
+
+Models are assigned a routing tier (S+ = best/most expensive, T10 = cheapest/local):
+
+| Tier | Example Models | Notes |
+|------|---------------|-------|
+| S+ | claude-opus-4.7, gpt-5, gemini-ultra | Best quality, highest cost |
+| S | claude-sonnet-4.x, gpt-4.1, gemini-pro | Production default |
+| A+ | claude-haiku, gpt-4.1-mini | Fast + capable |
+| A | mistral-large, llama-3.3-70b, qwen3-72b | Open-weight large |
+| B+ | mistral-small, llama-3.1-8b | Open-weight balanced |
+| B | deepseek-v3, qwen3-32b | Cost-effective capable |
+| C+ | gemma-3-27b, phi-4 | Small capable |
+| C | qwen3-14b, phi-3.5 | Lightweight |
+| D | qwen3-7b, llama-3.2-3b | Minimal resources |
+| T10 | qwen3-0.6B (Ollama) | Local only — runs on dev PC |
+
+---
+
+## Phase 14 — @instrument Integration
+
+`UnifiedLLMClient.complete()` is **entry point 3 of 5** for the `@events` system.
+
+- Namespace: `@instrument("llm.call.{provider}.{model}")`
+- Examples: `"llm.call.anthropic.claude-sonnet-4"`, `"llm.call.ollama.qwen3-0.6b"`
+- Events fired: `llm.call.started`, `llm.call.completed`, `llm.call.failed`
+- All provider SDK wrappers in `api_services/` are instrumented via this namespace
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

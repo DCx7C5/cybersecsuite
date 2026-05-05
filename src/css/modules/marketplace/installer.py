@@ -36,7 +36,7 @@ class PackageInstaller:
         Returns:
             InstallationResult with success status and details
         """
-        item = await MarketplaceItem.get_or_none(id=item_id)
+        item = await MarketplaceItem.get_or_none(slug=item_id)
         if not item:
             return InstallationResult(
                 success=False,
@@ -75,7 +75,7 @@ class PackageInstaller:
         Returns:
             InstallationResult with success status and details
         """
-        item = await MarketplaceItem.get_or_none(id=item_id)
+        item = await MarketplaceItem.get_or_none(slug=item_id)
         if not item:
             return InstallationResult(
                 success=False,

@@ -4,9 +4,13 @@
 
 ---
 
-**Location**: `src/css/modules/teams/`
+## 🔗 Integration Points
 
-**Responsibility**: Team creation, member management, task delegation, and team coordination.
+| Component | Direction | Relationship |
+|-----------|-----------|--------------|
+| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.db` | → consumes | ORM models (if applicable) |
+| *(fill in module-specific relationships)* | | |
 
 ---
 
@@ -34,6 +38,7 @@
 - [ ] Task distribution to members
 - [ ] Team coordination engine
 - [ ] Add logger initialization in `__init__.py`
+- [x] Remove conflicting ORM stubs (`models.py`, `orchestrator.py`) and use `css.core.db.models` as canonical source
 
 ---
 
@@ -55,7 +60,7 @@ __all__ = ['TeamManager']
 
 ---
 
-**Status**: 🔴 Priority (Critical) | **Last Updated**: 2026-05-03
+**Status**: 🔴 Priority (Critical) | **Last Updated**: 2026-05-04
 ## 🎭 FEATURE 2: TEAMSCOPE ARCHITECTURE
 
 ### Problem → Solution
@@ -147,3 +152,21 @@ Transitions:
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
 **Details**: See .plan/modules/module-audit-matrix.md for full audit results.
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

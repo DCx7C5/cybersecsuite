@@ -5,6 +5,8 @@ to a canonical ToolSchema format for unified access and discovery.
 """
 
 import logging
+import pkgutil
+from pathlib import Path
 from typing import Optional
 
 from css.modules.tools.base import BaseToolRegistry
@@ -28,7 +30,11 @@ class ToolRegistry(BaseToolRegistry):
         self.tools: dict[str, ManagedTool] = {}
         self.hybrid_tools: dict[str, ManagedTool] = {}
         self._load_builtin_tools()
-        logger.info(f"Tool registry initialized with {len(self.tools)} tools from {self._provider_count} providers")
+        logger.info(
+            "Tool registry initialized with %d tools from %d providers",
+            len(self.tools),
+            self._provider_count,
+        )
 
     @property
     def _provider_count(self) -> int:
@@ -41,12 +47,30 @@ class ToolRegistry(BaseToolRegistry):
         For each provider, extract available tools and normalize to ToolSchema.
         Handles provider-specific tool naming/structure conventions.
         """
-        # Load hybrid tools from database (async call deferred to app startup)
-        # Call _load_hybrid_tools_from_db() during app initialization
-        
-        # Provider-specific tool definitions (hardcoded for now, can be migrated to provider plugins)
-        builtin_tools_map = {
-            # OpenAI: code_interpreter, file_search, retrieval
+        self.tools.clear()
+        loaded = 0
+        for provider in self._discover_providers():
+            for tool_schema in self._builtin_schemas_for_provider(provider):
+                self.tools[tool_schema.tool_id] = ManagedTool(schema=tool_schema)
+                logger.debug("Registered tool: %s", tool_schema.tool_id)
+                loaded += 1
+        logger.info("Loaded %d builtin tools from %d providers", loaded, self._provider_count)
+
+    @staticmethod
+    def _discover_providers() -> list[str]:
+        """Auto-discover provider package names under css.api_services."""
+        api_services_dir = Path(__file__).resolve().parents[2] / "api_services"
+        providers = [
+            svc_name
+            for _, svc_name, ispkg in pkgutil.iter_modules([str(api_services_dir)])
+            if ispkg
+        ]
+        return sorted(set(providers))
+
+    @staticmethod
+    def _builtin_schemas_for_provider(provider: str) -> list[ToolSchema]:
+        """Return normalized builtin tool schemas for one provider."""
+        builtin_tools_map: dict[str, list[ToolSchema]] = {
             "openai": [
                 ToolSchema(
                     provider="openai",
@@ -88,7 +112,6 @@ class ToolRegistry(BaseToolRegistry):
                     timeout_seconds=30,
                 ),
             ],
-            # Anthropic: computer_use (vision-based tool use)
             "anthropic": [
                 ToolSchema(
                     provider="anthropic",
@@ -124,29 +147,8 @@ class ToolRegistry(BaseToolRegistry):
                     timeout_seconds=30,
                 ),
             ],
-            # Groq: OpenAI-compatible (no builtin tools at provider level, uses function calling)
-            "groq": [],
-            # Ollama: Local model runner (no builtin tools)
-            "ollama": [],
-            # Google Gemini: function calling support
-            "gemini": [],
-            # Mistral: function calling support
-            "mistral": [],
-            # Together: function calling support
-            "together": [],
-            # All other providers: empty by default (can be extended)
         }
-
-        # Load tools for each provider
-        loaded = 0
-        for provider, tools in builtin_tools_map.items():
-            for tool_schema in tools:
-                managed_tool = ManagedTool(schema=tool_schema)
-                self.tools[tool_schema.tool_id] = managed_tool
-                logger.debug(f"Registered tool: {tool_schema.tool_id}")
-                loaded += 1
-
-        logger.info(f"Loaded {loaded} builtin tools from {len(builtin_tools_map)} providers")
+        return builtin_tools_map.get(provider, [])
 
     def register_tool(self, tool_schema: ToolSchema, **kwargs) -> None:
         """Register a new tool in the registry.
@@ -164,7 +166,7 @@ class ToolRegistry(BaseToolRegistry):
         
         managed_tool = ManagedTool(schema=tool_schema)
         self.tools[tool_schema.tool_id] = managed_tool
-        logger.info(f"Registered tool: {tool_schema.tool_id}")
+        logger.info("Registered tool: %s", tool_schema.tool_id)
 
     def register_hybrid_tool(self, hybrid_schema) -> None:
         """Register a new hybrid tool in the registry.
@@ -203,7 +205,7 @@ class ToolRegistry(BaseToolRegistry):
         
         managed_tool = ManagedTool(schema=hybrid_schema)
         self.hybrid_tools[hybrid_schema.tool_id] = managed_tool
-        logger.info(f"Registered hybrid tool: {hybrid_schema.tool_id}")
+        logger.info("Registered hybrid tool: %s", hybrid_schema.tool_id)
 
     def get_tool(self, tool_id: str) -> ToolSchema:
         """Get a specific tool by ID.
@@ -330,7 +332,7 @@ class ToolRegistry(BaseToolRegistry):
         managed_tool = self.tools[tool_id]
         managed_tool.schema.enabled = False
         managed_tool.disabled_reason = reason
-        logger.info(f"Disabled tool: {tool_id}" + (f" ({reason})" if reason else ""))
+        logger.info("Disabled tool: %s%s", tool_id, f" ({reason})" if reason else "")
 
     def enable_tool(self, tool_id: str) -> None:
         """Re-enable a previously disabled tool.
@@ -347,7 +349,7 @@ class ToolRegistry(BaseToolRegistry):
         managed_tool = self.tools[tool_id]
         managed_tool.schema.enabled = True
         managed_tool.disabled_reason = None
-        logger.info(f"Enabled tool: {tool_id}")
+        logger.info("Enabled tool: %s", tool_id)
 
     def get_tool_stats(self, tool_id: str) -> dict:
         """Get execution statistics for a tool.
@@ -380,18 +382,19 @@ class ToolRegistry(BaseToolRegistry):
         """
         try:
             from css.modules.tools.models import HybridToolDefinition
-            
+
+            self.hybrid_tools.clear()
             hybrids = await HybridToolDefinition.all()
             for hybrid_orm in hybrids:
                 hybrid_schema = hybrid_orm.to_schema()
                 try:
                     self.register_hybrid_tool(hybrid_schema)
                 except ValueError as e:
-                    logger.warning(f"Failed to load hybrid tool {hybrid_orm.name}: {e}")
-            
-            logger.info(f"Loaded {len(hybrids)} hybrid tools from database")
+                    logger.warning("Failed to load hybrid tool %s: %s", hybrid_orm.name, e)
+
+            logger.info("Loaded %d hybrid tools from database", len(hybrids))
         except Exception as e:
-            logger.error(f"Failed to load hybrid tools from database: {e}")
+            logger.error("Failed to load hybrid tools from database: %s", e)
 
     async def save_hybrid_tool(self, hybrid_schema) -> None:
         """Persist hybrid tool to database (async).
@@ -401,13 +404,17 @@ class ToolRegistry(BaseToolRegistry):
         """
         try:
             from css.modules.tools.models import HybridToolDefinition
-            
+
             hybrid_orm = HybridToolDefinition.from_schema(hybrid_schema)
             await hybrid_orm.save()
-            logger.info(f"Persisted hybrid tool: {hybrid_schema.tool_id}")
+            logger.info("Persisted hybrid tool: %s", hybrid_schema.tool_id)
         except Exception as e:
-            logger.error(f"Failed to persist hybrid tool {hybrid_schema.name}: {e}")
+            logger.error("Failed to persist hybrid tool %s: %s", hybrid_schema.name, e)
             raise
+
+    async def initialize_runtime_state(self) -> None:
+        """Initialize async runtime state required at ASGI startup."""
+        await self._load_hybrid_tools_from_db()
 
     # Implement abstract methods from BaseRegistry
     async def register(self, tool_id: str, tool_schema: ToolSchema) -> None:
@@ -431,7 +438,7 @@ class ToolRegistry(BaseToolRegistry):
         if tool_id not in self.tools:
             raise ToolNotFoundError(f"Tool not found: {tool_id}")
         del self.tools[tool_id]
-        logger.info(f"Unregistered tool: {tool_id}")
+        logger.info("Unregistered tool: %s", tool_id)
 
     async def get(self, tool_id: str) -> ToolSchema:
         """Get a tool (async wrapper for get_tool).
@@ -463,7 +470,7 @@ class ToolRegistry(BaseToolRegistry):
 _registry: Optional[ToolRegistry] = None
 
 
-def get_tool_registry() -> ToolRegistry | None:
+def get_tool_registry() -> ToolRegistry:
     """Get the global tool registry instance.
     
     Returns:

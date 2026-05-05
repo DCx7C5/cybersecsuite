@@ -6,7 +6,6 @@ import os
 from typing import Any, AsyncIterator, Optional
 
 from css.core.types import (
-    BaseApiServiceClient,
     BaseMessage,
     MessageRole,
     ModelMetadata,
@@ -16,11 +15,12 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
+from css.core.types.providers import LocalProviderBase
 
 logger = logging.getLogger(__name__)
 
 
-class OllamaApiService(BaseApiServiceClient, StreamingHandler):
+class OllamaApiService(LocalProviderBase, StreamingHandler):
     """Ollama API service with streaming support."""
     
     def __init__(

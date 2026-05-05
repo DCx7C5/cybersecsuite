@@ -82,7 +82,7 @@ Result: 5 tasks complete 3x faster (N tasks ÷ N orchestrators)
 #### Pattern: Isolated Task Queues per Team (TeamLeaders coordinate Workers/TeamMembers)
 
 ```
-SessionScope
+Session
 │
 ├─ Team-Engineering (max 5 Orchestrators delegate)
 │  ├─ Queue (isolated)
@@ -205,19 +205,19 @@ results = await team.delegate_agents_concurrent([
 #### Development Mode: Dual Orchestrators (Parallel Planning + Execution)
 
 ```
-SessionScope [mode=development]
+Session [mode=development]
 │
 ├─ Orchestrator (Planner role) (Process 1)
-│  ├─ Reads project code
+│  ├─ Reads project.source_dir
 │  ├─ Generates proposals (async)
-│  ├─ Writes to .css/plan/ (isolated)
+│  ├─ Writes to ~/.css/sessions/<sid>/plan/ (isolated)
 │  └─ [Running in parallel with Orch-Dev]
 │
 ├─ Orchestrator (Orchestrator role) (Process 2)
 │  ├─ Reads decisions from plan
 │  ├─ Executes implementation (async)
 │  ├─ Delegates to Workers/TeamMembers
-│  ├─ Writes to /src/, test results
+│  ├─ Writes to project.source_dir/src/, results to ~/.css/sessions/<sid>/results/
 │  └─ [Running in parallel with Orch-Plan]
 │
 └─ Orchestrator (Triage role) (Process 3, background)
@@ -237,7 +237,7 @@ Result: 6s total (vs 12s if serial)
 #### Red/Blue/Purple Modes: Coordinated Parallel Attacks/Defenses
 
 ```
-SessionScope [mode=purple_team]
+Session [mode=purple_team]
 │
 ├─ Orchestrator (Orchestrator role - Red) (Process 1)
 │  ├─ Spawn N attack workers (parallel)

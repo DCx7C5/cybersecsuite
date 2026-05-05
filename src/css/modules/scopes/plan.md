@@ -1,73 +1,85 @@
-# @scopes — Scope Management & Hierarchy
+# @scopes — ⛔ DEPRECATED: SCHEDULED FOR DELETION (Phase 15)
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
 ---
 
-**Location**: `src/css/modules/scopes/`
+## ⛔ STATUS: DEPRECATED — DO NOT USE, DO NOT EXTEND
 
-**Responsibility**: Scope hierarchy management, scope resolution, and scope-based access control.
+**Reason**: The `ScopeLevel` (GLOBAL→APP→PROJECT→RUNTIME→SESSION) multi-tenant SaaS hierarchy does not fit a cybersecurity tool. This entire module is being removed in Phase 15.
 
----
+**Todo ID**: `scopes-module-remove` (tracked in session.db)
 
-## Current State
-
-🟡 **Skeleton** (method signatures with docstrings, bodies marked `pass`)
+> ⚠️ **WARNING**: Do NOT import from this module in any new code. All existing imports must be migrated to replacements before `scopes-module-remove` todo is closed.
 
 ---
 
-## Purpose
+## What Was Here
 
-- Implement 5-level scope hierarchy (GLOBAL → APP → PROJECT → RUNTIME → SESSION)
-- Resolve scope paths and access
-- Manage scope configurations
-- Handle scope inheritance and restriction
-- Support scope-based permission checks
-
----
-
-## Implementation Checklist
-
-- [x] Scope hierarchy definition — HIERARCHY constant with all 5 levels
-- [x] Scope context class — ScopeContext with validation
-- [x] Scope configuration loading — Via ScopeContext parameters
-- [x] Scope path resolution — resolve_scope_path() builds inheritance chain
-- [x] Inheritance and restriction logic — Via ScopeManager._find_scope_at_level()
-- [x] Add logger initialization in `__init__.py` — Full logging setup
-
-**Completed (Phase 2 Foundation)**:
-✅ ScopeLevel enum (GLOBAL, APP, PROJECT, RUNTIME, SESSION)
-✅ ScopeRestriction enum (NONE, READ_ONLY, DENY, REQUIRE_AUTH, REQUIRE_ROLE)
-✅ ScopeContext class with full validation
-✅ ScopeManager: create, get, resolve, access control, delete, list
-✅ Inheritance chain resolution via HIERARCHY
-✅ Access control: can_access() with restriction-based checks
-✅ Exception hierarchy (ScopeValidationError, ScopeResolutionError)
-✅ Full module exports and logging
+| Component | Description |
+|-----------|-------------|
+| `ScopeLevel` enum | GLOBAL → APP → PROJECT → RUNTIME → SESSION (5-level SaaS hierarchy) |
+| `ScopeContext` | Context object carrying scope resolution state |
+| `ScopeManager` | CRUD + access control for the scope hierarchy |
+| `ScopeRestriction` | NONE, READ_ONLY, DENY, REQUIRE_AUTH, REQUIRE_ROLE |
 
 ---
 
-## Module Pattern
+## Replacements
+
+| Old | Replacement | Location |
+|-----|-------------|----------|
+| `ScopeContext` | `SessionContext(msgspec.Struct, frozen=True)` | `css/core/session.py` |
+| `ScopeManager.create()` | `WorkingDirManager.create()` | `css/modules/working_dir/` |
+| `scope_id` on PathGrant/ToolGrant | `session_id` field | `css/modules/permissions/` |
+| `ScopeLevel` in `options_manager.py` | Local `ConfigLayer(str, Enum)` | `css/modules/streaming/options_manager.py` |
+
+### SessionContext (replacement for ScopeContext)
 
 ```python
-# src/css/modules/scopes/__init__.py
-"""Scope management and hierarchy."""
-
-import logging
-from css.core.logger import getLogger
-
-logger = getLogger(__name__)
-
-from .context import ScopeContext
-from .manager import ScopeManager
-
-__all__ = ['ScopeContext', 'ScopeManager']
+# css/core/session.py
+class SessionContext(msgspec.Struct, frozen=True):
+    session_id: str
+    agent_id: str
+    project_dir: Path
+    target: str | None
+    parent_session_id: str | None
 ```
+
+### WorkingDirManager (replacement for scope creation)
+
+`WorkingDirManager.create(session_id, agent_id, mode)` creates the session directory AND auto-registers the least-privilege PathGrant (agent → session_dir/** → READ+WRITE). Returns `SessionContext`.
 
 ---
 
-**Status**: 🔴 Priority (High) | **Last Updated**: 2026-05-03
-## Audit (2026-05-03)
+## Migration Todos (in dependency order)
 
-**Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/modules/module-audit-matrix.md for full audit results.
+| Todo ID | Description | Status |
+|---------|-------------|--------|
+| `session-context-create` | Create `SessionContext` in `css/core/session.py` | pending |
+| `working-dir-manager` | Implement `WorkingDirManager.create()` | pending |
+| `perm-rename-scope-to-session` | Rename `scope_id` → `session_id` on all grants | pending |
+| `streaming-decouple-from-scopes` | Replace `ScopeLevel` import with local `ConfigLayer` | pending |
+| `scopes-module-remove` | Delete this entire module (LAST step) | pending |
+
+---
+
+**Status**: ⛔ DEPRECATED | **Phase**: Phase 15 addendum | **Last Updated**: 2026-05-03
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

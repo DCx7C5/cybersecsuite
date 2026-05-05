@@ -4,8 +4,9 @@ Complements types.py dataclasses with database persistence.
 Follows hybrid pattern: dataclass (runtime) + ORM model (persistence).
 """
 
-from tortoise import fields
+from tortoise import fields, models
 from tortoise.models import Model
+from css.core.db.enums import CompositionStrategy
 
 
 class HybridToolDefinition(Model):
@@ -17,15 +18,9 @@ class HybridToolDefinition(Model):
     name = fields.CharField(max_length=256, unique=True, db_index=True)
     description = fields.TextField()
     component_tools = fields.JSONField()
-    composition_strategy = fields.CharField(
-        max_length=50,
-        choices=[
-            ("sequential", "Sequential"),
-            ("parallel", "Parallel"),
-            ("conditional", "Conditional"),
-            ("fallback", "Fallback"),
-            ("load_balanced", "Load Balanced"),
-        ]
+    composition_strategy = fields.CharEnumField(
+        CompositionStrategy,
+        default=CompositionStrategy.SEQUENTIAL,
     )
     fallback_provider = fields.CharField(max_length=100, null=True)
     requires_coordination = fields.BooleanField(default=False)
@@ -93,4 +88,4 @@ class HybridToolDefinitionTag(Model):
         table = "hybrid_tool_tag"
         table_description = "M2M relationship between hybrid tools and tags"
         unique_together = [("hybrid_tool", "tag")]
-        indexes = [("hybrid_tool", "tag")]
+        indexes = [models.Index(fields=["hybrid_tool", "tag"])]

@@ -1,471 +1,464 @@
 # Development Workflow
 
-**⚠️ CRITICAL**: AI MUST follow these completion workflows rigorously. Always execute TODO → TASK → PHASE in order. No shortcuts.
+**⚠️ CRITICAL**: Read this file completely before touching any code. Follow every step exactly. No shortcuts.
 
-**Workspace**: `/home/daen/Projects/cybersecsuite/.plan/`
+**Project root**: `/home/daen/Projects/cybersecsuite/`
+**Plan directory**: `/home/daen/Projects/cybersecsuite/.plan/`
+**Source directory**: `/home/daen/Projects/cybersecsuite/src/css/`
+**Python venv**: `/home/daen/Projects/cybersecsuite/.venv/bin/python`
 
 ---
 
-## ✅ COMPLETION WORKFLOWS (Primary Reference)
+## ⚡ STARTUP RITUAL — DO THIS FIRST, EVERY SESSION
 
-Follow **exactly one workflow** based on unit size. Always start with **Pre-Task** if beginning a new task.
+Run these commands before anything else. They tell you the current state.
 
-### 📋 PRE-TODO WORKFLOW (Before starting any todo)
+```bash
+# 1. Go to project root
+cd /home/daen/Projects/cybersecsuite
 
-**1. Select next ready todo**
+# 2. Check git status (understand what was last touched)
+git log --oneline -10
+git status
+```
 
 ```sql
--- Find next pending todo with no blocking dependencies
-SELECT t.id, t.title, t.description FROM todos t
+-- 3. Find what todos are ready to work on RIGHT NOW (no blocked deps)
+-- Run this in: sqlite3 /home/daen/Projects/cybersecsuite/.plan/session.db
+SELECT t.id, t.title, t.phase, t.task
+FROM todos t
 WHERE t.status = 'pending'
 AND NOT EXISTS (
   SELECT 1 FROM todo_deps td
   JOIN todos dep ON td.depends_on = dep.id
   WHERE td.todo_id = t.id AND dep.status != 'done'
 )
+ORDER BY t.phase, t.task
+LIMIT 10;
+```
+
+```sql
+-- 4. Check if anything is in_progress (was left incomplete)
+SELECT id, title, phase, task FROM todos WHERE status = 'in_progress';
+```
+
+```bash
+# 5. Read the master plan to understand context
+head -100 /home/daen/Projects/cybersecsuite/.plan/plan.md
+```
+
+**If step 4 returns rows**: finish those in_progress todos BEFORE starting anything new.
+
+---
+
+## 🗃️ SESSION.DB — THE ONLY TASK TRACKER
+
+All work is tracked in `.plan/session.db`. This is a SQLite database.
+
+**How to open it**:
+```bash
+sqlite3 /home/daen/Projects/cybersecsuite/.plan/session.db
+```
+
+**Schema (exact columns — do NOT use columns that aren't listed here)**:
+
+```sql
+-- todos table
+CREATE TABLE todos (
+  id          TEXT PRIMARY KEY,   -- e.g. "events-instrument-decorator"
+  title       TEXT NOT NULL,      -- short label
+  description TEXT,               -- full implementation spec
+  status      TEXT DEFAULT 'pending'
+              CHECK(status IN ('pending', 'in_progress', 'done', 'blocked')),
+  created_at  TEXT DEFAULT (datetime('now')),
+  updated_at  TEXT DEFAULT (datetime('now')),
+  phase       TEXT DEFAULT 'unassigned',  -- e.g. "Phase 14 — ..."
+  task        TEXT DEFAULT 'unassigned'   -- e.g. "T14.1 ..."
+);
+
+-- todo_deps table (dependency links)
+CREATE TABLE todo_deps (
+  todo_id    TEXT NOT NULL,  -- the todo that is BLOCKED
+  depends_on TEXT NOT NULL,  -- the todo that must be DONE first
+  PRIMARY KEY (todo_id, depends_on)
+);
+```
+
+**⚠️ THERE IS NO `tasks` TABLE. THERE IS NO `completed_at` COLUMN. DO NOT USE THEM.**
+
+**Status lifecycle**: `pending` → `in_progress` → `done` (or `blocked`)
+
+---
+
+## ✅ WORKFLOW 1 — COMPLETING A SINGLE TODO
+
+This is the most common workflow. Do this for each todo.
+
+### Step 1 — Pick a todo
+
+```sql
+-- Find the first ready todo (no blocked dependencies)
+SELECT t.id, t.title, t.description, t.phase, t.task
+FROM todos t
+WHERE t.status = 'pending'
+AND NOT EXISTS (
+  SELECT 1 FROM todo_deps td
+  JOIN todos dep ON td.depends_on = dep.id
+  WHERE td.todo_id = t.id AND dep.status != 'done'
+)
+ORDER BY t.phase, t.task
 LIMIT 1;
 ```
 
-**2. Inspect codebase for existing implementation**
-
-```bash
-# Based on todo description, search src/css for related files
-grep -r "pattern_or_keyword" src/css --include="*.py" | head -20
-
-# Check if module/feature already partially exists
-ls -la src/css/modules/  # or api_services/ or core/
-```
-
-**3. Adapt todo to existing codebase**
-
-- If partial implementation exists: **Focus on completing it**, not recreating
-- If no implementation exists: **Create from scratch** per todo spec
-- Update todo description in session.db if assumptions need adjustment
-- **Update status to `in_progress` ONLY after adapting** (ready to implement)
-
-**4. Proceed to TODO workflow**
-
----
-
-### 📋 PRE-TASK WORKFLOW (Before starting any task)
-
-**1. Verify all dependencies are satisfied (UNDERSTANDING STATE)**
+If this returns nothing: either all todos are done, or all pending todos are blocked. Run this to find out:
 
 ```sql
--- Check blocking dependencies
-SELECT t.id, t.title FROM todos t
+-- See what's blocking everything
+SELECT t.id as blocked_todo, t.title, dep.id as blocked_by, dep.status
+FROM todos t
 JOIN todo_deps td ON t.id = td.todo_id
 JOIN todos dep ON td.depends_on = dep.id
-WHERE dep.status != 'done'
-AND t.id LIKE 'task-prefix-%';
+WHERE t.status = 'pending' AND dep.status != 'done'
+ORDER BY t.phase, t.task;
 ```
 
-**If blocked**: Document in `plan.md` why this task cannot start. Mark as `blocked` in session.db.
-
-**2. Inspect codebase for existing implementation (UNDERSTANDING STATE)**
-
-```bash
-# List files modified during this task's previous todos
-git log --name-only --oneline | grep -A 10 "task-prefix"
-
-# Check module/area structure for this task
-ls -la src/css/modules/  # or api_services/ or core/
-find src/css -type f -name "*.py" | grep -E "(task-keyword)" | head -20
-```
-
-**3. Adapt todos to existing codebase (UNDERSTANDING STATE)**
-
-- Review which files already exist from previous work
-- Identify gaps that remaining todos should fill
-- Update todo descriptions if new files discovered
-- Document in `plan.md` any structural assumptions
-
-**4. UNDERSTAND INTENT and deep inspect the local `plan.md` in the directory you're working in**
-
-For any component, **always start with the local plan.md file**:
-
-**Deep inspection checklist for component plan.md files**:
-- [ ] **Purpose & Use Cases** — Why does this exist? What problems does it solve?
-- [ ] **Architecture & Design** — How is it structured? What patterns?
-- [ ] **5-File Pattern** (if module) — models.py, types.py, enums.py, exceptions.py, __init__.py
-- [ ] **Integration Points** — Where/how does it connect to other modules?
-- [ ] **API & Public Interface** — What classes/functions should be exported?
-- [ ] **Performance Targets** — Latency, throughput, accuracy, reliability goals
-- [ ] **Success Criteria** — What does "done" look like?
-- [ ] **Implementation Roadmap** — Phases/milestones/breakdown
-- [ ] **Dependencies & Blockers** — What must be done first?
-- [ ] **Known Gaps or TODOs** — What's acknowledged as incomplete?
-
-**Example: Studying cache module**:
-```bash
-# Read the source-of-truth for the cache module
-$ cat src/css/modules/cache/plan.md | head -200
-# Sections to review:
-- Purpose: "auto-discover and normalize ALL builtin tools from 26 LLM providers"
-- Architecture: registry design, MCP server integration
-- 5-File Pattern: models.py (ToolSchema), types.py, enums.py, exceptions.py, __init__.py
-- Integration Points: api_services (26 providers), response_strategy_router, REST endpoints
-- Performance: <100ms for tool discovery
-- Success: All 26 providers catalogued, MCP server running
-```
-
-**Why**: You need to deeply understand the INTENDED design before seeing what's been built. This prevents:
-- Building the wrong thing
-- Missing integration requirements
-- Creating inconsistent API
-- Duplicating work
-
-**Document findings in session**: Note what the plan says should be built.
-
-**5. Inspect ACTUAL implementation in src/css/**
-
-Now that you understand the PLAN, see what's actually been implemented:
-
-```bash
-# For modules (e.g., @tools):
-ls -lh src/css/modules/tools/
-find src/css/modules/tools -name "*.py" -exec wc -l {} +
-cat src/css/modules/tools/__init__.py    # What's exported?
-grep -r "class\|def\|TODO" src/css/modules/tools/*.py | head -30
-
-# For API services (e.g., Ollama):
-ls -lh src/css/api_services/ollama/
-find src/css/api_services/ollama -name "*.py" -exec wc -l {} +
-cat src/css/api_services/ollama/__init__.py
-grep -r "TODO\|FIXME\|NotImplemented" src/css/api_services/ollama/*.py
-
-# For core infrastructure:
-ls -lh src/css/core/orchestration/
-find src/css/core/orchestration -name "*.py" -exec wc -l {} +
-grep -r "class\|TODO\|FIXME" src/css/core/orchestration/*.py
-```
-
-**Inspection checklist for src/css/**:
-- [ ] Line counts for each file (size/maturity?)
-- [ ] What's exported in `__init__.py`?
-- [ ] How many TODOs/FIXMEs exist?
-- [ ] What classes/functions are stubbed vs complete?
-- [ ] What imports are present? (hints at dependencies)
-- [ ] Does code match the todo description?
-
-**6. Compare PLAN vs ACTUAL & understand the GAP**
-
-Now you've seen both:
-- **PLAN** (.plan/ docs): What SHOULD be built
-- **ACTUAL** (src/css/ code): What HAS been built
-
-Compare to understand the work:
-
-```
-Gap = Planned - Actual
-
-Example: @tools module
-  Planned: 5-file pattern (models, types, enums, exceptions, __init__)
-           + registry.py for 26 providers
-           + MCP server integration
-  Actual:  registry.py exists but is 0 lines (stub)
-           No models.py, types.py, enums.py yet
-  
-  Gap: Need to implement 4 files + fill in registry.py
-```
-
-**Questions to answer**:
-- [ ] Does actual implementation match planned architecture?
-- [ ] What files are missing?
-- [ ] What functions/classes are stubbed (TODO markers)?
-- [ ] Are there TODOs in code that match .plan/ sections?
-- [ ] What refactoring is needed to match the plan?
-- [ ] What's partially done vs not started?
-
-**Document in session**: Update todo descriptions with specific findings.
-
-**If clear**: Proceed to TODO workflow for each todo.
-
----
-
-### 🔧 TODO COMPLETION WORKFLOW (~1-2 hours, atomic unit)
+### Step 2 — Mark it in_progress
 
 ```sql
--- 1. Mark in_progress
-UPDATE todos SET status = 'in_progress' WHERE id = 'my-todo-id';
+-- Replace 'your-todo-id' with the actual id
+UPDATE todos SET status = 'in_progress', updated_at = datetime('now')
+WHERE id = 'your-todo-id';
 ```
 
-```bash
--- 2. Implement code changes
-# Modify files in src/css/
-```
-
-```bash
--- 3. Lint (single pass, context-aware)
-# If working in modules:
-ruff check --fix src/css/modules/<module_name>/
-
-# If working in api_services:
-ruff check --fix src/css/api_services/<provider_name>/
-
-# 4. Update local plan.md file in the working directory
-# Verify src/css/{modules|api_services|core}/{name}/plan.md was updated:
-#   - Audit timestamp added
-#   - Implementation status updated
-#   - TODOs section updated
-#   - Success criteria section updated
-
-# Use: grep to verify local plan.md changes
-# Example: grep "2026-05-" src/css/modules/cache/plan.md
-```
+### Step 3 — Read what the todo actually wants
 
 ```sql
--- 5. Mark done
-UPDATE todos SET status = 'done', completed_at = CURRENT_TIMESTAMP WHERE id = 'my-todo-id';
+SELECT description FROM todos WHERE id = 'your-todo-id';
 ```
+
+Read the **full description**. It tells you exactly what file to create/edit, what class/function to implement, and what the result should look like.
+
+Also read the relevant architecture doc:
+```bash
+# For events module work:
+cat /home/daen/Projects/cybersecsuite/src/css/modules/events/plan.md
+cat /home/daen/Projects/cybersecsuite/.plan/architecture/observability.md
+
+# For SDK/LLM work:
+cat /home/daen/Projects/cybersecsuite/.plan/architecture/sdks.md
+
+# For routing/intelligence work:
+cat /home/daen/Projects/cybersecsuite/src/css/modules/intelligence/plan.md
+
+# For any module, always read its own plan.md first:
+cat /home/daen/Projects/cybersecsuite/src/css/modules/<module_name>/plan.md
+```
+
+### Step 4 — Check what already exists
 
 ```bash
--- 6. Commit work (REQUIRED FINAL STEP)
-git add -A
-git commit -m "[TODO] my-todo-id: Brief title of what was done
+# See what's already in the relevant directory
+ls -la /home/daen/Projects/cybersecsuite/src/css/modules/<module_name>/
 
-- Specific change 1
-- Specific change 2
-- Files modified: src/css/module/file.py, etc"
+# Search for related code
+grep -r "ClassName\|function_name" /home/daen/Projects/cybersecsuite/src/css/ --include="*.py" | head -20
 ```
 
-**Done.** One todo complete. Simple.
+### Step 5 — Implement the code
 
----
+- Edit files in `src/css/` only
+- Follow the **5-file pattern** for modules: `models.py`, `types.py`, `enums.py`, `exceptions.py`, `__init__.py`
+- Always `async def` for any I/O (never sync wrappers)
+- HTTP clients: always `aiohttp`, NEVER `httpx`
+- Structs/value types: `msgspec.Struct`, not `@dataclass`
 
-### 🎯 TASK COMPLETION WORKFLOW (~2-5 days, 3-5 todos)
-
-**Prerequisites**: All child todos marked `done`.
-
-**1. Code Quality (3-pass Ruff)**
+### Step 6 — Lint the changed files
 
 ```bash
-cd src/css
+cd /home/daen/Projects/cybersecsuite
 
-# Identify which area you worked on, then run:
-
-# If worked in modules/<name>:
-for i in {1..3}; do
-  echo "=== Ruff Pass $i ==="
-  ruff check --fix src/css/modules/<module_name>/
-  ruff check src/css/modules/<module_name>/
-  if [ $? -eq 0 ]; then
-    echo "✓ Pass $i: Clean"
-    break
-  fi
-done
-
-# If worked in api_services/<provider>:
-for i in {1..3}; do
-  echo "=== Ruff Pass $i ==="
-  ruff check --fix src/css/api_services/<provider_name>/
-  ruff check src/css/api_services/<provider_name>/
-  if [ $? -eq 0 ]; then
-    echo "✓ Pass $i: Clean"
-    break
-  fi
-done
-
-# If worked in core:
-for i in {1..3}; do
-  echo "=== Ruff Pass $i ==="
-  ruff check --fix src/css/core/
-  ruff check src/css/core/
-  if [ $? -eq 0 ]; then
-    echo "✓ Pass $i: Clean"
-    break
-  fi
-done
+# Run ruff on exactly the files you touched (replace path):
+/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix src/css/modules/<module_name>/
+/home/daen/Projects/cybersecsuite/.venv/bin/ruff check src/css/modules/<module_name>/
 ```
 
-**Stop if**: Ruff reports errors after pass 3. Mark task as `blocked` in session.db.
+If ruff reports errors: fix them before continuing. Run up to 3 times.
 
-**2. Update .plan/**
+### Step 7 — Update the local plan.md
+
+Every module/api_service/core subdir has its own `plan.md`. Update it:
+```bash
+# Open the plan.md for the area you worked on
+# e.g. nano src/css/modules/events/plan.md
+# Update the checklist item to checked: - [x] ...
+# Update "Last Updated" date to today (2026-05-04)
+```
+
+### Step 8 — Update the master plan.md
+
+Mark done and update in `.plan/plan.md`.
+
+
+### Step 9 — Mark done and commit
 
 ```sql
--- Update task status
-UPDATE tasks SET 
-  status = 'done',
-  completed_at = CURRENT_TIMESTAMP
-WHERE id = 'phase-X-task-Y';
-
--- Verify all child todos are done
-SELECT * FROM todos WHERE task_id = 'phase-X-task-Y' AND status != 'done';
+-- Mark done
+UPDATE todos SET status = 'done', updated_at = datetime('now')
+WHERE id = 'your-todo-id';
 ```
-
-**3. Update plan.md & {core,modules,api_services}/<module or provider or core subdir>/plan.md**
-
-- Add task completion summary
-- Mark task as DONE
-
-
-**4. Update session.db status**
-
-```sql
--- Mark task completed
-UPDATE tasks SET status = 'done' 
-WHERE id = 'phase-X-task-Y';
-```
-
-**5. Delegate agent "rubber-duck"**
-- create task with rubber-duck agent that lets him analyze every plan.md in project and .plan/session.db and generally .plan/ 
-
-
-**6. Commit Work**
 
 ```bash
 git add -A
-git commit -m "[PHASE-X] Task Y: Brief title
+git commit -m "[your-todo-id] Brief description of what was done
+
+- File created/edited: src/css/...
+- Class/function implemented: ..."
+```
+
+**NEVER add `Co-authored-by:` to commits.**
+
+---
+
+## ✅ WORKFLOW 2 — FINISHING A TASK (all todos in a task are done)
+
+A task is the parent grouping (e.g. "T14.1 @instrument Decorator Core"). When all its todos are `done`:
+
+### Step 1 — Verify all todos in the task are done
+
+```sql
+-- Replace 'T14.1 @instrument Decorator Core' with the actual task name
+SELECT id, title, status FROM todos
+WHERE task = 'T14.1 @instrument Decorator Core';
+```
+
+All rows must show `status = 'done'`. If any are `pending` or `in_progress`: complete them first.
+
+### Step 2 — Search in the module or codebase for duplicated code warnings
+
+### Step 3 — Run ruff on the area
+
+```bash
+DIRECTORIES_WORKED_IN=<space separated list of directories you touched>
+/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix "$DIRECTORIES_WORKED_IN"
+```
+### Step 4 - Fix remaining errors (5 turns max)
+
+Fix the remaining errors of prior ruff run
+
+### Step 5 — Update plan.md
+
+In `.plan/plan.md`, find the task section and add a completion note:
+```
+**Status**: ✅ DONE — 2026-05-04
+```
+
+### Step 6 — Update session.db
+
+In `.plan/session.db`, update the corresponding entries.
+
+### Step 7 — Update memory.md
+
+Update memory file at `.plan/memory.md`.
+
+
+### Step 8 — Create/Update the documentary if needed
+
+Create/Update documentation `docs/` if necessary. 
+Also write a concise changelog at `docs/changelog/`.
+
+### Step 9 — Mark TASK done and Commit
+
+```bash
+git add -A
+git commit -m "[TASK-T14.1] @instrument decorator + singletons complete
 
 - N todos completed
-- 3-pass ruff: clean"
+- Ruff: clean (3 passes)"
 ```
 
 
+---
 
-### 🚀 PHASE COMPLETION WORKFLOW (~2-4 weeks, 4-7 tasks)
+## ✅ WORKFLOW 3 — FINISHING A PHASE (all tasks done)
 
-**Prerequisites**: All child tasks marked `done`.
+A phase is the top grouping (e.g. "Phase 14 — Event Hooks & Entry/Exit Instrumentation").
 
-**1. Code Quality**
+### Step 1 — Verify all phase todos are done
 
-```bash
-cd src/css
-
-# Run 3-pass ruff on all areas touched in this phase:
-for area in modules api_services core; do
-  echo "=== Checking $area ==="
-  for i in {1..3}; do
-    ruff check --fix src/css/$area/
-    ruff check src/css/$area/
-    if [ $? -eq 0 ]; then
-      echo "✓ $area Pass $i: Clean"
-      break
-    fi
-  done
-done
-
-# Run full test suite
-pytest -v
-```
-
-**Stop if**: Ruff errors after 3 passes OR tests fail. Mark phase as `blocked` in session.db.
-
-**2. Update session.db**
 ```sql
-UPDATE todos SET status = 'done' WHERE phase_id = 'phase-X' AND status != 'done';
+-- Replace phase name with the actual phase
+SELECT id, title, status FROM todos
+WHERE phase = 'Phase 14 — Event Hooks & Entry/Exit Instrumentation'
+AND status != 'done';
 ```
 
-**3. Sync all .plan/ files** (8 files total):
-- `plan.md` — Phase summary, next steps
-- `architecture.md` — New patterns, diagrams
-- `rules.md` — New rules discovered
-- `features_overview.md` — Mark complete
-- `checkpoints.md` — Phase checkpoint
-- `development-workflow.md` — New workflows
-- `frontend.md` — UI changes
-- `session.db` — All status updates
+Must return 0 rows. If not: complete remaining todos first.
 
-**4. Commit Phase**
+
+### Step 2 — Run ruff on the area
+
 ```bash
-git commit -m "[PHASE-X] Phase Name: Summary
+DIRECTORY_LIST=<space separated list of directories you touched>
+/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix $DIRECTORY_LIST
+```
 
-- All X tasks completed (Y todos)
-- 3-pass ruff: clean
+### Step 3 - Fix remaining errors
+
+Fix the remaining errors of prior ruff output
+
+### Step 3.5 — Repeat Step 3 & 4 up to two times
+
+Run again:
+```bash
+/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix $DIRECTORY_LIST
+```
+
+If still errors in ruff output, repeat Step 2 & 3.
+If no errors, proceed with next step.
+
+### Step 4 - Delegate rubber-duck agent
+
+Delegate a rubber-duck agent to inspect the complete plan at `.plan/*.md`, `.plan/architecture/*.md`, and a list of directories you worked in as context, as well as a set of tasks to inspect the code and plan.
+Let it report back to you, follow recommendations and update TODOs/TASKs/PHASEs if needed.
+
+
+### Step 5 — Run full test suite
+
+```bash
+cd /home/daen/Projects/cybersecsuite
+/home/daen/Projects/cybersecsuite/.venv/bin/pytest -v
+```
+
+Fix any failures before proceeding.
+
+### Step 6 — Update all .plan/ files
+
+```bash
+# These 7 files must be updated (the whitelist):
+# 1. .plan/plan.md        — mark phase DONE, add summary
+# 2. .plan/memory.md      — update phase row (done count)
+# 3. .plan/checkpoints.md — add phase checkpoint entry
+# 4. .plan/architecture/observability.md (or relevant arch file)
+# 5. The corresponding file in .plan/architecture/*.md (if it exists)
+# 6. The local plan.md in every module you touched
+```
+
+### Step 7 — Commit
+
+```bash
+git add -A
+git commit -m "[PHASE-14] Event Hooks & Instrumentation: complete
+
+- 18 todos done across 5 tasks
+- Ruff: clean
 - Tests: passing
 - .plan/ synced"
 ```
 
 ---
 
-## 🗂️ WORKSPACE
+## 📊 USEFUL SQL QUERIES (copy-paste ready)
 
-### 8-File Whitelist
-
-```
-.plan/
-├── plan.md                 ← Timeline, milestones, progress
-├── development-workflow.md ← THIS FILE (completion workflows)
-├── architecture.md         ← System design (or /architecture/ subdir)
-├── rules.md                ← Tech stack, patterns, rules
-├── features_overview.md    ← Feature specs
-├── checkpoints.md          ← Phase summaries
-├── frontend.md             ← UI/UX architecture
-└── session.db              ← Todo tracker (SQL)
-```
-
-### File Responsibilities
-
-| File                        | When to Update             |
-|-----------------------------|----------------------------|
-| **plan.md**                 | Each task/phase completion |
-| **development-workflow.md** | New workflows discovered   |
-| **architecture.md**         | New design patterns        |
-| **rules.md**                | New rules or patterns      |
-| **features_overview.md**    | Features marked complete   |
-| **checkpoints.md**          | Phase complete             |
-| **frontend.md**             | UI changes                 |
-| **session.db**              | Every todo completion      |
-
----
-
-## 🔄 GIT COMMITS
-
-**Format**: `[PHASE-X] Feature: Brief description`
-
-```bash
-git commit -m "[PHASE-0] TeamScope: Add model to scope.py
-
-- Create TeamScope DB model
-- Add team_id FK to orchestrator_instances"
-```
-
----
-
-## 📊 USEFUL SQL
-
-**Ready todos** (no pending dependencies):
 ```sql
-SELECT t.* FROM todos t
+-- All ready todos (no blocked deps) — use this most often
+SELECT t.id, t.title, t.phase, t.task
+FROM todos t
 WHERE t.status = 'pending'
 AND NOT EXISTS (
   SELECT 1 FROM todo_deps td
   JOIN todos dep ON td.depends_on = dep.id
   WHERE td.todo_id = t.id AND dep.status != 'done'
-);
-```
+)
+ORDER BY t.phase, t.task;
 
-**Blocked todos**:
-```sql
-SELECT t.id, t.title, dep.id as blocked_by, dep.status
-FROM todos t
-JOIN todo_deps td ON t.id = td.todo_id
+-- Phase summary — how far along is each phase?
+SELECT phase,
+  COUNT(*) as total,
+  SUM(status = 'done') as done,
+  SUM(status = 'pending') as pending,
+  SUM(status = 'in_progress') as active
+FROM todos GROUP BY phase ORDER BY phase;
+
+-- What's blocking a specific todo?
+SELECT dep.id as blocking_todo, dep.title, dep.status
+FROM todo_deps td
 JOIN todos dep ON td.depends_on = dep.id
-WHERE dep.status != 'done';
-```
+WHERE td.todo_id = 'your-todo-id';
 
-**Task progress**:
-```sql
-SELECT t.id, t.title, COUNT(todo.id) as total,
-  SUM(CASE WHEN todo.status = 'done' THEN 1 ELSE 0 END) as done
-FROM tasks t
-LEFT JOIN todos todo ON t.id = todo.task_id
-GROUP BY t.id;
+-- All todos for a specific task
+SELECT id, title, status FROM todos WHERE task = 'T14.5 Interceptor Chain';
+
+-- Full description of a todo (to know exactly what to implement)
+SELECT id, title, description FROM todos WHERE id = 'your-todo-id';
+
+-- Mark todo in_progress
+UPDATE todos SET status = 'in_progress', updated_at = datetime('now') WHERE id = 'your-todo-id';
+
+-- Mark todo done
+UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'your-todo-id';
 ```
 
 ---
 
-## 🎓 RULES
+## 🏗️ MODULE FILE PATTERN (always follow this)
 
-1. **Always follow completion workflows** (TODO → TASK → PHASE)
-2. **Pre-Task before any task** — Check dependencies
-3. **Mark status** before and after work
-4. **One todo** = one atomic change (~1-2 hours)
-5. **Commit frequently** — After task completion
-6. **Update .plan/** — Keep docs in sync
-7. **No external files** — Only 8 whitelisted files
+Every directory under `src/css/modules/<name>/` should have:
+
+```
+modules/<name>/
+├── __init__.py      ← REQUIRED. Exports public API via __all__. Nothing else.
+├── models.py        ← Tortoise ORM models (auto-discovered by loader if present)
+├── endpoints.py     ← FastAPI routes (auto-discovered by loader if present)
+├── types.py         ← msgspec.Struct value types (manually imported where needed)
+├── enums.py         ← Enum definitions (manually imported where needed)
+└── exceptions.py    ← Custom exceptions (manually imported where needed)
+```
+
+**Rules**:
+- `__all__` lives **only** in `__init__.py`
+- Never mix `@dataclass` with `ABC` on the same class — pick one
+- `msgspec.Struct` for value types, `Protocol` for structural contracts
+- All I/O must be `async def` — never sync
+- Never `httpx` — always `aiohttp`
+- Never `npm` — always `bun` for frontend
 
 ---
 
-**Status**: 📋 Active | **Last Updated**: 2026-05-03
+## 🚫 NEVER DO THESE
 
+| ❌ WRONG | ✅ RIGHT |
+|---------|---------|
+| `UPDATE tasks SET status = 'done'` | `UPDATE todos SET status = 'done'` — there is no tasks table |
+| `UPDATE todos SET completed_at = ...` | `UPDATE todos SET updated_at = datetime('now')` — no completed_at column |
+| `httpx.AsyncClient()` | `aiohttp.ClientSession()` |
+| `import npm` / `npx` | `bun run` / `bun install` |
+| Create `.md` files outside `.plan/` whitelist | Merge content into whitelisted files |
+| `@dataclass class Foo(ABC)` | Choose one: pure abstract `class Foo(ABC)` or pure concrete `@dataclass class Foo` |
+| Commit with `Co-authored-by:` trailer | Plain commit message, no trailer |
+| Test code during a phase | Test only after the entire phase is complete |
+| Cross-module imports | Import only from `core/` between modules |
+
+---
+
+## 📁 .PLAN/ WHITELIST (7 files only — no others allowed)
+
+```
+.plan/
+├── plan.md                  ← Master plan, all phases
+├── memory.md                ← Compressed session context
+├── rules.md                 ← Dev rules (CRITICAL section is absolute)
+├── development-workflow.md  ← THIS FILE
+├── checkpoints.md           ← Phase summaries
+├── session.db               ← ONLY task tracker (SQLite)
+└── architecture/            ← System design docs (*.md files)
+    ├── observability.md
+    ├── sdks.md
+    ├── system-overview.md
+    └── ... (other arch docs)
+```
+
+**If you find a `.md` file under `.plan/` that isn't in this list**: move its content into the nearest whitelisted file, then delete it.
+
+---
+
+**Status**: 📋 Active | **Last Updated**: 2026-05-04

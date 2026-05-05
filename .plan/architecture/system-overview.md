@@ -32,9 +32,9 @@ Process 2 (PID: 1002): Normal Orchestrator (Main)
 ├─ Isolation: Full process isolation
 └─ Capability: Execute tasks, create teams, spawn subprocesses
 
-Process 3 (PID: 1003): Background Orchestrator (Triage)
-├─ Model: Qwen3-0.6B (lightweight, always-on)
-├─ Role: Task triage & routing
+Process 3 (PID: 1003): Background Orchestrator (Intelligence)
+├─ Model: Qwen3-0.6B / Phi4-mini (lightweight, always-on) via core/ollama/
+├─ Role: Task triage, routing, quality gates, cost analysis
 ├─ Access: Read project, limited write (logs)
 ├─ Isolation: Full process isolation
 └─ Capability: Route tasks to appropriate teams/processes
@@ -52,9 +52,9 @@ Process 1 (PID: 2001): Main Orchestrator
 ├─ Isolation: Full process isolation
 └─ Capability: Execute tasks, create teams, spawn subprocesses
 
-Process 2 (PID: 2002): Background Orchestrator (Triage)
-├─ Model: Qwen3-0.6B (lightweight, always-on)
-├─ Role: Task triage & routing
+Process 2 (PID: 2002): Background Orchestrator (Intelligence)
+├─ Model: Qwen3-0.6B / Phi4-mini (lightweight, always-on) via core/ollama/
+├─ Role: Task triage, routing, quality gates
 ├─ Access: Read project, limited write (logs)
 ├─ Isolation: Full process isolation
 └─ Capability: Route tasks to appropriate teams/processes
@@ -70,19 +70,18 @@ Process 2 (PID: 2002): Background Orchestrator (Triage)
 5. **Triage** — Routes tasks, prioritizes, background processing
 6. **TeamMember** — Individual agent/worker in team
 
-Each orchestrator process integrates **`@cache` module** for:
+Each orchestrator process integrates **`core/cache`** for:
 - **Task Result Caching** (idempotency keys prevent re-execution)
 - **LLM Response Caching** (reduce Claude API costs 40-60%)
 - **Orchestrator Heartbeat** (Redis cache for crash detection)
 
 ```
 Main Orchestrator Process
-├─ Access: Full Project Scope ($(pwd)/)
-├─ Cache Layer: @cache module (multi-level backends)
+├─ Access: project.source_dir (full project, via PathGrant)
+├─ Cache Layer: core/cache (multi-level backends)
 │  ├─ L1: In-Memory (session-local)
 │  ├─ L2: Redis (shared, multi-orchestrator)
-│  ├─ L3: PostgreSQL (persistent, auditable)
-│  └─ L4: Disk (crash recovery fallback)
+│  └─ L3: PostgreSQL (persistent, auditable)
 ├─ Can execute inline async tasks (in same process)
 ├─ Can delegate to Teams/Roles (spawn subprocess)
 │  ├─ Team runs in isolated subprocess
@@ -94,44 +93,41 @@ Main Orchestrator Process
 └─ Role: Orchestrator (primary execution)
 ```
 
-**See `.plan/architecture/caching-and-memory.md` for full caching strategy**
+**See `core/cache/plan.md` and `.plan/architecture/sdks.md` for full caching strategy**
 
-### Scope Hierarchy (Corrected)
+### Session & Working Directory Layout
 
 ```
-AppScope
-  ↓
-ProjectScope
-  ↓
-┌────────────────────┬─────────────────┐
-│  SessionScope      │  PlanScope      │
-│  (sibling scopes)  │  (dev mode only)│
-├────────────────────┼─────────────────┤
-│ WorkDir:           │ WorkDir:        │
-│ .css/sessions/     │ .css/plan/      │
-│ session-<sid>/     │                 │
-│                    │ Main Orch       │
-│ Creates:           │ (Planner only)  │
-│ • Teams            │ Read: project   │
-│ • Tasks            │ Write: .css/    │
-│ • Async procs      │ plan/           │
-│ • Processes        │                 │
-│                    │ Permissions:    │
-│ ├─ TeamScope       │ Read .plan/,    │
-│ │  WorkDir:        │ Write .css/     │
-│ │  .css/teams/     │ plan/ only      │
-│ │  team-<id>/      │                 │
-│ │  • TeamLeader    │                 │
-│ │  • Roles (with   │                 │
-│ │    Permissions:  │                 │
-│ │    R/W team-<id>/│                 │
-│ │    only)         │                 │
-│ │                  │                 │
-│ └─ OrchestratorPool│                 │
-│    (per team)      │                 │
-│                    │                 │
-└────────────────────┴─────────────────┘
+~/.css/                          # Global CSS home
+├── projects/                    # ProjectManager registry
+│   └── <project-id>/metadata.json  # {id, name, source_dir, created_at}
+└── sessions/                    # ALL sessions live here
+    └── session-<sid>/           # Default workspace (always write)
+        ├── metadata.json        # {id, mode, project_id|null, agent_id, target}
+        ├── plan/                # Planner mode output (dev mode only)
+        ├── teams/               # Team subdivisions
+        │   └── team-<name>/
+        │       ├── queue.db     # SQLite task queue
+        │       ├── orchestrators/
+        │       └── results/
+        ├── findings/            # Cybersec evidence
+        ├── artifacts/           # Tool output
+        ├── results/             # Aggregated results
+        └── logs/
+
+# WorkspaceRegistry (core/workspace/) — per entity (session or agent)
+# Each entity holds a list of WorkspaceDirHandle entries:
+#
+#   workspaces[0]  = DEFAULT  ~/.css/sessions/<sid>/        READ+WRITE (always)
+#   workspaces[1]  = PROJECT  /home/user/my-app/            READ+WRITE (default)
+#   workspaces[N]  = EXTRA    /any/path/in/the/system       READ+WRITE (expandable)
+#
+# workspaces.default → workspaces[0]
+# workspaces.add(path, permissions=READ|WRITE) → new WorkspaceDirHandle
+# Each handle enforces its PermissionSet on all path operations.
 ```
+
+**Teams, Tasks, OrchestratorPool** are still session-scoped (inside default workspace) — only the location of the session dir changed (centralized, not per-project).
 
 ### Result
 - **Before**: Serial execution, 1 task at a time

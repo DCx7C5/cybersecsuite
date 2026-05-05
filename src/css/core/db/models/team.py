@@ -1,6 +1,7 @@
 """TeamScope model — team isolation, orchestrator pool, task queues, resource quotas."""
 
 from tortoise import fields, models
+from css.core.db.enums import TeamStatus
 
 
 class Team(models.Model):
@@ -27,9 +28,9 @@ class Team(models.Model):
         db_index=True,
     )
     team_name = fields.CharField(max_length=256, db_index=True)
-    status = fields.CharField(
-        max_length=16,
-        default="pending",
+    status = fields.CharEnumField(
+        TeamStatus,
+        default=TeamStatus.PENDING,
         db_index=True,
         description="Status: pending, active, paused, completed",
     )

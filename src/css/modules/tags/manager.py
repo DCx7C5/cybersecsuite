@@ -8,6 +8,7 @@ from datetime import datetime
 from .models import Tag
 from .enums import TagColor
 from .exceptions import TagNotFoundError, TagCreationError, TagValidationError
+from .types import TagConflictResolution, TagSuggestion
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,8 @@ class TagManager:
         self,
         name: str,
         color: TagColor = TagColor.GRAY,
-        description: str = ""
+        description: str = "",
+        parent_tag_id: Optional[int] = None,
     ) -> Tag:
         """Create a new tag."""
         # Validation
@@ -48,6 +50,10 @@ class TagManager:
         if slug in self._slug_index:
             raise TagCreationError(f"Tag already exists: {name}", tag_name=name)
         
+        parent_tag = self._tags.get(parent_tag_id) if parent_tag_id else None
+        if parent_tag_id and parent_tag is None:
+            raise TagNotFoundError(str(parent_tag_id))
+
         # Create tag (simulated - in production would use DB)
         tag_id = len(self._tags) + 1
         tag = Tag(
@@ -55,6 +61,7 @@ class TagManager:
             name=name,
             slug=slug,
             color=color,
+            parent_tag=parent_tag,
             description=description,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
@@ -103,6 +110,21 @@ class TagManager:
                 matches.append(tag)
         
         return sorted(matches, key=lambda t: t.name)
+
+    async def suggest_tags(self, prefix: str, limit: int = 10) -> list[TagSuggestion]:
+        """Suggest tags by prefix for autocomplete UX."""
+        needle = prefix.strip().lower()
+        if not needle:
+            return []
+
+        suggestions: list[TagSuggestion] = []
+        for tag in sorted(self._tags.values(), key=lambda t: t.name):
+            if tag.name.lower().startswith(needle) or tag.slug.startswith(needle):
+                suggestions.append(TagSuggestion(id=tag.id, name=tag.name, slug=tag.slug))
+            if len(suggestions) >= limit:
+                break
+
+        return suggestions
     
     async def assign_tag(self, tag_id: int, resource_key: str) -> None:
         """Assign tag to a resource."""
@@ -129,7 +151,7 @@ class TagManager:
     
     async def find_resources_by_tag(self, tag_id: int) -> List[str]:
         """Find all resources with a specific tag."""
-        tag = await self.get_tag_or_fail(tag_id)
+        await self.get_tag_or_fail(tag_id)
         
         resources = []
         for resource_key, tag_ids in self._assignments.items():
@@ -161,6 +183,24 @@ class TagManager:
         
         logger.info(f"Deleted tag: {tag.name}")
         return True
+
+    async def resolve_conflicts(self, tag_ids: set[int]) -> TagConflictResolution:
+        """Remove redundant parent tags when child tags are present."""
+        kept = {tid for tid in tag_ids if tid in self._tags}
+        removed: set[int] = set()
+
+        for tag_id in list(kept):
+            tag = self._tags[tag_id]
+            parent = getattr(tag, "parent_tag", None)
+            parent_id = getattr(parent, "id", None)
+            if parent_id in kept:
+                kept.discard(parent_id)
+                removed.add(parent_id)
+
+        return TagConflictResolution(
+            kept_tag_ids=sorted(kept),
+            removed_tag_ids=sorted(removed),
+        )
     
     async def get_stats(self) -> Dict[str, Any]:
         """Get tag statistics."""

@@ -200,6 +200,26 @@ async def lifespan(app: FastAPI):
 - ✅ All 4 integration points validated and working
 - ✅ No circular import risks
 
+---
+
+## Phase 14 — Entry Point 1 of 5
+
+The ASGI HTTP middleware is **entry point 1 of 5** for the `@events` instrumentation system.
+
+- Pattern: `@instrument("http.{method}.{path}")` applied per-request in `middleware.py`
+- Middleware extracts W3C `traceparent` header → sets `correlation_id` ContextVar
+- All downstream `@instrument` calls (CommandBus, LLM, Agent, Tool) inherit `correlation_id` automatically — no manual passing
+- `HookRegistry` observers and `InterceptorRegistry` pre/post hooks can attach to `"http.*"` patterns
+
+```python
+# core/asgi/middleware.py (conceptual)
+async def instrumentation_middleware(request: Request, call_next):
+    correlation_id = extract_traceparent(request.headers)
+    correlation_id_var.set(correlation_id or generate_correlation_id())
+    async with instrument("http.{method}.{path}".format(...)):
+        return await call_next(request)
+```
+
 ### Implementation Status
 - ✅ FastAPI app creation
 - ✅ Lifespan context (startup/shutdown)
@@ -214,7 +234,7 @@ async def lifespan(app: FastAPI):
 
 ---
 
-**Status**: 🟢 Implemented | **Priority**: 🔴 High | **Last Updated**: 2026-05-03
+**Status**: 🟢 Implemented | **Priority**: 🔴 High | **Last Updated**: 2026-05-04
 
 ---
 
@@ -231,3 +251,31 @@ async def lifespan(app: FastAPI):
 - **Phase Ready**: Phase 2 ✅ (Production Ready)
 - **Last Audited**: 2026-05-03 by Agent 2
 - **Audit Matrix**: .plan/architecture/core-audit-matrix.md
+
+---
+
+## Audit Timestamp (2026-05-04)
+
+**Status**: TODO `db-asgi-tortoise-init` completed
+
+- ✅ ASGI lifespan startup now initializes Tortoise with discovered model modules
+- ✅ Development mode now calls `Tortoise.generate_schemas(safe=True)`
+- ✅ Shutdown path keeps `Tortoise.close_connections()` in a `finally` block
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

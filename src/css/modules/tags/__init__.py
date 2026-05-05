@@ -1,19 +1,19 @@
 """Tag management and classification."""
 
-import logging
 from css.core.logger import getLogger
-
-logger = getLogger(__name__)
 
 from .manager import TagManager, normalize_slug
 from .models import Tag
 from .enums import TagColor
+from .types import TagSuggestion, TagConflictResolution
 from .exceptions import (
     BaseTagException,
     TagNotFoundError,
     TagCreationError,
     TagValidationError,
 )
+
+logger = getLogger(__name__)
 
 __all__ = [
     # Manager
@@ -25,6 +25,10 @@ __all__ = [
     
     # Enums
     "TagColor",
+
+    # Types
+    "TagSuggestion",
+    "TagConflictResolution",
     
     # Exceptions
     "BaseTagException",
@@ -34,4 +38,3 @@ __all__ = [
 ]
 
 logger.info("Tags module loaded")
-

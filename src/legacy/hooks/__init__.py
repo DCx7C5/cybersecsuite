@@ -208,9 +208,9 @@ Then add to build_python_hooks():
 See PHASE_15_HOOKS_IMPROVEMENT.md for full design details.
 """
 
+from css.core.types.hook_events import HookContext
 from .events import (
     ErrorStrategy,
-    HookContext,
     HookOutput,
     NotificationEvent,
     PermissionRequestEvent,

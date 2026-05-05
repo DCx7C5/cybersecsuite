@@ -34,67 +34,6 @@ x-crypto-env: &crypto-env
   DYSTOPIAN_VAULT_PASSWORD_FILE: ${DYSTOPIAN_VAULT_PASSWORD_FILE:-}
 
 services:
-  cybersec-proxy:
-    profiles:
-      - default
-    build:
-      context: .
-      dockerfile: .docker/proxy/Dockerfile
-    image: cybersec-proxy
-    container_name: cybersec-asgi
-    <<: *common
-    tty: true
-    stdin_open: true
-    depends_on:
-      cybersec-postgres:
-        condition: service_healthy
-    environment:
-      <<: [ *db-env, *ai-keys, *oo-env, *crypto-env ]
-      # Unix socket: just the directory — asyncpg appends /.s.PGSQL.<port>
-      CYBERSEC_DB_HOST: /tmp
-      CYBERSEC_DB_PORT: 5432
-      CYBERSEC_AUTO_CREATE_DB: "true"
-      CYBERSEC_REDIS_URL: "redis://cybersec-redis:6379/0"
-    ports:
-      - "127.0.0.1:8765:8000"   # direct backend access
-    volumes:
-      - pg_socket:/tmp                          # shared socket directory with postgres
-      - ${HOME}/.claude:/app/.claude-global:rw  # host ~/.claude (global settings, plugins)
-    healthcheck:
-      test: [ "CMD", "curl", "-fs", "http://localhost:8000/health" ]   # liveness only
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-      start_interval: 5s
-
-  cybersec-dashboard:
-    profiles:
-      - default
-    build:
-      context: .docker/dashboard
-      dockerfile: Dockerfile
-    image: cybersec-dashboard
-    container_name: cybersec-dashboard
-    <<: *common
-    depends_on:
-      cybersec-proxy:
-        condition: service_healthy
-    environment:
-      BACKEND_URL: http://cybersec-proxy:8000
-    ports:
-      - "127.0.0.1:8000:8000"
-      - "127.0.0.1:8443:8000"
-    volumes:
-      - ./src/frontend:/app:rw
-      - frontend_node_modules:/app/node_modules
-    healthcheck:
-      test: ["CMD", "curl", "-fs", "http://localhost:8000"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
   cybersec-postgres:
     profiles:
       - default
@@ -208,7 +147,3 @@ volumes:
   redis_socket:
   oo_data:
   ollama_data:
-  openobserve_data:
-  openobserve_logs:
-  openobserve_etc:
-  frontend_node_modules:

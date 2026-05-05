@@ -1,4 +1,4 @@
-from tortoise import Model, fields
+from tortoise import Model, fields, models
 from .enums import MarketplaceItemType, MarketplaceItemStatus, MarketplaceStatus
 
 
@@ -24,7 +24,8 @@ class MarketplaceMeta(Model):
 
 class MarketplaceItem(Model):
     """Tortoise ORM model for marketplace items."""
-    id = fields.CharField(max_length=255, primary_key=True)
+    id = fields.BigIntField(primary_key=True)
+    slug = fields.CharField(max_length=255, unique=True, db_index=True)
     name = fields.CharField(max_length=255, db_index=True)
     description = fields.TextField()
     kind = fields.CharEnumField(MarketplaceItemType, default=MarketplaceItemType.agent)
@@ -43,8 +44,11 @@ class MarketplaceItem(Model):
         table = "marketplace_item"
         table_description_plural = "Marketplace Items"
         table_description_singular = "Marketplace Item"
-        ordering = ["id", "name"]
-        indexes = [("kind", "status"), ("kind", "version")]
+        ordering = ["slug", "name"]
+        indexes = [
+            models.Index(fields=["kind", "status"]),
+            models.Index(fields=["kind", "version"]),
+        ]
         unique_together = [("kind", "name")]
 
 
@@ -65,5 +69,4 @@ class MarketplaceItemTag(Model):
         table = "marketplace_item_tag"
         table_description = "M2M relationship between marketplace items and tags"
         unique_together = [("marketplace_item", "tag")]
-        indexes = [("marketplace_item", "tag")]
-
+        indexes = [models.Index(fields=["marketplace_item", "tag"])]

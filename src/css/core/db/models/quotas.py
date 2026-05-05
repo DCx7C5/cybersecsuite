@@ -1,6 +1,7 @@
 """Task assignment, team quota, and task result models."""
 
 from tortoise import fields, models
+from css.core.db.enums import TaskAssignmentStatus, TaskPriority
 
 
 class TaskAssignment(models.Model):
@@ -14,14 +15,14 @@ class TaskAssignment(models.Model):
     )
     orchestrator_id = fields.BigIntField(db_index=True)
     task_id = fields.CharField(max_length=256, db_index=True, unique=True)
-    status = fields.CharField(
-        max_length=32,
-        default="pending",
+    status = fields.CharEnumField(
+        TaskAssignmentStatus,
+        default=TaskAssignmentStatus.PENDING,
         db_index=True,
     )
-    priority = fields.CharField(
-        max_length=32,
-        default="normal",
+    priority = fields.CharEnumField(
+        TaskPriority,
+        default=TaskPriority.NORMAL,
     )
     timeout_seconds = fields.IntField(default=300)
     retry_count = fields.IntField(default=0)

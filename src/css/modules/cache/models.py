@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional, Dict
 from datetime import datetime
 
-from tortoise import fields
+from tortoise import fields, models
 from tortoise.models import Model
 
 
@@ -23,7 +23,7 @@ class CacheEntryModel(Model):
     class Meta:
         table = "cache_entry"
         table_description = "Cached entries with TTL"
-        indexes = [("namespace", "key")]
+        indexes = [models.Index(fields=["namespace", "key"])]
 
 
 class CacheStatsModel(Model):

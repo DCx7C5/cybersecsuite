@@ -250,7 +250,8 @@ async def periodic_update_check():
 - `last_index_check` — Timestamp
 
 **MarketplaceItem**:
-- `id` — Item name (unique)
+- `id` — Internal BigInt primary key
+- `slug` — External item identifier (unique, e.g. kebab-case ID used by API)
 - `name` — Description
 - `description` — Full text
 - `kind` — Type (agent, skill, mcp, etc.)
@@ -354,7 +355,7 @@ MARKETPLACE_CONFIG = {
 
 ---
 
-**Status**: 🟡 Partial | **Priority**: 🔴 High | **Last Updated**: 2026-05-03
+**Status**: 🟡 Partial | **Priority**: 🔴 High | **Last Updated**: 2026-05-04
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
@@ -367,3 +368,29 @@ MARKETPLACE_CONFIG = {
 - Updated MarketplaceMeta ORM: added 4 fields (remote_index_hash, local_index_hash, update_available, last_index_check)
 - Created MarketplaceMetaBase + MarketplaceMetaResponse Pydantic models
 - Updated __all__ exports to include new models
+
+## Audit (2026-05-04)
+
+**Status**: TODO `db-fix-marketplace-item-pk` completed | **Timestamp**: 2026-05-04T21:10
+**Changes**:
+- `MarketplaceItem.id` migrated from `CharField` PK to `BigIntField(primary_key=True)`
+- Added `MarketplaceItem.slug` as unique external identifier
+- Updated marketplace and tag lookup paths to resolve items by `slug` instead of `id`
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

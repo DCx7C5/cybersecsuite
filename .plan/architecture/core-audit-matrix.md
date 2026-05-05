@@ -82,14 +82,14 @@ None detected. Clean dependency chain: app → loader → routers.
 | `__init__.py` | ✅ | 56 | Module exports |
 | `enums.py` | ✅ | 334 | DB enums (RedBlueMode, Severity, etc) |
 | `exceptions.py` | ✅ | 184 | Database exceptions |
-| `scope_utils.py` | ✅ | 395 | Scope management utilities |
+| `scope_utils.py` | ~~✅~~ ⛔ | 395 | **DEPRECATED** — will be deleted (Phase 15, T15.7). Logic moves to `@working_dir` |
 | `utils.py` | ⚠️ | 0 | Helpers (empty) |
 | **models/** | ✅ | 969 | Subdirectory (4 model files) |
 
 **Total**: 5 files + 4 model files, 969 LOC → Good
 
 #### Models Breakdown
-- `scope.py` — ProjectScope, SessionScope (395 lines)
+- `scope.py` — ProjectScope, SessionScope **(DEPRECATED — Phase 15 deletion target, replaced by `SessionContext` in `css/core/session.py`)**
 - `team.py` — Team, Agent models (2103 lines)
 - `orchestrator.py` — OrchestratorInstance (755 lines)
 - `quotas.py` — TaskAssignment, TaskResult, TeamQuota (2900 lines)
@@ -104,7 +104,7 @@ None detected. Clean dependency chain: app → loader → routers.
 #### Reverse Dependencies
 - `css.core.asgi` — Lifespan
 - `css.core.loader` — Model auto-discovery
-- `css.modules.scopes` — Scope queries
+- `css.modules.scopes` — **DEPRECATED** (Phase 15 — module being removed)
 - `css.modules.tasks` — Task queries
 - 50+ module files — ORM model access
 
@@ -113,6 +113,7 @@ None detected. Clean dependency chain: app → loader → routers.
 #### Implementation Status
 - ✅ Tortoise ORM configured
 - ✅ Model auto-discovery
+- ⛔ `scope.py` / `scope_utils.py` — **deprecated, scheduled for deletion in Phase 15 (T15.7)**
 - ✅ Scope/team/quota management
 - ✅ Connection pooling (asyncpg)
 - ✅ Schema generation
@@ -129,7 +130,7 @@ Minor: db → types → retry (mitigated with lazy imports, verified working)
 5. **All @modules** → Model access via Tortoise
 6. **Connection pooling** → asyncpg (automatic)
 7. **Schema generation** → Automatic on startup
-8. **Scope isolation** → ProjectScope/SessionScope models
+8. **Session isolation** → `SessionContext` in `css/core/session.py` *(replaces deprecated ProjectScope/SessionScope)*
 
 #### Recommendations
 - Status: Ready for Phase 2

@@ -1,21 +1,28 @@
 ## 🔐 SESSION RUN MODES & PERMISSIONS
 
+> **Path convention** (applies to ALL modes below):
+> - Session working dir: `~/.css/sessions/session-<sid>/`
+> - Project source dir: resolved via `ProjectManager.get(project_id).source_dir` (e.g. `/home/user/my-project/`)
+> - No `.css/` folders inside project source trees
+
+---
+
 ### Development Mode (Up to 3 Separate Processes)
 ```
-SessionScope [mode=development]
+Session [mode=development]
 
 Process 1 (PID: 1001): Planner Orchestrator
 ├─ Role: Planner
 ├─ Permissions (Read-Only Code + Limited Write)
-│  ├─ Read: $(pwd) (project code, config)
-│  ├─ Write: $(pwd)/.css/plan/ only
+│  ├─ Read: project.source_dir  (project code, config)
+│  ├─ Write: ~/.css/sessions/<sid>/plan/  only
 │  ├─ Permission model: Code analysis, no modifications
-│  └─ Scope: Planning decisions, architecture, proposals
+│  └─ Context: Planning decisions, architecture, proposals
 ├─ Process Isolation: Separate process
 ├─ Output Paths
-│  ├─ Proposals: $(pwd)/.css/sessions/session-<sid>/plan/
-│  ├─ Decisions: $(pwd)/.css/sessions/session-<sid>/plan/decisions/
-│  └─ Analysis: $(pwd)/.css/sessions/session-<sid>/plan/analysis/
+│  ├─ Proposals: ~/.css/sessions/<sid>/plan/
+│  ├─ Decisions: ~/.css/sessions/<sid>/plan/decisions/
+│  └─ Analysis:  ~/.css/sessions/<sid>/plan/analysis/
 └─ Use Cases
    ├─ Architectural review
    ├─ Feature design proposals
@@ -25,15 +32,15 @@ Process 1 (PID: 1001): Planner Orchestrator
 Process 2 (PID: 1002): Main Orchestrator
 ├─ Role: Orchestrator
 ├─ Permissions (Full Project Access)
-│  ├─ Read: $(pwd) (full project)
-│  ├─ Write: $(pwd) (full project)
+│  ├─ Read: project.source_dir (full project)
+│  ├─ Write: project.source_dir (full project)
 │  ├─ Permission model: Full execution capability
-│  └─ Scope: Implement, test, modify code
+│  └─ Context: Implement, test, modify code
 ├─ Process Isolation: Separate process
 ├─ Output Paths
-│  ├─ Code changes: $(pwd)/src/, $(pwd)/tests/
-│  ├─ Test results: $(pwd)/.css/sessions/session-<sid>/results/
-│  └─ Artifacts: $(pwd)/.css/sessions/session-<sid>/
+│  ├─ Code changes: project.source_dir/src/, project.source_dir/tests/
+│  ├─ Test results: ~/.css/sessions/<sid>/results/
+│  └─ Artifacts:   ~/.css/sessions/<sid>/artifacts/
 ├─ Contains:
 │  ├─ Team spawning (creates TeamLeader roles)
 │  ├─ Task delegation (assigns to Workers/TeamMembers)
@@ -47,8 +54,8 @@ Process 2 (PID: 1002): Main Orchestrator
 Process 3 (PID: 1003): Background Triage Orchestrator
 ├─ Role: Triage
 ├─ Permissions (Read + Limited Write)
-│  ├─ Read: $(pwd), logs
-│  ├─ Write: logs only
+│  ├─ Read: project.source_dir, logs
+│  ├─ Write: ~/.css/sessions/<sid>/logs/ only
 │  └─ Permission model: Task routing
 ├─ Process Isolation: Separate process (lightweight, always-on)
 ├─ Functions:
@@ -64,64 +71,64 @@ Process 3 (PID: 1003): Background Triage Orchestrator
 
 ### Red Team Mode (2 Separate Processes)
 ```
-SessionScope [mode=red_team]
+Session [mode=red_team]
 
 Process 1 (PID: 2001): Main Orchestrator (Attack Context)
 ├─ Role: Orchestrator
-├─ Permissions: Full project/system access
+├─ Permissions: project.source_dir + system paths (per PathGrant)
 ├─ Process Isolation: Separate process
-├─ Scope: Penetration testing, vulnerability discovery
-├─ Output: Attack vectors, exploits, findings
+├─ Context: Penetration testing, vulnerability discovery
+├─ Output: ~/.css/sessions/<sid>/findings/, ~/.css/sessions/<sid>/artifacts/
 ├─ Tasks: Simulate attacker behavior
 └─ Contains: Team spawning, Worker/TeamMember delegation
 
 Process 2 (PID: 2002): Background Triage Orchestrator
 ├─ Role: Triage
-├─ Permissions: Read-only + limited write (logs)
+├─ Permissions: Read-only + write ~/.css/sessions/<sid>/logs/ only
 ├─ Process Isolation: Separate process
-├─ Scope: Task routing & prioritization
+├─ Context: Task routing & prioritization
 ├─ Functions: Background processing
 └─ Tasks: Route attack tasks, prioritize findings
 ```
 
 ### Blue Team Mode (2 Separate Processes)
 ```
-SessionScope [mode=blue_team]
+Session [mode=blue_team]
 
 Process 1 (PID: 2001): Main Orchestrator (Defense Context)
 ├─ Role: Orchestrator
-├─ Permissions: Full project/system access
+├─ Permissions: project.source_dir + system paths (per PathGrant)
 ├─ Process Isolation: Separate process
-├─ Scope: Detection, remediation, hardening
-├─ Output: Defenses, patches, mitigations
+├─ Context: Detection, remediation, hardening
+├─ Output: ~/.css/sessions/<sid>/findings/, ~/.css/sessions/<sid>/artifacts/
 ├─ Tasks: Simulate defender behavior
 └─ Contains: Team spawning, Worker/TeamMember delegation
 
 Process 2 (PID: 2002): Background Triage Orchestrator
 ├─ Role: Triage
-├─ Permissions: Read-only + limited write (logs)
+├─ Permissions: Read-only + write ~/.css/sessions/<sid>/logs/ only
 ├─ Process Isolation: Separate process
-├─ Scope: Task routing & prioritization
+├─ Context: Task routing & prioritization
 ├─ Functions: Background processing
 └─ Tasks: Route defense tasks, prioritize mitigations
 ```
 
 ### Purple Team Mode (2 Separate Processes)
 ```
-SessionScope [mode=purple_team]
+Session [mode=purple_team]
 
 Process 1 (PID: 2001): Red Orchestrator (Attack Context)
 ├─ Role: Orchestrator
-├─ Permissions: Full access
+├─ Permissions: Full access (per PathGrant)
 ├─ Process Isolation: Separate process
-├─ Output: Attack findings
+├─ Output: ~/.css/sessions/<sid>/findings/red/
 └─ Tasks: Simulate attacker behavior
 
 Process 2 (PID: 2002): Blue Orchestrator (Defense Context)
 ├─ Role: Orchestrator
-├─ Permissions: Full access
+├─ Permissions: Full access (per PathGrant)
 ├─ Process Isolation: Separate process
-├─ Output: Defense measures
+├─ Output: ~/.css/sessions/<sid>/findings/blue/
 └─ Tasks: Simulate defender behavior
 
 Shared Results Queue (via IPC):
@@ -131,25 +138,25 @@ Shared Results Queue (via IPC):
 ```
 
 ### Permission Model Architecture
+
+Permissions are managed by `@permissions` module (Phase 15). Each orchestrator process gets explicit PathGrants at session start. See `modules/permissions/plan.md` for full design.
+
 ```python
-@dataclass
-class OrchestratorPermissions:
-    """Define what an orchestrator can access"""
-    read_paths: List[str]       # e.g., ["/project", "/config"]
-    write_paths: List[str]      # e.g., ["/project/.css/plan"]
-    
-    # Examples:
-    # Plan mode:
-    #   read: ["/project"]
-    #   write: ["/project/.css/plan"]
-    #
-    # Dev mode:
-    #   read: ["/project"]
-    #   write: ["/project"]
-    #
-    # Red/Blue/Purple:
-    #   read: ["/project", "/system"]
-    #   write: ["/project", "/system"]
+# At session start, orchestrator gets PathGrants via GrantManager:
+#
+# Planner mode:
+#   grant_path(agent_id, project.source_dir + "/**", {READ})
+#   grant_path(agent_id, "~/.css/sessions/<sid>/plan/**", {READ, WRITE})
+#
+# Dev mode (main orchestrator):
+#   grant_path(agent_id, project.source_dir + "/**", {READ, WRITE})
+#   grant_path(agent_id, "~/.css/sessions/<sid>/**", {READ, WRITE})
+#
+# Red/Blue/Purple (system-level tools need elevated grants):
+#   grant_path(agent_id, project.source_dir + "/**", {READ, WRITE})
+#   grant_path(agent_id, "~/.css/sessions/<sid>/**", {READ, WRITE})
+#   grant_path(agent_id, "/etc/**", {READ}, elevated=False)
+#   grant_path(agent_id, "/usr/bin/nmap", {EXECUTE}, elevated=True)
 ```
 
 ---

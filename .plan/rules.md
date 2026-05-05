@@ -1,30 +1,69 @@
 # Development Rules
 
-**Status**: 📋 Active Convention | **Updated**: 2026-05-03
+**Status**: 📋 Active Convention | **Updated**: 2026-05-04
+
+---
+
+## 🚀 FIRST: WHERE DO I START?
+
+If you are an AI agent starting a new session, do this **in order**:
+
+```bash
+# 1. Go to project root
+cd /home/daen/Projects/cybersecsuite
+
+# 2. Check what is in progress (finish these first)
+sqlite3 .plan/session.db "SELECT id, title FROM todos WHERE status = 'in_progress';"
+
+# 3. Find the next ready todo with no blocked dependencies (ALWAYS sorted by phase order)
+sqlite3 .plan/session.db "
+SELECT t.id, t.title, t.phase, t.task
+FROM todos t
+WHERE t.status = 'pending'
+AND NOT EXISTS (
+  SELECT 1 FROM todo_deps td
+  JOIN todos dep ON td.depends_on = dep.id
+  WHERE td.todo_id = t.id AND dep.status != 'done'
+)
+ORDER BY t.sort_order, t.task, t.id LIMIT 5;"
+
+# 4. Read the full spec for the todo you'll work on
+sqlite3 .plan/session.db "SELECT description FROM todos WHERE id = 'CHOSEN-ID';"
+
+# 5. Read the local plan.md for the module you're working in
+cat src/css/modules/<module_name>/plan.md
+```
+
 
 ---
 
 ## CRITICAL MOST IMPORTANT RULES NEVER FORGET
-- **no Co-authored-by: Copilot**
-- **minimize your thinking chat to only essentials** — No reasoning bloat
-- **minimize your chat response to <100 words max** — Keep it concise, unless unavoidable
-- **always show h3 header while working on todos**
-- **keep normal summaries in the end**
-- **always use async python if possible**
-- **when working with frontend use `bun` over `npm`**
-- **use always `aiohttp` not `httpx`**
-- **`.plan/` is now your WORKING DIRECTORY. Not `~/.copilot/` or `~/.claude` anymore. THIS IS IMPORTANT**
-- **no hallucinations, ask the user if unsure**
-- **read the different workflows in [development-workflow.md](development-workflow.md)**
-- **you have access to `.venv/bin/` here in the cybersecsuite Project**
-- **don't ask dumb questions like should I mark task as complete or todo as complete. just run the necessary workflow.**
-- **you follow existing directory, documentary and code patterns for consistency**
-- **WHEN WORKING IN PLAN MODE ALWAYS UPDATE EVERY .md UNDER `.plan/` and keep in sync with `.plan/session.db`!**
-- **GENERAL ARCHITECTURE IN `.plan/architecture/*.md`**
-- **EVERY PROVIDER IN `src/css/{core,modules,api_services}/` DIRECTORY HAS A `plan.md` FILE TO DEEPINSPECT WHEN WORKING IN DIR** 
-- **TELL WHEN A SESSION IS ABOUT TO END OR A NEW ONE TO START**
+- **ABSOLUTE: never add `Co-authored-by:` anywhere**
+- **ABSOLUTE: keep thinking chat to bare essentials only** — No reasoning bloat, no hidden verbosity
+- **ABSOLUTE: keep every chat response under 500 words unless impossible**
+- **ABSOLUTE: explicitly announce whenever a TODO, TASK, or PHASE is completed**
+- **ABSOLUTE: every tool execution must have a clear headline**
+- **ABSOLUTE: always end with a normal summary**
+- **ABSOLUTE: always prefer async Python whenever possible**
+- **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
+- **ABSOLUTE: always use `aiohttp`, never `httpx`**
+- **ABSOLUTE: in planning mode, always structure work as PHASE > TASK > TODO**
+- **ABSOLUTE: every new TODO, must belong to exactly one TASK and one PHASE**
+- **ABSOLUTE: [.plan/](../.plan) is the working directory** — never treat `~/.copilot/` or `~/.claude` as the working directory
+- **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
+- **ABSOLUTE: track all TODOs, TASKs, and PHASEs in [.plan/session.db](session.db)**
+- **ABSOLUTE: in `src/css/`, every module ([src/css/modules/](../src/css/modules)) directory, every api_service ([src/css/api_services/](../src/css/api_services)) directory, and every core directory ([src/css/core/](../src/css/core)) contains its own local plan.md; always check, update, and keep that local plan.md synchronized with [.plan/session.db](session.db) while working there**
+- **ABSOLUTE: use the project virtualenv at [.venv/bin/](../.venv/bin) whenever Python execution is needed**
+- **ABSOLUTE: follow all existing directory, documentation, and code patterns for consistency**
+- **ABSOLUTE: in PLAN MODE, update every `.md` under `.plan/` and keep all of them synchronized with [.plan/session.db](session.db)**
+- **ABSOLUTE: use [.plan/architecture/*.md](architecture) & nearest `plan.md` as the source of truth for general architecture**
+- **ABSOLUTE: keep also `memory.md` and `checkpoints.md` in sync with [.plan/session.db](session.db)** 
+- **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
 
 # CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
+
+**Then follow**: `.plan/development-workflow.md` — WORKFLOW 1 for todos, WORKFLOW 2 for tasks, WORKFLOW 3 for phases.
+
 
 ## ✅ .plan/ WHITELIST 
 
@@ -39,7 +78,7 @@
 | **session.db**               | Todo tracker (SQLite)    ALWAYS KEEP IN SYNC!!!!!     |
 
 **❌ FORBIDDEN**: Other .md files, subdirectories, staging files. if rule is broken, files content must be moved into white listed files and file deleted
-**CONSOLIDATE**: If you need a new file, merge content into one of the 8 above.
+**CONSOLIDATE**: If you need a new file, merge content into one of the 7 above.
 
 ---
 
@@ -58,25 +97,51 @@
 | **Testing**          | pytest (unit/integration), only after phase complete                                 |
 | **Containerization** | Docker Compose (6 services: ASGI, Dashboard, PostgreSQL, Redis, Ollama, OpenObserve) |
 
-### Service Ports (docker-compose)
-| Port  | Service                  | Container            |
-|-------|--------------------------|----------------------|
-| 8765  | Backend ASGI (direct)    | cybersec-proxy       |
-| 8000  | Dashboard HTTP           | cybersec-dashboard   |
-| 8443  | Dashboard TLS            | cybersec-dashboard   |
-| 5432  | PostgreSQL (Unix socket) | cybersec-postgres    |
-| 6379  | Redis                    | cybersec-redis       |
-| 11434 | Ollama (local LLM)       | cybersec-ollama      |
-| 5080  | OpenObserve (metrics/UI) | cybersec-openobserve |
+### Running the App
 
-### ⚠️ Frontend Changes Require Service Restart
-After editing React/TypeScript frontend code in `src/frontend/`:
 ```bash
-docker-compose restart cybersec-dashboard
-# or full restart
-docker-compose down && docker-compose up -d
+# Start infra (postgres, redis, ollama, openobserve) — Docker-only
+docker-compose up -d
+
+# Start ASGI app directly (NOT in Docker)
+cd /home/daen/Projects/cybersecsuite
+source .venv/bin/activate
+CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload
+# → uvicorn css.core.asgi.app:app --reload on port 8000
+
+# Frontend (dev, NOT in Docker)
+cd src/frontend && bun run dev
 ```
-**Reason**: Dashboard container rebuilds on code changes, but not automatically detected
+
+### Service Ports
+| Port  | Service                  | Notes                        |
+|-------|--------------------------|------------------------------|
+| 8000  | Backend ASGI             | `manage.py serve` (direct)   |
+| 5432  | PostgreSQL               | Docker: `cybersec-postgres`  |
+| 6379  | Redis                    | Docker: `cybersec-redis`     |
+| 11434 | Ollama (local LLM)       | **Native process** — `OllamaProcessManager` starts `ollama serve` via asyncio subprocess (not Docker). Linux-only. |
+| 5080  | OpenObserve (metrics/UI) | Docker: `cybersec-openobserve` |
+
+> **Docker is infra-only** — `cybersec-dashboard`, `cybersec-frontend`, `cybersec-proxy`, `cybersec-ollama` are removed/legacy. The ASGI app and frontend run directly via `manage.py` + `bun`. Ollama runs natively via `OllamaProcessManager` (see `core/ollama/`).
+
+### llama-cpp-python (CUDA — Pascal/GTX 10xx series, sm_61)
+
+llama-cpp-python requires a manual build step for CUDA support. Run this **once** after `uv sync`:
+
+```bash
+CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=61" \
+FORCE_CMAKE=1 \
+uv pip install llama-cpp-python --reinstall --no-cache-dir --force-reinstall
+```
+
+> ⚠️ `sm_61` = Pascal architecture (GTX 1060/1070/1080 etc.). Do NOT change this for other GPU generations.
+
+### manage.py Commands
+```bash
+python manage.py serve [--reload] [--port 8000]   # start ASGI
+python manage.py init-db                           # drop + generate_schemas(safe=False) + seed
+python manage.py shell                             # async REPL
+```
 
 ---
 
@@ -107,29 +172,34 @@ modules/<name>/
 └── __init__.py
 ```
 
-### Current Modules (19 total)
+### Current Modules (20 total)
 
-| Module       | Purpose                                       |
-|--------------|-----------------------------------------------|
-| agents       | Agent orchestration & execution               |
-| cache        | Caching layer (Redis, local)                  |
-| capabilities | Capability definitions & registry             |
-| chat         | Chat session management                       |
-| events       | Event bus & streaming                         |
-| google_a2a   | Google Auth2App integration                   |
-| llm_models   | LLM model registry & metadata                 |
-| llm_proxy    | LLM provider abstraction layer                |
-| marketplace  | Marketplace (plugins, integrations)           |
-| memory       | Memory & context management                   |
-| permissions  | Role-based access control                     |
-| roles        | Role definitions & assignment                 |
-| scopes       | Scope hierarchy (Project, App, Session, Team) |
-| skills       | Skill definitions & execution                 |
-| streaming    | Streaming & SSE support                       |
-| tags         | Tag management & categorization               |
-| teams        | Team management & isolation                   |
-| tools        | Tool registry & execution                     |
-| working_dir  | Working directory & file management           |
+| Module        | Purpose                                       |
+|---------------|-----------------------------------------------|
+| agents        | Agent orchestration & execution               |
+| capabilities  | Capability definitions & registry             |
+| chat          | Chat session management                       |
+| events        | Event bus & streaming                         |
+| google_a2a    | Google Auth2App integration                   |
+| intelligence  | Local AI assistance — Qwen3/Phi4/llama.cpp routing, quality gates, cost budget, conversation health (renamed from `triage`) |
+| llm_models    | LLM model registry & metadata                 |
+| llm_proxy     | LLM provider abstraction layer                | ⚠️ Directory does NOT exist — Phase 12 target |
+| marketplace   | Marketplace (plugins, integrations)           |
+| mcps          | MCP server management (register/connect/call) — PYTHON_DIRECT bypass, STDIO, SSE, HTTP transports |
+| memory        | Memory & context management                   |
+| permissions   | Role-based access control                     |
+| prompts       | Prompt registry, template engine, variable substitution — reusable versioned prompt definitions |
+| roles         | Role definitions & assignment                 |
+| ~~scopes~~    | ⚠️ DEPRECATED — deletion target (Phase 15, todo: scopes-module-remove). Do NOT import. |
+| skills        | Skill definitions & execution                 |
+| streaming     | Streaming & SSE support                       |
+| tags          | Tag management & categorization               |
+| teams         | Team management & isolation                   |
+| tools         | Tool registry & execution (LLM provider builtins; MCP tools bridged in via mcps/) |
+
+**Moved to `core/` (infrastructure, not business logic)**:
+- `cache` → `core/cache/` (KV cache: L1 memory, L2 Redis, L3 PostgreSQL)
+- `working_dir` → `core/workspace/` (multi-workspace registry with per-entity expandable dir list)
 
 **Loader.py auto-discovers**:
 - `endpoints.py` — FastAPI routers (if present, module is skipped silently if missing)
@@ -193,27 +263,36 @@ Provider implementations in `api_services/`:
 
 ## 🧬 ABC & @dataclass Consistency
 
-**❌ WRONG**:
+**❌ WRONG** — mixing on the same class:
 ```python
 @dataclass
-class Base(ABC):  # Contradictory
+class Base(ABC):  # Contradictory — use one or the other
+    pass
+
+@dataclass
+class Ctx(BaseModel):  # Also wrong — @dataclass + Pydantic together
     pass
 ```
 
-**✅ RIGHT** (pick one):
+**✅ RIGHT** (pick one per class):
 ```python
-# Pure abstract
+# Abstract contract → Protocol (Phase 6 P1 direction) or plain ABC
 class Base(ABC):
     @abstractmethod
     def method(self): ...
 
-# Pure concrete
+# Value / data container → @dataclass (acceptable) or msgspec.Struct (preferred)
 @dataclass
-class Base:
+class SkillDefinition:     # pure data — no ABC, fine as-is until Phase 6 P1 migration
     field: str
+
+class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all value types
+    session_id: str
 ```
 
-**Status**: `base_entity.py`, `base_header.py`, `base_client.py` mix both → **refactor needed**
+**Migration rule (Phase 6 P1)**: *When you touch a `@dataclass` value type, convert it to `msgspec.Struct`.* Don't mass-migrate — only on touch.
+
+**Status**: `base_entity.py`, `base_header.py`, `base_client.py` still mix both → tracked in Phase 4 refactor todos. `core/types/context.py` uses `@dataclass + BaseModel` → tracked as `gap-context-antipattern` (Phase 15).
 
 ---
 
@@ -300,15 +379,36 @@ Tool       → modules/tools/types.py
 
 ---
 
+## 🗄️ ORM Naming & Schema Rules
+
+| Rule | Detail |
+|------|--------|
+| **No `Record` suffix** | Model class is `LLMModel`, not `LLMModelRecord`. Table name is `llm_models`. Only suffix allowed is a domain noun (e.g., `ProviderCapability`, `ChatMessage`). |
+| **No migrations during dev** | While phases are in progress we drop + reseed. `manage.py init-db` calls `generate_schemas(safe=False)` in dev, then runs all seed fixtures. Only consider Aerich migration tooling after all phases are locked. |
+| **BigIntField PK always** | `id = fields.BigIntField(primary_key=True)` on every model. No `IntField`, no `CharField` PK. |
+| **CharEnumField for enums** | All enum-valued columns use `CharEnumField(MyEnum)`, never raw `CharField` with manual choices. |
+| **Full Meta class** | Every model needs: `table`, `table_description`, `ordering`, `indexes` (as `models.Index(fields=[...])`), `unique_together` where applicable. |
+| **Index syntax** | Always `models.Index(fields=["a", "b"])` — never tuple syntax `("a", "b")` (silently ignored). |
+| **auto_now timestamps** | `created_at = fields.DatetimeField(auto_now_add=True)`, `updated_at = fields.DatetimeField(auto_now=True)` on every mutable model. |
+| **Soft delete pattern** | `is_active = BooleanField(default=True, db_index=True)` + `deleted_at = DatetimeField(null=True)`. Use `SoftDeleteMixin` once created. |
+| **null=True only if truly nullable** | Don't use `null=True` as a default. Required fields must be non-null with a sensible default. |
+| **No duplicate enum names** | One canonical enum per concept. Keep `Severity`, `Confidence`, `IOCStatus` — delete `SeverityLevel`, `ConfidenceLevel`, `ForensicIOCStatus`. |
+
+---
+
 ## 🚫 Anti-Patterns (NEVER)
 
 | Anti-Pattern                    | Fix                                   |
 |---------------------------------|---------------------------------------|
 | Create .md outside whitelist    | Consolidate to 7 files                |
 | Manual .env.example edits       | Regenerate from CONFIG_SPEC           |
-| Mix ABC + @dataclass            | Choose pure abstract OR pure concrete |
+| Mix ABC + @dataclass on same class  | Use ABC alone OR @dataclass alone OR msgspec.Struct |
+| @dataclass + BaseModel(Pydantic)    | Replace with msgspec.Struct (see gap-context-antipattern) |
 | Test during phase               | Test only after phase complete        |
 | Cross-module imports (non-core) | Import only from core                 |
 | Hardcoded manager.py defaults   | Use CONFIG object                     |
 | Missing 5-file pattern          | Ensure all 5 files                    |
 | Skip commit validation          | Run validation checklist              |
+| `Record` suffix on ORM models   | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability` |
+| Aerich migrations during dev    | Drop + reseed via `manage.py init-db` until all phases locked |
+| Tuple-syntax indexes in Meta    | Use `models.Index(fields=["a","b"])` — tuple syntax silently ignored |

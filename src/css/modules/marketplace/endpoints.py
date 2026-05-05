@@ -107,7 +107,7 @@ async def uninstall_item(request: UninstallRequest) -> UninstallResponse:
 async def toggle_item(request: ToggleRequest) -> ToggleResponse:
     """Toggle enabled state of a marketplace item."""
     try:
-        item = await MarketplaceItem.get_or_none(id=request.item_id)
+        item = await MarketplaceItem.get_or_none(slug=request.item_id)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -176,7 +176,7 @@ async def list_marketplace_items(
         # Format items
         for item in results:
             item_dict = {
-                "id": item.id,
+                "id": item.slug,
                 "name": item.name,
                 "description": item.description,
                 "kind": item.kind,
@@ -223,7 +223,7 @@ async def get_marketplace_item(item_id: str) -> dict:
         item = await MarketplaceItem.get_or_none(name=title_case)
 
         if not item:
-            item = await MarketplaceItem.get_or_none(id=item_id)
+            item = await MarketplaceItem.get_or_none(slug=item_id)
 
         if not item:
             raise HTTPException(
@@ -233,7 +233,7 @@ async def get_marketplace_item(item_id: str) -> dict:
 
         return {
             "item": {
-                "id": item.id,
+                "id": item.slug,
                 "name": item.name,
                 "description": item.description,
                 "kind": item.kind,

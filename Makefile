@@ -62,12 +62,8 @@ machine:  ## Seed local machine hardware inventory
 # ── Run ───────────────────────────────────────────────────────────────────────
 
 .PHONY: serve
-serve: .css-initialized  ## Start the ASGI server (A2A + AI proxy at /v1/)
-	$(UV) run uvicorn proxy.asgi:app \
-		--host $(UVICORN_HOST) \
-		--port $(UVICORN_PORT) \
-		--reload \
-		--app-dir src
+serve: .css-initialized  ## Start the ASGI server
+	$(UV) run python manage.py serve --reload --host $(UVICORN_HOST) --port $(UVICORN_PORT)
 
 .PHONY: mcp
 mcp:  ## Start the MCP server (stdio transport for Claude)

@@ -45,7 +45,7 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
         Raises:
             PackageNotFoundError: If item not found
         """
-        item = await MarketplaceItem.get_or_none(id=item_id)
+        item = await MarketplaceItem.get_or_none(slug=item_id)
         if not item:
             raise PackageNotFoundError(item_id=item_id)
         await item.delete()
@@ -61,7 +61,7 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
         Returns:
             MarketplaceItem instance or None if not found
         """
-        return await MarketplaceItem.get_or_none(id=item_id)
+        return await MarketplaceItem.get_or_none(slug=item_id)
 
     async def list_all(
         self,

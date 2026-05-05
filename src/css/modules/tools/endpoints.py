@@ -32,6 +32,31 @@ async def list_hybrid_tools(strategy: Optional[str] = Query(None), enabled_only:
     }
 
 
+@router.get("")
+async def list_tools(provider: Optional[str] = Query(None), enabled_only: bool = Query(True)) -> dict:
+    """List regular provider tools, optionally filtered by provider."""
+    registry = get_tool_registry()
+    tools = registry.list_tools(filter_by_provider=provider, enabled_only=enabled_only)
+    return {
+        "count": len(tools),
+        "tools": [tool.to_dict() for tool in tools],
+    }
+
+
+@router.get("/provider/{provider}")
+async def list_provider_tools(provider: str, enabled_only: bool = Query(True)) -> dict:
+    """List tools for one provider (e.g. openai, anthropic)."""
+    registry = get_tool_registry()
+    tools = registry.get_provider_tools(provider)
+    if enabled_only:
+        tools = [tool for tool in tools if tool.enabled]
+    return {
+        "provider": provider,
+        "count": len(tools),
+        "tools": [tool.to_dict() for tool in tools],
+    }
+
+
 @router.get("/hybrid/{tool_id}")
 async def get_hybrid_tool(tool_id: str) -> dict:
     """Get specific hybrid tool by ID.
@@ -42,6 +67,17 @@ async def get_hybrid_tool(tool_id: str) -> dict:
     try:
         registry = get_tool_registry()
         tool = registry.get_hybrid_tool(tool_id)
+        return tool.to_dict()
+    except ToolNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.get("/{tool_id}")
+async def get_tool(tool_id: str) -> dict:
+    """Get one regular tool by ID (format: provider:name)."""
+    try:
+        registry = get_tool_registry()
+        tool = registry.get_tool(tool_id)
         return tool.to_dict()
     except ToolNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))

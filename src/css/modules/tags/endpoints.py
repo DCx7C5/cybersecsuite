@@ -3,6 +3,7 @@
 import logging
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
+from tortoise.expressions import Q
 
 from css.modules.tags.models import Tag
 from css.modules.marketplace.models import MarketplaceItemTag, MarketplaceItem
@@ -22,6 +23,20 @@ async def list_tags(name_filter: Optional[str] = Query(None)) -> dict:
     return {"count": len(tags), "tags": [t.to_dict() if hasattr(t, "to_dict") else {"id": t.id, "name": t.name} for t in tags]}
 
 
+@router.get("/suggest")
+async def suggest_tags(prefix: str = Query(...), limit: int = Query(10, ge=1, le=50)) -> dict:
+    """Suggest tags for autocomplete by matching name/slug prefix."""
+    prefix = prefix.strip()
+    if not prefix:
+        return {"count": 0, "suggestions": []}
+
+    tags = await Tag.filter(Q(name__istartswith=prefix) | Q(slug__istartswith=prefix)).limit(limit)
+    return {
+        "count": len(tags),
+        "suggestions": [{"id": t.id, "name": t.name, "slug": t.slug} for t in tags],
+    }
+
+
 @router.post("")
 async def create_tag(name: str, slug: str, color: str = "gray", description: str = "") -> dict:
     """Create new tag."""
@@ -37,7 +52,7 @@ async def create_tag(name: str, slug: str, color: str = "gray", description: str
 @router.post("/marketplace/{item_id}")
 async def add_tag_to_marketplace_item(item_id: str, tag_id: int) -> dict:
     """Add tag to marketplace item."""
-    item = await MarketplaceItem.get_or_none(id=item_id)
+    item = await MarketplaceItem.get_or_none(slug=item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Marketplace item not found")
     
@@ -80,6 +95,6 @@ async def filter_marketplace_by_tags(tags: str = Query(...)) -> dict:
     for item in items:
         item_tags = await item.tags_m2m.all()
         if any(t.tag.name in tag_names for t in item_tags):
-            filtered.append({"id": item.id, "name": item.name})
+            filtered.append({"id": item.slug, "name": item.name})
     
     return {"count": len(filtered), "items": filtered}

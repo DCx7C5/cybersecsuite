@@ -15,8 +15,8 @@ Ports (env-configurable):
     ASGI_HOST      — bind address     (default: 0.0.0.0)
     ASGI_PORT      — HTTP port        (default: 8000)
     ASGI_TLS_PORT  — HTTPS port       (default: 8433)
-    ASGI_TLS_CERT  — PEM cert path    (default: ~/.cybersecsuite/certs/cert.pem)
-    ASGI_TLS_KEY   — PEM key path     (default: ~/.cybersecsuite/certs/key.pem)
+    ASGI_TLS_CERT  — PEM cert path    (default: ~/.css/certs/cert.pem)
+    ASGI_TLS_KEY   — PEM key path     (default: ~/.css/certs/key.pem)
 """
 
 import logging
@@ -29,7 +29,9 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from tortoise import Tortoise
 
-from css.core.loader import mount_app_routers
+from css.config import ENVIRONMENT, POSTGRES_DATABASE
+from css.core.loader import build_tortoise_db_url, build_tortoise_modules, mount_app_routers
+from css.modules.tools.registry import get_tool_registry
 
 log = logging.getLogger(__name__)
 
@@ -41,11 +43,11 @@ ASGI_PORT = int(os.environ.get("ASGI_PORT", "8000"))
 ASGI_TLS_PORT = int(os.environ.get("ASGI_TLS_PORT", "8433"))
 ASGI_TLS_CERT = os.environ.get(
     "ASGI_TLS_CERT",
-    str(Path.home() / ".cybersecsuite" / "certs" / "cert.pem"),
+    str(Path.home() / ".css" / "certs" / "cert.pem"),
 )
 ASGI_TLS_KEY = os.environ.get(
     "ASGI_TLS_KEY",
-    str(Path.home() / ".cybersecsuite" / "certs" / "key.pem"),
+    str(Path.home() / ".css" / "certs" / "key.pem"),
 )
 
 TLS_AVAILABLE = Path(ASGI_TLS_CERT).is_file() and Path(ASGI_TLS_KEY).is_file()
@@ -74,9 +76,31 @@ def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         log.info("CyberSecSuite starting — host=%s port=%d", ASGI_HOST, ASGI_PORT)
-        yield
-        log.info("CyberSecSuite shutting down")
-        await Tortoise.close_connections()
+        db_url = build_tortoise_db_url(POSTGRES_DATABASE)
+        tortoise_apps = build_tortoise_modules()
+        await Tortoise.init(
+            config={
+                "connections": {"default": db_url},
+                "apps": tortoise_apps,
+            }
+        )
+        if ENVIRONMENT == "development":
+            await Tortoise.generate_schemas(safe=True)
+
+        # Load async tool-registry runtime state after DB init.
+        tool_registry = get_tool_registry()
+        await tool_registry.initialize_runtime_state()
+        log.info(
+            "ToolRegistry ready: %d builtin tools, %d hybrid tools",
+            len(tool_registry.tools),
+            len(tool_registry.hybrid_tools),
+        )
+
+        try:
+            yield
+        finally:
+            log.info("CyberSecSuite shutting down")
+            await Tortoise.close_connections()
 
     _app = FastAPI(
         title="CyberSecSuite",
@@ -106,4 +130,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

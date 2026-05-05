@@ -339,7 +339,21 @@ async def lifespan(app: FastAPI):
 
 ---
 
-**Status**: 🟢 Implemented | **Priority**: 🔴 High | **Last Updated**: 2026-05-03
+## Phase 15 Cleanup (Post-working-dir-manager)
+
+**Prerequisite**: These changes happen AFTER `working-dir-manager` todo is complete.
+
+| Item | Action | Todo ID |
+|------|--------|---------|
+| `scope_utils.py` | Delete entire file | `scopes-module-remove` |
+| `enums.py` | Remove `ScopeLevel` enum | `scopes-module-remove` |
+| `models/scope.py` | Drop/migrate `SessionScope` and `ProjectScope` DB models | `scopes-module-remove` |
+
+> **Order matters**: `working-dir-manager` → `perm-rename-scope-to-session` → `streaming-decouple-from-scopes` → `scopes-module-remove` (deletes this DB code last)
+
+---
+
+**Status**: 🟢 Implemented | **Priority**: 🔴 High | **Last Updated**: 2026-05-04
 
 ---
 
@@ -356,3 +370,32 @@ async def lifespan(app: FastAPI):
 - **Phase Ready**: Phase 2 ✅ (Production Ready)
 - **Last Audited**: 2026-05-03 by Agent 2
 - **Audit Matrix**: .plan/architecture/core-audit-matrix.md
+
+---
+
+## Audit Timestamp (2026-05-04)
+
+**Status**: DB critical chain updates synchronized from session.db
+
+- ✅ `db-dedupe-enums` / `db-fix-tooltype-enum-empty`: canonical enum set retained in `enums.py`
+- ✅ `db-fix-fk-labels-scope`: scope model FKs now use `css.ProjectScope` / `css.SessionScope`
+- ✅ `db-fix-scope-level-charenum`: `ScopedEntry.scope_level` now uses `CharEnumField(ScopeLevel)`
+- ✅ `db-fix-charfield-enums`: team/orchestrator/task status + priority fields migrated to DB enums
+
+---
+
+## 🔄 Sync Reminder
+
+> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+>
+> - When adding/completing a TODO: update `status` in `.plan/session.db`
+> - When updating session.db: reflect changes back to this checklist
+> - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
+> - See `.plan/rules.md` CRITICAL section for full rules
+>
+> **Pattern rules enforced here**:
+> - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
+> - Never mix `@dataclass` with `ABC` on the same class
+> - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - HTTP clients: always `aiohttp`, never `httpx`
+> - Package manager: always `uv`/`bun`, never `pip`/`npm`

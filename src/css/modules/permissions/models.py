@@ -7,7 +7,7 @@ from tortoise.models import Model
 class PermissionGrant(Model):
     """Permission grant mapping role to permissions at scope level."""
 
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(primary_key=True)
     role = fields.CharField(max_length=32)
     scope_level = fields.CharField(max_length=32)
     scope_id = fields.CharField(max_length=255)
@@ -25,7 +25,8 @@ class PermissionGrant(Model):
 class ScopeSession(Model):
     """Session scope tracking for TTL and auto-cleanup."""
 
-    id = fields.CharField(max_length=255, pk=True)
+    id = fields.BigIntField(primary_key=True)
+    session_id = fields.CharField(max_length=255, unique=True, db_index=True)
     scope_level = fields.CharField(max_length=32)
     parent_scope_id = fields.CharField(max_length=255, null=True)
     role = fields.CharField(max_length=32)
@@ -40,7 +41,7 @@ class ScopeSession(Model):
 class RolePermissionCache(Model):
     """Cache computed role permissions for performance."""
 
-    id = fields.IntField(pk=True)
+    id = fields.BigIntField(primary_key=True)
     role = fields.CharField(max_length=32)
     scope_level = fields.CharField(max_length=32)
     cache_key = fields.CharField(max_length=512, unique=True)

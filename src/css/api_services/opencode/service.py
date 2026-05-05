@@ -6,21 +6,21 @@ import os
 from typing import Any, AsyncIterator, Optional
 
 from css.core.types import (
-    BaseApiServiceClient,
-    StreamingHandler,
-    ProviderType,
-    ModelMetadata,
     BaseMessage,
-    StreamChunk,
-    LLMResponse,
     MessageRole,
+    ModelMetadata,
+    ProviderType,
+    StreamChunk,
+    StreamingHandler,
     Tool,
+    LLMResponse,
 )
+from css.core.types.providers import APIProviderBase
 
 logger = logging.getLogger(__name__)
 
 
-class OpenCodeApiService(BaseApiServiceClient, StreamingHandler):
+class OpenCodeApiService(APIProviderBase, StreamingHandler):
     """OpenCode API service with streaming support."""
     
     def __init__(

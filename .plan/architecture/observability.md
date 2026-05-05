@@ -1,631 +1,449 @@
-# PLAN: Observability & Events Architecture
+# Observability & Events Architecture
 
-**Objective**: Design and implement BaseEvent system + OpenTelemetry integration for comprehensive observability
+**Status**: 🚀 Phase 6 — Proposals 3 + 5 (CQRS Event Store + OTEL Bridge)
+**Updated**: 2026-05-04 (session 9a5b41c4)
 
-**Status**: 📋 Planning Phase
-
----
-
-## Problem Statement
-
-CyberSecSuite requires comprehensive observability across:
-- **Events** — First-class events for all significant operations (task execution, permission checks, role changes, etc.)
-- **Tracing** — Distributed tracing with correlation IDs across services
-- **Metrics** — Performance metrics (latency, throughput, error rates)
-- **Logging** — Structured logging with context propagation
-- **Backends** — OpenObserve (open-source observability platform) for centralized collection
-
-Currently:
-- Hooks exist (`HookContext`, `HookErrorStrategy`) but no unified event system
-- Logger exists but not integrated with OpenTelemetry
-- No tracing infrastructure
-- No OpenObserve backend integration
-- No metrics collection
+> ⚠️ **ARCHITECTURE CHANGE**: The old `BaseEvent` + `EventBus` pub/sub design is **superseded**.
+> New architecture: `DomainEvent` (immutable) → `EventStore` (PostgreSQL) → Redis Streams
+> → `OtelBridge` → OpenObserve. See todos `p6-events-*` in `.plan/session.db`.
 
 ---
 
-## Proposed Architecture (Unified Approach)
-
-### System Design
+## System Design
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                    Application Layer                             │
-│  (Modules: chat, capabilities, marketplace, permissions, etc.)   │
-└──────────┬───────────────────────────────────────────────────────┘
-           │
-           ├─ Emit: event = BaseEvent(...)
-           │ 
-           └─→ ┌────────────────────────────────────────────────┐
-               │      Unified Event & Hook System               │
-               │         (@modules:events)                      │
-               │                                                │
-               ├─ BaseEvent (event model)                       │
-               ├─ EventType (20+ event types)                   │
-               ├─ EventContext (metadata)                       │
-               ├─ EventBus (pub/sub emitter)                    │
-               ├─ EventDispatcher (route to handlers)           │
-               ├─ Hook registry (pre/post hooks)                │
-               ├─ @on_event decorator (subscribe to events)     │
-               ├─ @on_hook decorator (register hooks)           │
-               └─ Hook execution logic (error handling)         │
-               │                                                │
-               ├─→ Event Handlers Execute                       │
-               │   ├─ Hook functions                           │
-               │   ├─ Event listeners (@on_event subscribers)   │
-               │   └─ Observability middleware                  │
-               │                                                │
-               └─→ ┌────────────────────────────────────────────┐
-                   │ OpenTelemetry Integration                  │
-                   │    (@core:opentelemetry)                   │
-                   │                                            │
-                   ├─ Convert BaseEvent → OTel span             │
-                   ├─ Track metrics (counters, histograms)      │
-                   ├─ OTLP exporter                             │
-                   └─ Tracer/Meter initialization               │
-                   │                                            │
-                   └─→ ┌─────────────────────────────┐         │
-                       │   OpenObserve Backend       │         │
-                       │   (HTTP/OTLP Collector)    │         │
-                       │                             │         │
-                       ├─ Traces (spans)            │         │
-                       ├─ Metrics (gauges, counters)│         │
-                       ├─ Logs (structured)         │         │
-                       └─ Events (custom)           │         │
-                       └─────────────────────────────┘         │
+Application Layer (modules: chat, tasks, teams, agents, marketplace, permissions)
+  │
+  │  emit: await event_store.append(DomainEvent(...))
+  │
+  ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                    EventStore (core/events/store.py)                 │
+│                                                                      │
+│  1. Write DomainEvent to PostgreSQL (DomainEventRecord table)        │
+│  2. XADD to Redis Streams  css:events  (fan-out)                     │
+│  3. Return event_id                                                  │
+└──────┬───────────────────────────────────────────────────────────────┘
+       │  Redis Streams: css:events (fan-out to all consumers)
+       │
+   ┌───┴────────────────────────────────────┐
+   │                                        │
+   ▼                                        ▼
+┌──────────────────────┐          ┌────────────────────────────┐
+│   OtelBridge         │          │   Read Projections         │
+│ (core/events/otel.py)│          │ (modules/permissions/,     │
+│                      │          │  modules/events/)          │
+│  DomainEvent         │          │                            │
+│  → OTEL span         │          │  PermissionProjection:     │
+│  (event_type→name,   │          │  rebuilds agent permissions│
+│   correlation_id     │          │  from event stream         │
+│   →trace_id,         │          │                            │
+│   aggregate_id       │          │  AuditProjection:          │
+│   →attributes)       │          │  materializes audit log    │
+│                      │          │  for forensic replay       │
+└──────┬───────────────┘          └────────────────────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│   OTLP Exporter      │
+│   (OpenTelemetry)    │
+└──────┬───────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│   OpenObserve        │
+│   :5080              │
+│                      │
+│  • Traces (spans)    │
+│  • Metrics           │
+│  • Structured logs   │
+│  • Events timeline   │
+└──────────────────────┘
 ```
-
-### Key Decision: Unified @modules:events
-- **Events and hooks are integrated** (hooks are event handlers)
-- **Single BaseEvent model** used for all event types
-- **Single EventBus** handles both pub/sub and hook registration
-- **Single dispatcher** routes events to hooks, listeners, and observability
-- **Clear data flow**: action → BaseEvent → handler execution → OTel export
 
 ---
 
-## Phase 1: BaseEvent System in @modules:events
-
-### Unified Events Module Location
-**Location**: `src/css/modules/events/` (NOT @core:events)
-
-This is the user-facing event system where all event types, hook registration, and pub/sub happens.
-
-### BaseEvent Model
-
-**Location**: `src/css/modules/events/base.py` (NEW)
+## DomainEvent (msgspec.Struct)
 
 ```python
-@dataclass
-class BaseEvent:
-    """Base event for all observability events.
-    
-    Events are immutable records of significant operations.
-    Can be consumed by hooks, emitted to tracing, exported to observability backend.
-    """
-    
-    # Identity
-    event_id: str  # UUID
-    event_type: EventType  # e.g., TASK_EXECUTED, PERMISSION_CHECKED
-    source: str  # Module name (e.g., "marketplace", "chat", "capabilities")
-    timestamp: float  # Seconds since epoch
-    
-    # Tracing
-    correlation_id: str  # Links related events across services
-    parent_span_id: Optional[str] = None  # Parent trace context
-    span_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    trace_id: Optional[str] = None
-    
-    # Context
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    scope_id: Optional[str] = None
-    role_id: Optional[str] = None
-    
-    # Data
-    data: dict[str, Any] = field(default_factory=dict)  # Event-specific data
-    metadata: dict[str, str] = field(default_factory=dict)  # Tags, labels
-    
-    # Status
-    status: EventStatus = EventStatus.COMPLETED  # COMPLETED, FAILED, PENDING
-    duration_ms: Optional[int] = None  # For completed events
-    error: Optional[str] = None  # Error message if failed
-    
-    # Severity
-    severity: EventSeverity = EventSeverity.INFO  # DEBUG, INFO, WARN, ERROR, CRITICAL
-```
+# core/events/domain_event.py
+import msgspec
+import uuid
+import time
 
-### EventType Enum
+class DomainEvent(msgspec.Struct, frozen=True):
+    """Immutable domain event. Every state change in the system emits one."""
+    event_type: str          # "team.spawned", "task.delegated", "agent.action"
+    aggregate_id: str        # ID of the entity this event is about
+    aggregate_type: str      # "team", "task", "agent", "permission"
+    payload: dict            # Event-specific data (arbitrary JSON)
+    
+    # Auto-populated
+    event_id: str = msgspec.field(default_factory=lambda: str(uuid.uuid4()))
+    occurred_at: float = msgspec.field(default_factory=time.time)
+    
+    # Correlation / tracing
+    correlation_id: str | None = None   # links events in a single request
+    session_id: str | None = None
+    agent_id: str | None = None
+    team_id: str | None = None
 
-```python
-class EventType(str, Enum):
-    # Task/Execution events
-    TASK_CREATED = "task.created"
-    TASK_STARTED = "task.started"
+# Canonical event type constants
+class EventType:
+    # Teams
+    TEAM_SPAWNED = "team.spawned"
+    TEAM_SHUTDOWN = "team.shutdown"
+    TEAM_CRASHED = "team.crashed"
+    
+    # Tasks
+    TASK_DELEGATED = "task.delegated"
     TASK_COMPLETED = "task.completed"
     TASK_FAILED = "task.failed"
-    TASK_RETRIED = "task.retried"
+    TASK_REASSIGNED = "task.reassigned"
     
-    # Permission events
-    PERMISSION_CHECKED = "permission.checked"
-    PERMISSION_DENIED = "permission.denied"
+    # Agents
+    AGENT_ACTION = "agent.action"
+    AGENT_ERROR = "agent.error"
+    
+    # Permissions
     PERMISSION_GRANTED = "permission.granted"
-    ROLE_ASSIGNED = "role.assigned"
+    PERMISSION_REVOKED = "permission.revoked"
+    PERMISSION_DENIED = "permission.denied"
     
-    # Tool/Agent events
-    TOOL_EXECUTED = "tool.executed"
-    AGENT_SPAWNED = "agent.spawned"
-    AGENT_TERMINATED = "agent.terminated"
+    # Marketplace
+    MARKETPLACE_INSTALL = "marketplace.install"
+    MARKETPLACE_UNINSTALL = "marketplace.uninstall"
     
-    # Communication events
-    MESSAGE_SENT = "message.sent"
-    MESSAGE_RECEIVED = "message.received"
-    A2A_REQUEST = "a2a.request"
-    A2A_RESPONSE = "a2a.response"
-    
-    # Marketplace events
-    PACKAGE_INSTALLED = "package.installed"
-    PACKAGE_REMOVED = "package.removed"
-    INDEX_UPDATED = "index.updated"
-    
-    # System events
-    APP_STARTED = "app.started"
-    APP_STOPPED = "app.stopped"
-    DB_CONNECTED = "db.connected"
-    DB_ERROR = "db.error"
+    # LLM calls
+    LLM_CALL_START = "llm.call.start"
+    LLM_CALL_COMPLETE = "llm.call.complete"
+    LLM_CALL_ERROR = "llm.call.error"
+    LLM_CACHE_HIT = "llm.cache.hit"
 ```
 
-### EventContext
+---
+
+## EventStore
 
 ```python
+# core/events/store.py
+class EventStore:
+    """Write-once event log. PostgreSQL + Redis Streams fan-out."""
+
+    def __init__(self, redis: Redis, tortoise_conn):
+        self._redis = redis
+        self._db = tortoise_conn
+
+    async def append(self, event: DomainEvent) -> str:
+        # 1. Persist to PostgreSQL
+        await DomainEventRecord.create(
+            event_id=event.event_id,
+            event_type=event.event_type,
+            aggregate_id=event.aggregate_id,
+            aggregate_type=event.aggregate_type,
+            payload=event.payload,
+            correlation_id=event.correlation_id,
+            session_id=event.session_id,
+            agent_id=event.agent_id,
+            occurred_at=event.occurred_at,
+        )
+        
+        # 2. Fan-out to Redis Streams (all consumers)
+        await self._redis.xadd(
+            "css:events",
+            msgspec.json.encode(event),
+            maxlen=100_000  # rolling window
+        )
+        
+        return event.event_id
+
+    async def replay(
+        self,
+        aggregate_id: str,
+        until: float | None = None,
+    ) -> list[DomainEvent]:
+        """Replay all events for an aggregate. Core forensic tool."""
+        qs = DomainEventRecord.filter(aggregate_id=aggregate_id)
+        if until:
+            qs = qs.filter(occurred_at__lte=until)
+        records = await qs.order_by("occurred_at").values()
+        return [DomainEvent(**r) for r in records]
+
+    async def replay_session(self, session_id: str) -> list[DomainEvent]:
+        """Replay every event in a session — full forensic audit."""
+        records = await DomainEventRecord.filter(
+            session_id=session_id
+        ).order_by("occurred_at").values()
+        return [DomainEvent(**r) for r in records]
+```
+
+---
+
+## CommandBus + CQRS
+
+```python
+# core/events/commands.py
+class CommandBus:
+    """Dispatch commands → handlers → list[DomainEvent] → EventStore.append."""
+
+    def __init__(self, event_store: EventStore):
+        self._store = event_store
+        self._handlers: dict[type, Callable] = {}
+
+    def register(self, command_type: type, handler: Callable):
+        self._handlers[command_type] = handler
+
+    async def dispatch(self, command) -> list[DomainEvent]:
+        handler = self._handlers[type(command)]
+        events = await handler(command)        # handler returns list[DomainEvent]
+        for event in events:
+            await self._store.append(event)
+        return events
+
+# Example command + handler
 @dataclass
-class EventContext:
-    """Metadata for event emission."""
-    correlation_id: str  # From request header or generate
-    session_id: Optional[str] = None
-    user_id: Optional[str] = None
-    role_id: Optional[str] = None
-```
+class SpawnTeamCommand:
+    team_name: str
+    session_id: str
+    roles: list[str]
 
-### EventStatus & EventSeverity Enums
-
-```python
-class EventStatus(str, Enum):
-    COMPLETED = "completed"
-    FAILED = "failed"
-    PENDING = "pending"
-    CANCELLED = "cancelled"
-
-class EventSeverity(str, Enum):
-    DEBUG = "debug"
-    INFO = "info"
-    WARN = "warn"
-    ERROR = "error"
-    CRITICAL = "critical"
+async def handle_spawn_team(cmd: SpawnTeamCommand) -> list[DomainEvent]:
+    team_id = str(uuid.uuid4())
+    return [
+        DomainEvent(
+            event_type=EventType.TEAM_SPAWNED,
+            aggregate_id=team_id,
+            aggregate_type="team",
+            payload={"name": cmd.team_name, "roles": cmd.roles},
+            session_id=cmd.session_id,
+        )
+    ]
 ```
 
 ---
 
-### Phase 2: OpenTelemetry Integration in @core
-
-### OpenTelemetry Setup
-
-**Location**: `src/css/core/opentelemetry/` (NEW PACKAGE)
-
-#### `__init__.py`
+## OTEL Bridge (implements the otel stub)
 
 ```python
-"""OpenTelemetry initialization and utilities."""
-
-from .config import init_otel, get_tracer, get_meter, get_logger_provider
-from .exporters import setup_otlp_exporter
-from .instrumentation import setup_auto_instrumentation
-
-__all__ = [
-    "init_otel",
-    "get_tracer",
-    "get_meter",
-    "get_logger_provider",
-    "setup_otlp_exporter",
-    "setup_auto_instrumentation",
-]
-```
-
-#### `config.py`
-
-```python
-"""OpenTelemetry configuration."""
-
-from opentelemetry import trace, metrics, logs
+# core/events/otel_bridge.py
+# ~50 LOC — implements entire @otel module via event stream
+from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.sdk.logs import LoggerProvider
-from opentelemetry.sdk.logs.export import BatchLogRecordProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
-from opentelemetry.exporter.otlp.proto.http.log_exporter import OTLPLogExporter
-from opentelemetry.sdk.resources import Resource
-import os
 
-
-def init_otel(service_name: str = "cybersecsuite"):
-    """Initialize OpenTelemetry with OTLP exporter."""
+class OtelBridge:
+    """Subscribe to Redis Streams css:events → emit OTEL spans.
     
-    # Create resource
-    resource = Resource.create({
-        "service.name": service_name,
-        "service.version": os.getenv("APP_VERSION", "dev"),
-        "environment": os.getenv("ENV", "development"),
-    })
-    
-    # Tracer setup
-    tracer_provider = TracerProvider(resource=resource)
-    otlp_span_exporter = OTLPSpanExporter(
-        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"),
-        insecure=os.getenv("OTEL_EXPORTER_OTLP_INSECURE", "true").lower() == "true",
-    )
-    tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
-    trace.set_tracer_provider(tracer_provider)
-    
-    # Meter setup
-    metric_reader = PeriodicExportingMetricReader(OTLPMetricExporter(
-        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"),
-    ))
-    meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
-    metrics.set_meter_provider(meter_provider)
-    
-    # Logger setup
-    logger_provider = LoggerProvider(resource=resource)
-    otlp_log_exporter = OTLPLogExporter(
-        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"),
-    )
-    logger_provider.add_log_record_processor(BatchLogRecordProcessor(otlp_log_exporter))
-    logs.set_logger_provider(logger_provider)
+    Replaces the empty @otel stub with zero-effort observability:
+    every DomainEvent automatically becomes a trace span.
+    """
 
+    def __init__(self, redis: Redis, otlp_endpoint: str):
+        provider = TracerProvider()
+        provider.add_span_processor(
+            BatchSpanProcessor(OTLPSpanExporter(endpoint=otlp_endpoint))
+        )
+        self._tracer = trace.get_tracer("css.events")
+        self._redis = redis
 
-def get_tracer(name: str) -> trace.Tracer:
-    """Get tracer for a module."""
-    return trace.get_tracer(name)
+    async def run(self):
+        """Consume css:events stream and emit OTEL spans continuously."""
+        last_id = "0"
+        while True:
+            entries = await self._redis.xread({"css:events": last_id}, count=100, block=1000)
+            for _, messages in entries:
+                for msg_id, data in messages:
+                    event = msgspec.json.decode(data[b"data"], type=DomainEvent)
+                    self._emit_span(event)
+                    last_id = msg_id
 
-
-def get_meter(name: str) -> metrics.Meter:
-    """Get meter for a module."""
-    return metrics.get_meter(name)
-
-
-def get_logger_provider() -> LoggerProvider:
-    """Get logger provider."""
-    return logs.get_logger_provider()
-```
-
-#### `instrumentation.py`
-
-```python
-"""Auto-instrumentation setup."""
-
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-
-
-def setup_auto_instrumentation():
-    """Setup automatic instrumentation for frameworks."""
-    
-    # FastAPI instrumentation
-    FastAPIInstrumentor().instrument()
-    
-    # HTTP client instrumentation
-    HTTPXClientInstrumentor().instrument()
-    
-    # SQLAlchemy instrumentation
-    SQLAlchemyInstrumentor().instrument()
+    def _emit_span(self, event: DomainEvent):
+        ctx = self._make_trace_context(event.correlation_id)
+        with self._tracer.start_as_current_span(
+            event.event_type,
+            context=ctx,
+            attributes={
+                "aggregate.id": event.aggregate_id,
+                "aggregate.type": event.aggregate_type,
+                "session.id": event.session_id or "",
+                "agent.id": event.agent_id or "",
+                "team.id": event.team_id or "",
+            }
+        ):
+            pass  # span ends on context exit, duration = 0 for discrete events
 ```
 
 ---
 
-## Phase 3: Event System Integration
-
-### Event System in @modules:events
-
-**Location**: `src/css/modules/events/` (already exists, will be enhanced)
-
-#### `emitter.py`
+## Read Projections
 
 ```python
-"""Event emission system."""
+# modules/permissions/projections.py
+class PermissionProjection:
+    """Rebuild permission state from event stream. Replaces static RBAC tables."""
 
-from typing import Callable, List
-from css.core.types.events import BaseEvent
+    def __init__(self, event_store: EventStore):
+        self._store = event_store
+        self._cache: dict[str, set[str]] = {}  # agent_id → set of granted permissions
 
-
-class EventEmitter:
-    """Centralized event emission."""
-    
-    def __init__(self):
-        self._listeners: dict[str, List[Callable]] = {}
-    
-    def on(self, event_type: str, callback: Callable) -> None:
-        """Register listener for event type."""
-        if event_type not in self._listeners:
-            self._listeners[event_type] = []
-        self._listeners[event_type].append(callback)
-    
-    def emit(self, event: BaseEvent) -> None:
-        """Emit event to all registered listeners."""
-        listeners = self._listeners.get(event.event_type, [])
-        for listener in listeners:
-            try:
-                listener(event)
-            except Exception as e:
-                log.error(f"Event listener failed: {e}", exc_info=True)
-```
-
-### Event to OpenTelemetry Converter
-
-#### `converter.py`
-
-```python
-"""Convert BaseEvent to OpenTelemetry spans/metrics."""
-
-from opentelemetry import trace, metrics
-from css.core.types.events import BaseEvent, EventType, EventStatus
-
-
-def event_to_span(event: BaseEvent, tracer):
-    """Convert BaseEvent to OTel span."""
-    
-    with tracer.start_as_current_span(
-        f"{event.source}.{event.event_type}",
-        attributes={
-            "event.id": event.event_id,
-            "event.type": event.event_type,
-            "event.source": event.source,
-            "event.status": event.status,
-            "event.severity": event.severity,
-            "user.id": event.user_id,
-            "session.id": event.session_id,
-            "role.id": event.role_id,
-            **event.metadata,
-        }
-    ) as span:
-        if event.duration_ms:
-            span.set_attribute("event.duration_ms", event.duration_ms)
-        if event.error:
-            span.set_attribute("event.error", event.error)
-        return span
-
-
-def event_to_metric(event: BaseEvent, meter):
-    """Convert BaseEvent to OTel metric (counter/histogram)."""
-    
-    counter = meter.create_counter(
-        f"event.{event.event_type.replace('.', '_')}.total",
-        description=f"Count of {event.event_type} events",
-    )
-    counter.add(1, {"source": event.source, "status": event.status})
-    
-    if event.duration_ms:
-        histogram = meter.create_histogram(
-            f"event.{event.event_type.replace('.', '_')}.duration_ms",
-            description=f"Duration of {event.event_type} events",
-        )
-        histogram.record(event.duration_ms, {"source": event.source})
+    async def get_permissions(self, agent_id: str) -> set[str]:
+        if agent_id in self._cache:
+            return self._cache[agent_id]
+        
+        events = await self._store.replay(aggregate_id=agent_id)
+        permissions = set()
+        for event in events:
+            if event.event_type == EventType.PERMISSION_GRANTED:
+                permissions.add(event.payload["permission"])
+            elif event.event_type == EventType.PERMISSION_REVOKED:
+                permissions.discard(event.payload["permission"])
+        
+        self._cache[agent_id] = permissions
+        return permissions
 ```
 
 ---
 
-## Phase 4: Hook + Event Integration
+## PostgreSQL Schema
 
-### Enhanced Hooks with Events
+```sql
+-- core/db/models/events.py (Tortoise ORM model)
+CREATE TABLE domain_events (
+    event_id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_type    TEXT NOT NULL,
+    aggregate_id  TEXT NOT NULL,
+    aggregate_type TEXT NOT NULL,
+    payload       JSONB NOT NULL DEFAULT '{}',
+    correlation_id TEXT,
+    session_id    TEXT,
+    agent_id      TEXT,
+    team_id       TEXT,
+    occurred_at   DOUBLE PRECISION NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())
+);
 
-**Location**: `src/css/core/hooks/` (ENHANCED)
-
-```python
-"""Hooks that emit events."""
-
-from css.core.types.events import BaseEvent, EventType, EventContext
-from css.core.events import EventEmitter
-
-
-class HookWithEvents:
-    """Hook system integrated with event emission."""
-    
-    def __init__(self, event_emitter: EventEmitter):
-        self.emitter = event_emitter
-    
-    async def execute_hook(self, hook_name: str, *args, **kwargs):
-        """Execute hook and emit event."""
-        
-        context = EventContext(
-            correlation_id=kwargs.get("correlation_id"),
-            session_id=kwargs.get("session_id"),
-            user_id=kwargs.get("user_id"),
-        )
-        
-        event = BaseEvent(
-            event_id=str(uuid.uuid4()),
-            event_type=EventType.HOOK_EXECUTED,
-            source="hooks",
-            timestamp=time.time(),
-            correlation_id=context.correlation_id,
-            session_id=context.session_id,
-            user_id=context.user_id,
-            data={"hook_name": hook_name},
-        )
-        
-        try:
-            result = await hook_name(*args, **kwargs)
-            event.status = EventStatus.COMPLETED
-            self.emitter.emit(event)
-            return result
-        except Exception as e:
-            event.status = EventStatus.FAILED
-            event.error = str(e)
-            self.emitter.emit(event)
-            raise
+CREATE INDEX idx_events_aggregate ON domain_events (aggregate_id, occurred_at);
+CREATE INDEX idx_events_session   ON domain_events (session_id, occurred_at);
+CREATE INDEX idx_events_type      ON domain_events (event_type, occurred_at);
+CREATE INDEX idx_events_team      ON domain_events (team_id, occurred_at);
 ```
 
 ---
 
-## Phase 5: OpenObserve Integration
+## OpenObserve Backend
 
-### Docker Compose Entry
-
-**docker-compose.yml**:
+**Service**: `cybersec-openobserve` on port `5080`
 
 ```yaml
-  openobserve:
-    image: public.ecr.aws/zinclabs/openobserve:latest
-    container_name: openobserve
-    ports:
-      - "5080:5080"  # Web UI
-      - "4318:4318"  # OTLP HTTP
-    environment:
-      ZO_ROOT_USER_EMAIL: admin@example.com
-      ZO_ROOT_USER_PASSWORD: Changeme@123
-      ZO_DATA_DIR: ./data/openobserve
-    volumes:
-      - openobserve_data:/data
-    networks:
-      - cybersec
-
-volumes:
-  openobserve_data:
+# docker-compose.yml
+cybersec-openobserve:
+  image: public.ecr.aws/zinclabs/openobserve:latest
+  ports:
+    - "5080:5080"
+  environment:
+    ZO_ROOT_USER_EMAIL: admin@cybersec.local
+    ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_PASSWORD}
+  volumes:
+    - openobserve_data:/data
 ```
 
-### Configuration
+**OTLP endpoint**: `http://cybersec-openobserve:5080/api/default/v1/traces`
 
-**Environment Variables**:
-
-```bash
-OTEL_EXPORTER_OTLP_ENDPOINT=http://openobserve:4318
-OTEL_SERVICE_NAME=cybersecsuite
-OTEL_ENABLED=true
-```
+**What gets collected automatically** (via OtelBridge):
+- Every `DomainEvent` → trace span (group by `correlation_id`)
+- Session forensic timelines (group by `session_id`)
+- Team activity (group by `team_id`)
+- LLM call latency (EventType.LLM_CALL_START → LLM_CALL_COMPLETE duration)
+- Permission audit log (EventType.PERMISSION_*)
+- Error rates (EventType.*.error count per minute)
 
 ---
 
-## Todos (10 Tasks)
+## Migration from Old Architecture
 
-### Phase 1: BaseEvent System
-
-- [ ] **event-types-enum** — Create EventType enum with all event types
-- [ ] **event-model** — Create BaseEvent dataclass with all fields
-- [ ] **event-status-severity** — Create EventStatus, EventSeverity enums
-- [ ] **event-context** — Create EventContext class
-- [ ] **event-exports** — Update types/__init__.py to export events
-
-### Phase 2: OpenTelemetry Core
-
-- [ ] **otel-config** — Create opentelemetry/config.py (init_otel, get_tracer, get_meter)
-- [ ] **otel-exporter** — Create opentelemetry/exporters.py (OTLP setup)
-- [ ] **otel-instrumentation** — Create opentelemetry/instrumentation.py (FastAPI, HTTPx, SQLAlchemy)
-- [ ] **otel-init** — Call init_otel from app startup
-
-### Phase 3: Event System
-
-- [ ] **event-emitter** — Create events/emitter.py (EventEmitter class)
-- [ ] **event-converter** — Create events/converter.py (BaseEvent → OTel conversion)
-- [ ] **event-dispatcher** — Create events/dispatcher.py (route events to handlers)
-
-### Phase 4: Integration
-
-- [ ] **hooks-events** — Integrate hooks with BaseEvent emission
-- [ ] **permission-events** — Emit events for permission checks/denials
-- [ ] **task-events** — Emit events for task execution
-- [ ] **openobserve-docker** — Add OpenObserve to docker-compose.yml
+| Old | New | Notes |
+|-----|-----|-------|
+| `HookContext` | `DomainEvent` | More structured, immutable |
+| `EventBus.emit()` | `event_store.append()` | Persistent, replayable |
+| `@on_event decorator` | Redis Streams consumer | Decoupled fan-out |
+| Manual OTel spans | `OtelBridge.run()` | Automatic from events |
+| Separate RBAC tables | `PermissionProjection` | Derived from event stream |
+| `HookErrorStrategy` | Retry at CommandBus level | Cleaner separation |
 
 ---
 
-## Key Integration Points
-
-| Component | Emits Events | Consumes Events | Notes |
-|-----------|-------------|-----------------|-------|
-| @core:hooks | Yes | Yes | Hook callbacks emit events |
-| @core:permissions | Yes | No | Permission checks → events |
-| @core:tasks | Yes | No | Task execution → events |
-| @core:events | Yes (dispatcher) | Yes | Central event hub |
-| @core:opentelemetry | No | Yes | Events → OTel spans/metrics |
-| All modules | Yes | No | Module actions → events |
+## Related Todos (Phase 6 T6.3)
+- `p6-events-store-model` — DomainEventRecord Tortoise model
+- `p6-events-domain-event` — DomainEvent struct + EventStore
+- `p6-events-command-bus` — CommandBus + domain handlers
+- `p6-events-projections` — PermissionProjection + AuditProjection
+- `p6-events-otel-bridge` — OtelBridge (implements @otel stub)
 
 ---
 
-## Success Criteria
+## Phase 14 — Entry/Exit Instrumentation
 
-✅ BaseEvent model fully defined with all fields
-✅ EventType enum covers all major operations
-✅ OpenTelemetry initialized on app startup
-✅ OTLP exporter sending to OpenObserve
-✅ Events emitted from hooks, permissions, tasks
-✅ Events converted to OTel spans and metrics
-✅ OpenObserve dashboard shows events/traces
-✅ Correlation IDs propagate across requests
-✅ Duration tracking for events
-✅ Error tracking and reporting
+### New EventType Constants
 
----
+Add to `EventType` class in `core/events/domain_event.py`:
 
-## Architecture Diagram
+```python
+# HTTP (T14.2)
+HTTP_REQUEST_STARTED   = "http.request.started"
+HTTP_REQUEST_COMPLETED = "http.request.completed"
+HTTP_REQUEST_FAILED    = "http.request.failed"
 
-```
-Application
-    ↓
-BaseEvent emission
-    ↓
-EventEmitter
-    ├→ Hooks (consume)
-    ├→ Database (store)
-    └→ Converter
-         ↓
-    OpenTelemetry
-    ├─ Tracer (spans)
-    ├─ Meter (metrics)
-    └─ Logger
-         ↓
-    OTLP Exporter
-         ↓
-    OpenObserve Collector
-         ↓
-    OpenObserve Backend
-    ├─ Dashboard
-    ├─ Traces
-    ├─ Metrics
-    └─ Logs
+# Commands (T14.2)
+COMMAND_DISPATCHED = "command.dispatched"
+COMMAND_HANDLED    = "command.handled"
+COMMAND_FAILED     = "command.failed"
+
+# Agents (T14.2)
+AGENT_RUN_STARTED   = "agent.run.started"
+AGENT_RUN_COMPLETED = "agent.run.completed"
+AGENT_RUN_FAILED    = "agent.run.failed"
+
+# Tools (T14.2)
+TOOL_CALL_START    = "tool.call.start"
+TOOL_CALL_COMPLETE = "tool.call.complete"
+TOOL_CALL_ERROR    = "tool.call.error"
 ```
 
----
+### Instrumentation Map
 
-## DECISION: Unified @modules:events Architecture
+| Entry Point | Event on Entry | Event on Exit (ok) | Event on Exit (err) |
+|---|---|---|---|
+| `FastAPI route` | `http.request.started` | `http.request.completed` | `http.request.failed` |
+| `CommandBus.dispatch()` | `command.dispatched` | `command.handled` | `command.failed` |
+| `UnifiedLLMClient.complete()` | `llm.call.start` | `llm.call.complete` | `llm.call.error` |
+| `Agent.run()` | `agent.run.started` | `agent.run.completed` | `agent.run.failed` |
+| `ToolExecutor.execute()` | `tool.call.start` | `tool.call.complete` | `tool.call.error` |
 
-See: `.plan/hooks-vs-events-analysis.md` for full analysis.
+All events share the same `correlation_id` (set from W3C `traceparent` or auto-generated per request).
 
-**Conclusion**: Use unified @modules:events for all event + hook management.
+### OTEL Context Flow
 
-**Key Points**:
-- BaseEvent and hooks are integrated (hooks ARE event handlers)
-- Single EventBus handles pub/sub and hook registration  
-- Single dispatcher routes events to hooks, listeners, and observability
-- Clear data flow: action → BaseEvent → handler → OTel export
-
-**Module Structure**:
 ```
-@modules:events/
-├─ base.py          (BaseEvent, EventType, EventStatus)
-├─ emitter.py       (EventBus, hook registry)
-├─ hooks.py         (hook execution)
-├─ dispatcher.py    (route events)
-├─ decorators.py    (@on_event, @on_hook)
-├─ registry.py      (global registry)
-└─ __init__.py      (exports)
-
-@core:opentelemetry/  (OTel infrastructure)
-├─ config.py         (init_otel)
-├─ exporters.py      (OTLP)
-└─ instrumentation.py (auto-instrumentation)
-
-@core:events/         (Thin middleware for OTel)
-├─ converter.py      (BaseEvent → OTel)
-└─ middleware.py     (auto-convert + export)
+Incoming HTTP request
+  → EventInstrumentationMiddleware
+      → extract traceparent header
+      → map trace_id → correlation_id
+      → set ContextVar
+      → all downstream @instrument calls inherit correlation_id
+  → OtelBridge groups all events with same correlation_id into one trace tree
+  → OpenObserve renders full request timeline
 ```
+
+### Related Todos (Phase 14)
+- `events-instrument-decorator` — T14.1
+- `events-event-bus-module` — T14.1
+- `events-middleware-fastapi` — T14.2
+- `events-instrument-command-bus` — T14.2
+- `events-instrument-llm-client` — T14.2 (dep: Phase 10)
+- `events-instrument-agent` — T14.2
+- `events-instrument-tool` — T14.2
+- `events-otel-trace-context` — T14.3
+- `events-otel-child-spans` — T14.3
+- `events-otel-auto-deps` — T14.3
+- `events-hook-registry` — T14.4
+- `events-on-event-decorator` — T14.4
+- `events-hook-executor` — T14.4

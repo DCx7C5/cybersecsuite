@@ -147,7 +147,7 @@ class MarketplaceSeeder:
                     continue
 
                 # Check if item already exists
-                existing = await MarketplaceItem.get_or_none(id=item_id)
+                existing = await MarketplaceItem.get_or_none(slug=item_id)
                 if existing and not force:
                     skipped += 1
                     continue
@@ -168,7 +168,7 @@ class MarketplaceSeeder:
                     await existing.save()
                 else:
                     await MarketplaceItem.create(
-                        id=item_id,
+                        slug=item_id,
                         name=agent.get("description", item_id)[:255],
                         description=agent.get("description", ""),
                         kind=MarketplaceItemType.agent,
