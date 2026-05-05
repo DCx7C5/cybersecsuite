@@ -1,10 +1,10 @@
 # CyberSecSuite: Implementation Plan
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
-**Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-05T00:15 (session current)  
-**Last Audit**: App initialization blockers fixed — 4 commits + circular import prevention  
-**Todos**: 732 total (215 done, 514 pending, 3 blocked) | PHASE > TASK > TODO enforced in session.db
+**Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
+**Updated**: 2026-05-05T09:43 (session current)  
+**Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
+**Todos**: 768 total (284 done, 477 pending, 7 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -142,6 +142,23 @@ See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
 | `audit-tools-registry` | Tools registry 0 LOC | ✅ tools/ now has 7 files including registry.py |
 | `audit-tools-schema` | ToolSchema missing | ✅ Defined in tools/types.py |
 | `audit-api-tools-sync` | api_services docs sync | ✅ Done |
+
+### ✅ FACT-CHECKED (2026-05-05T09:43)
+
+All 7 critical app-init todos verified complete:
+
+| ID | Verification |
+|----|--------------|
+| `blocker-3-circular` | ✅ All 4 circular imports resolved; verified imports work |
+| `import-arch-circular-deps` | ✅ No problematic bidirectional cross-module imports found |
+| `import-arch-a2a-compat` | ✅ TaskState, MessageRole, Message, Task models present in google_a2a |
+| `import-arch-marketplace-models` | ✅ MARKETPLACE_CACHE_TTL_SECONDS = 300 (importable from config.py) |
+| `mod-css-a2a` | ✅ A2ACommunicator class defined and exportable |
+| `mod-google-a2a` | ✅ All 4 required modules exist: models.py, enums.py, types.py, endpoints.py |
+| `marketplace-config` | ✅ Module-level config constants added and working |
+
+**Fact-check method**: Automated tests + Python import validation
+**Status**: 284 todos done, 477 pending, 7 blocked (768 total)
 
 ---
 
