@@ -5,7 +5,7 @@ import asyncio
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from .models import SkillDefinition, SkillResult, SkillParameter
+from .models import SkillDefinition, SkillResult
 from .enums import SkillStatus, SkillCategory
 from .exceptions import SkillNotFoundError, SkillExecutionError, SkillConfigurationError
 
