@@ -1,7 +1,5 @@
 """Core types for CyberSecSuite — base classes, enums, data models."""
 
-# Note: A2A types moved to modules.google_a2a.types in Phase 2
-# Import from there: from modules.google_a2a import A2AConfig, StreamState, ResponseInjection, etc.
 from .base import (
     BaseApiServiceClient,
     BaseCommunicator,
@@ -31,19 +29,19 @@ from .context import (
     ModelContext,
 )
 from .entities import (
-    Account,
-    Agent,
     BaseAgent,
     BaseEntity,
     BaseRole,
     BaseSkill,
     BaseTool,
-    Role,
-    Skill,
-    Tool as ToolEntity,
     BaseToolHeader,
     get_role,
 )
+from css.modules.accounts.types import Account
+from css.modules.agents.types import Agent
+from css.modules.permissions.types import Role
+from css.modules.skills.types import Skill
+from css.modules.tools.types import Tool as ToolEntity
 from .headers import (
     BaseAccountHeader,
     BaseAgentHeader,
