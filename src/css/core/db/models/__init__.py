@@ -12,7 +12,7 @@ from ..enums import (
     FindingStatus,
     IOCStatus,
 )
-from .scope import ProjectScope, SessionScope
+from .scope import AppScope, ProjectScope, SessionScope
 from .team import Team
 from .orchestrator import OrchestratorInstance
 from .quotas import TaskAssignment, TaskResult, TeamQuota
@@ -24,6 +24,7 @@ __all__ = [
     "Confidence",
     "FindingStatus",
     "IOCStatus",
+    "AppScope",
     "ProjectScope",
     "SessionScope",
     "Team",

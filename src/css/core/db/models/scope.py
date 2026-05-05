@@ -7,12 +7,33 @@ from tortoise import fields, models
 from css.core.db.enums import RedBlueMode, ScopeLevel
 
 
-class ProjectScope(Model):
-    """Project scopes level — organizational container."""
+class AppScope(Model):
+    """Application scope — top-level global container."""
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
     description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
+    working_dir = fields.CharField(max_length=1024, default="", db_index=True)
+    is_active = fields.BooleanField(default=True, db_index=True)
+    deleted_at = fields.DatetimeField(null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    class Meta:
+        table = "app_scopes"
+        table_description_singular = "App Scope"
+        table_description_plural = "App Scopes"
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["is_active", "deleted_at"]),
+        ]
+
+
+class ProjectScope(Model):
+    """Project scope — organizational container within app scope."""
+    id = fields.BigIntField(primary_key=True)
+    name = fields.CharField(max_length=256, db_index=True, unique=True)
+    description = fields.TextField(default="")
+    working_dir = fields.CharField(max_length=1024, default="", db_index=True)
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -26,27 +47,6 @@ class ProjectScope(Model):
             models.Index(fields=["name"]),
             models.Index(fields=["is_active", "deleted_at"]),
         ]
-
-
-class ApplicationScope(Model):
-    """Application scopes level — top-level application container."""
-    id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
-    class Meta:
-        table = "modules"
-        table_description_singular = "Application Scope"
-        indexes = [
-            models.Index(fields=["name"]),
-            models.Index(fields=["is_active"]),
-        ]
-        unique_together = ["name"]
 
 
 class SessionScope(Model):
@@ -72,7 +72,7 @@ class SessionScope(Model):
     sdk_session_id = fields.CharField(max_length=128, null=True, db_index=True)
     name = fields.CharField(max_length=256, default="")
     description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
+    working_dir = fields.CharField(max_length=1024, default="", db_index=True)
     agent = fields.CharField(max_length=128, default="", db_index=True)
     mode = fields.CharEnumField(RedBlueMode, default=RedBlueMode.BLUE, db_index=True)
     phase = fields.CharField(max_length=64, default="init")
