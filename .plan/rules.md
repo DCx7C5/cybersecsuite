@@ -204,30 +204,38 @@ modules/<name>/
 └── __init__.py
 ```
 
-### Current Modules (20 total)
+### Current Modules (28 total)
 
 | Module        | Purpose                                       |
 |---------------|-----------------------------------------------|
+| accounts      | User account management & authentication      |
 | agents        | Agent orchestration & execution               |
+| cache         | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache) |
 | capabilities  | Capability definitions & registry             |
 | chat          | Chat session management                       |
+| css_a2a       | CSS-specific auth integration                 |
 | events        | Event bus & streaming                         |
 | google_a2a    | Google Auth2App integration                   |
-| intelligence  | Local AI assistance — Qwen3/Phi4/llama.cpp routing, quality gates, cost budget, conversation health (renamed from `triage`) |
 | llm_models    | LLM model registry & metadata                 |
-| llm_proxy     | LLM provider abstraction layer                | ⚠️ Directory does NOT exist — Phase 12 target |
 | marketplace   | Marketplace (plugins, integrations)           |
-| mcps          | MCP server management (register/connect/call) — PYTHON_DIRECT bypass, STDIO, SSE, HTTP transports |
+| mcps          | MCP server management (register/connect/call) |
 | memory        | Memory & context management                   |
-| permissions   | Role-based access control                     |
-| prompts       | Prompt registry, template engine, variable substitution — reusable versioned prompt definitions |
+| permissions   | Role-based access control (PathGrant, ToolGrant) |
+| planer        | Planning & task decomposition                 |
+| projects      | Project registration & session linking        |
+| prompts       | Prompt registry, template engine, variable substitution |
 | roles         | Role definitions & assignment                 |
-| ~~scopes~~    | ⚠️ DEPRECATED — deletion target (Phase 15, todo: scopes-module-remove). Do NOT import. |
+| ~~scopes~~    | ⚠️ DEPRECATED — 2-level model docs only (Phase 15 deletion) |
+| settings      | Settings management & config cascade         |
 | skills        | Skill definitions & execution                 |
+| strategies    | Strategy selection & execution                |
 | streaming     | Streaming & SSE support                       |
 | tags          | Tag management & categorization               |
+| tasks         | Task management & coordination                |
 | teams         | Team management & isolation                   |
-| tools         | Tool registry & execution (LLM provider builtins; MCP tools bridged in via mcps/) |
+| tools         | Tool registry & execution (LLM + MCP)        |
+| triage        | Intelligence layer — task routing & prioritization |
+| workflows     | Workflow management & orchestration           | |
 
 **Moved to `core/` (infrastructure, not business logic)**:
 - `cache` → `core/cache/` (KV cache: L1 memory, L2 Redis, L3 PostgreSQL)
