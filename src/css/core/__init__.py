@@ -31,29 +31,13 @@ from .exceptions import (
 # Base entity classes (from core)
 from .types.base import BaseEntity, BaseAgent, BaseRole, BaseSkill, BaseTool
 
-# Concrete entities (from modules)
-from css.modules.accounts.types import Account
-from css.modules.agents.types import Agent
-from css.modules.permissions.types import Role, get as get_role
-from css.modules.skills.types import Skill
-from css.modules.tools.types import Tool
-
 # Communication protocol
 from .types.base import BaseCommunicator
 
-# Core database (once exported by core.db)
-# from .db import DB
-
-# Registry system
-# from .registries import BaseRegistry, get_registry
-
-# Hooks & execution context
-# from .hooks import (
-#     HookContext,
-#     HookOutput,
-#     PostToolUseEvent,
-#     PreToolUseEvent,
-# )
+# NOTE: Concrete entities (Account, Agent, Role, Skill, Tool) import from modules
+# and should NOT be re-exported from core to avoid circular imports.
+# Modules depend on core/types.base, so core/__init__ must not import from modules.
+# Users should import entities directly: from css.modules.accounts.types import Account
 
 __all__ = [
     # Exceptions (Layer 1-2-3)
@@ -81,26 +65,12 @@ __all__ = [
     "OllamaConnectionError",
     "OllamaModelNotFoundError",
     "OllamaModelLoadError",
-    # Entity framework
-    "Account",
-    "Agent",
+    # Base entity framework (abstract)
     "BaseEntity",
     "BaseAgent",
     "BaseRole",
     "BaseSkill",
     "BaseTool",
-    "Role",
-    "Skill",
-    "Tool",
-    "get_role",
     # Infrastructure
     "BaseCommunicator",
-    # Registries
-    # "BaseRegistry",
-    # "get_registry",
-    # Hooks
-    # "HookContext",
-    # "HookOutput",
-    # "PreToolUseEvent",
-    # "PostToolUseEvent",
 ]
