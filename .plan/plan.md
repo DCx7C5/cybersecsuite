@@ -1,10 +1,10 @@
 # CyberSecSuite: Implementation Plan
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
-**Status**: ✅ Phase 0–1 Complete | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-04T23:28 (session ffed87aa)  
-**Last Audit**: DB critical startup chain synced — 11 todos completed  
-**Todos**: 732 total (208 done, 521 pending, 3 blocked) | PHASE > TASK > TODO enforced in session.db
+**Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
+**Updated**: 2026-05-05T00:15 (session current)  
+**Last Audit**: App initialization blockers fixed — 4 commits + circular import prevention  
+**Todos**: 732 total (215 done, 514 pending, 3 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -104,26 +104,28 @@ See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
 - **Fix**: Phase 15 working_dir + PathGrant/ToolGrant + PermissionChecker (todos: `perm-*`, `working-dir-*`)
 - **Blocks**: All session execution, Phase 16 native tools, Phase 19 sessions module
 
-### 🔴 BLOCKER #3: App Initialization Fails (CRITICAL)
+### ✅ BLOCKER #3: App Initialization Fails → RESOLVED
 - **Impact**: Cannot start app for testing; blocks Phase 5 integration tests + all downstream phases
-- **Root Causes**:
-  1. ✅ **FIXED**: Removed deprecated `src/core/a2a` module → css_a2a & google_a2a now use local models/enums
-  2. 🔄 **IN PROGRESS**: **Circular imports in accounts/types.py ↔ core/types/base** — entities moved but core/types/__init__.py has stale import paths
-  3. 🔄 **IN PROGRESS**: **Circular imports in scopes/context.py** — deprecated module, blocked by same core/types issue
-  4. 🔄 **PENDING**: **Marketplace config import path** — MARKETPLACE_CACHE_TTL_SECONDS not found in config.py
-- **Fixes Applied** (commit 158da6bf):
-  - ✅ Deleted deprecated src/core/a2a package from git
-  - ✅ Removed a2a references from pyproject.toml
-  - ✅ Moved AgentCard to types.py to break circular import in google_a2a
-  - ✅ Fixed css_a2a/__init__.py to only export existing classes
-  - ✅ Wrapped a2a.agent_sdk imports in try/except blocks in orchestration/streaming
-  - ✅ Created proper models.py and enums.py for google_a2a with A2A protocol types
-- **Next Steps**:
-  - Trace circular import: accounts/types.py → core/types/base → core/types/__init__.py → back to accounts?
-  - Fix core/types/__init__.py import paths (likely stale entity imports from deleted directories)
-  - Fix marketplace config: check what MARKETPLACE_CACHE_TTL_SECONDS should be
-- **Status**: 🔧 PARTIALLY FIXED — 1/4 issues resolved, 3 remaining
-- **Blocks**: Phase 5 Integration Tests (15+ todos), Phase 6+ all downstream work
+- **Root Causes (All Fixed)**:
+  1. ✅ **FIXED**: Removed deprecated `src/core/a2a` module → css_a2a & google_a2a now use local models/enums (commit 158da6bf)
+  2. ✅ **FIXED**: Removed circular imports in accounts/types.py ↔ core/types → deleted entity re-exports from core/__init__.py (commit b3c13e01)
+  3. ✅ **FIXED**: Removed circular imports in scopes/context.py ↔ core/db → added TYPE_CHECKING guard in scope_utils (commit b3c13e01)
+  4. ✅ **FIXED**: Added marketplace config exports → MARKETPLACE_CACHE_TTL_SECONDS module-level constant (commit b3c13e01)
+- **Fixes Applied**:
+  - ✅ Commit 158da6bf: Deleted deprecated src/core/a2a; fixed css_a2a/google_a2a imports; created A2A protocol models/enums
+  - ✅ Commit b3c13e01: Removed entity re-exports from core/types/__init__.py (Account, Agent, Role, Skill, Tool)
+  - ✅ Commit b3c13e01: Added TYPE_CHECKING guard in core/db/scope_utils.py for ScopeContext import
+  - ✅ Commit b3c13e01: Added module-level constants to core/config.py (MARKETPLACE_CACHE_TTL_SECONDS, etc.)
+  - ✅ Commit 12808bde: Removed entity re-exports from core/__init__.py (future prevention)
+  - ✅ Proactive audit: Scanned for bidirectional cross-module imports; found a2a cycle is safe (css_a2a imports google_a2a, google_a2a/endpoints imports css_a2a — not circular because css_a2a doesn't import from endpoints)
+- **Verification**:
+  - ✅ `from css.modules.accounts.types import Account` — works
+  - ✅ `from css.modules.scopes.context import ScopeContext` — works
+  - ✅ `from css.core.config import MARKETPLACE_CACHE_TTL_SECONDS` — returns 300
+  - ✅ `from css.modules.css_a2a.a2a_comms import A2ACommunicator` — works
+  - ✅ App initialization test: All critical imports successful
+- **Status**: ✅ COMPLETE — All app initialization blockers resolved
+- **Next Phase**: Phase 5 Integration Tests can now proceed
 
 ### 🟠 ACTIVE: 5-File Pattern Compliance
 - **Current**: 5/25 modules fully compliant (google_a2a, marketplace, tasks, teams, tools)
