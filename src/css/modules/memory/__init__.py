@@ -8,6 +8,7 @@ from .context_window import ContextWindow, TokenEstimate, WindowConfig
 from .enums import MemoryEntryKind, MemoryScope, MemoryTier
 from .exceptions import BaseMemoryException, MemoryNotFoundError, MemoryPersistenceError
 from .models import MemoryEntryRecord, MemorySnapshotRecord
+from .session_store import SessionStore
 from .types import MemoryEntry, MemorySnapshot
 from .vault.hot_cache import HotCache, HotCacheState
 from .vault.manager import VaultManager
@@ -33,4 +34,5 @@ __all__ = [
     "ContextWindow",
     "TokenEstimate",
     "WindowConfig",
+    "SessionStore",
 ]
