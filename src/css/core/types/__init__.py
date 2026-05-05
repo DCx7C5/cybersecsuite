@@ -1,5 +1,9 @@
 """Core types for CyberSecSuite — base classes, enums, data models."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .base import (
     BaseApiServiceClient,
     BaseCommunicator,
@@ -36,12 +40,6 @@ from .base import (
     BaseTool,
 )
 from .base.base_header import BaseToolHeader
-from css.modules.permissions.types import get as get_role
-from css.modules.accounts.types import Account
-from css.modules.agents.types import Agent
-from css.modules.permissions.types import Role
-from css.modules.skills.types import Skill
-from css.modules.tools.types import Tool as ToolEntity
 from .headers import (
     BaseAccountHeader,
     BaseAgentHeader,
@@ -107,19 +105,12 @@ __all__ = [
     "ContextConfig",
     "ExecutionContext",
     "ModelContext",
-    # Entities
-    "Account",
-    "Agent",
+    # Base entity types (concrete entities Account, Agent, Role, Skill, Tool import from modules, not re-exported here)
     "BaseAgent",
     "BaseEntity",
     "BaseRole",
     "BaseSkill",
     "BaseTool",
-    "Role",
-    "Skill",
-    "ToolEntity",
-    "ToolHeader",
-    "get_role",
     # Entity headers
     "BaseAccountHeader",
     "BaseAgentHeader",

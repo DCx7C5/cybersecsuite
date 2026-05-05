@@ -107,20 +107,22 @@ See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
 ### 🔴 BLOCKER #3: App Initialization Fails (CRITICAL)
 - **Impact**: Cannot start app for testing; blocks Phase 5 integration tests + all downstream phases
 - **Root Causes**:
-  1. **Missing `src/core/a2a/` package** — listed in pyproject.toml but directory deleted; code imports from `a2a` expecting it
-  2. **Circular imports in accounts/types.py ↔ core/types/base** — entities moved but core/types/__init__.py still has stale paths
-  3. **Circular imports in scopes/context.py** — deprecated module; decision needed: keep or remove
-  4. **Marketplace config import path** — config.py added but import paths may need verification
-- **Investigation Needed**:
-  - Git history shows a2a was deleted in commit ac9fc0dc, then reverted in 93e154f5. Was it permanently removed? Should it be restored?
-  - What does a2a package contain? (Use: `git show ac9fc0dc:src/core/a2a/__init__.py` to see last version)
-  - Should css_a2a and google_a2a modules depend on internal `src/core/a2a` or external `a2a` package?
-- **Fix Strategy** (NOT band-aid):
-  - Restore or create `src/core/a2a/` with proper stubs if needed
-  - Trace and fix circular imports in accounts/scopes modules
-  - Verify marketplace config imports
-  - Validate app startup
-- **Status**: 🔧 PLANNING — detailed diagnostic todos TBD based on investigation
+  1. ✅ **FIXED**: Removed deprecated `src/core/a2a` module → css_a2a & google_a2a now use local models/enums
+  2. 🔄 **IN PROGRESS**: **Circular imports in accounts/types.py ↔ core/types/base** — entities moved but core/types/__init__.py has stale import paths
+  3. 🔄 **IN PROGRESS**: **Circular imports in scopes/context.py** — deprecated module, blocked by same core/types issue
+  4. 🔄 **PENDING**: **Marketplace config import path** — MARKETPLACE_CACHE_TTL_SECONDS not found in config.py
+- **Fixes Applied** (commit 158da6bf):
+  - ✅ Deleted deprecated src/core/a2a package from git
+  - ✅ Removed a2a references from pyproject.toml
+  - ✅ Moved AgentCard to types.py to break circular import in google_a2a
+  - ✅ Fixed css_a2a/__init__.py to only export existing classes
+  - ✅ Wrapped a2a.agent_sdk imports in try/except blocks in orchestration/streaming
+  - ✅ Created proper models.py and enums.py for google_a2a with A2A protocol types
+- **Next Steps**:
+  - Trace circular import: accounts/types.py → core/types/base → core/types/__init__.py → back to accounts?
+  - Fix core/types/__init__.py import paths (likely stale entity imports from deleted directories)
+  - Fix marketplace config: check what MARKETPLACE_CACHE_TTL_SECONDS should be
+- **Status**: 🔧 PARTIALLY FIXED — 1/4 issues resolved, 3 remaining
 - **Blocks**: Phase 5 Integration Tests (15+ todos), Phase 6+ all downstream work
 
 ### 🟠 ACTIVE: 5-File Pattern Compliance

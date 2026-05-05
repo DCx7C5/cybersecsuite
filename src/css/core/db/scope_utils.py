@@ -5,16 +5,17 @@ Provides scopes resolution, configuration loading, and permission checking
 for the 5-level scopes hierarchy: global, app, project, runtime, session.
 """
 
-
 import os
 from pathlib import Path
-from typing import Any, Optional, Dict, TypeVar
+from typing import Any, Optional, Dict, TypeVar, TYPE_CHECKING
 import logging
 import json
 from datetime import datetime
 
 from css.core.db.enums import ScopeLevel, ScopeAction
-from css.modules.scopes.context import ScopeContext
+
+if TYPE_CHECKING:
+    from css.modules.scopes.context import ScopeContext
 
 logger = logging.getLogger(__name__)
 
