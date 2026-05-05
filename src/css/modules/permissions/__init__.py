@@ -2,8 +2,8 @@
 
 import logging
 
-from .enums import Role, ScopeLevel, Permission
-from .types import PermissionPolicy, ScopeContext, TokenPayload
+from .enums import ScopeLevel, Permission, Role as RoleEnum
+from .types import Role, PermissionPolicy, ScopeContext, TokenPayload
 from .exceptions import (
     PermissionError,
     PermissionDenied,
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "Role",
+    "RoleEnum",
     "ScopeLevel",
     "Permission",
     "PermissionPolicy",
