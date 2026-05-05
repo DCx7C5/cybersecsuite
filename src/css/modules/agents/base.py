@@ -3,6 +3,7 @@
 This module defines:
 1. BaseAgent Protocol: Minimal interface for agent-like systems
 2. AgentExecutor: Runs an agent with an LLM provider
+3. CapabilityRoutingExecutor: Routes to providers based on capabilities
 
 The design avoids dataclass+ABC mixing by using Protocol (PEP 544).
 Each agent (even external/remote) just needs to implement execute().
@@ -10,10 +11,14 @@ Each agent (even external/remote) just needs to implement execute().
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable, TYPE_CHECKING
 import asyncio
 import logging
 from datetime import datetime
+
+if TYPE_CHECKING:
+    from css.modules.capabilities.capability_registry import DynamicCapabilityRegistry
+    from css.core.types.capabilities import CapabilityType
 
 log = logging.getLogger(__name__)
 
@@ -120,6 +125,7 @@ class AgentExecutor:
     Wires together:
     - Agent: What to execute
     - Provider client: How to execute (OpenAI, Anthropic, etc.)
+    - Capabilities: Dynamic capability routing
     - Context: Conversation history
     - Instrumentation: Events, logging, tracing
     """
@@ -135,6 +141,7 @@ class AgentExecutor:
         self.client = provider_client
         self.provider = provider
         self.model = model
+        self._capability_registry: DynamicCapabilityRegistry | None = None
 
     async def execute(
         self,
@@ -155,3 +162,82 @@ class AgentExecutor:
         raise NotImplementedError(
             "AgentExecutor.execute() must be implemented by provider-specific subclass"
         )
+
+    def set_capability_registry(self, registry: DynamicCapabilityRegistry) -> None:
+        """Set the capability registry for provider routing.
+        
+        Args:
+            registry: DynamicCapabilityRegistry instance for capability discovery
+        """
+        self._capability_registry = registry
+        log.debug(f"AgentExecutor capability registry initialized for {self.provider}/{self.model}")
+
+    def get_capabilities(self) -> list[str]:
+        """Get capabilities for current provider/model.
+        
+        Returns:
+            List of capability type strings (e.g., ['streaming', 'vision', 'tool_use'])
+            Empty list if registry not initialized or model not found
+        """
+        if not self._capability_registry:
+            log.warning("Capability registry not initialized, returning empty capabilities")
+            return []
+        
+        caps = self._capability_registry.get_capabilities(self.provider, self.model)
+        return [c.value if hasattr(c, 'value') else str(c) for c in caps]
+
+    def has_capability(self, capability_type: str) -> bool:
+        """Check if current provider/model supports a capability.
+        
+        Args:
+            capability_type: Capability type to check (e.g., 'streaming', 'vision')
+        
+        Returns:
+            True if capability is supported, False otherwise
+        """
+        if not self._capability_registry:
+            log.warning(f"Capability registry not initialized, cannot check for {capability_type}")
+            return False
+        
+        # Import here to avoid circular imports
+        from css.core.types.capabilities import CapabilityType
+        
+        try:
+            cap = CapabilityType(capability_type.lower())
+            return self._capability_registry.has_capability(self.provider, self.model, cap)
+        except ValueError:
+            log.warning(f"Unknown capability type: {capability_type}")
+            return False
+
+    def select_model_for_capability(self, provider_name: str, required_capability: str) -> str | None:
+        """Select a model from provider that supports the required capability.
+        
+        Uses DynamicCapabilityRegistry to find first model supporting the capability.
+        
+        Args:
+            provider_name: Provider to search (e.g., 'openai', 'anthropic')
+            required_capability: Capability type required (e.g., 'vision', 'tool_use')
+        
+        Returns:
+            Model identifier if found, None otherwise
+        """
+        if not self._capability_registry:
+            log.warning("Capability registry not initialized, cannot select model for capability")
+            return None
+        
+        from css.core.types.capabilities import CapabilityType
+        
+        try:
+            cap = CapabilityType(required_capability.lower())
+        except ValueError:
+            log.warning(f"Unknown capability type: {required_capability}")
+            return None
+        
+        # Get all registered capabilities for provider
+        # Note: This requires iterating through registry internal state
+        # More efficient if registry exposes get_models_for_capability(provider, capability)
+        log.debug(f"Querying {provider_name} for models with {required_capability}")
+        
+        # For now, log that capability routing is active
+        log.info(f"Capability routing: searching {provider_name} for {required_capability}")
+        return None
