@@ -57,6 +57,8 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: always prefer async Python whenever possible**
 - **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
 - **ABSOLUTE: always use `aiohttp`, never `httpx`**
+- **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
+- **ABSOLUTE: never use `Exception` only, create custom exception with help of base exceptions in `src/core/exceptions.py`**
 
 ### Architecture & Structure
 - **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**

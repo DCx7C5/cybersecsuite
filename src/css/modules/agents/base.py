@@ -9,10 +9,8 @@ The design avoids dataclass+ABC mixing by using Protocol (PEP 544).
 Each agent (even external/remote) just needs to implement execute().
 """
 
-from __future__ import annotations
 
 from typing import Protocol, runtime_checkable, TYPE_CHECKING
-import asyncio
 import logging
 from datetime import datetime
 
@@ -135,8 +133,8 @@ class AgentExecutor:
         
         Args:
             provider_client: Async client for the LLM provider (e.g., AsyncOpenAI)
-            provider: Provider name (openai, anthropic, etc.)
-            model: Model identifier (gpt-4, claude-opus, etc.)
+            provider: Provider name (OpenAI, anthropic, etc.)
+            model: Model identifier (gpt-4, Claude Opus, etc.)
         """
         self.client = provider_client
         self.provider = provider

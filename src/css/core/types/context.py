@@ -2,51 +2,64 @@
 
 Separates user/conversation context (what we're talking about)
 from model context (what the model can do).
+
+Uses msgspec.Struct for efficient serialization/deserialization.
 """
 
-from dataclasses import dataclass
+from __future__ import annotations
+
+import msgspec
 from datetime import datetime
 from typing import Any, Optional
-
-from pydantic import BaseModel, Field
 
 from .api_services import BaseMessage
 
 
-@dataclass
-class ConversationContext(BaseModel):
+class ConversationContext(msgspec.Struct):
     """What we're talking about with the user.
 
     Persists across turns, tracks conversation state.
+    
+    Attributes:
+        session_id: Unique conversation session
+        user_id: User making the request
+        messages: Conversation history
+        turn_number: Current turn (0-indexed)
+        metadata: Custom metadata (tags, etc.)
+        created_at: When conversation started
+        updated_at: When last updated
     """
 
-    session_id: str = Field(..., description="Unique conversation session")
-    user_id: str = Field(..., description="User making the request")
-    messages: list[BaseMessage] = Field(default_factory=list, description="Conversation history")
-    turn_number: int = Field(default=0, description="Current turn (0-indexed)")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Custom metadata (tags, etc.)")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    session_id: str
+    user_id: str
+    messages: list[BaseMessage] = msgspec.field(default_factory=list)
+    turn_number: int = 0
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    def __post_init__(self) -> None:
+        """Initialize timestamps on creation."""
+        now = datetime.utcnow()
+        if self.created_at is None:
+            object.__setattr__(self, 'created_at', now)
+        if self.updated_at is None:
+            object.__setattr__(self, 'updated_at', now)
 
     def add_message(self, message: BaseMessage) -> None:
         """Add message to conversation history."""
         self.messages.append(message)
-        self.turn_number += 1
-        self.updated_at = datetime.utcnow()
+        object.__setattr__(self, 'turn_number', self.turn_number + 1)
+        object.__setattr__(self, 'updated_at', datetime.utcnow())
 
-    def get_last_user_message(self) -> Optional[BaseMessage]:
+    def get_last_user_message(self) -> BaseMessage | None:
         """Get most recent user message."""
         for msg in reversed(self.messages):
             if msg.role.value == "user":
                 return msg
         return None
 
-    def get_last_assistant_message(self) -> Optional[BaseMessage]:
+    def get_last_assistant_message(self) -> BaseMessage | None:
         """Get most recent assistant message."""
         for msg in reversed(self.messages):
             if msg.role.value == "assistant":
@@ -54,93 +67,119 @@ class ConversationContext(BaseModel):
         return None
 
 
-@dataclass
-class ModelContext(BaseModel):
+class ModelContext(msgspec.Struct):
     """What a model can do and how much it costs.
 
     Model-specific capabilities, limits, and pricing.
+    
+    Attributes:
+        provider: Provider name (e.g., 'openai', 'anthropic')
+        model_name: Model identifier (e.g., 'gpt-4', 'claude-3-sonnet')
+        max_tokens: Max tokens per request
+        context_window: Total context window size
+        capabilities: Supported capabilities
+        cost_per_1k_tokens: Cost per 1k tokens
+        estimated_latency_ms: Expected response latency
+        rate_limit_rpm: Requests per minute limit
+        rate_limit_tpm: Tokens per minute limit
+        batch_support: Supports batch API?
+        vision_capable: Supports vision input?
+        tool_use_capable: Supports tools calling?
+        discovered_at: When capabilities were discovered
     """
 
-    provider: str = Field(..., description="Provider name (e.g., 'openai', 'anthropic')")
-    model_name: str = Field(..., description="Model identifier (e.g., 'gpt-4', 'claude-3-sonnet')")
-    max_tokens: int = Field(default=4000, description="Max tokens per request")
-    context_window: int = Field(default=4000, description="Total context window size")
-    capabilities: list[str] = Field(default_factory=list, description="Supported capabilities")
-    cost_per_1k_tokens: float = Field(default=0.0, description="Cost per 1k tokens")
-    estimated_latency_ms: float = Field(default=0.0, description="Expected response latency")
-    rate_limit_rpm: Optional[int] = Field(default=None, description="Requests per minute limit")
-    rate_limit_tpm: Optional[int] = Field(default=None, description="Tokens per minute limit")
-    batch_support: bool = Field(default=False, description="Supports batch API?")
-    vision_capable: bool = Field(default=False, description="Supports vision input?")
-    tool_use_capable: bool = Field(default=False, description="Supports tools calling?")
-    discovered_at: datetime = Field(default_factory=datetime.utcnow)
+    provider: str
+    model_name: str
+    max_tokens: int = 4000
+    context_window: int = 4000
+    capabilities: list[str] = msgspec.field(default_factory=list)
+    cost_per_1k_tokens: float = 0.0
+    estimated_latency_ms: float = 0.0
+    rate_limit_rpm: int | None = None
+    rate_limit_tpm: int | None = None
+    batch_support: bool = False
+    vision_capable: bool = False
+    tool_use_capable: bool = False
+    discovered_at: datetime | None = None
 
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    def __post_init__(self) -> None:
+        """Initialize timestamp on creation."""
+        if self.discovered_at is None:
+            object.__setattr__(self, 'discovered_at', datetime.utcnow())
 
     def effective_cost(self, tokens: int) -> float:
         """Calculate cost for token count."""
         return (tokens / 1000.0) * self.cost_per_1k_tokens
 
 
-@dataclass
-class ExecutionContext(BaseModel):
+class ExecutionContext(msgspec.Struct):
     """Combined context for a single LLM execution.
 
     Merges conversation and model context for complete picture.
+    
+    Attributes:
+        conversation: What we're talking about
+        model: What the model can do
+        execution_id: Unique execution identifier
+        started_at: When execution started
+        ended_at: When execution ended (if completed)
+        tokens_used: Tokens consumed in execution
+        cost: Actual cost incurred
+        error: Error message if failed
     """
 
-    conversation: ConversationContext = Field(..., description="What we're talking about")
-    model: ModelContext = Field(..., description="What the model can do")
-    execution_id: str = Field(default_factory=lambda: str(__import__("uuid").uuid4()))
-    started_at: datetime = Field(default_factory=datetime.utcnow)
-    ended_at: Optional[datetime] = Field(default=None)
-    tokens_used: int = Field(default=0, description="Tokens consumed in execution")
-    cost: float = Field(default=0.0, description="Actual cost incurred")
-    error: Optional[str] = Field(default=None, description="Error message if failed")
+    conversation: ConversationContext
+    model: ModelContext
+    execution_id: str = msgspec.field(default_factory=lambda: str(__import__("uuid").uuid4()))
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
+    tokens_used: int = 0
+    cost: float = 0.0
+    error: str | None = None
 
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    def __post_init__(self) -> None:
+        """Initialize start timestamp on creation."""
+        if self.started_at is None:
+            object.__setattr__(self, 'started_at', datetime.utcnow())
 
     def set_completed(self, tokens_used: int = 0) -> None:
         """Mark execution as completed."""
-        self.ended_at = datetime.utcnow()
-        self.tokens_used = tokens_used
-        self.cost = self.model.effective_cost(tokens_used)
+        object.__setattr__(self, 'ended_at', datetime.utcnow())
+        object.__setattr__(self, 'tokens_used', tokens_used)
+        object.__setattr__(self, 'cost', self.model.effective_cost(tokens_used))
 
     def set_failed(self, error: str) -> None:
         """Mark execution as failed."""
-        self.ended_at = datetime.utcnow()
-        self.error = error
+        object.__setattr__(self, 'ended_at', datetime.utcnow())
+        object.__setattr__(self, 'error', error)
 
-    def get_duration_seconds(self) -> Optional[float]:
+    def get_duration_seconds(self) -> float | None:
         """Get execution duration in seconds."""
         if self.ended_at is None:
             return None
         return (self.ended_at - self.started_at).total_seconds()
 
 
-@dataclass
-class ContextConfig(BaseModel):
-    """Configuration for context handling."""
+class ContextConfig(msgspec.Struct):
+    """Configuration for context handling.
+    
+    Attributes:
+        max_conversation_turns: Max turns per conversation
+        max_conversation_age_hours: Max age before archiving
+        capability_cache_ttl_hours: Cache model capabilities for this long
+        cost_estimate_variance_pct: Variance on cost estimates
+        log_all_executions: Log all LLM calls?
+        trace_expensive_calls: Trace calls costing >$0.10?
+    """
 
     # Conversation context
-    max_conversation_turns: int = Field(default=100, description="Max turns per conversation")
-    max_conversation_age_hours: int = Field(default=24, description="Max age before archiving")
+    max_conversation_turns: int = 100
+    max_conversation_age_hours: int = 24
 
     # Model context
-    capability_cache_ttl_hours: int = Field(default=24, description="Cache model capabilities for this long")
-    cost_estimate_variance_pct: float = Field(default=0.1, description="10% variance on cost estimates")
+    capability_cache_ttl_hours: int = 24
+    cost_estimate_variance_pct: float = 0.1
 
     # Execution tracking
-    log_all_executions: bool = Field(default=True, description="Log all LLM calls?")
-    trace_expensive_calls: bool = Field(default=True, description="Trace calls costing >$0.10?")
-
-    class Config:
-        """Pydantic config."""
-
-        extra = "allow"  # Allow forward-compatible fields
+    log_all_executions: bool = True
+    trace_expensive_calls: bool = True
