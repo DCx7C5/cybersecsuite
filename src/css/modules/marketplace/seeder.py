@@ -7,6 +7,7 @@ from typing import Optional
 
 import aiohttp
 
+from css.core.config import MarketplaceConfig
 from .enums import MarketplaceItemType
 from .models import MarketplaceItem
 from .exceptions import MarketplaceSeedingError
@@ -33,7 +34,7 @@ class MarketplaceSeeder:
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create aiohttp session."""
         if self._session is None or self._session.closed:
-            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
+            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=MarketplaceConfig.SEEDER_HTTP_TIMEOUT))
         return self._session
 
     async def close(self):

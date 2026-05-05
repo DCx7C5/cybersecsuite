@@ -10,8 +10,8 @@
 |-----------|--------|-------|-----|--------|------|---------|-------|-------|
 | **@asgi** | ✅ 100% | 5 | 224 | ✅ Compliant | 1 | 1 | Phase 2 ✅ | Production ready |
 | **@db** | ✅ 100% | 10 | 969 | ⚠️ Partial | 3 | 5+ | Phase 2 ✅ | Models subdir, production ready |
-| **@types** | ✅ 100% | 31 | 1539 | ❌ Oversized | 2 | 50+ | Phase 2 ⚠️ | REFACTOR NEEDED (13→4 files) |
-| **@otel** | 🟡 0% | 1 | 0 | ❌ Missing | 0 | 0 | Phase 4+ | Not started, stub only |
+| **@types** | ✅ 100% | 29 | 1540 | ✅ Compliant | 2 | 50+ | Phase 4 ✅ | entities/ deleted — concrete entities in modules; base classes remain in core |
+| **@otel** | 🟡 0% | 1 | 0 | ❌ Missing | 0 | 0 | Phase 6 (p6-events-otel-bridge) | DomainEvent→OTEL bridge planned; direct OTEL deferred |
 
 ---
 
@@ -142,47 +142,34 @@ Minor: db → types → retry (mitigated with lazy imports, verified working)
 
 ### 3. @types — Core Type Definitions
 
-**Status**: ✅ **Production Ready** | **Effort**: 95% (needs refactor) | **Risk**: Code organization
+**Status**: ✅ **Phase 4 Complete** | **Effort**: 100% | **Risk**: Low
 
 #### 5-File Pattern Compliance
-❌ **OVERSIZED PATTERN** — 31 Python files (way beyond 5-file limit)
+⚠️ **STRUCTURED** — 29 Python files across base/, providers/ subdirs (by design)
+Entity files removed from this module — concrete entities live in their own modules.
 
-**Root Files Breakdown** (13 .py files):
+**Root Files Breakdown**:
 | File | LOC | Purpose |
 |------|-----|---------|
-| `__init__.py` | 73 | Module exports (72 exports in __all__) |
-| `base.py` | 200+ | Core abstractions (BaseApiServiceClient, etc) |
+| `__init__.py` | 73 | Module exports |
+| `base/` | 200+ | Core abstractions — BaseAgent, BaseEntity, BaseRole, BaseSkill, BaseTool |
 | `capabilities.py` | 100+ | Capability discovery |
 | `context.py` | 80+ | Execution context |
-| `entities.py` | 200+ | Domain entities (Pydantic models) |
+| `~~entities/~~` | ~~200+~~ | **DELETED (Phase 4)** — Entities moved to modules/*.types |
 | `headers.py` | 50+ | Request/response headers |
 | `hook_events.py` | 30+ | Event/hook types |
 | `query.py` | 30+ | Query/search types |
 | `sdk_local.py` | 30+ | Local SDK base |
-| `api_services/` | 200+ | API service types (nested) |
 | `providers/` | 400+ | Provider abstractions (nested) |
-| `models/` | 200+ | Pydantic models (nested) |
-| `retry.py` | 150+ | Retry logic (circular import risk) |
 
-**Total**: 31 files, 1539 LOC → **WAY OVERSIZED**
-
-#### Subdirectory Structure (Phase 2 expansion)
-```
-@types/
-├── base.py              # Core abstractions
-├── capabilities.py      # Capability discovery
-├── context.py           # Execution contexts
-├── entities.py          # Domain entities
-├── headers.py           # Headers
-├── hook_events.py       # Events/hooks
-├── query.py             # Query types
-├── sdk_local.py         # Local SDK
-├── retry.py             # Retry orchestration
-├── api_services/        # API service types
-│   ├── __init__.py
-│   ├── base.py
-│   ├── models.py
-│   └── providers.py
+**Concrete entities** (post-Phase-4 location):
+| Entity | New Location |
+|--------|-------------|
+| `Account` | `css.modules.accounts.types` |
+| `Agent` | `css.modules.agents.types` |
+| `Role` | `css.modules.permissions.types` |
+| `Skill` | `css.modules.skills.types` |
+| `Tool` | `css.modules.tools.types` |
 ├── providers/           # Provider abstractions
 │   ├── __init__.py
 │   ├── base_providers.py
@@ -290,12 +277,12 @@ None yet (will integrate with @asgi, @db in Phase 3+)
 - ❌ No exporters configured
 
 #### Phase Readiness
-🔴 **NOT READY** — Deferred to Phase 3 or Phase 4
+🔴 **DEFERRED** — Architecture decision: direct OTel instrumentation deferred to Phase 6. Implementation pattern: `DomainEvent → OTEL bridge` (todo: `p6-events-otel-bridge`). All internal events flow via `css.modules.events`; Phase 6 bridges events → OTEL spans/metrics.
 
 #### Recommendations
-- **Status**: Not ready for Phase 2
-- **Priority**: MEDIUM (observability, not critical path)
-- **Timeline**: Phase 4 or later
+- **Status**: Deferred by design (Phase 6 events bridge)
+- **Priority**: LOW until Phase 6
+- **Timeline**: Phase 6 — `p6-events-otel-bridge` todo
 - **Risk**: None (optional layer)
 - **Blockers**: None (infrastructure ready to integrate)
 - **Effort**: 8-12 hours for full implementation

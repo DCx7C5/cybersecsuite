@@ -1,4 +1,4 @@
-"""Cloudflare API service provider."""
+"""Cloudflare Workers AI service provider."""
 
 import json
 import logging
@@ -16,20 +16,27 @@ from css.core.types import (
     LLMResponse,
 )
 from css.core.types.providers import APIProviderBase
+from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
 
 class CloudflareApiService(APIProviderBase, StreamingHandler):
-    """Cloudflare API service with streaming support."""
-    
+    """Cloudflare Workers AI service using the OpenAI-compatible endpoint.
+
+    Requires CLOUDFLARE_API_KEY and CLOUDFLARE_ACCOUNT_ID env vars.
+    Base URL: https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1
+    """
+
     def __init__(
         self,
         api_key: Optional[str] = None,
+        account_id: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout_seconds: int = 120,
-        max_retries: int = 3,
+        timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
+        max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
+        self._account_id = account_id or os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
         super().__init__(
             provider_id=ProviderType.CLOUDFLARE,
             api_key=api_key or os.getenv("CLOUDFLARE_API_KEY"),
@@ -37,22 +44,44 @@ class CloudflareApiService(APIProviderBase, StreamingHandler):
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
         )
-    
+
     def _default_base_url(self) -> str:
-        return "https://api.cloudflare.com/client/v4"
-    
+        if self._account_id:
+            return f"https://api.cloudflare.com/client/v4/accounts/{self._account_id}/ai/v1"
+        return "https://api.cloudflare.com/client/v4/accounts/__account_id__/ai/v1"
+
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
         return [
             ModelMetadata(
-                id="@cf/meta/llama-2-7b-chat-int8",
+                id="@cf/meta/llama-3.1-8b-instruct",
                 provider=ProviderType.CLOUDFLARE,
-                display_name="Llama 2 7B",
-                context_window=4096,
+                display_name="Llama 3.1 8B Instruct",
+                context_window=128000,
                 max_output_tokens=4096,
                 streaming=True,
                 tool_use=True,
                 structured_output=True,
+            ),
+            ModelMetadata(
+                id="@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+                provider=ProviderType.CLOUDFLARE,
+                display_name="Llama 3.3 70B Instruct FP8",
+                context_window=128000,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+                provider=ProviderType.CLOUDFLARE,
+                display_name="DeepSeek R1 Distill Qwen 32B",
+                context_window=32768,
+                max_output_tokens=4096,
+                streaming=True,
+                tool_use=False,
+                structured_output=False,
             ),
         ]
     

@@ -439,7 +439,7 @@ class ChatResponse(BaseModel):
 | `base.py` | Core abstractions (BaseApiServiceClient, etc) | 200+ | ✅ |
 | `capabilities.py` | Capability discovery types | 100+ | ✅ |
 | `context.py` | Execution context types | 80+ | ✅ |
-| `entities.py` | Domain entities (Pydantic models) | 200+ | ✅ |
+| `entities.py` | Domain entities — **DELETED** (Phase 4 migration) | — | ✅ Migrated to modules |
 | `headers.py` | Request/response header types | 50+ | ✅ |
 | `hook_events.py` | Event/hook types | 30+ | ✅ |
 | `query.py` | Query/search types | 30+ | ✅ |

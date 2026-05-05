@@ -2,7 +2,6 @@
 
 from enum import Enum
 from pathlib import Path
-import sys
 
 
 def _discover_providers():

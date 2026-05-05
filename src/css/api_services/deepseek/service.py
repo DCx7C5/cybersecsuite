@@ -16,6 +16,7 @@ from css.core.types import (
     LLMResponse,
 )
 from css.core.types.providers import APIProviderBase
+from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +28,8 @@ class DeepSeekApiService(APIProviderBase, StreamingHandler):
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout_seconds: int = 120,
-        max_retries: int = 3,
+        timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
+        max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
         super().__init__(
             provider_id=ProviderType.DEEPSEEK,
@@ -109,13 +110,22 @@ class DeepSeekApiService(APIProviderBase, StreamingHandler):
             data = json.loads(data_str)
             choice = data.get("choices", [{}])[0]
             delta = choice.get("delta", {})
-            
+
+            # DeepSeek-R1 non-standard field: reasoning chain-of-thought
+            reasoning = delta.get("reasoning_content")
+            if reasoning:
+                return StreamChunk(
+                    type="content_block_delta",
+                    content=reasoning,
+                    metadata={"content_type": "reasoning"},
+                )
+
             if "content" in delta and delta["content"]:
                 return StreamChunk(
                     type="content_block_delta",
                     content=delta["content"],
                 )
-            
+
             if choice.get("finish_reason"):
                 return StreamChunk(
                     type="message_stop",
@@ -123,7 +133,7 @@ class DeepSeekApiService(APIProviderBase, StreamingHandler):
                 )
         except (json.JSONDecodeError, KeyError, ValueError):
             pass
-        
+
         return None
     
     async def _stream_response(
@@ -183,14 +193,23 @@ class DeepSeekApiService(APIProviderBase, StreamingHandler):
         ) as resp:
             data = await resp.json()
             text = ""
+            reasoning = ""
             for choice in data.get("choices", []):
-                if choice.get("message", {}).get("content"):
-                    text += choice["message"]["content"]
-            
+                msg = choice.get("message", {})
+                if msg.get("content"):
+                    text += msg["content"]
+                # DeepSeek-R1 non-standard reasoning chain-of-thought
+                if msg.get("reasoning_content"):
+                    reasoning += msg["reasoning_content"]
+
+            metadata: dict[str, Any] = {}
+            if reasoning:
+                metadata["reasoning"] = reasoning
+
             return LLMResponse(
                 text=text,
                 stop_reason=data["choices"][0].get("finish_reason", "stop") if data.get("choices") else "stop",
-                usage=data.get("usage", {}),
+                usage={**data.get("usage", {}), **({"reasoning": reasoning} if reasoning else {})},
             )
     
     @staticmethod

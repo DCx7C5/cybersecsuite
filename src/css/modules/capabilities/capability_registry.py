@@ -1,7 +1,7 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
 from typing import Dict, List, Optional, Set
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 
 from css.core.types.capabilities import CapabilityType

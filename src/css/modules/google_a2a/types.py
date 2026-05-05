@@ -151,6 +151,16 @@ class A2AConfig:
         extra = "allow"
 
 
+@dataclass
+class ToolMetadata:
+    """Metadata for a registered A2A tool."""
+
+    name: str
+    description: str
+    schema: dict[str, Any]
+    fn: Any
+
+
 __all__ = [
     "StreamState",
     "ResponseInjectionStrategy",
@@ -159,4 +169,5 @@ __all__ = [
     "StreamingState",
     "StreamingController",
     "A2AConfig",
+    "ToolMetadata",
 ]

@@ -1,14 +1,13 @@
 """Triage classification and routing engine."""
 
 import logging
-import asyncio
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 from datetime import datetime
 import uuid
 
 from .models import TriageRequest, TriageResult
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
-from .exceptions import TriageExecutionError, TriageClassificationError
+from .exceptions import TriageExecutionError
 
 logger = logging.getLogger(__name__)
 

@@ -166,7 +166,7 @@ grep -r "ClassName\|function_name" /home/daen/Projects/cybersecsuite/src/css/ --
 
 ### Step 5 — Implement the code
 
-- Edit files in `src/css/` only
+- Edit files in `src/css/` or `src/frontend/` (if exists) only
 - Follow the **5-file pattern** for modules: `models.py`, `types.py`, `enums.py`, `exceptions.py`, `__init__.py`
 - Always `async def` for any I/O (never sync wrappers)
 - HTTP clients: always `aiohttp`, NEVER `httpx`
@@ -215,7 +215,7 @@ git commit -m "[your-todo-id] Brief description of what was done
 - Class/function implemented: ..."
 ```
 
-**NEVER add `Co-authored-by:` to commits.**
+**NEVER add `Co-authored-by:` to any new commit.** Historical commits contain it — do not amend history, but all future commits must omit it.
 
 ---
 
@@ -302,11 +302,11 @@ DIRECTORY_LIST=<space separated list of directories you touched>
 /home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix $DIRECTORY_LIST
 ```
 
-### Step 3 - Fix remaining errors
+### Step 3 — Fix remaining errors
 
 Fix the remaining errors of prior ruff output
 
-### Step 3.5 — Repeat Step 3 & 4 up to two times
+### Step 4 — Repeat Steps 2 & 3 up to two times
 
 Run again:
 ```bash
@@ -316,13 +316,13 @@ Run again:
 If still errors in ruff output, repeat Step 2 & 3.
 If no errors, proceed with next step.
 
-### Step 4 - Delegate rubber-duck agent
+### Step 5 — Delegate rubber-duck agent
 
 Delegate a rubber-duck agent to inspect the complete plan at `.plan/*.md`, `.plan/architecture/*.md`, and a list of directories you worked in as context, as well as a set of tasks to inspect the code and plan.
 Let it report back to you, follow recommendations and update TODOs/TASKs/PHASEs if needed.
 
 
-### Step 5 — Run full test suite
+### Step 6 — Run full test suite
 
 ```bash
 cd /home/daen/Projects/cybersecsuite
@@ -331,19 +331,24 @@ cd /home/daen/Projects/cybersecsuite
 
 Fix any failures before proceeding.
 
-### Step 6 — Update all .plan/ files
+### Step 7 — Update all .plan/ files and local plans
 
 ```bash
-# These 7 files must be updated (the whitelist):
-# 1. .plan/plan.md        — mark phase DONE, add summary
-# 2. .plan/memory.md      — update phase row (done count)
+# .plan/ whitelist files to update (max 7 files in .plan/ root):
+# 1. .plan/plan.md        — mark phase DONE, update CURRENT STATUS
+# 2. .plan/memory.md      — update phase table row (done count, blocked count)
 # 3. .plan/checkpoints.md — add phase checkpoint entry
-# 4. .plan/architecture/observability.md (or relevant arch file)
-# 5. The corresponding file in .plan/architecture/*.md (if it exists)
-# 6. The local plan.md in every module you touched
+# 4. .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
+
+# Local plan.md files REQUIRED — update every directory you touched:
+# 5. src/css/plan.md                          — if root-level changes
+# 6. src/css/core/<subdir>/plan.md            — for each core subdir touched
+# 7. src/css/modules/<module>/plan.md         — for each module touched
+# 8. src/css/api_services/plan.md             — if api_services touched
+# NOTE: local plan.md files are NOT part of .plan/ whitelist; they are codebase files
 ```
 
-### Step 7 — Commit
+### Step 8 — Commit
 
 ```bash
 git add -A

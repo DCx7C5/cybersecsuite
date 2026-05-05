@@ -5,6 +5,8 @@ Each provider lives in src/api_services/{provider_name}/ and exports an *ApiServ
 that inherits from BaseApiServiceClient (in src/core/api_service_client/).
 """
 
+from css.core.config import ProviderDefaults
+
 # Tier 1: Major cloud providers
 from css.api_services.anthropic import AnthropicApiService
 from css.api_services.openai import OpenAIApiService
@@ -53,6 +55,12 @@ from css.core.types.error_mappers import (
 )
 
 # Provider registry
+# Module-level configuration switches — override via environment variables.
+PROVIDER_DEFAULT_TIMEOUT = ProviderDefaults.TIMEOUT_SECONDS
+PROVIDER_DEFAULT_MAX_RETRIES = ProviderDefaults.MAX_RETRIES
+PROVIDER_DEFAULT_MAX_TOKENS = ProviderDefaults.DEFAULT_MAX_TOKENS
+PROVIDER_DEFAULT_TEMPERATURE = ProviderDefaults.DEFAULT_TEMPERATURE
+
 PROVIDERS = {
     "anthropic": AnthropicApiService,
     "openai": OpenAIApiService,

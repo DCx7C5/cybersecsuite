@@ -1,7 +1,7 @@
 """Scope management and resolution."""
 
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 from datetime import datetime
 
 from .context import ScopeContext

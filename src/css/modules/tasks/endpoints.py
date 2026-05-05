@@ -43,7 +43,7 @@ async def create_task(
     task = Task(id=task_id, scope=scope)
     
     # Persist to ORM (B9)
-    task_assignment = await TaskAssignment.create(
+    await TaskAssignment.create(
         team_id=team_id,
         orchestrator_id=orchestrator_id,
         task_id=task_id,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from legacy.cssmcp.sdk_compat import ToolMetadata
+from .types import ToolMetadata
 
 _A2A_TOOLS: list[ToolMetadata] = []
 

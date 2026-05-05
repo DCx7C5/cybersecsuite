@@ -1,7 +1,7 @@
 """Triage request and response models."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional
 from datetime import datetime
 
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel

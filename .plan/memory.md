@@ -1,59 +1,93 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-04T23:57+02:00 | **Session**: ffed87aa-p6
+**Last Updated**: 2026-05-05T07:10+02:00 | **Session**: Rules/DB audit + Phase 34/35 assignment
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
-⚠️ **Remember**: Each module/provider has its own `src/css/*/plan.md` as source-of-truth.  
+⚠️ **Remember**: Every directory in `src/css/` has a local `plan.md` — read it FIRST before working there, update it DURING work (not end-of-session).  
 ⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve). Ollama: native `ollama serve` via `core/ollama/OllamaProcessManager`. Frontend: `cd src/frontend && bun run dev`.
 
 ---
 
-## 📊 session.db State (2026-05-04)
+## 📊 session.db State (2026-05-05)
 
-**Total**: 732 todos | **Done**: 213 | **Pending**: 516 | **Blocked**: 3
+**Total**: 768 todos | **Done**: 242 | **Pending**: 522 | **Blocked**: 4
 
-| Phase | Todos | Done | Pending |
-|-------|-------|------|---------|
-| Phase 0 — TeamScope Foundation | 12 | 12 | 0 |
-| Phase 1 — Multi-Orchestrator Core | 16 | 16 | 0 |
-| Phase 2 — SDK Architecture | 64 | 64 | 0 |
-| Phase 3 — Module Consistency | 143 | 104 | 39 |
-| Phase 4 — Core Consistency + Types | 23 | 0 | 22 |
-| Phase 5 — Integration & Testing | 32 | 2 | 30 |
-| Phase 6 — Architecture Overhaul | 36 | 2 | 34 |
-| Phase 7 — Feature Completeness | 19 | 0 | 19 |
-| Phase 8 — AI Execution Layer | 17 | 0 | 17 |
-| Phase 9 — ORM/Manager/Registry | 8 | 0 | 8 |
-| Phase 10 — Unified SDK Architecture | 13 | 0 | 13 |
-| Phase 11 — Cross-Provider Prompt Caching | 10 | 0 | 10 |
-| Phase 12 — QoL Output Controls Migration | 11 | 0 | 11 |
-| Phase 13 — Provider Routing & Resilience | 15 | 0 | 15 |
-| Phase 14 — Event Hooks & Instrumentation | 18 | 0 | 18 |
-| Phase 15 — Permissions + WorkingDir | 31 | 0 | 29 (+2 blocked) |
-| Phase 16 — Provider SDK Features | 31 | 0 | 31 |
-| Phase 17 — Settings & Projects | 33 | 0 | 33 |
-| Phase 18 — Frontend Foundation | 19 | 0 | 19 |
-| Phase 19 — Module Restructuring + Sessions | 13 | 2 | 10 |
-| Phase 20 — Persistent Memory Layer | 23 | 0 | 23 |
-| Phase 21 — Qwen3-0.6B Triage Intelligence | 14 | 0 | 14 |
-| Phase 22 — MCP Protocol Layer | 15 | 0 | 15 |
-| Phase 23 — Prompt Registry | 11 | 0 | 11 |
-| Phase 24 — Git Tracking & Worktree Isolation | 9 | 0 | 9 |
-| Phase 25 — Integration Hardening | 8 | 0 | 8 |
-| Phase 26 — Human Approval Workflows | 14 | 0 | 14 |
-| Phase 27 — Graph Visualization Engine | 16 | 0 | 16 |
-| Phase 28 — Auth & Accounts | 6 | 0 | 6 |
-| Phase 29 — Cybersec Domain Layer | 8 | 0 | 8 |
-| Phase 30 — Workflow Engine + IPC | 5 | 0 | 5 |
-| Phase 31 — Production Readiness | 7 | 0 | 7 |
-| Phase 32 — Reports Module | 11 | 0 | 11 |
+| Phase | Todos | Done | Pending | Blocked |
+|-------|-------|------|---------|---------|
+| Phase 0 — TeamScope Foundation | 12 | 12 | 0 | 0 |
+| Phase 1 — Multi-Orchestrator Core | 16 | 16 | 0 | 0 |
+| Phase 2 — SDK Architecture | 64 | 64 | 0 | 0 |
+| Phase 3 — Module Consistency | 147 | 125 | 22 | 0 |
+| Phase 4 — Core Consistency + Types | 24 | 7 | 16 | 1 |
+| Phase 5 — Integration & Testing | 32 | 2 | 30 | 0 |
+| Phase 6 — Architecture Overhaul | 36 | 2 | 34 | 0 |
+| Phase 7 — Feature Completeness | 19 | 0 | 18 | 1 |
+| Phase 8 — AI Execution Layer | 17 | 0 | 17 | 0 |
+| Phase 9 — ORM/Manager/Registry | 26 | 11 | 15 | 0 |
+| Phase 10 — Unified SDK Architecture | 13 | 0 | 13 | 0 |
+| Phase 11 — Cross-Provider Prompt Caching | 10 | 0 | 9 | 1 |
+| Phase 12 — QoL Output Controls Migration | 11 | 0 | 11 | 0 |
+| Phase 13 — Provider Routing & Resilience | 15 | 0 | 15 | 0 |
+| Phase 14 — Event Hooks & Instrumentation | 18 | 0 | 18 | 0 |
+| Phase 15 — Permissions + WorkingDir | 31 | 0 | 31 | 0 |
+| Phase 16 — Provider SDK Features | 31 | 0 | 31 | 0 |
+| Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 |
+| Phase 18 — Frontend Foundation | 19 | 0 | 19 | 0 |
+| Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 |
+| Phase 20 — Persistent Memory Layer | 23 | 0 | 23 | 0 |
+| Phase 21 — Qwen3-0.6B Triage Intelligence | 14 | 0 | 14 | 0 |
+| Phase 22 — MCP Protocol Layer | 15 | 0 | 15 | 0 |
+| Phase 23 — Prompt Registry | 11 | 0 | 11 | 0 |
+| Phase 24 — Git Tracking & Worktree Isolation | 9 | 0 | 9 | 0 |
+| Phase 25 — Integration Hardening | 8 | 0 | 8 | 0 |
+| Phase 26 — Human Approval Workflows | 14 | 0 | 14 | 0 |
+| Phase 27 — Graph Visualization Engine | 16 | 0 | 16 | 0 |
+| Phase 28 — Auth & Accounts | 6 | 0 | 6 | 0 |
+| Phase 29 — Cybersec Domain Layer | 8 | 0 | 8 | 0 |
+| Phase 30 — Workflow Engine + IPC | 5 | 0 | 5 | 0 |
+| Phase 31 — Production Readiness | 7 | 0 | 7 | 0 |
+| Phase 32 — Reports Module | 11 | 0 | 11 | 0 |
+| Phase 33 — Ollama Native | 6 | 0 | 6 | 0 |
+| Phase 34 — Dependency Map | 19 | 1 | 18 | 0 |
+| Phase 35 — Telemetry Infrastructure | 7 | 0 | 7 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### ✅ Phase 4 Entity Migrations (Completed 2026-05-05)
+
+Session completed 7 Phase 4 entity migration todos:
+- `phase4-verify-imports`: Core module imports verified (css.core.types, css.core.db, css.modules.events, css.modules.roles all functional)
+- `types-option-c-accounts`: Account entity moved to `src/css/modules/accounts/types.py`
+- `types-option-c-agents`: Agent entity moved to `src/css/modules/agents/types.py`
+- `types-option-c-permissions`: Role entity added to `src/css/modules/permissions/types.py` with built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER)
+- `types-option-c-skills`: Skill entity moved to `src/css/modules/skills/types.py`
+- `types-option-c-tools`: Tool entity moved to `src/css/modules/tools/types.py` + 5 helper classes (ToolParameter, ToolReturnType, ToolSchema, HybridToolSchema, ManagedTool)
+- `types-option-c-reimport`: Updated `src/css/core/types/__init__.py` to import entities from new module locations
+
+**QA Verification**: ✅ PASS
+- All 5 new entity files in correct locations with proper Python syntax
+- All module __init__.py files export entities via __all__
+- Import chain verified: css.core.types → css.modules.*.types (no circular imports)
+- Base classes (BaseAgent, BaseRole, BaseSkill, BaseTool) remain in core/types/entities/ as expected
+- Old entity files still preserved for Phase 4 cleanup (types-option-c-cleanup todo)
+- All changes passed ruff linting
+
+**Files Modified**:
+- src/css/core/types/__init__.py (updated imports)
+- src/css/modules/accounts/__init__.py (new)
+- src/css/modules/agents/__init__.py (updated)
+- src/css/modules/permissions/__init__.py (updated)
+- src/css/modules/skills/__init__.py (new)
+- src/css/modules/tools/__init__.py (updated)
+
+**Session Progress**:
+- Started: 235/768 todos (Phase 3: 125/147, Phase 4: 0/23)
+- Completed: 242/768 todos (+7 entity migration todos, now Phase 4: 7/24)
 
 ### ✅ DB Critical Startup Chain (Completed 2026-05-04)
 
@@ -170,7 +204,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **732 todos**, PHASE > TASK > TODO hierarchy
+- `.plan/session.db` — **768 todos**, PHASE > TASK > TODO hierarchy (35 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (21 modules, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (007 checkpoints)
 - `src/css/modules/*/plan.md` — module source-of-truth (23 module directories)

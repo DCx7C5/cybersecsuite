@@ -38,7 +38,17 @@ cat src/css/modules/<module_name>/plan.md
 ---
 
 ## CRITICAL MOST IMPORTANT RULES NEVER FORGET
-- **ABSOLUTE: never add `Co-authored-by:` anywhere**
+
+### Session & Project Planning
+- **ABSOLUTE: `.plan/plan.md` is the session workspace plan** — high-level project overview for THIS session's work (planning ONLY, not progress logs)
+- **ABSOLUTE: track all progress in [.plan/session.db](session.db) ONLY** — every todo status change goes here, never in markdown
+- **ABSOLUTE: local `plan.md` files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/*/plan.md`, `src/css/api_services/plan.md`, `src/css/core/*/plan.md`, etc.
+- **ABSOLUTE: keep EVERY local plan.md synchronized with [.plan/session.db](session.db) while working in that directory** — each plan.md reflects todos/milestones relevant to that module/subdirectory
+- **ABSOLUTE: when working in a module (e.g., `src/css/modules/permissions/`), READ that module's local `plan.md` FIRST** — understand what's planned, in-progress, and completed for that area
+- **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
+
+### Code & Execution
+- **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
 - **ABSOLUTE: keep thinking chat to bare essentials only** — No reasoning bloat, no hidden verbosity
 - **ABSOLUTE: keep every chat response under 500 words unless impossible**
 - **ABSOLUTE: explicitly announce whenever a TODO, TASK, or PHASE is completed**
@@ -47,17 +57,19 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: always prefer async Python whenever possible**
 - **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
 - **ABSOLUTE: always use `aiohttp`, never `httpx`**
+
+### Architecture & Structure
 - **ABSOLUTE: in planning mode, always structure work as PHASE > TASK > TODO**
-- **ABSOLUTE: every new TODO, must belong to exactly one TASK and one PHASE**
+- **ABSOLUTE: every new TODO must belong to exactly one TASK and one PHASE**
 - **ABSOLUTE: [.plan/](../.plan) is the working directory** — never treat `~/.copilot/` or `~/.claude` as the working directory
-- **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
-- **ABSOLUTE: track all TODOs, TASKs, and PHASEs in [.plan/session.db](session.db)**
-- **ABSOLUTE: in `src/css/`, every module ([src/css/modules/](../src/css/modules)) directory, every api_service ([src/css/api_services/](../src/css/api_services)) directory, and every core directory ([src/css/core/](../src/css/core)) contains its own local plan.md; always check, update, and keep that local plan.md synchronized with [.plan/session.db](session.db) while working there**
 - **ABSOLUTE: use the project virtualenv at [.venv/bin/](../.venv/bin) whenever Python execution is needed**
 - **ABSOLUTE: follow all existing directory, documentation, and code patterns for consistency**
-- **ABSOLUTE: in PLAN MODE, update every `.md` under `.plan/` and keep all of them synchronized with [.plan/session.db](session.db)**
 - **ABSOLUTE: use [.plan/architecture/*.md](architecture) & nearest `plan.md` as the source of truth for general architecture**
-- **ABSOLUTE: keep also `memory.md` and `checkpoints.md` in sync with [.plan/session.db](session.db)** 
+
+### Workflow & Tooling
+- **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
+- **ABSOLUTE: in PLAN MODE, update every `.md` under `.plan/` and keep all of them synchronized with [.plan/session.db](session.db)**
+- **ABSOLUTE: keep also `memory.md` and `checkpoints.md` in sync with [.plan/session.db](session.db)** — but only at end-of-session, not during work
 - **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
 
 # CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
@@ -65,20 +77,37 @@ cat src/css/modules/<module_name>/plan.md
 **Then follow**: `.plan/development-workflow.md` — WORKFLOW 1 for todos, WORKFLOW 2 for tasks, WORKFLOW 3 for phases.
 
 
-## ✅ .plan/ WHITELIST 
+## ✅ FILE ORGANIZATION: PROJECT vs LOCAL
+
+### `.plan/` Directory WHITELIST (7 files ONLY)
 
 | File                         | Purpose                                               |
 |------------------------------|-------------------------------------------------------|
-| **plan.md**                  | Project overview, milestones, timeline                |
-| **architecture/*.md**        | System design                                         |
-| **memory.md**                | Highly compressed previous session context            |
-| **development-workflow.md**  | Development process, git strategy                     |
-| **rules.md**                 | THIS FILE — development rules                         |
-| **checkpoints.md**           | Phase summaries, history                              |
-| **session.db**               | Todo tracker (SQLite)    ALWAYS KEEP IN SYNC!!!!!     |
+| **plan.md**                  | Project session workspace plan (high-level overview)  |
+| **architecture/*.md**        | System design decisions                               |
+| **memory.md**                | Compressed context from previous sessions             |
+| **development-workflow.md**  | Development process and git strategy                  |
+| **rules.md**                 | Development rules (THIS FILE)                         |
+| **checkpoints.md**           | Phase summaries and completion records                |
+| **session.db**               | Todo tracker (SQLite) — ALWAYS KEEP IN SYNC!!!        |
 
-**❌ FORBIDDEN**: Other .md files, subdirectories, staging files. if rule is broken, files content must be moved into white listed files and file deleted
-**CONSOLIDATE**: If you need a new file, merge content into one of the 7 above.
+**❌ FORBIDDEN in `.plan/`**: Other .md files, subdirectories, staging files, temporary docs
+**CONSOLIDATE**: If you need new content, merge into one of the 7 whitelisted files above.
+
+### LOCAL `plan.md` Files (Throughout `src/css/`)
+
+**✅ REQUIRED**: Every directory in the `src/css/` tree has its own `plan.md`:
+- `src/css/plan.md` — CSS root planning
+- `src/css/core/plan.md` — core infrastructure planning
+- `src/css/core/*/plan.md` — each subdirectory (asgi, db, redis, otel, types, orchestration, etc.)
+- `src/css/modules/*/plan.md` — each module (agents, permissions, skills, tools, chat, etc.)
+- `src/css/api_services/plan.md` — api_services planning
+
+**These are NOT part of `.plan/` whitelist.** They are organizational files within the codebase structure. Each local `plan.md`:
+- Reflects todos/milestones relevant to that directory
+- Must be kept synchronized with files in `.plan/`, very important is `.plan/session.db` while working there
+- Should be updated DURING work, not at end-of-session
+- Is committed to git (part of codebase structure, not project planning)
 
 ---
 

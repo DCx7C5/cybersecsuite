@@ -15,6 +15,7 @@ from css.core.types import (
     LLMResponse,
 )
 from css.core.types.providers import APIProviderBase
+from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,8 @@ class AnthropicApiService(APIProviderBase, StreamingHandler):
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout_seconds: int = 120,
-        max_retries: int = 3,
+        timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
+        max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
         super().__init__(
             provider_id=ProviderType.ANTHROPIC,

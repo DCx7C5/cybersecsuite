@@ -358,3 +358,74 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 - `streaming/options_manager.py` already uses local `Scope = Literal[...]` — NOT importing deprecated scopes module (that todo is already done)
 - `ConversationContext` / `ModelContext` / `ExecutionContext` in context.py are not imported by any module — safe to replace
 - Phase 19 sessions module is still fully missing — it's the upstream gate for Phase 24 worktrees
+
+---
+
+## Checkpoint 009 — Phase 4 Entity Migrations + QA Review (2026-05-05T06:48)
+
+**Session**: Current | **Phase Progress**: Phase 3 (85%), Phase 4 (29%)
+
+### Work Done
+
+**7 Phase 4 Entity Migration Todos Completed**:
+1. `phase4-verify-imports` — Core module imports verified (css.core.types, css.core.db, css.modules.events, css.modules.roles)
+2. `types-option-c-accounts` — Account entity moved to `src/css/modules/accounts/types.py`
+3. `types-option-c-agents` — Agent entity moved to `src/css/modules/agents/types.py`
+4. `types-option-c-permissions` — Role entity added to `src/css/modules/permissions/types.py` with built-in singletons
+5. `types-option-c-skills` — Skill entity moved to `src/css/modules/skills/types.py`
+6. `types-option-c-tools` — Tool entity moved to `src/css/modules/tools/types.py` + 5 helper classes
+7. `types-option-c-reimport` — Updated `src/css/core/types/__init__.py` to import entities from new module locations
+
+**Comprehensive QA Review Performed**:
+- ✅ All 5 new entity files in correct locations with valid Python syntax
+- ✅ All module __init__.py files export entities via __all__
+- ✅ Import chain verified working: css.core.types → css.modules.*.types (no circular imports)
+- ✅ Base classes (BaseAgent, BaseRole, BaseSkill, BaseTool) remain in core/types/entities/ as designed
+- ✅ Old entity files preserved in original locations (for types-option-c-cleanup todo later)
+- ✅ All changes passed ruff linting checks
+- ✅ Documentation complete with proper docstrings
+
+### Files Modified (7 total)
+- `src/css/core/types/__init__.py` (updated imports from new module locations)
+- `src/css/modules/accounts/__init__.py` (new)
+- `src/css/modules/accounts/types.py` (new)
+- `src/css/modules/agents/__init__.py` (new)
+- `src/css/modules/agents/types.py` (new)
+- `src/css/modules/permissions/__init__.py` (updated)
+- `src/css/modules/permissions/types.py` (updated)
+- `src/css/modules/skills/__init__.py` (new)
+- `src/css/modules/skills/types.py` (new)
+- `src/css/modules/tools/__init__.py` (updated)
+- `src/css/modules/tools/types.py` (updated)
+
+### session.db Changes
+- **+7 todos completed**: All in Phase 4 — Core Consistency + Types
+- **+0 new dependencies**: No new blockers introduced
+- Total: 768 todos (242 done, 522 pending, 0 blocked)
+- Phase 3 progress: 125/147 (85%)
+- Phase 4 progress: 7/24 (29%)
+
+### Key Architecture Decisions
+1. **Account entity**: 8 fields (vault_key, provider_id, label, auth_method, active, etc) + 3 properties (is_active, needs_test, mark_tested)
+2. **Agent entity**: 3 fields (header, skill_tags, claude_metadata) + properties (is_default, base_url, client())
+3. **Role entity**: Built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER) + REGISTRY dict + get() factory
+4. **Skill entity**: 4 fields (status, install_path, installed_at) + 3 properties (is_installed, has_update, is_deprecated)
+5. **Tool entity**: Main class + 5 helper classes (ToolParameter, ToolReturnType, ToolSchema, HybridToolSchema, ManagedTool)
+6. **Import pattern**: Entities now import from css.core.types.base and css.core.types.headers (no circular deps)
+
+### Verification Checklist (ALL PASS ✅)
+1. ✅ File structure verification
+2. ✅ Module exports verification  
+3. ✅ Import chain verification
+4. ✅ Python syntax validation
+5. ✅ Original files preservation
+6. ✅ Entity class completeness
+7. ✅ Circular import check
+8. ✅ Imports in entity files
+9. ✅ Documentation quality
+10. ✅ Consistency checks
+
+### Status
+- **Phase 4 Progress**: 7/24 todos done (29%) — Entity migration phase progressing
+- **Next**: Continue with phase4-linting-cycle2, types-option-c-cleanup, and config strategy todos
+- **No blockers**: All Phase 4 migrations successful, ready for cleanup and next phase

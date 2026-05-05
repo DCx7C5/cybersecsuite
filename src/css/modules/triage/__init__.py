@@ -1,6 +1,5 @@
 """Triage: Background LLM for classification and routing."""
 
-import logging
 from css.core.logger import getLogger
 
 logger = getLogger(__name__)

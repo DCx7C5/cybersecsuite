@@ -28,6 +28,7 @@ from css.core.exceptions import (
     AuthError,
 )
 from css.core.retry import RetryOrchestrator, RetryConfig
+from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +52,9 @@ class OllamaClientCompat(BaseApiServiceClient):
     def __init__(
         self,
         base_url: str = "http://localhost:11434",
-        timeout_seconds: int = 120,
+        timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         enable_model_auto_load: bool = True,
-        max_retries: int = 3,
+        max_retries: int = ProviderDefaults.MAX_RETRIES,
         api_key: Optional[str] = None,
     ):
         """

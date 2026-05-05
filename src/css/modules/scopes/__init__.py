@@ -1,6 +1,5 @@
 """Scope management and hierarchy."""
 
-import logging
 from css.core.logger import getLogger
 
 logger = getLogger(__name__)

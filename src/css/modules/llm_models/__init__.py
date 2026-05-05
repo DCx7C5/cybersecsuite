@@ -1,6 +1,5 @@
 """LLM model registry and management."""
 
-import logging
 from css.core.logger import getLogger
 
 logger = getLogger(__name__)

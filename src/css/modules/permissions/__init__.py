@@ -4,6 +4,7 @@ import logging
 
 from .enums import ScopeLevel, Permission, Role as RoleEnum
 from .types import Role, PermissionPolicy, ScopeContext, TokenPayload
+from .checker import PermissionChecker, permission_checker
 from .exceptions import (
     PermissionError,
     PermissionDenied,
@@ -22,6 +23,8 @@ __all__ = [
     "PermissionPolicy",
     "ScopeContext",
     "TokenPayload",
+    "PermissionChecker",
+    "permission_checker",
     "PermissionError",
     "PermissionDenied",
     "TokenInvalid",

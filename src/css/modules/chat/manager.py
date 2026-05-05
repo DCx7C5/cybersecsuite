@@ -7,7 +7,7 @@ from datetime import datetime
 
 from .models import ChatMessage, ChatSession
 from .enums import ChatRole, ChatMessageType, ChatStatus
-from .exceptions import ChatSessionNotFoundError, ChatProcessingError
+from .exceptions import ChatSessionNotFoundError
 
 logger = logging.getLogger(__name__)
 

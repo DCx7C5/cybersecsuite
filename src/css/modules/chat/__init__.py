@@ -1,6 +1,5 @@
 """Backend layer for frontend chat with QoL injections."""
 
-import logging
 from css.core.logger import getLogger
 
 logger = getLogger(__name__)

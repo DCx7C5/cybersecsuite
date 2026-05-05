@@ -16,6 +16,7 @@ from css.core.types import (
     LLMResponse,
 )
 from css.core.types.providers import APIProviderBase
+from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +28,8 @@ class CerebrasApiService(APIProviderBase, StreamingHandler):
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout_seconds: int = 120,
-        max_retries: int = 3,
+        timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
+        max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
         super().__init__(
             provider_id=ProviderType.CEREBRAS,
@@ -45,10 +46,40 @@ class CerebrasApiService(APIProviderBase, StreamingHandler):
         """Get available models for this provider."""
         return [
             ModelMetadata(
-                id="llama-3-70b",
+                id="llama-3.1-8b",
                 provider=ProviderType.CEREBRAS,
-                display_name="Llama 3 70B",
-                context_window=8192,
+                display_name="Llama 3.1 8B",
+                context_window=128000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="llama-3.1-70b",
+                provider=ProviderType.CEREBRAS,
+                display_name="Llama 3.1 70B",
+                context_window=128000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="llama-3.3-70b",
+                provider=ProviderType.CEREBRAS,
+                display_name="Llama 3.3 70B",
+                context_window=128000,
+                max_output_tokens=8192,
+                streaming=True,
+                tool_use=True,
+                structured_output=True,
+            ),
+            ModelMetadata(
+                id="qwen-3-32b",
+                provider=ProviderType.CEREBRAS,
+                display_name="Qwen 3 32B",
+                context_window=128000,
                 max_output_tokens=8192,
                 streaming=True,
                 tool_use=True,

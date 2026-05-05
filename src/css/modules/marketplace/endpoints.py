@@ -257,3 +257,64 @@ async def get_marketplace_item(item_id: str) -> dict:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Retrieval failed: {str(e)}",
         )
+
+
+@router.get("/items/by-tags", response_model=dict)
+async def list_items_by_tags(
+    tags: str = Query(..., description="Comma-separated tag slugs, e.g. 'python,security'"),
+    kind: Optional[MarketplaceItemType] = Query(None),
+    match_all: bool = Query(False, description="True = item must have ALL tags; False = ANY tag"),
+) -> dict:
+    """Filter marketplace items by one or more tags.
+
+    Query params:
+    - **tags**: comma-separated tag slugs, e.g. ``python,security``
+    - **kind**: optional item type filter
+    - **match_all**: if True items must carry ALL supplied tags; default is ANY
+
+    Returns:
+        ``{"items": [...], "count": int}``
+    """
+    from css.modules.marketplace.cache import marketplace_cache
+
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+    cache_key = f"tags:{','.join(sorted(tag_list))}:{kind or 'any'}:{match_all}"
+    cached = marketplace_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    try:
+        query = MarketplaceItem.all()
+        if kind:
+            query = query.filter(kind=kind)
+
+        all_items = await query
+        results = []
+        for item in all_items:
+            item_tags = set(item.meta.get("tags", []) if item.meta else [])
+            tag_set = set(tag_list)
+            if match_all:
+                matched = tag_set.issubset(item_tags)
+            else:
+                matched = bool(tag_set & item_tags)
+
+            if matched:
+                results.append({
+                    "id": item.slug,
+                    "name": item.name,
+                    "kind": item.kind,
+                    "status": item.status,
+                    "tags": list(item_tags),
+                    "version": item.version,
+                })
+
+        response = {"items": results, "count": len(results)}
+        marketplace_cache.set(cache_key, response)
+        return response
+
+    except Exception as e:
+        log.exception("Tags filter error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Tag filter failed: {str(e)}",
+        )

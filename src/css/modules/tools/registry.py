@@ -194,14 +194,15 @@ class ToolRegistry(BaseToolRegistry):
             if tool_id not in self.tools:
                 raise ValueError(f"Component tool not found: {tool_id}")
         
-        # Validate fallback provider if specified
+        # Validate fallback provider if specified — use ModelRegistry for
+        # filesystem-based provider existence check (works without seeding).
         if hybrid_schema.fallback_provider:
-            fallback_found = any(
-                t.schema.provider == hybrid_schema.fallback_provider
-                for t in self.tools.values()
-            )
-            if not fallback_found:
-                raise ValueError(f"Fallback provider not available: {hybrid_schema.fallback_provider}")
+            from css.modules.llm_models.registry import get_model_registry
+            model_reg = get_model_registry()
+            if not model_reg.is_known_provider(hybrid_schema.fallback_provider):
+                raise ValueError(
+                    f"Fallback provider not available: {hybrid_schema.fallback_provider}"
+                )
         
         managed_tool = ManagedTool(schema=hybrid_schema)
         self.hybrid_tools[hybrid_schema.tool_id] = managed_tool

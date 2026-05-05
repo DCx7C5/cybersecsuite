@@ -34,20 +34,15 @@ from .exceptions import (
     OllamaModelLoadError,
 )
 
-# Entity framework & base classes
-from .types.entities import (
-    Account,
-    Agent,
-    BaseEntity,
-    BaseAgent,
-    BaseRole,
-    BaseSkill,
-    BaseTool,
-    Role,
-    Skill,
-    Tool,
-    get_role,
-)
+# Base entity classes (from core)
+from .types.base import BaseEntity, BaseAgent, BaseRole, BaseSkill, BaseTool
+
+# Concrete entities (from modules)
+from css.modules.accounts.types import Account
+from css.modules.agents.types import Agent
+from css.modules.permissions.types import Role, get as get_role
+from css.modules.skills.types import Skill
+from css.modules.tools.types import Tool
 
 # Communication protocol
 from .types.base import BaseCommunicator

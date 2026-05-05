@@ -28,15 +28,15 @@ from .context import (
     ExecutionContext,
     ModelContext,
 )
-from .entities import (
+from .base import (
     BaseAgent,
     BaseEntity,
     BaseRole,
     BaseSkill,
     BaseTool,
-    BaseToolHeader,
-    get_role,
 )
+from .base.base_header import BaseToolHeader
+from css.modules.permissions.types import get as get_role
 from css.modules.accounts.types import Account
 from css.modules.agents.types import Agent
 from css.modules.permissions.types import Role

@@ -8,6 +8,8 @@ from typing import Any, AsyncIterator, Optional
 
 from aiohttp import ClientSession
 
+from css.core.config import ProviderDefaults
+
 
 logger = logging.getLogger(__name__)
 
@@ -147,8 +149,8 @@ class BaseApiServiceClient(ABC):
         provider_id: ProviderType,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        timeout_seconds: int = 120,
-        max_retries: int = 3,
+        timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
+        max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
         self.provider_id = provider_id
         self.api_key = api_key

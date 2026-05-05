@@ -137,3 +137,98 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
         item.status = status
         await item.save()
         return item
+
+    # ------------------------------------------------------------------
+    # Tools ↔ Marketplace integration (T5.1 integration-tools-marketplace)
+    # ------------------------------------------------------------------
+
+    async def get_tool_ids_for_item(self, item_slug: str) -> list[str]:
+        """Return tool_ids stored in the item's meta JSON.
+
+        Marketplace items of kind 'agent' or 'skill' may embed a list of
+        tool_ids they require / expose in ``item.meta["tool_ids"]``.
+
+        Args:
+            item_slug: Unique slug of the marketplace item.
+
+        Returns:
+            List of tool_id strings (may be empty).
+        """
+        item = await self.get(item_slug)
+        if item is None:
+            return []
+        return item.meta.get("tool_ids", [])
+
+    async def set_tool_ids_for_item(
+        self, item_slug: str, tool_ids: list[str]
+    ) -> None:
+        """Store *tool_ids* in the item's meta JSON and invalidate cache.
+
+        Args:
+            item_slug: Unique slug of the marketplace item.
+            tool_ids: List of ``provider:name`` tool identifiers.
+
+        Raises:
+            PackageNotFoundError: If the item does not exist.
+        """
+        from .cache import marketplace_cache
+        from .exceptions import PackageNotFoundError
+
+        item = await self.get(item_slug)
+        if item is None:
+            raise PackageNotFoundError(item_id=item_slug)
+
+        item.meta = {**item.meta, "tool_ids": tool_ids}
+        await item.save()
+        marketplace_cache.invalidate(f"item:{item_slug}")
+        marketplace_cache.invalidate_prefix("items:")
+
+    async def find_items_by_tool_id(self, tool_id: str) -> list[MarketplaceItem]:
+        """Return all marketplace items that reference *tool_id* in their meta.
+
+        This is a full-table scan — suitable only in Phase 5.  Phase 7 should
+        add a DB index on meta->'tool_ids'.
+
+        Args:
+            tool_id: Tool identifier in ``provider:name`` format.
+
+        Returns:
+            List of matching MarketplaceItem instances.
+        """
+        all_items = await self.list_all()
+        return [
+            item
+            for item in all_items
+            if tool_id in item.meta.get("tool_ids", [])
+        ]
+
+    # ------------------------------------------------------------------
+    # Cache-aware list helpers (T5.1 integration-cache-marketplace)
+    # ------------------------------------------------------------------
+
+    async def list_all_cached(
+        self,
+        kind=None,
+        status=None,
+    ) -> list[MarketplaceItem]:
+        """Cache-aware version of list_all().  Uses marketplace_cache TTL.
+
+        Cache key: ``"items:{kind or 'all'}:{status or 'any'}"``.
+        """
+        from .cache import marketplace_cache
+
+        cache_key = f"items:{kind.value if kind else 'all'}:{status.value if status else 'any'}"
+        cached = marketplace_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        result = await self.list_all(kind=kind, status=status)
+        marketplace_cache.set(cache_key, result)
+        return result
+
+    async def invalidate_item_cache(self, item_slug: str) -> None:
+        """Invalidate all cache entries related to *item_slug*."""
+        from .cache import marketplace_cache
+
+        marketplace_cache.invalidate(f"item:{item_slug}")
+        marketplace_cache.invalidate_prefix("items:")

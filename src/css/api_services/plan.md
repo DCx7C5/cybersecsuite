@@ -10,14 +10,14 @@
 
 ## 🔗 Integration Points
 
-| Component | Direction | Relationship |
-|-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts — ALL providers import from here |
-| `css.core.resilience` | → consumes | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py` |
-| `css.modules.llm_models` | ← consumed by | `UnifiedLLMClient` routes to provider SDKs via registry |
-| `css.modules.events` | ← wrapped by | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14 |
-| `css.core.prompt_cache` | ← consumed by | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only |
-| `css.core.ollama` | ← proxied by | `OllamaProcessManager` must be running before any Ollama API calls |
+| Component                | Direction     | Relationship                                                                |
+|--------------------------|---------------|-----------------------------------------------------------------------------|
+| `css.core.types`         | → consumes    | Base types, Protocol contracts — ALL providers import from here             |
+| `css.core.resilience`    | → consumes    | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        |
+| `css.modules.llm_models` | ← consumed by | `UnifiedLLMClient` routes to provider SDKs via registry                     |
+| `css.modules.events`     | ← wrapped by  | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        |
+| `css.core.prompt_cache`  | ← consumed by | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only |
+| `css.core.ollama`        | ← proxied by  | `OllamaProcessManager` must be running before any Ollama API calls          |
 
 ---
 
@@ -162,13 +162,19 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ### Cerebras (`cerebras`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.cerebras.ai/v1"`) | **Status**: ⏳ Pending Research
+**Tier**: B — OpenAI-compat (`base_url="https://api.cerebras.ai/v1"`) | **Status**: ✅ Complete
+
+**Models**: `llama-3.1-8b`, `llama-3.1-70b`, `llama-3.3-70b`, `qwen-3-32b`
 
 ---
 
 ### Cloudflare (`cloudflare`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"`) | **Status**: ⏳ Pending Research
+**Tier**: B — OpenAI-compat (`base_url="https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"`) | **Status**: ✅ Complete
+
+**Requires**: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` env vars. `account_id` injected into URL in constructor.
+
+**Models**: `@cf/meta/llama-3.1-8b-instruct`, `@cf/meta/llama-3.3-70b-instruct-fp8-fast`, `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b`
 
 ---
 
@@ -182,15 +188,15 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ### DeepSeek (`deepseek`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.deepseek.com/v1"`) | **Status**: ⏳ Pending Research
+**Tier**: B — OpenAI-compat (`base_url="https://api.deepseek.com/v1"`) | **Status**: ✅ Complete
 
-> Note: DeepSeek has non-standard `reasoning_content` field in responses.
+> Note: DeepSeek-R1 returns non-standard `reasoning_content` field. Handled: streaming emits it as `StreamChunk(metadata={"content_type": "reasoning"})`; buffered stores it in `LLMResponse.usage["reasoning"]`.
 
 ---
 
 ### Fireworks (`fireworks`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.fireworks.ai/inference/v1"`) | **Status**: ⏳ Pending Research
+**Tier**: B — OpenAI-compat (`base_url="https://api.fireworks.ai/inference/v1"`) | **Status**: ✅ Complete
 
 ---
 
