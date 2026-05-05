@@ -289,7 +289,7 @@ Provider implementations in `api_services/`:
 | together    | Cloud API | ⏳ Pending refactor |
 | xai         | Cloud API | ⏳ Pending refactor |
 
-**Pattern**: Each provider should follow 5-file structure (models, endpoints, types, enums, exceptions)
+**Pattern**: Each provider should follow a **consistent file structure**. The 5-file baseline (models, endpoints, types, enums, exceptions) is a guideline, not a rigid rule. Use more files if needed for functionality; use fewer if not all file types are needed (e.g., a provider without database models skips models.py, or without enums skips enums.py). The key is **consistent naming and patterns** across providers when files DO exist.
 
 ---
 
@@ -331,13 +331,13 @@ class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all
 ## 🔑 Pattern Consistency
 
 ### Module Organization
-- ✅ 5-file pattern for structure (models, endpoints, types, enums, exceptions)
+- ✅ **Consistent file structure** (baseline: models.py, endpoints.py, types.py, enums.py, exceptions.py — flexible based on module needs)
 - ✅ Loader auto-discovers: endpoints.py + models.py only (if present, both optional)
 - ✅ Types/enums/exceptions: manually imported (organizational structure only)
 - **Current**: 2/19 modules (11%)
 
 ### Core Organization
-- ✅ Each subdir follows 5-file pattern for consistency
+- ✅ Each subdir follows consistent file/function/class/variable naming patterns
 - ✅ Entities moved: core/types/entities/ → modules/*/types.py
 - **Current**: 1/8 subdirs (13%)
 
@@ -376,7 +376,7 @@ Tool       → modules/tools/types.py
 **Rules**:
 - ✅ Atomic commits per module/subdir
 - ✅ Validate before commit:
-  - All 5-file pattern files present
+  - All necessary files present with consistent naming
   - No import errors
   - Loader discovers all
   - Todos updated
@@ -439,7 +439,7 @@ Tool       → modules/tools/types.py
 | Test during phase               | Test only after phase complete        |
 | Cross-module imports (non-core) | Import only from core                 |
 | Hardcoded manager.py defaults   | Use CONFIG object                     |
-| Missing 5-file pattern          | Ensure all 5 files                    |
+| Inconsistent file/naming structure | Follow patterns established in other modules for same domain |
 | Skip commit validation          | Run validation checklist              |
 | `Record` suffix on ORM models   | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability` |
 | Aerich migrations during dev    | Drop + reseed via `manage.py init-db` until all phases locked |

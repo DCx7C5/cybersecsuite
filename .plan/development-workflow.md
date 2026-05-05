@@ -167,7 +167,7 @@ grep -r "ClassName\|function_name" /home/daen/Projects/cybersecsuite/src/css/ --
 ### Step 5 — Implement the code
 
 - Edit files in `src/css/` or `src/frontend/` (if exists) only
-- Follow the **5-file pattern** for modules: `models.py`, `types.py`, `enums.py`, `exceptions.py`, `__init__.py`
+- Follow **consistent file naming and patterns** across modules. Baseline structure includes `models.py`, `types.py`, `enums.py`, `exceptions.py`, `__init__.py`, but the number of files is flexible: use more files if domain complexity requires it; use fewer if certain file types aren't needed. The goal is consistency in naming and patterns within each domain.
 - Always `async def` for any I/O (never sync wrappers)
 - HTTP clients: always `aiohttp`, NEVER `httpx`
 - Structs/value types: `msgspec.Struct`, not `@dataclass`

@@ -50,8 +50,8 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 33 total (Phase 0–32) — Phase 0 + 1 complete, Phase 2+ pending  
 **Todos**: **732 total (213 done, 516 pending, 3 blocked)**  
-**5-File Pattern Compliance**: 5/25 modules fully compliant (google_a2a, marketplace, tasks, teams, tools)  
-**Last Update**: `mod-tags` completed (5-file pattern + hierarchy/autocomplete/conflict support)  
+**Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
+**Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
 **Next**: Continue ready queue from `session.db` (`mod-working-dir` first by `sort_order`)
 
 ### ✅ Completed Phases
@@ -63,15 +63,15 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ### Module Status Snapshot
 
-| Module | Files | 5-file? |
-|--------|-------|---------|
-| google_a2a | 8 | ✅ |
-| marketplace | 8 | ✅ |
-| teams | 10 | ✅ |
-| tools | 7 | ✅ |
-| tasks | 5 | ✅ |
-| streaming, tags, triage, permissions | 3–7 | 🟡 partial |
-| agents, cache, chat, skills, llm_models | 2–5 | 🟡 stubs |
+| Module | Files | Pattern Complete? |
+|--------|-------|---|
+| google_a2a | 8 | ✅ (consistent, >5 files OK) |
+| marketplace | 8 | ✅ (consistent, >5 files OK) |
+| teams | 10 | ✅ (consistent, >5 files OK) |
+| tools | 7 | ✅ (consistent, >5 files OK) |
+| tasks | 5 | ✅ (consistent, baseline) |
+| streaming, tags, triage, permissions | 3–7 | 🟡 emerging patterns |
+| agents, cache, chat, skills, llm_models | 2–5 | 🟡 stubs, needs pattern alignment |
 | events | 0 | ❌ empty — HIGH PRIORITY |
 | settings, working_dir, workflows | 0 | ❌ empty — Phase 17/15 |
 | planer, strategies | 0 | ❌ empty stubs — Phase 19 rename/absorb |
