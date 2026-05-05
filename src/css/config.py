@@ -245,3 +245,32 @@ CHAT_CONTEXT_WINDOW = int(getenv('CHAT_CONTEXT_WINDOW', '4096'))
 API_KEYS = {
 
 }
+
+# ── Marketplace Configuration ───────────────────────────────────────
+
+MARKETPLACE_CONFIG = {
+    'index_url': getenv(
+        'MARKETPLACE_INDEX_URL',
+        'https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main/index.json'
+    ),
+    'index_hash_url': getenv(
+        'MARKETPLACE_INDEX_HASH_URL',
+        'https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main/index.json.sha512'
+    ),
+    'base_url': getenv(
+        'MARKETPLACE_BASE_URL',
+        'https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main'
+    ),
+    'install_root': getenv('MARKETPLACE_INSTALL_ROOT', '~/.css/packages'),
+    'update_check_interval': int(getenv('MARKETPLACE_UPDATE_CHECK_INTERVAL', '3600')),  # 1 hour
+    'download_timeout': int(getenv('MARKETPLACE_DOWNLOAD_TIMEOUT', '60')),  # seconds
+    'max_package_size': int(getenv('MARKETPLACE_MAX_PACKAGE_SIZE', str(100 * 1024 * 1024))),  # 100MB
+}
+
+# Marketplace cache configuration
+MARKETPLACE_CACHE_TTL_SECONDS = int(getenv('MARKETPLACE_CACHE_TTL', '86400'))  # 1 day
+MARKETPLACE_MAX_RESULTS = int(getenv('MARKETPLACE_MAX_RESULTS', '100'))
+MARKETPLACE_PAGE_SIZE = int(getenv('MARKETPLACE_PAGE_SIZE', '20'))
+
+# Marketplace HTTP client configuration
+MARKETPLACE_SEEDER_HTTP_TIMEOUT = int(getenv('MARKETPLACE_SEEDER_HTTP_TIMEOUT', '30'))  # seconds

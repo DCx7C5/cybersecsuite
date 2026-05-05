@@ -1,6 +1,6 @@
 """Marketplace module for CyberSecSuite."""
 
-from css.core.config import MarketplaceConfig
+from css.core.config import MARKETPLACE_CACHE_TTL_SECONDS, MARKETPLACE_MAX_RESULTS, MARKETPLACE_PAGE_SIZE
 from .enums import MarketplaceStatus, MarketplaceItemStatus, MarketplaceItemType
 from .types import (
     MarketplaceBase,
@@ -30,9 +30,9 @@ except ImportError:
 
 # Module-level configuration switches — override via environment variables.
 # These are the single reference point for marketplace tuning.
-MARKETPLACE_CACHE_TTL = MarketplaceConfig.CACHE_TTL_SECONDS
-MARKETPLACE_MAX_RESULTS = MarketplaceConfig.MAX_RESULTS
-MARKETPLACE_PAGE_SIZE = MarketplaceConfig.PAGE_SIZE
+MARKETPLACE_CACHE_TTL = MARKETPLACE_CACHE_TTL_SECONDS
+MARKETPLACE_MAX_RESULTS = MARKETPLACE_MAX_RESULTS
+MARKETPLACE_PAGE_SIZE = MARKETPLACE_PAGE_SIZE
 
 __all__ = [
     "MARKETPLACE_CACHE_TTL",

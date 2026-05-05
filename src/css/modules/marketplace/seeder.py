@@ -7,16 +7,17 @@ from typing import Optional
 
 import aiohttp
 
-from css.core.config import MarketplaceConfig
+from css.core.config import MARKETPLACE_CONFIG, MARKETPLACE_SEEDER_HTTP_TIMEOUT
 from .enums import MarketplaceItemType
 from .models import MarketplaceItem
 from .exceptions import MarketplaceSeedingError
 
 log = logging.getLogger(__name__)
 
-INDEX_URL = "https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main/index.json"
-INDEX_SHA512_URL = "https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main/index.json.sha512"
-MARKETPLACE_BASE_URL = "https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main"
+# Load URLs from configuration
+INDEX_URL = MARKETPLACE_CONFIG['index_url']
+INDEX_SHA512_URL = MARKETPLACE_CONFIG['index_hash_url']
+MARKETPLACE_BASE_URL = MARKETPLACE_CONFIG['base_url']
 
 
 class MarketplaceSeeder:
@@ -34,7 +35,7 @@ class MarketplaceSeeder:
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create aiohttp session."""
         if self._session is None or self._session.closed:
-            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=MarketplaceConfig.SEEDER_HTTP_TIMEOUT))
+            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=MARKETPLACE_SEEDER_HTTP_TIMEOUT))
         return self._session
 
     async def close(self):
