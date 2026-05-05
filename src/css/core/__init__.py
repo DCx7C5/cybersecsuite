@@ -1,11 +1,5 @@
 """CyberSecSuite core — agents framework, entity system, databases, and infrastructure."""
 
-# Import a2a compatibility module (ignore if not available for legacy support)
-try:
-    import a2a  # noqa: F401
-except ImportError:
-    pass  # a2a module not available, skip legacy compatibility
-
 # Custom exceptions
 from .exceptions import (
     CSSException,

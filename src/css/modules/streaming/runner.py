@@ -98,9 +98,14 @@ class QueryExecutor:
             return await self.pool.acquire(self.session_id)
 
         if self._client is None:
-            from claude_agent_sdk import ClaudeSDKClient
-            from a2a.agent_sdk import build_agent_options
-            options = build_agent_options(extra_tools=self.extra_tools)
+            from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
+
+            try:
+                from a2a.agent_sdk import build_agent_options
+                options = build_agent_options(extra_tools=self.extra_tools)
+            except ImportError:
+                options = ClaudeAgentOptions()
+
             if self.session_id:
                 options.resume = self.session_id
             self._client = ClaudeSDKClient(options=options)
@@ -133,10 +138,14 @@ class QueryExecutor:
             return result.get("result", "") if isinstance(result, dict) else str(result)
         
         # Fallback: direct ClaudeSDKClient
-        from claude_agent_sdk import query, ResultMessage, SystemMessage
-        from a2a.agent_sdk import build_agent_options
+        from claude_agent_sdk import query, ResultMessage, SystemMessage, ClaudeAgentOptions
 
-        options = build_agent_options(extra_tools=self.extra_tools)
+        try:
+            from a2a.agent_sdk import build_agent_options
+            options = build_agent_options(extra_tools=self.extra_tools)
+        except ImportError:
+            options = ClaudeAgentOptions()
+
         if self.session_id:
             options.resume = self.session_id
 

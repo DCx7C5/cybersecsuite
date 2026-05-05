@@ -104,6 +104,25 @@ See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
 - **Fix**: Phase 15 working_dir + PathGrant/ToolGrant + PermissionChecker (todos: `perm-*`, `working-dir-*`)
 - **Blocks**: All session execution, Phase 16 native tools, Phase 19 sessions module
 
+### 🔴 BLOCKER #3: App Initialization Fails (CRITICAL)
+- **Impact**: Cannot start app for testing; blocks Phase 5 integration tests + all downstream phases
+- **Root Causes**:
+  1. **Missing `src/core/a2a/` package** — listed in pyproject.toml but directory deleted; code imports from `a2a` expecting it
+  2. **Circular imports in accounts/types.py ↔ core/types/base** — entities moved but core/types/__init__.py still has stale paths
+  3. **Circular imports in scopes/context.py** — deprecated module; decision needed: keep or remove
+  4. **Marketplace config import path** — config.py added but import paths may need verification
+- **Investigation Needed**:
+  - Git history shows a2a was deleted in commit ac9fc0dc, then reverted in 93e154f5. Was it permanently removed? Should it be restored?
+  - What does a2a package contain? (Use: `git show ac9fc0dc:src/core/a2a/__init__.py` to see last version)
+  - Should css_a2a and google_a2a modules depend on internal `src/core/a2a` or external `a2a` package?
+- **Fix Strategy** (NOT band-aid):
+  - Restore or create `src/core/a2a/` with proper stubs if needed
+  - Trace and fix circular imports in accounts/scopes modules
+  - Verify marketplace config imports
+  - Validate app startup
+- **Status**: 🔧 PLANNING — detailed diagnostic todos TBD based on investigation
+- **Blocks**: Phase 5 Integration Tests (15+ todos), Phase 6+ all downstream work
+
 ### 🟠 ACTIVE: 5-File Pattern Compliance
 - **Current**: 5/25 modules fully compliant (google_a2a, marketplace, tasks, teams, tools)
 - **Remaining**: 20 modules need endpoints.py, types.py or both

@@ -32,13 +32,18 @@ async def stream_query(
         ResultMessage,
         SystemMessage,
         AssistantMessage,
-        TextBlock,
+         TextBlock,
         ToolUseBlock,
         ToolResultBlock,
     )
-    from a2a.agent_sdk import build_agent_options
 
-    options = build_agent_options(extra_tools=extra_tools)
+    try:
+        from a2a.agent_sdk import build_agent_options
+        options = build_agent_options(extra_tools=extra_tools)
+    except ImportError:
+        from claude_agent_sdk import ClaudeAgentOptions
+        options = ClaudeAgentOptions()
+
     if session_id:
         options.resume = session_id
 

@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 from datetime import UTC, datetime
 
-from a2a.models import (
+from css.modules.google_a2a.models import (
     Message as A2AMessage,
     Task,
     TaskStatus,
@@ -13,10 +13,10 @@ from a2a.models import (
     TextPart,
     Part,
 )
-from a2a.enums import TaskState, MessageRole
+from css.modules.google_a2a.enums import TaskState, MessageRole
 
 from .dispatcher import MessageDispatcher
-from .pydantic import Message as InternalMessage
+from css.modules.google_a2a.pydantic import InternalMessage
 
 log = logging.getLogger(__name__)
 

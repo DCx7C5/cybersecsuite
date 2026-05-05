@@ -17,20 +17,10 @@ Usage:
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-
 
 from .endpoints import init_a2a_endpoints
-from .a2a_comms import A2ACommunicator
-
-
-class AgentCard(BaseModel):
-    """A2A Agent identity card."""
-
-    name: str
-    description: str
-    version: str = "1.0.0"
-    url: str | None = None
+from .types import AgentCard
+from css.modules.css_a2a.a2a_comms import A2ACommunicator
 
 
 async def get_agent_card_handler(card: AgentCard):

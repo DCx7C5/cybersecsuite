@@ -59,6 +59,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: always use `aiohttp`, never `httpx`**
 
 ### Architecture & Structure
+- **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**
 - **ABSOLUTE: in planning mode, always structure work as PHASE > TASK > TODO**
 - **ABSOLUTE: every new TODO must belong to exactly one TASK and one PHASE**
 - **ABSOLUTE: [.plan/](../.plan) is the working directory** — never treat `~/.copilot/` or `~/.claude` as the working directory

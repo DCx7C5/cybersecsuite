@@ -31,9 +31,16 @@ class ClientPool:
     async def _create_client(self, session_id: str | None = None) -> Any:
         """Create a new ClaudeSDKClient instance."""
         from claude_agent_sdk import ClaudeSDKClient
-        from a2a.agent_sdk import build_agent_options
 
-        options = build_agent_options()
+        try:
+            from a2a.agent_sdk import build_agent_options
+
+            options = build_agent_options()
+        except ImportError:
+            from claude_agent_sdk import ClaudeAgentOptions
+
+            options = ClaudeAgentOptions()
+
         if session_id:
             options.resume = session_id
         return ClaudeSDKClient(options=options)

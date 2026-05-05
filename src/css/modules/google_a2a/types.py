@@ -161,6 +161,15 @@ class ToolMetadata:
     fn: Any
 
 
+class AgentCard(BaseModel):
+    """A2A Agent identity card."""
+
+    name: str
+    description: str
+    version: str = "1.0.0"
+    url: str | None = None
+
+
 __all__ = [
     "StreamState",
     "ResponseInjectionStrategy",
@@ -170,4 +179,5 @@ __all__ = [
     "StreamingController",
     "A2AConfig",
     "ToolMetadata",
+    "AgentCard",
 ]

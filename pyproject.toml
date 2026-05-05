@@ -91,7 +91,6 @@ packages = [
   "src/core/db",
   "src/core/registries",
   "src/core/hooks",
-  "src/core/a2a",
   "src/core/accounts",
   "src/core/ai_proxy",
   "src/core/marketplace",
@@ -110,9 +109,8 @@ packages = [
   # APP-LEVEL PACKAGES
   "src/apps",
   "src/apps/streaming",
-  
+
   # BACKWARD COMPATIBILITY SHIMS (enable gradual migration)
-  "src/a2a",
   "src/accounts",
   "src/ai_proxy",
   "src/asgi",
