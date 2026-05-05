@@ -4,21 +4,19 @@ Defines roles for orchestration architecture:
 - Orchestrator: process-level coordinator
 - TeamLeader: in-process coordinator
 - TeamMember: in-process executor
+- Planner: planning & decision-making
 """
-
-import logging
-from css.core.logger import getLogger
-
-logger = getLogger(__name__)
 
 from .role_types import (
     OrchestrationRole,
     OrchestratorRole,
     TeamLeaderRole,
     TeamMemberRole,
+    PlannerRole,
     ORCHESTRATOR,
     TEAM_LEADER,
     TEAM_MEMBER,
+    PLANNER,
     get,
 )
 from .enums import RoleType, Permission
@@ -28,6 +26,9 @@ from .exceptions import (
     PermissionDeniedError,
     InvalidRoleError,
 )
+from css.core.logger import getLogger
+
+logger = getLogger(__name__)
 
 __all__ = [
     # Role types
@@ -35,11 +36,13 @@ __all__ = [
     "OrchestratorRole",
     "TeamLeaderRole",
     "TeamMemberRole",
+    "PlannerRole",
     
     # Built-in roles
     "ORCHESTRATOR",
     "TEAM_LEADER",
     "TEAM_MEMBER",
+    "PLANNER",
     
     # Enums
     "RoleType",
@@ -56,4 +59,3 @@ __all__ = [
 ]
 
 logger.info("Roles module loaded")
-

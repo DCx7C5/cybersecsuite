@@ -128,14 +128,47 @@ class TeamMemberRole(OrchestrationRole):
     can_execute_tasks: bool = True
 
 
+@dataclass
+class PlannerRole(OrchestrationRole):
+    """Planner: planning & decision-making for PlanScope — read project, write .css/plan/ only."""
+
+    role_id: str = "planner"
+    name: str = "Planner"
+    description: str = (
+        "Planning & decision-making for PlanScope — "
+        "reads project metadata, writes plan files (.css/plan/) only."
+    )
+    permissions: list[str] = field(
+        default_factory=lambda: [
+            "project:read",
+            "plan:write",
+            "scope:read",
+        ]
+    )
+    capabilities: dict[str, bool] = field(
+        default_factory=lambda: {
+            "can_orchestrate": True,
+            "can_broadcast": False,
+            "can_spawn_subagents": False,
+            "can_plan": True,
+            "can_analyze": True,
+        }
+    )
+    heartbeat_timeout_seconds: int = 30
+    can_pause_team: bool = False
+    can_delegate: bool = False
+    can_execute_tasks: bool = False
+
+
 # Built-in role singletons
 ORCHESTRATOR = OrchestratorRole()
 TEAM_LEADER = TeamLeaderRole()
 TEAM_MEMBER = TeamMemberRole()
+PLANNER = PlannerRole()
 
 # Role registry for lookup
 REGISTRY: dict[str, OrchestrationRole] = {
-    r.role_id: r for r in (ORCHESTRATOR, TEAM_LEADER, TEAM_MEMBER)
+    r.role_id: r for r in (ORCHESTRATOR, TEAM_LEADER, TEAM_MEMBER, PLANNER)
 }
 
 
