@@ -2636,9 +2636,9 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 **Rule**: Scope ≠ Permission. Scope = *where you are*. Permission = *what you can do*.
 
 ```
-@scopes          — context only: GLOBAL→APP→PROJECT→RUNTIME→SESSION hierarchy
+@scopes          — 2-level config cascade (GLOBAL + SESSION only)
                    ZERO access control logic here
-                   provides: ScopeContext (current scope, scope_id, parent)
+                   provides: ScopeContext (current scope, session_id, parent)
 
 @permissions     — access control only: PathGrant + ToolGrant + PermissionChecker
                    no scope hierarchy, no filesystem path building, no JWT
@@ -2714,8 +2714,8 @@ class ToolGrant(msgspec.Struct, frozen=True):
 
 **Todos (T15.1)**:
 - `perm-path-op-flag` — Define `PathOp(Flag)` enum in `modules/permissions/enums.py`. Values: READ, WRITE, EXECUTE, ALL = READ|WRITE|EXECUTE.
-- `perm-path-grant-struct` — Define `PathGrant` msgspec.Struct in `modules/permissions/types.py`. Fields: agent_id, path_pattern (glob), ops (frozenset[str]), elevated (bool=False), scope_id (str|None), expires_at (float|None). Method: `allows(op: PathOp) -> bool`.
-- `perm-tool-grant-struct` — Define `ToolGrant` msgspec.Struct in `modules/permissions/types.py`. Fields: agent_id, tool_pattern (glob), allowed (bool=True), scope_id (str|None), expires_at (float|None). Deny-wins rule documented in docstring.
+- `perm-path-grant-struct` — Define `PathGrant` msgspec.Struct in `modules/permissions/types.py`. Fields: agent_id, path_pattern (glob), ops (frozenset[str]), elevated (bool=False), session_id (str|None), expires_at (float|None). Method: `allows(op: PathOp) -> bool`.
+- `perm-tool-grant-struct` — Define `ToolGrant` msgspec.Struct in `modules/permissions/types.py`. Fields: agent_id, tool_pattern (glob), allowed (bool=True), session_id (str|None), expires_at (float|None). Deny-wins rule documented in docstring.
 
 ---
 
@@ -2756,7 +2756,7 @@ Redis cache key: `perm:agent:{agent_id}` → JSON list of all grants (TTL 60s).
 Invalidated on any grant create/delete for that agent.
 
 **Todos (T15.2)**:
-- `perm-grant-models` — Create `PathGrantRecord` + `ToolGrantRecord` Tortoise models in `modules/permissions/models.py`. Indexes on agent_id and (agent_id, scope_id).
+- `perm-grant-models` — Create `PathGrantRecord` + `ToolGrantRecord` Tortoise models in `modules/permissions/models.py`. Indexes on agent_id and (agent_id, session_id).
 - `perm-grant-redis-cache` — `GrantCache` helper in `modules/permissions/cache.py`. `load(agent_id) → (list[PathGrant], list[ToolGrant])`. Key: `perm:agent:{agent_id}`, TTL 60s. Invalidate on write.
 
 ---
@@ -2783,13 +2783,13 @@ class PermissionChecker:
         agent_id: str,
         path: str,           # actual path e.g. "/etc/passwd"
         op: PathOp,
-        scope_id: str | None = None,
+        session_id: str | None = None,
     ) -> bool:
         """True if agent has matching PathGrant for path+op.
         
         Matching rules:
         - path_pattern is a glob: fnmatch("/etc/**", "/etc/passwd") → True
-        - scope_id=None grants match any scope
+        - session_id=None grants match any session
         - Expired grants are ignored
         - At least one matching grant with op must exist
         """
@@ -2798,24 +2798,24 @@ class PermissionChecker:
         for g in grants:
             if g.expires_at and g.expires_at < now:
                 continue
-            if g.scope_id and g.scope_id != scope_id:
+            if g.session_id and g.session_id != session_id:
                 continue
             if fnmatch.fnmatch(path, g.path_pattern) and g.allows(op):
                 return True
         return False
 
-    async def can_elevated(self, agent_id: str, path: str, scope_id: str | None = None) -> bool:
+    async def can_elevated(self, agent_id: str, path: str, session_id: str | None = None) -> bool:
         """True if agent has a PathGrant with elevated=True for this path."""
         grants, _ = await self._cache.load(agent_id)
         now = time.time()
         for g in grants:
             if g.expires_at and g.expires_at < now: continue
-            if g.scope_id and g.scope_id != scope_id: continue
+            if g.session_id and g.session_id != session_id: continue
             if fnmatch.fnmatch(path, g.path_pattern) and g.elevated:
                 return True
         return False
 
-    async def can_tool(self, agent_id: str, tool_name: str, scope_id: str | None = None) -> bool:
+    async def can_tool(self, agent_id: str, tool_name: str, session_id: str | None = None) -> bool:
         """True if agent may use tool_name.
         
         Deny-wins: if ANY ToolGrant with allowed=False matches → return False.
@@ -2826,7 +2826,7 @@ class PermissionChecker:
         allow = False
         for g in tool_grants:
             if g.expires_at and g.expires_at < now: continue
-            if g.scope_id and g.scope_id != scope_id: continue
+            if g.session_id and g.session_id != session_id: continue
             if fnmatch.fnmatch(tool_name, g.tool_pattern):
                 if not g.allowed:
                     return False     # explicit deny — immediately reject
@@ -2834,16 +2834,16 @@ class PermissionChecker:
         return allow
 
     # Raise variants (for use in @pre_hook interceptors and @require_* decorators)
-    async def require_path(self, agent_id: str, path: str, op: PathOp, scope_id=None):
-        if not await self.can_path(agent_id, path, op, scope_id):
+    async def require_path(self, agent_id: str, path: str, op: PathOp, session_id=None):
+        if not await self.can_path(agent_id, path, op, session_id):
             raise PermissionDenied(f"{agent_id} cannot {op.name} {path!r}")
 
-    async def require_tool(self, agent_id: str, tool_name: str, scope_id=None):
-        if not await self.can_tool(agent_id, tool_name, scope_id):
+    async def require_tool(self, agent_id: str, tool_name: str, session_id=None):
+        if not await self.can_tool(agent_id, tool_name, session_id):
             raise PermissionDenied(f"{agent_id} cannot use tool {tool_name!r}")
 
-    async def require_elevated(self, agent_id: str, path: str, scope_id=None):
-        if not await self.can_elevated(agent_id, path, scope_id):
+    async def require_elevated(self, agent_id: str, path: str, session_id=None):
+        if not await self.can_elevated(agent_id, path, session_id):
             raise ElevationDenied(f"{agent_id} has no elevated grant for {path!r}")
 ```
 
@@ -2853,7 +2853,7 @@ class PermissionChecker:
 - `can_elevated` is a **separate check** — you need both `can_path(..., EXECUTE)` AND `can_elevated(...)` to run something as root. Two gates.
 
 **Todos (T15.3)**:
-- `perm-checker-can-path` — `PermissionChecker.can_path()` + `require_path()`. Glob matching via fnmatch, expiry check, scope_id filter.
+- `perm-checker-can-path` — `PermissionChecker.can_path()` + `require_path()`. Glob matching via fnmatch, expiry check, session_id filter.
 - `perm-checker-can-tool` — `PermissionChecker.can_tool()` + `require_tool()`. Deny-wins logic: explicit `allowed=False` immediately returns False before any allow check.
 - `perm-checker-can-elevated` — `PermissionChecker.can_elevated()` + `require_elevated()`. Separate from can_path — must be checked explicitly.
 - `perm-checker-exceptions` — `PermissionDenied(agent_id, path_or_tool, op)` and `ElevationDenied(agent_id, path)` in `modules/permissions/exceptions.py`. Both subclass a common `AccessDenied` base.
@@ -2906,9 +2906,9 @@ def require_tool(tool_name: str):
 class GrantManager:
     """CRUD for PathGrant and ToolGrant. Used by REST endpoints and admin commands."""
 
-    async def grant_path(self, agent_id: str, path_pattern: str, ops: set[PathOp], elevated=False, scope_id=None, expires_in_seconds=None) -> PathGrant: ...
+    async def grant_path(self, agent_id: str, path_pattern: str, ops: set[PathOp], elevated=False, session_id=None, expires_in_seconds=None) -> PathGrant: ...
     async def revoke_path(self, agent_id: str, path_pattern: str) -> None: ...
-    async def grant_tool(self, agent_id: str, tool_pattern: str, allowed=True, scope_id=None) -> ToolGrant: ...
+    async def grant_tool(self, agent_id: str, tool_pattern: str, allowed=True, session_id=None) -> ToolGrant: ...
     async def revoke_tool(self, agent_id: str, tool_pattern: str) -> None: ...
     async def list_grants(self, agent_id: str) -> dict[str, list]: ...
     async def clear_agent(self, agent_id: str) -> None: ...
@@ -3038,18 +3038,21 @@ POST /permissions/profiles/apply             — apply a GrantProfile to an agen
 
 ---
 
-## 📐 Phase 15 Addendum — Remove @scopes, Add SessionContext + WorkingDir
+## 📐 Phase 15 Addendum — Simplify to 2-Level Scope Model (GLOBAL + SESSION)
 
-### Decision: Remove @scopes Module
+### Decision: Simplify @scopes to 2-Level Model
 
-**Reason**: `ScopeLevel` (GLOBAL→APP→PROJECT→RUNTIME→SESSION) is a multi-tenant SaaS hierarchy. This is a cybersec tool. The question is never "am I in PROJECT scope vs RUNTIME scope?" The question is always:
+**Reason**: Multi-tenant SaaS models (GLOBAL→APP→PROJECT→RUNTIME→SESSION) are unnecessary. This is a cybersec tool. The actual scope model is:
 
-1. Which pentest/threat-hunt session am I in? → `session_id: str`
-2. Where on disk am I working? → `working_dir: Path`
-3. What am I allowed to do? → `@permissions` least-privilege grants
+1. **GLOBAL** — system-wide settings (config in `~/.css/`)
+2. **SESSION** — per-pentest/threat-hunt working context (config in `~/.css/sessions/session-<sid>/`)
 
-The scope hierarchy is dead weight. It gets replaced by two things:
+Everything else (APP, PROJECT, RUNTIME) is dead weight.
+
+The simplified model:
+- `ScopeLevel` enum: ONLY {GLOBAL, SESSION}
 - `SessionContext` — plain struct: session_id, agent_id, project_dir, target
+- Config cascade: `~/.css/config.yaml` (GLOBAL) → `~/.css/sessions/{session_id}/config.yaml` (SESSION)
 - `@working_dir` module — manages project folder lifecycle
 
 ---
@@ -3078,7 +3081,7 @@ class SessionContext(msgspec.Struct, frozen=True):
 ```
 
 Replaces: `ScopeContext` (all 7 fields collapse to these 5).
-`scope_id` field on `PathGrant`/`ToolGrant` → renamed to `session_id`.
+`session_id` field on `PathGrant`/`ToolGrant` — used by grants to scope to a specific session.
 
 ---
 
@@ -3142,25 +3145,25 @@ STEP 5: If agent needs root/sudo for a path:
 
 ---
 
-### @scopes Removal — Which Files to Touch
+### @scopes Simplification — Which Files to Touch
 
-All external consumers of @scopes (found by grep):
+2-level scope model requires these updates:
 
-| File | What it uses from @scopes | Fix |
-|------|--------------------------|-----|
-| `modules/permissions/` | `ScopeLevel` in enums.py, types.py, models.py | Replace `scope_id`/`ScopeLevel` with `session_id: str` |
-| `streaming/options_manager.py` | 3-layer config (global/app/project) | Add local `ConfigLayer(str,Enum)` = GLOBAL,PROJECT — NOT imported from @scopes |
-| `core/db/scope_utils.py` | Maps ScopeLevel → filesystem paths | Move path logic to `WorkingDirManager`, then remove this file |
-| `core/db/enums.py` | Exports `ScopeLevel` | Remove `ScopeLevel` after all consumers updated |
+| File | Current State | Fix |
+|------|---------------|-----|
+| `modules/scopes/enums.py` | ScopeLevel = {GLOBAL, APP, PROJECT, RUNTIME, SESSION} | Keep ONLY {GLOBAL, SESSION}, delete APP/PROJECT/RUNTIME |
+| `modules/scopes/context.py` | ScopeContext requires project_id for multi-tenant | Simplify: accept ONLY scope_level in [GLOBAL, SESSION], remove project_id requirement |
+| `modules/scopes/manager.py` | Full 5-level hierarchy + path resolution | Simplify for 2-level: no inheritance chain needed |
+| `modules/permissions/` | Uses `ScopeLevel` + `scope_id` field | Replace ALL `scope_id` → `session_id: str`, remove ScopeLevel dependency |
+| `streaming/options_manager.py` | Imports 3-layer config from @scopes | Add local `ConfigLayer(str,Enum)` = {GLOBAL, SESSION} — NOT from @scopes |
 
-Removal order — each step requires the previous:
-1. Implement `SessionContext` in `css/core/session.py`
-2. Implement `WorkingDirManager` with PathGrant registration
-3. Rename `scope_id` → `session_id` in all @permissions types + models
-4. Fix `streaming/options_manager.py` with local `ConfigLayer` enum
-5. Remove `core/db/scope_utils.py`
-6. Remove `ScopeLevel` from `core/db/enums.py`
-7. Remove `modules/scopes/` directory entirely
+Simplification order:
+1. Update `modules/scopes/enums.py` — ScopeLevel = {GLOBAL, SESSION} only
+2. Update `modules/scopes/context.py` — Simplify validation for 2-level model
+3. Update `modules/scopes/manager.py` — Remove inheritance logic
+4. Rename `scope_id` → `session_id` in all @permissions types + models
+5. Fix `streaming/options_manager.py` with local `ConfigLayer` enum (GLOBAL, SESSION only)
+6. Note: Keep `modules/scopes/` directory (GLOBAL scope still exists for config); just simplified to 2 levels
 
 ---
 
@@ -3175,8 +3178,8 @@ Removal order — each step requires the previous:
 | `working-dir-agent-subdir` | Per-agent sub-dir | Method `agent_subdir(ctx: SessionContext) -> Path`. Creates agents/{ctx.agent_id}/scratch/ and agents/{ctx.agent_id}/output/ inside ctx.project_dir. Returns agents/{ctx.agent_id}/. |
 | `working-dir-cleanup` | Session cleanup | Method `cleanup(session_id, keep_findings=True)`. If keep_findings: move findings/ to `~/.css/archive/{session_id}/`. Then shutil.rmtree(session_dir). |
 | `perm-rename-scope-to-session` | Rename scope_id to session_id | In modules/permissions/ only: rename field `scope_id` → `session_id` on PathGrant, ToolGrant, PathGrantRecord, ToolGrantRecord, and all PermissionChecker method signatures. Update GrantCache key from "perm:agent:{id}" to "perm:agent:{id}" (key unchanged, just field rename). |
-| `streaming-decouple-from-scopes` | Remove scopes import from streaming | In `streaming/options_manager.py`: add local `ConfigLayer(str, Enum)` enum at top of file with values GLOBAL="global", PROJECT="project", SESSION="session". Replace any `ScopeLevel` reference with `ConfigLayer`. No import from @scopes. |
-| `scopes-module-remove` | Remove @scopes entirely | ONLY after all 8 todos above are done. Steps: (1) rm -rf modules/scopes/, (2) rm core/db/scope_utils.py, (3) remove ScopeLevel from core/db/enums.py, (4) grep for remaining ScopeContext/ScopeManager/ScopeLevel imports and fix each, (5) run tests. |
+| `streaming-decouple-from-scopes` | Remove scopes import from streaming | In `streaming/options_manager.py`: add local `ConfigLayer(str, Enum)` enum at top of file with values GLOBAL="global", SESSION="session". Replace any `ScopeLevel` reference with `ConfigLayer`. No import from @scopes. Remove PROJECT entirely. |
+| `scopes-module-simplify` | Simplify @scopes to 2-level | After `perm-rename-scope-to-session` and `streaming-decouple-from-scopes`: (1) update enums.py ScopeLevel to {GLOBAL, SESSION}, (2) simplify context.py validation, (3) simplify manager.py for 2-level model. Keep directory (GLOBAL scope config). |
 
 **Dependencies for new todos:**
 - `working-dir-manager` → `session-context-create`, `perm-grant-manager`
@@ -3185,7 +3188,7 @@ Removal order — each step requires the previous:
 - `working-dir-agent-subdir` → `working-dir-manager`
 - `working-dir-cleanup` → `working-dir-manager`
 - `perm-rename-scope-to-session` → `perm-path-grant-struct`, `perm-tool-grant-struct`
-- `scopes-module-remove` → `session-context-create`, `working-dir-manager`, `perm-rename-scope-to-session`, `streaming-decouple-from-scopes`
+- `scopes-module-simplify` → `perm-rename-scope-to-session`, `streaming-decouple-from-scopes`
 
 ---
 
@@ -5215,7 +5218,7 @@ Phase 15: scopes-module-remove ← git-scope-migration
 | B | `core/db/models/` | ORM models missing: `ProjectRecord`, `McpServerConfigRecord`, `PromptDefinitionRecord` | HIGH |
 | C | `core/types/projects.py` | File missing — projects/plan.md references it | HIGH |
 | D | `core/types/context.py` | `@dataclass + BaseModel` anti-pattern on 4 classes | HIGH (BLOCKED) |
-| E | `css.modules.permissions.ScopeLevel` | 3 independent definitions of same enum | HIGH (BLOCKED) |
+| E | `modules/scopes` | 5-level ScopeLevel hierarchy (GLOBAL→APP→PROJECT→RUNTIME→SESSION) | RESOLVED (simplified to 2-level: GLOBAL + SESSION) |
 | F | `agents/plan.md` | Integration table: stale `project_dir` + missing `prompts` row | MEDIUM |
 | G | `events/plan.md` | Planned events list missing `project.*`, `settings.changed`, `mcp.call.*` | MEDIUM |
 | H | 8 module plan.mds | `*(fill in module-specific relationships)*` placeholder tables | MEDIUM |
@@ -5241,9 +5244,8 @@ Phase 15: scopes-module-remove ← git-scope-migration
 - `gap-orm-mcps-models` (Phase 22) — create `McpServerConfigRecord` in `core/db/models/mcps.py`
 - `gap-orm-prompts-models` (Phase 23) — create `PromptDefinitionRecord` in `core/db/models/prompts.py`
 
-### Blocked (await user decision)
-- `gap-scopelevel-deduplicate` (Phase 15) — deduplicate 3 `ScopeLevel` definitions → single source in `core/db/enums`
-- `gap-context-antipattern` (Phase 15) — replace `@dataclass + BaseModel` in `context.py` → `msgspec.Struct`
+### Blocked (RESOLVED or dropped)
+- Gap E — simplified to 2-level model (Phase 15 Addendum)
 
 ### Dependencies
 ```
@@ -5294,10 +5296,9 @@ Fix in this exact order (each unblocks the next):
 | 4 | `db-fix-pk-permissions` | `PermissionGrant` + `RolePermissionCache` → `BigIntField` PK | Must be correct before any schema drop+reseed |
 | 5 | `db-fix-marketplace-item-pk` | `MarketplaceItem.id` → `BigIntField`; add `slug` field | Same |
 | 6 | `db-fix-fk-labels-scope` | Fix `SessionScope` FK labels to `css.ProjectScope` / `css.SessionScope` | FK resolution needed for `generate_schemas` to pass |
-| 7 | `db-fix-scope-level-charenum` | `ScopedEntry.scope_level` → `CharEnumField(ScopeLevel)` | Uses fixed enums from step 1 |
-| 8 | `db-fix-charfield-enums` | All other raw `CharField` status fields → `CharEnumField` | Bulk cleanup |
-| 9 | `db-fix-index-tuple-syntax` | All tuple-syntax indexes → `models.Index(fields=[...])` | Must be correct before generate_schemas |
-| 10 | `db-asgi-tortoise-init` | Wire `Tortoise.init()` + `generate_schemas()` into ASGI lifespan | **Unblocks everything** — app can now actually use the DB |
+| 7 | `db-fix-charfield-enums` | All other raw `CharField` status fields → `CharEnumField` | Bulk cleanup |
+| 8 | `db-fix-index-tuple-syntax` | All tuple-syntax indexes → `models.Index(fields=[...])` | Must be correct before generate_schemas |
+| 9 | `db-asgi-tortoise-init` | Wire `Tortoise.init()` + `generate_schemas()` into ASGI lifespan | **Unblocks everything** — app can now actually use the DB |
 
 After these 10: app boots with a working schema. Then tackle high-priority todos (TaskAssignment updated_at, CacheEntry expires_at, SoftDeleteMixin, ApiServiceProvider expansion).
 

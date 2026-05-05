@@ -4,25 +4,21 @@ from css.core.db import ScopeLevel
 
 
 class ScopeContext:
-    """Context object for scopes resolution."""
+    """Context object for scopes resolution (2-level model: GLOBAL + SESSION only)."""
 
     def __init__(
         self,
         scope_level: str | ScopeLevel,
-        project_id: Optional[int] = None,
         session_id: Optional[str] = None,
-        runtime_id: Optional[str] = None,
         worktree_path: Optional[str] = None,
         user_id: Optional[str] = None,
         user_role: Optional[str] = None,
     ) -> None:
-        """Initialize scopes context.
+        """Initialize scopes context (simplified for 2-level model).
 
         Args:
-            scope_level: One of: global, app, project, runtime, session
-            project_id: Project identifier (for project+ scopes)
-            session_id: Session identifier (for session scopes)
-            runtime_id: Container/pod runtime identity (for runtime+ scopes)
+            scope_level: One of: global, session (only these two supported now)
+            session_id: Session identifier (required for session scope, optional for global)
             worktree_path: Absolute path to worktree directory
             user_id: User identifier for permission checks
             user_role: User role (admin, analyst, viewer, etc.)
@@ -31,46 +27,33 @@ class ScopeContext:
             try:
                 self.scope_level = ScopeLevel(scope_level)
             except ValueError:
-                raise ValueError(f"Invalid scopes level: {scope_level}")
+                raise ValueError(f"Invalid scopes level: {scope_level}. Must be 'global' or 'session'.")
         else:
             self.scope_level = scope_level
 
-        self.project_id = project_id
         self.session_id = session_id
-        self.runtime_id = runtime_id
         self.worktree_path = worktree_path
         self.user_id = user_id
         self.user_role = user_role
         self._validate()
 
     def _validate(self) -> None:
-        """Validate scopes context consistency."""
-        # Higher scopes should have lower scopes attributes
+        """Validate scopes context consistency (2-level model)."""
         if self.scope_level == ScopeLevel.GLOBAL:
+            # GLOBAL scope: no requirements
             pass
-        elif self.scope_level == ScopeLevel.APP:
-            pass
-        elif self.scope_level == ScopeLevel.PROJECT:
-            if not self.project_id:
-                raise ValueError("PROJECT scopes requires project_id")
-        elif self.scope_level == ScopeLevel.RUNTIME:
-            if not self.runtime_id:
-                raise ValueError("RUNTIME scopes requires runtime_id")
-            if not self.worktree_path:
-                raise ValueError("RUNTIME scopes requires worktree_path")
         elif self.scope_level == ScopeLevel.SESSION:
+            # SESSION scope: session_id is required
             if not self.session_id:
-                raise ValueError("SESSION scopes requires session_id")
-            if not self.project_id:
-                raise ValueError("SESSION scopes requires project_id")
+                raise ValueError("SESSION scope requires session_id")
+        else:
+            raise ValueError(f"Unexpected scope level: {self.scope_level}. Only GLOBAL and SESSION are supported.")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert context to dictionary."""
         return {
             "scope_level": self.scope_level.value,
-            "project_id": self.project_id,
             "session_id": self.session_id,
-            "runtime_id": self.runtime_id,
             "worktree_path": self.worktree_path,
             "user_id": self.user_id,
             "user_role": self.user_role,

@@ -4,12 +4,9 @@ from enum import Enum
 
 
 class ScopeLevel(str, Enum):
-    """Scope hierarchy levels (GLOBAL → APP → PROJECT → RUNTIME → SESSION)."""
+    """Scope hierarchy levels — simplified to 2-level model (GLOBAL + SESSION)."""
     
     GLOBAL = "global"
-    APP = "app"
-    PROJECT = "project"
-    RUNTIME = "runtime"
     SESSION = "session"
 
 

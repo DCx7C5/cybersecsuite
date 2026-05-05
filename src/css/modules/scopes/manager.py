@@ -1,4 +1,4 @@
-"""Scope management and resolution."""
+"""Scope management and resolution (2-level model: GLOBAL + SESSION)."""
 
 import logging
 from typing import Optional, Dict, List
@@ -12,14 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class ScopeManager:
-    """Manages scope hierarchy, resolution, and access control."""
+    """Manages scope resolution for 2-level model (GLOBAL + SESSION only)."""
     
-    # Scope hierarchy: lower levels inherit from higher
+    # Simplified hierarchy: only 2 levels
     HIERARCHY = [
         ScopeLevel.GLOBAL,
-        ScopeLevel.APP,
-        ScopeLevel.PROJECT,
-        ScopeLevel.RUNTIME,
         ScopeLevel.SESSION,
     ]
     
@@ -45,7 +42,7 @@ class ScopeManager:
         return self._scopes.get(scope_id)
     
     def resolve_scope_path(self, scope_id: str) -> List[ScopeContext]:
-        """Resolve scope path from root to target scope (inheritance chain)."""
+        """Resolve scope path from root to target scope (simplified for 2-level model)."""
         try:
             target = self._scopes.get(scope_id)
             if not target:
@@ -53,13 +50,9 @@ class ScopeManager:
             
             path = [self.root_scope]
             
-            # Build inheritance chain based on scope level
-            current_level = self.HIERARCHY.index(target.scope_level)
-            for level_idx in range(1, current_level + 1):
-                # Find scope at this level with matching context
-                matching = self._find_scope_at_level(self.HIERARCHY[level_idx], target)
-                if matching:
-                    path.append(matching)
+            # For 2-level model, only SESSION scope extends the path
+            if target.scope_level == ScopeLevel.SESSION:
+                path.append(target)
             
             return path
         except Exception as e:
@@ -111,13 +104,9 @@ class ScopeManager:
         ]
     
     def _generate_scope_id(self, context: ScopeContext) -> str:
-        """Generate unique scope ID from context."""
+        """Generate unique scope ID from context (simplified for 2-level model)."""
         parts = [context.scope_level.value]
         
-        if context.project_id:
-            parts.append(f"p{context.project_id}")
-        if context.runtime_id:
-            parts.append(f"r{context.runtime_id}")
         if context.session_id:
             parts.append(f"s{context.session_id}")
         
@@ -127,17 +116,13 @@ class ScopeManager:
         return ":".join(parts)
     
     def _find_scope_at_level(self, level: ScopeLevel, target: ScopeContext) -> Optional[ScopeContext]:
-        """Find scope at given level that matches target context."""
+        """Find scope at given level that matches target context (simplified for 2-level)."""
         for scope in self._scopes.values():
             if scope.scope_level != level:
                 continue
             
-            # Match based on level
-            if level == ScopeLevel.PROJECT and scope.project_id == target.project_id:
-                return scope
-            elif level == ScopeLevel.RUNTIME and scope.runtime_id == target.runtime_id:
-                return scope
-            elif level == ScopeLevel.SESSION and scope.session_id == target.session_id:
+            # Match based on simplified 2-level hierarchy
+            if level == ScopeLevel.SESSION and scope.session_id == target.session_id:
                 return scope
         
         return None
