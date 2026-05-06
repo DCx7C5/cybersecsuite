@@ -77,25 +77,9 @@ def project_root():
 
 
 # ---------------------------------------------------------------------------
-# In-memory database (SQLite for unit tests — no Postgres required)
+# Database fixtures removed — tests run only after phase complete
+# Docker infra (postgres) required for integration tests
 # ---------------------------------------------------------------------------
-
-@pytest_asyncio.fixture
-async def db():
-    """Initialize SQLite database for tests."""
-    modules_to_load = [
-        "css.core.db.models.scope",
-        "css.core.db.models.team",
-        "css.core.db.models.orchestrator",
-        "css.core.db.models.quotas",
-    ]
-    await Tortoise.init(
-        db_url="sqlite://:memory:",
-        modules={"models": modules_to_load},
-    )
-    await Tortoise.generate_schemas()
-    yield
-    await Tortoise.close_connections()
 
 
 # ---------------------------------------------------------------------------

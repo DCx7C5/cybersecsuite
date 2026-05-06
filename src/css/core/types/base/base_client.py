@@ -1,136 +1,29 @@
-"""Abstract base for all API service providers."""
+"""Abstract base for all API service providers.
+
+Imports msgspec.Struct versions from messages.py (Phase 6 P1).
+"""
 
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, AsyncIterator, Optional
+from typing import AsyncIterator, Optional
 
 from aiohttp import ClientSession
 
 from css.core.config import ProviderDefaults
+from .messages import (  # Phase 6 P1: msgspec.Struct versions
+    MessageRole,
+    ProviderType,
+    BaseMessage,
+    Tool,
+    ModelMetadata,
+    StreamChunk,
+    LLMResponse,
+    ExecutorResult,
+    ErrorStrategy,
+)
 
 
 logger = logging.getLogger(__name__)
-
-
-class MessageRole(str, Enum):
-    """Message roles."""
-    USER = "user"
-    ASSISTANT = "assistant"
-    SYSTEM = "system"
-
-
-class ProviderType(str, Enum):
-    """Provider types for LLM services."""
-    ANTHROPIC = "anthropic"
-    OPENAI = "openai"
-    GEMINI = "gemini"
-    DEEPSEEK = "deepseek"
-    GROQ = "groq"
-    MISTRAL = "mistral"
-    XAI = "xai"
-    NVIDIA = "nvidia"
-    OPENROUTER = "openrouter"
-    CEREBRAS = "cerebras"
-    TOGETHER = "together"
-    GITHUB = "github"
-    CLOUDFLARE = "cloudflare"
-    FIREWORKS = "fireworks"
-    OPENCODE = "opencode"
-    COHERE = "cohere"
-    PERPLEXITY = "perplexity"
-    SAMBANOVA = "sambanova"
-    DEEPINFRA = "deepinfra"
-    AI21 = "ai21"
-    HUGGINGFACE = "huggingface"
-    OLLAMA = "ollama"
-    NSCALE = "nscale"
-    LAMBDA = "lambda"
-    # Legacy/deprecated
-    GOOGLE = "google"
-    LOCAL = "local"
-
-
-@dataclass
-class BaseMessage:
-    """A message in the conversation."""
-    role: MessageRole
-    content: str
-
-
-@dataclass
-class Tool:
-    """A tools available to the model."""
-    name: str
-    description: str
-    input_schema: dict[str, Any]
-
-
-@dataclass
-class ModelMetadata:
-    """Metadata about a model with per-model feature flags."""
-    id: str
-    provider: ProviderType
-    display_name: str
-    context_window: int
-    max_output_tokens: int
-    # Per-model feature flags (not provider-wide)
-    streaming: bool = True
-    vision: bool = False
-    tool_use: bool = False
-    prompt_caching: bool = False
-    batch_api: bool = False
-    structured_output: bool = False
-    extended_thinking: bool = False
-    files_api: bool = False
-    tool_use_caching: bool = False
-    # Cost
-    input_cost_per_mtok: float = 0.0
-    output_cost_per_mtok: float = 0.0
-
-
-@dataclass
-class StreamChunk:
-    """A chunk from a streaming response."""
-    type: str  # "content_block_delta", "message_stop", "error"
-    content: Optional[str] = None
-    stop_reason: Optional[str] = None
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class LLMResponse:
-    """A complete LLM response (buffered)."""
-    text: str
-    stop_reason: str = "stop"
-    usage: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class ExecutorResult:
-    """Result from an execution/API call to a provider."""
-    status_code: int = 200
-    headers: dict[str, str] = field(default_factory=dict)
-    body: Optional[dict[str, Any]] = None
-    stream: Optional[AsyncIterator[bytes]] = None
-    error: Optional[str] = None
-    latency_ms: float = 0.0
-    provider_id: str = ""
-    model_id: str = ""
-    request_id: Optional[str] = None
-
-    @property
-    def ok(self) -> bool:
-        """Check if status code is successful (2xx range)."""
-        return 200 <= self.status_code < 300
-
-
-class ErrorStrategy(str, Enum):
-    """Strategy for handling errors in hook and service execution."""
-    PRESERVE_EXISTING = "preserve"
-    LOG = "log"
-    WARN = "warn"
 
 
 class StreamingHandler:

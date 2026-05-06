@@ -1,7 +1,7 @@
 """Layer 0: Minimal abstract base classes (foundational contracts)."""
 
 from .base_header import BaseHeader
-from .base_client import (
+from .messages import (  # Phase 6 P1: msgspec.Struct versions
     ProviderType,
     MessageRole,
     BaseMessage,
@@ -11,6 +11,8 @@ from .base_client import (
     LLMResponse,
     ExecutorResult,
     ErrorStrategy,
+)
+from .base_client import (
     StreamingHandler,
     BaseApiServiceClient,
 )
@@ -29,7 +31,7 @@ from .base_entity import (
 __all__ = [
     # base_header
     "BaseHeader",
-    # base_client (enums and types)
+    # messages (Phase 6 P1: msgspec.Struct)
     "ProviderType",
     "MessageRole",
     "BaseMessage",
@@ -39,8 +41,8 @@ __all__ = [
     "LLMResponse",
     "ExecutorResult",
     "ErrorStrategy",
-    "StreamingHandler",
     # base_client (abstract base)
+    "StreamingHandler",
     "BaseApiServiceClient",
     # base_context
     "BaseContext",

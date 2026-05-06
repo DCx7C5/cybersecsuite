@@ -13,6 +13,7 @@ from typing import Any, Optional
 import uuid
 from datetime import datetime
 
+
 logger = getLogger("agents.runner")
 
 _MODE_PREFIXES: dict[str, str] = {
@@ -91,7 +92,7 @@ class QueryExecutor:
             return None
         
         if self._team_leader is None:
-            from css.modules.orchestration import TeamLeader
+            from css.core.orchestration import TeamLeader
             self._team_leader = TeamLeader(self.team_id, self.orchestrator_id)
             await self._team_leader.initialize()
         
@@ -149,7 +150,7 @@ class QueryExecutor:
     
     async def stream(self, prompt: str) -> AsyncGenerator[dict[str, Any], None]:
         """Stream a query, yielding SSE-ready dicts."""
-        from agent.streaming import stream_query
+        from css.modules.streaming.streaming import stream_query
         async for chunk in stream_query(
             prompt=prompt,
             agent_name=self.agent_name,
