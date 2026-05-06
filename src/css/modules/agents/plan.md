@@ -20,7 +20,8 @@
 
 ## Current State
 
-🟡 **Skeleton** (method signatures with docstrings, bodies marked `pass`)
+✅ **Active** — AgentExecutor implemented with provider-agnostic execution via HttpProviderAdapter.
+Claude SDK hardcode removed from streaming/runner.py.
 
 ---
 
@@ -37,7 +38,7 @@
 ## Implementation Checklist
 
 - [ ] Agent registry and lifecycle management
-- [ ] Agent execution engine
+- [x] Agent execution engine (AgentExecutor → HttpProviderAdapter)
 - [ ] State management
 - [ ] Communication layer
 - [ ] Monitoring and metrics
@@ -63,7 +64,7 @@ __all__ = ['AgentManager']
 
 ---
 
-**Status**: 🔴 Priority (Medium) | **Last Updated**: 2026-05-03
+**Status**: 🟢 Priority (Medium) | **Last Updated**: 2026-05-05
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55

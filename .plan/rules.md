@@ -57,6 +57,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: always prefer async Python whenever possible**
 - **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
 - **ABSOLUTE: always use `aiohttp`, never `httpx`**
+- **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**
 - **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
 - **ABSOLUTE: never use `Exception` only, create custom exception with help of base exceptions in `src/core/exceptions.py`**
 

@@ -16,7 +16,8 @@
 
 ## Current State
 
-🟡 **Skeleton** (method signatures with docstrings, bodies marked `pass`)
+✅ **Active** — QueryExecutor updated to use AgentExecutor → HttpProviderAdapter.
+Claude SDK hardcode removed — provider-agnostic execution.
 
 ---
 
@@ -59,7 +60,7 @@ __all__ = ['StreamManager']
 
 ---
 
-**Status**: 🔴 Priority (Medium) | **Last Updated**: 2026-05-03
+**Status**: 🟢 Priority (Medium) | **Last Updated**: 2026-05-05
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
