@@ -23,6 +23,7 @@ class RuntimeOptionsManager:
             "global": {},
             "app": {},
             "project": {},
+            "team": {},
         }
 
     @classmethod
