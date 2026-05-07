@@ -1,17 +1,14 @@
-"""Working memory and state management."""
+"""Working memory and state management — MemoryStore, ContextWindow, AgentMemory."""
 
 from css.core.logger import getLogger
 
-from .canvas.canvas_validate import validate_canvas
-from .canvas.generator import CanvasGenerator
 from .context_window import ContextWindow, TokenEstimate, WindowConfig
 from .enums import MemoryEntryKind, MemoryScope, MemoryTier
 from .exceptions import BaseMemoryException, MemoryNotFoundError, MemoryPersistenceError
 from .models import MemoryEntryRecord, MemorySnapshotRecord
 from .session_store import SessionStore
 from .types import MemoryEntry, MemorySnapshot
-from .vault.hot_cache import HotCache, HotCacheState
-from .vault.manager import VaultManager
+from .agent_memory import AgentMemory
 
 logger = getLogger(__name__)
 
@@ -26,13 +23,9 @@ __all__ = [
     "MemorySnapshot",
     "MemoryEntryRecord",
     "MemorySnapshotRecord",
-    "HotCache",
-    "HotCacheState",
-    "VaultManager",
-    "CanvasGenerator",
-    "validate_canvas",
     "ContextWindow",
     "TokenEstimate",
     "WindowConfig",
     "SessionStore",
+    "AgentMemory",
 ]
