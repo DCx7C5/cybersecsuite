@@ -43,6 +43,46 @@ class ChainStrategy:
         return f"{assistant_output}\n\nReasoning trace:\n{trace_lines}"
 
 
+@dataclass
+class BalancedStrategy:
+    """Round-robin provider selection for balanced distribution."""
+
+    _cursor: int = 0
+
+    def choose_provider(self, providers: list[str]) -> str:
+        if not providers:
+            return "ollama"
+        idx = self._cursor % len(providers)
+        self._cursor = (self._cursor + 1) % len(providers)
+        return providers[idx]
+
+
+@dataclass
+class CostOptimizedStrategy:
+    """Select provider with the lowest estimated per-token cost."""
+
+    def choose_provider(self, providers: list[str], cost_map: dict[str, float] | None = None) -> str:
+        if not providers:
+            return "ollama"
+        costs = cost_map or {}
+        return min(providers, key=lambda provider: costs.get(provider, 1.0))
+
+
+@dataclass
+class LatencyOptimizedStrategy:
+    """Select provider with the lowest observed latency."""
+
+    def choose_provider(
+        self,
+        providers: list[str],
+        latency_map: dict[str, float] | None = None,
+    ) -> str:
+        if not providers:
+            return "ollama"
+        latencies = latency_map or {}
+        return min(providers, key=lambda provider: latencies.get(provider, 9999.0))
+
+
 def get_strategy(strategy: ResponseInjectionStrategy):
     """Resolve concrete strategy implementation from enum value."""
     if strategy == ResponseInjectionStrategy.INJECT:
