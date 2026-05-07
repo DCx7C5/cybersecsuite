@@ -508,3 +508,63 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 - Continue Phase 3/4 completion (highest done counts)
 - Resolve 7 blocked todos (Phase 3: 2, Phase4:2, Phase7:1, Phase11:1, Phase19:1)
 - Sync local plan.md files in src/css/ modules with updated session.db state
+
+---
+
+## Checkpoint 011 — Python 3.14 + msgspec Normalization (2026-05-07T17:14)
+
+**Status**: 🎯 COMPLETE (active scope) | ⛔ legacy deferred by user directive
+
+### Work Done
+- Completed pre-phase typing normalization for active scope (`src/css` + `tests`):
+  - Removed `from __future__ import annotations`
+  - Removed legacy typing imports (`List/Dict/Tuple/Set/FrozenSet/Optional/Union`)
+  - Removed `typing.List/Dict/...` usage
+- Migrated all active-scope `@dataclass` models to `msgspec.Struct`.
+- Added/updated guardrail command in `Makefile`:
+  - `make lint-typing-rules`
+  - Enforces typing + dataclass bans in `src/css` and `tests`.
+
+### Verification Snapshot
+- `src/css + tests`:
+  - dataclass decorators: **0**
+  - dataclass imports (`dataclass`/`field`): **0**
+  - forbidden typing patterns: **0**
+- `make lint-typing-rules`: ✅ pass
+
+### Scope Decision
+- Per user instruction: **`src/legacy/**` is out of scope** until explicitly requested.
+- Reverted legacy edits from this pass.
+- SQL todo `phase-n1-migrate-legacy` marked `blocked` with explicit reason.
+
+### SQL Todo State (phase-n1)
+- done: `phase-n1-dataclass-baseline`, `phase-n1-migrate-core`, `phase-n1-migrate-modules`, `phase-n1-compat-fixes`, `phase-n1-guardrail`, `phase-n1-validation`
+- blocked: `phase-n1-migrate-legacy`
+
+---
+
+## Checkpoint 012 — Marketplace Architecture Alignment + Planning Sync (2026-05-07T19:46)
+
+**Status**: 🎯 COMPLETE
+
+### Work Done
+- Enforced core architecture rules in implementation:
+  - `core/` subdirs use enums from `src/css/core/enums.py`
+  - ORM models moved to `src/css/core/db/models/<subdir>.py` (marketplace moved to `core/db/models/marketplace.py`)
+- Updated marketplace imports across runtime code to the new canonical locations.
+- Removed `src/css/core/marketplace/enums.py` and reverted loader model discovery to `core/db/models/*.py` only.
+
+### Planning Docs Synced
+- Updated stale marketplace path references across planning docs:
+  - `src/css/modules/marketplace/*` → `src/css/core/marketplace/*` where applicable
+  - `src/css/modules/marketplace/models.py` → `src/css/core/db/models/marketplace.py`
+  - `@css/modules/marketplace/templates` → `@css/core/marketplace/templates`
+- Updated `.plan/plan.md` and `.plan/memory.md` headline todo counts to current session.db values.
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 780   |
+| Done         | 323   |
+| Pending      | 449   |
+| Blocked      | 7     |

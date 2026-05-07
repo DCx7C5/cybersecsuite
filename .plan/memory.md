@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-07T00:00+02:00 | **Session**: Sync session.db state with memory.md/checkpoints.md
+**Last Updated**: 2026-05-07T19:46+02:00 | **Session**: Marketplace architecture alignment + planning sync
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -11,7 +11,7 @@
 
 ## 📊 session.db State (2026-05-07)
 
-**Total**: 772 todos | **Done**: 297 | **Pending**: 467 | **Blocked**: 7
+**Total**: 780 todos | **Done**: 323 | **Pending**: 449 | **Blocked**: 7
 
 **Last Verified**: 2026-05-07 (matches session.db exactly)
 
@@ -20,9 +20,10 @@
 | Phase 0 — TeamScope Foundation               | 12    | 12   | 0       | 0       |
 | Phase 1 — Multi-Orchestrator Core            | 16    | 16   | 0       | 0       |
 | Phase 2 — SDK Architecture                   | 64    | 64   | 0       | 0       |
-| Phase 3 — Module Consistency                 | 148   | 140  | 6       | 2       |
-| Phase 4 — Core Consistency + Types           | 24    | 21   | 1       | 2       |
-| Phase 6 — Architecture Overhaul              | 37    | 5    | 31      | 0       |
+| Phase 3 — Module Consistency                 | 151   | 148  | 1       | 2       |
+| Phase 4 — Core Consistency + Types           | 24    | 21   | 0       | 2       |
+| Phase 5 — Integration & Testing              | 32    | 28   | 4       | 0       |
+| Phase 6 — Architecture Overhaul              | 37    | 6    | 31      | 0       |
 | Phase 9 — ORM/Manager/Registry               | 26    | 11   | 15      | 0       |
 | Phase 28 — Auth & Accounts                   | 6     | 1    | 5       | 0       |
 | Phase 34 — Dependency Map                    | 19    | 1    | 18      | 0       |
@@ -32,6 +33,27 @@
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### ✅ Phase N0 — Python 3.14 Typing Normalization (Completed 2026-05-07)
+
+- Removed forbidden typing patterns in active code scope.
+- `src/css + tests` now have:
+  - `from __future__ import annotations` = 0
+  - legacy typing imports (`List/Dict/Optional/...`) = 0
+  - `typing.List/Dict/Optional/...` = 0
+- Added guardrail command: `make lint-typing-rules` (scoped to `src/css` + `tests`).
+
+### ✅/⛔ Phase N1 — dataclass → msgspec.Struct (2026-05-07)
+
+- Migrated `@dataclass` usage in active scope:
+  - `src/css/core/**` → done
+  - `src/css/modules/**` → done
+- Guardrail extended to block dataclass reintroduction in active scope.
+- `src/css + tests` current state:
+  - dataclass decorators = 0
+  - dataclass imports (`dataclass`/`field`) = 0
+- **User directive applied**: `src/legacy/**` is out of scope until explicitly requested.
+  - `phase-n1-migrate-legacy` set to `blocked` accordingly.
 
 ### ✅ Phase 4 Entity Migrations (Completed 2026-05-05)
 

@@ -2,9 +2,9 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-05T09:43 (session current)  
+**Updated**: 2026-05-07T19:46 (session current)  
 **Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 772 total (297 done, 467 pending, 7 blocked) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 780 total (323 done, 449 pending, 7 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -17,7 +17,7 @@
 ### Source of Truth Locations
 
 When implementing or learning about components:
-- **API Providers**: `src/css/api_services/{provider}/plan.md` ← **Use this**
+- **API Providers**: `src/css/api_services/plan.md` ← **Use this**
 - **Core Infrastructure**: `src/css/core/{area}/plan.md` ← **Use this**
 - **Modules**: `src/css/modules/{module}/plan.md` ← **Use this**
 
@@ -30,7 +30,7 @@ Each file contains:
 
 ### Central `.plan/` Reference Files
 
-Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERSHIP):
+Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERSHIP):
 
 | File | What | Purpose |
 |------|------|-----------|
@@ -45,14 +45,20 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ---
 
-## 📊 CURRENT STATUS (2026-05-04T23:57 UTC+2)
+## 📊 CURRENT STATUS (2026-05-07T19:46 UTC+2)
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 35 total (Phase 0–34) — Phase 0 + 1 complete, Phase 2+ pending  
-**Todos**: **772 total (297 done, 467 pending, 7 blocked)**  
+**Todos**: **780 total (323 done, 449 pending, 7 blocked)**  
 **Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
 **Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
 **Next**: Continue ready queue from `session.db` (`mod-working-dir` first by `sort_order`)
+
+### Normalization Status (2026-05-07)
+
+- ✅ Active scope (`src/css` + `tests`) normalized to Python 3.14 typing rules.
+- ✅ Active scope migrated from `@dataclass` to `msgspec.Struct`.
+- ⛔ `src/legacy/**` excluded by explicit user directive until requested.
 
 ### ✅ Completed Phases
 
@@ -86,7 +92,7 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 | ✅ Implemented | anthropic, openai, gemini, groq, mistral, ollama, openrouter, cohere, ai21, together, github |
 | 🟡 Pending | cerebras, cloudflare, deepinfra, deepseek, fireworks, huggingface, lambda_api, nscale, nvidia, opencode, perplexity, sambanova, xai |
 
-See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
+See this file's **Module Status Snapshot** and phase sections for current core infrastructure analysis.
 
 ---
 
@@ -384,7 +390,7 @@ All 7 critical app-init todos verified complete:
 6. Core Loader Validation — 2 days
 7. ABC & @dataclass Consistency Fix — 2 days
 
-🔗 **See**: [core/types.md](./core/types.md) for core type patterns
+🔗 **See**: [`src/css/core/types/plan.md`](../src/css/core/types/plan.md) for core type patterns
 
 ---
 
@@ -400,7 +406,7 @@ All 7 critical app-init todos verified complete:
 3. Runtime Config Loading — 2 days
 4. Manager.py Integration — 1 day
 
-🔗 **See**: [core/db.md](./core/db.md) for database patterns
+🔗 **See**: [`src/css/core/db/plan.md`](../src/css/core/db/plan.md) for database patterns
 
 ---
 
@@ -456,7 +462,7 @@ Update all `.plan/architecture/*.md` files to reflect the new architecture decis
 - `arch-tools-startup` — Update tools-startup.md: entry_points provider scanning
 - `arch-services` — Update services-frontend-backend.md: YAML provider context
 - `arch-filesystem` — Update filesystem-layout.md: spec.yaml in api_services layout
-- `arch-core-matrix` — Update core-audit-matrix.md: Phase 4 types + Phase 6 otel bridge
+- `arch-core-matrix` — Update core audit sections in plan.md: Phase 4 types + Phase 6 otel bridge
 - `arch-frontend` — Write frontend.md (currently empty, 0 bytes)
 
 ---
@@ -4491,7 +4497,7 @@ export const MODULE_PANELS: ModulePanel[] = [
     label: 'Marketplace',
     icon: Store,
     path: '/marketplace',
-    component: lazy(() => import('@css/modules/marketplace/templates')),
+    component: lazy(() => import('@css/core/marketplace/templates')),
   },
   {
     id: 'chat',
@@ -4564,7 +4570,7 @@ The first real panel — connects directly to the Phase 17 REST API (`/api/setti
 
 ### T18.7 — Marketplace Panel
 
-**Files**: `src/css/modules/marketplace/templates/`
+**Files**: `src/css/core/marketplace/templates/`
 
 Panel for browsing/installing tools from the marketplace.
 
@@ -5336,7 +5342,7 @@ After these 10: app boots with a working schema. Then tackle high-priority todos
 - Fix: `id = fields.BigIntField(primary_key=True)`; rename current id field to `session_key = fields.CharField(max_length=255, unique=True, db_index=True)`
 
 **4. `MarketplaceItem.id` is a `CharField` PK — violates BigIntField rule**
-- File: `src/css/modules/marketplace/models.py` line 28
+- File: `src/css/core/db/models/marketplace.py` line 28
 - Fix: `id = fields.BigIntField(primary_key=True)`; keep the slug in a separate `slug = fields.CharField(max_length=255, unique=True)` field
 
 **5. `SessionScope` FK references use wrong app label `"models.Project"` / `"models.Session"`**

@@ -144,7 +144,7 @@ export const MODULE_PANELS: ModulePanel[] = [
   { id: 'settings',     label: 'Settings',     path: '/settings',
     component: lazy(() => import('@css/core/settings/templates')) },
   { id: 'marketplace',  label: 'Marketplace',  path: '/marketplace',
-    component: lazy(() => import('@css/modules/marketplace/templates')) },
+    component: lazy(() => import('@css/core/marketplace/templates')) },
   { id: 'chat',         label: 'Chat',         path: '/chat',
     component: lazy(() => import('@css/modules/chat/templates')) },
   // Add here → auto appears in nav

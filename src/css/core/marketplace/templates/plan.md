@@ -9,4 +9,4 @@ Template storage for marketplace items (reports, prompts, etc.).
 - TBD (Phase 32 / marketplace tasks)
 
 ## Dependencies
-- `src/css/modules/marketplace/`
+- `src/css/core/marketplace/`

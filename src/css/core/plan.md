@@ -28,7 +28,7 @@ Each module **optionally** exposes:
 - **`router: APIRouter`** (required) — App-scoped routes (e.g., `/api/marketplace/*`)
 - **`root_router: APIRouter`** (optional) — Root-level routes (e.g., `/.well-known/*`)
 
-**File**: `src/css/modules/marketplace/endpoints.py`
+**File**: `src/css/core/marketplace/endpoints.py`
 
 ```python
 from fastapi import APIRouter
@@ -104,7 +104,7 @@ Models are discovered from:
 - `css.modules.<app>.models` (for each module)
 - `css.api_services.<app>.models` (for each API service)
 
-**File**: `src/css/modules/marketplace/models.py`
+**File**: `src/css/core/db/models/marketplace.py`
 
 ```python
 from tortoise import Model, fields
@@ -112,7 +112,8 @@ from tortoise import Model, fields
 class MarketplaceItem(Model):
     """Marketplace package."""
     
-    id = fields.CharField(max_length=255, pk=True)
+    id = fields.BigIntField(primary_key=True)
+    slug = fields.CharField(max_length=255, unique=True, db_index=True)
     name = fields.CharField(max_length=255)
     # ... other fields
     

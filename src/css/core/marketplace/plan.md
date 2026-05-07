@@ -12,8 +12,8 @@ Central skill/agent/tool/MCP registry. Lives in `core/` because all business mod
 
 | File | Contents |
 |------|---------|
-| `models.py` | `MarketplaceItem`, `MarketplaceItemTag` ORM models |
-| `enums.py` | `MarketplaceItemType`, `MarketplaceItemStatus` |
+| `core/db/models/marketplace.py` | `MarketplaceMeta`, `MarketplaceItem`, `MarketplaceItemTag` ORM models |
+| `core/enums.py` | `MarketplaceItemType`, `MarketplaceItemStatus`, `MarketplaceStatus` |
 | `types.py` | Request/response Pydantic schemas |
 | `registry.py` | `MarketplaceRegistry` — in-memory item store |
 | `cache.py` | `marketplace_cache` — Redis-backed cache |
