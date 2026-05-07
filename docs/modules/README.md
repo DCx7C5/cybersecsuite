@@ -28,6 +28,9 @@ class ModuleBase(ABC):
 - Hooks
 - Manage
 
+## Notes
+- Marketplace runtime is now under `src/css/core/marketplace/` (core service), not `src/css/modules/marketplace/`.
+
 ## Testing
 - [ ] Unit tests: initialize, shutdown
 - [ ] Integration: route registration

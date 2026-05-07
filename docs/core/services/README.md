@@ -4,6 +4,10 @@
 
 ## Components
 
+### MarketplaceService
+- Runtime docs: `docs/core/marketplace/README.md`
+- Code: `src/css/core/marketplace/`
+
 ### RateLimiter
 ```python
 class RateLimiter:
