@@ -319,12 +319,27 @@ api-services:
 
   xai:
     display_name: xAI
-    base_url: h
+    base_url: https://api.x.ai/v2
     python_packages: xai-sdk
     api_type: openai_compatible
     models: auto
 
   grok:
-
+    display_name: Grok
+    base_url: https://api.grok.ai/v1
+    api_type: webllm
+    models: auto
+    auth: browser-plugin
+    endpoints:
+        completion: /v1/chat/completions
 
   x:
+    display_name: X
+    base_url: https://api.x.com/v1
+    api_type: openai_compatible
+    models: auto
+    auth: browser-plugin
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
