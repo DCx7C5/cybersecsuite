@@ -210,7 +210,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
   Paraphrase Suggester, Pre-Filter
 - All gate on `ai-triage-ollama-wire` (Phase 8)
 - PreFilter + FallbackWhisperer are highest value (cost savings + resilience)
-- All in modules/triage/ sub-files, orchestrated by TriageEngine
+- All in core/triage/ sub-files, orchestrated by TriageEngine
 
 **session.db**: 572 total (194 done, 377 pending, 1 blocked) | +30 todos this session
 
@@ -354,7 +354,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 2. **`gap-context-antipattern`**: `context.py` uses `@dataclass + BaseModel` on 4 classes (anti-pattern #3). Proposed: replace all 4 with `msgspec.Struct`. Currently only re-exported from `core/types/__init__.py` — not yet used by any module.
 
 ### Key Technical Findings
-- `ScopeLevel` exists in: `core/db/enums.py` AND `modules/scopes/enums.py` AND `modules/permissions/enums.py`
+- `ScopeLevel` exists in: `core/db/enums.py` AND `/enums.py` AND `core/permissions/enums.py`
 - `streaming/options_manager.py` already uses local `Scope = Literal[...]` — NOT importing deprecated scopes module (that todo is already done)
 - `ConversationContext` / `ModelContext` / `ExecutionContext` in context.py are not imported by any module — safe to replace
 - Phase 19 sessions module is still fully missing — it's the upstream gate for Phase 24 worktrees
@@ -369,9 +369,9 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 **7 Phase 4 Entity Migration Todos Completed**:
 1. `phase4-verify-imports` — Core module imports verified (css.core.types, css.core.db, css.modules.events, css.modules.roles)
-2. `types-option-c-accounts` — Account entity moved to `src/css/modules/accounts/types.py`
+2. `types-option-c-accounts` — Account entity moved to `src/css/core/accounts/types.py`
 3. `types-option-c-agents` — Agent entity moved to `src/css/modules/agents/types.py`
-4. `types-option-c-permissions` — Role entity added to `src/css/modules/permissions/types.py` with built-in singletons
+4. `types-option-c-permissions` — Role entity added to `src/css/core/permissions/types.py` with built-in singletons
 5. `types-option-c-skills` — Skill entity moved to `src/css/modules/skills/types.py`
 6. `types-option-c-tools` — Tool entity moved to `src/css/modules/tools/types.py` + 5 helper classes
 7. `types-option-c-reimport` — Updated `src/css/core/types/__init__.py` to import entities from new module locations
@@ -387,12 +387,12 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Files Modified (7 total)
 - `src/css/core/types/__init__.py` (updated imports from new module locations)
-- `src/css/modules/accounts/__init__.py` (new)
-- `src/css/modules/accounts/types.py` (new)
+- `src/css/core/accounts/__init__.py` (new)
+- `src/css/core/accounts/types.py` (new)
 - `src/css/modules/agents/__init__.py` (new)
 - `src/css/modules/agents/types.py` (new)
-- `src/css/modules/permissions/__init__.py` (updated)
-- `src/css/modules/permissions/types.py` (updated)
+- `src/css/core/permissions/__init__.py` (updated)
+- `src/css/core/permissions/types.py` (updated)
 - `src/css/modules/skills/__init__.py` (new)
 - `src/css/modules/skills/types.py` (new)
 - `src/css/modules/tools/__init__.py` (updated)

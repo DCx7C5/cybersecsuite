@@ -62,9 +62,9 @@
 
 Session completed 7 Phase 4 entity migration todos:
 - `phase4-verify-imports`: Core module imports verified (css.core.types, css.core.db, css.modules.events, css.modules.roles all functional)
-- `types-option-c-accounts`: Account entity moved to `src/css/modules/accounts/types.py`
+- `types-option-c-accounts`: Account entity moved to `src/css/core/accounts/types.py`
 - `types-option-c-agents`: Agent entity moved to `src/css/modules/agents/types.py`
-- `types-option-c-permissions`: Role entity added to `src/css/modules/permissions/types.py` with built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER)
+- `types-option-c-permissions`: Role entity added to `src/css/core/permissions/types.py` with built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER)
 - `types-option-c-skills`: Skill entity moved to `src/css/modules/skills/types.py`
 - `types-option-c-tools`: Tool entity moved to `src/css/modules/tools/types.py` + 5 helper classes (ToolParameter, ToolReturnType, ToolSchema, HybridToolSchema, ManagedTool)
 - `types-option-c-reimport`: Updated `src/css/core/types/__init__.py` to import entities from new module locations
@@ -79,9 +79,9 @@ Session completed 7 Phase 4 entity migration todos:
 
 **Files Modified**:
 - src/css/core/types/__init__.py (updated imports)
-- src/css/modules/accounts/__init__.py (new)
+- src/css/core/accounts/__init__.py (new)
 - src/css/modules/agents/__init__.py (updated)
-- src/css/modules/permissions/__init__.py (updated)
+- src/css/core/permissions/__init__.py (updated)
 - src/css/modules/skills/__init__.py (new)
 - src/css/modules/tools/__init__.py (updated)
 
@@ -148,7 +148,7 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 - Dependency chain: `ollama-install-checker` → `ollama-process-manager` → `ollama-lifespan-wire` → `ollama-docker-remove`
 
 ### Phase 21 — Intelligence Layer (renamed from Triage, 2026-05-04)
-- **Renamed**: `modules/triage/` → `modules/intelligence/`, Phase 21 renamed "Local Intelligence Layer"
+- **Renamed**: `core/triage/` → `modules/intelligence/`, Phase 21 renamed "Local Intelligence Layer"
 - Todo: `triage-rename-module` (Phase 19)
 - Scope broadened: quality gates, conversation health, cost budget, memory tagging, tone adaptation — all local AI assistance (not just routing/classification)
 - Uses `core/ollama/client.py` (native process), preloaded models via `core/ollama/preloader.py`
@@ -192,7 +192,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - **`core/retry/` renamed → `core/resilience/`**: Already has `detection.py`, `orchestrator.py`, `config.py` — broader than retry alone.
 - **`working_dir` module deleted → `core/workspace/` pending**: `WorkspaceRegistry` tracks N `WorkspaceDirHandle` entries per entity. Default `~/.css/sessions/<sid>/` + optional project dir, both WRITE. List expandable. Todos rewritten under Phase 15.
 - **`modules/cache/` → `core/cache/` pending**: L4 SQLite removed. 3-layer (L1 memory, L2 redis.asyncio, L3 PostgreSQL). `cache-move-to-core` todo gates L4-removal + redis.asyncio migration. All tracked in Phase 3.
-- **`modules/triage/` → `modules/intelligence/` pending**: Rename tracked as `triage-rename-module` (Phase 19). Phase 21 broadened to full local AI assistance.
+- **`core/triage/` → `modules/intelligence/` pending**: Rename tracked as `triage-rename-module` (Phase 19). Phase 21 broadened to full local AI assistance.
 - Tool Registry partially implemented (provider normalization + execution path still pending) — Phase 3
 - Permissions not implemented — Phase 15
 - Events module missing (0/5 files) — Phase 6 P3

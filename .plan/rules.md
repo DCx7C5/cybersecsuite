@@ -44,7 +44,8 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: track all progress in [.plan/session.db](session.db) ONLY** — every todo status change goes here, never in markdown
 - **ABSOLUTE: local `plan.md` files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/*/plan.md`, `src/css/api_services/plan.md`, `src/css/core/*/plan.md`, etc.
 - **ABSOLUTE: keep EVERY local plan.md synchronized with [.plan/session.db](session.db) while working in that directory** — each plan.md reflects todos/milestones relevant to that module/subdirectory
-- **ABSOLUTE: when working in a module (e.g., `src/css/modules/permissions/`), READ that module's local `plan.md` FIRST** — understand what's planned, in-progress, and completed for that area
+- **ABSOLUTE: when working in a module (e.g., `src/css/core/permissions/`), READ that module's local `plan.md` FIRST** — understand what's planned, in-progress, and completed for that area
+- **ABSOLUTE: there is no such thing like "backwards compatibility". we are not yet in production.**
 - **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 
@@ -354,9 +355,9 @@ class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all
 
 ### Entity Consolidation
 ```
-Account    → modules/accounts/types.py
+Account    → core/accounts/types.py
 Agent      → modules/agents/types.py
-Role       → modules/permissions/types.py
+Role       → core/permissions/types.py
 Skill      → modules/skills/types.py
 Tool       → modules/tools/types.py
 ```

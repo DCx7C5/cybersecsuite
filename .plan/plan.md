@@ -100,7 +100,7 @@ See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
 
 ### 🔴 BLOCKER #2: Permissions Stubs Only
 - **Impact**: No RBAC, no path enforcement, no tool gating — security critical
-- **Location**: `src/css/modules/permissions/` — 4 files but no working enforcement
+- **Location**: `src/css/core/permissions/` — 4 files but no working enforcement
 - **Fix**: Phase 15 working_dir + PathGrant/ToolGrant + PermissionChecker (todos: `perm-*`, `working-dir-*`)
 - **Blocks**: All session execution, Phase 16 native tools, Phase 19 sessions module
 
@@ -1216,7 +1216,7 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 | ID | Feature | Notes |
 |----|---------|-------|
 | `feat-auth-module` | `modules/auth/` | JWT + API key auth. `account.py` entity exists in `core/types/entities/` but no module. FastAPI `Depends()` middleware. |
-| `feat-accounts-module` | `modules/accounts/` | User profiles, org membership (multi-tenant). Link to roles RBAC. |
+| `feat-accounts-module` | `core/accounts/` | User profiles, org membership (multi-tenant). Link to roles RBAC. |
 | `feat-sessions-persistence` | Persist `ChatSession` | ChatSessionManager is an in-memory `dict` — all history gone on restart. PostgreSQL-backed. |
 
 ---
@@ -1490,7 +1490,7 @@ Rule: **Endpoints → Service functions → (Manager OR Registry). Never skip a 
 ### Pattern: Custom Tortoise Manager
 
 ```python
-# tools/models.py
+# tools/user.py
 from tortoise import fields, models
 from tortoise.manager import Manager
 
@@ -2654,7 +2654,7 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 Two orthogonal grant types, both `msgspec.Struct`, both immutable.
 
 ```python
-# modules/permissions/types.py
+# core/permissions/types.py
 
 import msgspec
 from enum import Flag, auto
@@ -2713,16 +2713,16 @@ class ToolGrant(msgspec.Struct, frozen=True):
 - Mixing them means you can't have "allow bash.* but deny bash.rm_rf"
 
 **Todos (T15.1)**:
-- `perm-path-op-flag` — Define `PathOp(Flag)` enum in `modules/permissions/enums.py`. Values: READ, WRITE, EXECUTE, ALL = READ|WRITE|EXECUTE.
-- `perm-path-grant-struct` — Define `PathGrant` msgspec.Struct in `modules/permissions/types.py`. Fields: agent_id, path_pattern (glob), ops (frozenset[str]), elevated (bool=False), session_id (str|None), expires_at (float|None). Method: `allows(op: PathOp) -> bool`.
-- `perm-tool-grant-struct` — Define `ToolGrant` msgspec.Struct in `modules/permissions/types.py`. Fields: agent_id, tool_pattern (glob), allowed (bool=True), session_id (str|None), expires_at (float|None). Deny-wins rule documented in docstring.
+- `perm-path-op-flag` — Define `PathOp(Flag)` enum in `core/permissions/enums.py`. Values: READ, WRITE, EXECUTE, ALL = READ|WRITE|EXECUTE.
+- `perm-path-grant-struct` — Define `PathGrant` msgspec.Struct in `core/permissions/types.py`. Fields: agent_id, path_pattern (glob), ops (frozenset[str]), elevated (bool=False), session_id (str|None), expires_at (float|None). Method: `allows(op: PathOp) -> bool`.
+- `perm-tool-grant-struct` — Define `ToolGrant` msgspec.Struct in `core/permissions/types.py`. Fields: agent_id, tool_pattern (glob), allowed (bool=True), session_id (str|None), expires_at (float|None). Deny-wins rule documented in docstring.
 
 ---
 
 ### T15.2 — Grant Storage: Tortoise Model + Redis Cache
 
 ```python
-# modules/permissions/models.py
+# core/permissions/user.py
 
 class PathGrantRecord(Model):
     """Persistent storage for PathGrant. One row per agent+path_pattern."""
@@ -2756,8 +2756,8 @@ Redis cache key: `perm:agent:{agent_id}` → JSON list of all grants (TTL 60s).
 Invalidated on any grant create/delete for that agent.
 
 **Todos (T15.2)**:
-- `perm-grant-models` — Create `PathGrantRecord` + `ToolGrantRecord` Tortoise models in `modules/permissions/models.py`. Indexes on agent_id and (agent_id, session_id).
-- `perm-grant-redis-cache` — `GrantCache` helper in `modules/permissions/cache.py`. `load(agent_id) → (list[PathGrant], list[ToolGrant])`. Key: `perm:agent:{agent_id}`, TTL 60s. Invalidate on write.
+- `perm-grant-models` — Create `PathGrantRecord` + `ToolGrantRecord` Tortoise models in `core/permissions/models.py`. Indexes on agent_id and (agent_id, session_id).
+- `perm-grant-redis-cache` — `GrantCache` helper in `core/permissions/cache.py`. `load(agent_id) → (list[PathGrant], list[ToolGrant])`. Key: `perm:agent:{agent_id}`, TTL 60s. Invalidate on write.
 
 ---
 
@@ -2766,7 +2766,7 @@ Invalidated on any grant create/delete for that agent.
 This is the only class other modules should ever import from `@permissions`.
 
 ```python
-# modules/permissions/checker.py
+# core/permissions/checker.py
 
 class PermissionChecker:
     """Single entry point for all permission checks.
@@ -2856,14 +2856,14 @@ class PermissionChecker:
 - `perm-checker-can-path` — `PermissionChecker.can_path()` + `require_path()`. Glob matching via fnmatch, expiry check, session_id filter.
 - `perm-checker-can-tool` — `PermissionChecker.can_tool()` + `require_tool()`. Deny-wins logic: explicit `allowed=False` immediately returns False before any allow check.
 - `perm-checker-can-elevated` — `PermissionChecker.can_elevated()` + `require_elevated()`. Separate from can_path — must be checked explicitly.
-- `perm-checker-exceptions` — `PermissionDenied(agent_id, path_or_tool, op)` and `ElevationDenied(agent_id, path)` in `modules/permissions/exceptions.py`. Both subclass a common `AccessDenied` base.
+- `perm-checker-exceptions` — `PermissionDenied(agent_id, path_or_tool, op)` and `ElevationDenied(agent_id, path)` in `core/permissions/exceptions.py`. Both subclass a common `AccessDenied` base.
 
 ---
 
 ### T15.4 — Decorators: `@require_path`, `@require_tool`
 
 ```python
-# modules/permissions/decorators.py
+# core/permissions/decorators.py
 
 def require_path(path_or_kwarg: str, op: PathOp):
     """@require_path("/etc/**", PathOp.READ)
@@ -2901,7 +2901,7 @@ def require_tool(tool_name: str):
 ### T15.5 — GrantManager: CRUD + profiles
 
 ```python
-# modules/permissions/manager.py
+# core/permissions/manager.py
 
 class GrantManager:
     """CRUD for PathGrant and ToolGrant. Used by REST endpoints and admin commands."""
@@ -2936,7 +2936,7 @@ class GrantProfile:
 The Phase 14 `@pre_hook` system is the enforcement point. No permission check should live inside business logic — it lives in pre-hooks.
 
 ```python
-# modules/permissions/hooks.py
+# core/permissions/hooks.py
 from css.modules.events import pre_hook, HookContext, HookBlockedError
 from .checker import checker  # module-level singleton
 
@@ -2959,7 +2959,7 @@ async def enforce_working_dir_access(ctx: HookContext) -> HookContext:
 ```
 
 **Todos (T15.6)**:
-- `perm-hook-tool-enforcement` — `@pre_hook("tool.call.*", priority=5)` in `modules/permissions/hooks.py`. Extracts agent_id from HookContext.metadata. Calls `checker.can_tool()`. Raises HookBlockedError on deny. Dep: `events-instrument-decorator` (Phase 14) + `perm-checker-can-tool`.
+- `perm-hook-tool-enforcement` — `@pre_hook("tool.call.*", priority=5)` in `core/permissions/hooks.py`. Extracts agent_id from HookContext.metadata. Calls `checker.can_tool()`. Raises HookBlockedError on deny. Dep: `events-instrument-decorator` (Phase 14) + `perm-checker-can-tool`.
 - `perm-hook-path-enforcement` — `@pre_hook("agent.run.*", priority=5)` for working_dir path access check. Dep: `perm-checker-can-path`.
 
 ---
@@ -2978,7 +2978,7 @@ POST /permissions/profiles/apply             — apply a GrantProfile to an agen
 ```
 
 **Todos (T15.7)**:
-- `perm-rest-endpoints` — FastAPI routes in `modules/permissions/endpoints.py`. All 8 routes above. Uses `GrantManager` + `PermissionChecker`. Auth: Orchestrator role required for write endpoints.
+- `perm-rest-endpoints` — FastAPI routes in `core/permissions/endpoints.py`. All 8 routes above. Uses `GrantManager` + `PermissionChecker`. Auth: Orchestrator role required for write endpoints.
 
 ---
 
@@ -3151,19 +3151,19 @@ STEP 5: If agent needs root/sudo for a path:
 
 | File | Current State | Fix |
 |------|---------------|-----|
-| `modules/scopes/enums.py` | ScopeLevel = {GLOBAL, APP, PROJECT, RUNTIME, SESSION} | Keep ONLY {GLOBAL, SESSION}, delete APP/PROJECT/RUNTIME |
-| `modules/scopes/context.py` | ScopeContext requires project_id for multi-tenant | Simplify: accept ONLY scope_level in [GLOBAL, SESSION], remove project_id requirement |
-| `modules/scopes/manager.py` | Full 5-level hierarchy + path resolution | Simplify for 2-level: no inheritance chain needed |
-| `modules/permissions/` | Uses `ScopeLevel` + `scope_id` field | Replace ALL `scope_id` → `session_id: str`, remove ScopeLevel dependency |
+| `/enums.py` | ScopeLevel = {GLOBAL, APP, PROJECT, RUNTIME, SESSION} | Keep ONLY {GLOBAL, SESSION}, delete APP/PROJECT/RUNTIME |
+| `/context.py` | ScopeContext requires project_id for multi-tenant | Simplify: accept ONLY scope_level in [GLOBAL, SESSION], remove project_id requirement |
+| `/manager.py` | Full 5-level hierarchy + path resolution | Simplify for 2-level: no inheritance chain needed |
+| `core/permissions/` | Uses `ScopeLevel` + `scope_id` field | Replace ALL `scope_id` → `session_id: str`, remove ScopeLevel dependency |
 | `streaming/options_manager.py` | Imports 3-layer config from @scopes | Add local `ConfigLayer(str,Enum)` = {GLOBAL, SESSION} — NOT from @scopes |
 
 Simplification order:
-1. Update `modules/scopes/enums.py` — ScopeLevel = {GLOBAL, SESSION} only
-2. Update `modules/scopes/context.py` — Simplify validation for 2-level model
-3. Update `modules/scopes/manager.py` — Remove inheritance logic
+1. Update `/enums.py` — ScopeLevel = {GLOBAL, SESSION} only
+2. Update `/context.py` — Simplify validation for 2-level model
+3. Update `/manager.py` — Remove inheritance logic
 4. Rename `scope_id` → `session_id` in all @permissions types + models
 5. Fix `streaming/options_manager.py` with local `ConfigLayer` enum (GLOBAL, SESSION only)
-6. Note: Keep `modules/scopes/` directory (GLOBAL scope still exists for config); just simplified to 2 levels
+6. Note: Keep `/` directory (GLOBAL scope still exists for config); just simplified to 2 levels
 
 ---
 
@@ -3177,7 +3177,7 @@ Simplification order:
 | `working-dir-search-layout` | Search mode layout | Method `_setup_search_layout(session_dir, target)`. Creates findings/ and artifacts/ only. No plan.md. |
 | `working-dir-agent-subdir` | Per-agent sub-dir | Method `agent_subdir(ctx: SessionContext) -> Path`. Creates agents/{ctx.agent_id}/scratch/ and agents/{ctx.agent_id}/output/ inside ctx.project_dir. Returns agents/{ctx.agent_id}/. |
 | `working-dir-cleanup` | Session cleanup | Method `cleanup(session_id, keep_findings=True)`. If keep_findings: move findings/ to `~/.css/archive/{session_id}/`. Then shutil.rmtree(session_dir). |
-| `perm-rename-scope-to-session` | Rename scope_id to session_id | In modules/permissions/ only: rename field `scope_id` → `session_id` on PathGrant, ToolGrant, PathGrantRecord, ToolGrantRecord, and all PermissionChecker method signatures. Update GrantCache key from "perm:agent:{id}" to "perm:agent:{id}" (key unchanged, just field rename). |
+| `perm-rename-scope-to-session` | Rename scope_id to session_id | In core/permissions/ only: rename field `scope_id` → `session_id` on PathGrant, ToolGrant, PathGrantRecord, ToolGrantRecord, and all PermissionChecker method signatures. Update GrantCache key from "perm:agent:{id}" to "perm:agent:{id}" (key unchanged, just field rename). |
 | `streaming-decouple-from-scopes` | Remove scopes import from streaming | In `streaming/options_manager.py`: add local `ConfigLayer(str, Enum)` enum at top of file with values GLOBAL="global", SESSION="session". Replace any `ScopeLevel` reference with `ConfigLayer`. No import from @scopes. Remove PROJECT entirely. |
 | `scopes-module-simplify` | Simplify @scopes to 2-level | After `perm-rename-scope-to-session` and `streaming-decouple-from-scopes`: (1) update enums.py ScopeLevel to {GLOBAL, SESSION}, (2) simplify context.py validation, (3) simplify manager.py for 2-level model. Keep directory (GLOBAL scope config). |
 
@@ -3447,7 +3447,7 @@ ollama.embed(model, input)              # Embeddings
 ```
 
 **Design:**
-- Add `OllamaModelManager` to `modules/llm_models/`  
+- Add `OllamaModelManager` to `core/models/`  
 - Methods: `pull(model_name) → AsyncIterator[PullProgress]`, `list() → list[ModelInfo]`, `delete(model_name)`, `is_available(model_name) → bool`  
 - Auto-pull on first use: if tier 10 (qwen3-0.6B) not present, auto-pull before routing  
 - Progress streaming: emit `EVENT_MODEL_DOWNLOAD_PROGRESS` events (useful for UI)  
@@ -3598,7 +3598,7 @@ get_subagent_messages(session_id, subagent_id)
 | `gemini-cache-adapter` | Use Gemini cache in L5 | In `@cache` L5 handler for Gemini: check for existing `CachedContent` before creating new one. Pass `cached_content_name` in model call. Track `provider_cache_id` in `CacheEntry`. | `gemini-cache-manager` |
 | `memory-tool-bridge` | CSSMemoryTool implementation | Implement `CSSMemoryTool(BetaAbstractMemoryTool)` in `modules/memory/`. Bridge view/create/insert/str_replace/delete/rename to `MemoryStore` operations. Fire `EVENT_MEMORY_WRITTEN` on mutations. |  |
 | `memory-tool-grant` | Memory tool permission | Add `ToolGrant("anthropic.memory_tool")` to `GrantProfile.DEVELOPMENT_AGENT`. `CSSMemoryTool()` added to tool list only when this grant is present. | `memory-tool-bridge`, `perm-grant-manager` |
-| `ollama-model-manager` | OllamaModelManager | Add `OllamaModelManager` to `modules/llm_models/`. Methods: `pull(model_name, stream=True)`, `list() → list[ModelInfo]`, `delete(model_name)`, `is_available(model_name) → bool`. Auto-pull S10 model if not installed. Emit `EVENT_MODEL_DOWNLOAD_PROGRESS`. |  |
+| `ollama-model-manager` | OllamaModelManager | Add `OllamaModelManager` to `core/models/`. Methods: `pull(model_name, stream=True)`, `list() → list[ModelInfo]`, `delete(model_name)`, `is_available(model_name) → bool`. Auto-pull S10 model if not installed. Emit `EVENT_MODEL_DOWNLOAD_PROGRESS`. |  |
 | `ollama-router-check` | Router skips unavailable Ollama models | In Phase 13 router: before routing to Ollama tier, call `OllamaModelManager.is_available()`. If False: auto-pull (if config allows) or skip to next tier. | `ollama-model-manager` |
 | `openrouter-cost-tracking` | OpenRouter generation cost tracking | In `api_services/openrouter/response.py`: capture `X-Generation-ID` response header. After response: async-fetch `generations.get_generation(id)`. Attach `llm.cost_usd`, `llm.actual_provider` to OTEL span via OtelBridge. |  |
 | `openrouter-provider-list` | Dynamic OpenRouter provider list | In `api_services/openrouter/`: add `list_providers() → list[ProviderInfo]`. Cache in @cache L2 (Redis, TTL=1h). Use in `@llm_models` to keep OpenRouter model list fresh. | `openrouter-cost-tracking` |
@@ -3784,7 +3784,7 @@ class SettingDefinition:
 
 ### T17.3 — SettingsRegistry
 
-**Files**: `src/css/modules/settings/registry.py`
+**Files**: `src/css/core/settings/registry.py`
 
 The registry holds all `SettingDefinition` objects (similar to `ModelRegistry` in `@llm_models`).
 
@@ -3809,7 +3809,7 @@ class SettingsRegistry:
 
 ### T17.4 — SettingsManager (Core)
 
-**Files**: `src/css/modules/settings/manager.py`
+**Files**: `src/css/core/settings/manager.py`
 
 **Resolution order** (highest priority wins):
 1. Explicit env override (env var with `CSS_SETTING__<KEY_UPPERCASE>` format)  
@@ -3853,7 +3853,7 @@ class SettingsManager:
 
 ### T17.5 — config.py Registration (DEFAULT_SETTINGS list)
 
-**Files**: `src/css/modules/settings/defaults.py`
+**Files**: `src/css/core/settings/defaults.py`
 
 Register every key from `config.py` as a `SettingDefinition`. Example:
 ```python
@@ -3904,7 +3904,7 @@ DEFAULT_SETTINGS = [
 
 ### T17.6 — Setting Templates
 
-**Files**: `src/css/modules/settings/profiles/`
+**Files**: `src/css/core/settings/profiles/`
 
 > ⚠️ **Dir is `profiles/` not `templates/`** — `templates/` is reserved for the colocated React panel (Phase 18).
 
@@ -3924,7 +3924,7 @@ Templates to create:
 
 ### T17.7 — Settings REST Endpoints
 
-**Files**: `src/css/modules/settings/routes.py` (registered with ASGI router)
+**Files**: `src/css/core/settings/routes.py` (registered with ASGI router)
 
 ```
 GET    /api/settings/                            → list all (masked if sensitive)
@@ -4174,7 +4174,7 @@ After Phase 14 events module is implemented:
 
 **Goal**: Scaffold a running React 19 + TypeScript frontend with dark feature-rich UI, Vite dev server already in Docker, and the **module-colocated panel architecture** — each Python module owns its own React panel alongside its Python code. First three live panels: Settings, Marketplace, Chat.
 
-**Core principle**: Code that belongs together stays together. `src/css/modules/settings/templates/` lives next to `settings/manager.py`. The frontend shell discovers panels via a central registry, not file-system scanning.
+**Core principle**: Code that belongs together stays together. `src/css/core/settings/templates/` lives next to `settings/manager.py`. The frontend shell discovers panels via a central registry, not file-system scanning.
 
 > **Naming rule**: Module-colocated React panel dirs are called `templates/` (not `frontend/`). Exception: YAML profiles in `@settings` live in `profiles/` to avoid collision.
 
@@ -4257,7 +4257,7 @@ src/css/modules/<name>/templates/     ← MODULE-COLOCATED panels (named templat
 | **TanStack Router v1** | Best TypeScript routing — fully type-safe params, loaders, error boundaries per-route |
 | **TanStack Query v5** | REST data fetching + cache + background refresh — pairs perfectly with the Settings REST API |
 | **Zustand v5** | Tiny. For WebSocket global state (agent status, event stream). No boilerplate |
-| **Vite path aliases** | `@css/modules/settings/templates` → `../../css/modules/settings/templates` — keeps module panels colocated without monorepo complexity |
+| **Vite path aliases** | `@css/core/settings/templates` → `../../css/core/settings/templates` — keeps module panels colocated without monorepo complexity |
 | **Lucide React** | Icons used by shadcn/ui, consistent dark design |
 | **Shiki** | Server-rendered syntax highlighting in CodeBlock (used by Chat + agent output) |
 
@@ -4466,8 +4466,8 @@ export const MODULE_PANELS: ModulePanel[] = [
     label: 'Settings',
     icon: Settings,
     path: '/settings',
-    // ← This imports from src/css/modules/settings/templates/index.tsx
-    component: lazy(() => import('@css/modules/settings/templates')),
+    // ← This imports from src/css/core/settings/templates/index.tsx
+    component: lazy(() => import('@css/core/settings/templates')),
   },
   {
     id: 'marketplace',
@@ -4502,7 +4502,7 @@ TanStack Router generates type-safe routes from this registry at startup.
 
 ### T18.6 — Settings Panel
 
-**Files**: `src/css/modules/settings/templates/`
+**Files**: `src/css/core/settings/templates/`
 
 The first real panel — connects directly to the Phase 17 REST API (`/api/settings/`).
 
@@ -4933,7 +4933,7 @@ The three rubber-duck reports (API services, core infrastructure, modules) from 
 Since the rubber-duck reports (2026-05-03), Phase 8 audit revealed additional critical gaps:
 - `streaming/runner.py` hardcodes Claude — multi-provider routing dead (todos: `ai-provider-routing`)
 - `agents/base.py`, `agents/models.py` — 0 LOC (todos: `ai-agent-base-protocol`, `ai-agent-models`)
-- `modules/triage/` ConfidenceScore hardcoded 0.85 (todo: `ai-triage-ollama-wire`)
+- `core/triage/` ConfidenceScore hardcoded 0.85 (todo: `ai-triage-ollama-wire`)
 
 These are captured in Phase 8 todos. All rubber-duck report findings are actionable and tracked.
 
@@ -5048,7 +5048,7 @@ User Message → AgentExecutor
 
 ### T21.7 — Integration
 - `triage-intelligence-wire` — orchestrate all sub-systems in triage/engine.py TriageEngine
-- `triage-module-plan-update` — update src/css/modules/triage/plan.md
+- `triage-module-plan-update` — update src/css/core/triage/plan.md
 
 ### Dependencies
 ```
@@ -5218,7 +5218,7 @@ Phase 15: scopes-module-remove ← git-scope-migration
 | B | `core/db/models/` | ORM models missing: `ProjectRecord`, `McpServerConfigRecord`, `PromptDefinitionRecord` | HIGH |
 | C | `core/types/projects.py` | File missing — projects/plan.md references it | HIGH |
 | D | `core/types/context.py` | `@dataclass + BaseModel` anti-pattern on 4 classes | HIGH (BLOCKED) |
-| E | `modules/scopes` | 5-level ScopeLevel hierarchy (GLOBAL→APP→PROJECT→RUNTIME→SESSION) | RESOLVED (simplified to 2-level: GLOBAL + SESSION) |
+| E | `` | 5-level ScopeLevel hierarchy (GLOBAL→APP→PROJECT→RUNTIME→SESSION) | RESOLVED (simplified to 2-level: GLOBAL + SESSION) |
 | F | `agents/plan.md` | Integration table: stale `project_dir` + missing `prompts` row | MEDIUM |
 | G | `events/plan.md` | Planned events list missing `project.*`, `settings.changed`, `mcp.call.*` | MEDIUM |
 | H | 8 module plan.mds | `*(fill in module-specific relationships)*` placeholder tables | MEDIUM |
@@ -5311,11 +5311,11 @@ After these 10: app boots with a working schema. Then tackle high-priority todos
 - Fix: Add `await init_tortoise_db(POSTGRES_DATABASE)` inside the lifespan enter block; optionally call `await Tortoise.generate_schemas(safe=True)` in dev mode; use Aerich in production
 
 **2. `PermissionGrant` and `RolePermissionCache` use `IntField` PK — violates core rule**
-- File: `src/css/modules/permissions/models.py` lines 10, 43
+- File: `src/css/core/permissions/models.py` lines 10, 43
 - Fix: `id = fields.BigIntField(primary_key=True)` on both models
 
 **3. `ScopeSession.id` is a `CharField` PK — non-sequential, not auto-incrementing**
-- File: `src/css/modules/permissions/models.py` line 27
+- File: `src/css/core/permissions/models.py` line 27
 - Fix: `id = fields.BigIntField(primary_key=True)`; rename current id field to `session_key = fields.CharField(max_length=255, unique=True, db_index=True)`
 
 **4. `MarketplaceItem.id` is a `CharField` PK — violates BigIntField rule**
@@ -5388,7 +5388,7 @@ After these 10: app boots with a working schema. Then tackle high-priority todos
 - Fix: see "Missing ORM Models" section below for full recommended schema
 
 **7. `PermissionGrant.scope_level` and `PermissionGrant.role` are raw `CharField` — no validation**
-- File: `src/css/modules/permissions/models.py`
+- File: `src/css/core/permissions/models.py`
 - Fix: `scope_level = fields.CharEnumField(ScopeLevel)`; create `RoleEnum` in `enums.py` or use `permissions/enums.py`
 
 **8. `ScopeSession` and `RolePermissionCache` have no indexes on `expires_at` — expiry cleanup is full-scan**
@@ -5564,7 +5564,7 @@ key fields:
 indexes: (category, status), (is_builtin, status)
 ```
 
-**`SettingRecord`** — `src/css/modules/settings/models.py` (Phase 17 T17.1)
+**`SettingRecord`** — `src/css/core/settings/models.py` (Phase 17 T17.1)
 ```
 table: setting_record
 purpose: Persisted application settings with scope and validation
@@ -6053,7 +6053,7 @@ db-oo-stream-definitions → graph-telemetry-service
 
 **G2 — No User/Account Model** (Phase 7 todo only)
 - Platform is multi-agent but there's no concept of _who is using it_.
-- **Missing**: `modules/accounts/` — `User` ORM model (id, email, hashed_password, api_key_hash, roles, is_active), `AccountManager`, registration + invite flow.
+- **Missing**: `core/accounts/` — `User` ORM model (id, email, hashed_password, api_key_hash, roles, is_active), `AccountManager`, registration + invite flow.
 - Blocks: audit trail (`decided_by` in approvals), multi-user project isolation, permission grants scoped to users.
 
 **G3 — WebSocket lifecycle unspecified**
@@ -6163,7 +6163,7 @@ All of these are single-line todos with no implementation plan:
 
 | New Phase | Contents | Dependencies |
 |-----------|---------|-------------|
-| **Phase 28 — Auth & Accounts** | `modules/auth/` (JWT, API keys), `modules/accounts/` (User ORM, profiles), row-level project isolation | Phase 15 (permissions), Phase 17 (settings/projects) |
+| **Phase 28 — Auth & Accounts** | `modules/auth/` (JWT, API keys), `core/accounts/` (User ORM, profiles), row-level project isolation | Phase 15 (permissions), Phase 17 (settings/projects) |
 | **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, knowledge, compliance, reports | Phase 20 (memory/pgvector for knowledge RAG), Phase 28 (auth), Phase 14 (events) |
 | **Phase 30 — Workflow Engine + IPC** | `modules/workflows/` DAG engine, `modules/ipc/` (A2A messaging), `modules/planner/` (goal decomposition) | Phase 20 (memory), Phase 26 (approvals), Phase 14 (events) |
 | **Phase 31 — Production Readiness** | Secrets management, rate limiting, task queue, deployment Dockerfile, OpenAPI polish, alerting/webhooks, multi-tenancy RLS | Phase 28 (auth), Phase 26 (approvals), Phase 27 (graphs) |
