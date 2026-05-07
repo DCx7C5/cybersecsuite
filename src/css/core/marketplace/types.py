@@ -5,11 +5,10 @@ No inheritance chains. Each class = one API endpoint response or request.
 """
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from .enums import MarketplaceItemType, MarketplaceItemStatus
+from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 
 
 # ── Base Models ───────────────────────────────────────────────────
@@ -50,8 +49,8 @@ class MarketplaceItemCreate(BaseModel):
 class MarketplaceItemUpdate(BaseModel):
     """Request to update a marketplace item."""
 
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
 
 
 class MarketplaceItemResponse(BaseModel):
@@ -64,8 +63,8 @@ class MarketplaceItemResponse(BaseModel):
     kind: MarketplaceItemType
     status: MarketplaceItemStatus
     source_url: str
-    install_path: Optional[str] = None
-    installed_at: Optional[datetime] = None
+    install_path: str | None = None
+    installed_at: datetime | None = None
     meta: dict = Field(default_factory=dict)
 
     class Config:
@@ -82,7 +81,7 @@ class MarketplaceMetaResponse(BaseModel):
     name: str
     version: str
     update_available: bool
-    last_index_check: Optional[datetime] = None
+    last_index_check: datetime | None = None
 
 
 # ── Item List/Detail ──────────────────────────────────────────────
@@ -108,7 +107,7 @@ class ItemDetailResponse(BaseModel):
     version: str
     status: MarketplaceItemStatus
     installed: bool
-    installed_at: Optional[datetime] = None
+    installed_at: datetime | None = None
     meta: dict = Field(default_factory=dict)
 
 
@@ -119,7 +118,7 @@ class InstallRequest(BaseModel):
     """Request to install a marketplace item."""
 
     item_id: str = Field(..., description="Kebab-case item ID")
-    source_url: Optional[str] = Field(
+    source_url: str | None = Field(
         default=None, description="Override source URL"
     )
 
@@ -130,8 +129,8 @@ class InstallResponse(BaseModel):
     success: bool
     item_id: str
     message: str
-    installed_path: Optional[str] = None
-    error: Optional[str] = None
+    installed_path: str | None = None
+    error: str | None = None
 
 
 class UninstallRequest(BaseModel):
@@ -149,7 +148,7 @@ class UninstallResponse(BaseModel):
     success: bool
     item_id: str
     message: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 # ── Toggle Enable/Disable ────────────────────────────────────────
@@ -169,7 +168,7 @@ class ToggleResponse(BaseModel):
     item_id: str
     enabled: bool
     message: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 # ── Upgrade Version ──────────────────────────────────────────────
@@ -179,7 +178,7 @@ class UpgradeRequest(BaseModel):
     """Request to upgrade a marketplace item."""
 
     item_id: str = Field(..., description="Kebab-case item ID")
-    target_version: Optional[str] = Field(
+    target_version: str | None = Field(
         default=None, description="Specific version to upgrade to"
     )
     backup: bool = Field(default=True, description="Create backup before upgrade")
@@ -193,5 +192,5 @@ class UpgradeResponse(BaseModel):
     old_version: str
     new_version: str
     message: str
-    backup_path: Optional[str] = None
-    error: Optional[str] = None
+    backup_path: str | None = None
+    error: str | None = None

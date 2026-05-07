@@ -1,5 +1,6 @@
 from tortoise import Model, fields, models
-from .enums import MarketplaceItemType, MarketplaceItemStatus, MarketplaceStatus
+
+from css.core.enums import MarketplaceItemStatus, MarketplaceItemType, MarketplaceStatus
 
 
 class MarketplaceMeta(Model):

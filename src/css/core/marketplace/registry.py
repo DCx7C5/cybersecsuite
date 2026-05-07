@@ -1,11 +1,10 @@
 """Registry for marketplace items (DB-backed), adapted to use BaseRegistry."""
 
-from typing import Optional
 
 from css.core.types.base_registry import BaseRegistry
+from css.core.db.models.marketplace import MarketplaceItem
+from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 
-from .models import MarketplaceItem
-from .enums import MarketplaceItemType, MarketplaceItemStatus
 from .exceptions import PackageNotFoundError
 
 
@@ -50,7 +49,7 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
             raise PackageNotFoundError(item_id=item_id)
         await item.delete()
 
-    async def get(self, item_id: str) -> Optional[MarketplaceItem]:
+    async def get(self, item_id: str) -> MarketplaceItem | None:
         """Get a marketplace item by ID.
 
         Implements BaseRegistry.get().
@@ -65,8 +64,8 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
 
     async def list_all(
         self,
-        kind: Optional[MarketplaceItemType] = None,
-        status: Optional[MarketplaceItemStatus] = None,
+        kind: MarketplaceItemType | None = None,
+        status: MarketplaceItemStatus | None = None,
         installed_only: bool = False,
     ) -> list[MarketplaceItem]:
         """List all marketplace items with optional filtering.
@@ -94,14 +93,14 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
 
     # Convenience methods that wrap the base interface
 
-    async def get_item(self, item_id: str) -> Optional[MarketplaceItem]:
+    async def get_item(self, item_id: str) -> MarketplaceItem | None:
         """Get a marketplace item by ID (convenience wrapper)."""
         return await self.get(item_id)
 
     async def list_items(
         self,
-        kind: Optional[MarketplaceItemType] = None,
-        status: Optional[MarketplaceItemStatus] = None,
+        kind: MarketplaceItemType | None = None,
+        status: MarketplaceItemStatus | None = None,
         installed_only: bool = False,
     ) -> list[MarketplaceItem]:
         """List marketplace items with optional filtering (convenience wrapper)."""

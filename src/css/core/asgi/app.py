@@ -19,6 +19,7 @@ Ports (env-configurable):
     ASGI_TLS_KEY   — PEM key path     (default: ~/.css/certs/key.pem)
 """
 
+import asyncio
 import logging
 import os
 import ssl
@@ -29,7 +30,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from tortoise import Tortoise
 
-from css.config import ENVIRONMENT, POSTGRES_DATABASE
+from css.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 from css.core.loader import build_tortoise_db_url, build_tortoise_modules, mount_app_routers
 from css.core.tools.base import get_tool_registry
 
@@ -78,6 +79,25 @@ def create_app() -> FastAPI:
         log.info("CyberSecSuite starting — host=%s port=%d", ASGI_HOST, ASGI_PORT)
         db_url = build_tortoise_db_url(POSTGRES_DATABASE)
         tortoise_apps = build_tortoise_modules()
+        marketplace_update_task: asyncio.Task | None = None
+        marketplace_update_stop = asyncio.Event()
+
+        async def _periodic_marketplace_update_check() -> None:
+            from css.core.marketplace.seeder import MarketplaceSeeder
+
+            update_interval = int(MARKETPLACE_CONFIG["update_check_interval"])
+            while not marketplace_update_stop.is_set():
+                try:
+                    async with MarketplaceSeeder() as seeder:
+                        await seeder.check_for_updates()
+                except Exception as exc:
+                    log.warning("Marketplace periodic update check failed: %s", exc)
+
+                try:
+                    await asyncio.wait_for(marketplace_update_stop.wait(), timeout=update_interval)
+                except asyncio.TimeoutError:
+                    continue
+
         await Tortoise.init(
             config={
                 "connections": {"default": db_url},
@@ -97,9 +117,24 @@ def create_app() -> FastAPI:
         )
 
         try:
+            from css.core.marketplace.seeder import seed_marketplace_on_startup
+
+            await seed_marketplace_on_startup()
+            marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
+        except Exception as exc:
+            log.warning("Marketplace startup integration failed: %s", exc)
+
+        try:
             yield
         finally:
             log.info("CyberSecSuite shutting down")
+            marketplace_update_stop.set()
+            if marketplace_update_task is not None:
+                marketplace_update_task.cancel()
+                try:
+                    await marketplace_update_task
+                except asyncio.CancelledError:
+                    pass
             await Tortoise.close_connections()
 
     _app = FastAPI(

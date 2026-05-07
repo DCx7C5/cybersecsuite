@@ -1,15 +1,15 @@
-from css.core.exceptions import BaseModuleException
+from css.core.exceptions import BaseCoreException
 
-class BaseMarketplaceException(BaseModuleException):
+class BaseMarketplaceException(BaseCoreException):
     """Base exception for the marketplace module."""
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, module_name="marketplace", **kwargs)
+        super().__init__(message, dir_name="marketplace", **kwargs)
 
 
 class InstallationError(BaseMarketplaceException):
     """Raised when package installation fails."""
     
-    def __init__(self, message: str = None, item_id: str = None, **kwargs):
+    def __init__(self, message: str, item_id: str, **kwargs):
         ctx = kwargs.get("context", {})
         if item_id:
             ctx["item_id"] = item_id
@@ -23,7 +23,7 @@ class InstallationError(BaseMarketplaceException):
 class DependencyResolutionError(InstallationError):
     """Raised when dependency resolution fails."""
     
-    def __init__(self, message: str = None, missing_deps: list[str] = None, **kwargs):
+    def __init__(self, message: str, missing_deps: list[str], **kwargs):
         ctx = kwargs.get("context", {})
         if missing_deps:
             ctx["missing_dependencies"] = missing_deps
@@ -37,7 +37,7 @@ class DependencyResolutionError(InstallationError):
 class ManifestValidationError(InstallationError):
     """Raised when manifest validation fails."""
     
-    def __init__(self, message: str = None, manifest_path: str = None, **kwargs):
+    def __init__(self, message: str, manifest_path: str, **kwargs):
         ctx = kwargs.get("context", {})
         if manifest_path:
             ctx["manifest_path"] = manifest_path
@@ -64,7 +64,7 @@ class PackageNotFoundError(BaseMarketplaceException):
 class PackageStateError(BaseMarketplaceException):
     """Raised when package state is invalid."""
     
-    def __init__(self, message: str = None, current_status: str = None, **kwargs):
+    def __init__(self, message: str, current_status: str, **kwargs):
         ctx = kwargs.get("context", {})
         if current_status:
             ctx["current_status"] = current_status
@@ -78,7 +78,7 @@ class PackageStateError(BaseMarketplaceException):
 class MarketplaceSeedingError(BaseMarketplaceException):
     """Raised when marketplace seeding fails."""
     
-    def __init__(self, message: str = None, url: str = None, **kwargs):
+    def __init__(self, message: str, url: str | None = None, **kwargs):
         ctx = kwargs.get("context", {})
         if url:
             ctx["url"] = url

@@ -2,11 +2,10 @@
 
 import logging
 from fastapi import APIRouter, HTTPException, Query
-from typing import Optional
 from tortoise.expressions import Q
 
+from css.core.db.models.marketplace import MarketplaceItemTag, MarketplaceItem
 from css.modules.tags.models import Tag
-from css.core.marketplace.models import MarketplaceItemTag, MarketplaceItem
 from css.modules.tools.models import HybridToolDefinitionTag, HybridToolDefinition
 
 logger = logging.getLogger(__name__)
@@ -14,7 +13,7 @@ router = APIRouter(prefix="/api/tags", tags=["tags"])
 
 
 @router.get("")
-async def list_tags(name_filter: Optional[str] = Query(None)) -> dict:
+async def list_tags(name_filter: str | None = Query(None)) -> dict:
     """List all tags, optionally filtered by name."""
     query = Tag.all()
     if name_filter:

@@ -16,8 +16,8 @@ Usage::
 import logging
 
 from css.modules.skills.types import Skill
-from css.core.marketplace.models import MarketplaceItem
-from css.core.marketplace.enums import MarketplaceItemType, MarketplaceItemStatus
+from css.core.db.models.marketplace import MarketplaceItem
+from css.core.enums import MarketplaceItemType, MarketplaceItemStatus
 from css.core.marketplace.cache import marketplace_cache
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ async def skill_to_marketplace_item(skill: Skill):
         skill: :class:`~css.modules.skills.types.Skill` instance.
 
     Returns:
-        The created/updated :class:`~css.core.marketplace.models.MarketplaceItem`.
+        The created/updated :class:`~css.core.db.models.marketplace.MarketplaceItem`.
     """
 
     slug = f"skill:{skill.id}"
@@ -81,7 +81,7 @@ async def get_skill_marketplace_item(skill_id: str) -> MarketplaceItem | None:
         skill_id: The skill's unique identifier (``Skill.id``).
 
     Returns:
-        :class:`~css.core.marketplace.models.MarketplaceItem` or ``None``.
+        :class:`~css.core.db.models.marketplace.MarketplaceItem` or ``None``.
     """
     return await MarketplaceItem.get_or_none(slug=f"skill:{skill_id}")
 

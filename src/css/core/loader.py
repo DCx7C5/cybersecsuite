@@ -16,8 +16,8 @@ ignored (not every app needs HTTP routes). Import errors from modules that
 swallowed so that startup failures surface immediately.
 
 Also supports auto-discovery of Tortoise ORM models:
-- ``modules/*/user.py``
-- ``api_services/*/user.py``
+- ``modules/*/models.py``
+- ``api_services/*/models.py``
 - ``core/db/models/*.py``
 """
 
@@ -118,14 +118,14 @@ def iter_model_modules() -> Iterator[ModelModule]:
     """Discover Tortoise ORM model modules.
 
     Searches:
-    - ``modules/*/user.py``
-    - ``api_services/*/user.py``
+    - ``modules/*/models.py``
+    - ``api_services/*/models.py``
     - ``core/db/models/*.py``
 
     Yields:
         ModelModule with module_name and Tortoise-compatible path
     """
-    # Search modules/*/user.py
+    # Search modules/*/models.py
     for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
         module_name = f"css.modules.{app_name}.models"
         try:
@@ -136,13 +136,13 @@ def iter_model_modules() -> Iterator[ModelModule]:
             )
             log.info("Discovered model: %s", module_name)
         except ModuleNotFoundError:
-            # No user.py in this module — skip
+            # No models.py in this module — skip
             pass
         except Exception as exc:
             log.error("modules/%s: models import failed: %s", app_name, exc)
             raise
 
-    # Search api_services/*/user.py
+    # Search api_services/*/models.py
     for finder, svc_name, ispkg in pkgutil.iter_modules(api_services_pkg.__path__):
         module_name = f"css.api_services.{svc_name}.models"
         try:
@@ -159,7 +159,12 @@ def iter_model_modules() -> Iterator[ModelModule]:
             raise
 
     # Search core/db/models/*.py
-    db_models_path = Path(core_db_pkg.__file__).parent / "models"
+    if isinstance(core_db_pkg.__file__, str):
+        core_db_path = Path(core_db_pkg.__file__).parent
+    else:
+        raise RuntimeError("core.db package has no __file__ attribute — cannot discover models")
+
+    db_models_path = core_db_path / "models"
     if db_models_path.exists():
         for model_file in db_models_path.glob("*.py"):
             if model_file.name.startswith("_"):
@@ -176,7 +181,6 @@ def iter_model_modules() -> Iterator[ModelModule]:
             except Exception as exc:
                 log.error("core/db/models/%s: import failed: %s", model_name, exc)
                 raise
-
 
 def build_tortoise_modules() -> dict[str, list[str]]:
     """Build Tortoise ORM modules dict for Tortoise.init().

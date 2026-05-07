@@ -1,15 +1,16 @@
 """Marketplace seeder — seeds DB from remote index on first startup."""
 
+from datetime import UTC, datetime
 import hashlib
 import json
 import logging
-from typing import Optional
+from pathlib import Path
 
 import aiohttp
 
 from css.core.config import MARKETPLACE_CONFIG, MARKETPLACE_SEEDER_HTTP_TIMEOUT
-from .enums import MarketplaceItemType
-from .models import MarketplaceItem
+from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
+from css.core.enums import MarketplaceItemType
 from .exceptions import MarketplaceSeedingError
 
 log = logging.getLogger(__name__)
@@ -23,22 +24,22 @@ MARKETPLACE_BASE_URL = MARKETPLACE_CONFIG['base_url']
 class MarketplaceSeeder:
     """Seeds marketplace items from remote index."""
 
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: str | None = None):
         """Initialize seeder.
 
         Args:
             base_url: Override base URL for marketplace items (default: MARKETPLACE_BASE_URL)
         """
         self.base_url = base_url or MARKETPLACE_BASE_URL
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
 
-    async def _get_session(self) -> aiohttp.ClientSession:
+    async def _get_session(self) -> aiohttp.ClientSession | None:
         """Get or create aiohttp session."""
         if self._session is None or self._session.closed:
             self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=MARKETPLACE_SEEDER_HTTP_TIMEOUT))
         return self._session
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the HTTP session."""
         if self._session and not self._session.closed:
             await self._session.close()
@@ -107,6 +108,66 @@ class MarketplaceSeeder:
             log.warning(f"Hash verification failed: {e}")
             return False
 
+    def _get_install_path(self, item_kind: MarketplaceItemType, slug: str) -> str:
+        install_root = Path(MARKETPLACE_CONFIG["install_root"]).expanduser()
+        return str((install_root / item_kind.value / slug).resolve())
+
+    async def _seed_type(
+        self,
+        seed_items: list[dict],
+        item_kind: MarketplaceItemType,
+        force: bool,
+    ) -> tuple[int, int]:
+        created = 0
+        skipped = 0
+
+        for seed_item in seed_items:
+            try:
+                item_id = seed_item.get("name", "")
+                if not item_id:
+                    skipped += 1
+                    continue
+
+                existing = await MarketplaceItem.get_or_none(slug=item_id)
+                if existing and not force:
+                    skipped += 1
+                    continue
+
+                file_path = seed_item.get("file", "")
+                source_url = f"{self.base_url}/{file_path}" if file_path else ""
+                install_path = self._get_install_path(item_kind=item_kind, slug=item_id)
+                description = seed_item.get("description", "")
+
+                meta = {
+                    "file": file_path,
+                    "sha512": seed_item.get("sha512", ""),
+                    "tags": seed_item.get("tags", []),
+                }
+
+                if existing:
+                    existing.name = (description or item_id)[:255]
+                    existing.description = description
+                    existing.source_url = source_url
+                    existing.install_path = install_path
+                    existing.meta = {**(existing.meta or {}), **meta}
+                    await existing.save()
+                else:
+                    await MarketplaceItem.create(
+                        slug=item_id,
+                        name=(description or item_id)[:255],
+                        description=description,
+                        kind=item_kind,
+                        source_url=source_url,
+                        install_path=install_path,
+                        meta=meta,
+                    )
+                created += 1
+            except Exception as e:
+                log.error(f"Failed to seed {item_kind.value} item {seed_item.get('name', 'unknown')}: {e}")
+                skipped += 1
+
+        return created, skipped
+
     async def seed_if_empty(self, force: bool = False) -> tuple[int, int]:
         """Seed marketplace if DB is empty (or if force=True).
 
@@ -123,7 +184,7 @@ class MarketplaceSeeder:
 
         if existing_count > 0 and not force:
             log.info(f"Marketplace already has {existing_count} items, skipping seed")
-            return (0, 0)
+            return 0, 0
 
         if force:
             log.info("Force seeding marketplace...")
@@ -137,59 +198,33 @@ class MarketplaceSeeder:
         if not await self.verify_index(index_data, expected_hash):
             log.warning("Index hash verification failed, proceeding anyway...")
 
-        agents = index_data.get("agents", [])
         created = 0
         skipped = 0
 
-        for agent in agents:
-            try:
-                item_id = agent.get("name", "")
-                if not item_id:
-                    skipped += 1
-                    continue
-
-                # Check if item already exists
-                existing = await MarketplaceItem.get_or_none(slug=item_id)
-                if existing and not force:
-                    skipped += 1
-                    continue
-
-                # Build source URL from file path
-                file_path = agent.get("file", "")
-                source_url = f"{self.base_url}/{file_path}" if file_path else ""
-
-                # Create or update item
-                if existing:
-                    existing.name = agent.get("description", item_id)[:255]
-                    existing.description = agent.get("description", "")
-                    existing.source_url = source_url
-                    existing.meta = {
-                        "file": file_path,
-                        "sha512": agent.get("sha512", ""),
-                    }
-                    await existing.save()
-                else:
-                    await MarketplaceItem.create(
-                        slug=item_id,
-                        name=agent.get("description", item_id)[:255],
-                        description=agent.get("description", ""),
-                        kind=MarketplaceItemType.agent,
-                        source_url=source_url,
-                        meta={
-                            "file": file_path,
-                            "sha512": agent.get("sha512", ""),
-                        },
-                    )
-                created += 1
-
-            except Exception as e:
-                log.error(f"Failed to seed item {agent.get('name', 'unknown')}: {e}")
-                skipped += 1
+        type_key_map: list[tuple[str, MarketplaceItemType]] = [
+            ("agents", MarketplaceItemType.agent),
+            ("skills", MarketplaceItemType.skill),
+            ("workflows", MarketplaceItemType.workflow),
+            ("prompts", MarketplaceItemType.prompt),
+            ("templates", MarketplaceItemType.template),
+            ("mcps", MarketplaceItemType.mcp),
+        ]
+        for index_key, item_kind in type_key_map:
+            seed_items = index_data.get(index_key, [])
+            if not isinstance(seed_items, list):
+                continue
+            type_created, type_skipped = await self._seed_type(
+                seed_items=seed_items,
+                item_kind=item_kind,
+                force=force,
+            )
+            created += type_created
+            skipped += type_skipped
 
         log.info(f"Seeding complete: created={created}, skipped={skipped}")
         return (created, skipped)
 
-    async def check_for_updates(self) -> Optional[str]:
+    async def check_for_updates(self) -> str | None:
         """Check if remote index has been updated.
 
         Returns:
@@ -197,7 +232,31 @@ class MarketplaceSeeder:
         """
         try:
             index_data = await self.fetch_index()
-            return index_data.get("version", None)
+            remote_hash = await self.fetch_index_hash()
+            local_items = await MarketplaceItem.all().order_by("slug").values(
+                "slug", "version", "sha512", "meta", "updated_at",
+            )
+            local_hash = hashlib.sha512(
+                json.dumps(local_items, sort_keys=True, default=str).encode("utf-8"),
+            ).hexdigest()
+
+            meta, _ = await MarketplaceMeta.get_or_create(
+                id=1,
+                defaults={
+                    "name": "default",
+                    "description": "Marketplace metadata",
+                    "version": index_data.get("version", "0.1.0"),
+                },
+            )
+            meta.remote_index_hash = remote_hash
+            meta.local_index_hash = local_hash
+            meta.last_index_check = datetime.now(UTC)
+            meta.update_available = local_hash != remote_hash
+            if index_data.get("version"):
+                meta.version = index_data["version"]
+            await meta.save()
+
+            return index_data.get("version") if meta.update_available else None
         except Exception as e:
             log.error(f"Failed to check for updates: {e}")
             return None

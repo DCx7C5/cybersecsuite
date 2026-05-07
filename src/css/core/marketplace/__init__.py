@@ -1,7 +1,7 @@
 """Marketplace module for CyberSecSuite."""
 
 from css.core.config import MARKETPLACE_CACHE_TTL_SECONDS, MARKETPLACE_MAX_RESULTS, MARKETPLACE_PAGE_SIZE
-from .enums import MarketplaceStatus, MarketplaceItemStatus, MarketplaceItemType
+from css.core.enums import MarketplaceStatus, MarketplaceItemStatus, MarketplaceItemType
 from .types import (
     MarketplaceBase,
     MarketplaceMetaBase,
@@ -22,8 +22,8 @@ from .types import (
 
 # Import seeder and models
 try:
+    from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
     from .seeder import MarketplaceSeeder, seed_marketplace_on_startup
-    from .models import MarketplaceItem, MarketplaceMeta
 except ImportError:
     # Models may not be available during initial import phase
     pass
