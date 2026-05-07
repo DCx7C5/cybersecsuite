@@ -16,8 +16,8 @@ ignored (not every app needs HTTP routes). Import errors from modules that
 swallowed so that startup failures surface immediately.
 
 Also supports auto-discovery of Tortoise ORM models:
-- ``modules/*/models.py``
-- ``api_services/*/models.py``
+- ``modules/*/user.py``
+- ``api_services/*/user.py``
 - ``core/db/models/*.py``
 """
 
@@ -118,14 +118,14 @@ def iter_model_modules() -> Iterator[ModelModule]:
     """Discover Tortoise ORM model modules.
 
     Searches:
-    - ``modules/*/models.py``
-    - ``api_services/*/models.py``
+    - ``modules/*/user.py``
+    - ``api_services/*/user.py``
     - ``core/db/models/*.py``
 
     Yields:
         ModelModule with module_name and Tortoise-compatible path
     """
-    # Search modules/*/models.py
+    # Search modules/*/user.py
     for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
         module_name = f"css.modules.{app_name}.models"
         try:
@@ -136,13 +136,13 @@ def iter_model_modules() -> Iterator[ModelModule]:
             )
             log.info("Discovered model: %s", module_name)
         except ModuleNotFoundError:
-            # No models.py in this module — skip
+            # No user.py in this module — skip
             pass
         except Exception as exc:
             log.error("modules/%s: models import failed: %s", app_name, exc)
             raise
 
-    # Search api_services/*/models.py
+    # Search api_services/*/user.py
     for finder, svc_name, ispkg in pkgutil.iter_modules(api_services_pkg.__path__):
         module_name = f"css.api_services.{svc_name}.models"
         try:
