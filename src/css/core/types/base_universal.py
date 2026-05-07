@@ -10,9 +10,9 @@ Supports:
 from __future__ import annotations
 
 import logging
-from typing import Optional, Type
+from typing import Optional, Type, Dict, Callable
 
-from .base import BaseApiServiceClient
+from .api_services import BaseApiServiceClient
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +22,8 @@ class SDKRegistry:
 
     def __init__(self):
         """Initialize empty registry."""
-        self._registry: dict[str, Type[BaseApiServiceClient] | callable] = {}
-        self._cache: dict[str, BaseApiServiceClient] = {}
+        self._registry: Dict[str, Type[BaseApiServiceClient] | Callable] = {}
+        self._cache: Dict[str, Type[BaseApiServiceClient]] = {}
         self._initializing: set[str] = set()  # Track in-flight initializations
 
     def register(
@@ -123,7 +123,7 @@ _registry = SDKRegistry()
 
 def register_sdk(
     provider_id: str,
-    sdk_class: Type[BaseApiServiceClient] | callable,
+    sdk_class: Type[BaseApiServiceClient] | Callable,
 ) -> None:
     """Register an SDK class or factory function globally.
 
@@ -220,7 +220,7 @@ class UniversalLLMClient:
 
 
 # Import asyncio for the wait logic (avoid circular imports)
-import asyncio
+import asyncio  # noqa: E402
 
 
 __all__ = [

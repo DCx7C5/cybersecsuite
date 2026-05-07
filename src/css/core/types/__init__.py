@@ -1,153 +1,137 @@
-"""Core types for CyberSecSuite — base classes, enums, data models."""
+"""Core types for CyberSecSuite — flat structure (Phase 6 P1).
 
-from __future__ import annotations
+All types at root level (no base/ or providers/ subdirectories).
+Provider headers will be YAML-driven (Phase 6 P2), not Python files.
+"""
 
-from typing import TYPE_CHECKING
-
-from .base import (
-    BaseApiServiceClient,
-    BaseCommunicator,
-    BaseContext,
-    ErrorStrategy,
-    ExecutorResult,
-    LLMResponse,
-    BaseMessage,
-    MessageRole,
-    ModelMetadata,
+# Base protocol and abstract classes (from base_client.py)
+from .base_client import (
     ProviderType,
-    StreamChunk,
-    StreamingHandler,
+    MessageRole,
+    BaseMessage,
     Tool,
+    ModelMetadata,
+    StreamChunk,
+    LLMResponse,
+    ExecutorResult,
+    ErrorStrategy,
+    StreamingHandler,
+    BaseApiServiceClient,
 )
+
+# Base communicator protocol
+from .base_protocols import BaseCommunicator
+
+# Base registry
+from .base_registry import BaseRegistry
+
+# Protocol classes (Phase 6 P1)
+from .protocols import (
+    AgentLike,
+    SkillLike,
+    ToolLike,
+    TeamMemberLike,
+)
+
+# Base entity types (msgspec.Struct, Phase 6 P1)
+from .base_entity import (
+    BaseEntity,
+    BaseAgent,
+    BaseTool,
+    BaseSkill,
+    BaseRole,
+)
+
+# Entity headers (msgspec.Struct, Phase 6 P1)
+from .headers import (
+    BaseHeader,
+    BaseAgentHeader,
+    BaseSkillHeader,
+    BaseAccountHeader,
+    BaseToolHeader,
+    BaseRoleHeader,
+)
+
+# Capabilities
 from .capabilities import (
     Capability,
-    CapabilityRegistry,
     CapabilityType,
+    CapabilityRegistry,
     DEFAULT_CAPABILITIES,
     ModelCapabilities,
 )
+
+# Context types (msgspec.Struct)
 from .context import (
     ConversationContext,
-    ContextConfig,
-    ExecutionContext,
     ModelContext,
+    ExecutionContext,
+    ContextConfig,
 )
-from .base import (
-    BaseAgent,
-    BaseEntity,
-    BaseRole,
-    BaseSkill,
-    BaseTool,
-)
-from .base.base_header import BaseToolHeader
-from .headers import (
-    BaseAccountHeader,
-    BaseAgentHeader,
-    BaseHeader,
-    BaseRoleHeader,
-    BaseSkillHeader,
-)
+
+# Hook events
 from .hook_events import HookContext, HookErrorStrategy
-from .query import Query, QueryHeader
-from .sdk_local import LocalSDKBase
-from .providers import (
-    APIHeader,
-    APIProviderBase,
-    AnthropicHeader,
-    AuthRefreshStrategy,
-    CohereHeader,
-    GeminiHeader,
-    GroqHeader,
-    LocalHeader,
-    LocalProviderBase,
-    MistralHeader,
-    NScaleLocalHeader,
-    OllamaHeader,
-    OllamaLocalHeader,
-    OllamaProviderBase,
-    OpenAIHeader,
-    PerplexityHeader,
-    RateLimitConfig,
-    VLLMLocalHeader,
-)
-
-# Note: Ollama types moved to api_services.ollama.types in Phase 2
-# Import from there: from api_services.ollama import OllamaConfig, OllamaModel, etc.
-
-# Note: loader is in core/loader.py, marketplace router is in modules/marketplace/endpoints.py
-# These are accessible via core.loader and modules.marketplace respectively
 
 __all__ = [
-    # Note: A2A types moved to modules.google_a2a.types (Phase 2 migration)
-    # Base layer (abstract)
-    "BaseCommunicator",
-    "BaseContext",
-    # API Service models
-    "BaseApiServiceClient",
-    "ErrorStrategy",
-    "ExecutorResult",
-    "LLMResponse",
-    "BaseMessage",
-    "MessageRole",
-    "ModelMetadata",
+    # Base
+    "HookErrorStrategy",
     "ProviderType",
-    "StreamChunk",
-    "StreamingHandler",
+    "MessageRole",
+    "BaseMessage",
     "Tool",
+    "ModelMetadata",
+    "StreamChunk",
+    "LLMResponse",
+    "ExecutorResult",
+    "ErrorStrategy",
+    "StreamingHandler",
+    "BaseApiServiceClient",
+    "BaseCommunicator",
+    "BaseRegistry",
+    "AgentLike",
+    "SkillLike",
+    "ToolLike",
+    "TeamMemberLike",
+    # Entities (msgspec.Struct)
+    "BaseEntity",
+    "BaseAgent",
+    "BaseTool",
+    "BaseSkill",
+    "BaseRole",
+    # Headers (msgspec.Struct)
+    "BaseHeader",
+    "BaseAgentHeader",
+    "BaseSkillHeader",
+    "BaseAccountHeader",
+    "BaseToolHeader",
+    "BaseRoleHeader",
     # Capabilities
     "Capability",
-    "CapabilityRegistry",
     "CapabilityType",
+    "CapabilityRegistry",
     "DEFAULT_CAPABILITIES",
     "ModelCapabilities",
     # Context
     "ConversationContext",
-    "ContextConfig",
-    "ExecutionContext",
     "ModelContext",
-    # Base entity types (concrete entities Account, Agent, Role, Skill, Tool import from modules, not re-exported here)
-    "BaseAgent",
-    "BaseEntity",
-    "BaseRole",
-    "BaseSkill",
-    "BaseTool",
-    # Entity headers
-    "BaseAccountHeader",
-    "BaseAgentHeader",
-    "BaseHeader",
-    "BaseRoleHeader",
-    "BaseSkillHeader",
-    "BaseToolHeader",
+    "ExecutionContext",
+    "ContextConfig",
+    # Messages
+    "BaseMessage",
+    "Tool",
+    "ModelMetadata",
+    "StreamChunk",
+    "LLMResponse",
+    "ExecutorResult",
     # Hook events
     "HookContext",
-    "HookErrorStrategy",
-    # Query types (Task types are in modules.tasks)
+    "HookBlockedError",
+    # Query
     "Query",
     "QueryHeader",
-    # LocalSDK base (Issue #5)
+    # SDK
     "LocalSDKBase",
-    # Provider base classes (Phase 2)
-    "APIProviderBase",
-    "LocalProviderBase",
-    "OllamaProviderBase",
-    # Provider utilities (Phase 2)
-    "RateLimitConfig",
-    "AuthRefreshStrategy",
-    # API headers (Phase 2)
-    "APIHeader",
-    "OpenAIHeader",
-    "AnthropicHeader",
-    "GeminiHeader",
-    "GroqHeader",
-    "MistralHeader",
-    "CohereHeader",
-    "PerplexityHeader",
-    # Local headers (Phase 2)
-    "LocalHeader",
-    "OllamaLocalHeader",
-    "NScaleLocalHeader",
-    "VLLMLocalHeader",
-    # Ollama-specific (Phase 2)
-    "OllamaHeader",
-    # Note: Ollama types moved to api_services.ollama (Phase 2 migration)
+    # Universal client
+    "UnifiedLLMClient",
+    "LLMAdapter",
 ]

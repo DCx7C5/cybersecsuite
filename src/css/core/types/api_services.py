@@ -6,7 +6,7 @@ Includes:
 - SDK registry for custom providers
 """
 
-from .base import (
+from .base_client import (
     BaseApiServiceClient,
     ErrorStrategy,
     ExecutorResult,
@@ -20,7 +20,7 @@ from .base import (
     Tool,
 )
 
-from .universal_client import (
+from .base_universal import (
     UniversalLLMClient,
     SDKRegistry,
     register_sdk,

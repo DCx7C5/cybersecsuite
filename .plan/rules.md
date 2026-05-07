@@ -46,6 +46,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: keep EVERY local plan.md synchronized with [.plan/session.db](session.db) while working in that directory** — each plan.md reflects todos/milestones relevant to that module/subdirectory
 - **ABSOLUTE: when working in a module (e.g., `src/css/modules/permissions/`), READ that module's local `plan.md` FIRST** — understand what's planned, in-progress, and completed for that area
 - **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
+- **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 
 ### Code & Execution
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
@@ -55,6 +56,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: every tool execution must have a clear headline**
 - **ABSOLUTE: always end with a normal summary**
 - **ABSOLUTE: always prefer async Python whenever possible**
+- **ABSOLUTE: we never use type `Any`. Only exception is second type in `Dict` type `Dict[str, Any]`.
 - **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
 - **ABSOLUTE: always use `aiohttp`, never `httpx`**
 - **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**

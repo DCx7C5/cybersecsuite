@@ -1,12 +1,14 @@
-"""Hook event types and context — foundational contracts for hook system."""
+"""Hook event types and context — foundational contracts for hook system.
 
-from dataclasses import dataclass
+Converted to msgspec.Struct (Phase 6 P1) for faster serialization.
+"""
+
+import msgspec
 from enum import Enum
 from typing import Optional
 
 
-@dataclass
-class HookContext:
+class HookContext(msgspec.Struct, frozen=True):
     """Metadata passed to every hook execution.
     
     Attributes:
@@ -23,7 +25,7 @@ class HookContext:
     agent_id: Optional[str] = None
 
 
-class HookErrorStrategy(Enum):
+class HookErrorStrategy(str, Enum):
     """How to handle errors in hook execution.
     
     Values:

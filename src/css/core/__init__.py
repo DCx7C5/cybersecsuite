@@ -29,10 +29,10 @@ from .exceptions import (
 )
 
 # Base entity classes (from core)
-from .types.base import BaseEntity, BaseAgent, BaseRole, BaseSkill, BaseTool
+from .types.base_entity import BaseEntity, BaseAgent, BaseRole, BaseSkill, BaseTool
 
 # Communication protocol
-from .types.base import BaseCommunicator
+from .types.base_protocols import BaseCommunicator
 
 # NOTE: Concrete entities (Account, Agent, Role, Skill, Tool) import from modules
 # and should NOT be re-exported from core to avoid circular imports.

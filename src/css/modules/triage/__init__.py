@@ -1,9 +1,6 @@
 """Triage: Background LLM for classification and routing."""
 
 from css.core.logger import getLogger
-
-logger = getLogger(__name__)
-
 from .engine import TriageEngine
 from .models import TriageRequest, TriageResult
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
@@ -12,6 +9,8 @@ from .exceptions import (
     TriageExecutionError,
     TriageClassificationError,
 )
+
+logger = getLogger(__name__)
 
 __all__ = [
     # Engine

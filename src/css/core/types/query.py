@@ -1,34 +1,33 @@
 """Query types — normalized user-facing execution request.
 
 Query = user-facing execution request (prompt + metadata)
+Converted to msgspec.Struct (Phase 6 P1).
 
 Note: Task types are in modules.tasks.types (internal TeamMember assignment).
 """
 
-from dataclasses import dataclass, field
+import msgspec
 from datetime import datetime
 from typing import Any
 
-from .base import BaseHeader
+from .headers import BaseHeader
 
 
-@dataclass
-class QueryHeader(BaseHeader):
+class QueryHeader(BaseHeader, frozen=True):
     """Metadata header for query execution."""
+    mode: str = "blue"
+    agent_name: str = ""
+    version: str = "1.0"
     
-    def __init__(
-        self,
-        name: str = "query",
-        description: str = "Execution request",
-    ):
-        super().__init__(name, description)
-        self.mode: str = "blue"
-        self.agent_name: str = ""
-        self.version: str = "1.0"
+    def __post_init__(self):
+        """Set defaults for name and description."""
+        if not self.name:
+            self.name = "query"
+        if not self.description:
+            self.description = "Execution request"
 
 
-@dataclass
-class Query:
+class Query(msgspec.Struct, frozen=True):
     """Normalized user-facing query.
     
     Input to QueryExecutor.query() — encapsulates prompt + execution metadata.
@@ -37,19 +36,12 @@ class Query:
     prompt: str
     mode: str = "blue"
     agent_name: str = "cybersec-agents"
-    metadata: dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.now)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    created_at: datetime = msgspec.field(default_factory=datetime.now)
     
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict for inter-process communication."""
-        return {
-            "id": self.id,
-            "prompt": self.prompt,
-            "mode": self.mode,
-            "agent_name": self.agent_name,
-            "metadata": self.metadata,
-            "created_at": self.created_at.isoformat(),
-        }
+        return msgspec.to_builtin(self)
 
 
 __all__ = ["QueryHeader", "Query"]

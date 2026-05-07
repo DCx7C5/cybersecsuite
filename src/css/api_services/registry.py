@@ -14,8 +14,7 @@ Usage::
 from typing import Dict, Optional
 import logging
 
-from css.core.types.providers import ProviderSpec
-from css.api_services.adapters import HttpProviderAdapter
+from .adapters import HttpProviderAdapter, ProviderSpec
 
 logger = logging.getLogger(__name__)
 

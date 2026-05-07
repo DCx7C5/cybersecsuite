@@ -13,11 +13,30 @@ Usage::
 from typing import Any, Optional
 import logging
 from aiohttp import ClientSession, ClientTimeout
+import msgspec
 
-from css.core.types.providers import ProviderSpec
 from css.core.exceptions import ProviderRegistryError
 
+
 logger = logging.getLogger(__name__)
+
+
+class ProviderSpec(msgspec.Struct, frozen=True):
+    """Provider specification loaded from YAML (Phase 6 P2).
+    
+    Defines endpoint, auth, and model configuration for HttpProviderAdapter.
+    """
+    name: str
+    display_name: str
+    base_url: str
+    api_type: str = "openai_compatible"
+    api_key_env: Optional[str] = None
+    completion_endpoint: str = "/chat/completions"
+    models: list[str] = msgspec.field(default_factory=list)
+    streaming: bool = True
+    vision: bool = False
+    tool_use: bool = False
+
 
 # Module-level singleton cache
 _adapters: dict[str, "HttpProviderAdapter"] = {}

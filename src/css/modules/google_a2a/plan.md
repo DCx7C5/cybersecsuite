@@ -1,5 +1,8 @@
 # @google_a2a — Google A2A Protocol Integration
 
+> **MOVED TO CORE**: Originally `modules/google_a2a/`, now at `src/css/core/a2a/google_a2a/`
+> Part of `core/a2a/` — A2A protocol implementations consolidated in core.
+
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
 ---
