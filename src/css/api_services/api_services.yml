@@ -1,13 +1,27 @@
 
 api-services:
   ai21:
-    type:
-    url:
+    display_name: AI21
+    base_url: https://api.ai21.com/studio/v1
+    python_packages: ai21
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: AI21_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /j1-jumbo/complete
+      models: /models
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
 
   anthropic:
     display_name: Anthropic
     base_url: https://api.anthropic.com/v1
-    python_package: anthropic
+    python_packages: ["anthropic", "anthropic[aiohttp]"]
     api_type: openai_compatible
     models: auto
     auth:
@@ -25,7 +39,7 @@ api-services:
   cerebras:
     display_name: Cerebras
     base_url: https://api.cerebras.com/v1
-    python_package: cerebras
+    python_packages: cerebras
     api_type: openai_compatible
     models: auto
     auth:
@@ -47,7 +61,7 @@ api-services:
   cohere:
     display_name: Cohere
     base_url: https://api.cohere.ai/v1
-    python_package: cohere
+    python_packages: cohere
     api_type: openai_compatible
     models: auto
     auth:
@@ -65,7 +79,7 @@ api-services:
   deepinfra:
     display_name: DeepInfra
     base_url: https://api.deepinfra.com/v1
-    python_package: deepinfra
+    python_packages: deepinfra
     api_type: openai_compatible
     models: auto
     auth:
@@ -84,7 +98,7 @@ api-services:
   deepseek:
     display_name: DeepSeek
     base_url: https://api.deepseek.com/v1
-    python_package: deepseek
+    python_packages: deepseek
     api_type: openai_compatible
     models: auto
     auth:
@@ -103,7 +117,7 @@ api-services:
   fireworks:
     display_name: Fireworks AI
     base_url: https://api.fireworks.ai/inference/v1
-    python_package: fireworks-ai
+    python_packages: fireworks-ai
     api_type: openai_compatible
     models: auto
     auth:
@@ -123,7 +137,7 @@ api-services:
   github:
     display_name: GitHub Copilot
     base_url: https://api.github.com/v1
-    python_package: github-copilot-sdk
+    python_packages: github-copilot-sdk
     api_type: openai_compatible
     models: auto
     auth:
@@ -148,7 +162,7 @@ api-services:
   google:
     display_name: Google
     base_url: https://generativelanguage.googleapis.com/v1beta
-    python_package: google-generativeai
+    python_packages: google-generativeai
     api_type: openai_compatible
     models: auto
     auth:
@@ -266,7 +280,7 @@ api-services:
   openrouter:
     display_name: OpenRouter
     base_url: https://openrouter.ai/api/v1
-    python_package: openrouter
+    python_packages: openrouter
     api_type: openai_compatible
     models: auto
     auth:
@@ -286,7 +300,7 @@ api-services:
   sambanova:
     display_name: SambaNova
     base_url: https://api.sambanova.ai/v1
-    python_package: sambanova
+    python_packages: sambanova
     api_type: openai_compatible
     models: auto
     auth:
@@ -304,7 +318,13 @@ api-services:
   together:
 
   xai:
+    display_name: xAI
+    base_url: h
+    python_packages: xai-sdk
+    api_type: openai_compatible
+    models: auto
 
   grok:
+
 
   x:

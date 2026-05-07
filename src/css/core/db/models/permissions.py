@@ -5,7 +5,11 @@ from tortoise.models import Model
 
 
 class PermissionGrant(Model):
-    """Permission grant mapping role to permissions at scope level."""
+    """Permission grant mapping role to permissions at scope level.
+    
+    Supports both action-based permissions (tool_permissions) and 
+    path-based permissions (read_paths, write_paths) for filesystem access control.
+    """
 
     id = fields.BigIntField(primary_key=True)
     role = fields.CharField(max_length=32)
@@ -14,12 +18,37 @@ class PermissionGrant(Model):
     path_permissions = fields.JSONField(default=list)
     tool_permissions = fields.JSONField(default=list)
     allow_all_tools = fields.BooleanField(default=False)
+    # Path-based permission patterns
+    read_paths = fields.JSONField(default=list)
+    write_paths = fields.JSONField(default=list)
+    base_permissions = fields.JSONField(default=dict)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "permission_grants"
         unique_together = (("role", "scope_level", "scope_id"),)
+
+    def has_path_permission(self, path: str, action: str) -> bool:
+        """Check if grant allows filesystem action on path.
+        
+        Args:
+            path: Filesystem path to check (absolute or relative)
+            action: "read" or "write"
+        
+        Returns:
+            True if path matches allowed patterns for action, False otherwise
+        """
+        from fnmatch import fnmatch
+        
+        allowed_paths = self.read_paths if action == "read" else self.write_paths
+        
+        # Check if path matches any allowed pattern
+        for pattern in allowed_paths:
+            if fnmatch(path, pattern) or fnmatch(path, pattern + "/*"):
+                return True
+        
+        return False
 
 
 class ScopeSession(Model):

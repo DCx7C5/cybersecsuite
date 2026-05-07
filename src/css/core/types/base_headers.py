@@ -74,18 +74,47 @@ class BaseToolHeader(BaseHeader):
     deprecated_at: str | None = None
 
 class BaseRoleHeader(BaseHeader):
-    """Metadata header for role entities.
+    """Metadata header for role entities with path-based permissions.
     
     ``role_id`` mirrors the canonical string used in agents frontmatter
     (e.g. ``"orchestrator"``, ``"team-mode"``).
     
     ``scopes`` constrains where this role applies:
     ``"global"`` | ``"team"`` | ``"agent"``.
+    
+    Path-based permissions control filesystem access:
+    - ``read_paths``: glob patterns allowed for read (e.g., "project/**", "~/.css/plans/*")
+    - ``write_paths``: glob patterns allowed for write/modify
+    - ``base_permissions``: foundational permissions (action strings like "task:execute")
     """
     
     role_id: str = ""
     scope: str = "global"
     permissions: list[str] = msgspec.field(default_factory=list)
+    read_paths: list[str] = msgspec.field(default_factory=list)
+    write_paths: list[str] = msgspec.field(default_factory=list)
+    base_permissions: dict[str, bool] = msgspec.field(default_factory=dict)
+    
+    def has_path_permission(self, path: str, action: str) -> bool:
+        """Check if role has permission for filesystem action on path.
+        
+        Args:
+            path: Filesystem path to check (absolute or relative)
+            action: "read" or "write"
+        
+        Returns:
+            True if path matches allowed patterns for action, False otherwise
+        """
+        from fnmatch import fnmatch
+        
+        allowed_paths = self.read_paths if action == "read" else self.write_paths
+        
+        # Check if path matches any allowed pattern
+        for pattern in allowed_paths:
+            if fnmatch(path, pattern) or fnmatch(path, pattern + "/*"):
+                return True
+        
+        return False
 
 __all__ = [
     "BaseHeader",
