@@ -4,18 +4,18 @@ from pathlib import Path
 
 # ── General Settings ──────────────────────────────────────────────────────────
 
-DEBUG = getenv('DEBUG', 'false').lower() == 'true'
+DEBUG = bool(getenv('DEBUG', 'false'))
 ENVIRONMENT = getenv('ENVIRONMENT', 'development')
 PROJECT_DIR = Path(__file__).resolve().parent
 PYTHONUNBUFFERED = True
 
-AUTO_CREATE_POSTGRES_DB = getenv('AUTO_CREATE_DATABASE', 'true').lower() == 'true'
+AUTO_CREATE_POSTGRES_DB = bool(getenv('AUTO_CREATE_DATABASE', 'true'))
 LOG_LEVEL = getenv('LOG_LEVEL', 'info').upper()
 
 
 # ── Cache Configuration (Unified @cache Module) ────────────────────────────────
 
-CACHE_ENABLED = getenv('CACHE_ENABLED', 'true').lower() == 'true'
+CACHE_ENABLED = bool(getenv('CACHE_ENABLED', 'true'))
 CACHE_BACKENDS = getenv('CACHE_BACKENDS', 'redis,postgres,disk').split(',')  # Fallback order
 CACHE_DEFAULT_TTL = int(getenv('CACHE_DEFAULT_TTL', '86400'))  # 1 day in seconds
 
@@ -29,8 +29,8 @@ CACHE_CONFIG_TTL = int(getenv('CACHE_CONFIG_TTL', '3600'))  # 1 hour
 
 # Cache compression & encryption
 CACHE_COMPRESSION = getenv('CACHE_COMPRESSION', 'gzip')  # 'gzip' or 'none'
-CACHE_ENCRYPTION = getenv('CACHE_ENCRYPTION', 'true').lower() == 'true'
-CACHE_METRICS = getenv('CACHE_METRICS', 'true').lower() == 'true'
+CACHE_ENCRYPTION = bool(getenv('CACHE_ENCRYPTION', 'true'))
+CACHE_METRICS = bool(getenv('CACHE_METRICS', 'true'))
 
 # Disk cache (L4 fallback)
 CACHE_DISK_PATH = getenv('CACHE_DISK_PATH', '/var/cache/css/')
@@ -86,7 +86,7 @@ POSTGRES_DATABASE = {
 
 # PostgreSQL cache storage
 CACHE_POSTGRES_TABLE = getenv('CACHE_POSTGRES_TABLE', 'cache_entries')
-CACHE_POSTGRES_ARCHIVE = getenv('CACHE_POSTGRES_ARCHIVE', 'true').lower() == 'true'
+CACHE_POSTGRES_ARCHIVE = bool(getenv('CACHE_POSTGRES_ARCHIVE', 'true'))
 
 
 # ── OpenTelemetry / OpenObserve (Observability) ───────────────────────────────
@@ -105,25 +105,12 @@ OPEN_OBSERVE = {
 }
 
 # Telemetry indices
-TELEMETRY_ENABLED = getenv('TELEMETRY_ENABLED', 'true').lower() == 'true'
-AUDIT_LOG_ENABLED = getenv('AUDIT_LOG_ENABLED', 'true').lower() == 'true'
+TELEMETRY_ENABLED = bool(getenv('TELEMETRY_ENABLED', 'true'))
+AUDIT_LOG_ENABLED = bool(getenv('AUDIT_LOG_ENABLED', 'true'))
 
 
 # ── LLM API Services Configuration ──────────────────────────────────────────────
 
-# Anthropic (Claude)
-ANTHROPIC_API_KEY = getenv('ANTHROPIC_API_KEY', '')
-ANTHROPIC_MODEL = getenv('ANTHROPIC_MODEL', 'claude-3-opus-20240229')
-ANTHROPIC_TIMEOUT = int(getenv('ANTHROPIC_TIMEOUT', '60'))
-
-# OpenAI
-OPENAI_API_KEY = getenv('OPENAI_API_KEY', '')
-OPENAI_MODEL = getenv('OPENAI_MODEL', 'gpt-4')
-OPENAI_TIMEOUT = int(getenv('OPENAI_TIMEOUT', '60'))
-
-# Groq
-GROQ_API_KEY = getenv('GROQ_API_KEY', '')
-GROQ_MODEL = getenv('GROQ_MODEL', 'mixtral-8x7b-32768')
 
 # Local LLM (Ollama)
 OLLAMA_API_URL = getenv('OLLAMA_API_URL', 'http://localhost:11434')
@@ -131,19 +118,19 @@ OLLAMA_MODEL = getenv('OLLAMA_MODEL', 'qwen3:0.6b')  # For Triage role
 OLLAMA_TIMEOUT = int(getenv('OLLAMA_TIMEOUT', '120'))
 
 # LLM API caching (reduces costs)
-LLM_CACHE_ENABLED = getenv('LLM_CACHE_ENABLED', 'true').lower() == 'true'
+LLM_CACHE_ENABLED = bool(getenv('LLM_CACHE_ENABLED', 'true'))
 LLM_CACHE_TTL = CACHE_LLM_TTL  # 30 days
 
 
 # ── A2A Communication (Agent-to-Agent) ──────────────────────────────────────────
 
 # Custom A2A (@css_a2a module)
-CSS_A2A_ENABLED = getenv('CSS_A2A_ENABLED', 'true').lower() == 'true'
+CSS_A2A_ENABLED = bool(getenv('CSS_A2A_ENABLED', 'true'))
 CSS_A2A_KB_SIZE_MB = int(getenv('CSS_A2A_KB_SIZE_MB', '100'))
 CSS_A2A_MESSAGE_TIMEOUT_SEC = int(getenv('CSS_A2A_MESSAGE_TIMEOUT_SEC', '5'))
 
 # Google A2A (@google_a2a module)
-GOOGLE_A2A_ENABLED = getenv('GOOGLE_A2A_ENABLED', 'false').lower() == 'true'
+GOOGLE_A2A_ENABLED = bool(getenv('GOOGLE_A2A_ENABLED', 'false'))
 
 A2A_SERVER = {
     'host': getenv('A2A_HOST', '127.0.0.1'),
@@ -159,7 +146,7 @@ ORCHESTRATOR_CRASH_TIMEOUT_SEC = int(getenv('ORCHESTRATOR_CRASH_TIMEOUT_SEC', '3
 ORCHESTRATOR_TASK_TIMEOUT_SEC = int(getenv('ORCHESTRATOR_TASK_TIMEOUT_SEC', '3600'))  # 1 hour
 
 # Multi-orchestrator mode
-MULTI_ORCHESTRATOR_ENABLED = getenv('MULTI_ORCHESTRATOR_ENABLED', 'true').lower() == 'true'
+MULTI_ORCHESTRATOR_ENABLED = bool(getenv('MULTI_ORCHESTRATOR_ENABLED', 'true'))
 MAX_ORCHESTRATORS_DEV = int(getenv('MAX_ORCHESTRATORS_DEV', '3'))
 MAX_ORCHESTRATORS_OTHER = int(getenv('MAX_ORCHESTRATORS_OTHER', '2'))
 
@@ -191,7 +178,7 @@ BACKEND_PORT = int(getenv('BACKEND_PORT', '8000'))
 # ASGI server
 ASGI_WORKERS = int(getenv('ASGI_WORKERS', '4'))
 ASGI_WORKER_CLASS = getenv('ASGI_WORKER_CLASS', 'uvicorn.workers.UvicornWorker')
-ASGI_ACCESS_LOG = getenv('ASGI_ACCESS_LOG', 'true').lower() == 'true'
+ASGI_ACCESS_LOG = bool(getenv('ASGI_ACCESS_LOG', 'true'))
 
 
 # ── Logging Configuration ──────────────────────────────────────────────────────
@@ -237,14 +224,12 @@ MAX_CONCURRENT_AGENTS = int(getenv('MAX_CONCURRENT_AGENTS', '50'))
 # ── Chat Settings ────────────────────────────────────────────────────────
 
 QOL_MAX_TOKENS = int(getenv('QOL_MAX_TOKENS', '100'))
+QOL_TOKEN_COUNTER = bool(getenv('QOL_TOKEN_COUNTER', 'true'))
 CHAT_CONTEXT_WINDOW = int(getenv('CHAT_CONTEXT_WINDOW', '4096'))
 
 
 # ── Api Keys ────────────────────────────────────────────────────────
 
-API_KEYS = {
-
-}
 
 # ── Marketplace Configuration ───────────────────────────────────────
 
