@@ -46,7 +46,7 @@ def _ensure_root() -> logging.Logger:
     return root
 
 
-def getLogger(name: str) -> "Logger":
+def getLogger(name: str) -> Logger:
     """Get a logger instance, cached for reuse.
 
     Args:

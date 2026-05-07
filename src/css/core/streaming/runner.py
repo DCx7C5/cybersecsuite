@@ -148,7 +148,7 @@ class QueryExecutor:
             logger.error("QueryExecutor: AgentExecutor failed: %s", e)
             raise
 
-    async def stream(self, prompt: str) -> AsyncGenerator[dict[str, str], None]:
+    async def stream(self, prompt: str) -> AsyncGenerator[dict[str, str]]:
         """Stream a query, yielding SSE-ready dicts."""
         from css.modules.streaming.streaming import stream_query
         async for chunk in stream_query(

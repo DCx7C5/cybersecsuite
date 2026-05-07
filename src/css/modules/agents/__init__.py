@@ -1,9 +1,9 @@
 """Agent management module."""
 
-from .base import BaseAgent, AgentExecutor, AgentResult
+from .base import BaseAgent, AgentExecutor
 from .types import Agent
 from .executor import AgentToolExecutor, get_executor
-from .models import AgentConfig, AgentTurn, ConversationContext, TokenUsage
+from .models import AgentConfig, AgentResult, AgentTurn, ConversationContext, TokenUsage
 
 __all__ = [
     "BaseAgent",

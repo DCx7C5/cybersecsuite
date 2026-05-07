@@ -6,12 +6,11 @@ own domain-specific fields, status enums, and state machine methods.
 
 Note: Team types live entirely within modules/teams — no core base needed.
 """
+import msgspec
 
-from dataclasses import dataclass, field
 from typing import Any
 
-
-@dataclass
+@msgspec.struct
 class BaseTask:
     """Abstract base for task entities.
 
@@ -23,16 +22,14 @@ class BaseTask:
     """
 
     id: str
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
-
-@dataclass
+@msgspec.struct
 class BaseTaskScope:
     """Abstract base for immutable task context snapshots."""
 
     id: str
-    metadata: dict[str, Any] = field(default_factory=dict)
-
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
 __all__ = [
     "BaseTask",

@@ -6,15 +6,12 @@ All headers are frozen (immutable) value types.
 
 import msgspec
 
-
-
 class BaseHeader(msgspec.Struct, frozen=True):
     """Base metadata header for all entities."""
 
     name: str
     description: str
     version: str = "0.1.0"
-
 
 class BaseAgentHeader(BaseHeader):
     """Metadata header for agents entities.
@@ -34,7 +31,6 @@ class BaseAgentHeader(BaseHeader):
     streaming: bool = False
     push_notifications: bool = False
 
-
 class BaseSkillHeader(BaseHeader):
     """Metadata header for skills entities.
     
@@ -49,7 +45,6 @@ class BaseSkillHeader(BaseHeader):
     marketplace_id: str | None = None
     install_path: str | None = None
 
-
 class BaseAccountHeader(BaseHeader):
     """Metadata header for account entities.
     
@@ -59,7 +54,6 @@ class BaseAccountHeader(BaseHeader):
     provider_id: str = ""
     auth_method: str = "api_key"
     active: bool = False
-
 
 class BaseToolHeader(BaseHeader):
     """Catalog and access-control metadata for tools entities.
@@ -79,7 +73,6 @@ class BaseToolHeader(BaseHeader):
     deprecated: bool = False
     deprecated_at: str | None = None
 
-
 class BaseRoleHeader(BaseHeader):
     """Metadata header for role entities.
     
@@ -93,7 +86,6 @@ class BaseRoleHeader(BaseHeader):
     role_id: str = ""
     scope: str = "global"
     permissions: list[str] = msgspec.field(default_factory=list)
-
 
 __all__ = [
     "BaseHeader",

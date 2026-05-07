@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Optional, Set, Any
+from typing import Any
 from datetime import datetime
 
 from .models import Tag
@@ -28,14 +28,14 @@ class TagManager:
         """Initialize tag manager."""
         self._tags: dict[int, Tag] = {}
         self._slug_index: dict[str, int] = {}
-        self._assignments: dict[str, Set[int]] = {}  # resource_type:resource_id -> set of tag IDs
+        self._assignments: dict[str, set[int]] = {}  # resource_type:resource_id -> set of tag IDs
     
     async def create_tag(
         self,
         name: str,
         color: TagColor = TagColor.GRAY,
         description: str = "",
-        parent_tag_id: Optional[int] = None,
+        parent_tag_id: int | None = None,
     ) -> Tag:
         """Create a new tag."""
         # Validation
@@ -73,11 +73,11 @@ class TagManager:
         logger.info(f"Created tag: {name} (slug: {slug})")
         return tag
     
-    async def get_tag(self, tag_id: int) -> Optional[Tag]:
+    async def get_tag(self, tag_id: int) -> Tag | None:
         """Get tag by ID."""
         return self._tags.get(tag_id)
     
-    async def get_tag_by_slug(self, slug: str) -> Optional[Tag]:
+    async def get_tag_by_slug(self, slug: str) -> Tag | None:
         """Get tag by slug."""
         tag_id = self._slug_index.get(slug)
         if tag_id:

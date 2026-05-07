@@ -250,7 +250,7 @@ async def instrumentation_middleware(request: Request, call_next):
 - **Blockers**: None
 - **Phase Ready**: Phase 2 ✅ (Production Ready)
 - **Last Audited**: 2026-05-03 by Agent 2
-- **Audit Matrix**: .plan/architecture/core-audit-matrix.md
+- **Audit Reference**: .plan/plan.md (phase and status sections)
 
 ---
 

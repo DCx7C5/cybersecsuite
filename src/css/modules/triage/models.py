@@ -1,32 +1,30 @@
 """Triage request and response models."""
+import msgspec
 
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 from datetime import datetime
 
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
 
-
-@dataclass
+@msgspec.struct
 class TriageRequest:
     """Request for triage classification."""
     query: str
     context: str = ""
-    metadata: dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
 
-
-@dataclass
+@msgspec.struct
 class TriageResult:
     """Result from triage classification."""
     request_id: str
     status: TriageStatus
-    category: Optional[TriageCategory] = None
-    decision: Optional[TriageDecision] = None
-    severity: Optional[SeverityLevel] = None
+    category: TriageCategory | None = None
+    decision: TriageDecision | None = None
+    severity: SeverityLevel | None = None
     confidence: float = 0.0
     reasoning: str = ""
-    routing_target: Optional[str] = None
+    routing_target: str | None = None
     duration_ms: float = 0.0
-    error: Optional[str] = None
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    error: str | None = None
+    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)

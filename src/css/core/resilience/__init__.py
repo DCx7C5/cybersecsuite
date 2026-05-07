@@ -1,8 +1,8 @@
-"""Retry orchestration for all API service providers."""
+"""Resilience orchestration for API service providers."""
 
 from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
-from .orchestrator import RetryOrchestrator, RetryAttempt, RetryResult
+from .orchestrator import RetryAttempt, RetryOrchestrator, RetryResult
 
 __all__ = [
     "RetryConfig",

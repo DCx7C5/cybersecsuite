@@ -1,12 +1,11 @@
 """Cache data models and types (hybrid: dataclasses + Tortoise ORM)."""
+import msgspec
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Dict
+from typing import Any
 from datetime import datetime
 
 from tortoise import fields, models
 from tortoise.models import Model
-
 
 # ─── TORTOISE ORM MODELS (Database schema) ────────────────────────────
 
@@ -25,7 +24,6 @@ class CacheEntryModel(Model):
         table_description = "Cached entries with TTL"
         indexes = [models.Index(fields=["namespace", "key"])]
 
-
 class CacheStatsModel(Model):
     """Cache operation statistics (persisted)."""
     id = fields.BigIntField(primary_key=True)
@@ -41,17 +39,16 @@ class CacheStatsModel(Model):
         table = "cache_stats"
         table_description = "Cache performance metrics"
 
-
 # ─── IN-MEMORY DATACLASSES (Runtime models) ──────────────────────────
 
-@dataclass
+@msgspec.struct
 class CacheEntry:
     """In-memory cache entry (maps to CacheEntryModel)."""
     key: str
     value: Any
-    ttl_seconds: Optional[int] = None
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    ttl_seconds: int | None = None
+    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     
     @property
     def is_expired(self) -> bool:
@@ -61,8 +58,7 @@ class CacheEntry:
         elapsed = (datetime.utcnow() - self.created_at).total_seconds()
         return elapsed > self.ttl_seconds
 
-
-@dataclass
+@msgspec.struct
 class CacheStats:
     """In-memory cache statistics (maps to CacheStatsModel)."""
     hits: int = 0

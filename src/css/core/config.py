@@ -10,10 +10,8 @@ Usage:
   from css.core.config import ProviderDefaults, MarketplaceConfig, SystemConfig
 """
 
-from __future__ import annotations
-
 import os
-
+# TODO: Everything has to go to src/css/config.py
 
 class ProviderDefaults:
     """Default settings shared across all LLM provider clients."""

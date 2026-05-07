@@ -1,6 +1,7 @@
 """Event bus — centralized event emission and handling."""
 import inspect
-from typing import Any, Callable, List
+from typing import Any
+from collections.abc import Callable
 import asyncio
 import logging
 
@@ -16,7 +17,7 @@ class EventBus(metaclass=AsyncSafeSingletonMeta):
     """
 
     def __init__(self):
-        self._handlers: dict[str, List[Callable]] = {}
+        self._handlers: dict[str, list[Callable]] = {}
 
     async def emit(self, event_type: str, payload: Any) -> None:
         """Emit an event to all registered handlers."""

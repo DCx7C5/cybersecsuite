@@ -6,13 +6,10 @@ this vault) can load recent context in ~500 tokens without crawling the full wik
 
 Adapted from the claude-obsidian hot cache pattern.
 """
-
+import msgspec
 
 import time
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
-
 
 _TEMPLATE = """\
 ---
@@ -39,14 +36,12 @@ updated: {updated}
 _HOT_PATH = "wiki/hot.md"
 _MAX_WORDS = 500
 
-
-@dataclass
+@msgspec.struct
 class HotCacheState:
     summary: str = "Session started."
-    facts: list[str] = field(default_factory=list)
-    changes: list[str] = field(default_factory=list)
-    threads: list[str] = field(default_factory=list)
-
+    facts: list[str] = msgspec.field(default_factory=list)
+    changes: list[str] = msgspec.field(default_factory=list)
+    threads: list[str] = msgspec.field(default_factory=list)
 
 class HotCache:
     """
@@ -143,7 +138,7 @@ class HotCache:
 
         state = HotCacheState()
         lines = content.splitlines()
-        section: Optional[str] = None
+        section: str | None = None
 
         for line in lines:
             if line.startswith("## Last Updated"):

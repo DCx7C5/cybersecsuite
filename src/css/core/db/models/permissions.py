@@ -31,11 +31,16 @@ class ScopeSession(Model):
     parent_scope_id = fields.CharField(max_length=255, null=True)
     role = fields.CharField(max_length=32)
     created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
     expires_at = fields.DatetimeField(null=True)
     auto_cleanup_at = fields.DatetimeField(null=True)
 
     class Meta:
         table = "scope_sessions"
+        unique_together = (("session_id", "scope_level"),)
+
+
+
 
 
 class RolePermissionCache(Model):
@@ -51,4 +56,4 @@ class RolePermissionCache(Model):
 
     class Meta:
         table = "role_permission_cache"
-
+        unique_together = (("role", "scope_level", "cache_key"),)

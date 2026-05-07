@@ -1,15 +1,13 @@
 """Skill types — concrete implementation of BaseSkill with installation tracking."""
+import msgspec
 
-
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
 from css.core.types.base_entity import BaseSkill
 from css.core.types.base_headers import BaseSkillHeader
 
-
-@dataclass
+@msgspec.struct
 class Skill(BaseSkill):
     """Concrete skills entity with marketplace installation tracking.
 

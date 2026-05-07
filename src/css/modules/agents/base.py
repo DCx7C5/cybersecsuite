@@ -13,10 +13,10 @@ from typing import Protocol, runtime_checkable, TYPE_CHECKING
 import logging
 from datetime import datetime
 
-import msgspec
-
 if TYPE_CHECKING:
     from css.modules.capabilities.capability_registry import DynamicCapabilityRegistry
+
+from .models import AgentResult
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class BaseAgent(Protocol):
         prompt: str,
         context: dict | None = None,
         **kwargs,
-    ) -> "AgentResult":
+    ) -> AgentResult:
         """Execute the agent with a prompt.
         
         Args:
@@ -52,57 +52,6 @@ class BaseAgent(Protocol):
             AgentExecutionError: If execution fails
         """
         ...
-
-
-class AgentResult(msgspec.Struct, frozen=True):
-    """Structured result from agent execution (msgspec.Struct for Phase 6 P1).
-    
-    Attributes:
-        response: Final agent response (text)
-        thinking: Internal reasoning chain (if available)
-        tool_calls: Any tools the agent tried to use
-        stop_reason: Why execution stopped (end_turn, tool_use, max_tokens, etc.)
-        input_tokens: Token count for prompt
-        output_tokens: Token count for response
-        duration_ms: Execution time in milliseconds
-        executed_at: Timestamp of execution (ISO format string)
-        provider: Which LLM provider was used
-        model: Which model variant
-    """
-    
-    response: str = ""
-    thinking: str | None = None
-    tool_calls: list[dict] = msgspec.field(default_factory=list)
-    stop_reason: str = "end_turn"
-    input_tokens: int = 0
-    output_tokens: int = 0
-    duration_ms: float = 0.0
-    executed_at: str = ""
-    provider: str = "unknown"
-    model: str = "unknown"
-    
-    def to_dict(self) -> dict:
-        """Convert to serializable dict."""
-        return {
-            "response": self.response,
-            "thinking": self.thinking,
-            "tool_calls": self.tool_calls,
-            "stop_reason": self.stop_reason,
-            "input_tokens": self.input_tokens,
-            "output_tokens": self.output_tokens,
-            "duration_ms": self.duration_ms,
-            "executed_at": self.executed_at,
-            "provider": self.provider,
-            "model": self.model,
-        }
-    
-    def __repr__(self) -> str:
-        return (
-            f"AgentResult(provider={self.provider}, model={self.model}, "
-            f"response={self.response[:50]}..., "
-            f"tokens={self.input_tokens}→{self.output_tokens}, "
-            f"duration_ms={self.duration_ms:.1f})"
-        )
 
 
 class AgentExecutor:
@@ -173,13 +122,18 @@ class AgentExecutor:
         duration_ms = (time.time() - start) * 1000
         
         # Build AgentResult from adapter response
+        context = context or {}
         return AgentResult(
+            agent_id=str(context.get("agent_id", "")),
+            session_id=str(context.get("session_id", "")),
             response=result_dict.get("response", ""),
+            thinking=result_dict.get("thinking"),
+            tool_calls=result_dict.get("tool_calls", []),
             stop_reason=result_dict.get("stop_reason", "unknown"),
             input_tokens=result_dict.get("input_tokens", 0),
             output_tokens=result_dict.get("output_tokens", 0),
             duration_ms=duration_ms,
-            executed_at=datetime.now().isoformat(),
+            executed_at=datetime.now(),
             provider=self.provider,
             model=self.model,
         )

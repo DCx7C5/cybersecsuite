@@ -24,12 +24,11 @@ Usage::
     marketplace_cache.invalidate_all()            # nuke everything
 """
 
-from __future__ import annotations
 
 import time
 import asyncio
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from css.core.config import MarketplaceConfig
 
@@ -47,7 +46,7 @@ class MarketplaceCache:
         _store: Dict mapping key → (value, expiry_timestamp).
     """
 
-    def __init__(self, ttl: Optional[int] = None) -> None:
+    def __init__(self, ttl: int | None = None) -> None:
         self._ttl = ttl if ttl is not None else MarketplaceConfig.CACHE_TTL_SECONDS
         self._store: dict[str, tuple[Any, float]] = {}
 
@@ -55,7 +54,7 @@ class MarketplaceCache:
     # Core operations
     # ------------------------------------------------------------------
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Return the cached value for *key*, or ``None`` if missing/expired."""
         entry = self._store.get(key)
         if entry is None:

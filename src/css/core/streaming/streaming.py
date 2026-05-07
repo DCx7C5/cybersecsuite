@@ -17,7 +17,7 @@ async def stream_query(
     mode: str = "blue",
     session_id: str | None = None,
     extra_tools: list[str] | None = None,
-) -> AsyncGenerator[dict[str, Any], None]:
+) -> AsyncGenerator[dict[str, Any]]:
     """Stream a query through the agents SDK, yielding SSE-ready dicts.
 
     Yield types:

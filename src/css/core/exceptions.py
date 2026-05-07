@@ -1,8 +1,6 @@
-
 """Custom exceptions for CyberSecSuite with optional full traceback."""
 
 import traceback
-from typing import Optional
 
 
 class CSSException(Exception):
@@ -17,7 +15,7 @@ class CSSException(Exception):
         self,
         message: str,
         capture_traceback: bool = False,
-        context: Optional[dict] = None,
+        context: dict | None = None,
     ):
         """
         Initialize CSSException.
@@ -41,37 +39,178 @@ class CSSException(Exception):
         if self.full_traceback:
             return f"{self.message}\n\nTraceback:\n{self.full_traceback}"
         return self.message
-        
-        
+
 # ==============================================================================
-# Provider Exceptions Base (api_services/*/)
+# Base Core Exception (css/core/*/)
+# ==============================================================================
+
+class BaseCoreException(CSSException):
+    """
+    Base exception for all core/ errors.
+
+    All module-specific exceptions (marketplace, streaming, etc.)
+    should inherit from this class.
+
+    Attributes:
+        dir_name: Optional name of the core dir (e.g., 'streaming', 'marketplace')
+        context: Optional dict with additional error context
+    """
+
+    def __init__(
+            self,
+            message: str,
+            dir_name: str | None = None,
+            capture_traceback: bool = False,
+            context: dict | None = None,
+    ):
+        ctx = context or {}
+        if dir_name:
+            ctx["dir"] = dir_name
+
+        super().__init__(message, capture_traceback=capture_traceback, context=ctx)
+        self.dir_name = dir_name
+
+# ==============================================================================
+# Base Module Exception (css/modules/*/)
+# ==============================================================================
+
+class BaseModuleException(CSSException):
+    """
+    Base exception for all modules/ module errors.
+
+    All module-specific exceptions (google_a2a, marketplace, streaming, etc.)
+    should inherit from this class.
+
+    Attributes:
+        module_name: Optional name of the module (e.g., 'google_a2a', 'marketplace')
+        context: Optional dict with additional error context
+    """
+
+    def __init__(
+            self,
+            message: str,
+            module_name: str | None = None,
+            capture_traceback: bool = False,
+            context: dict | None = None,
+    ):
+        ctx = context or {}
+        if module_name:
+            ctx["module"] = module_name
+
+        super().__init__(message, capture_traceback=capture_traceback, context=ctx)
+        self.module_name = module_name
+
+
+# ==============================================================================
+# Base Provider Exceptions (css/api_services/*/)
 # ==============================================================================
 
 class BaseProviderException(CSSException):
     """
     Base exception for all api_services/ provider errors.
-    
+
     All provider-specific exceptions should inherit from this class
     (directly or via LLMApiServiceError for LLM providers).
-    
+
     Attributes:
         provider_name: Optional name of the provider (e.g., 'anthropic', 'ollama')
         context: Optional dict with additional error context
     """
-    
+
     def __init__(
-        self,
-        message: str,
-        provider_name: Optional[str] = None,
-        capture_traceback: bool = False,
-        context: Optional[dict] = None,
+            self,
+            message: str,
+            provider_name: str | None = None,
+            capture_traceback: bool = False,
+            context: dict | None = None,
     ):
         ctx = context or {}
         if provider_name:
             ctx["provider"] = provider_name
-        
+
         super().__init__(message, capture_traceback=capture_traceback, context=ctx)
         self.provider_name = provider_name
+
+
+# ==============================================================================
+# Unified Error Hierarchy (for Retry Orchestrator)
+# Issue #3: Map all provider errors to 5-type hierarchy
+# ==============================================================================
+
+
+class UnifiedLLMError(BaseCoreException):
+    """
+    Base for unified error classification across all providers.
+
+    Maps provider-specific errors to 5 standard types:
+    - AuthError: Authentication/authorization failed
+    - RateLimitError: Rate limit exceeded
+    - TimeoutError: Request timed out
+    - GatewayError: Provider returned 5xx/unavailable
+    - UnknownError: Everything else
+    """
+
+    def __init__(
+            self,
+            message: str,
+            error_code: str | None = None,
+            provider: str | None = None,
+            original_error: Exception | None = None,
+            capture_traceback: bool = False,
+            context: dict | None = None,
+    ):
+        """
+        Initialize unified error.
+
+        Args:
+            message: Human-readable message
+            error_code: Provider-specific error code
+            provider: Provider name (anthropic, openai, ollama, etc.)
+            original_error: Original exception from SDK
+            capture_traceback: If True, capture full traceback
+            context: Additional context dict
+        """
+        ctx = context or {}
+        if provider:
+            ctx["provider"] = provider
+        if error_code:
+            ctx["error_code"] = error_code
+
+        super().__init__(message, capture_traceback=capture_traceback, context=ctx)
+        self.error_code = error_code
+        self.provider = provider
+        self.original_error = original_error
+
+
+class AuthError(BaseCoreException):
+    """Authentication or authorization failed (401, 403, invalid credentials)."""
+    pass
+
+
+class RateLimitError(BaseCoreException):
+    """Rate limit exceeded (429, quota exhausted)."""
+
+    def __init__(
+            self,
+            message: str,
+            provider: str | None = None,
+            retry_after_seconds: float | None = None,
+            original_error: Exception | None = None,
+            context: dict | None = None,
+    ):
+        """Initialize rate limit error with retry info."""
+        ctx = context or {}
+        if retry_after_seconds:
+            ctx["retry_after_seconds"] = retry_after_seconds
+
+        super().__init__(
+            message,
+            provider=provider,
+            original_error=original_error,
+            context=ctx,
+        )
+        self.retry_after_seconds = retry_after_seconds
+
 
 
 # ==============================================================================
@@ -85,10 +224,10 @@ class LLMApiServiceError(BaseProviderException):
     def __init__(
         self,
         message: str,
-        provider_name: Optional[str] = None,
-        model_id: Optional[str] = None,
+        provider_name: str | None = None,
+        model_id: str | None = None,
         capture_traceback: bool = False,
-        context: Optional[dict] = None,
+        context: dict | None = None,
     ):
         """
         Initialize LLM API service error.
@@ -117,7 +256,7 @@ class ApiKeyMissingError(LLMApiServiceError):
     def __init__(
         self,
         provider_name: str,
-        message: Optional[str] = None,
+        message: str | None = None,
         capture_traceback: bool = False,
     ):
         """
@@ -179,7 +318,7 @@ class ProviderTimeoutError(LLMApiServiceError):
 # ==============================================================================
 
 
-class LLMHarnessError(CSSException):
+class LLMHarnessError(BaseCoreException):
     """Base exception for LLM harness core logic errors."""
     pass
 
@@ -219,12 +358,12 @@ class ModelExecutionError(LLMHarnessError):
 # ==============================================================================
 
 
-class ConfigurationError(CSSException):
+class ConfigurationError(BaseCoreException):
     """Raised when configuration is invalid or incomplete."""
     pass
 
 
-class ValidationError(CSSException):
+class ValidationError(BaseCoreException):
     """Raised when validation fails."""
     pass
 
@@ -234,7 +373,7 @@ class ValidationError(CSSException):
 # ==============================================================================
 
 
-class OllamaError(CSSException):
+class OllamaError(BaseCoreException):
     """Base exception for Ollama-specific errors."""
     pass
 
@@ -253,116 +392,6 @@ class OllamaModelLoadError(OllamaError):
     """Raised when Ollama model fails to load."""
     pass
 
-
-# ==============================================================================
-# Module Exceptions Base (modules/*/)
-# ==============================================================================
-
-class BaseModuleException(CSSException):
-    """
-    Base exception for all modules/ module errors.
-    
-    All module-specific exceptions (google_a2a, marketplace, streaming, etc.)
-    should inherit from this class.
-    
-    Attributes:
-        module_name: Optional name of the module (e.g., 'google_a2a', 'marketplace')
-        context: Optional dict with additional error context
-    """
-    
-    def __init__(
-        self,
-        message: str,
-        module_name: Optional[str] = None,
-        capture_traceback: bool = False,
-        context: Optional[dict] = None,
-    ):
-        ctx = context or {}
-        if module_name:
-            ctx["module"] = module_name
-        
-        super().__init__(message, capture_traceback=capture_traceback, context=ctx)
-        self.module_name = module_name
-
-
-# ==============================================================================
-# Unified Error Hierarchy (for Retry Orchestrator)
-# Issue #3: Map all provider errors to 5-type hierarchy
-# ==============================================================================
-
-
-class UnifiedLLMError(CSSException):
-    """
-    Base for unified error classification across all providers.
-    
-    Maps provider-specific errors to 5 standard types:
-    - AuthError: Authentication/authorization failed
-    - RateLimitError: Rate limit exceeded
-    - TimeoutError: Request timed out
-    - GatewayError: Provider returned 5xx/unavailable
-    - UnknownError: Everything else
-    """
-    
-    def __init__(
-        self,
-        message: str,
-        error_code: Optional[str] = None,
-        provider: Optional[str] = None,
-        original_error: Optional[Exception] = None,
-        capture_traceback: bool = False,
-        context: Optional[dict] = None,
-    ):
-        """
-        Initialize unified error.
-        
-        Args:
-            message: Human-readable message
-            error_code: Provider-specific error code
-            provider: Provider name (anthropic, openai, ollama, etc.)
-            original_error: Original exception from SDK
-            capture_traceback: If True, capture full traceback
-            context: Additional context dict
-        """
-        ctx = context or {}
-        if provider:
-            ctx["provider"] = provider
-        if error_code:
-            ctx["error_code"] = error_code
-        
-        super().__init__(message, capture_traceback=capture_traceback, context=ctx)
-        self.error_code = error_code
-        self.provider = provider
-        self.original_error = original_error
-
-
-class AuthError(UnifiedLLMError):
-    """Authentication or authorization failed (401, 403, invalid credentials)."""
-    pass
-
-
-class RateLimitError(UnifiedLLMError):
-    """Rate limit exceeded (429, quota exhausted)."""
-    
-    def __init__(
-        self,
-        message: str,
-        provider: Optional[str] = None,
-        retry_after_seconds: Optional[float] = None,
-        original_error: Optional[Exception] = None,
-        context: Optional[dict] = None,
-    ):
-        """Initialize rate limit error with retry info."""
-        ctx = context or {}
-        if retry_after_seconds:
-            ctx["retry_after_seconds"] = retry_after_seconds
-        
-        super().__init__(
-            message,
-            provider=provider,
-            original_error=original_error,
-            context=ctx,
-        )
-        self.retry_after_seconds = retry_after_seconds
 
 
 class TimeoutError(UnifiedLLMError):

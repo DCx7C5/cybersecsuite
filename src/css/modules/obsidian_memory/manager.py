@@ -4,18 +4,19 @@ VaultManager — scaffold and manage a CyberSecSuite forensic Obsidian vault.
 Adapted from the claude-obsidian wiki pattern for forensic/security domains.
 Provides: scaffold, ingest (with delta-tracking), query, lint, status.
 """
-
+import msgspec
 
 import hashlib
 import json
-import logging
 import os
 import time
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Optional
 
-logger = logging.getLogger("csmcp.vault")
+from pathlib import Path
+from typing import Any
+
+from css.modules import getLogger
+
+logger = getLogger("vault")
 
 _DEFAULT_VAULT_PATH = str(
     Path(os.environ.get("CYBERSECSUITE_HOME", str(Path.home() / ".cybersecsuite"))).expanduser()
@@ -104,17 +105,15 @@ updated: {date}
 - (none yet)
 """
 
-
-@dataclass
+@msgspec.struct
 class IngestResult:
     source: str
     skipped: bool = False
     skip_reason: str = ""
-    pages_created: list[str] = field(default_factory=list)
-    pages_updated: list[str] = field(default_factory=list)
-    entities_extracted: list[str] = field(default_factory=list)
-    error: Optional[str] = None
-
+    pages_created: list[str] = msgspec.field(default_factory=list)
+    pages_updated: list[str] = msgspec.field(default_factory=list)
+    entities_extracted: list[str] = msgspec.field(default_factory=list)
+    error: str | None = None
 
 class VaultManager:
     """
@@ -208,7 +207,7 @@ class VaultManager:
         canvas_files = list((wiki / "canvases").glob("*.canvas")) if (wiki / "canvases").exists() else []
 
         hot_path = wiki / "hot.md"
-        hot_age: Optional[float] = None
+        hot_age: float | None = None
         if hot_path.exists():
             hot_age = time.time() - hot_path.stat().st_mtime
 
@@ -287,7 +286,6 @@ class VaultManager:
             except json.JSONDecodeError:
                 pass
         return {"sources": {}}
-
 
 # ── CLAUDE.md template ────────────────────────────────────────────────────────
 

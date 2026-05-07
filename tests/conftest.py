@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 import pytest_asyncio
-from tortoise import Tortoise
 
 # Ensure src/ is on the path so both `css.*` and `legacy.*` imports resolve
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()

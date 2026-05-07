@@ -1,7 +1,7 @@
 """Base classes for the tools module."""
 
 import logging
-from typing import Optional, Any
+from typing import Any
 
 from css.core.tools.base import BaseToolRegistry
 
@@ -18,7 +18,7 @@ class ToolRegistry(BaseToolRegistry):
         self._tools[tool_id] = tool_data
         logger.debug(f"Registered tool: {tool_id}")
 
-    def get_tool(self, tool_id: str) -> Optional[dict[str, Any]]:
+    def get_tool(self, tool_id: str) -> dict[str, Any] | None:
         """Retrieve a tool's data by its ID."""
         return self._tools.get(tool_id)
 

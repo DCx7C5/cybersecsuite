@@ -6,7 +6,7 @@ permission denials, and resource access errors.
 """
 
 
-from typing import Any, Optional
+from typing import Any
 
 
 class ScopeError(Exception):
@@ -16,7 +16,7 @@ class ScopeError(Exception):
         self,
         message: str,
         error_code: str = "SCOPE_ERROR",
-        context: Optional[dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Initialize scopes error.
 
@@ -37,9 +37,9 @@ class ScopeValidationError(ScopeError):
     def __init__(
         self,
         message: str,
-        scope_level: Optional[str] = None,
-        invalid_fields: Optional[list[str]] = None,
-        context: Optional[dict[str, Any]] = None,
+        scope_level: str | None = None,
+        invalid_fields: list[str] | None = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Initialize scopes validation error.
 
@@ -67,11 +67,11 @@ class ScopePermissionError(ScopeError):
     def __init__(
         self,
         message: str,
-        user_id: Optional[str] = None,
-        resource: Optional[str] = None,
-        action: Optional[str] = None,
-        scope_level: Optional[str] = None,
-        context: Optional[dict[str, Any]] = None,
+        user_id: str | None = None,
+        resource: str | None = None,
+        action: str | None = None,
+        scope_level: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Initialize permission error.
 
@@ -108,9 +108,9 @@ class ScopeResourceNotFoundError(ScopeError):
     def __init__(
         self,
         message: str,
-        resource_id: Optional[str | int] = None,
-        resource_type: Optional[str] = None,
-        scope_level: Optional[str] = None,
+        resource_id: str | int | None = None,
+        resource_type: str | None = None,
+        scope_level: str | None = None,
     ) -> None:
         """Initialize resource not found error.
 
@@ -138,8 +138,8 @@ class ScopeHierarchyError(ScopeError):
     def __init__(
         self,
         message: str,
-        source_scope: Optional[str] = None,
-        target_scope: Optional[str] = None,
+        source_scope: str | None = None,
+        target_scope: str | None = None,
     ) -> None:
         """Initialize hierarchy error.
 
@@ -164,8 +164,8 @@ class CacheInvalidationError(ScopeError):
     def __init__(
         self,
         message: str,
-        cache_key: Optional[str] = None,
-        scope_level: Optional[str] = None,
+        cache_key: str | None = None,
+        scope_level: str | None = None,
     ) -> None:
         """Initialize cache invalidation error.
 

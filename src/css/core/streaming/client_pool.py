@@ -8,6 +8,18 @@ from css.core.types.meta import SingletonMetaClass
 
 logger = logging.getLogger("agents.client_pool")
 
+try:
+    from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions as _ClaudeAgentOptions
+    _CLAUDE_SDK_AVAILABLE = True
+except ImportError:
+    _CLAUDE_SDK_AVAILABLE = False
+
+try:
+    from a2a.agent_sdk import build_agent_options as _build_agent_options
+    _A2A_SDK_AVAILABLE = True
+except ImportError:
+    _A2A_SDK_AVAILABLE = False
+
 
 @runtime_checkable
 class SDKClientProtocol(Protocol):
@@ -35,18 +47,17 @@ class ClientPool:
 
     async def _create_client(self, session_id: str | None = None) -> SDKClientProtocol:
         """Create a new ClaudeSDKClient instance."""
-        from claude_agent_sdk import ClaudeSDKClient
+        if not _CLAUDE_SDK_AVAILABLE:
+            raise RuntimeError("claude_agent_sdk is not installed")
 
-        try:
-            from a2a.agent_sdk import build_agent_options
-            options = build_agent_options()
-        except ImportError:
-            from claude_agent_sdk import ClaudeAgentOptions
-            options = ClaudeAgentOptions()
+        if _A2A_SDK_AVAILABLE:
+            options = _build_agent_options()
+        else:
+            options = _ClaudeAgentOptions()
 
         if session_id:
             options.resume = session_id
-        return ClaudeSDKClient(options=options)  # type: ignore[return-value]
+        return ClaudeSDKClient(options=options)
 
     async def acquire(self, session_id: str | None = None) -> SDKClientProtocol:
         """Acquire a client from the pool."""

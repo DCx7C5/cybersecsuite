@@ -1,6 +1,5 @@
 """Agent data models — configuration and result structures using msgspec."""
 
-from __future__ import annotations
 
 import msgspec
 from datetime import datetime
@@ -53,30 +52,63 @@ class AgentConfig(msgspec.Struct):
 class AgentResult(msgspec.Struct):
     """Result from agent execution.
     
-    Attributes:
-        agent_id: ID of the executing agent
-        session_id: Conversation session ID
-        response: Final text response from agent
-        tool_calls: Any tools the agent attempted to use
-        usage: Token usage statistics
-        duration_ms: Time taken for execution
-        provider_used: Which provider was actually used
-        stop_reason: Why execution stopped (end_turn, tool_use, max_tokens, etc.)
-        executed_at: Timestamp of execution
+    Canonical result type shared by AgentExecutor and conversation turns.
     """
-    agent_id: str
-    session_id: str
-    response: str
+    agent_id: str = ""
+    session_id: str = ""
+    response: str = ""
+    thinking: str | None = None
     tool_calls: list[dict[str, Any]] = msgspec.field(default_factory=list)
     usage: TokenUsage | None = None
+    input_tokens: int = 0
+    output_tokens: int = 0
     duration_ms: float = 0.0
-    provider_used: str = "unknown"
+    provider: str = "unknown"
+    model: str = "unknown"
     stop_reason: str = "end_turn"
     executed_at: datetime | None = None
 
     def __post_init__(self) -> None:
         if self.executed_at is None:
             object.__setattr__(self, 'executed_at', datetime.now())
+        if self.usage is None and (self.input_tokens or self.output_tokens):
+            object.__setattr__(
+                self,
+                'usage',
+                TokenUsage(
+                    input_tokens=self.input_tokens,
+                    output_tokens=self.output_tokens,
+                ),
+            )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "session_id": self.session_id,
+            "response": self.response,
+            "thinking": self.thinking,
+            "tool_calls": self.tool_calls,
+            "usage": {
+                "input_tokens": self.usage.input_tokens,
+                "output_tokens": self.usage.output_tokens,
+                "total_tokens": self.usage.total_tokens,
+            } if self.usage else None,
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "duration_ms": self.duration_ms,
+            "provider": self.provider,
+            "model": self.model,
+            "stop_reason": self.stop_reason,
+            "executed_at": self.executed_at.isoformat() if self.executed_at else None,
+        }
+
+    def __repr__(self) -> str:
+        return (
+            f"AgentResult(provider={self.provider}, model={self.model}, "
+            f"response={self.response[:50]}..., "
+            f"tokens={self.input_tokens}→{self.output_tokens}, "
+            f"duration_ms={self.duration_ms:.1f})"
+        )
 
 
 class AgentTurn(msgspec.Struct):

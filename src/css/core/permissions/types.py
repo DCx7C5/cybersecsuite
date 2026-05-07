@@ -1,23 +1,19 @@
 """Type definitions for permissions module."""
+import msgspec
 
-from __future__ import annotations
-
-from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 from pathlib import Path
 
 from .enums import ScopeLevel, Permission
 from css.core.types.base_entity import BaseRole
 from css.core.types.base_headers import BaseRoleHeader
 
-
-@dataclass
+@msgspec.struct
 class PermissionPolicy:
     """Permission policy for a role at a scope level."""
 
-    path_permissions: set[Permission] = field(default_factory=set)
-    tool_permissions: set[str] = field(default_factory=set)
+    path_permissions: set[Permission] = msgspec.field(default_factory=set)
+    tool_permissions: set[str] = msgspec.field(default_factory=set)
     allow_all_tools: bool = False
 
     def has_permission(self, permission: Permission) -> bool:
@@ -30,17 +26,16 @@ class PermissionPolicy:
             return True
         return tool_id in self.tool_permissions
 
-
-@dataclass
+@msgspec.struct
 class ScopeContext:
     """Encapsulates permission context for current operation."""
 
     role: Role
     scope_level: ScopeLevel
     scope_id: str
-    timestamp: datetime = field(default_factory=datetime.utcnow)
-    token: Optional[str] = None
-    parent_scope: Optional["ScopeContext"] = None
+    timestamp: datetime = msgspec.field(default_factory=datetime.utcnow)
+    token: str | None = None
+    parent_scope: ScopeContext | None = None
 
     def get_filesystem_path(self) -> Path:
         """Get filesystem path for this scope."""
@@ -57,11 +52,11 @@ class ScopeContext:
             return Path("/tmp/cybersec") / f"runtime_{runtime_id}" / "sessions" / self.scope_id
         return Path("/tmp/cybersec")
 
-    def get_parent_scope(self) -> Optional["ScopeContext"]:
+    def get_parent_scope(self) -> ScopeContext | None:
         """Get parent scope context."""
         return self.parent_scope
 
-    def has_permission(self, permission: Permission, level: Optional[ScopeLevel] = None) -> bool:
+    def has_permission(self, permission: Permission, level: ScopeLevel | None = None) -> bool:
         """Check if role has permission at scope level."""
         check_level = level or self.scope_level
         if check_level == self.scope_level:
@@ -72,14 +67,13 @@ class ScopeContext:
         """Check if role can access tool."""
         return True  # TODO: Implement tool permission checks
 
-
-@dataclass
+@msgspec.struct
 class TokenPayload:
     """JWT token payload for scope context."""
 
     scope_context: ScopeContext
-    issued_at: datetime = field(default_factory=datetime.utcnow)
-    expires_at: Optional[datetime] = None
+    issued_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    expires_at: datetime | None = None
 
     def is_expired(self) -> bool:
         """Check if token is expired."""
@@ -87,8 +81,7 @@ class TokenPayload:
             return False
         return datetime.utcnow() > self.expires_at
 
-
-@dataclass
+@msgspec.struct
 class Role(BaseRole):
     """Concrete role entity with display metadata and a permission set.
 
@@ -116,7 +109,6 @@ class Role(BaseRole):
     @property
     def display_name(self) -> str:
         return self.header.name if self.header else self.role_id
-
 
 # ── Built-in role singletons ──────────────────────────────────────────────────
 
@@ -167,7 +159,6 @@ WORKER = Role(
 
 #: Maps role_id → Role for quick lookup
 REGISTRY: dict[str, Role] = {r.role_id: r for r in (ORCHESTRATOR, TEAM_MODE, WORKER)}
-
 
 def get(role_id: str) -> Role:
     """Return a built-in Role by ID, or a default zero-capability Role for unknown IDs."""

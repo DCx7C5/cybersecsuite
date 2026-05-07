@@ -1,36 +1,34 @@
 """Chat data models and types."""
+import msgspec
 
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 from datetime import datetime
 
 from .enums import ChatRole, ChatMessageType, ChatStatus
 
-
-@dataclass
+@msgspec.struct
 class ChatMessage:
     """Single chat message."""
     id: str
     role: ChatRole
     message_type: ChatMessageType
     content: str
-    metadata: dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
     tokens: int = 0
 
-
-@dataclass
+@msgspec.struct
 class ChatSession:
     """Chat session containing messages."""
     session_id: str
     title: str
     status: ChatStatus = ChatStatus.ACTIVE
-    model_id: Optional[str] = None
+    model_id: str | None = None
     system_prompt: str = ""
-    messages: list[ChatMessage] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime = field(default_factory=datetime.utcnow)
+    messages: list[ChatMessage] = msgspec.field(default_factory=list)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    updated_at: datetime = msgspec.field(default_factory=datetime.utcnow)
     
     def add_message(self, message: ChatMessage) -> None:
         """Add message to session."""

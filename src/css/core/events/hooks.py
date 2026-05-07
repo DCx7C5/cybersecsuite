@@ -1,6 +1,7 @@
 """Hook registry — register event handlers using decorators."""
 
-from typing import Callable, Any, TypeVar
+from typing import Any, TypeVar
+from collections.abc import Callable
 import logging
 
 from .event_bus import event_bus

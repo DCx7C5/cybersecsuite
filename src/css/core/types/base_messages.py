@@ -5,14 +5,14 @@ Uses msgspec.Struct for 10-40× faster serialization.
 """
 
 import logging
-from typing import Any, AsyncIterator
+from typing import Any
+from collections.abc import AsyncIterator
 
 import msgspec
 
 from .enums import MessageRole, ProviderType
 
 logger = logging.getLogger(__name__)
-
 
 class BaseMessage(msgspec.Struct, frozen=True):
     """A message in the conversation."""
@@ -23,7 +23,6 @@ class BaseMessage(msgspec.Struct, frozen=True):
     tool_calls: list[dict] = msgspec.field(default_factory=list)
     tool_call_id: str | None = None
 
-
 class Tool(msgspec.Struct, frozen=True):
     """A tool available to the model."""
 
@@ -31,7 +30,6 @@ class Tool(msgspec.Struct, frozen=True):
     description: str = ""
     input_schema: dict[str, Any] = msgspec.field(default_factory=dict)
     return_schema: dict[str, Any] | None = None
-
 
 class ModelMetadata(msgspec.Struct, frozen=True):
     """Metadata about a model with per-model feature flags."""
@@ -53,7 +51,6 @@ class ModelMetadata(msgspec.Struct, frozen=True):
     input_cost_per_mtok: float = 0.0
     output_cost_per_mtok: float = 0.0
 
-
 class StreamChunk(msgspec.Struct, frozen=True):
     """A chunk from a streaming response."""
 
@@ -62,14 +59,12 @@ class StreamChunk(msgspec.Struct, frozen=True):
     stop_reason: str | None = None
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
-
 class LLMResponse(msgspec.Struct, frozen=True):
     """A complete LLM response (buffered)."""
 
     text: str = ""
     stop_reason: str = "stop"
     usage: dict[str, Any] = msgspec.field(default_factory=dict)
-
 
 class ExecutorResult(msgspec.Struct, frozen=True):
     """Result from an execution/API call to a provider."""
@@ -88,7 +83,6 @@ class ExecutorResult(msgspec.Struct, frozen=True):
     def ok(self) -> bool:
         """Check if status code is successful (2xx range)."""
         return 200 <= self.status_code < 300
-
 
 __all__ = [
     "BaseMessage",

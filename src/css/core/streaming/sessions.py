@@ -3,26 +3,23 @@
 Bridges claude_agent_sdk session functions to the forensic investigation
 workflow: maps session IDs to cases, agents, and modes.
 """
-
+import msgspec
 
 import logging
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger("agents.sessions")
 
-
-@dataclass
+@msgspec.struct
 class SessionRecord:
     """In-memory record of a Claude SDK session."""
     session_id: str
     agent_name: str
     mode: str = "blue"
     case_id: str | None = None
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    tags: list[str] = field(default_factory=list)
-
+    created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
+    tags: list[str] = msgspec.field(default_factory=list)
 
 class SessionManager:
     """Manages Claude SDK sessions for forensic investigations.
@@ -137,7 +134,6 @@ class SessionManager:
         except Exception as exc:
             logger.warning("fork_session(%s) failed: %s", session_id, exc)
             return None
-
 
 # Global singleton — shared across AgentRunner instances
 default_session_manager = SessionManager()

@@ -1,18 +1,16 @@
 """RedisCommunicator — implements BaseCommunicator protocol for Redis-backed messaging."""
-
-from __future__ import annotations
+import msgspec
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Callable, Literal
+from typing import Any, Literal
+from collections.abc import Callable
 
 from .dispatcher import MessageDispatcher
 from .messaging import Message
 
 log = logging.getLogger(__name__)
 
-
-@dataclass
+@msgspec.struct
 class RedisCommunicator:
     """High-level async messaging interface for a single agents/entity.
 
@@ -26,7 +24,7 @@ class RedisCommunicator:
 
     _entity_id: str
     _dispatcher: MessageDispatcher
-    _handlers: dict[str, list[Callable]] = field(default_factory=dict)
+    _handlers: dict[str, list[Callable]] = msgspec.field(default_factory=dict)
 
     @property
     def entity_id(self) -> str:

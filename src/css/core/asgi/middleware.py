@@ -3,7 +3,7 @@
 
 import re
 import time
-from typing import Callable, List, Tuple
+from collections.abc import Callable
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -12,7 +12,7 @@ from starlette.responses import Response, RedirectResponse
 from .app import TLS_AVAILABLE, ASGI_TLS_PORT
 from telemetry import record_event
 
-PathPattern = Tuple[re.Pattern, str]
+PathPattern = tuple[re.Pattern, str]
 
 # Paths to skip
 _SKIP_PREFIXES = ("/health", "/static", "/favicon")
@@ -23,13 +23,13 @@ _ID_PATTERNS = [
     (re.compile(r"/[0-9a-fA-F-]{32,}(?=/|$)"), "/{uuid}"),
 ]
 
-def should_skip_path(path: str, skip_prefixes: List[str]) -> bool:
+def should_skip_path(path: str, skip_prefixes: list[str]) -> bool:
     """Check if a path should be skipped based on prefix list."""
     return any(path.startswith(p) for p in skip_prefixes)
 
 
 
-def normalize_path_patterns(path: str, patterns: List[PathPattern]) -> str:
+def normalize_path_patterns(path: str, patterns: list[PathPattern]) -> str:
     """Normalize path by replacing patterns (e.g., numeric IDs with placeholders)."""
     for pat, rep in patterns:
         path = pat.sub(rep, path)

@@ -5,7 +5,6 @@ All endpoints use async aiohttp patterns.
 """
 
 import logging
-from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 
 from css.modules.tools.registry import get_tool_registry
@@ -17,7 +16,7 @@ router = APIRouter(prefix="/api/tools", tags=["tools"])
 
 
 @router.get("/hybrid")
-async def list_hybrid_tools(strategy: Optional[str] = Query(None), enabled_only: bool = Query(True)) -> dict:
+async def list_hybrid_tools(strategy: str | None = Query(None), enabled_only: bool = Query(True)) -> dict:
     """List all registered hybrid tools.
     
     Query params:
@@ -33,7 +32,7 @@ async def list_hybrid_tools(strategy: Optional[str] = Query(None), enabled_only:
 
 
 @router.get("")
-async def list_tools(provider: Optional[str] = Query(None), enabled_only: bool = Query(True)) -> dict:
+async def list_tools(provider: str | None = Query(None), enabled_only: bool = Query(True)) -> dict:
     """List regular provider tools, optionally filtered by provider."""
     registry = get_tool_registry()
     tools = registry.list_tools(filter_by_provider=provider, enabled_only=enabled_only)

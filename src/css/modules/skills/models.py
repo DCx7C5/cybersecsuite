@@ -1,13 +1,13 @@
 """Skill data models and types."""
+import msgspec
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Callable
+from typing import Any
+from collections.abc import Callable
 from datetime import datetime
 
 from .enums import SkillStatus, SkillCategory
 
-
-@dataclass
+@msgspec.struct
 class SkillParameter:
     """Definition of a skill parameter."""
     name: str
@@ -15,21 +15,19 @@ class SkillParameter:
     description: str = ""
     required: bool = True
     default_value: Any = None
-    validation_rules: dict[str, Any] = field(default_factory=dict)
+    validation_rules: dict[str, Any] = msgspec.field(default_factory=dict)
 
-
-@dataclass
+@msgspec.struct
 class SkillResult:
     """Result from skill execution."""
     skill_id: str
     success: bool
     output: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     duration_ms: float = 0.0
-    executed_at: datetime = field(default_factory=datetime.utcnow)
+    executed_at: datetime = msgspec.field(default_factory=datetime.utcnow)
 
-
-@dataclass
+@msgspec.struct
 class SkillDefinition:
     """Complete definition of a skill."""
     skill_id: str
@@ -40,18 +38,18 @@ class SkillDefinition:
     status: SkillStatus = SkillStatus.ACTIVE
     
     # Parameters and execution
-    parameters: list[SkillParameter] = field(default_factory=list)
-    handler: Optional[Callable] = None  # Execution function
+    parameters: list[SkillParameter] = msgspec.field(default_factory=list)
+    handler: Callable | None = None  # Execution function
     
     # Metadata
     author: str = ""
-    tags: list[str] = field(default_factory=list)
-    dependencies: list[str] = field(default_factory=list)  # Other skill IDs
-    custom_metadata: dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = msgspec.field(default_factory=list)
+    dependencies: list[str] = msgspec.field(default_factory=list)  # Other skill IDs
+    custom_metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     
     # Lifecycle
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    updated_at: datetime = msgspec.field(default_factory=datetime.utcnow)
     
     def validate_parameters(self, **kwargs) -> dict[str, str]:
         """Validate parameters against definition."""

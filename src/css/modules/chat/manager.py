@@ -1,15 +1,16 @@
 """Chat handler and session management."""
 
-import logging
 import uuid
-from typing import Optional
 from datetime import datetime
+from typing import Any
 
+from . import getLogger
 from .models import ChatMessage, ChatSession
 from .enums import ChatRole, ChatMessageType, ChatStatus
 from .exceptions import ChatSessionNotFoundError
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
+
 
 
 class ChatSessionManager:
@@ -34,7 +35,7 @@ class ChatSessionManager:
         
         return session
     
-    def get_session(self, session_id: str) -> Optional[ChatSession]:
+    def get_session(self, session_id: str) -> ChatSession | None:
         """Get chat session by ID."""
         return self._sessions.get(session_id)
     
@@ -90,7 +91,7 @@ class ChatSessionManager:
             return True
         return False
     
-    def get_stats(self) -> dict[str, any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get chat statistics."""
         total_sessions = len(self._sessions)
         total_messages = sum(len(s.messages) for s in self._sessions.values())

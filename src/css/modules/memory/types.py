@@ -1,6 +1,5 @@
 """Value types for memory state and snapshots."""
 
-from dataclasses import dataclass, field
 from typing import Any
 
 try:
@@ -9,7 +8,6 @@ except ImportError:  # pragma: no cover - fallback for minimal dev envs
     msgspec = None
 
 from .enums import MemoryEntryKind, MemoryScope, MemoryTier
-
 
 if msgspec is not None:
 
@@ -37,7 +35,7 @@ if msgspec is not None:
         created_at: str = ""
 else:
 
-    @dataclass(frozen=True)
+    @msgspec.struct(frozen=True)
     class MemoryEntry:
         """Fallback memory entry value object when msgspec is unavailable."""
 
@@ -48,16 +46,16 @@ else:
         tier: MemoryTier
         kind: MemoryEntryKind
         content: str
-        metadata: dict[str, Any] = field(default_factory=dict)
+        metadata: dict[str, Any] = msgspec.field(default_factory=dict)
         created_at: str = ""
 
-    @dataclass(frozen=True)
+    @msgspec.struct(frozen=True)
     class MemorySnapshot:
         """Fallback memory snapshot value object when msgspec is unavailable."""
 
         snapshot_id: str
         session_id: str
         summary: str
-        entries: list[str] = field(default_factory=list)
-        metadata: dict[str, Any] = field(default_factory=dict)
+        entries: list[str] = msgspec.field(default_factory=list)
+        metadata: dict[str, Any] = msgspec.field(default_factory=dict)
         created_at: str = ""

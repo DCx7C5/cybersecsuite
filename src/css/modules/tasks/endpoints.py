@@ -1,6 +1,6 @@
 """Task CRUD endpoints."""
 
-from typing import Any, Optional
+from typing import Any
 
 from .enums import TaskStatus, TaskPriority
 from .types import Task, TaskScope
@@ -58,7 +58,7 @@ async def create_task(
     return task
 
 
-async def get_task(task_id: str) -> Optional[Task]:
+async def get_task(task_id: str) -> Task | None:
     """Retrieve task by ID from ORM (B11).
     
     Deserialize from TaskAssignment.task_payload.
@@ -94,7 +94,7 @@ async def get_task(task_id: str) -> Optional[Task]:
 
 async def list_tasks(
     team_id: int,
-    status: Optional[str] = None,
+    status: str | None = None,
     limit: int = 100,
 ) -> list[Task]:
     """List tasks for team.

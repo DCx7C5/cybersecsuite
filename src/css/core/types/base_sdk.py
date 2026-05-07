@@ -8,16 +8,12 @@ Subclasses: OllamaApiService, NScaleApiService, and future local providers.
 """
 
 import logging
-from typing import AsyncIterator, Optional, List
+from collections.abc import AsyncIterator
 from abc import ABC, abstractmethod
 
 
 from css.core.exceptions import GatewayError
-try:
-    from css.core.retry import RetryOrchestrator, RetryConfig
-except ModuleNotFoundError:
-    RetryOrchestrator = None  # type: ignore[assignment,misc]
-    RetryConfig = None  # type: ignore[assignment,misc]
+from css.core.resilience import RetryOrchestrator, RetryConfig
 from css.core.types import BaseApiServiceClient, ProviderType, ModelMetadata, BaseMessage, StreamChunk, Tool
 
 logger = logging.getLogger(__name__)
@@ -53,7 +49,7 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
         base_url: str,
         timeout_seconds: int = 120,
         max_retries: int = 3,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         enable_model_auto_load: bool = True,
     ):
         """
@@ -82,9 +78,9 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
                 base_delay_ms=100,  # Local APIs usually respond quickly
             )
         )
-        self._cached_models: Optional[List[ModelMetadata]] = None
+        self._cached_models: list[ModelMetadata] | None = None
     
-    async def get_models(self) -> List[ModelMetadata]:
+    async def get_models(self) -> list[ModelMetadata]:
         """
         Discover available models.
         
@@ -101,7 +97,7 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
         if self._cached_models is not None:
             return self._cached_models
         
-        async def fetch_models() -> List[ModelMetadata]:
+        async def fetch_models() -> list[ModelMetadata]:
             fetched = await self._fetch_available_models()
             self._cached_models = fetched
             return fetched
@@ -125,7 +121,7 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
         return models
     
     @abstractmethod
-    async def _fetch_available_models(self) -> List[ModelMetadata]:
+    async def _fetch_available_models(self) -> list[ModelMetadata]:
         """
         Fetch available models from local SDK.
         
@@ -143,11 +139,11 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
     async def call_llm(
         self,
         model_id: str,
-        messages: List[BaseMessage],
-        tools: Optional[List[Tool]] = None,
+        messages: list[BaseMessage],
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk]:
@@ -229,11 +225,11 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
     async def _prepare_call_body(
         self,
         model_id: str,
-        messages: List[BaseMessage],
-        tools: Optional[List[Tool]],
+        messages: list[BaseMessage],
+        tools: list[Tool] | None,
         temperature: float,
-        max_tokens: Optional[int],
-        system_prompt: Optional[str],
+        max_tokens: int | None,
+        system_prompt: str | None,
         streaming: bool,
         **kwargs,
     ) -> dict:

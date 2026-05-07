@@ -1,80 +1,51 @@
-"""Wrapper to add retry logic to any API service."""
+"""Wrapper to apply retry orchestration to any API service client."""
 
-import logging
-from typing import AsyncIterator, Optional
+from collections.abc import AsyncIterator
 
 from css.core.types import (
     BaseApiServiceClient,
     BaseMessage,
-    Tool,
-    ModelMetadata,
-    StreamChunk,
     LLMResponse,
+    ModelMetadata,
     ProviderType,
+    StreamChunk,
+    Tool,
 )
-from css.core.retry import RetryOrchestrator
 
-logger = logging.getLogger(__name__)
+from .orchestrator import RetryOrchestrator
 
 
 class RetryWrappedApiService:
-    """
-    Wraps any BaseApiServiceClient with retry logic.
-    
-    Automatically detects whether provider has built-in retry:
-    - If yes: passes through (no double-retry)
-    - If no: wraps calls with exponential backoff + jitter
-    """
-    
     def __init__(
         self,
         service: BaseApiServiceClient,
-        orchestrator: Optional[RetryOrchestrator] = None
+        orchestrator: RetryOrchestrator | None = None,
     ):
-        """
-        Initialize wrapper.
-        
-        Args:
-            service: BaseApiServiceClient instance to wrap
-            orchestrator: RetryOrchestrator instance (creates default if None)
-        """
         self.service = service
         self.orchestrator = orchestrator or RetryOrchestrator()
-        logger.debug(f"Wrapped {service.provider_id} with retry orchestrator")
-    
+
     async def get_models(self) -> list[ModelMetadata]:
-        """
-        Get available models with retry.
-        
-        Returns:
-            List of ModelMetadata
-        """
         result = await self.orchestrator.execute_with_retry(
             api_call=self.service.get_models,
             provider_id=self.service.provider_id,
         )
-        
-        if result.success:
+        if result.success and result.result is not None:
             return result.result
-        else:
+        if result.error is not None:
             raise result.error
-    
+        raise RuntimeError("get_models failed without explicit error")
+
     async def call_llm(
         self,
         model_id: str,
         messages: list[BaseMessage],
-        tools: Optional[list[Tool]] = None,
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk] | LLMResponse:
-        """
-        Call LLM with retry.
-        
-        Returns AsyncIterator[StreamChunk] if streaming, else LLMResponse.
-        """
         result = await self.orchestrator.execute_with_retry(
             api_call=self.service.call_llm,
             provider_id=self.service.provider_id,
@@ -87,13 +58,12 @@ class RetryWrappedApiService:
             streaming=streaming,
             **kwargs,
         )
-        
-        if result.success:
+        if result.success and result.result is not None:
             return result.result
-        else:
+        if result.error is not None:
             raise result.error
-    
+        raise RuntimeError("call_llm failed without explicit error")
+
     @property
     def provider_id(self) -> ProviderType:
-        """Proxy to underlying service provider_id."""
         return self.service.provider_id

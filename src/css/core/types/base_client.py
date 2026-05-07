@@ -5,7 +5,7 @@ Imports msgspec.Struct versions from messages.py (Phase 6 P1).
 
 import logging
 from abc import ABC, abstractmethod
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from aiohttp import ClientSession
 

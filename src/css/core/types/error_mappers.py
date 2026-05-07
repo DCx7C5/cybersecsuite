@@ -10,7 +10,7 @@ Issue #3: Error Code Mapping — Map all SDK errors to standard types:
 """
 
 import re
-from typing import Optional, Callable
+from collections.abc import Callable
 from css.core.exceptions import (
     AuthError,
     RateLimitError,
@@ -25,13 +25,13 @@ class ErrorMapper:
     """Base error mapper with common patterns."""
     
     @staticmethod
-    def extract_status_code(error_message: str) -> Optional[int]:
+    def extract_status_code(error_message: str) -> int | None:
         """Extract HTTP status code from error message."""
         match = re.search(r'\b([4-5]\d{2})\b', error_message)
         return int(match.group(1)) if match else None
     
     @staticmethod
-    def extract_retry_after(error_message: str) -> Optional[float]:
+    def extract_retry_after(error_message: str) -> float | None:
         """Extract retry-after seconds from error message."""
         # Look for patterns like "retry-after: 60" or "retry_after_seconds: 30"
         match = re.search(r'retry[_-]after[:\s]+(\d+)', error_message, re.IGNORECASE)

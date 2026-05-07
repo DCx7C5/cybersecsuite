@@ -17,10 +17,9 @@ Usage::
     )
 """
 
-from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from css.core.tools.base import get_tool_registry
 from css.core.tools.exceptions import ToolNotFoundError, ToolExecutionError
@@ -46,7 +45,7 @@ class AgentToolExecutor:
         agent_id: str,
         tool_id: str,
         params: dict[str, Any],
-        scope: Optional[Any] = None,
+        scope: Any | None = None,
     ) -> dict[str, Any]:
         """Execute *tool_id* on behalf of *agent_id*.
 
@@ -127,7 +126,7 @@ class AgentToolExecutor:
         agent_id: str,
         hybrid_tool_id: str,
         params: dict[str, Any],
-        scope: Optional[Any] = None,
+        scope: Any | None = None,
     ) -> list[dict[str, Any]]:
         """Execute all component tools of a HybridToolDefinition.
 
@@ -172,7 +171,7 @@ class AgentToolExecutor:
 
 
 # Module-level singleton
-_executor: Optional[AgentToolExecutor] = None
+_executor: AgentToolExecutor | None = None
 
 
 def get_executor(permission_checker=None) -> AgentToolExecutor:

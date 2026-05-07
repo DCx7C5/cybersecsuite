@@ -1,7 +1,6 @@
 """Agent management and coordination."""
 
 import logging
-from typing import Optional
 from datetime import datetime
 
 from .models import AgentConfig, AgentMetrics, AgentState, AgentMessage
@@ -48,7 +47,7 @@ class AgentRegistry:
             logger.error(f"Failed to register agent: {e}")
             raise
     
-    def get(self, agent_id: str) -> Optional[AgentState]:
+    def get(self, agent_id: str) -> AgentState | None:
         """Get agent by ID."""
         return self._agents.get(agent_id)
     

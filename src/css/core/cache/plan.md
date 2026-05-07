@@ -3,7 +3,7 @@
 > ⚠️ **MOVED TO `core/cache/`** — This module is infrastructure, not business logic.
 > Active location: `src/css/core/cache/`
 > Todo tracking: `cache-move-to-core` in session.db (Phase 3)
-> This plan.md remains as a redirect until the move is complete.
+> Move completed. `src/css/modules/cache/` no longer exists.
 
 ---
 
@@ -23,10 +23,10 @@
 
 ## Current State
 
-🟡 **Partial Implementation** (L1-L4 backends implemented; orchestration/wiring still pending)
+🟡 **Partial Implementation** (L1-L3 backends implemented; orchestration/wiring still pending)
 
 **Files**:
-- `base.py` — Base interface + L1/L2/L3/L4 backends + decorator
+- `base.py` — Base interface + L1/L2/L3 backends + decorator
 - `models.py` — Runtime + ORM cache models
 - `exceptions.py` — Custom cache exceptions
 - `__init__.py` — Public exports
@@ -43,7 +43,7 @@
 
 ---
 
-## L1-L4 Architecture
+## L1-L3 Architecture
 
 ```
 L1 (Hot):      In-memory asyncio.Cache (<1ms) — orchestrator-local
@@ -52,7 +52,6 @@ L2 (Warm):     Redis (1-10ms) — shared, multi-orchestrator
                ↓ [down]
 L3 (Cold):     PostgreSQL (10-50ms) — persistent, auditable
                ↓ [down]
-L4 (Archive):  Disk SQLite (50-500ms) — fallback when all above fail
 ```
 
 ---
@@ -61,9 +60,9 @@ L4 (Archive):  Disk SQLite (50-500ms) — fallback when all above fail
 
 - [x] Implement base cache interface with async/await support
 - [x] Implement L1 backend (asyncio.Cache) — L1MemoryCache class
-- [x] Implement L2 backend (aioredis) — L2RedisCache class
+- [x] Implement L2 backend (`redis.asyncio`) — L2RedisCache class
 - [x] Implement L3 backend (PostgreSQL) — `L3PostgresCache` via Tortoise ORM
-- [x] Implement L4 backend (aiosqlite) — `L4SQLiteCache` archive fallback
+- [x] L4 SQLite backend (`L4SQLiteCache`) removed from runtime
 - [x] Add logger initialization in `__init__.py`
 
 **Completed (Phase 2 Foundation)**:
@@ -80,8 +79,8 @@ L4 (Archive):  Disk SQLite (50-500ms) — fallback when all above fail
 ## Module Pattern
 
 ```python
-# src/css/modules/cache/__init__.py
-"""Unified L1-L4 caching layer."""
+# src/css/core/cache/__init__.py
+"""Unified L1-L3 caching layer."""
 
 import logging
 from css.core.logger import getLogger
@@ -112,18 +111,18 @@ __all__ = ['CacheBackend', 'CacheError']
 
 ## Prompt Caching (L5 — Provider-Native)
 
-L5 sits above the L1-L4 cache stack and is handled at the provider SDK level, not in `@cache`.
+L5 sits above the L1-L3 cache stack and is handled at the provider SDK level, not in `@cache`.
 
 | Provider | Caching | Implementation |
 |----------|---------|----------------|
 | Anthropic | Native `cache_control` param (up to 90% savings) | In `api_services/anthropic/` wrapper |
 | OpenAI | Automatic server-side (no params needed) | Nothing to do |
 | Gemini | Automatic server-side (no params needed) | Nothing to do |
-| All others | No native caching | `@cache` L4 semantic cache is the fallback |
+| All others | No native caching | `@cache` semantic cache is the fallback |
 
-- `@cache` module's role: provide **L4 semantic cache** for providers WITHOUT native prompt caching
+- `@cache` module's role: provide semantic cache for providers WITHOUT native prompt caching
 - `@cache` exposes `CacheablePrompt` type that provider wrappers can mark for semantic matching
-- L4 uses Redis + semantic similarity (see `@semantic-token-caching` skill for strategy)
+- Semantic cache uses Redis + similarity matching (see `@semantic-token-caching` skill for strategy)
 
 ---
 

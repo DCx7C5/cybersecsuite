@@ -2,13 +2,11 @@
 
 All team types live entirely within this module. No core base class needed.
 """
-
-from dataclasses import dataclass
+import msgspec
 
 from .enums import TeamStatus, OrchestratorMode
 
-
-@dataclass
+@msgspec.struct
 class TeamScope:
     """Immutable team context snapshot."""
 
@@ -22,8 +20,7 @@ class TeamScope:
     created_at: str | None = None
     paused_at: str | None = None
 
-
-@dataclass
+@msgspec.struct
 class Team:
     """Team entity — mutable team state with lifecycle management."""
 

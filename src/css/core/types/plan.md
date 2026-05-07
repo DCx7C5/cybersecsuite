@@ -492,7 +492,7 @@ class ChatResponse(BaseModel):
 - **Blockers**: None (refactoring is tech debt, not blocking)
 - **Phase Ready**: Phase 2 ⚠️ (Production Ready, REFACTOR in Phase 3)
 - **Last Audited**: 2026-05-03 by Agent 2
-- **Audit Matrix**: .plan/architecture/core-audit-matrix.md
+- **Audit Reference**: .plan/plan.md (phase and status sections)
 - **Refactor Plan**: Split into base/, api/, events/, providers/ subdirs (effort: 3-4h)
 
 ---

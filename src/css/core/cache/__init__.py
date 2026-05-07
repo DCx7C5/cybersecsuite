@@ -2,7 +2,7 @@
 
 from css.core.logger import getLogger
 
-from .base import CacheBackend, L1MemoryCache, L2RedisCache, L3PostgresCache, L4SQLiteCache, CacheDecorator
+from .base import CacheBackend, L1MemoryCache, L2RedisCache, L3PostgresCache, CacheDecorator
 from .exceptions import BaseCacheException, CacheNotFoundError, CacheExecutionError, CacheSerializationError
 from .models import CacheEntry, CacheStats
 
@@ -14,7 +14,6 @@ __all__ = [
     'L1MemoryCache',
     'L2RedisCache',
     'L3PostgresCache',
-    'L4SQLiteCache',
     'CacheDecorator',
     
     # Exceptions

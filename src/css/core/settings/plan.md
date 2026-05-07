@@ -25,16 +25,16 @@ DB-backed runtime configuration registry — sits on top of `config.py` (static 
 
 ## Integration Points
 
-| Component | Direction | Relationship |
-|-----------|-----------|--------------|
-| `css.core.types` (settings.py) | → consumes | `SettingDefinition`, `SettingScope`, `SettingCategory` |
-| `css.core.db` | → consumes | `SettingRecord` ORM model (T17.1) |
-| `config.py` | → consumes | Bootstrap values → seeded into DB on first startup |
-| `@cache` | → consumes | Redis for `css:settings:{scope}:{scope_id}:{key}` (CACHE_CONFIG_TTL=3600) |
-| `@events` (Phase 14) | → emits | `settings.changed` event |
-| `@projects` | ← consumed by | Project-level setting overrides |
-| Frontend | ← consumed by | REST endpoints `/api/settings/*` |
-| OTEL | → emits | `@instrument("settings.get")` spans |
+| Component                      | Direction     | Relationship                                                              |
+|--------------------------------|---------------|---------------------------------------------------------------------------|
+| `css.core.types` (settings.py) | → consumes    | `SettingDefinition`, `SettingScope`, `SettingCategory`                    |
+| `css.core.db`                  | → consumes    | `SettingRecord` ORM model (T17.1)                                         |
+| `config.py`                    | → consumes    | Bootstrap values → seeded into DB on first startup                        |
+| `@cache`                       | → consumes    | Redis for `css:settings:{scope}:{scope_id}:{key}` (CACHE_CONFIG_TTL=3600) |
+| `@events` (Phase 14)           | → emits       | `settings.changed` event                                                  |
+| `@projects`                    | ← consumed by | Project-level setting overrides                                           |
+| Frontend                       | ← consumed by | REST endpoints `/api/settings/*`                                          |
+| OTEL                           | → emits       | `@instrument("settings.get")` spans                                       |
 
 ---
 
@@ -102,17 +102,17 @@ settings(
 
 ## REST API
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/settings/` | List all (sensitive masked) |
-| GET | `/api/settings/categories/` | List categories + setting counts |
-| GET | `/api/settings/{key}` | Single setting (masked if sensitive) |
-| PUT | `/api/settings/{key}` | Update setting (type-validated) |
-| POST | `/api/settings/{key}/reset` | Reset to default |
-| GET | `/api/settings/export/` | Export as YAML or JSON |
-| POST | `/api/settings/import/` | Import from YAML/JSON body |
-| GET | `/api/settings/projects/{pid}/` | Project-level overrides |
-| PUT | `/api/settings/projects/{pid}/{key}` | Set project-level override |
+| Method | Path                                 | Description                          |
+|--------|--------------------------------------|--------------------------------------|
+| GET    | `/api/settings/`                     | List all (sensitive masked)          |
+| GET    | `/api/settings/categories/`          | List categories + setting counts     |
+| GET    | `/api/settings/{key}`                | Single setting (masked if sensitive) |
+| PUT    | `/api/settings/{key}`                | Update setting (type-validated)      |
+| POST   | `/api/settings/{key}/reset`          | Reset to default                     |
+| GET    | `/api/settings/export/`              | Export as YAML or JSON               |
+| POST   | `/api/settings/import/`              | Import from YAML/JSON body           |
+| GET    | `/api/settings/projects/{pid}/`      | Project-level overrides              |
+| PUT    | `/api/settings/projects/{pid}/{key}` | Set project-level override           |
 
 `requires_restart=True` settings: write succeeds, response includes `{"restart_required": true}`.
 
@@ -134,18 +134,18 @@ Pre-built profiles stored as YAML in `profiles/` (not `templates/` — that dir 
 
 All synced in session.db. IDs match:
 
-| Todo ID | Description | Status |
-|---------|-------------|--------|
-| `settings-db-model` | SettingRecord Tortoise ORM model | pending |
-| `settings-db-migration` | DB migration for settings table | pending |
-| `settings-definition-struct` | SettingDefinition + enums in core/types | pending |
-| `settings-registry-class` | SettingsRegistry class | pending |
+| Todo ID                       | Description                                            | Status  |
+|-------------------------------|--------------------------------------------------------|---------|
+| `settings-db-model`           | SettingRecord Tortoise ORM model                       | pending |
+| `settings-db-migration`       | DB migration for settings table                        | pending |
+| `settings-definition-struct`  | SettingDefinition + enums in core/types                | pending |
+| `settings-registry-class`     | SettingsRegistry class                                 | pending |
 | `settings-registry-singleton` | SETTINGS_REGISTRY singleton + DEFAULT_SETTINGS wire-up | pending |
-| `settings-manager-core` | SettingsManager get/set/reset/get_all | pending |
-| `settings-manager-seed` | seed_from_config_py() bootstrap | pending |
-| `settings-manager-cache` | Redis cache layer | pending |
-| `settings-manager-templates` | load_template() + export/import YAML | pending |
-| `settings-defaults-all` | Complete DEFAULT_SETTINGS for all config.py keys | pending |
-| `settings-templates` | 5 YAML template files | pending |
-| `settings-rest-routes` | REST endpoints /api/settings/* | pending |
-| `settings-event-emission` | settings.changed event (BLOCKED: Phase 14) | pending |
+| `settings-manager-core`       | SettingsManager get/set/reset/get_all                  | pending |
+| `settings-manager-seed`       | seed_from_config_py() bootstrap                        | pending |
+| `settings-manager-cache`      | Redis cache layer                                      | pending |
+| `settings-manager-templates`  | load_template() + export/import YAML                   | pending |
+| `settings-defaults-all`       | Complete DEFAULT_SETTINGS for all config.py keys       | pending |
+| `settings-templates`          | 5 YAML template files                                  | pending |
+| `settings-rest-routes`        | REST endpoints /api/settings/*                         | pending |
+| `settings-event-emission`     | settings.changed event (BLOCKED: Phase 14)             | pending |

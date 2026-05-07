@@ -1,6 +1,6 @@
 """Task types — immutable scope + mutable state machine."""
+import msgspec
 
-from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
@@ -8,14 +8,13 @@ from css.core.types.base_workflow import BaseTask, BaseTaskScope
 from css.core.types.query import Query
 from .enums import TaskStatus, TaskPriority
 
-
-@dataclass
+@msgspec.struct
 class TaskScope(BaseTaskScope):
     """Immutable task snapshot (read-only context)."""
 
     team_id: int = 0
     orchestrator_id: str = ""
-    query: Query = field(default_factory=lambda: None)  # type: ignore[arg-type]
+    query: Query = msgspec.field(default_factory=lambda: None)  # type: ignore[arg-type]
     priority: TaskPriority = TaskPriority.NORMAL
     max_retries: int = 3
     timeout_seconds: int = 300
@@ -33,12 +32,11 @@ class TaskScope(BaseTaskScope):
             "metadata": self.metadata,
         }
 
-
-@dataclass
+@msgspec.struct
 class Task(BaseTask):
     """Mutable task state machine."""
 
-    scope: TaskScope = field(default_factory=TaskScope)
+    scope: TaskScope = msgspec.field(default_factory=TaskScope)
     status: TaskStatus = TaskStatus.PENDING
     assigned_member_id: str | None = None
     assigned_at: datetime | None = None
@@ -126,6 +124,5 @@ class Task(BaseTask):
             "result": self.result,
             "error": self.error,
         }
-
 
 __all__ = ["TaskScope", "Task"]

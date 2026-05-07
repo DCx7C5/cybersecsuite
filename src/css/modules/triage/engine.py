@@ -1,7 +1,6 @@
 """Triage classification and routing engine."""
 
 import logging
-from typing import Optional
 from datetime import datetime
 import uuid
 
@@ -101,7 +100,7 @@ class TriageEngine:
         
         return SeverityLevel.MEDIUM
     
-    def get_result(self, request_id: str) -> Optional[TriageResult]:
+    def get_result(self, request_id: str) -> TriageResult | None:
         """Get cached triage result."""
         return self._results_cache.get(request_id)
     

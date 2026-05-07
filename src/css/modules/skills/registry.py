@@ -2,7 +2,7 @@
 
 import logging
 import asyncio
-from typing import Optional, Any
+from typing import Any
 from datetime import datetime
 
 from .models import SkillDefinition, SkillResult
@@ -36,7 +36,7 @@ class SkillRegistry:
         self._skills[skill.skill_id] = skill
         logger.info(f"Registered skill: {skill.skill_id} v{skill.version}")
     
-    def get(self, skill_id: str) -> Optional[SkillDefinition]:
+    def get(self, skill_id: str) -> SkillDefinition | None:
         """Get skill definition by ID."""
         return self._skills.get(skill_id)
     

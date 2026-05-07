@@ -1,26 +1,24 @@
 """LLM model metadata and validation."""
+import msgspec
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Set
+from typing import Any
 
 from tortoise import Model
 
 from .enums import ModelProvider, ModelFamily, ModelCapability
 
-
-@dataclass
+@msgspec.struct
 class ModelPricing:
     """Pricing information for a model."""
     input_tokens_per_1k: float  # Cost per 1000 input tokens
     output_tokens_per_1k: float  # Cost per 1000 output tokens
     currency: str = "USD"
 
-
 class LLMModel(Model):
     # TODO: implement real database table; get rid off @dataclass ModelMetadata and ModelPricing. Find other ways to implement
+    ...
 
-
-@dataclass
+@msgspec.struct
 class ModelMetadata:
     """Metadata for an LLM model."""
     
@@ -38,10 +36,10 @@ class ModelMetadata:
     throughput_tokens_per_sec: float = 100.0
     
     # Pricing
-    pricing: Optional[ModelPricing] = None
+    pricing: ModelPricing | None = None
     
     # Capabilities
-    capabilities: Set[ModelCapability] = field(default_factory=set)
+    capabilities: set[ModelCapability] = msgspec.field(default_factory=set)
     
     # Configuration
     temperature_range: tuple = (0.0, 2.0)
@@ -51,7 +49,7 @@ class ModelMetadata:
     # Metadata
     released_at: str = ""  # ISO 8601 date
     deprecated: bool = False
-    custom_params: dict[str, Any] = field(default_factory=dict)
+    custom_params: dict[str, Any] = msgspec.field(default_factory=dict)
     
     def estimate_cost(self, input_tokens: int, output_tokens: int) -> float:
         """Estimate cost for token usage."""

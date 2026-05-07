@@ -1,5 +1,5 @@
+import msgspec
 import logging
-from dataclasses import dataclass, field
 from typing import Any
 from datetime import UTC, datetime
 
@@ -11,8 +11,7 @@ from .dispatcher import MessageDispatcher
 
 log = logging.getLogger(__name__)
 
-
-@dataclass
+@msgspec.struct
 class A2ACommunicator:
     """High-level async interface for A2A protocol messaging.
 
@@ -28,7 +27,7 @@ class A2ACommunicator:
 
     agent_id: str
     dispatcher: MessageDispatcher
-    task_store: dict[str, Task] = field(default_factory=dict)
+    task_store: dict[str, Task] = msgspec.field(default_factory=dict)
 
     async def create_task(self, task_id: str, message: A2AMessage, session_id: str | None = None) -> Task:
         """Create a new A2A task in SUBMITTED state."""
@@ -144,8 +143,7 @@ class A2ACommunicator:
             await self.dispatcher.send(msg)
             log.debug("A2A task %r: dispatched to %r", task_id, member_id)
 
-
-@dataclass
+@msgspec.struct
 class A2ACommunicationGroup:
     """A2A protocol group for multi-agents collaboration.
 
@@ -157,7 +155,7 @@ class A2ACommunicationGroup:
     """
 
     name: str
-    members: list[str] = field(default_factory=list)
+    members: list[str] = msgspec.field(default_factory=list)
     dispatcher: MessageDispatcher | None = None
     a2a_communicator: A2ACommunicator | None = None
 

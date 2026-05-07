@@ -1,14 +1,12 @@
 """Agent types — concrete implementation of BaseAgent with HTTP/remote capabilities."""
+import msgspec
 
-
-from dataclasses import dataclass, field
 from typing import Any
 
 from css.core.types.base_entity import BaseAgent
 from css.core.types.base_headers import BaseAgentHeader
 
-
-@dataclass
+@msgspec.struct
 class Agent(BaseAgent):
     """Concrete agents entity with HTTP endpoint and metadata.
 
@@ -20,8 +18,8 @@ class Agent(BaseAgent):
     """
 
     header: BaseAgentHeader | None = None
-    skill_tags: set[str] = field(default_factory=set)
-    claude_metadata: dict[str, Any] = field(default_factory=dict)
+    skill_tags: set[str] = msgspec.field(default_factory=set)
+    claude_metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
     @property
     def is_default(self) -> bool:

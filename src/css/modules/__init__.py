@@ -28,11 +28,11 @@ Available modules (auto-discovered):
 """
 
 import sys
-import logging
+from css.core.logger import getLogger
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-logger = logging.getLogger(__name__)
+logger = getLogger("modules")
 
 # Track imported modules
 _MODULES: dict[str, Any] = {}
@@ -69,7 +69,7 @@ def _discover_modules() -> None:
             logger.error(f"Error loading module {module_name}: {e}")
 
 
-def get_module(module_name: str) -> Optional[Any]:
+def get_module(module_name: str) -> Any | None:
     """Get a discovered module by name.
 
     Args:
@@ -105,6 +105,7 @@ _discover_modules()
 # (Keep this minimal to avoid circular imports)
 __all__ = [
     # Core orchestration
+    "getLogger",
     "get_module",
     "list_modules",
     "list_failed_modules",

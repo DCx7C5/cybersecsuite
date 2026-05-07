@@ -1,7 +1,7 @@
 # core/redis — Redis-backed Messaging Infrastructure
 
 **Location**: `src/css/core/redis/`  
-**Status**: ✅ Implemented (3 files) | 🟡 from __future__ + dataclass patterns need cleanup (Phase 3)
+**Status**: ✅ Implemented (3 files) | ✅ Phase 3 cleanup applied (`__future__` removed, dataclass migrated)
 
 ---
 
@@ -33,6 +33,4 @@ Inter-entity messaging over Redis pub/sub. Lives in `core/` — consumed by agen
 
 ## Known Debt
 
-- All 3 files use forbidden `from __future__ import annotations` — tracked as Phase 3 cleanup
-- `communicator.py` uses `@dataclass` — migrate to `msgspec.Struct` on next touch (Phase 6 P1)
 - `messaging.py` uses Pydantic `BaseModel` — acceptable for message wire format only

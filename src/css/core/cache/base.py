@@ -1,15 +1,11 @@
 """Abstract cache backend interface and implementations."""
 
-import asyncio
-import json
 import logging
-import time
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
-from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-from .exceptions import CacheExecutionError, CacheSerializationError
+from .exceptions import CacheExecutionError
 from .models import CacheEntry, CacheStats
 
 logger = logging.getLogger(__name__)
@@ -24,12 +20,12 @@ class CacheBackend(ABC):
         self.stats = CacheStats()
     
     @abstractmethod
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from cache."""
         pass
     
     @abstractmethod
-    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in cache."""
         pass
     
@@ -74,7 +70,7 @@ class L1MemoryCache(CacheBackend):
         self.max_size = max_size
         self._cache: dict[str, CacheEntry] = {}
     
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from memory cache."""
         try:
             full_key = self._make_key(key)
@@ -95,7 +91,7 @@ class L1MemoryCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L1 get failed: {e}", operation="get")
     
-    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in memory cache."""
         try:
             if len(self._cache) >= self.max_size:
@@ -169,14 +165,15 @@ class L2RedisCache(CacheBackend):
         """Lazy-load Redis connection."""
         if self._redis is None:
             try:
-                import aioredis
-                self._redis = await aioredis.create_redis_pool(self.redis_url)
+                import redis.asyncio as redis_asyncio
+
+                self._redis = redis_asyncio.from_url(self.redis_url)
             except ImportError:
-                logger.warning("aioredis not installed; L2 cache unavailable")
+                logger.warning("redis.asyncio not installed; L2 cache unavailable")
                 return None
         return self._redis
     
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from Redis."""
         try:
             redis = await self._get_redis()
@@ -197,7 +194,7 @@ class L2RedisCache(CacheBackend):
             self.stats.errors += 1
             return None
     
-    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in Redis."""
         try:
             redis = await self._get_redis()
@@ -208,7 +205,7 @@ class L2RedisCache(CacheBackend):
             serialized = str(value).encode() if not isinstance(value, bytes) else value
             
             if ttl_seconds:
-                await redis.setex(full_key, ttl_seconds, serialized)
+                await redis.set(full_key, serialized, ex=ttl_seconds)
             else:
                 await redis.set(full_key, serialized)
             
@@ -274,14 +271,14 @@ class L3PostgresCache(CacheBackend):
     """L3: PostgreSQL-backed persistent cache via Tortoise ORM."""
 
     @staticmethod
-    def _is_expired(ttl_seconds: Optional[int], created_at: datetime) -> bool:
+    def _is_expired(ttl_seconds: int | None, created_at: datetime) -> bool:
         if ttl_seconds is None:
             return False
         now = datetime.now(UTC)
         created = created_at.astimezone(UTC) if created_at.tzinfo else created_at.replace(tzinfo=UTC)
         return (now - created).total_seconds() > ttl_seconds
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from PostgreSQL cache."""
         try:
             from .models import CacheEntryModel
@@ -301,7 +298,7 @@ class L3PostgresCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L3 get failed: {e}", operation="get")
 
-    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in PostgreSQL cache."""
         try:
             from .models import CacheEntryModel
@@ -362,193 +359,10 @@ class L3PostgresCache(CacheBackend):
             return False
 
 
-class L4SQLiteCache(CacheBackend):
-    """L4: SQLite disk-backed archive cache for fallback durability."""
-
-    def __init__(self, namespace: str = "default", sqlite_path: str = "/tmp/css-cache/archive.sqlite"):
-        super().__init__(namespace)
-        self.sqlite_path = sqlite_path
-        self._lock = asyncio.Lock()
-        self._initialized = False
-
-    async def _ensure_table(self) -> None:
-        if self._initialized:
-            return
-        async with self._lock:
-            if self._initialized:
-                return
-            try:
-                import aiosqlite
-
-                Path(self.sqlite_path).parent.mkdir(parents=True, exist_ok=True)
-                async with aiosqlite.connect(self.sqlite_path) as db:
-                    await db.execute(
-                        """
-                        CREATE TABLE IF NOT EXISTS cache_archive (
-                            namespace TEXT NOT NULL,
-                            key TEXT NOT NULL,
-                            value TEXT NOT NULL,
-                            ttl_seconds INTEGER NULL,
-                            created_at REAL NOT NULL,
-                            PRIMARY KEY(namespace, key)
-                        )
-                        """
-                    )
-                    await db.execute(
-                        "CREATE INDEX IF NOT EXISTS idx_cache_archive_ns_key ON cache_archive(namespace, key)"
-                    )
-                    await db.commit()
-                self._initialized = True
-            except Exception as e:
-                raise CacheExecutionError(f"L4 initialize failed: {e}", operation="initialize") from e
-
-    @staticmethod
-    def _is_expired(ttl_seconds: Optional[int], created_at: float) -> bool:
-        return ttl_seconds is not None and (time.time() - created_at) > ttl_seconds
-
-    @staticmethod
-    def _serialize(value: Any) -> str:
-        try:
-            return json.dumps(value)
-        except TypeError as e:
-            raise CacheSerializationError(str(e), data_type=type(value).__name__) from e
-
-    @staticmethod
-    def _deserialize(raw: str) -> Any:
-        try:
-            return json.loads(raw)
-        except json.JSONDecodeError as e:
-            raise CacheSerializationError(str(e), data_type="json") from e
-
-    async def get(self, key: str) -> Optional[Any]:
-        """Get value from SQLite archive cache."""
-        await self._ensure_table()
-        try:
-            import aiosqlite
-
-            async with aiosqlite.connect(self.sqlite_path) as db:
-                async with db.execute(
-                    "SELECT value, ttl_seconds, created_at FROM cache_archive WHERE namespace=? AND key=?",
-                    (self.namespace, key),
-                ) as cursor:
-                    row = await cursor.fetchone()
-                if row is None:
-                    self.stats.misses += 1
-                    return None
-                value, ttl_seconds, created_at = row
-                if self._is_expired(ttl_seconds, created_at):
-                    await db.execute(
-                        "DELETE FROM cache_archive WHERE namespace=? AND key=?",
-                        (self.namespace, key),
-                    )
-                    await db.commit()
-                    self.stats.misses += 1
-                    return None
-                self.stats.hits += 1
-                return self._deserialize(value)
-        except CacheSerializationError:
-            self.stats.errors += 1
-            raise
-        except Exception as e:
-            self.stats.errors += 1
-            raise CacheExecutionError(f"L4 get failed: {e}", operation="get") from e
-
-    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
-        """Set value in SQLite archive cache."""
-        await self._ensure_table()
-        try:
-            import aiosqlite
-
-            payload = self._serialize(value)
-            async with aiosqlite.connect(self.sqlite_path) as db:
-                await db.execute(
-                    """
-                    INSERT INTO cache_archive(namespace, key, value, ttl_seconds, created_at)
-                    VALUES (?, ?, ?, ?, ?)
-                    ON CONFLICT(namespace, key) DO UPDATE SET
-                        value=excluded.value,
-                        ttl_seconds=excluded.ttl_seconds,
-                        created_at=excluded.created_at
-                    """,
-                    (self.namespace, key, payload, ttl_seconds, time.time()),
-                )
-                await db.commit()
-            self.stats.sets += 1
-            return True
-        except CacheSerializationError:
-            self.stats.errors += 1
-            raise
-        except Exception as e:
-            self.stats.errors += 1
-            raise CacheExecutionError(f"L4 set failed: {e}", operation="set") from e
-
-    async def delete(self, key: str) -> bool:
-        """Delete value from SQLite archive cache."""
-        await self._ensure_table()
-        try:
-            import aiosqlite
-
-            async with aiosqlite.connect(self.sqlite_path) as db:
-                cursor = await db.execute(
-                    "DELETE FROM cache_archive WHERE namespace=? AND key=?",
-                    (self.namespace, key),
-                )
-                await db.commit()
-            deleted = cursor.rowcount > 0
-            if deleted:
-                self.stats.deletes += 1
-            return deleted
-        except Exception as e:
-            self.stats.errors += 1
-            raise CacheExecutionError(f"L4 delete failed: {e}", operation="delete") from e
-
-    async def clear(self) -> bool:
-        """Clear all entries in namespace from SQLite archive cache."""
-        await self._ensure_table()
-        try:
-            import aiosqlite
-
-            async with aiosqlite.connect(self.sqlite_path) as db:
-                await db.execute("DELETE FROM cache_archive WHERE namespace=?", (self.namespace,))
-                await db.commit()
-            return True
-        except Exception as e:
-            self.stats.errors += 1
-            raise CacheExecutionError(f"L4 clear failed: {e}", operation="clear") from e
-
-    async def exists(self, key: str) -> bool:
-        """Check if key exists in SQLite archive cache."""
-        await self._ensure_table()
-        try:
-            import aiosqlite
-
-            async with aiosqlite.connect(self.sqlite_path) as db:
-                async with db.execute(
-                    "SELECT ttl_seconds, created_at FROM cache_archive WHERE namespace=? AND key=?",
-                    (self.namespace, key),
-                ) as cursor:
-                    row = await cursor.fetchone()
-                if row is None:
-                    return False
-                ttl_seconds, created_at = row
-                if self._is_expired(ttl_seconds, created_at):
-                    await db.execute(
-                        "DELETE FROM cache_archive WHERE namespace=? AND key=?",
-                        (self.namespace, key),
-                    )
-                    await db.commit()
-                    return False
-                return True
-        except Exception as e:
-            logger.warning(f"L4 cache exists error: {e}")
-            self.stats.errors += 1
-            return False
-
-
 class CacheDecorator:
     """Decorator for caching function results."""
     
-    def __init__(self, cache: CacheBackend, ttl_seconds: Optional[int] = None):
+    def __init__(self, cache: CacheBackend, ttl_seconds: int | None = None):
         """Initialize cache decorator."""
         self.cache = cache
         self.ttl_seconds = ttl_seconds

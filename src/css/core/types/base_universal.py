@@ -9,7 +9,7 @@ Supports:
 
 import asyncio
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 from css.core.types import BaseApiServiceClient
 

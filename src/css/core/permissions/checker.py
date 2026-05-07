@@ -1,6 +1,5 @@
 """Permission checker — gate tool access via ScopeContext / PermissionGrant rules."""
 
-from __future__ import annotations
 
 import logging
 

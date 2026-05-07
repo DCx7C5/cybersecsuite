@@ -7,11 +7,9 @@ the api_services/ directory so that HybridTool provider validation works
 without a running database.
 """
 
-from __future__ import annotations
 
 import pkgutil
 from pathlib import Path
-from typing import Optional
 
 from .models import ModelMetadata
 from .enums import ModelCapability
@@ -56,14 +54,14 @@ class ModelRegistry:
         for model in models:
             self.register(model)
 
-    def get_model(self, model_id: str) -> Optional[ModelMetadata]:
+    def get_model(self, model_id: str) -> ModelMetadata | None:
         """Return the ModelMetadata for *model_id*, or None."""
         return self._models.get(model_id)
 
     def list_models(
         self,
-        provider: Optional[str] = None,
-        capability: Optional[ModelCapability] = None,
+        provider: str | None = None,
+        capability: ModelCapability | None = None,
     ) -> list[ModelMetadata]:
         """Return all registered models, optionally filtered."""
         result = list(self._models.values())
@@ -89,7 +87,7 @@ class ModelRegistry:
 
 
 # Module-level singleton
-_model_registry: Optional[ModelRegistry] = None
+_model_registry: ModelRegistry | None = None
 
 
 def get_model_registry() -> ModelRegistry:

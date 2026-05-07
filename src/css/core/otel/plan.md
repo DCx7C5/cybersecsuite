@@ -145,7 +145,7 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 - **Blockers**: None (optional infrastructure)
 - **Phase Ready**: Phase 4+ 🔴 (NOT READY - deferred)
 - **Last Audited**: 2026-05-03 by Agent 2
-- **Audit Matrix**: .plan/architecture/core-audit-matrix.md
+- **Audit Reference**: .plan/plan.md (phase and status sections)
 - **Effort Estimate**: 8-12 hours for full implementation
 - **Action**: Schedule for Phase 4 backlog
 

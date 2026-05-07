@@ -1,6 +1,5 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
-from typing import List, Optional, Set
 from datetime import datetime
 import logging
 
@@ -66,8 +65,8 @@ class DynamicCapabilityRegistry:
     
     def __init__(self):
         """Initialize capability registry with empty cache."""
-        self._capabilities: dict[str, dict[str, Set[CapabilityType]]] = {}
-        self._last_discovery: Optional[datetime] = None
+        self._capabilities: dict[str, dict[str, set[CapabilityType]]] = {}
+        self._last_discovery: datetime | None = None
         self._discovery_in_progress = False
     
     async def discover(self) -> None:
@@ -105,7 +104,7 @@ class DynamicCapabilityRegistry:
             await self._load_yaml_config()
             # Note: _query_provider_endpoints requires provider registry, skip for now
             
-            self._last_discovery = datetime.utcnow()
+            self._last_discovery = datetime.now()
             logger.info(f"Capability discovery completed, cached {len(self._capabilities)} providers")
         except Exception as e:
             logger.error(f"Capability discovery failed: {e}")
@@ -116,7 +115,7 @@ class DynamicCapabilityRegistry:
         self,
         provider_name: str,
         model_id: str,
-    ) -> List[CapabilityType]:
+    ) -> list[CapabilityType]:
         """
         Get capabilities for a specific model.
         

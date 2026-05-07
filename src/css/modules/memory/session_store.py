@@ -8,7 +8,6 @@ Implements hybrid session persistence:
 This enables fast session resumption while ensuring durability.
 """
 
-from __future__ import annotations
 
 import msgspec
 import logging

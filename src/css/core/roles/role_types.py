@@ -3,29 +3,23 @@
 These roles define capabilities, permissions, and heartbeat requirements for
 the orchestration architecture (process-level and in-process roles).
 """
+import msgspec
 
-from __future__ import annotations
-
-from dataclasses import dataclass, field
-from typing import Optional
-
-
-@dataclass
+@msgspec.struct
 class OrchestrationRole:
     """Base class for orchestration-specific roles (not tied to system-wide roles)."""
 
     role_id: str
     name: str
     description: str
-    permissions: list[str] = field(default_factory=list)
-    capabilities: dict[str, bool] = field(default_factory=dict)
+    permissions: list[str] = msgspec.field(default_factory=list)
+    capabilities: dict[str, bool] = msgspec.field(default_factory=dict)
     heartbeat_timeout_seconds: int = 30
     can_pause_team: bool = False
     can_delegate: bool = False
     can_execute_tasks: bool = False
 
-
-@dataclass
+@msgspec.struct
 class OrchestratorRole(OrchestrationRole):
     """Orchestrator: process-level coordinator — spawns sub-processes, monitors heartbeat."""
 
@@ -35,7 +29,7 @@ class OrchestratorRole(OrchestrationRole):
         "Process-level coordinator — spawns orchestrator instances, "
         "monitors team heartbeat, detects crashes, triggers recovery."
     )
-    permissions: list[str] = field(
+    permissions: list[str] = msgspec.field(
         default_factory=lambda: [
             "orchestrator:spawn",
             "orchestrator:kill",
@@ -46,7 +40,7 @@ class OrchestratorRole(OrchestrationRole):
             "crash:recover",
         ]
     )
-    capabilities: dict[str, bool] = field(
+    capabilities: dict[str, bool] = msgspec.field(
         default_factory=lambda: {
             "can_spawn_orchestrators": True,
             "can_monitor_health": True,
@@ -59,8 +53,7 @@ class OrchestratorRole(OrchestrationRole):
     can_delegate: bool = True
     can_execute_tasks: bool = False
 
-
-@dataclass
+@msgspec.struct
 class TeamLeaderRole(OrchestrationRole):
     """TeamLeader: in-process coordinator — delegates tasks, retries on failure, manages team."""
 
@@ -70,7 +63,7 @@ class TeamLeaderRole(OrchestrationRole):
         "In-process coordinator — receives Query objects, delegates to TeamMembers, "
         "retries with backoff, enforces timeouts, reports results."
     )
-    permissions: list[str] = field(
+    permissions: list[str] = msgspec.field(
         default_factory=lambda: [
             "task:delegate",
             "task:retry",
@@ -81,7 +74,7 @@ class TeamLeaderRole(OrchestrationRole):
             "timeout:enforce",
         ]
     )
-    capabilities: dict[str, bool] = field(
+    capabilities: dict[str, bool] = msgspec.field(
         default_factory=lambda: {
             "can_delegate_tasks": True,
             "can_retry_failures": True,
@@ -95,8 +88,7 @@ class TeamLeaderRole(OrchestrationRole):
     can_delegate: bool = True
     can_execute_tasks: bool = False
 
-
-@dataclass
+@msgspec.struct
 class TeamMemberRole(OrchestrationRole):
     """TeamMember/Worker: in-process executor — executes Task objects, reports completion."""
 
@@ -106,7 +98,7 @@ class TeamMemberRole(OrchestrationRole):
         "In-process executor — receives Task objects from TeamLeader, "
         "executes with tool context, returns Result with execution_time_ms."
     )
-    permissions: list[str] = field(
+    permissions: list[str] = msgspec.field(
         default_factory=lambda: [
             "task:execute",
             "tool:use",
@@ -114,7 +106,7 @@ class TeamMemberRole(OrchestrationRole):
             "error:catch",
         ]
     )
-    capabilities: dict[str, bool] = field(
+    capabilities: dict[str, bool] = msgspec.field(
         default_factory=lambda: {
             "can_execute_tasks": True,
             "can_use_tools": True,
@@ -127,8 +119,7 @@ class TeamMemberRole(OrchestrationRole):
     can_delegate: bool = False
     can_execute_tasks: bool = True
 
-
-@dataclass
+@msgspec.struct
 class PlannerRole(OrchestrationRole):
     """Planner: planning & decision-making for PlanScope — read project, write .css/plan/ only."""
 
@@ -138,14 +129,14 @@ class PlannerRole(OrchestrationRole):
         "Planning & decision-making for PlanScope — "
         "reads project metadata, writes plan files (.css/plan/) only."
     )
-    permissions: list[str] = field(
+    permissions: list[str] = msgspec.field(
         default_factory=lambda: [
             "project:read",
             "plan:write",
             "scope:read",
         ]
     )
-    capabilities: dict[str, bool] = field(
+    capabilities: dict[str, bool] = msgspec.field(
         default_factory=lambda: {
             "can_orchestrate": True,
             "can_broadcast": False,
@@ -159,7 +150,6 @@ class PlannerRole(OrchestrationRole):
     can_delegate: bool = False
     can_execute_tasks: bool = False
 
-
 # Built-in role singletons
 ORCHESTRATOR = OrchestratorRole()
 TEAM_LEADER = TeamLeaderRole()
@@ -171,7 +161,6 @@ REGISTRY: dict[str, OrchestrationRole] = {
     r.role_id: r for r in (ORCHESTRATOR, TEAM_LEADER, TEAM_MEMBER, PLANNER)
 }
 
-
-def get(role_id: str) -> Optional[OrchestrationRole]:
+def get(role_id: str) -> OrchestrationRole | None:
     """Return an orchestration role by ID, or None if not found."""
     return REGISTRY.get(role_id)

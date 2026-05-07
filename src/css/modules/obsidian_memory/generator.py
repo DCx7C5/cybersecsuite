@@ -16,7 +16,7 @@ import json
 import math
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 GRID = 20
 H_GAP = 60
@@ -49,7 +49,7 @@ def _reset_counter() -> None:
 
 # ── Layout algorithms (ported from claude-canvas) ─────────────────────────────
 
-def _layout_grid(content: list[dict], columns: Optional[int] = None) -> list[dict]:
+def _layout_grid(content: list[dict], columns: int | None = None) -> list[dict]:
     if not content:
         return content
     n = len(content)
@@ -282,7 +282,7 @@ def _make_attack_graph(title: str, stages: list[dict[str, str]]) -> dict[str, An
     colors = ["6", "3", "5", "4", "1", "2", "6", "3"]
 
     x = 0
-    prev_id: Optional[str] = None
+    prev_id: str | None = None
     for i, stage in enumerate(stages):
         nid = _gen_id("stage", stage.get("name", f"stage-{i}"))
         text = f"## {stage.get('name', f'Stage {i+1}')}\n\n"
@@ -443,9 +443,9 @@ class CanvasGenerator:
         self,
         archetype: str,
         title: str,
-        output_name: Optional[str] = None,
-        params: Optional[dict[str, Any]] = None,
-        data: Optional[dict[str, Any]] = None,
+        output_name: str | None = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Generate a canvas file.
@@ -543,7 +543,7 @@ class CanvasGenerator:
         y: int = 0,
         width: int = 300,
         height: int = 120,
-        color: Optional[str] = None,
+        color: str | None = None,
     ) -> dict[str, Any]:
         """Add a node to an existing canvas."""
         canvas_path = self.canvas_dir / canvas_name
