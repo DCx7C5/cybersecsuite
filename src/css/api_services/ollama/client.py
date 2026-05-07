@@ -3,7 +3,7 @@
 from typing import Optional, List, AsyncIterator
 import logging
 
-from css.core.types.base import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
+from css.core.types.base_client import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
 from .types import OllamaConfig, OllamaExecutionContext
 
 

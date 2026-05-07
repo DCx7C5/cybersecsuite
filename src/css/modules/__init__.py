@@ -10,7 +10,7 @@ Available modules (auto-discovered):
 - chat: Chat message types and handlers
 - events: Event system and handlers
 - google_a2a: Google A2A protocol and endpoints
-- llm_models: LLM model registry and metadata
+- models: LLM model registry and metadata
 - llm_proxy: LLM proxy and routing
 - marketplace: Plugin marketplace, installer, registry
 - memory: Memory and context managers
