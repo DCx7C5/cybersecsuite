@@ -3,6 +3,8 @@
 from tortoise import fields
 from tortoise.models import Model
 
+from css.core.db.models.enums import UserRoles
+
 
 class User(Model):
     """User account ORM model.
@@ -25,7 +27,7 @@ class User(Model):
     email = fields.CharField(max_length=255, unique=True)
     hashed_password = fields.CharField(max_length=255)
     api_key_hash = fields.CharField(max_length=255, null=True)
-    roles = fields.JSONField(default=list)
+    roles = fields.CharEnumField(enum_type=UserRoles, default=[])
     is_active = fields.BooleanField(default=True)
     last_login = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)

@@ -84,3 +84,10 @@ class OrchestratorStatus(str, Enum):
     PAUSED = "paused"
     STOPPED = "stopped"
     CRASHED = "crashed"
+
+
+class UserRoles(str, Enum):
+    """"""
+    ADMIN = "admin"
+    USER = "user"
+    GUEST = "guest"

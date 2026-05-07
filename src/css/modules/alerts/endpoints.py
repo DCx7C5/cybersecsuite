@@ -1,0 +1,258 @@
+"""Alert management endpoints — CRUD for rules and channels."""
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+from typing import List, Dict, Optional
+from datetime import datetime
+from .models import AlertRule, AlertHistory, ChannelConfig
+
+router = APIRouter(prefix="/api/alerts", tags=["alerts"])
+
+
+# Request/Response Models
+class AlertRuleCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    description: str = ""
+    event_type: str = Field(..., min_length=1, max_length=64)
+    severity_threshold: str = Field("medium", regex="^(low|medium|high|critical)$")
+    condition_expr: str = ""
+    channels: List[str] = Field(default_factory=list)
+    cooldown_minutes: int = Field(0, ge=0)
+
+
+class AlertRuleUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    severity_threshold: Optional[str] = None
+    condition_expr: Optional[str] = None
+    channels: Optional[List[str]] = None
+    cooldown_minutes: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+class AlertRuleResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    event_type: str
+    severity_threshold: str
+    channels: List[str]
+    is_active: bool
+    cooldown_minutes: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ChannelConfigCreate(BaseModel):
+    channel_type: str = Field(..., regex="^(email|slack|webhook)$")
+    config: Dict
+
+
+class ChannelConfigResponse(BaseModel):
+    id: int
+    channel_type: str
+    is_active: bool
+    last_test_at: Optional[datetime] = None
+    last_test_status: Optional[str] = None
+
+
+class AlertHistoryResponse(BaseModel):
+    id: int
+    event_id: str
+    event_type: str
+    delivery_status: Dict
+    fired_at: datetime
+
+
+# Alert Rules Endpoints
+@router.post("/rules", response_model=AlertRuleResponse, status_code=status.HTTP_201_CREATED)
+async def create_alert_rule(
+    req: AlertRuleCreate,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """Create new alert rule."""
+    # TODO: Check org authorization
+    
+    try:
+        rule = await AlertRule.create(
+            organization_id=org_id,
+            name=req.name,
+            description=req.description,
+            event_type=req.event_type,
+            severity_threshold=req.severity_threshold,
+            condition_expr=req.condition_expr,
+            channels=req.channels,
+            cooldown_minutes=req.cooldown_minutes,
+        )
+        return AlertRuleResponse.model_validate(rule)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to create rule: {str(e)}")
+
+
+@router.get("/rules", response_model=List[AlertRuleResponse])
+async def list_alert_rules(
+    org_id: int = Query(..., description="Organization ID"),
+    is_active: Optional[bool] = None,
+):
+    """List alert rules for organization."""
+    # TODO: Check org authorization
+    
+    query = AlertRule.filter(organization_id=org_id)
+    if is_active is not None:
+        query = query.filter(is_active=is_active)
+    
+    rules = await query.all()
+    return [AlertRuleResponse.model_validate(r) for r in rules]
+
+
+@router.get("/rules/{rule_id}", response_model=AlertRuleResponse)
+async def get_alert_rule(
+    rule_id: int,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """Get specific alert rule."""
+    # TODO: Check org authorization
+    
+    rule = await AlertRule.get_or_none(id=rule_id, organization_id=org_id)
+    if not rule:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    
+    return AlertRuleResponse.model_validate(rule)
+
+
+@router.put("/rules/{rule_id}", response_model=AlertRuleResponse)
+async def update_alert_rule(
+    rule_id: int,
+    req: AlertRuleUpdate,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """Update alert rule."""
+    # TODO: Check org authorization
+    
+    rule = await AlertRule.get_or_none(id=rule_id, organization_id=org_id)
+    if not rule:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    
+    update_data = req.model_dump(exclude_unset=True)
+    await rule.update_from_dict(update_data).save()
+    
+    return AlertRuleResponse.model_validate(rule)
+
+
+@router.delete("/rules/{rule_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_alert_rule(
+    rule_id: int,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """Delete alert rule."""
+    # TODO: Check org authorization
+    
+    rule = await AlertRule.get_or_none(id=rule_id, organization_id=org_id)
+    if not rule:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    
+    await rule.delete()
+
+
+# Channel Configuration Endpoints
+@router.post("/channels", response_model=ChannelConfigResponse, status_code=status.HTTP_201_CREATED)
+async def create_channel_config(
+    req: ChannelConfigCreate,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """Create or update alert channel configuration."""
+    # TODO: Check org authorization
+    
+    # Upsert: only one config per org per channel type
+    config, created = await ChannelConfig.get_or_create(
+        organization_id=org_id,
+        channel_type=req.channel_type,
+        defaults={"config": req.config, "is_active": True},
+    )
+    
+    if not created:
+        config.config = req.config
+        await config.save()
+    
+    return ChannelConfigResponse.model_validate(config)
+
+
+@router.get("/channels", response_model=List[ChannelConfigResponse])
+async def list_channel_configs(
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """List all channel configurations for organization."""
+    # TODO: Check org authorization
+    
+    configs = await ChannelConfig.filter(organization_id=org_id).all()
+    return [ChannelConfigResponse.model_validate(c) for c in configs]
+
+
+@router.post("/channels/{channel_type}/test", status_code=status.HTTP_200_OK)
+async def test_channel(
+    channel_type: str,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """
+    Test alert channel connectivity.
+    
+    Sends a test alert to verify configuration.
+    Returns success/failure status and error message if failed.
+    """
+    # TODO: Check org authorization
+    # TODO: Implement test logic (send test alert to channel)
+    
+    config = await ChannelConfig.get_or_none(
+        organization_id=org_id,
+        channel_type=channel_type,
+    )
+    if not config:
+        raise HTTPException(status_code=404, detail=f"Channel {channel_type} not configured")
+    
+    # Placeholder: mark attempted test
+    config.last_test_at = datetime.utcnow()
+    config.last_test_status = "pending"
+    await config.save()
+    
+    return {"status": "test_initiated", "channel": channel_type}
+
+
+# Alert History Endpoints
+@router.get("/history", response_model=List[AlertHistoryResponse])
+async def list_alert_history(
+    org_id: int = Query(..., description="Organization ID"),
+    event_type: Optional[str] = None,
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+):
+    """
+    List fired alerts with delivery status per channel.
+    
+    Useful for debugging alert delivery and auditing what was fired.
+    """
+    # TODO: Check org authorization
+    
+    query = AlertHistory.filter(organization_id=org_id)
+    if event_type:
+        query = query.filter(event_type=event_type)
+    
+    history = await query.order_by("-fired_at").offset(offset).limit(limit).all()
+    return [AlertHistoryResponse.model_validate(h) for h in history]
+
+
+@router.get("/history/{alert_id}", response_model=AlertHistoryResponse)
+async def get_alert_details(
+    alert_id: int,
+    org_id: int = Query(..., description="Organization ID"),
+):
+    """Get detailed delivery status for specific fired alert."""
+    # TODO: Check org authorization
+    
+    alert = await AlertHistory.get_or_none(id=alert_id, organization_id=org_id)
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    
+    return AlertHistoryResponse.model_validate(alert)
+
+
+__all__ = ["router"]
