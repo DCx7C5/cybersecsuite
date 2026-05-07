@@ -3,6 +3,12 @@
 from .response_strategy_router import QueryComplexity, ResponseStrategyRouter
 # Phase 6 T6.5: Pipeline stages
 from .pipeline import RouteStage, route
+from .implementations import (
+    ChainStrategy,
+    DirectStrategy,
+    PrependContextStrategy,
+    get_strategy,
+)
 
 __all__ = [
     "QueryComplexity",
@@ -10,4 +16,9 @@ __all__ = [
     # Pipeline stages
     "RouteStage",
     "route",
+    # Strategy implementations
+    "DirectStrategy",
+    "PrependContextStrategy",
+    "ChainStrategy",
+    "get_strategy",
 ]
