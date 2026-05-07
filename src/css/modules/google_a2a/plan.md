@@ -104,7 +104,7 @@ class GoogleA2AAdapter:
         return response
     
     async def receive_messages(self, 
-                               queue_timeout_sec: int = 60) -> List[dict]:
+                               queue_timeout_sec: int = 60) -> list[dict]:
         """Poll Google A2A for messages addressed to our agents"""
         
         messages = await self.client.poll_queue(

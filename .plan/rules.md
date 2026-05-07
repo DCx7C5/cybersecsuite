@@ -49,9 +49,11 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 - **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
+- **ABSOLUTE: Python v3.14 discourages the use of typing**
 
 ### Code & Execution
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
+- **ABSOLUTE: `@dataclass + ABC` is deprecated pattern. Fix immediately when seen in existing codebase.**
 - **ABSOLUTE: keep thinking chat to bare essentials only** — No reasoning bloat, no hidden verbosity
 - **ABSOLUTE: keep every chat response under 500 words unless impossible**
 - **ABSOLUTE: explicitly announce whenever a TODO, TASK, or PHASE is completed**
@@ -155,13 +157,13 @@ cd src/frontend && bun run dev
 ```
 
 ### Service Ports
-| Port  | Service                  | Notes                        |
-|-------|--------------------------|------------------------------|
-| 8000  | Backend ASGI             | `manage.py serve` (direct)   |
-| 5432  | PostgreSQL               | Docker: `cybersec-postgres`  |
-| 6379  | Redis                    | Docker: `cybersec-redis`     |
+| Port  | Service                  | Notes                                                                                                              |
+|-------|--------------------------|--------------------------------------------------------------------------------------------------------------------|
+| 8000  | Backend ASGI             | `manage.py serve` (direct)                                                                                         |
+| 5432  | PostgreSQL               | Docker: `cybersec-postgres`                                                                                        |
+| 6379  | Redis                    | Docker: `cybersec-redis`                                                                                           |
 | 11434 | Ollama (local LLM)       | **Native process** — `OllamaProcessManager` starts `ollama serve` via asyncio subprocess (not Docker). Linux-only. |
-| 5080  | OpenObserve (metrics/UI) | Docker: `cybersec-openobserve` |
+| 5080  | OpenObserve (metrics/UI) | Docker: `cybersec-openobserve`                                                                                     |
 
 > **Docker is infra-only** — `cybersec-dashboard`, `cybersec-frontend`, `cybersec-proxy`, `cybersec-ollama` are removed/legacy. The ASGI app and frontend run directly via `manage.py` + `bun`. Ollama runs natively via `OllamaProcessManager` (see `core/ollama/`).
 
@@ -215,36 +217,36 @@ modules/<name>/
 
 ### Current Modules (22 total)
 
-| Module        | Purpose                                       |
-|---------------|-----------------------------------------------|
-| accounts      | User account management & authentication      |
-| agents        | Agent orchestration & execution               |
-| cache         | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache) |
-| capabilities  | Capability definitions & registry             |
-| chat          | Chat session management                       |
-| css_a2a       | CSS-specific auth integration                 |
-| events        | Event bus & streaming                         |
-| google_a2a    | Google Auth2App integration                   |
-| llm_models    | LLM model registry & metadata                 |
-| marketplace   | Marketplace (plugins, integrations)           |
-| mcps          | MCP server management (register/connect/call) |
-| memory        | Memory & context management                   |
-| permissions   | Role-based access control (PathGrant, ToolGrant) |
-| planer        | Planning & task decomposition                 |
-| projects      | Project registration & session linking        |
-| prompts       | Prompt registry, template engine, variable substitution |
-| roles         | Role definitions & assignment                 |
-| ~~scopes~~    | ⚠️ DEPRECATED — 2-level model docs only (Phase 15 deletion) |
-| settings      | Settings management & config cascade         |
-| skills        | Skill definitions & execution                 |
-| strategies    | Strategy selection & execution                |
-| streaming     | Streaming & SSE support                       |
-| tags          | Tag management & categorization               |
-| tasks         | Task management & coordination                |
-| teams         | Team management & isolation                   |
-| tools         | Tool registry & execution (LLM + MCP)        |
-| triage        | Intelligence layer — task routing & prioritization |
-| workflows     | Workflow management & orchestration           | |
+| Module       | Purpose                                                     |
+|--------------|-------------------------------------------------------------|
+| accounts     | User account management & authentication                    |
+| agents       | Agent orchestration & execution                             |
+| cache        | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache)               |
+| capabilities | Capability definitions & registry                           |
+| chat         | Chat session management                                     |
+| css_a2a      | CSS-specific auth integration                               |
+| events       | Event bus & streaming                                       |
+| google_a2a   | Google Auth2App integration                                 |
+| llm_models   | LLM model registry & metadata                               |
+| marketplace  | Marketplace (plugins, integrations)                         |
+| mcps         | MCP server management (register/connect/call)               |
+| memory       | Memory & context management                                 |
+| permissions  | Role-based access control (PathGrant, ToolGrant)            |
+| planer       | Planning & task decomposition                               |
+| projects     | Project registration & session linking                      |
+| prompts      | Prompt registry, template engine, variable substitution     |
+| roles        | Role definitions & assignment                               |
+| ~~scopes~~   | ⚠️ DEPRECATED — 2-level model docs only (Phase 15 deletion) |
+| settings     | Settings management & config cascade                        |
+| skills       | Skill definitions & execution                               |
+| strategies   | Strategy selection & execution                              |
+| streaming    | Streaming & SSE support                                     |
+| tags         | Tag management & categorization                             |
+| tasks        | Task management & coordination                              |
+| teams        | Team management & isolation                                 |
+| tools        | Tool registry & execution (LLM + MCP)                       |
+| triage       | ⚠️ PENDING RENAME → `modules/intelligence/` (todo: `triage-rename-module`, Phase 19) |
+| workflows    | Workflow management & orchestration                         | |
 
 **Moved to `core/` (infrastructure, not business logic)**:
 - `cache` → `core/cache/` (KV cache: L1 memory, L2 Redis, L3 PostgreSQL)
@@ -430,34 +432,122 @@ Tool       → modules/tools/types.py
 
 ## 🗄️ ORM Naming & Schema Rules
 
-| Rule | Detail |
-|------|--------|
-| **No `Record` suffix** | Model class is `LLMModel`, not `LLMModelRecord`. Table name is `llm_models`. Only suffix allowed is a domain noun (e.g., `ProviderCapability`, `ChatMessage`). |
-| **No migrations during dev** | While phases are in progress we drop + reseed. `manage.py init-db` calls `generate_schemas(safe=False)` in dev, then runs all seed fixtures. Only consider Aerich migration tooling after all phases are locked. |
-| **BigIntField PK always** | `id = fields.BigIntField(primary_key=True)` on every model. No `IntField`, no `CharField` PK. |
-| **CharEnumField for enums** | All enum-valued columns use `CharEnumField(MyEnum)`, never raw `CharField` with manual choices. |
-| **Full Meta class** | Every model needs: `table`, `table_description`, `ordering`, `indexes` (as `models.Index(fields=[...])`), `unique_together` where applicable. |
-| **Index syntax** | Always `models.Index(fields=["a", "b"])` — never tuple syntax `("a", "b")` (silently ignored). |
-| **auto_now timestamps** | `created_at = fields.DatetimeField(auto_now_add=True)`, `updated_at = fields.DatetimeField(auto_now=True)` on every mutable model. |
-| **Soft delete pattern** | `is_active = BooleanField(default=True, db_index=True)` + `deleted_at = DatetimeField(null=True)`. Use `SoftDeleteMixin` once created. |
-| **null=True only if truly nullable** | Don't use `null=True` as a default. Required fields must be non-null with a sensible default. |
-| **No duplicate enum names** | One canonical enum per concept. Keep `Severity`, `Confidence`, `IOCStatus` — delete `SeverityLevel`, `ConfidenceLevel`, `ForensicIOCStatus`. |
+| Rule                                 | Detail                                                                                                                                                                                                           |
+|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **No `Record` suffix**               | Model class is `LLMModel`, not `LLMModelRecord`. Table name is `llm_models`. Only suffix allowed is a domain noun (e.g., `ProviderCapability`, `ChatMessage`).                                                   |
+| **No migrations during dev**         | While phases are in progress we drop + reseed. `manage.py init-db` calls `generate_schemas(safe=False)` in dev, then runs all seed fixtures. Only consider Aerich migration tooling after all phases are locked. |
+| **BigIntField PK always**            | `id = fields.BigIntField(primary_key=True)` on every model. No `IntField`, no `CharField` PK.                                                                                                                    |
+| **CharEnumField for enums**          | All enum-valued columns use `CharEnumField(MyEnum)`, never raw `CharField` with manual choices.                                                                                                                  |
+| **Full Meta class**                  | Every model needs: `table`, `table_description`, `ordering`, `indexes` (as `models.Index(fields=[...])`), `unique_together` where applicable.                                                                    |
+| **Index syntax**                     | Always `models.Index(fields=["a", "b"])` — never tuple syntax `("a", "b")` (silently ignored).                                                                                                                   |
+| **auto_now timestamps**              | `created_at = fields.DatetimeField(auto_now_add=True)`, `updated_at = fields.DatetimeField(auto_now=True)` on every mutable model.                                                                               |
+| **Soft delete pattern**              | `is_active = BooleanField(default=True, db_index=True)` + `deleted_at = DatetimeField(null=True)`. Use `SoftDeleteMixin` once created.                                                                           |
+| **null=True only if truly nullable** | Don't use `null=True` as a default. Required fields must be non-null with a sensible default.                                                                                                                    |
+| **No duplicate enum names**          | One canonical enum per concept. Keep `Severity`, `Confidence`, `IOCStatus` — delete `SeverityLevel`, `ConfidenceLevel`, `ForensicIOCStatus`.                                                                     |
 
 ---
 
 ## 🚫 Anti-Patterns (NEVER)
 
-| Anti-Pattern                    | Fix                                   |
-|---------------------------------|---------------------------------------|
-| Create .md outside whitelist    | Consolidate to 7 files                |
-| Manual .env.example edits       | Regenerate from CONFIG_SPEC           |
-| Mix ABC + @dataclass on same class  | Use ABC alone OR @dataclass alone OR msgspec.Struct |
-| @dataclass + BaseModel(Pydantic)    | Replace with msgspec.Struct (see gap-context-antipattern) |
-| Test during phase               | Test only after phase complete        |
-| Cross-module imports (non-core) | Import only from core                 |
-| Hardcoded manager.py defaults   | Use CONFIG object                     |
-| Inconsistent file/naming structure | Follow patterns established in other modules for same domain |
-| Skip commit validation          | Run validation checklist              |
-| `Record` suffix on ORM models   | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability` |
-| Aerich migrations during dev    | Drop + reseed via `manage.py init-db` until all phases locked |
-| Tuple-syntax indexes in Meta    | Use `models.Index(fields=["a","b"])` — tuple syntax silently ignored |
+| Anti-Pattern                       | Fix                                                                   |
+|------------------------------------|-----------------------------------------------------------------------|
+| Create .md outside whitelist       | Consolidate to 7 files                                                |
+| Manual .env.example edits          | Regenerate from CONFIG_SPEC                                           |
+| Mix ABC + @dataclass on same class | Use ABC alone OR @dataclass alone OR msgspec.Struct                   |
+| @dataclass + BaseModel(Pydantic)   | Replace with msgspec.Struct (see gap-context-antipattern)             |
+| Test during phase                  | Test only after phase complete                                        |
+| Cross-module imports (non-core)    | Import only from core                                                 |
+| Hardcoded manager.py defaults      | Use CONFIG object                                                     |
+| Inconsistent file/naming structure | Follow patterns established in other modules for same domain          |
+| Skip commit validation             | Run validation checklist                                              |
+| `Record` suffix on ORM models      | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability` |
+| Aerich migrations during dev       | Drop + reseed via `manage.py init-db` until all phases locked         |
+| Tuple-syntax indexes in Meta       | Use `models.Index(fields=["a","b"])` — tuple syntax silently ignored  |
+
+
+# Python 3.14 Type Hints – Quick Reference
+
+**Last Updated:** May 2026  
+**Target:** Python 3.14+
+
+---
+
+## 1. Core Type Mappings (Legacy → Modern)
+
+| Legacy (Avoid)                     | Modern (Python 3.14+)                        | Notes                              |
+|------------------------------------|----------------------------------------------|------------------------------------|
+| `typing.List[int]`                 | `list[int]`                                  | Use built-in                       |
+| `typing.Dict[str, float]`          | `dict[str, float]`                           | Use built-in                       |
+| `typing.Tuple[int, str]`           | `tuple[int, str]`                            | Use built-in                       |
+| `typing.Set[str]`                  | `set[str]`                                   | Use built-in                       |
+| `typing.FrozenSet[int]`            | `frozenset[int]`                             | Use built-in                       |
+| `typing.Optional[str]`             | `str \| None`                                | Preferred                          |
+| `typing.Union[int, str]`           | `int \| str`                                 | Preferred                          |
+| `typing.Iterable[str]`             | `collections.abc.Iterable[str]`              | Abstract types                     |
+| `typing.Mapping[str, int]`         | `collections.abc.Mapping[str, int]`          | Abstract types                     |
+| `typing.Callable[[int], str]`      | `Callable[[int], str]` (from `typing`)       | See Callable table below           |
+
+---
+
+## 2. When to Import from `typing` (Still Recommended)
+
+| Construct                   | Use Case                                      | Recommended Import                          |
+|-----------------------------|-----------------------------------------------|---------------------------------------------|
+| `Callable`                  | Functions, decorators, higher-order functions | `from typing import Callable`               |
+| `ParamSpec` + `Concatenate` | Advanced decorators & wrappers                | `from typing import ParamSpec, Concatenate` |
+| `TypedDict`                 | Structured dictionaries with known keys       | `from typing import TypedDict`              |
+| `Protocol`                  | Structural interfaces / duck typing           | `from typing import Protocol`               |
+| `Literal`                   | Specific allowed literal values               | `from typing import Literal`                |
+| `Self`                      | Methods returning the current class instance  | `from typing import Self`                   |
+| `TypeIs` / `TypeGuard`      | Custom type narrowing                         | `from typing import TypeIs, TypeGuard`      |
+| `Annotated`                 | Attach metadata (validation, docs, etc.)      | `from typing import Annotated`              |
+| `TypeVar` / `TypeVarTuple`  | Generic classes & functions                   | `from typing import TypeVar, TypeVarTuple`  |
+| `Any`, `Never`, `NoReturn`  | Escape hatch, never-return functions          | `from typing import Any, Never, NoReturn`   |
+| `LiteralString`             | Compile-time literal strings (security)       | `from typing import LiteralString`          |
+
+---
+
+## 3. `Callable` Patterns (Most Common Advanced Use)
+
+| Pattern                              | Example                                                              | When to Use                  |
+|--------------------------------------|----------------------------------------------------------------------|------------------------------|
+| Simple function                      | `Callable[[int, str], bool]`                                         | Basic cases                  |
+| Any arguments, specific return       | `Callable[..., str]`                                                 | Rare                         |
+| Preserve signature (decorator)       | `Callable[P, R]` + `ParamSpec("P")`                                  | **Recommended**              |
+| Add prefix argument                  | `Callable[Concatenate[str, P], R]`                                   | Wrappers                     |
+| Method decorator                     | `Callable[Concatenate[Self, P], R]`                                  | Class methods                |
+| Async callable                       | `Callable[P, Coroutine[Any, Any, R]]`                                | Async wrappers               |
+
+**Best Practice**: Always import `Callable`, `ParamSpec`, and `Concatenate` from `typing` for anything beyond the simplest signatures.
+
+---
+
+## 4. Deprecated / Avoid in Python 3.14+
+
+| Avoid                                     | Reason                                        | Replacement                                   |
+|-------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| `from typing import List, Dict, Tuple...` | Deprecated since 3.9, warnings starting 3.14+ | Built-ins                                     |
+| `from __future__ import annotations`      | Mostly unnecessary (PEP 649 lazy evaluation)  | Remove                                        |
+| `typing.ByteString`                       | Poorly defined, scheduled for removal in 3.17 | `collections.abc.Buffer` or explicit union    |
+| Old `NamedTuple("Name", x=int)` syntax    | Deprecated since 3.13                         | Class-based or functional with list of tuples |
+| `typing.no_type_check_decorator`          | Never supported by any major type checker     | Remove                                        |
+| Direct access to `__annotations__`        | Fragile with lazy evaluation (PEP 649)        | `from annotationlib import get_annotations`   |
+
+---
+
+## Quick Decision Guide
+
+**Use built-ins / `collections.abc` for:**
+- Lists, dicts, sets, tuples
+- Abstract collections (`Iterable`, `Mapping`, `Sequence`, etc.)
+
+**Use `typing` for:**
+- `Callable` (especially with `ParamSpec`)
+- `TypedDict`, `Protocol`, `Literal`, `Self`, `TypeIs`
+- Advanced generics (`TypeVar`, `Annotated`, etc.)
+
+**Never use in new code (Python 3.14+):**
+- `typing.List`, `Dict`, `Tuple`, `Optional`, `Union`
+- `from __future__ import annotations`
+
+---

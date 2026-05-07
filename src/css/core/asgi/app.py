@@ -31,7 +31,7 @@ from tortoise import Tortoise
 
 from css.config import ENVIRONMENT, POSTGRES_DATABASE
 from css.core.loader import build_tortoise_db_url, build_tortoise_modules, mount_app_routers
-from css.core.tools.base import BaseToolRegistry
+from css.core.tools.base import get_tool_registry
 
 log = logging.getLogger(__name__)
 

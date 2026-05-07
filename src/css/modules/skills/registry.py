@@ -2,7 +2,7 @@
 
 import logging
 import asyncio
-from typing import Dict, List, Optional, Any
+from typing import Optional, Any
 from datetime import datetime
 
 from .models import SkillDefinition, SkillResult
@@ -17,8 +17,8 @@ class SkillRegistry:
     
     def __init__(self):
         """Initialize skill registry."""
-        self._skills: Dict[str, SkillDefinition] = {}
-        self._execution_history: List[SkillResult] = []
+        self._skills: dict[str, SkillDefinition] = {}
+        self._execution_history: list[SkillResult] = []
     
     def register(self, skill: SkillDefinition) -> None:
         """Register a skill definition."""
@@ -47,7 +47,7 @@ class SkillRegistry:
             raise SkillNotFoundError(skill_id)
         return skill
     
-    def list_all(self, category: SkillCategory = None, status: SkillStatus = None) -> List[SkillDefinition]:
+    def list_all(self, category: SkillCategory = None, status: SkillStatus = None) -> list[SkillDefinition]:
         """List skills with optional filtering."""
         result = list(self._skills.values())
         
@@ -59,7 +59,7 @@ class SkillRegistry:
         
         return result
     
-    def search(self, query: str) -> List[SkillDefinition]:
+    def search(self, query: str) -> list[SkillDefinition]:
         """Search skills by name or description."""
         query_lower = query.lower()
         return [
@@ -142,7 +142,7 @@ class SkillRegistry:
             return True
         return False
     
-    def get_execution_history(self, skill_id: str = None, limit: int = 100) -> List[SkillResult]:
+    def get_execution_history(self, skill_id: str = None, limit: int = 100) -> list[SkillResult]:
         """Get execution history."""
         history = self._execution_history
         
@@ -151,7 +151,7 @@ class SkillRegistry:
         
         return history[-limit:]
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         skills_by_category = {}
         skills_by_status = {}

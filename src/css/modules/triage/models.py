@@ -1,7 +1,7 @@
 """Triage request and response models."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 from datetime import datetime
 
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
@@ -12,7 +12,7 @@ class TriageRequest:
     """Request for triage classification."""
     query: str
     context: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
 
 

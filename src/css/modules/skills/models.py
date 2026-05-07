@@ -1,7 +1,7 @@
 """Skill data models and types."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, List, Callable
+from typing import Any, Optional, Callable
 from datetime import datetime
 
 from .enums import SkillStatus, SkillCategory
@@ -15,7 +15,7 @@ class SkillParameter:
     description: str = ""
     required: bool = True
     default_value: Any = None
-    validation_rules: Dict[str, Any] = field(default_factory=dict)
+    validation_rules: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,20 +40,20 @@ class SkillDefinition:
     status: SkillStatus = SkillStatus.ACTIVE
     
     # Parameters and execution
-    parameters: List[SkillParameter] = field(default_factory=list)
+    parameters: list[SkillParameter] = field(default_factory=list)
     handler: Optional[Callable] = None  # Execution function
     
     # Metadata
     author: str = ""
-    tags: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)  # Other skill IDs
-    custom_metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)  # Other skill IDs
+    custom_metadata: dict[str, Any] = field(default_factory=dict)
     
     # Lifecycle
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime = field(default_factory=datetime.utcnow)
     
-    def validate_parameters(self, **kwargs) -> Dict[str, str]:
+    def validate_parameters(self, **kwargs) -> dict[str, str]:
         """Validate parameters against definition."""
         errors = {}
         

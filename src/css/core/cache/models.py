@@ -51,7 +51,7 @@ class CacheEntry:
     value: Any
     ttl_seconds: Optional[int] = None
     created_at: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     
     @property
     def is_expired(self) -> bool:

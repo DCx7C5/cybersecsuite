@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Optional, Dict, Set, Any
+from typing import Optional, Set, Any
 from datetime import datetime
 
 from .models import Tag
@@ -26,9 +26,9 @@ class TagManager:
     
     def __init__(self):
         """Initialize tag manager."""
-        self._tags: Dict[int, Tag] = {}
-        self._slug_index: Dict[str, int] = {}
-        self._assignments: Dict[str, Set[int]] = {}  # resource_type:resource_id -> set of tag IDs
+        self._tags: dict[int, Tag] = {}
+        self._slug_index: dict[str, int] = {}
+        self._assignments: dict[str, Set[int]] = {}  # resource_type:resource_id -> set of tag IDs
     
     async def create_tag(
         self,
@@ -91,7 +91,7 @@ class TagManager:
             raise TagNotFoundError(tag_id)
         return tag
     
-    async def list_tags(self, color: TagColor = None) -> List[Tag]:
+    async def list_tags(self, color: TagColor = None) -> list[Tag]:
         """List tags with optional filtering."""
         tags = list(self._tags.values())
         
@@ -100,7 +100,7 @@ class TagManager:
         
         return sorted(tags, key=lambda t: t.name)
     
-    async def search_tags(self, query: str) -> List[Tag]:
+    async def search_tags(self, query: str) -> list[Tag]:
         """Search tags by name or description."""
         query_lower = query.lower()
         matches = []
@@ -144,12 +144,12 @@ class TagManager:
             self._assignments[resource_key].discard(tag_id)
             logger.debug(f"Unassigned tag {tag.name} from {resource_key}")
     
-    async def get_resource_tags(self, resource_key: str) -> List[Tag]:
+    async def get_resource_tags(self, resource_key: str) -> list[Tag]:
         """Get all tags assigned to a resource."""
         tag_ids = self._assignments.get(resource_key, set())
         return [self._tags[tid] for tid in sorted(tag_ids) if tid in self._tags]
     
-    async def find_resources_by_tag(self, tag_id: int) -> List[str]:
+    async def find_resources_by_tag(self, tag_id: int) -> list[str]:
         """Find all resources with a specific tag."""
         await self.get_tag_or_fail(tag_id)
         
@@ -202,7 +202,7 @@ class TagManager:
             removed_tag_ids=sorted(removed),
         )
     
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get tag statistics."""
         total_tags = len(self._tags)
         

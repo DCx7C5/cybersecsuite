@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 
-from css.core.tools.base import BaseToolRegistry
+from css.core.tools.base import get_tool_registry
 from css.core.tools.exceptions import ToolNotFoundError, ToolExecutionError
 from css.core.events.instrument import instrument
 

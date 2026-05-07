@@ -11,13 +11,11 @@ This enables fast session resumption while ensuring durability.
 from __future__ import annotations
 
 import msgspec
-import json
 import logging
-from datetime import datetime, timedelta
-from typing import Optional, Any
+from datetime import datetime
 
-from css.core.types.context import ConversationContext, ExecutionContext
-from css.modules.memory.models import MemoryEntryRecord, MemorySnapshotRecord
+from css.core.types.context import ConversationContext
+from css.modules.memory.models import MemorySnapshotRecord
 
 log = logging.getLogger(__name__)
 
@@ -174,7 +172,7 @@ class SessionStore:
         """
         try:
             # Create snapshot record
-            snapshot = await MemorySnapshotRecord.create(
+            await MemorySnapshotRecord.create(
                 snapshot_id=f"checkpoint-{session_id}-{datetime.utcnow().isoformat()}",
                 session_id=session_id,
                 summary=f"Session {session_id} turn {context.turn_number}",

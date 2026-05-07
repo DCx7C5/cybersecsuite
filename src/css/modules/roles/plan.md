@@ -153,9 +153,9 @@ A **Role** definition:
 class Role:
     """Role = unified capability across agents, skills, tools, MCPs"""
     role_id: str           # e.g., "senior-engineer"
-    agents: List[Agent]    # Which agents can this role spawn?
-    skills: List[Skill]    # Which skills are attached?
-    tools: List[Tool]      # Which tools can it call?
+    agents: list[Agent]    # Which agents can this role spawn?
+    skills: list[Skill]    # Which skills are attached?
+    tools: list[Tool]      # Which tools can it call?
     sdk_access: Dict       # Which MCPs/SDKs are available?
     max_concurrent: int    # Parallelism limit
     timeout_sec: int       # Execution timeout

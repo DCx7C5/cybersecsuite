@@ -1,6 +1,6 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
-from typing import Dict, List, Optional, Set
+from typing import List, Optional, Set
 from datetime import datetime
 import logging
 
@@ -66,7 +66,7 @@ class DynamicCapabilityRegistry:
     
     def __init__(self):
         """Initialize capability registry with empty cache."""
-        self._capabilities: Dict[str, Dict[str, Set[CapabilityType]]] = {}
+        self._capabilities: dict[str, dict[str, Set[CapabilityType]]] = {}
         self._last_discovery: Optional[datetime] = None
         self._discovery_in_progress = False
     

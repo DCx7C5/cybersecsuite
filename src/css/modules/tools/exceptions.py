@@ -1,4 +1,7 @@
 from css.core.tools.exceptions import BaseToolException
+
+
+class ToolException(BaseToolException):
     """Base exception for the tool module."""
     def __init__(self, message: str, **kwargs):
         super().__init__(message, module_name="tool", **kwargs)

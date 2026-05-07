@@ -1,7 +1,7 @@
 """Triage classification and routing engine."""
 
 import logging
-from typing import Optional, Dict
+from typing import Optional
 from datetime import datetime
 import uuid
 
@@ -18,7 +18,7 @@ class TriageEngine:
     def __init__(self, ollama_client=None):
         """Initialize triage engine."""
         self.ollama_client = ollama_client
-        self._results_cache: Dict[str, TriageResult] = {}
+        self._results_cache: dict[str, TriageResult] = {}
     
     async def classify(self, request: TriageRequest) -> TriageResult:
         """Classify a query and determine routing."""
@@ -105,7 +105,7 @@ class TriageEngine:
         """Get cached triage result."""
         return self._results_cache.get(request_id)
     
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """Get triage statistics."""
         completed = sum(1 for r in self._results_cache.values() if r.status == TriageStatus.COMPLETED)
         failed = sum(1 for r in self._results_cache.values() if r.status == TriageStatus.FAILED)

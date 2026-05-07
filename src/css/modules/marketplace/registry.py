@@ -1,6 +1,6 @@
 """Registry for marketplace items (DB-backed), adapted to use BaseRegistry."""
 
-from typing import Optional, List
+from typing import Optional
 
 from css.core.types.base_registry import BaseRegistry
 
@@ -68,7 +68,7 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
         kind: Optional[MarketplaceItemType] = None,
         status: Optional[MarketplaceItemStatus] = None,
         installed_only: bool = False,
-    ) -> List[MarketplaceItem]:
+    ) -> list[MarketplaceItem]:
         """List all marketplace items with optional filtering.
 
         Implements BaseRegistry.list_all().
@@ -103,15 +103,15 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
         kind: Optional[MarketplaceItemType] = None,
         status: Optional[MarketplaceItemStatus] = None,
         installed_only: bool = False,
-    ) -> List[MarketplaceItem]:
+    ) -> list[MarketplaceItem]:
         """List marketplace items with optional filtering (convenience wrapper)."""
         return await self.list_all(kind=kind, status=status, installed_only=installed_only)
 
-    async def list_installed(self) -> List[MarketplaceItem]:
+    async def list_installed(self) -> list[MarketplaceItem]:
         """List all installed marketplace items."""
         return await self.list_all(installed_only=True)
 
-    async def list_by_kind(self, kind: MarketplaceItemType) -> List[MarketplaceItem]:
+    async def list_by_kind(self, kind: MarketplaceItemType) -> list[MarketplaceItem]:
         """List all items of a specific kind."""
         return await self.list_all(kind=kind)
 

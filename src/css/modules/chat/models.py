@@ -1,7 +1,7 @@
 """Chat data models and types."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, List
+from typing import Any, Optional
 from datetime import datetime
 
 from .enums import ChatRole, ChatMessageType, ChatStatus
@@ -14,7 +14,7 @@ class ChatMessage:
     role: ChatRole
     message_type: ChatMessageType
     content: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     tokens: int = 0
 
@@ -27,8 +27,8 @@ class ChatSession:
     status: ChatStatus = ChatStatus.ACTIVE
     model_id: Optional[str] = None
     system_prompt: str = ""
-    messages: List[ChatMessage] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    messages: list[ChatMessage] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime = field(default_factory=datetime.utcnow)
     
@@ -37,7 +37,7 @@ class ChatSession:
         self.messages.append(message)
         self.updated_at = datetime.utcnow()
     
-    def get_messages_for_api(self) -> List[Dict[str, Any]]:
+    def get_messages_for_api(self) -> list[dict[str, Any]]:
         """Get messages in API-ready format."""
         result = []
         

@@ -1,7 +1,7 @@
 """LLM model metadata and validation."""
 
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional, Set
+from typing import Any, Optional, Set
 
 from .enums import ModelProvider, ModelFamily, ModelCapability
 
@@ -45,7 +45,7 @@ class ModelMetadata:
     # Metadata
     released_at: str = ""  # ISO 8601 date
     deprecated: bool = False
-    custom_params: Dict[str, Any] = field(default_factory=dict)
+    custom_params: dict[str, Any] = field(default_factory=dict)
     
     def estimate_cost(self, input_tokens: int, output_tokens: int) -> float:
         """Estimate cost for token usage."""
@@ -60,7 +60,7 @@ class ModelMetadata:
         """Check if model supports capability."""
         return capability in self.capabilities
     
-    def validate_parameters(self, **kwargs) -> Dict[str, str]:
+    def validate_parameters(self, **kwargs) -> dict[str, str]:
         """Validate model parameters. Return errors dict if invalid."""
         errors = {}
         

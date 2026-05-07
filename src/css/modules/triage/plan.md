@@ -1,7 +1,7 @@
 # Triage → Intelligence Module: Local AI Assistance Layer
 
-> ⚠️ **RENAMED TO `core/intelligence/`** — Module does far more than routing/classification.
-> New location: `src/css/core/intelligence/`
+> ⚠️ **PENDING RENAME → `modules/intelligence/`** — Module does far more than routing/classification.
+> New location: `src/css/modules/intelligence/`
 > Todo: `triage-rename-module` in session.db (Phase 19)
 > Scope: quality gates, conversation health, cost analysis, memory tagging, tone adaptation.
 
@@ -183,7 +183,7 @@ class TriageRequest(BaseModel):
     """Input: User query or event for classification."""
     query: str = Field(..., description="Query or event text")
     context: Optional[str] = Field(None, description="Additional context")
-    examples: Optional[List[str]] = Field(None, description="Few-shot examples")
+    examples: Optional[list[str]] = Field(None, description="Few-shot examples")
     decision_type: str = Field("binary", description="binary|classification|routing")
 
 class TriageDecision(BaseModel):
@@ -191,7 +191,7 @@ class TriageDecision(BaseModel):
     decision: str = Field(..., description="Decision value (yes/no/simple/etc)")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence 0.0-1.0")
     reasoning: str = Field(..., description="Why this decision")
-    alternatives: Optional[List[str]] = Field(None)
+    alternatives: Optional[list[str]] = Field(None)
     latency_ms: float = Field(..., description="Inference latency")
     model: str = Field("qwen3:0.6b", description="Model used")
 ```

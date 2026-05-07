@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-from css.core.events.instrument import instrument
+async def instrument(
     event_prefix: str,
     **payload_fields: Any,
 ) -> AsyncIterator[dict[str, Any]]:

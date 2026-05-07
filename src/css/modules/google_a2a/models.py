@@ -1,6 +1,6 @@
 """A2A Protocol Pydantic models for google_a2a module."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 from datetime import datetime, timezone
 
 from pydantic import BaseModel, Field
@@ -16,7 +16,7 @@ class TextPart(BaseModel):
 
     type: PartType = PartType.TEXT
     text: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class FileContent(BaseModel):
@@ -33,15 +33,15 @@ class FilePart(BaseModel):
 
     type: PartType = PartType.FILE
     file: FileContent
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class DataPart(BaseModel):
     """Structured JSON data part."""
 
     type: PartType = PartType.DATA
-    data: Dict[str, Any]
-    metadata: Optional[Dict[str, Any]] = None
+    data: dict[str, Any]
+    metadata: Optional[dict[str, Any]] = None
 
 
 Part = Union[TextPart, FilePart, DataPart]
@@ -54,8 +54,8 @@ class Message(BaseModel):
     """A single message in a task conversation."""
 
     role: MessageRole
-    parts: List[Part]
-    metadata: Optional[Dict[str, Any]] = None
+    parts: list[Part]
+    metadata: Optional[dict[str, Any]] = None
 
 
 # ─── Artifact ─────────────────────────────────────────────────────────────────
@@ -66,11 +66,11 @@ class TaskArtifact(BaseModel):
 
     name: Optional[str] = None
     description: Optional[str] = None
-    parts: List[Part]
+    parts: list[Part]
     index: int = 0
     append: Optional[bool] = None
     last_chunk: Optional[bool] = None
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 # ─── Task Status ──────────────────────────────────────────────────────────────
@@ -93,6 +93,6 @@ class Task(BaseModel):
     id: str
     session_id: Optional[str] = None
     status: TaskStatus
-    history: Optional[List[Message]] = None
-    artifacts: Optional[List[TaskArtifact]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    history: Optional[list[Message]] = None
+    artifacts: Optional[list[TaskArtifact]] = None
+    metadata: Optional[dict[str, Any]] = None

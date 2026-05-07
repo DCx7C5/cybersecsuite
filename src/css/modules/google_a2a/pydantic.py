@@ -1,7 +1,7 @@
 """Pydantic models for google_a2a internal message handling."""
 
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Callable
+from typing import Optional, Callable
 
 
 class InternalMessage(BaseModel):
@@ -29,7 +29,7 @@ class MessageDispatcher:
             redis_client: Optional Redis client for pub/sub
         """
         self.redis = redis_client
-        self._subscribers: Dict[str, List[Callable]] = {}
+        self._subscribers: dict[str, list[Callable]] = {}
 
     async def dispatch(self, message: InternalMessage, channel: str = "default") -> None:
         """Dispatch a message to all subscribers of a channel.

@@ -2,7 +2,7 @@
 
 import logging
 import uuid
-from typing import Dict, List, Optional
+from typing import Optional
 from datetime import datetime
 
 from .models import ChatMessage, ChatSession
@@ -17,7 +17,7 @@ class ChatSessionManager:
     
     def __init__(self):
         """Initialize chat session manager."""
-        self._sessions: Dict[str, ChatSession] = {}
+        self._sessions: dict[str, ChatSession] = {}
     
     def create_session(self, title: str = "New Chat", system_prompt: str = "") -> ChatSession:
         """Create a new chat session."""
@@ -61,12 +61,12 @@ class ChatSessionManager:
         
         return message
     
-    def get_session_messages(self, session_id: str) -> List[ChatMessage]:
+    def get_session_messages(self, session_id: str) -> list[ChatMessage]:
         """Get all messages in a session."""
         session = self.get_session_or_fail(session_id)
         return session.messages
     
-    def list_sessions(self, status: ChatStatus = None) -> List[ChatSession]:
+    def list_sessions(self, status: ChatStatus = None) -> list[ChatSession]:
         """List chat sessions with optional filtering."""
         sessions = list(self._sessions.values())
         
@@ -90,7 +90,7 @@ class ChatSessionManager:
             return True
         return False
     
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """Get chat statistics."""
         total_sessions = len(self._sessions)
         total_messages = sum(len(s.messages) for s in self._sessions.values())

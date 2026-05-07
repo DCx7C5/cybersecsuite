@@ -1,7 +1,7 @@
 """Agent management and coordination."""
 
 import logging
-from typing import Dict, List, Optional
+from typing import Optional
 from datetime import datetime
 
 from .models import AgentConfig, AgentMetrics, AgentState, AgentMessage
@@ -16,8 +16,8 @@ class AgentRegistry:
     
     def __init__(self):
         """Initialize agent registry."""
-        self._agents: Dict[str, AgentState] = {}
-        self._message_queue: Dict[str, List[AgentMessage]] = {}
+        self._agents: dict[str, AgentState] = {}
+        self._message_queue: dict[str, list[AgentMessage]] = {}
     
     def register(self, config: AgentConfig) -> AgentState:
         """Register a new agent."""
@@ -84,7 +84,7 @@ class AgentRegistry:
         
         logger.debug(f"Agent {agent_id} execution recorded: {duration_ms}ms, success={success}")
     
-    def list_all(self, agent_type: AgentType = None, status: AgentStatus = None) -> List[AgentState]:
+    def list_all(self, agent_type: AgentType = None, status: AgentStatus = None) -> list[AgentState]:
         """List agents with optional filtering."""
         result = list(self._agents.values())
         
@@ -113,7 +113,7 @@ class AgentRegistry:
         self._message_queue[message.recipient_id].append(message)
         logger.debug(f"Message sent from {message.sender_id} to {message.recipient_id}")
     
-    def get_messages(self, agent_id: str, clear: bool = True) -> List[AgentMessage]:
+    def get_messages(self, agent_id: str, clear: bool = True) -> list[AgentMessage]:
         """Get pending messages for an agent."""
         if agent_id not in self._message_queue:
             raise AgentNotFoundError(agent_id)
@@ -124,7 +124,7 @@ class AgentRegistry:
         
         return messages
     
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """Get registry statistics."""
         total = len(self._agents)
         by_status = {}

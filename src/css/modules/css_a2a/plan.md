@@ -151,7 +151,7 @@ Worker-D → send response back to Worker-A
 ```python
 class CrossTeamA2ACommunication:
     """Enable direct agent-to-agent communication across teams"""
-    def __init__(self, team_id: str, other_teams: Dict[str, Tuple]):
+    def __init__(self, team_id: str, other_teams: dict[str, Tuple]):
         self.team_id = team_id
         self.other_teams = other_teams  # team_id → (pipe_conn, agent_id)
     
