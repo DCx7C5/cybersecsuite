@@ -94,7 +94,7 @@ See `.plan/architecture/core-audit-matrix.md` for core infrastructure analysis.
 
 ### 🔴 BLOCKER #1: Events Module Missing
 - **Impact**: Audit trail missing, agent update notifications broken, OTEL bridge blocked
-- **Location**: `src/css/modules/events/` — 0 files
+- **Location**: `src/css/core/events/` — 0 files
 - **Fix**: Implement EventBus, @on_event decorator, streaming layer (todos: `events-*`)
 - **Blocks**: Phase 6 CQRS event store, `notifications-module-create`, agent observability
 
@@ -209,7 +209,7 @@ All 7 critical app-init todos verified complete:
 
 **Verification**: 
 - ✅ `from css.modules.agents.types import Agent` — works
-- ✅ `from css.modules.events import EventBus` — works
+- ✅ `from css.core.events import EventBus` — works
 - ✅ `from css.modules.tools.registry import get_tool_registry` — works
 - ✅ **No circular import errors on app startup**
 
@@ -2180,7 +2180,7 @@ RequestComplexity → minimum tier rank to route to
 The foundational building block. A single decorator wraps any `async def` (or sync) function and emits three events: `{namespace}.started`, `{namespace}.completed`, `{namespace}.failed`. Everything in T14.2 is just applying this decorator at the right layer.
 
 ```python
-# modules/events/instrument.py
+# core/events/instrument.py
 import functools, uuid, asyncio
 from .store import event_store  # module-level singleton
 
@@ -2238,8 +2238,8 @@ def _get_correlation_id() -> str:
 ```
 
 **Todos (T14.1)**:
-- `events-instrument-decorator` — Implement `@instrument(namespace)` in `modules/events/instrument.py` with `ContextVar` correlation propagation (async + sync support)
-- `events-event-bus-module` — Wire `EventStore` + `OtelBridge.run()` as module-level singletons in `modules/events/__init__.py`; register `OtelBridge.run()` as FastAPI lifespan background task
+- `events-instrument-decorator` — Implement `@instrument(namespace)` in `core/events/instrument.py` with `ContextVar` correlation propagation (async + sync support)
+- `events-event-bus-module` — Wire `EventStore` + `OtelBridge.run()` as module-level singletons in `core/events/__init__.py`; register `OtelBridge.run()` as FastAPI lifespan background task
 
 ---
 
@@ -2335,7 +2335,7 @@ class OtelSpanInstrumentor:
 For consumers who prefer `@on_event("llm.call.*")` decorator style over direct Redis Streams consumption. Fire-and-forget, never blocks main flow.
 
 ```python
-# modules/events/hooks.py
+# core/events/hooks.py
 import fnmatch, asyncio
 from collections import defaultdict
 
@@ -2411,7 +2411,7 @@ TOOL_CALL_ERROR    = "tool.call.error"
 | ID | Task | What |
 |----|------|------|
 | `events-instrument-decorator` | T14.1 | `@instrument(namespace)` decorator + `ContextVar` correlation propagation |
-| `events-event-bus-module` | T14.1 | Wire `EventStore` + `OtelBridge` singletons in `modules/events/__init__.py` |
+| `events-event-bus-module` | T14.1 | Wire `EventStore` + `OtelBridge` singletons in `core/events/__init__.py` |
 | `events-middleware-fastapi` | T14.2 | `EventInstrumentationMiddleware` for all HTTP entry/exit points |
 | `events-instrument-command-bus` | T14.2 | Apply `@instrument` to `CommandBus.dispatch()` |
 | `events-instrument-llm-client` | T14.2 | Apply `@instrument` to `UnifiedLLMClient.complete()` (dep: Phase 10) |
@@ -2452,7 +2452,7 @@ TOOL_CALL_ERROR    = "tool.call.error"
 This is the Claude Code / Express.js middleware pattern: every entry point (`tool.call`, `llm.call`, `agent.run`, `http.request`, `command.dispatch`) has a pre-hook chain and a post-hook chain. Each interceptor in the chain receives a mutable `HookContext` and must pass it forward (or block).
 
 ```python
-# modules/events/interceptors.py
+# core/events/interceptors.py
 from __future__ import annotations
 import functools
 from typing import Generic, TypeVar, Callable, Awaitable
@@ -2534,7 +2534,7 @@ async def _call(fn, ctx):
 **Wired into `@instrument`** (updates T14.1):
 
 ```python
-# modules/events/instrument.py  (updated)
+# core/events/instrument.py  (updated)
 async def wrapper(*args, **kwargs):
     ctx = HookContext(namespace=namespace, input={"args": args, "kwargs": kwargs}, ...)
     
@@ -2567,7 +2567,7 @@ async def wrapper(*args, **kwargs):
 **Usage examples**:
 
 ```python
-from css.modules.events import pre_hook, post_hook, HookContext, HookErrorStrategy
+from css.core.events import pre_hook, post_hook, HookContext, HookErrorStrategy
 
 # Validate + clamp tool input before execution
 @pre_hook("tool.call.*", priority=10)
@@ -2606,7 +2606,7 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 ```
 
 **Todos (T14.5)**:
-- `events-interceptor-context` — `HookContext[Input, Output]` generic dataclass; `HookErrorStrategy` exception; in `modules/events/interceptors.py`
+- `events-interceptor-context` — `HookContext[Input, Output]` generic dataclass; `HookErrorStrategy` exception; in `core/events/interceptors.py`
 - `events-interceptor-registry` — `InterceptorRegistry` with priority-sorted pre/post lists, glob pattern matching, `run_pre()` + `run_post()`; module-level `interceptor_registry` singleton
 - `events-pre-hook-decorator` — `@pre_hook(pattern, priority=50)` shortcut exported from `modules/events`
 - `events-post-hook-decorator` — `@post_hook(pattern, priority=50)` shortcut exported from `modules/events`
@@ -2954,7 +2954,7 @@ The Phase 14 `@pre_hook` system is the enforcement point. No permission check sh
 
 ```python
 # core/permissions/hooks.py
-from css.modules.events import pre_hook, HookContext, HookErrorStrategy
+from css.core.events import pre_hook, HookContext, HookErrorStrategy
 from .checker import checker  # module-level singleton
 
 @pre_hook("tool.call.*", priority=5)   # runs early — before tool executes
@@ -3577,7 +3577,7 @@ get_subagent_messages(session_id, subagent_id)
 
 **Design:**
 - `claude_agent_sdk` hooks are fire-and-modify (interceptors), exactly what our Phase 14 interceptors cover  
-- Create `CSSHookBridge` in `modules/events/`: maps our `@events` interceptor protocol to `claude_agent_sdk`'s hook format  
+- Create `CSSHookBridge` in `core/events/`: maps our `@events` interceptor protocol to `claude_agent_sdk`'s hook format  
 - This means when using `claude_agent_sdk` as a backend, hooks registered in our `@events` module automatically wire in  
 - `PermissionRequestHookInput` → maps to our `@permissions.can_tool()` check  
 - `PreToolUseHookInput` → our `INTERCEPTOR_BEFORE_TOOL` event  
@@ -3622,7 +3622,7 @@ get_subagent_messages(session_id, subagent_id)
 | `mistral-ocr-adapter` | OcrAdapter protocol + Mistral impl | Add `OcrAdapter` protocol to `core/types/`. Method: `ocr(document: Path \| bytes \| str) → OcrResult`. `OcrResult(msgspec.Struct)`: `text: str, pages: list[str], confidence: float \| None`. Implement using `mistral.ocr.process()`. |  |
 | `mistral-fim-adapter` | FIM fill-in-middle support | Add `fim_complete(prompt, suffix, stop, model) → str` to `LLMAdapter` (optional method, default raises `NotImplementedError`). Mistral implements via `mistral.fim.complete()`. Mark models as `supports_fim=True` in `ModelMetadata`. | `thinking-config-adapter` |
 | `groq-audio-adapter` | AudioAdapter protocol + Groq impl | Add `AudioAdapter` protocol to `core/types/`. Methods: `transcribe(file, language) → str`, `translate(file, target) → str`. Groq implements via `audio.transcriptions.create(model="whisper-large-v3")`. Register as `BuiltinTool("audio.transcribe")` requiring `ToolGrant`. |  |
-| `claude-sdk-hook-bridge` | CSSHookBridge for claude_agent_sdk | Add `CSSHookBridge` to `modules/events/`. Maps `claude_agent_sdk` hook callbacks to CSS event interceptors: `PreToolUseHookInput` → `INTERCEPTOR_BEFORE_TOOL`, `PermissionRequestHookInput` → `@permissions.can_tool()`, etc. |  |
+| `claude-sdk-hook-bridge` | CSSHookBridge for claude_agent_sdk | Add `CSSHookBridge` to `core/events/`. Maps `claude_agent_sdk` hook callbacks to CSS event interceptors: `PreToolUseHookInput` → `INTERCEPTOR_BEFORE_TOOL`, `PermissionRequestHookInput` → `@permissions.can_tool()`, etc. |  |
 | `claude-sdk-session-bridge` | Claude SDK session operations | Map `claude_agent_sdk` session ops to CSS session ops: `fork_session()` → `@tasks ForkSession`, `tag_session()` → session metadata update, `list_subagents()` → `@agents list` for session. | `claude-sdk-hook-bridge` |
 
 ---

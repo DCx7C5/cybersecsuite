@@ -22,9 +22,9 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 
-from css.modules.tools.registry import get_tool_registry
-from css.modules.tools.exceptions import ToolNotFoundError, ToolExecutionError
-from css.modules.events.instrument import instrument
+from css.core.tools.base import BaseToolRegistry
+from css.core.tools.exceptions import ToolNotFoundError, ToolExecutionError
+from css.core.events.instrument import instrument
 
 logger = logging.getLogger(__name__)
 

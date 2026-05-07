@@ -26,7 +26,7 @@ The `@mcps` module manages **MCP (Model Context Protocol) servers** — connecti
 | `css.modules.tools` | → pushes into | McpToolBridge registers MCP tools as `ToolType.MCP` in ToolRegistry |
 | `css.core.types.entities.tool` | → uses | `Tool.fn_path` is dotted path for PYTHON_DIRECT dispatch |
 | `css.core.db` | → persists to | McpServerConfigRecord Tortoise ORM |
-| `css.modules.events` | → emits into | `@instrument("mcp.call.{server}.{tool}")` — Phase 14 |
+| `css.core.events` | → emits into | `@instrument("mcp.call.{server}.{tool}")` — Phase 14 |
 | ASGI startup | → initialized by | load_from_db() + auto_connect on app start |
 | `fastmcp` (v3.1.0+) | → wraps | All transport logic delegated to fastmcp.Client |
 

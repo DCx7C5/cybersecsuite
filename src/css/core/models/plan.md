@@ -14,7 +14,7 @@
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.api_services.*` | ← consumed by | All 22 provider SDKs registered in this registry |
-| `css.modules.events` | → consumes | `@instrument("llm.call.{provider}.{model}")` — Phase 14 |
+| `css.core.events` | → consumes | `@instrument("llm.call.{provider}.{model}")` — Phase 14 |
 | `UnifiedLLMClient` (Phase 10) | ← provides to | Registry drives provider SDK selection |
 | `css.core.triage` | ← provides to | Triage module reads routing tier metadata |
 

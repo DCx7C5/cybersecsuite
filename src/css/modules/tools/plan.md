@@ -10,7 +10,7 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| `css.modules.events` | → consumes | `@instrument("tool.call.{tool_name}")` — Phase 14 entry point |
+| `css.core.events` | → consumes | `@instrument("tool.call.{tool_name}")` — Phase 14 entry point |
 | `css.modules.permissions` | → consumes | PermissionChecker.can_tool() enforced via @pre_hook (automatic) |
 
 ---

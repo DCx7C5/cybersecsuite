@@ -1,4 +1,9 @@
-from css.core.tools.exceptions import BaseToolException
+"""Tool-related exceptions — shared across all tool modules."""
+
+from css.core.exceptions import BaseModuleException
+
+
+class BaseToolException(BaseModuleException):
     """Base exception for the tool module."""
     def __init__(self, message: str, **kwargs):
         super().__init__(message, module_name="tool", **kwargs)
@@ -6,7 +11,6 @@ from css.core.tools.exceptions import BaseToolException
 
 class ToolNotFoundError(BaseToolException):
     """Raised when tool is not found."""
-    
     def __init__(self, tool_id: str = None, **kwargs):
         ctx = kwargs.get("context", {})
         if tool_id:
@@ -20,27 +24,12 @@ class ToolNotFoundError(BaseToolException):
 
 class ToolExecutionError(BaseToolException):
     """Raised when tool execution fails."""
-    
     def __init__(self, message: str = None, tool_id: str = None, **kwargs):
         ctx = kwargs.get("context", {})
         if tool_id:
             ctx["tool_id"] = tool_id
         super().__init__(
-            message or f"Tool execution failed: {tool_id}" if tool_id else "Tool execution failed",
-            context=ctx,
-            **kwargs
-        )
-
-
-class ToolConfigurationError(BaseToolException):
-    """Raised when tool configuration is invalid."""
-    
-    def __init__(self, message: str = None, config_key: str = None, **kwargs):
-        ctx = kwargs.get("context", {})
-        if config_key:
-            ctx["config_key"] = config_key
-        super().__init__(
-            message or f"Tool configuration error: {config_key}" if config_key else "Tool configuration error",
+            message or "Tool execution failed",
             context=ctx,
             **kwargs
         )

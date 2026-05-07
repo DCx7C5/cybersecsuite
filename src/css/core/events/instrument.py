@@ -5,7 +5,7 @@ Provides a lightweight async context manager ``instrument()`` that emits
 
 Usage::
 
-    from css.modules.events.instrument import instrument
+    from .instrument import instrument
 
     async with instrument("tool.call", tool_id="openai:code_interpreter", agent_id="a1"):
         result = await execute_tool(...)
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def instrument(
+from css.core.events.instrument import instrument
     event_prefix: str,
     **payload_fields: Any,
 ) -> AsyncIterator[dict[str, Any]]:

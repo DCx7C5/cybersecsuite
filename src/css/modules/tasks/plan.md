@@ -10,7 +10,7 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| `css.modules.events` | → consumes | `@instrument("command.{CommandName}")` — Phase 14 entry point 2 |
+| `css.core.events` | → consumes | `@instrument("command.{CommandName}")` — Phase 14 entry point 2 |
 
 ---
 

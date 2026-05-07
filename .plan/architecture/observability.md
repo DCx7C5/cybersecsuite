@@ -32,7 +32,7 @@ Application Layer (modules: chat, tasks, teams, agents, marketplace, permissions
 ┌──────────────────────┐          ┌────────────────────────────┐
 │   OtelBridge         │          │   Read Projections         │
 │ (core/events/otel.py)│          │ (core/permissions/,     │
-│                      │          │  modules/events/)          │
+│                      │          │  core/events/)          │
 │  DomainEvent         │          │                            │
 │  → OTEL span         │          │  PermissionProjection:     │
 │  (event_type→name,   │          │  rebuilds agent permissions│

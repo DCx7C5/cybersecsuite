@@ -408,7 +408,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 ### Work Done
 
 **7 Phase 4 Entity Migration Todos Completed**:
-1. `phase4-verify-imports` — Core module imports verified (css.core.types, css.core.db, css.modules.events, css.modules.roles)
+1. `phase4-verify-imports` — Core module imports verified (css.core.types, css.core.db, css.core.events, css.modules.roles)
 2. `types-option-c-accounts` — Account entity moved to `src/css/core/accounts/types.py`
 3. `types-option-c-agents` — Agent entity moved to `src/css/modules/agents/types.py`
 4. `types-option-c-permissions` — Role entity added to `src/css/core/permissions/types.py` with built-in singletons

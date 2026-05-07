@@ -277,7 +277,7 @@ None yet (will integrate with @asgi, @db in Phase 3+)
 - ❌ No exporters configured
 
 #### Phase Readiness
-🔴 **DEFERRED** — Architecture decision: direct OTel instrumentation deferred to Phase 6. Implementation pattern: `DomainEvent → OTEL bridge` (todo: `p6-events-otel-bridge`). All internal events flow via `css.modules.events`; Phase 6 bridges events → OTEL spans/metrics.
+🔴 **DEFERRED** — Architecture decision: direct OTel instrumentation deferred to Phase 6. Implementation pattern: `DomainEvent → OTEL bridge` (todo: `p6-events-otel-bridge`). All internal events flow via `css.core.events`; Phase 6 bridges events → OTEL spans/metrics.
 
 #### Recommendations
 - **Status**: Deferred by design (Phase 6 events bridge)

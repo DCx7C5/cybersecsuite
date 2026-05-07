@@ -15,7 +15,7 @@
 | `css.core.types`         | → consumes    | Base types, Protocol contracts — ALL providers import from here             |
 | `css.core.resilience`    | → consumes    | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        |
 | `css.modules.llm_models` | ← consumed by | `UnifiedLLMClient` routes to provider SDKs via registry                     |
-| `css.modules.events`     | ← wrapped by  | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        |
+| `css.core.events`     | ← wrapped by  | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        |
 | `css.core.prompt_cache`  | ← consumed by | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only |
 | `css.core.ollama`        | ← proxied by  | `OllamaProcessManager` must be running before any Ollama API calls          |
 

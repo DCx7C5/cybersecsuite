@@ -13,7 +13,7 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| `css.modules.events` | → consumes | Stream events via @events HookRegistry (fire-and-forget) |
+| `css.core.events` | → consumes | Stream events via @events HookRegistry (fire-and-forget) |
 
 ---
 

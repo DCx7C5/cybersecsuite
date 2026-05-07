@@ -380,7 +380,7 @@ async def qwen_classify_complexity(query_text: str) -> QueryComplexity:
 **Use Case**: Route complex queries to appropriate agent
 
 ### 4. Event Categorization
-**File**: `src/css/modules/events/` (event classification)  
+**File**: `src/css/core/events/` (event classification)  
 **Decision**: threat_level, recommendation_type  
 **Use Case**: Auto-categorize security incidents
 
@@ -612,7 +612,7 @@ logger.error(f"Triage inference failed: {error}")
 - **Response Router**: `src/css/core/orchestration/response_strategy_router.py` (has TODO)
 - **Task Routing**: `src/css/modules/tasks/enums.py` (RoutingStrategy enum)
 - **Agent Selection**: `src/css/modules/agents/` (skill matching)
-- **Events Module**: `src/css/modules/events/` (event categorization)
+- **Events Module**: `src/css/core/events/` (event categorization)
 
 ---
 

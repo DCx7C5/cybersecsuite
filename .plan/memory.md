@@ -36,7 +36,7 @@
 ### ✅ Phase 4 Entity Migrations (Completed 2026-05-05)
 
 Session completed 7 Phase 4 entity migration todos:
-- `phase4-verify-imports`: Core module imports verified (css.core.types, css.core.db, css.modules.events, css.modules.roles all functional)
+- `phase4-verify-imports`: Core module imports verified (css.core.types, css.core.db, css.core.events, css.modules.roles all functional)
 - `types-option-c-accounts`: Account entity moved to `src/css/core/accounts/types.py`
 - `types-option-c-agents`: Agent entity moved to `src/css/modules/agents/types.py`
 - `types-option-c-permissions`: Role entity added to `src/css/core/permissions/types.py` with built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER)

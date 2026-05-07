@@ -10,7 +10,7 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| `css.modules.events` | → consumes | `@instrument("agent.run.{agent_id}")` — Phase 14 entry point |
+| `css.core.events` | → consumes | `@instrument("agent.run.{agent_id}")` — Phase 14 entry point |
 | `css.modules.permissions` | → consumes | PermissionChecker.can_tool(), require_path() |
 | `css.modules.working_dir` | → consumes | WorkingDirManager.create() → SessionContext |
 | `css.modules.llm_models` | → consumes | Routing tier selection for agent LLM calls |

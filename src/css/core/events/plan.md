@@ -51,7 +51,7 @@
 ## Files to Create
 
 ```
-src/css/modules/events/
+src/css/core/events/
 ├── __init__.py              # Public API: EventStore, OtelBridge, instrument, on_event
 ├── instrument.py            # @instrument(namespace) decorator + ContextVar
 ├── hooks.py                 # HookRegistry, @on_event, HookExecutor (_safe_call)
@@ -94,7 +94,7 @@ core/events/
 ## API (Phase 14)
 
 ```python
-from css.modules.events import instrument, on_event, hook_registry, event_store
+from css.core.events import instrument, on_event, hook_registry, event_store
 
 # 1. Decorate entry/exit points
 @instrument("agent.run", extract_aggregate_id=lambda self, *a, **k: self.agent_id)
@@ -153,7 +153,7 @@ events = await event_store.replay_session(session_id="abc-123")
 ## Module Pattern
 
 ```python
-# src/css/modules/events/__init__.py
+# src/css/core/events/__init__.py
 """Event & hook system — entry/exit instrumentation + OTEL bridge."""
 
 from css.core.events.domain_event import DomainEvent, EventType

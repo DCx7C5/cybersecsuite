@@ -103,7 +103,7 @@ class MarketplaceCache:
     def _emit_invalidated(self, key: str) -> None:
         """Fire-and-forget event on the global event bus (non-blocking)."""
         try:
-            from css.modules.events.event_bus import event_bus
+            from css.core.events.event_bus import event_bus
 
             async def _fire() -> None:
                 await event_bus.emit(

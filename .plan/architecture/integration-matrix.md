@@ -182,7 +182,7 @@ All dependencies form a **Directed Acyclic Graph (DAG)**:
    from css.modules.agents.types import Agent
    from css.modules.tools.registry import get_tool_registry
    from css.modules.marketplace.models import MarketplaceItem
-   from css.modules.events import EventBus
+   from css.core.events import EventBus
    print('✅ All imports work')
    "
    ```
