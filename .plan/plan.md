@@ -406,7 +406,7 @@ All 7 critical app-init todos verified complete:
 3. Runtime Config Loading — 2 days
 4. Manager.py Integration — 1 day
 
-🔗 **See**: [`src/css/core/db/plan.md`](../src/css/core/db/plan.md) for database patterns
+🔗 **See**: [`src/css/core/db/plan.md`](../src/css/core/db/postgres-db.md) for database patterns
 
 ---
 

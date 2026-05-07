@@ -5,16 +5,60 @@ api-services:
     url:
 
   anthropic:
-    type:
-    url:
+    display_name: Anthropic
+    base_url: https://api.anthropic.com/v1
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: ANTHROPIC_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /messages
+    capabilities:
+      streaming: true
+      vision: true
+      tool_use: true
 
   cerebras:
 
   cloudflare:
 
   cohere:
+    display_name: Cohere
+    base_url: https://api.cohere.ai/v1
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: COHERE_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: true
 
   deepinfra:
+    display_name: DeepInfra
+    base_url: https://api.deepinfra.com/v1
+    api_type: openai_compatible
+    models:
+      - meta-llama/Llama-2-70b-chat-hf
+      - mistralai/Mistral-7B-Instruct-v0.1
+      - Qwen/Qwen1.5-72B-Chat
+    auth:
+      api_key_env: DEEPINFRA_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /openai/v1/chat/completions
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
+
 
   deepseek:
 

@@ -17,6 +17,9 @@ from .base_protocols import (  # noqa: F401
     BaseTeamMemberLike,
 )
 
+# ── Module protocol ──────────────────────────────────────────────────────────
+from .module_protocol import CSSModule  # noqa: F401
+
 # ── Base message/API value objects ───────────────────────────────────────────
 from .base_messages import (  # noqa: F401
     BaseMessage,
@@ -115,6 +118,7 @@ __all__ = [
     "BaseSkillLike",
     "BaseToolLike",
     "BaseTeamMemberLike",
+    "CSSModule",
     # messages
     "BaseMessage",
     "Tool",

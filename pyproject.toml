@@ -5,6 +5,45 @@ description = "Cybersecurity forensics suite — A2A agent orchestration, MCP se
 readme = "README.md"
 requires-python = ">=3.14"
 
+[project.entry-points."css.modules"]
+agents = "css.modules.agents:agents_module"
+chat = "css.modules.chat:chat_module"
+events = "css.modules.events:events_module"
+memory = "css.modules.memory:memory_module"
+obsidian_memory = "css.modules.obsidian_memory:obsidian_memory_module"
+skills = "css.modules.skills:skills_module"
+tags = "css.modules.tags:tags_module"
+tasks = "css.modules.tasks:tasks_module"
+teams = "css.modules.teams:teams_module"
+tools = "css.modules.tools:tools_module"
+triage = "css.modules.triage:triage_module"
+
+[project.entry-points."css.api_services"]
+anthropic = "css.api_services.anthropic:anthropic_service"
+openai = "css.api_services.openai:openai_service"
+gemini = "css.api_services.gemini:gemini_service"
+cohere = "css.api_services.cohere:cohere_service"
+mistral = "css.api_services.mistral:mistral_service"
+groq = "css.api_services.groq:groq_service"
+ollama = "css.api_services.ollama:ollama_service"
+deepinfra = "css.api_services.deepinfra:deepinfra_service"
+deepseek = "css.api_services.deepseek:deepseek_service"
+fireworks = "css.api_services.fireworks:fireworks_service"
+openrouter = "css.api_services.openrouter:openrouter_service"
+sambanova = "css.api_services.sambanova:sambanova_service"
+together = "css.api_services.together:together_service"
+xai = "css.api_services.xai:xai_service"
+github = "css.api_services.github:github_service"
+ai21 = "css.api_services.ai21:ai21_service"
+cerebras = "css.api_services.cerebras:cerebras_service"
+cloudflare = "css.api_services.cloudflare:cloudflare_service"
+lambda_api = "css.api_services.lambda_api:lambda_service"
+nscale = "css.api_services.nscale:nscale_service"
+nvidia = "css.api_services.nvidia:nvidia_service"
+opencode = "css.api_services.opencode:opencode_service"
+perplexity = "css.api_services.perplexity:perplexity_service"
+google_a2a = "css.api_services.google_a2a:google_a2a_service"
+
 dependencies = [
     # MCP server
     "argon2-cffi>=23.1",
