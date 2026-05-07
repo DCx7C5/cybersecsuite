@@ -4,9 +4,8 @@ Defines what features each model supports (streaming, vision, tools, etc.)
 and how to discover/register capabilities at runtime.
 """
 
-from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Optional
 from datetime import datetime, timedelta
 
 from pydantic import BaseModel, Field
@@ -28,7 +27,6 @@ class CapabilityType(str, Enum):
     REASONING = "reasoning"  # Extended reasoning (o1-style)
 
 
-@dataclass
 class Capability(BaseModel):
     """Single capability supported by a model."""
 
@@ -46,7 +44,6 @@ class Capability(BaseModel):
         use_enum_values = False
 
 
-@dataclass
 class ModelCapabilities(BaseModel):
     """Complete capability set for a single model."""
 
@@ -80,7 +77,6 @@ class ModelCapabilities(BaseModel):
         return None
 
 
-@dataclass
 class CapabilityRegistry(BaseModel):
     """Registry of capabilities for all providers/models.
 
@@ -88,7 +84,7 @@ class CapabilityRegistry(BaseModel):
     routing and orchestration decisions.
     """
 
-    capabilities: Dict[str, ModelCapabilities] = Field(
+    capabilities: dict[str, ModelCapabilities] = Field(
         default_factory=dict,
         description="Key: '{provider}:{model_name}', Value: ModelCapabilities",
     )

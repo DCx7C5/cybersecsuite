@@ -5,7 +5,7 @@ Uses msgspec.Struct for 10-40× faster serialization.
 """
 
 import logging
-from typing import Any, AsyncIterator, Optional, Dict
+from typing import Any, AsyncIterator, Optional
 from enum import Enum
 
 import msgspec
@@ -68,8 +68,8 @@ class Tool(msgspec.Struct, frozen=True):
     """A tool available to the model."""
     name: str
     description: str = ""
-    input_schema: Dict[str, Any] = msgspec.field(default_factory=dict)
-    return_schema: Optional[Dict[str, Any]] = None
+    input_schema: dict[str, Any] = msgspec.field(default_factory=dict)
+    return_schema: Optional[dict[str, Any]] = None
 
 
 class ModelMetadata(msgspec.Struct, frozen=True):
@@ -99,21 +99,21 @@ class StreamChunk(msgspec.Struct, frozen=True):
     type: str = "content_block_delta"  # "content_block_delta", "message_stop", "error"
     content: Optional[str] = None
     stop_reason: Optional[str] = None
-    metadata: Dict[str, Any] = msgspec.field(default_factory=dict)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
 
 class LLMResponse(msgspec.Struct, frozen=True):
     """A complete LLM response (buffered)."""
     text: str = ""
     stop_reason: str = "stop"
-    usage: Dict[str, Any] = msgspec.field(default_factory=dict)
+    usage: dict[str, Any] = msgspec.field(default_factory=dict)
 
 
 class ExecutorResult(msgspec.Struct, frozen=True):
     """Result from an execution/API call to a provider."""
     status_code: int = 200
-    headers: Dict[str, str] = msgspec.field(default_factory=dict)
-    body: Optional[Dict[str, Any]] = None
+    headers: dict[str, str] = msgspec.field(default_factory=dict)
+    body: Optional[dict[str, Any]] = None
     stream: Optional[AsyncIterator[bytes]] = None
     error: Optional[str] = None
     latency_ms: float = 0.0

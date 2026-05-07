@@ -10,7 +10,9 @@ from typing import List, Optional
 
 class BaseHeader(msgspec.Struct, frozen=True):
     """Base metadata header for all entities."""
-    
+
+    name: str
+    description: str
     version: str = "0.1.0"
 
 

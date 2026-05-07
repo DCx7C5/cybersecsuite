@@ -12,18 +12,18 @@ Usage::
     item = await skill_to_marketplace_item(my_skill)  # saves to DB
 """
 
-from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Optional
 
-if TYPE_CHECKING:
-    from css.modules.skills.types import Skill
+from css.modules.skills.types import Skill
+from css.modules.marketplace.models import MarketplaceItem
+from css.modules.marketplace.enums import MarketplaceItemType, MarketplaceItemStatus
+from css.modules.marketplace.cache import marketplace_cache
 
 logger = logging.getLogger(__name__)
 
 
-async def skill_to_marketplace_item(skill: "Skill"):
+async def skill_to_marketplace_item(skill: Skill):
     """Create or update a ``MarketplaceItem`` record from *skill*.
 
     The item's ``kind`` is set to ``MarketplaceItemType.skill`` and its
@@ -36,9 +36,6 @@ async def skill_to_marketplace_item(skill: "Skill"):
     Returns:
         The created/updated :class:`~css.modules.marketplace.models.MarketplaceItem`.
     """
-    from css.modules.marketplace.models import MarketplaceItem
-    from css.modules.marketplace.enums import MarketplaceItemType, MarketplaceItemStatus
-    from css.modules.marketplace.cache import marketplace_cache
 
     slug = f"skill:{skill.skill_id}"
     existing = await MarketplaceItem.get_or_none(slug=slug)
@@ -75,7 +72,7 @@ async def skill_to_marketplace_item(skill: "Skill"):
     return item
 
 
-async def get_skill_marketplace_item(skill_id: str) -> Optional[object]:
+async def get_skill_marketplace_item(skill_id: str) -> MarketplaceItem | None:
     """Return the ``MarketplaceItem`` for *skill_id*, or ``None``.
 
     Args:

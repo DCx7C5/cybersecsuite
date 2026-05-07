@@ -1,5 +1,5 @@
 import msgspec
-from typing import Any, Dict, List
+from typing import Any, List
 
 from .base_protocols import BaseCommunicator
 from .base_headers import (
@@ -15,7 +15,7 @@ class BaseEntity(BaseHeader):
     """Root domain entity — identity + descriptive header + arbitrary metadata bag."""
     
     id: str = ""
-    metadata: Dict[str, Any] = msgspec.field(default_factory=dict)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     
     def __post_init__(self):
         """Initialize non-Struct communicator after instantiation."""
@@ -31,7 +31,7 @@ class BaseEntity(BaseHeader):
         """Set the communicator for this entity."""
         self._communicator = value
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to dict."""
         return msgspec.to_builtin(self)  # type: ignore[no-any-return]
 
@@ -49,7 +49,7 @@ class BaseTool(BaseEntity):
     required_provider: str | None = None
     enabled_by_default: bool = True
     tags: List[str] = msgspec.field(default_factory=list)
-    input_schema: Dict[str, Any] = msgspec.field(default_factory=dict)
+    input_schema: dict[str, Any] = msgspec.field(default_factory=dict)
     
     def __post_init__(self):
         """Initialize tool-specific fields."""

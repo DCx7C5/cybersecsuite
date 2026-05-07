@@ -68,6 +68,9 @@ from .context import (  # noqa: F401
 # Hook events
 from .hook_events import HookContext, HookErrorStrategy  # noqa: F401
 
+# Core entities (concrete, from module locations)
+from css.core.accounts.types import Account  # noqa: F401
+
 __all__ = [
     # Base
     "HookErrorStrategy",

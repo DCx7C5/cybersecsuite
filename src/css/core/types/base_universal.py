@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Optional, Type, Dict, Callable
+from typing import Optional, Type, Callable
 
 from css.core.types import BaseApiServiceClient
 
@@ -23,8 +23,8 @@ class SDKRegistry:
 
     def __init__(self):
         """Initialize empty registry."""
-        self._registry: Dict[str, Type[BaseApiServiceClient] | Callable] = {}
-        self._cache: Dict[str, Type[BaseApiServiceClient]] = {}
+        self._registry: dict[str, Type[BaseApiServiceClient] | Callable] = {}
+        self._cache: dict[str, Type[BaseApiServiceClient]] = {}
         self._initializing: set[str] = set()  # Track in-flight initializations
 
     def register(
