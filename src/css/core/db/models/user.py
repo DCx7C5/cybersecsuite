@@ -21,7 +21,7 @@ class User(Model):
         updated_at: Last modification timestamp
     """
 
-    id = fields.BigIntField(pk=True)
+    id = fields.BigIntField(primary_key=True)
     email = fields.CharField(max_length=255, unique=True)
     hashed_password = fields.CharField(max_length=255)
     api_key_hash = fields.CharField(max_length=255, null=True)
