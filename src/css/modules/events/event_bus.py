@@ -4,12 +4,12 @@ from typing import Any, Callable, Dict, List
 import asyncio
 import logging
 
-from css.core.types.meta import TSSingletonMetaClass
+from css.core.types.meta import AsyncSafeSingletonMeta
 
 logger = logging.getLogger(__name__)
 
 
-class EventBus(metaclass=TSSingletonMetaClass):
+class EventBus(metaclass=AsyncSafeSingletonMeta):
     """Simple event bus for Phase 3 — emits events to registered handlers.
     
     Note: Phase 6 will replace this with CQRS/EventStore architecture.
@@ -48,3 +48,7 @@ class EventBus(metaclass=TSSingletonMetaClass):
         """Unregister a handler for an event type."""
         if event_type in self._handlers:
             self._handlers[event_type].remove(handler)
+
+
+# Singleton instance for backward compatibility
+event_bus = EventBus()

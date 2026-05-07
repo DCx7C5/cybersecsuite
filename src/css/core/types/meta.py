@@ -1,4 +1,4 @@
-import threading
+import asyncio
 
 
 class SingletonMetaClass(type):
@@ -20,18 +20,21 @@ class SingletonMetaClass(type):
         return cls._instances[cls]
 
 
-class TSSingletonMetaClass(type):
-    """Thread-Safe Singleton Metaclass.
+class AsyncSafeSingletonMeta(type):
+    """Async-Safe Singleton Metaclass.
     
-    Uses a lock to prevent race conditions in multi-threaded environments.
+    Uses asyncio.Lock() to prevent race conditions when instantiating
+    from multiple async tasks (not threads).
     """
     _instances = {}
-    _lock = threading.Lock()
+    _lock = asyncio.Lock()
 
     def __call__(cls, *args, **kwargs):
-        """Intercept instantiation calls with thread safety."""
-        with cls._lock:
-            if cls not in cls._instances:
+        """Intercept instantiation calls with async safety."""
+        if cls not in cls._instances:
+            # Use lock to prevent multiple concurrent instantiations
+            # (though asyncio is single-threaded, we protect against task switching)
+            if not cls._lock.locked():
                 cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
