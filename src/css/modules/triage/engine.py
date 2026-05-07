@@ -3,6 +3,11 @@
 import logging
 from datetime import datetime
 import uuid
+import json
+
+import aiohttp
+
+from css.config import OLLAMA_API_URL, OLLAMA_MODEL
 
 from .models import TriageRequest, TriageResult
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
@@ -18,6 +23,44 @@ class TriageEngine:
         """Initialize triage engine."""
         self.ollama_client = ollama_client
         self._results_cache: dict[str, TriageResult] = {}
+
+    async def _classify_with_ollama(self, request: TriageRequest) -> dict | None:
+        """Classify query using local Ollama/Qwen model."""
+        prompt = (
+            "You are a triage classifier for cybersecurity workflow routing.\n"
+            "Return only JSON with keys:\n"
+            "category(simple|moderate|complex|critical), "
+            "decision(skill|agent|team|queue|escalate), "
+            "severity(low|medium|high|critical), "
+            "confidence(0..1), reasoning(string).\n"
+            f"Query: {request.query}\n"
+        )
+        payload = {
+            "model": OLLAMA_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+        }
+
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
+            async with session.post(f"{OLLAMA_API_URL}/api/chat", json=payload) as response:
+                if response.status != 200:
+                    body = await response.text()
+                    raise TriageExecutionError(f"Ollama triage call failed ({response.status}): {body[:300]}")
+                data = await response.json()
+
+        content = (data.get("message") or {}).get("content", "").strip()
+        if not content:
+            return None
+
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            # Recover JSON object if model wraps it in prose/markdown.
+            start = content.find("{")
+            end = content.rfind("}")
+            if start == -1 or end == -1 or end <= start:
+                return None
+            return json.loads(content[start : end + 1])
     
     async def classify(self, request: TriageRequest) -> TriageResult:
         """Classify a query and determine routing."""
@@ -25,10 +68,20 @@ class TriageEngine:
         start_time = datetime.utcnow()
         
         try:
-            # Simple classification logic (in production would use Ollama)
-            category = await self._determine_category(request)
-            decision = await self._determine_decision(request, category)
-            severity = await self._determine_severity(request)
+            ollama_result = await self._classify_with_ollama(request)
+
+            if ollama_result:
+                category = TriageCategory(str(ollama_result.get("category", "moderate")).lower())
+                decision = TriageDecision(str(ollama_result.get("decision", "agent")).lower())
+                severity = SeverityLevel(str(ollama_result.get("severity", "medium")).lower())
+                confidence = float(ollama_result.get("confidence", 0.7))
+                reasoning = str(ollama_result.get("reasoning", "classified via Ollama"))
+            else:
+                category = await self._determine_category(request)
+                decision = await self._determine_decision(request, category)
+                severity = await self._determine_severity(request)
+                confidence = 0.55
+                reasoning = f"Fallback heuristic classification as {category.value}"
             
             duration_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
             
@@ -38,8 +91,8 @@ class TriageEngine:
                 category=category,
                 decision=decision,
                 severity=severity,
-                confidence=0.85,  # Placeholder
-                reasoning=f"Classified as {category.value} - routing to {decision.value}",
+                confidence=confidence,
+                reasoning=reasoning,
                 duration_ms=duration_ms
             )
             
