@@ -9,79 +9,109 @@
 
 ---
 
-## ⚡ STARTUP RITUAL — DO THIS FIRST, EVERY SESSION
+## 🔍 DEPENDENCY ANALYZER INTEGRATION
 
-Run these commands before anything else. They tell you the current state.
+**Script**: `.plan/codebase_dependency_analyzer.py`
+**Output**: JSON `{"file.py": {"consumed_by": [...], "consumes": [...]}}`
 
-```bash
-# 1. Go to project root
-cd /home/daen/Projects/cybersecsuite
-
-# 2. Check git status (understand what was last touched)
-git log --oneline -10
-git status
-```
-
-```sql
--- 3. Find what todos are ready to work on RIGHT NOW (no blocked deps)
--- Run this in: sqlite3 /home/daen/Projects/cybersecsuite/.plan/session.db
-SELECT t.id, t.title, t.phase, t.task
-FROM todos t
-WHERE t.status = 'pending'
-AND NOT EXISTS (
-  SELECT 1 FROM todo_deps td
-  JOIN todos dep ON td.depends_on = dep.id
-  WHERE td.todo_id = t.id AND dep.status != 'done'
-)
-ORDER BY t.phase, t.task
-LIMIT 10;
-```
-
-```sql
--- 4. Check if anything is in_progress (was left incomplete)
-SELECT id, title, phase, task FROM todos WHERE status = 'in_progress';
-```
+### When to Run (copy-paste ready):
 
 ```bash
-# 5. Read the master plan to understand context
-head -100 /home/daen/Projects/cybersecsuite/.plan/plan.md
+# BEFORE editing — see what depends on files you're about to touch
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ \
+  --output /tmp/deps.json
+
+# AFTER editing — verify no illegal cross-module deps
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ \
+  --output /tmp/deps_after.json
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/deps_after.json'))
+for f, data in d.items():
+    for dep in data['consumes']:
+        if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/'):
+            print(f'ILLEGAL DEP: {f} consumes {dep}')
+"
+
+# TASK completion — full module dep map
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ \
+  --output /tmp/task_deps.json
+
+# PHASE completion — full project impact analysis
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --output /tmp/full_deps.json
 ```
 
-**If step 4 returns rows**: finish those in_progress todos BEFORE starting anything new.
+### JSON Output (trivial for LLM to parse):
+```json
+{
+  "src/css/modules/foo/types.py": {
+    "consumed_by": ["src/css/modules/foo/endpoints.py"],
+    "consumes": ["src/css/core/types/base_entity.py"]
+  }
+}
+```
+
+### Where It Adds Value:
+| Workflow | Analyzer Use | Value |
+|----------|----------------|-------|
+| TODO | `consumed_by` on file you're editing | Avoid breaking files that depend on you |
+| TODO | `consumes` after editing | Catch illegal cross-module imports early |
+| TASK | Full module scan | Verify no circular deps before declaring task done |
+| PHASE | Full project scan | Impact analysis for PHASE completion |
 
 ---
 
-## 🗃️ SESSION.DB — THE ONLY TASK TRACKER
-
-All work is tracked in `.plan/session.db`. This is a SQLite database.
-
-**How to open it**:
-```bash
-sqlite3 /home/daen/Projects/cybersecsuite/.plan/session.db
-```
-
-**Schema (exact columns — do NOT use columns that aren't listed here)**:
+## 📊 SQL QUERIES (reference from workflows — single source of truth)
 
 ```sql
--- todos table
-CREATE TABLE todos (
-  id          TEXT PRIMARY KEY,   -- e.g. "events-instrument-decorator"
-  title       TEXT NOT NULL,      -- short label
-  description TEXT,               -- full implementation spec
-  status      TEXT DEFAULT 'pending'
-              CHECK(status IN ('pending', 'in_progress', 'done', 'blocked')),
-  created_at  TEXT DEFAULT (datetime('now')),
-  updated_at  TEXT DEFAULT (datetime('now')),
-  phase       TEXT DEFAULT 'unassigned',  -- e.g. "Phase 14 — ..."
-  task        TEXT DEFAULT 'unassigned'   -- e.g. "T14.1 ..."
-);
+-- Ready todos (no blocked deps) — use this most often
+SELECT id, title, phase, task FROM todos
+WHERE status = 'pending'
+AND NOT EXISTS (
+  SELECT 1 FROM todo_deps td
+  JOIN todos dep ON td.depends_on = dep.id
+  WHERE td.todo_id = todos.id AND dep.status != 'done'
+)
+ORDER BY phase, task;
 
--- todo_deps table (dependency links)
-CREATE TABLE todo_deps (
-  todo_id    TEXT NOT NULL,  -- the todo that is BLOCKED
-  depends_on TEXT NOT NULL,  -- the todo that must be DONE first
-  PRIMARY KEY (todo_id, depends_on)
-);
+-- Phase summary — how far along is each phase?
+SELECT phase,
+  COUNT(*) as total,
+  SUM(status = 'done') as done,
+  SUM(status = 'pending') as pending,
+  SUM(status = 'blocked') as blocked
+FROM todos GROUP BY phase ORDER BY phase;
+
+-- What's blocking a specific todo?
+SELECT dep.id as blocking_todo, dep.title, dep.status
+FROM todo_deps td
+JOIN todos dep ON td.depends_on = dep.id
+WHERE td.todo_id = 'your-todo-id';
+
+-- All todos for a specific task
+SELECT id, title, status FROM todos WHERE task = 'TASK_NAME';
+
+-- Full description of a todo
+SELECT id, title, description FROM todos WHERE id = 'your-todo-id';
+
+-- Mark todo in_progress
+UPDATE todos SET status = 'in_progress', updated_at = datetime('now') WHERE id = 'your-todo-id';
+
+-- Mark todo done
+UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'your-todo-id';
+
+-- Check for in_progress leftovers
+SELECT id, title, phase, task FROM todos WHERE status = 'in_progress';
+
+-- Verify all todos in a task are done
+SELECT id, title, status FROM todos WHERE task = 'TASK_NAME' AND status != 'done';
+
+-- Verify all phase todos are done
+SELECT COUNT(*) as remaining FROM todos WHERE phase = 'PHASE_NAME' AND status != 'done';
 ```
 
 **⚠️ THERE IS NO `tasks` TABLE. THERE IS NO `completed_at` COLUMN. DO NOT USE THEM.**
@@ -94,122 +124,126 @@ CREATE TABLE todo_deps (
 
 This is the most common workflow. Do this for each todo.
 
-### Step 1 — Pick a todo
+### 🔴 PRE-TODO (run BEFORE starting any todo)
 
 ```sql
--- Find the first ready todo (no blocked dependencies)
-SELECT t.id, t.title, t.description, t.phase, t.task
-FROM todos t
-WHERE t.status = 'pending'
+-- 1. Check for in_progress leftovers (finish these FIRST!)
+SELECT id, title FROM todos WHERE status = 'in_progress';
+
+-- 2. Pick next ready todo (no blocked deps)
+SELECT id, title, phase, task, description
+FROM todos
+WHERE status = 'pending'
 AND NOT EXISTS (
   SELECT 1 FROM todo_deps td
   JOIN todos dep ON td.depends_on = dep.id
-  WHERE td.todo_id = t.id AND dep.status != 'done'
+  WHERE td.todo_id = todos.id AND dep.status != 'done'
 )
-ORDER BY t.phase, t.task
-LIMIT 1;
-```
+ORDER BY phase, task LIMIT 1;
 
-If this returns nothing: either all todos are done, or all pending todos are blocked. Run this to find out:
-
-```sql
--- See what's blocking everything
-SELECT t.id as blocked_todo, t.title, dep.id as blocked_by, dep.status
-FROM todos t
-JOIN todo_deps td ON t.id = td.todo_id
-JOIN todos dep ON td.depends_on = dep.id
-WHERE t.status = 'pending' AND dep.status != 'done'
-ORDER BY t.phase, t.task;
-```
-
-### Step 2 — Mark it in_progress
-
-```sql
--- Replace 'your-todo-id' with the actual id
+-- 3. Mark it in_progress (replace TODO_ID with result from step 2)
 UPDATE todos SET status = 'in_progress', updated_at = datetime('now')
-WHERE id = 'your-todo-id';
+WHERE id = 'TODO_ID';
 ```
 
-### Step 3 — Read what the todo actually wants
-
-```sql
-SELECT description FROM todos WHERE id = 'your-todo-id';
-```
-
-Read the **full description**. It tells you exactly what file to create/edit, what class/function to implement, and what the result should look like.
-
-Also read the relevant architecture doc:
+**Read these files** (based on the todo's `phase`/`task`):
 ```bash
-# For events module work:
-cat /home/daen/Projects/cybersecsuite/src/css/modules/events/plan.md
-cat /home/daen/Projects/cybersecsuite/.plan/architecture/observability.md
+# Always read the local plan.md for the module you're working in:
+cat "src/css/modules/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
+cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
+cat "src/css/api_services/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null
 
-# For SDK/LLM work:
-cat /home/daen/Projects/cybersecsuite/.plan/architecture/sdks.md
+# Read architecture doc if phase mentions it:
+# Phase 6 → cat .plan/architecture/core-audit-matrix.md
+# Phase 14 → cat .plan/architecture/observability.md
+# Phase 21 → cat .plan/architecture/sdks.md
 
-# For routing/intelligence work:
-cat /home/daen/Projects/cybersecsuite/src/css/modules/intelligence/plan.md
-
-# For any module, always read its own plan.md first:
-cat /home/daen/Projects/cybersecsuite/src/css/modules/<module_name>/plan.md
+# Read the full todo description:
+# SELECT description FROM todos WHERE id = 'TODO_ID';
 ```
 
-### Step 4 — Check what already exists
-
+**Run dependency analyzer** (see what depends on your files):
 ```bash
-# See what's already in the relevant directory
-ls -la /home/daen/Projects/cybersecsuite/src/css/modules/<module_name>/
-
-# Search for related code
-grep -r "ClassName\|function_name" /home/daen/Projects/cybersecsuite/src/css/ --include="*.py" | head -20
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ --output /tmp/deps.json
 ```
 
-### Step 5 — Implement the code
+---
 
+### 🟢 ACTIVE (the actual work)
+
+**Step 1 — Check what already exists**
+```bash
+# List files in target directory (quiet, parseable)
+ls src/css/modules/<module_name>/ 2>/dev/null || ls src/css/core/<subdir>/ 2>/dev/null
+
+# Find related code (use python to avoid regex issues)
+.venv/bin/python -c "
+import pathlib
+for p in pathlib.Path('src/css/').rglob('*.py'):
+    try:
+        content = p.read_text(errors='replace')
+        if 'ClassName' in content or 'function_name' in content:
+            print(p)
+    except: pass
+" | head -10
+```
+
+**Step 2 — Implement the code**
 - Edit files in `src/css/` or `src/frontend/` (if exists) only
 - Follow **consistent file naming and patterns** across modules. Baseline structure includes `models.py`, `types.py`, `enums.py`, `exceptions.py`, `__init__.py`, but the number of files is flexible: use more files if domain complexity requires it; use fewer if certain file types aren't needed. The goal is consistency in naming and patterns within each domain.
 - Always `async def` for any I/O (never sync wrappers)
 - HTTP clients: always `aiohttp`, NEVER `httpx`
 - Structs/value types: `msgspec.Struct`, not `@dataclass`
 
-### Step 6 — Lint the changed files
-
+**Step 3 — Lint**
 ```bash
-cd /home/daen/Projects/cybersecsuite
-
-# Run ruff on exactly the files you touched (replace path):
-/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix src/css/modules/<module_name>/
-/home/daen/Projects/cybersecsuite/.venv/bin/ruff check src/css/modules/<module_name>/
+# Fix auto-fixable issues
+.venv/bin/ruff check --fix src/css/<path>/
+# Verify clean (re-run ONCE, fail if errors remain)
+.venv/bin/ruff check src/css/<path>/
 ```
 
-If ruff reports errors: fix them before continuing. Run up to 3 times.
-
-### Step 7 — Update the local plan.md
-
-Every module/api_service/core subdir has its own `plan.md`. Update it:
+**Step 4 — Run dependency analyzer (verify no illegal deps added)**
 ```bash
-# Open the plan.md for the area you worked on
-# e.g. nano src/css/modules/events/plan.md
-# Update the checklist item to checked: - [x] ...
-# Update "Last Updated" date to today (2026-05-04)
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ --output /tmp/deps_check.json
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/deps_check.json'))
+for f, data in d.items():
+    for dep in data['consumes']:
+        if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/'):
+            print(f'ILLEGAL DEP: {f} consumes {dep}')
+"
 ```
 
-### Step 8 — Update the master plan.md
+---
 
-Mark done and update in `.plan/plan.md`.
+### 🔵 POST-TODO (run AFTER implementation)
 
+**Step 1 — Update local plan.md**
+```bash
+# Find the checklist item and mark it checked (use sed, not nano!)
+sed -i 's/- \[ \] \(.*TODO_ID.*\)/- [x] \1/' "src/css/modules/<module>/plan.md"
+sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/plan.md"
+```
 
-### Step 9 — Mark done and commit
-
+**Step 2 — Update .plan/plan.md**
 ```sql
--- Mark done
-UPDATE todos SET status = 'done', updated_at = datetime('now')
-WHERE id = 'your-todo-id';
+-- Find the phase section and update todo count
+SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE phase = 'PHASE_NAME' GROUP BY phase;
 ```
 
+**Step 3 — Mark done**
+```sql
+UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'TODO_ID';
+```
+
+**Step 4 — Commit (logical and atomic)**
 ```bash
 git add -A
-git commit -m "[your-todo-id] Brief description of what was done
+git commit -m "[TODO_ID] Brief description of what was done
 
 - File created/edited: src/css/...
 - Class/function implemented: ..."
@@ -217,65 +251,105 @@ git commit -m "[your-todo-id] Brief description of what was done
 
 **NEVER add `Co-authored-by:` to any new commit.** Historical commits contain it — do not amend history, but all future commits must omit it.
 
+**Commit rules**:
+- **Logical**: Each commit should represent one logical change (one todo, one fix, one feature)
+- **Atomic**: Each commit should be self-contained — it compiles, passes ruff, and doesn't break existing functionality
+- **Focused**: Don't mix unrelated changes in one commit (e.g., don't combine a todo implementation with an unrelated lint fix)
+- **Message format**: `[TODO_ID] Brief description` followed by bullet points of what was done
+
 ---
 
 ## ✅ WORKFLOW 2 — FINISHING A TASK (all todos in a task are done)
 
 A task is the parent grouping (e.g. "T14.1 @instrument Decorator Core"). When all its todos are `done`:
 
-### Step 1 — Verify all todos in the task are done
+### 🔴 PRE-TASK (run BEFORE declaring task done)
 
 ```sql
--- Replace 'T14.1 @instrument Decorator Core' with the actual task name
-SELECT id, title, status FROM todos
-WHERE task = 'T14.1 @instrument Decorator Core';
+-- Verify ALL todos in task are done (replace TASK_NAME)
+SELECT id, title, status FROM todos WHERE task = 'TASK_NAME' AND status != 'done';
+-- Must return 0 rows
 ```
 
-All rows must show `status = 'done'`. If any are `pending` or `in_progress`: complete them first.
-
-### Step 2 — Search in the module or codebase for duplicated code warnings
-
-### Step 3 — Run ruff on the area
-
+**Run dependency analyzer** (full module dep map):
 ```bash
-DIRECTORIES_WORKED_IN=<space separated list of directories you touched>
-/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix "$DIRECTORIES_WORKED_IN"
-```
-### Step 4 - Fix remaining errors (5 turns max)
-
-Fix the remaining errors of prior ruff run
-
-### Step 5 — Update plan.md
-
-In `.plan/plan.md`, find the task section and add a completion note:
-```
-**Status**: ✅ DONE — 2026-05-04
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ --output /tmp/task_deps.json
 ```
 
-### Step 6 — Update session.db
+---
 
-In `.plan/session.db`, update the corresponding entries.
+### 🟢 ACTIVE
 
-### Step 7 — Update memory.md
+**Step 1 — Search for duplicated code (USE DEPENDENCY ANALYZER + AST)**
+```bash
+# Find all files in the task's module(s)
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ --output /tmp/task_deps.json
 
-Update memory file at `.plan/memory.md`.
+# Check for duplicated class/function names
+.venv/bin/python -c "
+import json, ast, pathlib
+d = json.load(open('/tmp/task_deps.json'))
+files = [k for k in d.keys()]
+definitions = {}
+for f in files:
+    try:
+        tree = ast.parse(pathlib.Path('$PWD/' + f).read_text())
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                definitions.setdefault(node.name, []).append(f)
+    except: pass
+for name, locations in definitions.items():
+    if len(locations) > 1:
+        print(f'DUPLICATE: {name} in {locations}')
+"
+```
 
+**Step 2 — Run ruff on all touched directories**
+```bash
+.venv/bin/ruff check --fix src/css/<dir1>/ src/css/<dir2>/
+.venv/bin/ruff check src/css/<dir1>/ src/css/<dir2>/
+```
 
-### Step 8 — Create/Update the documentary if needed
+**Step 3 — Fix remaining errors (5 turns max)**
+Fix the remaining errors of prior ruff run.
 
-Create/Update documentation `docs/` if necessary. 
-Also write a concise changelog at `docs/changelog/`.
+---
 
-### Step 9 — Mark TASK done and Commit
+### 🔵 POST-TASK (run AFTER task complete)
 
+**Step 1 — Update plan.md**
+```bash
+# Update local plan.md (mark task complete)
+sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/plan.md"
+
+# Add to .plan/plan.md task section:
+echo "**Status**: ✅ DONE — $(date +%Y-%m-%d)" >> .plan/plan.md
+```
+
+**Step 2 — Update memory.md**
+```bash
+# Update the phase table row (done count)
+.venv/bin/python -c "
+import sqlite3
+conn = sqlite3.connect('.plan/session.db')
+cur = conn.cursor()
+cur.execute('SELECT COUNT(*), SUM(status=\"done\") FROM todos WHERE phase = \"PHASE_NAME\"')
+total, done = cur.fetchone()
+print(f'Phase: {total} total, {done} done')
+"
+# Edit .plan/memory.md: update the phase row
+```
+
+**Step 3 — Commit (logical and atomic)**
 ```bash
 git add -A
-git commit -m "[TASK-T14.1] @instrument decorator + singletons complete
+git commit -m "[TASK-TASK_NAME] Task complete
 
 - N todos completed
 - Ruff: clean (3 passes)"
 ```
-
 
 ---
 
@@ -283,124 +357,79 @@ git commit -m "[TASK-T14.1] @instrument decorator + singletons complete
 
 A phase is the top grouping (e.g. "Phase 14 — Event Hooks & Entry/Exit Instrumentation").
 
-### Step 1 — Verify all phase todos are done
+### 🔴 PRE-PHASE (run BEFORE declaring phase done)
 
 ```sql
--- Replace phase name with the actual phase
-SELECT id, title, status FROM todos
-WHERE phase = 'Phase 14 — Event Hooks & Entry/Exit Instrumentation'
-AND status != 'done';
+-- Verify ALL phase todos are done (replace PHASE_NAME)
+SELECT COUNT(*) as remaining FROM todos
+WHERE phase = 'PHASE_NAME' AND status != 'done';
+-- Must return 0 rows
 ```
 
-Must return 0 rows. If not: complete remaining todos first.
-
-
-### Step 2 — Run ruff on the area
-
+**Run dependency analyzer** (full project impact analysis):
 ```bash
-DIRECTORY_LIST=<space separated list of directories you touched>
-/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix $DIRECTORY_LIST
-```
-
-### Step 3 — Fix remaining errors
-
-Fix the remaining errors of prior ruff output
-
-### Step 4 — Repeat Steps 2 & 3 up to two times
-
-Run again:
-```bash
-/home/daen/Projects/cybersecsuite/.venv/bin/ruff check --fix $DIRECTORY_LIST
-```
-
-If still errors in ruff output, repeat Step 2 & 3.
-If no errors, proceed with next step.
-
-### Step 5 — Delegate rubber-duck agent
-
-Delegate a rubber-duck agent to inspect the complete plan at `.plan/*.md`, `.plan/architecture/*.md`, and a list of directories you worked in as context, as well as a set of tasks to inspect the code and plan.
-Let it report back to you, follow recommendations and update TODOs/TASKs/PHASEs if needed.
-
-
-### Step 6 — Run full test suite
-
-```bash
-cd /home/daen/Projects/cybersecsuite
-/home/daen/Projects/cybersecsuite/.venv/bin/pytest -v
-```
-
-Fix any failures before proceeding.
-
-### Step 7 — Update all .plan/ files and local plans
-
-```bash
-# .plan/ whitelist files to update (max 7 files in .plan/ root):
-# 1. .plan/plan.md        — mark phase DONE, update CURRENT STATUS
-# 2. .plan/memory.md      — update phase table row (done count, blocked count)
-# 3. .plan/checkpoints.md — add phase checkpoint entry
-# 4. .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
-
-# Local plan.md files REQUIRED — update every directory you touched:
-# 5. src/css/plan.md                          — if root-level changes
-# 6. src/css/core/<subdir>/plan.md            — for each core subdir touched
-# 7. src/css/modules/<module>/plan.md         — for each module touched
-# 8. src/css/api_services/plan.md             — if api_services touched
-# NOTE: local plan.md files are NOT part of .plan/ whitelist; they are codebase files
-```
-
-### Step 8 — Commit
-
-```bash
-git add -A
-git commit -m "[PHASE-14] Event Hooks & Instrumentation: complete
-
-- 18 todos done across 5 tasks
-- Ruff: clean
-- Tests: passing
-- .plan/ synced"
+.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+  --output /tmp/full_deps.json
 ```
 
 ---
 
-## 📊 USEFUL SQL QUERIES (copy-paste ready)
+### 🟢 ACTIVE
 
-```sql
--- All ready todos (no blocked deps) — use this most often
-SELECT t.id, t.title, t.phase, t.task
-FROM todos t
-WHERE t.status = 'pending'
-AND NOT EXISTS (
-  SELECT 1 FROM todo_deps td
-  JOIN todos dep ON td.depends_on = dep.id
-  WHERE td.todo_id = t.id AND dep.status != 'done'
-)
-ORDER BY t.phase, t.task;
+**Step 1 — Run ruff on all touched directories (2 passes max)**
+```bash
+.venv/bin/ruff check --fix src/css/<dir1>/ src/css/<dir2>/
+.venv/bin/ruff check src/css/<dir1>/ src/css/<dir2>/
+```
 
--- Phase summary — how far along is each phase?
-SELECT phase,
-  COUNT(*) as total,
-  SUM(status = 'done') as done,
-  SUM(status = 'pending') as pending,
-  SUM(status = 'in_progress') as active
-FROM todos GROUP BY phase ORDER BY phase;
+**Step 2 — Delegate rubber-duck agent (copy-paste prompt)**
+```
+Use Task tool with:
+- subagent_type: general
+- prompt: |
+    Analyze the completed phase PHASE_NAME:
+    1. Read .plan/plan.md (phase section)
+    2. Read .plan/memory.md (phase table)
+    3. Read .plan/checkpoints.md
+    4. Read all src/css/modules/<module>/plan.md for modules in this phase
+    5. Run: python .plan/codebase_dependency_analyzer.py . --path src/css/<module>/
+    6. Check: Are all todos really done? Any missing integration points?
+    7. Report: Phase completeness score (0-100%), any gaps found, recommendations
+```
 
--- What's blocking a specific todo?
-SELECT dep.id as blocking_todo, dep.title, dep.status
-FROM todo_deps td
-JOIN todos dep ON td.depends_on = dep.id
-WHERE td.todo_id = 'your-todo-id';
+**Step 3 — Run full test suite**
+```bash
+.venv/bin/pytest -v
+```
 
--- All todos for a specific task
-SELECT id, title, status FROM todos WHERE task = 'T14.5 Interceptor Chain';
+---
 
--- Full description of a todo (to know exactly what to implement)
-SELECT id, title, description FROM todos WHERE id = 'your-todo-id';
+### 🔵 POST-PHASE (run AFTER phase complete)
 
--- Mark todo in_progress
-UPDATE todos SET status = 'in_progress', updated_at = datetime('now') WHERE id = 'your-todo-id';
+**Step 1 — Update all .plan/ files (CHECKLIST)**
+```bash
+# [ ] .plan/plan.md — mark phase ✅ DONE, update CURRENT STATUS
+# [ ] .plan/memory.md — update phase table row (done count, blocked count)
+# [ ] .plan/checkpoints.md — add phase checkpoint entry
+# [ ] .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
 
--- Mark todo done
-UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'your-todo-id';
+# Local plan.md files REQUIRED — update every directory you touched:
+# [ ] src/css/plan.md — if root-level changes
+# [ ] src/css/core/<subdir>/plan.md — for each core subdir touched
+# [ ] src/css/modules/<module>/plan.md — for each module touched
+# [ ] src/css/api_services/plan.md — if api_services touched
+# NOTE: local plan.md files are NOT part of .plan/ whitelist; they are codebase files
+```
+
+**Step 2 — Commit (logical and atomic)**
+```bash
+git add -A
+git commit -m "[PHASE-PHASE_NAME] Phase complete
+
+- N todos done across M tasks
+- Ruff: clean
+- Tests: passing
+- .plan/ synced"
 ```
 
 ---
@@ -442,6 +471,7 @@ modules/<name>/
 | Commit with `Co-authored-by:` trailer | Plain commit message, no trailer |
 | Test code during a phase | Test only after the entire phase is complete |
 | Cross-module imports | Import only from `core/` between modules |
+| Mix unrelated changes in one commit | **Logical and atomic commits** |
 
 ---
 
@@ -466,4 +496,4 @@ modules/<name>/
 
 ---
 
-**Status**: 📋 Active | **Last Updated**: 2026-05-04
+**Status**: 📋 Active | **Last Updated**: 2026-05-07
