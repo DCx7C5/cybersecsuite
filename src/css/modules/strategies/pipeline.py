@@ -64,16 +64,10 @@ class RouteStage(Stage):
                 complexity = None
                 if classification and hasattr(classification, "category"):
                     # Map triage category to routing complexity
-                    category_name = classification.category.value.lower()
-                    if "simple" in category_name:
-                        complexity = QueryComplexity.SIMPLE
-                    elif "moderate" in category_name or "complex" in category_name:
-                        complexity = QueryComplexity.MODERATE
-                    else:
-                        complexity = QueryComplexity.COMPLEX
+                    complexity = self.router.from_triage_category(classification.category)
                 else:
-                    # Fall back to heuristic classification
-                    complexity = self.router.qwen_classify_complexity(query)
+                    # Fallback now uses real triage classification.
+                    complexity = await self.router.classify_complexity(query)
 
                 # Decide strategy
                 strategy = self.router.decide_strategy(query, complexity)

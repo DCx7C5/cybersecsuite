@@ -6,6 +6,7 @@ Decides PREPEND vs INJECT vs CHAIN based on query complexity using local LLM.
 from enum import Enum
 
 from css.core.a2a.enums import ResponseInjectionStrategy
+from css.modules.triage import TriageCategory, TriageEngine, TriageRequest
 
 
 class QueryComplexity(str, Enum):
@@ -53,3 +54,22 @@ class ResponseStrategyRouter:
             return QueryComplexity.MODERATE
         else:
             return QueryComplexity.SIMPLE
+
+    @staticmethod
+    def from_triage_category(category: TriageCategory) -> QueryComplexity:
+        """Map triage category to routing complexity."""
+        if category == TriageCategory.SIMPLE:
+            return QueryComplexity.SIMPLE
+        if category == TriageCategory.MODERATE:
+            return QueryComplexity.MODERATE
+        if category in (TriageCategory.COMPLEX, TriageCategory.CRITICAL):
+            return QueryComplexity.COMPLEX
+        return QueryComplexity.MODERATE
+
+    async def classify_complexity(self, query_text: str) -> QueryComplexity:
+        """Classify complexity using TriageEngine instead of heuristics."""
+        triage = TriageEngine()
+        result = await triage.classify(TriageRequest(query=query_text))
+        if result.category is None:
+            return QueryComplexity.MODERATE
+        return self.from_triage_category(result.category)
