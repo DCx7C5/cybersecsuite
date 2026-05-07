@@ -210,7 +210,7 @@ modules/<name>/
 └── __init__.py
 ```
 
-### Current Modules (28 total)
+### Current Modules (22 total)
 
 | Module        | Purpose                                       |
 |---------------|-----------------------------------------------|

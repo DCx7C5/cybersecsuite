@@ -114,7 +114,46 @@ Phase 2: Config Integration & SDK Architecture (12 days)
 
 ---
 
-## Checkpoint 002: Full-System Audit Complete (2026-05-03)
+## Checkpoint 002: Phase 2 — SDK Pattern & Response ✅
+
+**Date**: 2026-05-03  
+**Duration**: Accelerated (1 phase-cycle)  
+**Status**: COMPLETE
+
+### Summary
+Phase 2 completed: SDK Pattern & Response, UniversalLLMClient registry + lazy-load router, Orchestration Roles module, Modules auto-discovery.
+
+### Todos Completed (16)
+1. sdk-universal-client
+2. sdk-registry
+3. sdk-roles-module
+4. sdk-auto-discovery
+5. sdk-responses-layer
+6. sdk-async-wrappers
+7. sdk-streaming-support
+8. sdk-error-handling
+9. sdk-tools-registry
+10. sdk-integration-test
+(16 total per plan.md)
+
+### Files Created/Modified
+- `src/css/modules/roles/role_types.py` (140 lines)
+- `src/css/core/types/universal_client.py` (220 lines)
+- `src/css/modules/roles/__init__.py` (updated)
+- `src/css/core/types/api_services.py` (updated)
+- `src/css/modules/__init__.py` (updated, auto-discovery)
+
+### Key Decisions
+1. UniversalLLMClient = Registry + lazy-load pattern
+2. Orchestration Roles defined in modules/roles/
+3. Module auto-discovery via importlib
+
+### Next Phase
+Phase 3: Module Consistency
+
+---
+
+## Checkpoint 003: Full-System Audit Complete (2026-05-03)
 
 **Status**: 🎯 COMPLETE | **Duration**: ~1 hour
 
@@ -135,6 +174,7 @@ Phase 2: Config Integration & SDK Architecture (12 days)
 **Next**: Phase 2 Foundation Tier Implementation
 
 See: `session-checkpoint.md` for full details | `plan.md` for implementation schedule | `memory.md` for latest state
+
 
 ---
 
@@ -429,3 +469,42 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 - **Phase 4 Progress**: 7/24 todos done (29%) — Entity migration phase progressing
 - **Next**: Continue with phase4-linting-cycle2, types-option-c-cleanup, and config strategy todos
 - **No blockers**: All Phase 4 migrations successful, ready for cleanup and next phase
+
+---
+
+## Checkpoint 010 — Session.db Sync & Plan File Update (2026-05-07)
+
+**Status**: 🎯 SYNC COMPLETE
+
+### Work Done
+- Synced `.plan/memory.md` with current session.db state (772 total todos, 297 done, 467 pending, 7 blocked)
+- Updated all per-phase todo counts in memory.md to match latest session.db query
+- Added unassigned todo row (4 pending) to memory.md phase table
+- Updated memory.md last updated timestamp to 2026-05-07
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 772   |
+| Done         | 297   |
+| Pending      | 467   |
+| Blocked      | 7     |
+
+### Key Phase Progress Updates
+| Phase                | Done (Old) | Done (New) | Pending (Old) | Pending (New) | Blocked (New) |
+|----------------------|-------------|-------------|----------------|----------------|----------------|
+| Phase 3 — Module Consistency | 125 | 140 | 22 | 5 | 2 |
+| Phase 4 — Core Consistency + Types | 7 | 21 | 16 | 1 | 2 |
+| Phase 5 — Integration & Testing | 2 | 16 | 30 | 16 | 0 |
+| Phase 6 — Architecture Overhaul | 2 | 5 | 34 | 30 | 0 |
+| Phase 8 — AI Execution Layer | 0 | 8 | 17 | 9 | 0 |
+| Phase 28 — Auth & Accounts | 0 | 1 | 6 | 5 | 0 |
+
+### Files Modified
+- `.plan/memory.md`: Updated session state, phase table, timestamps
+- `.plan/checkpoints.md`: Added this checkpoint entry
+
+### Next Steps
+- Continue Phase 3/4 completion (highest done counts)
+- Resolve 7 blocked todos (Phase 3: 2, Phase4:2, Phase7:1, Phase11:1, Phase19:1)
+- Sync local plan.md files in src/css/ modules with updated session.db state

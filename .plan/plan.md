@@ -4,7 +4,7 @@
 **Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
 **Updated**: 2026-05-05T09:43 (session current)  
 **Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 768 total (284 done, 477 pending, 7 blocked) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 772 total (297 done, 467 pending, 7 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -48,8 +48,8 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 ## 📊 CURRENT STATUS (2026-05-04T23:57 UTC+2)
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
-**Phases**: 33 total (Phase 0–32) — Phase 0 + 1 complete, Phase 2+ pending  
-**Todos**: **732 total (213 done, 516 pending, 3 blocked)**  
+**Phases**: 35 total (Phase 0–34) — Phase 0 + 1 complete, Phase 2+ pending  
+**Todos**: **772 total (297 done, 467 pending, 7 blocked)**  
 **Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
 **Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
 **Next**: Continue ready queue from `session.db` (`mod-working-dir` first by `sort_order`)
@@ -79,7 +79,7 @@ Only 8 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ### API Provider Status
 
-**26 providers** in `src/css/api_services/` (24 original + `huggingface` + `nvidia` added)
+**24 providers** in `src/css/api_services/` (per session.db and rules.md)
 
 | Status | Providers |
 |--------|-----------|
@@ -272,17 +272,34 @@ All 7 critical app-init todos verified complete:
 | 5 | Config Integration | 🟡 Pending |
 | 6 | Architecture Overhaul (5 Proposals) | 🟡 Pending |
 | 7 | Integration & Polish | 🟡 Pending |
-| 8–14 | Routing, Cache, Events, Hooks, Interceptors, Permissions | 🟡 Pending |
+| 8 | AI Execution Layer | 🟡 Pending |
+| 9 | ORM/Manager/Registry | 🟡 Pending |
+| 10 | Unified SDK Architecture | 🟡 Pending |
+| 11 | Cross-Provider Prompt Caching | 🟡 Pending |
+| 12 | QoL Output Controls Migration | 🟡 Pending |
+| 13 | Provider Routing & Resilience | 🟡 Pending |
+| 14 | Event Hooks & Entry/Exit Instrumentation | 🟡 Pending |
 | 15 | Permissions + WorkingDir | 🟡 Pending |
-| 16 | SDK Unique Features | 🟡 Pending |
-| 17 | Settings & Projects Modules | 🟡 Pending |
-| 18 | Frontend (React/Vite) | 🟡 Pending |
+| 16 | Provider SDK Features | 🟡 Pending |
+| 17 | Settings & Projects | 🟡 Pending |
+| 18 | Frontend Foundation | 🟡 Pending |
 | 19 | Module Restructuring + Sessions | 🟡 Pending |
 | 20 | Persistent Memory Layer | 🟡 Pending |
 | 21 | Qwen3-0.6B Triage Intelligence | 🟡 Pending |
 | 22 | MCP Protocol Layer | 🟡 Pending |
 | 23 | Prompt Registry | 🟡 Pending |
 | 24 | Git Tracking & Worktree Isolation | 🟡 Pending |
+| 25 | Integration Hardening | 🟡 Pending |
+| 26 | Human Approval Workflows | 🟡 Pending |
+| 27 | Graph Visualization Engine | 🟡 Pending |
+| 28 | Auth & Accounts | 🟡 Pending |
+| 29 | Cybersec Domain Layer | 🟡 Pending |
+| 30 | Workflow Engine + IPC | 🟡 Pending |
+| 31 | Production Readiness | 🟡 Pending |
+| 32 | Reports Module | 🟡 Pending |
+| 33 | Ollama Native | 🟡 Pending |
+| 34 | Dependency Map | 🟡 Pending |
+| 35 | Telemetry Infrastructure | 🟡 Pending |
 
 ### Phase 0: TeamScope Foundation (10 days)
 

@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-05T07:10+02:00 | **Session**: Rules/DB audit + Phase 34/35 assignment
+**Last Updated**: 2026-05-07T00:00+02:00 | **Session**: Sync session.db state with memory.md/checkpoints.md
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -11,46 +11,47 @@
 
 ## 📊 session.db State (2026-05-05)
 
-**Total**: 768 todos | **Done**: 242 | **Pending**: 522 | **Blocked**: 4
+**Total**: 772 todos | **Done**: 297 | **Pending**: 467 | **Blocked**: 7
 
-| Phase | Todos | Done | Pending | Blocked |
-|-------|-------|------|---------|---------|
-| Phase 0 — TeamScope Foundation | 12 | 12 | 0 | 0 |
-| Phase 1 — Multi-Orchestrator Core | 16 | 16 | 0 | 0 |
-| Phase 2 — SDK Architecture | 64 | 64 | 0 | 0 |
-| Phase 3 — Module Consistency | 147 | 125 | 22 | 0 |
-| Phase 4 — Core Consistency + Types | 24 | 7 | 16 | 1 |
-| Phase 5 — Integration & Testing | 32 | 2 | 30 | 0 |
-| Phase 6 — Architecture Overhaul | 36 | 2 | 34 | 0 |
-| Phase 7 — Feature Completeness | 19 | 0 | 18 | 1 |
-| Phase 8 — AI Execution Layer | 17 | 0 | 17 | 0 |
-| Phase 9 — ORM/Manager/Registry | 26 | 11 | 15 | 0 |
-| Phase 10 — Unified SDK Architecture | 13 | 0 | 13 | 0 |
-| Phase 11 — Cross-Provider Prompt Caching | 10 | 0 | 9 | 1 |
-| Phase 12 — QoL Output Controls Migration | 11 | 0 | 11 | 0 |
-| Phase 13 — Provider Routing & Resilience | 15 | 0 | 15 | 0 |
-| Phase 14 — Event Hooks & Instrumentation | 18 | 0 | 18 | 0 |
-| Phase 15 — Permissions + WorkingDir | 31 | 0 | 31 | 0 |
-| Phase 16 — Provider SDK Features | 31 | 0 | 31 | 0 |
-| Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 |
-| Phase 18 — Frontend Foundation | 19 | 0 | 19 | 0 |
-| Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 |
-| Phase 20 — Persistent Memory Layer | 23 | 0 | 23 | 0 |
-| Phase 21 — Qwen3-0.6B Triage Intelligence | 14 | 0 | 14 | 0 |
-| Phase 22 — MCP Protocol Layer | 15 | 0 | 15 | 0 |
-| Phase 23 — Prompt Registry | 11 | 0 | 11 | 0 |
-| Phase 24 — Git Tracking & Worktree Isolation | 9 | 0 | 9 | 0 |
-| Phase 25 — Integration Hardening | 8 | 0 | 8 | 0 |
-| Phase 26 — Human Approval Workflows | 14 | 0 | 14 | 0 |
-| Phase 27 — Graph Visualization Engine | 16 | 0 | 16 | 0 |
-| Phase 28 — Auth & Accounts | 6 | 0 | 6 | 0 |
-| Phase 29 — Cybersec Domain Layer | 8 | 0 | 8 | 0 |
-| Phase 30 — Workflow Engine + IPC | 5 | 0 | 5 | 0 |
-| Phase 31 — Production Readiness | 7 | 0 | 7 | 0 |
-| Phase 32 — Reports Module | 11 | 0 | 11 | 0 |
-| Phase 33 — Ollama Native | 6 | 0 | 6 | 0 |
-| Phase 34 — Dependency Map | 19 | 1 | 18 | 0 |
-| Phase 35 — Telemetry Infrastructure | 7 | 0 | 7 | 0 |
+| Phase                                        | Todos | Done | Pending | Blocked |
+|----------------------------------------------|-------|------|---------|---------|
+| Phase 0 — TeamScope Foundation               | 12    | 12   | 0       | 0       |
+| Phase 1 — Multi-Orchestrator Core            | 16    | 16   | 0       | 0       |
+| Phase 2 — SDK Architecture                   | 64    | 64   | 0       | 0       |
+| Phase 3 — Module Consistency                 | 147   | 140  | 5       | 2       |
+| Phase 4 — Core Consistency + Types           | 24    | 21   | 1       | 2       |
+| Phase 5 — Integration & Testing              | 32    | 16   | 16      | 0       |
+| Phase 6 — Architecture Overhaul              | 36    | 5    | 30      | 0       |
+| Phase 7 — Feature Completeness               | 19    | 0    | 18      | 1       |
+| Phase 8 — AI Execution Layer                 | 17    | 8    | 9       | 0       |
+| Phase 9 — ORM/Manager/Registry               | 26    | 11   | 15      | 0       |
+| Phase 10 — Unified SDK Architecture          | 13    | 0    | 13      | 0       |
+| Phase 11 — Cross-Provider Prompt Caching     | 10    | 0    | 9       | 1       |
+| Phase 12 — QoL Output Controls Migration     | 11    | 0    | 11      | 0       |
+| Phase 13 — Provider Routing & Resilience     | 15    | 0    | 15      | 0       |
+| Phase 14 — Event Hooks & Instrumentation     | 18    | 0    | 18      | 0       |
+| Phase 15 — Permissions + WorkingDir          | 31    | 0    | 31      | 0       |
+| Phase 16 — Provider SDK Features             | 31    | 0    | 31      | 0       |
+| Phase 17 — Settings & Projects               | 34    | 0    | 34      | 0       |
+| Phase 18 — Frontend Foundation               | 19    | 0    | 19      | 0       |
+| Phase 19 — Module Restructuring + Sessions   | 14    | 2    | 11      | 1       |
+| Phase 20 — Persistent Memory Layer           | 23    | 0    | 23      | 0       |
+| Phase 21 — Qwen3-0.6B Triage Intelligence    | 14    | 0    | 14      | 0       |
+| Phase 22 — MCP Protocol Layer                | 15    | 0    | 15      | 0       |
+| Phase 23 — Prompt Registry                   | 11    | 0    | 11      | 0       |
+| Phase 24 — Git Tracking & Worktree Isolation | 9     | 0    | 9       | 0       |
+| Phase 25 — Integration Hardening             | 8     | 0    | 8       | 0       |
+| Phase 26 — Human Approval Workflows          | 14    | 0    | 14      | 0       |
+| Phase 27 — Graph Visualization Engine        | 16    | 0    | 16      | 0       |
+| Phase 28 — Auth & Accounts                   | 6     | 1    | 5       | 0       |
+| Phase 29 — Cybersec Domain Layer             | 8     | 0    | 8       | 0       |
+| Phase 30 — Workflow Engine + IPC             | 5     | 0    | 5       | 0       |
+| Phase 31 — Production Readiness              | 7     | 0    | 7       | 0       |
+| Phase 32 — Reports Module                    | 11    | 0    | 11      | 0       |
+| Phase 33 — Ollama Native                     | 6     | 0    | 6       | 0       |
+| Phase 34 — Dependency Map                    | 19    | 1    | 18      | 0       |
+| Phase 35 — Telemetry Infrastructure          | 7     | 0    | 7       | 0       |
+| unassigned                                   | 4     | 0    | 4       | 0       |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -165,13 +166,13 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 
 All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 
-| Proposal | Core idea | Key tasks |
-|----------|-----------|-----------|
-| P1 — Protocol-first + msgspec | Drop ABC/dataclass mixing. Protocol for contracts, msgspec.Struct for values. 10-40× faster serialization. | `p6-msgspec-*` (5) |
-| P2 — 24 YAML specs + 1 adapter | Replace 24 provider classes (~4800 LOC) with YAML + 1 HttpProviderAdapter (~150 LOC) | `p6-yaml-*` (5) |
-| P3 — CQRS + Event Store | Every mutation = immutable DomainEvent in PostgreSQL. Forensic replay built-in. | `p6-events-*` (5) |
-| P4 — importlib.metadata entry_points | Replace pkgutil with Python plugin system. Loader → 20 lines. | `p6-entrypoints-*` (4) |
-| P5 — Composable async generator pipeline | `pipe(source, classify, route, execute, observe)` — each stage one `async def __aiter__` | `p6-pipeline-*` (6) |
+| Proposal                                 | Core idea                                                                                                  | Key tasks              |
+|------------------------------------------|------------------------------------------------------------------------------------------------------------|------------------------|
+| P1 — Protocol-first + msgspec            | Drop ABC/dataclass mixing. Protocol for contracts, msgspec.Struct for values. 10-40× faster serialization. | `p6-msgspec-*` (5)     |
+| P2 — 24 YAML specs + 1 adapter           | Replace 24 provider classes (~4800 LOC) with YAML + 1 HttpProviderAdapter (~150 LOC)                       | `p6-yaml-*` (5)        |
+| P3 — CQRS + Event Store                  | Every mutation = immutable DomainEvent in PostgreSQL. Forensic replay built-in.                            | `p6-events-*` (5)      |
+| P4 — importlib.metadata entry_points     | Replace pkgutil with Python plugin system. Loader → 20 lines.                                              | `p6-entrypoints-*` (4) |
+| P5 — Composable async generator pipeline | `pipe(source, classify, route, execute, observe)` — each stage one `async def __aiter__`                   | `p6-pipeline-*` (6)    |
 
 ---
 
