@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-from css.core.types.base import BaseSkill
+from css.core.types.base_entity import BaseSkill
 from css.core.types.headers import BaseSkillHeader
 
 

@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from css.modules.tools.enums import ParameterType
-from css.core.types.base import BaseTool
+from css.core.types.base_entity import BaseTool
 from css.core.types.headers import BaseToolHeader
 
 

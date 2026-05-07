@@ -1,6 +1,6 @@
 from abc import ABC
 
-from css.core.types.base import BaseRegistry
+from css.core.types.base_registry import BaseRegistry
 
 
 class BaseToolRegistry(BaseRegistry, ABC):

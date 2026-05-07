@@ -1,4 +1,4 @@
-"""Marketplace package installation — uses models.py for DB operations."""
+"""Marketplace package installation — uses user.py for DB operations."""
 
 from typing import Optional
 

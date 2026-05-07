@@ -2,7 +2,7 @@
 
 from typing import Optional, List
 
-from css.core.types.base import BaseRegistry
+from css.core.types.base_registry import BaseRegistry
 
 from .models import MarketplaceItem
 from .enums import MarketplaceItemType, MarketplaceItemStatus
