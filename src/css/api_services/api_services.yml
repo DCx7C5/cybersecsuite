@@ -7,7 +7,7 @@ api-services:
   anthropic:
     display_name: Anthropic
     base_url: https://api.anthropic.com/v1
-    python_package: anthropic-sdk
+    python_package: anthropic
     api_type: openai_compatible
     models: auto
     auth:
@@ -29,6 +29,7 @@ api-services:
   cohere:
     display_name: Cohere
     base_url: https://api.cohere.ai/v1
+    python_package: cohere
     api_type: openai_compatible
     models: auto
     auth:
@@ -46,6 +47,7 @@ api-services:
   deepinfra:
     display_name: DeepInfra
     base_url: https://api.deepinfra.com/v1
+    python_package: deepinfra
     api_type: openai_compatible
     models: auto
     auth:
@@ -64,6 +66,7 @@ api-services:
   deepseek:
     display_name: DeepSeek
     base_url: https://api.deepseek.com/v1
+    python_package: deepseek
     api_type: openai_compatible
     models: auto
     auth:
@@ -101,6 +104,7 @@ api-services:
   github:
     display_name: GitHub Copilot
     base_url: https://api.github.com/v1
+    python_package: github-copilot-sdk
     api_type: openai_compatible
     models: auto
     auth:

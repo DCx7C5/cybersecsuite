@@ -52,6 +52,7 @@ dependencies = [
     "mistralai>=0.0.19",
     "groq>=0.4.0",
     "google-generativeai>=0.3.0",
+    "google-copilot-sdk>=0.1.32",
     "together>=1.0.0",
     "fireworks-ai==0.19.20",
     "ollama>=0.1.0",
@@ -60,6 +61,8 @@ dependencies = [
     "msgspec>=0.20.0",
     "ruff>=0.9.1",
     "tortoise>=0.1.1",
+    "deepseek==1.0.0",
+    "github-copilot-sdk>=0.1.32",
 ]
 
 [project.entry-points."css.modules"]

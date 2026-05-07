@@ -1,11 +1,11 @@
 """Groq API service provider."""
 
 import json
-import logging
 import os
 from typing import Any
 from collections.abc import AsyncIterator
 
+from css.core.logger import getLogger
 from css.core.types import (
     BaseMessage,
     MessageRole,
@@ -19,7 +19,7 @@ from css.core.types import (
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class GroqApiService(BaseApiServiceClient, StreamingHandler):
@@ -45,38 +45,8 @@ class GroqApiService(BaseApiServiceClient, StreamingHandler):
     
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
-        return [
-            ModelMetadata(
-                id="mixtral-8x7b-32768",
-                provider=ProviderType.GROQ,
-                display_name="Mixtral 8x7B",
-                context_window=32768,
-                max_output_tokens=32768,
-                streaming=True,
-                tool_use=True,
-                structured_output=True,
-            ),
-            ModelMetadata(
-                id="llama-3-70b-8192",
-                provider=ProviderType.GROQ,
-                display_name="Llama 3 70B",
-                context_window=8192,
-                max_output_tokens=8192,
-                streaming=True,
-                tool_use=True,
-                structured_output=True,
-            ),
-            ModelMetadata(
-                id="llama-2-70b-4096",
-                provider=ProviderType.GROQ,
-                display_name="Llama 2 70B",
-                context_window=4096,
-                max_output_tokens=4096,
-                streaming=True,
-                tool_use=True,
-                structured_output=True,
-            ),
-        ]
+
+        ...
     
     async def call_llm(
         self,
