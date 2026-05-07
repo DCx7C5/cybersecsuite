@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from css.core.types.base import BaseAgent
+from css.core.types.base_entity import BaseAgent
 from css.core.types.headers import BaseAgentHeader
 
 
