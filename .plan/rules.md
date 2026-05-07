@@ -80,6 +80,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: in PLAN MODE, update every `.md` under `.plan/` and keep all of them synchronized with [.plan/session.db](session.db)**
 - **ABSOLUTE: keep also `memory.md` and `checkpoints.md` in sync with [.plan/session.db](session.db)** — but only at end-of-session, not during work
 - **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
+- **ABSOLUTE: make multiple logical and atomic commits**
 
 # CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
