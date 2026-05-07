@@ -1,23 +1,19 @@
-# core/a2a — A2A Protocol Layer
-
-**Location**: `src/css/core/a2a/`
-**Status**: ✅ Implemented (moved from google_a2a)
+# core/a2a — A2A Protocol Core
 
 ## Purpose
+Shared A2A (Agent-to-Agent) protocol primitives used by both `modules/css_a2a` and `modules/google_a2a`.
+Core layer only — no implementation, only shared enums, protocols, and base types.
 
-Shared A2A protocol types used by both `modules/css_a2a/` (internal fast protocol) and `modules/google_a2a/` (external Google A2A adapter). Lives in `core/` so both modules can import without circular dependencies.
+## Status: 🟡 Partially restored (enums only)
 
 ## Files
+- `enums.py` — TaskState, MessageRole, PartType, StreamState, ResponseInjectionStrategy
+- `__init__.py` — re-exports enums
 
-| File | Contents |
-|------|---------|
-| `enums.py` | `TaskState`, `MessageRole`, `PartType`, `StreamState`, `ResponseInjectionStrategy` |
-| `models.py` | `Message`, `Task`, `TaskStatus`, `TaskArtifact`, `TextPart`, `FilePart`, `DataPart`, `Part` |
-| `types.py` | `AgentCard`, `A2AConfig`, `PauseRequest`, `ResponseInjection`, `StreamingState`, `StreamingController`, `ToolMetadata` |
+## Planned (not yet built)
+- `models.py` — shared A2A message models (TextPart, FilePart, Message, Task)
+- `types.py` — A2AConfig, AgentCard, StreamingController
 
-## Integration Points
-
-| Consumer | What it uses |
-|----------|-------------|
-| `modules/css_a2a/` | `TaskState`, `MessageRole`, `Message`, `Task`, `TaskStatus`, `TaskArtifact` |
-| `modules/google_a2a/` | All — full protocol types |
+## Import Rule
+Both `modules/css_a2a` and `modules/google_a2a` import from here.
+Neither module should import from the other.

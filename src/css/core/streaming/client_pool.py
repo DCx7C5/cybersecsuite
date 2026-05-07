@@ -1,18 +1,23 @@
-"""Client pool for ClaudeSDKClient instances - enables multiple concurrent sessions."""
-
+"""Client pool for SDK agent client instances — concurrent session management."""
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Protocol, runtime_checkable
 
-if TYPE_CHECKING:
-    pass
+from css.core.types.meta import SingletonMetaClass
 
 logger = logging.getLogger("agents.client_pool")
 
 
+@runtime_checkable
+class SDKClientProtocol(Protocol):
+    """Structural protocol for any SDK client managed by the pool."""
+
+    async def close(self) -> None: ...
+
+
 class ClientPool:
-    """Pool of ClaudeSDKClient instances for concurrent sessions.
+    """Pool of SDK client instances for concurrent sessions.
 
     Usage:
         pool = ClientPool(max_size=6, default_size=4)
@@ -24,36 +29,32 @@ class ClientPool:
     def __init__(self, max_size: int = 6, default_size: int = 4) -> None:
         self._max_size = max_size
         self._default_size = default_size
-        self._pool: dict[str, Any] = {}  # session_id -> client
-        self._available: list[Any] = []
+        self._pool: dict[str, SDKClientProtocol] = {}
+        self._available: list[SDKClientProtocol] = []
         self._lock = asyncio.Lock()
 
-    async def _create_client(self, session_id: str | None = None) -> Any:
+    async def _create_client(self, session_id: str | None = None) -> SDKClientProtocol:
         """Create a new ClaudeSDKClient instance."""
         from claude_agent_sdk import ClaudeSDKClient
 
         try:
             from a2a.agent_sdk import build_agent_options
-
             options = build_agent_options()
         except ImportError:
             from claude_agent_sdk import ClaudeAgentOptions
-
             options = ClaudeAgentOptions()
 
         if session_id:
             options.resume = session_id
-        return ClaudeSDKClient(options=options)
+        return ClaudeSDKClient(options=options)  # type: ignore[return-value]
 
-    async def acquire(self, session_id: str | None = None) -> Any:
+    async def acquire(self, session_id: str | None = None) -> SDKClientProtocol:
         """Acquire a client from the pool."""
         async with self._lock:
-            # Reuse existing if session_id provided
             if session_id and session_id in self._pool:
                 logger.debug("reusing existing client for session %s", session_id)
                 return self._pool[session_id]
 
-            # Reuse from available pool
             if self._available:
                 client = self._available.pop()
                 if session_id:
@@ -61,7 +62,6 @@ class ClientPool:
                 logger.debug("reused available client for session %s", session_id)
                 return client
 
-            # Create new if under max_size
             current_count = len(self._pool) + len(self._available)
             if current_count < self._max_size:
                 client = await self._create_client(session_id)
@@ -70,13 +70,12 @@ class ClientPool:
                 logger.debug("created new client for session %s (pool size: %s)", session_id, current_count + 1)
                 return client
 
-            # Pool exhausted - wait for availability
             logger.warning("pool exhausted, waiting for available client")
-            while self._available:
+            while not self._available:
                 await asyncio.sleep(0.1)
             return await self.acquire(session_id)
 
-    async def release(self, client: Any, session_id: str | None = None) -> None:
+    async def release(self, client: SDKClientProtocol, session_id: str | None = None) -> None:
         """Release a client back to the pool."""
         async with self._lock:
             if session_id and session_id in self._pool:
@@ -91,7 +90,7 @@ class ClientPool:
                     pass
                 logger.debug("closed excess client")
 
-    def get(self, session_id: str) -> Any | None:
+    def get(self, session_id: str) -> SDKClientProtocol | None:
         """Get client by session_id without acquiring."""
         return self._pool.get(session_id)
 
@@ -117,13 +116,13 @@ class ClientPool:
             logger.info("client pool closed")
 
 
-# Global pool instance
-default_pool: ClientPool | None = None
+class _PoolSingleton(metaclass=SingletonMetaClass):
+    """Singleton wrapper holding the global ClientPool instance."""
+
+    def __init__(self) -> None:
+        self.pool = ClientPool(max_size=6, default_size=4)
 
 
 def get_pool() -> ClientPool:
-    """Get or create the global client pool."""
-    global default_pool
-    if default_pool is None:
-        default_pool = ClientPool(max_size=6, default_size=4)
-    return default_pool
+    """Get the global ClientPool singleton."""
+    return _PoolSingleton().pool

@@ -9,9 +9,15 @@ TeamLeader delegation when team_id + orchestrator_id are set.
 
 import logging
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import TYPE_CHECKING
 import uuid
 from datetime import datetime
+
+from css.core.streaming.client_pool import ClientPool
+
+if TYPE_CHECKING:
+    from css.modules.agents.base import AgentExecutor
+    from css.modules.teams.orchestrator import TeamLeader
 
 
 logger = logging.getLogger("agents.runner")
@@ -49,7 +55,7 @@ class QueryExecutor:
         session_id: str | None = None,
         mode: str = "blue",
         extra_tools: list[str] | None = None,
-        pool: Any | None = None,
+        pool: ClientPool | None = None,
         team_id: int | None = None,
         orchestrator_id: str | None = None,
         provider: str = "openai",
@@ -64,8 +70,8 @@ class QueryExecutor:
         self.orchestrator_id = orchestrator_id
         self.provider = provider
         self.model = model
-        self._executor: Any | None = None  # AgentExecutor
-        self._team_leader: Any | None = None  # TeamLeader (lazy-loaded)
+        self._executor: AgentExecutor | None = None
+        self._team_leader: TeamLeader | None = None
         
         # Validate team context (B10)
         self._validate_team_context()
@@ -86,19 +92,19 @@ class QueryExecutor:
     def _get_prefix(self) -> str:
         return _MODE_PREFIXES.get(self.mode, f"[MODE: {self.mode.upper()}] ")
     
-    async def _get_team_leader(self) -> Any:
+    async def _get_team_leader(self) -> TeamLeader | None:
         """Lazily initialize TeamLeader (for Team-based delegation)."""
         if self.team_id is None or self.orchestrator_id is None:
             return None
-        
+
         if self._team_leader is None:
             from css.modules.teams.orchestrator import TeamLeader  # TODO: build modules/teams/orchestrator.py
             self._team_leader = TeamLeader(self.team_id, self.orchestrator_id)
             await self._team_leader.initialize()
-        
+
         return self._team_leader
-    
-    async def _get_executor(self):
+
+    async def _get_executor(self) -> AgentExecutor:
         """Lazily initialise AgentExecutor (provider-agnostic)."""
         if self._executor is None:
             from css.modules.agents.base import AgentExecutor
@@ -107,21 +113,19 @@ class QueryExecutor:
                 model=self.model,
             )
         return self._executor
-    
+
     # ── Public API ───────────────────────────────────────────────────
-    
+
     async def query(self, prompt: str) -> str:
         """Run a single-turn query; returns the result text.
-        
-        If team_id + orchestrator_id provided: delegates to TeamLeader
-        Otherwise: uses AgentExecutor (provider-agnostic)
+
+        If team_id + orchestrator_id provided: delegates to TeamLeader.
+        Otherwise: uses AgentExecutor (provider-agnostic).
         """
         from css.core.types import Query
-        
-        # Try Team-based delegation first
+
         team_leader = await self._get_team_leader()
         if team_leader is not None:
-            # Create typed Query object (B5)
             query_obj = Query(
                 id=str(uuid.uuid4()),
                 prompt=prompt,
@@ -129,26 +133,22 @@ class QueryExecutor:
                 agent_name=self.agent_name,
                 metadata={"created_at": datetime.now().isoformat()},
             )
-            
-            # Delegate to TeamLeader with typed Query
             result = await team_leader.delegate(query_obj)
             return result.get("result", "") if isinstance(result, dict) else str(result)
-        
-        # Use AgentExecutor (provider-agnostic, no Claude hardcode)
+
         executor = await self._get_executor()
         full_prompt = f"{self._get_prefix()}{prompt}"
-        
+
         try:
             result = await executor.execute(prompt=full_prompt)
-            # Store session info if returned
-            if hasattr(result, 'session_id'):
+            if hasattr(result, "session_id"):
                 self.session_id = result.session_id
-            return result.response if hasattr(result, 'response') else str(result)
+            return result.response if hasattr(result, "response") else str(result)
         except Exception as e:
-            logger.error(f"QueryExecutor: AgentExecutor failed: {e}")
+            logger.error("QueryExecutor: AgentExecutor failed: %s", e)
             raise
-    
-    async def stream(self, prompt: str) -> AsyncGenerator[dict[str, Any], None]:
+
+    async def stream(self, prompt: str) -> AsyncGenerator[dict[str, str], None]:
         """Stream a query, yielding SSE-ready dicts."""
         from css.modules.streaming.streaming import stream_query
         async for chunk in stream_query(
