@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 
 from .endpoints import init_a2a_endpoints
 from .types import AgentCard
-from css.modules.css_a2a.a2a_comms import A2ACommunicator
+from css.modules.internal_a2a.a2a_comms import A2ACommunicator
 
 
 async def get_agent_card_handler(card: AgentCard):

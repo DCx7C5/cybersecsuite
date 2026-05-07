@@ -8,10 +8,10 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from css.modules.google_a2a.models import Message as A2AMessage, TaskStatus
-from css.modules.google_a2a.enums import TaskState
-from css.modules.google_a2a.types import AgentCard
-from css.modules.css_a2a.a2a_comms import A2ACommunicator
+from css.modules.a2a.models import Message as A2AMessage, TaskStatus
+from css.modules.internal_a2a.enums import TaskState
+from css.modules.internal_a2a.types import AgentCard
+from css.modules.internal_a2a.a2a_comms import A2ACommunicator
 
 log = logging.getLogger(__name__)
 

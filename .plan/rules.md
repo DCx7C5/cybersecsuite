@@ -48,6 +48,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: there is no such thing like "backwards compatibility". we are not yet in production.**
 - **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
+- **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
 
 ### Code & Execution
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
@@ -65,6 +66,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: never use `Exception` only, create custom exception with help of base exceptions in `src/core/exceptions.py`**
 - **ABSOLUTE: use Singleton metaclass patterns in `src/core/types/meta.py`. No end of file instantiation.**
 - **ABSOLUTE: use explicit imports `from X import Y` if applicable.**
+- **ABSOLUTE: don't create warnings leading to `"Expected type XY, got None instead"`**
 
 ### Architecture & Structure
 - **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**
