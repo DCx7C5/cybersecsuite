@@ -64,6 +64,7 @@ dependencies = [
     "tortoise>=0.1.1",
     "deepseek==1.0.0",
     "github-copilot-sdk>=0.1.32",
+    "xai-sdk",
 ]
 
 [project.entry-points."css.modules"]
