@@ -382,13 +382,204 @@ TIMELINE:
 
 ---
 
+### Level 3: Stream-Level Parallelization (Async Generator Pipeline)
+
+#### Pattern: Composable Async Generator Stages
+
+**Phase 6 T6.5** introduces stream-level parallelization via async generators. Instead of processing items in batches or sequentially, items flow through a pipeline of async generator stages:
+
+```
+Input Stream
+    │
+    ├─ ClassifyStage (async generator)
+    │     │ Receives: Message
+    │     │ Emits: Message with .classification
+    │     ├─ Non-blocking (triage engine callback)
+    │     └─ Can filter, transform, or enrich
+    │
+    ├─ RouteStage (async generator)
+    │     │ Receives: Classified Message
+    │     │ Emits: Message with .strategy
+    │     ├─ Maps classification → ResponseInjectionStrategy
+    │     └─ Heuristic routing fallback
+    │
+    ├─ ExecuteStage (async generator)
+    │     │ Receives: Routed Message
+    │     │ Emits: Message with .execution_result
+    │     ├─ Dispatches to handler callables
+    │     ├─ Captures result or error
+    │     └─ Non-blocking, concurrent
+    │
+    ├─ ObserveStage (async generator)
+    │     │ Receives: Executed Message
+    │     │ Emits: Message unchanged
+    │     ├─ Emits OTel spans (non-blocking)
+    │     ├─ Logs events asynchronously
+    │     └─ No request blocking
+    │
+    └─ Output Stream (results)
+```
+
+#### Key Properties
+
+1. **Backpressure**: Items pulled on-demand, no upfront collection
+   ```python
+   async for item in pipe(source, stage1, stage2):
+       process(item)  # Only pulls when ready
+   ```
+
+2. **Lazy Evaluation**: Stages process exactly as much as needed
+   ```
+   - Skip collecting all intermediate results
+   - Save memory for large streams
+   - Enable WebSocket streaming (yield per item)
+   ```
+
+3. **Composability**: Chain arbitrary stages without intermediate lists
+   ```python
+   pipeline = pipe(
+       message_source,        # AsyncGenerator[Message]
+       ClassifyStage(...),    # Adds classification
+       RouteStage(...),       # Adds strategy
+       ExecuteStage(...),     # Adds result
+       ObserveStage(...),     # Emits spans
+   )
+   
+   async for result in pipeline:
+       await ws.send_json(result)  # Stream to client
+   ```
+
+4. **Error Propagation**: Exceptions bubble up naturally
+   ```python
+   try:
+       async for item in pipeline:
+           process(item)
+   except ValueError:
+       handle_error()  # Caught from any stage
+   ```
+
+#### Async Generator Stage Contract
+
+All pipeline stages implement the same interface:
+
+```python
+async def stage(stream: AsyncGenerator[T_in, None]) -> AsyncGenerator[T_out, None]:
+    """Transform items as they flow through pipeline.
+    
+    Args:
+        stream: Async generator of input items
+    
+    Yields:
+        Transformed output items
+    
+    Raises:
+        Exception: Propagates from source or processing
+    """
+    async for item in stream:
+        # Optional: Transform/enrich item
+        transformed = await process(item)
+        
+        # Must yield each item (or skip to filter)
+        yield transformed
+```
+
+#### Implementation Examples (Phase 6 T6.5)
+
+**ClassifyStage** (src/css/modules/triage/pipeline.py):
+```python
+class ClassifyStage(Stage):
+    async def process(self, stream):
+        async for message in stream:
+            classification = await self.triage_engine.classify(message)
+            message.classification = classification
+            yield message
+```
+
+**ExecuteStage** (src/css/core/pipeline.py):
+```python
+class ExecuteStage(Stage):
+    async def process(self, stream):
+        async for message in stream:
+            try:
+                handler = self.handlers[message.type]
+                result = await handler(message)
+                message.result = result
+            except Exception as e:
+                message.error = str(e)
+            yield message
+```
+
+**ObserveStage** (src/css/core/pipeline.py):
+```python
+class ObserveStage(Stage):
+    async def process(self, stream):
+        async for message in stream:
+            # Non-blocking span emission (fire-and-forget)
+            asyncio.create_task(self.emit_span(message))
+            yield message  # Don't block on observability
+```
+
+#### Performance Characteristics
+
+| Model | Memory | Latency | Throughput | Backpressure |
+|-------|--------|---------|-----------|--------------|
+| Batch processing | O(N) | High | Medium | ❌ No |
+| Async generators | O(1) | Low | High | ✅ Yes |
+| Orchestrator pull | O(T) | Medium | High | ✅ Yes |
+
+- **Async generators**: Best for message streaming, WebSocket responses
+- **Orchestrator pull**: Best for long-running tasks, job queues
+- **Both together**: Orchestrators delegate work → streams of results
+
+#### Comparison: Stream vs. Orchestrator Parallelization
+
+```
+ORCHESTRATOR PARALLELIZATION (Level 1-2):
+├─ Granularity: Task-level (coarse)
+├─ Coordination: Shared queue + leader election
+├─ Latency: P50: 5s, P99: 30s (task overhead)
+└─ Use case: Background jobs, forensic scans
+
+STREAM PARALLELIZATION (Level 3):
+├─ Granularity: Item-level (fine)
+├─ Coordination: Async generator protocol (zero)
+├─ Latency: P50: 10ms, P99: 100ms (async/await overhead)
+└─ Use case: Real-time message processing, WebSocket streaming
+```
+
+#### Combined Architecture (All Levels)
+
+```
+Request Handler (Orchestrator Level-2)
+│
+├─ Pulls task from team queue (Level-1)
+│
+├─ Spawns stream pipeline (Level-3)
+│   │
+│   ├─ Input: Messages from database
+│   │
+│   ├─ Pipeline stages:
+│   │  ├─ ClassifyStage
+│   │  ├─ RouteStage
+│   │  ├─ ExecuteStage
+│   │  └─ ObserveStage
+│   │
+│   └─ Output: Streamed results to WebSocket
+│
+└─ Completes task, returns to queue for next pull
+```
+
+---
+
 ### Key Takeaways
 
-1. **Pull-based model** (not push) ensures no central bottleneck
+1. **Pull-based model** (Levels 1-2) ensures no central bottleneck
 2. **Team isolation** prevents resource contention between teams
 3. **Resource quotas** prevent runaway resource consumption
-4. **Async delegation** enables sub-process concurrency
-5. **Fault tolerance** with idempotency keys ensures correctness
-6. **Near-linear speedup** with N orchestrators (up to practical limits)
+4. **Async generators** (Level 3) enable streaming with backpressure
+5. **Zero-copy composition** via pipe() eliminates intermediate collections
+6. **Lazy evaluation** saves memory and reduces latency
+7. **Combined parallelization**: Orchestrators manage long tasks, streams handle real-time flows
+8. **Fault tolerance** with idempotency keys ensures correctness
 
 ---
