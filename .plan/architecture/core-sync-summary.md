@@ -522,12 +522,12 @@ Circular risks: NONE (OTEL is read-only)
 ### Migration of A2A Types
 ```
 Current: types/ (mixed with LLM types)
-Target: modules/google_a2a/types/
+Target: core/a2a/types/
 
 Impact:
   ├─ Reduces types/ size (200+ LOC)
   ├─ Improves module cohesion
-  ├─ Updates: modules/google_a2a imports
+  ├─ Updates: core/a2a imports
   └─ Deprecates: core.types A2A exports
 
 Circular risks: NONE

@@ -142,7 +142,7 @@ Adding a new panel is 3 steps:
 // src/frontend/src/module-registry.ts
 export const MODULE_PANELS: ModulePanel[] = [
   { id: 'settings',     label: 'Settings',     path: '/settings',
-    component: lazy(() => import('@css/modules/settings/templates')) },
+    component: lazy(() => import('@css/core/settings/templates')) },
   { id: 'marketplace',  label: 'Marketplace',  path: '/marketplace',
     component: lazy(() => import('@css/modules/marketplace/templates')) },
   { id: 'chat',         label: 'Chat',         path: '/chat',

@@ -139,7 +139,7 @@ Shared Results Queue (via IPC):
 
 ### Permission Model Architecture
 
-Permissions are managed by `@permissions` module (Phase 15). Each orchestrator process gets explicit PathGrants at session start. See `modules/permissions/plan.md` for full design.
+Permissions are managed by `@permissions` module (Phase 15). Each orchestrator process gets explicit PathGrants at session start. See `core/permissions/plan.md` for full design.
 
 ```python
 # At session start, orchestrator gets PathGrants via GrantManager:

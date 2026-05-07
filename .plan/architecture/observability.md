@@ -31,7 +31,7 @@ Application Layer (modules: chat, tasks, teams, agents, marketplace, permissions
    ▼                                        ▼
 ┌──────────────────────┐          ┌────────────────────────────┐
 │   OtelBridge         │          │   Read Projections         │
-│ (core/events/otel.py)│          │ (modules/permissions/,     │
+│ (core/events/otel.py)│          │ (core/permissions/,     │
 │                      │          │  modules/events/)          │
 │  DomainEvent         │          │                            │
 │  → OTEL span         │          │  PermissionProjection:     │
@@ -278,7 +278,7 @@ class OtelBridge:
 ## Read Projections
 
 ```python
-# modules/permissions/projections.py
+# core/permissions/projections.py
 class PermissionProjection:
     """Rebuild permission state from event stream. Replaces static RBAC tables."""
 
