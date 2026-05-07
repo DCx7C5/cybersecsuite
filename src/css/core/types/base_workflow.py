@@ -1,40 +1,14 @@
-"""Base workflow entity types — abstract contracts for team and task modules.
+"""Base workflow entity types — abstract contracts for task modules.
 
-Team and Task are workflow/orchestration entities (distinct from domain entities
+Task is a workflow/orchestration entity (distinct from domain entities
 like BaseAgent/BaseSkill). Modules extend these base dataclasses and add their
 own domain-specific fields, status enums, and state machine methods.
+
+Note: Team types live entirely within modules/teams — no core base needed.
 """
 
 from dataclasses import dataclass, field
 from typing import Any
-
-
-@dataclass
-class BaseTeam:
-    """Abstract base for team entities.
-
-    Modules (modules/teams) extend this with:
-    - Domain status enum (TeamStatus)
-    - Orchestrator pool state
-    - Task queue counters
-    - Lifecycle transitions (activate, pause, resume, complete)
-    """
-
-    team_id: int
-    team_name: str
-    session_id: int
-
-
-@dataclass
-class BaseTeamScope:
-    """Abstract base for immutable team context snapshots."""
-
-    team_id: int
-    team_name: str
-    session_id: int
-    max_orchestrators: int = 0
-    current_orchestrators: int = 0
-    completed_tasks: int = 0
 
 
 @dataclass
@@ -61,8 +35,6 @@ class BaseTaskScope:
 
 
 __all__ = [
-    "BaseTeam",
-    "BaseTeamScope",
     "BaseTask",
     "BaseTaskScope",
 ]

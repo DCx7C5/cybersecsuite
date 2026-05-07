@@ -88,7 +88,7 @@ from .hook_events import HookContext  # noqa: F401
 from .query import Query, QueryHeader  # noqa: F401
 
 # ── Base workflow types ───────────────────────────────────────────────────────
-from .base_workflow import BaseTeam, BaseTeamScope, BaseTask, BaseTaskScope  # noqa: F401
+from .base_workflow import BaseTask, BaseTaskScope  # noqa: F401
 
 # ── Core domain entities ──────────────────────────────────────────────────────
 from css.core.accounts.types import Account  # noqa: F401
@@ -153,9 +153,7 @@ __all__ = [
     # query
     "Query",
     "QueryHeader",
-    # workflow bases
-    "BaseTeam",
-    "BaseTeamScope",
+    # workflow bases (task only — team lives in modules/teams)
     "BaseTask",
     "BaseTaskScope",
     # accounts

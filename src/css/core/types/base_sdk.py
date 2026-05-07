@@ -13,7 +13,11 @@ from abc import ABC, abstractmethod
 
 
 from css.core.exceptions import GatewayError
-from css.core.retry import RetryOrchestrator, RetryConfig
+try:
+    from css.core.retry import RetryOrchestrator, RetryConfig
+except ModuleNotFoundError:
+    RetryOrchestrator = None  # type: ignore[assignment,misc]
+    RetryConfig = None  # type: ignore[assignment,misc]
 from css.core.types import BaseApiServiceClient, ProviderType, ModelMetadata, BaseMessage, StreamChunk, Tool
 
 logger = logging.getLogger(__name__)
