@@ -10,12 +10,6 @@ from .exceptions import (
 # Enums (import before scope_utils to avoid circular import)
 from .models.enums import ScopeLevel
 
-# Scope utilities
-from .scope_utils import (
-    check_scope_permission,
-    validate_scope_fields,
-)
-
 # Models and enums
 from .models import (
     RedBlueMode,
@@ -35,8 +29,6 @@ __all__ = [
     "ScopeValidationError",
     # Utilities
     "ScopeLevel",
-    "check_scope_permission",
-    "validate_scope_fields",
     # Models
     "ProjectScope",
     "SessionScope",
