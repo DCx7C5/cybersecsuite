@@ -81,6 +81,8 @@ Result: 5 tasks complete 3x faster (N tasks ÷ N orchestrators)
 
 #### Pattern: Isolated Task Queues per Team (TeamLeaders coordinate Workers/TeamMembers)
 
+# TODO: Hardware based parallelization values
+
 ```
 Session
 │

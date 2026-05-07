@@ -2455,7 +2455,7 @@ class HookContext(Generic[Input, Output]):
     correlation_id: str = ""
     metadata: dict = field(default_factory=dict)  # arbitrary per-hook data
 
-class HookBlockedError(Exception):
+class HookErrorStrategy(Exception):
     """Raised by a pre-hook to cancel the call entirely."""
 
 @dataclass(order=True)
@@ -2474,7 +2474,7 @@ class InterceptorRegistry:
 
     def pre(self, pattern: str, *, priority: int = 50):
         """@pre_hook("tool.call.*", priority=10) — run before the call.
-        Mutate ctx.input or raise HookBlockedError to cancel."""
+        Mutate ctx.input or raise HookErrorStrategy to cancel."""
         def decorator(fn):
             self._pre.append(_Interceptor(priority, pattern, fn, is_pre=True))
             self._pre.sort()
@@ -2491,7 +2491,7 @@ class InterceptorRegistry:
         return decorator
 
     async def run_pre(self, ctx: HookContext) -> HookContext:
-        """Run all matching pre-hooks in priority order. HookBlockedError cancels."""
+        """Run all matching pre-hooks in priority order. HookErrorStrategy cancels."""
         for ic in self._pre:
             if fnmatch.fnmatch(ctx.namespace, ic.pattern):
                 ctx = await _call(ic.fn, ctx)
@@ -2521,7 +2521,7 @@ async def _call(fn, ctx):
 async def wrapper(*args, **kwargs):
     ctx = HookContext(namespace=namespace, input={"args": args, "kwargs": kwargs}, ...)
     
-    # 1. Run pre-hooks (can mutate input or raise HookBlockedError)
+    # 1. Run pre-hooks (can mutate input or raise HookErrorStrategy)
     ctx = await interceptor_registry.run_pre(ctx)
     
     # 2. Emit .started event (T14.1 unchanged)
@@ -2538,7 +2538,7 @@ async def wrapper(*args, **kwargs):
         # 5. Emit .completed (T14.1 unchanged)
         await event_store.append(DomainEvent(event_type=f"{namespace}.completed", ...))
         return ctx.output
-    except HookBlockedError:
+    except HookErrorStrategy:
         raise   # propagate — caller handles blocked call
     except Exception as exc:
         ctx.error = exc
@@ -2550,7 +2550,7 @@ async def wrapper(*args, **kwargs):
 **Usage examples**:
 
 ```python
-from css.modules.events import pre_hook, post_hook, HookContext, HookBlockedError
+from css.modules.events import pre_hook, post_hook, HookContext, HookErrorStrategy
 
 # Validate + clamp tool input before execution
 @pre_hook("tool.call.*", priority=10)
@@ -2564,7 +2564,7 @@ async def clamp_tool_timeout(ctx: HookContext) -> HookContext:
 async def prompt_safety_check(ctx: HookContext) -> HookContext:
     last_msg = ctx.input["kwargs"].get("messages", [{}])[-1].get("content", "")
     if "<script>" in last_msg:
-        raise HookBlockedError("XSS detected in prompt")
+        raise HookErrorStrategy("XSS detected in prompt")
     return ctx
 
 # Redact secrets from LLM output
@@ -2584,12 +2584,12 @@ async def append_audit_trail(ctx: HookContext) -> HookContext:
 @pre_hook("*", priority=100)  # lowest priority — runs last in pre chain
 async def global_rate_check(ctx: HookContext) -> HookContext:
     if await rate_limiter.is_exhausted(ctx.metadata.get("user_id")):
-        raise HookBlockedError("Rate limit exceeded")
+        raise HookErrorStrategy("Rate limit exceeded")
     return ctx
 ```
 
 **Todos (T14.5)**:
-- `events-interceptor-context` — `HookContext[Input, Output]` generic dataclass; `HookBlockedError` exception; in `modules/events/interceptors.py`
+- `events-interceptor-context` — `HookContext[Input, Output]` generic dataclass; `HookErrorStrategy` exception; in `modules/events/interceptors.py`
 - `events-interceptor-registry` — `InterceptorRegistry` with priority-sorted pre/post lists, glob pattern matching, `run_pre()` + `run_post()`; module-level `interceptor_registry` singleton
 - `events-pre-hook-decorator` — `@pre_hook(pattern, priority=50)` shortcut exported from `modules/events`
 - `events-post-hook-decorator` — `@post_hook(pattern, priority=50)` shortcut exported from `modules/events`
@@ -2612,7 +2612,7 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 | `events-hook-registry` | T14.4 | Fire-and-forget observer registry (telemetry only) |
 | `events-on-event-decorator` | T14.4 | `@on_event` shortcut |
 | `events-hook-executor` | T14.4 | `_safe_call` fire-and-forget runner |
-| `events-interceptor-context` | T14.5 | `HookContext` + `HookBlockedError` |
+| `events-interceptor-context` | T14.5 | `HookContext` + `HookErrorStrategy` |
 | `events-interceptor-registry` | T14.5 | `InterceptorRegistry` with priority + glob |
 | `events-pre-hook-decorator` | T14.5 | `@pre_hook(pattern, priority)` |
 | `events-post-hook-decorator` | T14.5 | `@post_hook(pattern, priority)` |
@@ -2937,7 +2937,7 @@ The Phase 14 `@pre_hook` system is the enforcement point. No permission check sh
 
 ```python
 # core/permissions/hooks.py
-from css.modules.events import pre_hook, HookContext, HookBlockedError
+from css.modules.events import pre_hook, HookContext, HookErrorStrategy
 from .checker import checker  # module-level singleton
 
 @pre_hook("tool.call.*", priority=5)   # runs early — before tool executes
@@ -2945,7 +2945,7 @@ async def enforce_tool_permission(ctx: HookContext) -> HookContext:
     agent_id = ctx.metadata.get("agent_id")
     tool_name = ctx.namespace.split(".", 2)[-1]  # "tool.call.bash.execute" → "bash.execute"
     if agent_id and not await checker.can_tool(agent_id, tool_name):
-        raise HookBlockedError(f"Tool denied: {tool_name} for agent {agent_id}")
+        raise HookErrorStrategy(f"Tool denied: {tool_name} for agent {agent_id}")
     return ctx
 
 @pre_hook("agent.run.*", priority=5)
@@ -2954,12 +2954,12 @@ async def enforce_working_dir_access(ctx: HookContext) -> HookContext:
     working_dir = ctx.input.get("kwargs", {}).get("working_dir")
     if agent_id and working_dir:
         if not await checker.can_path(agent_id, str(working_dir), PathOp.READ):
-            raise HookBlockedError(f"Path access denied: {working_dir}")
+            raise HookErrorStrategy(f"Path access denied: {working_dir}")
     return ctx
 ```
 
 **Todos (T15.6)**:
-- `perm-hook-tool-enforcement` — `@pre_hook("tool.call.*", priority=5)` in `core/permissions/hooks.py`. Extracts agent_id from HookContext.metadata. Calls `checker.can_tool()`. Raises HookBlockedError on deny. Dep: `events-instrument-decorator` (Phase 14) + `perm-checker-can-tool`.
+- `perm-hook-tool-enforcement` — `@pre_hook("tool.call.*", priority=5)` in `core/permissions/hooks.py`. Extracts agent_id from HookContext.metadata. Calls `checker.can_tool()`. Raises HookErrorStrategy on deny. Dep: `events-instrument-decorator` (Phase 14) + `perm-checker-can-tool`.
 - `perm-hook-path-enforcement` — `@pre_hook("agent.run.*", priority=5)` for working_dir path access check. Dep: `perm-checker-can-path`.
 
 ---

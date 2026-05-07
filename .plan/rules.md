@@ -64,6 +64,7 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
 - **ABSOLUTE: never use `Exception` only, create custom exception with help of base exceptions in `src/core/exceptions.py`**
 - **ABSOLUTE: use Singleton metaclass patterns in `src/core/types/meta.py`. No end of file instantiation.**
+- **ABSOLUTE: use explicit imports `from X import Y` if applicable.**
 
 ### Architecture & Structure
 - **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**
