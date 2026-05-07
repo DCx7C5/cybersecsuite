@@ -7,6 +7,7 @@ api-services:
   anthropic:
     display_name: Anthropic
     base_url: https://api.anthropic.com/v1
+    python_package: anthropic-sdk
     api_type: openai_compatible
     models: auto
     auth:
@@ -192,6 +193,7 @@ api-services:
       scheme: Bearer
     endpoints:
       completion: /chat/completions
+      models: /models
     capabilities:
       streaming: true
       vision: true
@@ -199,12 +201,59 @@ api-services:
 
 
   opencode:
+    display_name: OpenCode
+    base_url: https://api.opencode.co/v1
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: OPENCODE_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+      models: /models
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
 
   openrouter:
+    display_name: OpenRouter
+    base_url: https://openrouter.ai/api/v1
+    python_package: openrouter
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: OPENROUTER_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+    capabilities:
+      streaming: true
+      vision: true
+      tool_use: true
+
 
   perplexity:
 
   sambanova:
+    display_name: SambaNova
+    base_url: https://api.sambanova.ai/v1
+    python_package: sambanova
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: SAMBANOVA_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
+
 
   together:
 

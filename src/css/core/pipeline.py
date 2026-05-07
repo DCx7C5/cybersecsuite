@@ -178,3 +178,159 @@ class MapStage(Stage):
     async def __call__(self, stream: AsyncGenerator[Any, None]) -> AsyncGenerator[Any, None]:
         async for item in stream:
             yield await self.transform(item)
+
+
+class ExecuteStage(Stage):
+    """Execute/dispatch stage for calling external services (Phase 6 T6.5).
+
+    Invokes a handler function on each message and enriches it with execution
+    results. Used for LLM provider calls, database operations, etc.
+
+    Input message fields:
+    - handler: Callable that will be invoked with the message
+    - (other fields are passed to handler)
+
+    Output message fields added:
+    - execution_result: Result from handler execution
+    - execution_error: Error message if handler failed
+    """
+
+    def __init__(self, handler=None):
+        """Initialize execute stage.
+
+        Args:
+            handler: Optional default handler callable for all messages.
+                     If None, messages must have a 'handler' field.
+        """
+        self.default_handler = handler
+
+    async def __call__(self, stream):
+        """Execute handler on each message.
+
+        Args:
+            stream: Async generator of messages
+
+        Yields:
+            Messages enriched with execution results
+        """
+        async for message in stream:
+            try:
+                # Get handler from message or use default
+                handler = (
+                    message.get("handler")
+                    if isinstance(message, dict)
+                    else getattr(message, "handler", None)
+                ) or self.default_handler
+
+                if not handler:
+                    if isinstance(message, dict):
+                        message["execution_error"] = "No handler specified"
+                    yield message
+                    continue
+
+                # Execute handler
+                result = (
+                    await handler(message)
+                    if callable(handler)
+                    else handler
+                )
+
+                # Enrich message with result
+                if isinstance(message, dict):
+                    message["execution_result"] = result
+                else:
+                    if hasattr(message, "__dict__"):
+                        message.execution_result = result
+
+                yield message
+
+            except Exception as e:
+                import logging
+                log = logging.getLogger(__name__)
+                log.error(f"Execute stage error: {e}")
+
+                if isinstance(message, dict):
+                    message["execution_error"] = str(e)
+                yield message
+
+
+class ObserveStage(Stage):
+    """Observability/logging stage for OpenTelemetry instrumentation (Phase 6 T6.5).
+
+    Pass-through stage that emits telemetry events without blocking the stream.
+    Useful for cross-cutting concerns like logging, tracing, metrics.
+
+    Args:
+        emit_span: Optional callable to emit a span for each message
+        emit_log: Optional callable to log message metadata
+    """
+
+    def __init__(self, emit_span=None, emit_log=None):
+        """Initialize observe stage.
+
+        Args:
+            emit_span: Async callable(message) -> trace span event
+            emit_log: Async callable(message) -> log event
+        """
+        self.emit_span = emit_span or self._default_emit_span
+        self.emit_log = emit_log or self._default_emit_log
+
+    async def _default_emit_span(self, message):
+        """Default span emission using OpenTelemetry."""
+        try:
+            from opentelemetry import trace
+            tracer = trace.get_tracer(__name__)
+            message_type = (
+                message.get("type")
+                if isinstance(message, dict)
+                else getattr(message, "type", "unknown")
+            )
+            with tracer.start_as_current_span(f"message.{message_type}") as span:
+                msg_id = message.get("id") if isinstance(message, dict) else getattr(message, "id", "unknown")
+                span.set_attribute("message.id", str(msg_id))
+        except Exception as e:
+            import logging
+            log = logging.getLogger(__name__)
+            log.debug(f"Span emission failed: {e}")
+
+    async def _default_emit_log(self, message):
+        """Default logging of message metadata."""
+        try:
+            import logging
+            log = logging.getLogger(__name__)
+            msg_type = (
+                message.get("type")
+                if isinstance(message, dict)
+                else getattr(message, "type", "unknown")
+            )
+            msg_id = (
+                message.get("id")
+                if isinstance(message, dict)
+                else getattr(message, "id", "unknown")
+            )
+            log.debug(f"Message processed: type={msg_type}, id={msg_id}")
+        except Exception as e:
+            import logging
+            log = logging.getLogger(__name__)
+            log.debug(f"Log emission failed: {e}")
+
+    async def __call__(self, stream):
+        """Pass items through while emitting telemetry.
+
+        Args:
+            stream: Async generator of messages
+
+        Yields:
+            Messages unchanged
+        """
+        async for message in stream:
+            try:
+                # Emit span and log without blocking
+                await self.emit_span(message)
+                await self.emit_log(message)
+            except Exception as e:
+                import logging
+                log = logging.getLogger(__name__)
+                log.debug(f"Observe stage error (non-blocking): {e}")
+
+            yield message

@@ -9,27 +9,33 @@ from .exceptions import (
     TriageExecutionError,
     TriageClassificationError,
 )
+# Phase 6 T6.5: Pipeline stages
+from .pipeline import ClassifyStage, classify
 
 logger = getLogger(__name__)
 
 __all__ = [
     # Engine
     "TriageEngine",
-    
+
     # Models
     "TriageRequest",
     "TriageResult",
-    
+
     # Enums
     "TriageStatus",
     "TriageCategory",
     "TriageDecision",
     "SeverityLevel",
-    
+
     # Exceptions
     "BaseTriageException",
     "TriageExecutionError",
     "TriageClassificationError",
+
+    # Pipeline stages (Phase 6 T6.5)
+    "ClassifyStage",
+    "classify",
 ]
 
 logger.info("Triage module loaded")
