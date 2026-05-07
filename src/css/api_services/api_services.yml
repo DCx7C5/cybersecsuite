@@ -23,6 +23,24 @@ api-services:
       tool_use: true
 
   cerebras:
+    display_name: Cerebras
+    base_url: https://api.cerebras.com/v1
+    python_package: cerebras
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: CEREBRAS_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+      models: /models
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
+
+
 
   cloudflare:
 
@@ -85,6 +103,7 @@ api-services:
   fireworks:
     display_name: Fireworks AI
     base_url: https://api.fireworks.ai/inference/v1
+    python_package: fireworks-ai
     api_type: openai_compatible
     models: auto
     auth:
@@ -127,6 +146,22 @@ api-services:
       tool_use: true
 
   google:
+    display_name: Google
+    base_url: https://generativelanguage.googleapis.com/v1beta
+    python_package: google-generativeai
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: GOOGLE_API_KEY
+      header: x-goog-api-key
+      scheme: ""
+    endpoints:
+      completion: /models/{model}:generateText
+    capabilities:
+      streaming: true
+      vision: true
+      tool_use: true
+
 
   google_palm:
 

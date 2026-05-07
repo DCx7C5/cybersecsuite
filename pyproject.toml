@@ -48,6 +48,7 @@ dependencies = [
     "anthropic[aiohttp]",
     "openai>=1.80.0",
     "ai21>=2.0.0",
+    "cerebras-sdk>=2.10.0",
     "cohere>=5.0.0",
     "mistralai>=0.0.19",
     "groq>=0.4.0",
