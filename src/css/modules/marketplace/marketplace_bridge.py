@@ -37,18 +37,20 @@ async def skill_to_marketplace_item(skill: Skill):
         The created/updated :class:`~css.modules.marketplace.models.MarketplaceItem`.
     """
 
-    slug = f"skill:{skill.skill_id}"
+    slug = f"skill:{skill.id}"
+    name = skill.header.name if skill.header else skill.id
+    description = skill.header.description if (skill.header and hasattr(skill.header, "description")) else ""
     existing = await MarketplaceItem.get_or_none(slug=slug)
 
     meta = {
-        "skill_id": skill.skill_id,
+        "skill_id": skill.id,
         "install_path": str(skill.install_path) if skill.install_path else None,
         "tags": getattr(skill, "tags", []),
     }
 
     if existing:
-        existing.name = skill.name
-        existing.description = getattr(skill, "description", "")
+        existing.name = name
+        existing.description = description
         existing.meta = {**existing.meta, **meta}
         if skill.is_installed:
             existing.status = MarketplaceItemStatus.installed
@@ -60,8 +62,8 @@ async def skill_to_marketplace_item(skill: Skill):
 
     item = MarketplaceItem(
         slug=slug,
-        name=skill.name,
-        description=getattr(skill, "description", ""),
+        name=name,
+        description=description,
         kind=MarketplaceItemType.skill,
         status=MarketplaceItemStatus.installed if skill.is_installed else MarketplaceItemStatus.disabled,
         meta=meta,
@@ -76,13 +78,11 @@ async def get_skill_marketplace_item(skill_id: str) -> MarketplaceItem | None:
     """Return the ``MarketplaceItem`` for *skill_id*, or ``None``.
 
     Args:
-        skill_id: The skill's unique identifier.
+        skill_id: The skill's unique identifier (``Skill.id``).
 
     Returns:
         :class:`~css.modules.marketplace.models.MarketplaceItem` or ``None``.
     """
-    from css.modules.marketplace.models import MarketplaceItem
-
     return await MarketplaceItem.get_or_none(slug=f"skill:{skill_id}")
 
 
