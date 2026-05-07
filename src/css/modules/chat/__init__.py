@@ -3,6 +3,7 @@
 from css.core.logger import getLogger
 from .manager import ChatSessionManager
 from .models import ChatMessage, ChatSession
+from .persistence_models import ChatMessageRecord, ChatSessionRecord
 from .enums import ChatRole, ChatMessageType, ChatStatus
 from .exceptions import (
     BaseChatException,
@@ -19,6 +20,8 @@ __all__ = [
     # Models
     "ChatMessage",
     "ChatSession",
+    "ChatSessionRecord",
+    "ChatMessageRecord",
     
     # Enums
     "ChatRole",

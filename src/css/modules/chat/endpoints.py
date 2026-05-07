@@ -97,7 +97,7 @@ async def create_session(req: CreateSessionRequest) -> CreateSessionResponse:
         HTTPException: If session creation fails
     """
     try:
-        session = _session_manager.create_session(
+        session = await _session_manager.create_session(
             title=req.title,
             system_prompt=req.system_prompt
         )
@@ -133,7 +133,7 @@ async def get_session_messages(session_id: str) -> GetMessagesResponse:
         HTTPException: If session not found
     """
     try:
-        session = _session_manager.get_session_or_fail(session_id)
+        session = await _session_manager.get_session_or_fail(session_id)
         
         messages = [
             ChatMessageResponse(
@@ -198,7 +198,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str) -> None
             }
     """
     try:
-        session = _session_manager.get_session_or_fail(session_id)
+        session = await _session_manager.get_session_or_fail(session_id)
     except ChatSessionNotFoundError:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
@@ -221,7 +221,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str) -> None
                 continue
             
             # Add user message to session
-            user_message = _session_manager.add_message(
+            user_message = await _session_manager.add_message(
                 session_id,
                 ChatRole.USER,
                 message_data.get("text", ""),
@@ -247,7 +247,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str) -> None
                     response_content = result.get("text", result.get("content", ""))
                     
                     # Add assistant message to session
-                    assistant_message = _session_manager.add_message(
+                    assistant_message = await _session_manager.add_message(
                         session_id,
                         ChatRole.ASSISTANT,
                         response_content,
@@ -272,7 +272,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str) -> None
                 log.exception(f"Error processing message: {e}")
                 
                 # Add error message to session
-                _session_manager.add_message(
+                await _session_manager.add_message(
                     session_id,
                     ChatRole.SYSTEM,
                     f"Error processing message: {str(e)}",
