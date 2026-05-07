@@ -20,6 +20,13 @@ from .command_bus import (
     CompleteTaskCommand,
     SpawnAgentCommand,
 )
+# Phase 6 T6.5: Read projections from event stream
+from .projections import (
+    Projection,
+    PermissionsProjection,
+    AuditTrailProjection,
+    ProjectionManager,
+)
 
 __all__ = [
     "DomainEvent",
@@ -38,4 +45,9 @@ __all__ = [
     "CreateTaskCommand",
     "CompleteTaskCommand",
     "SpawnAgentCommand",
+    # Read projections
+    "Projection",
+    "PermissionsProjection",
+    "AuditTrailProjection",
+    "ProjectionManager",
 ]
