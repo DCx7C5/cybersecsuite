@@ -1,7 +1,7 @@
 """Task assignment, team quota, and task result models."""
 
 from tortoise import fields, models
-from css.core.db.enums import TaskAssignmentStatus, TaskPriority
+from .enums import TaskAssignmentStatus, TaskPriority
 
 
 class TaskAssignment(models.Model):

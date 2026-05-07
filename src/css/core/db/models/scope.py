@@ -4,7 +4,7 @@
 from tortoise.models import Model
 from tortoise import fields, models
 
-from css.core.db.enums import RedBlueMode, ScopeLevel
+from .enums import RedBlueMode, ScopeLevel
 
 
 class AppScope(Model):

@@ -1,6 +1,6 @@
 """Multi-orchestrator management models."""
 from tortoise import fields, models
-from css.core.db.enums import OrchestratorStatus
+from .enums import OrchestratorStatus
 
 class OrchestratorInstance(models.Model):
     """Orchestrator instance tracking."""

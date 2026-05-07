@@ -8,7 +8,7 @@ from .exceptions import (
 )
 
 # Enums (import before scope_utils to avoid circular import)
-from .enums import ScopeLevel
+from .models.enums import ScopeLevel
 
 # Scope utilities
 from .scope_utils import (
