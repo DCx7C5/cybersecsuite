@@ -34,7 +34,7 @@ class QueryExecutor:
         session_id = runner.session_id  # resume later
     
     Or with client pool:
-        from css.core.orchestration.client_pool import get_pool
+        from css.core.streaming.client_pool import get_pool
         pool = get_pool()
         runner = QueryExecutor(agent_name="cybersec-agent", pool=pool)
     
@@ -92,7 +92,7 @@ class QueryExecutor:
             return None
         
         if self._team_leader is None:
-            from css.core.orchestration import TeamLeader
+            from css.modules.teams.orchestrator import TeamLeader  # TODO: build modules/teams/orchestrator.py
             self._team_leader = TeamLeader(self.team_id, self.orchestrator_id)
             await self._team_leader.initialize()
         

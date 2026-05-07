@@ -9,7 +9,7 @@ Public API:
 from css.core.logger import getLogger
 from css.core.streaming.runner import QueryExecutor
 from css.core.streaming.sessions import SessionManager
-from css.core.orchestration.client_pool import ClientPool, get_pool
+from css.core.streaming.client_pool import ClientPool, get_pool
 
 logger = getLogger(__name__)
 
