@@ -1,32 +1,28 @@
 """Core types for CyberSecSuite — flat structure (Phase 6 P1).
 
-All types at root level (no base/ or providers/ subdirectories).
 Provider headers will be YAML-driven (Phase 6 P2), not Python files.
 """
 
 # Base protocol and abstract classes (from base_client.py)
-from .base_client import (
+from .base_client import (  # noqa: F401
     ProviderType,
-    MessageRole,
     BaseMessage,
     Tool,
     ModelMetadata,
     StreamChunk,
     LLMResponse,
-    ExecutorResult,
-    ErrorStrategy,
     StreamingHandler,
     BaseApiServiceClient,
 )
 
 # Base communicator protocol
-from .base_protocols import BaseCommunicator
+from .base_protocols import BaseCommunicator  # noqa: F401
 
 # Base registry
-from .base_registry import BaseRegistry
+from .base_registry import BaseRegistry  # noqa: F401
 
 # Protocol classes (Phase 6 P1)
-from .protocols import (
+from .protocols import (  # noqa: F401
     AgentLike,
     SkillLike,
     ToolLike,
@@ -34,7 +30,7 @@ from .protocols import (
 )
 
 # Base entity types (msgspec.Struct, Phase 6 P1)
-from .base_entity import (
+from .base_entity import (  # noqa: F401
     BaseEntity,
     BaseAgent,
     BaseTool,
@@ -43,7 +39,7 @@ from .base_entity import (
 )
 
 # Entity headers (msgspec.Struct, Phase 6 P1)
-from .headers import (
+from .base_headers import (  # noqa: F401
     BaseHeader,
     BaseAgentHeader,
     BaseSkillHeader,
@@ -53,7 +49,7 @@ from .headers import (
 )
 
 # Capabilities
-from .capabilities import (
+from .capabilities import (  # noqa: F401
     Capability,
     CapabilityType,
     CapabilityRegistry,
@@ -62,7 +58,7 @@ from .capabilities import (
 )
 
 # Context types (msgspec.Struct)
-from .context import (
+from .context import (  # noqa: F401
     ConversationContext,
     ModelContext,
     ExecutionContext,
@@ -70,62 +66,11 @@ from .context import (
 )
 
 # Hook events
-from .hook_events import HookContext, HookErrorStrategy
+from .hook_events import HookContext, HookErrorStrategy  # noqa: F401
 
 __all__ = [
     # Base
     "HookErrorStrategy",
-    "ProviderType",
-    "MessageRole",
-    "BaseMessage",
-    "Tool",
-    "ModelMetadata",
-    "StreamChunk",
-    "LLMResponse",
-    "ExecutorResult",
-    "ErrorStrategy",
-    "StreamingHandler",
-    "BaseApiServiceClient",
-    "BaseCommunicator",
-    "BaseRegistry",
-    "AgentLike",
-    "SkillLike",
-    "ToolLike",
-    "TeamMemberLike",
-    # Entities (msgspec.Struct)
-    "BaseEntity",
-    "BaseAgent",
-    "BaseTool",
-    "BaseSkill",
-    "BaseRole",
-    # Headers (msgspec.Struct)
-    "BaseHeader",
-    "BaseAgentHeader",
-    "BaseSkillHeader",
-    "BaseAccountHeader",
-    "BaseToolHeader",
-    "BaseRoleHeader",
-    # Capabilities
-    "Capability",
-    "CapabilityType",
-    "CapabilityRegistry",
-    "DEFAULT_CAPABILITIES",
-    "ModelCapabilities",
-    # Context
-    "ConversationContext",
-    "ModelContext",
-    "ExecutionContext",
-    "ContextConfig",
-    # Messages
-    "BaseMessage",
-    "Tool",
-    "ModelMetadata",
-    "StreamChunk",
-    "LLMResponse",
-    "ExecutorResult",
-    # Hook events
-    "HookContext",
-    "HookBlockedError",
     # Query
     "Query",
     "QueryHeader",
