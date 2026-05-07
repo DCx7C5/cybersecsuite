@@ -50,3 +50,33 @@ class User(Model):
 
     def __str__(self) -> str:
         return f"User({self.username})"
+
+    @property
+    def is_admin(self) -> bool:
+        return UserRoles.ADMIN in self.roles
+
+    @property
+    def is_user(self) -> bool:
+        return UserRoles.USER in self.roles
+
+    @property
+    def is_guest(self) -> bool:
+        return UserRoles.GUEST in self.roles
+
+    @property
+    def is_authenticated(self) -> bool:
+        return self.is_active and self.last_login is not None
+
+    @property
+    def is_anonymous(self) -> bool:
+        return not self.is_active or self.last_login is None
+
+    @property
+    def is_superuser(self) -> bool:
+        return self.is_admin or self.is_user or self.is_guest
+
+    @property
+    def is_staff(self) -> bool:
+        return self.is_admin or self.is_user or self.is_guest
+
+    
