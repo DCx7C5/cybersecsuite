@@ -1,7 +1,7 @@
 """Provider Registry — lazy-loads 24 LLM providers with YAML-driven specs.
 
 Phase 6 P2: Uses HttpProviderAdapter for generic HTTP-based providers.
-YAML specs (Phase 6 P2) will replace individual provider client files.
+YAML specs loaded from provider directories, with hardcoded fallback defaults.
 
 Usage::
     from css.api_services.registry import ProviderRegistry, get_registry
@@ -12,22 +12,30 @@ Usage::
 """
 
 import logging
+from pathlib import Path
 
-from css.core.types.providers import ProviderAuth, ProviderEndpoint, ProviderSpec
+from css.core.types.providers import (
+    ProviderAuth,
+    ProviderCapabilities,
+    ProviderEndpoint,
+    ProviderSpec,
+    decode_provider_spec_file,
+)
 
 from .adapters import HttpProviderAdapter
 
 logger = logging.getLogger(__name__)
 
 # Module-level singleton
-_registry: ProviderRegistry | None = None
+_registry: "ProviderRegistry | None" = None
 
 
 class ProviderRegistry:
     """Lazy-loading registry for 24 LLM API service providers.
     
-    Phase 6 P2: Now YAML-driven with HttpProviderAdapter.
-    Individual provider files will be replaced by declarative YAML specs.
+    Phase 6 P2: YAML-driven with HttpProviderAdapter.
+    Loads specs from YAML files in each provider directory.
+    Falls back to hardcoded defaults for providers without YAML specs.
     
     Example::
         registry = ProviderRegistry()
@@ -35,76 +43,136 @@ class ProviderRegistry:
         spec = registry.get_spec('openai')  # Returns ProviderSpec from YAML
     """
     
-    # Provider specs loaded from YAML (Phase 6 P2)
-    # Fallback to hardcoded defaults until YAML fully implemented
-    _DEFAULT_SPECS = {
-        'openai': ProviderSpec(
-            name='openai',
-            display_name='OpenAI',
-            base_url='https://api.openai.com/v1',
+    # Hardcoded fallback specs for providers without YAML files
+    # These will be merged with YAML-loaded specs
+    _FALLBACK_SPECS = {
+        'ai21': ProviderSpec(
+            name='ai21',
+            display_name='AI21 Labs',
+            base_url='https://api.ai21.com/studio/v1',
             api_type='openai_compatible',
-            auth=ProviderAuth(api_key_env='OPENAI_API_KEY'),
+            auth=ProviderAuth(api_key_env='AI21_API_KEY'),
             endpoints=ProviderEndpoint(completion='/chat/completions'),
-            models=['gpt-4', 'gpt-3.5-turbo', 'gpt-4-turbo'],
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['j2-mid', 'j2-ultra'],
         ),
-        'anthropic': ProviderSpec(
-            name='anthropic',
-            display_name='Anthropic',
-            base_url='https://api.anthropic.com/v1',
-            api_type='openai_compatible',  # Uses OpenAI-compatible adapter for now
-            auth=ProviderAuth(api_key_env='ANTHROPIC_API_KEY'),
-            endpoints=ProviderEndpoint(completion='/messages'),
-            models=['claude-3-opus', 'claude-3-sonnet', 'claude-2.1'],
-        ),
-        'gemini': ProviderSpec(
-            name='gemini',
-            display_name='Google Gemini',
-            base_url='https://generativelanguage.googleapis.com/v1',
+        'cerebras': ProviderSpec(
+            name='cerebras',
+            display_name='Cerebras',
+            base_url='https://api.cerebras.ai/v1',
             api_type='openai_compatible',
-            auth=ProviderAuth(api_key_env='GEMINI_API_KEY'),
-            endpoints=ProviderEndpoint(completion='/models/{model}:generateContent'),
-            models=['gemini-pro', 'gemini-pro-vision'],
-        ),
-        'ollama': ProviderSpec(
-            name='ollama',
-            display_name='Ollama (Local)',
-            base_url='http://localhost:11434/v1',
-            api_type='openai_compatible',
-            auth=ProviderAuth(api_key_env=''),  # No key needed for local
+            auth=ProviderAuth(api_key_env='CEREBRAS_API_KEY'),
             endpoints=ProviderEndpoint(completion='/chat/completions'),
-            models=['llama3', 'mistral', 'codellama'],
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['cora-1b', 'cora-7b'],
         ),
-        'groq': ProviderSpec(
-            name='groq',
-            display_name='Groq',
-            base_url='https://api.groq.com/openai/v1',
+        'cloudflare': ProviderSpec(
+            name='cloudflare',
+            display_name='Cloudflare',
+            base_url='https://api.cloudflare.com/client/v4/accounts',
             api_type='openai_compatible',
-            auth=ProviderAuth(api_key_env='GROQ_API_KEY'),
+            auth=ProviderAuth(api_key_env='CLOUDFLARE_API_KEY'),
             endpoints=ProviderEndpoint(completion='/chat/completions'),
-            models=['llama3-70b-8192', 'mixtral-8x7b-32768'],
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['llama-3.1-8b', 'mistral-7b'],
         ),
-        'mistral': ProviderSpec(
-            name='mistral',
-            display_name='Mistral AI',
-            base_url='https://api.mistral.ai/v1',
+        'huggingface': ProviderSpec(
+            name='huggingface',
+            display_name='Hugging Face',
+            base_url='https://api-inference.huggingface.co/models',
             api_type='openai_compatible',
-            auth=ProviderAuth(api_key_env='MISTRAL_API_KEY'),
+            auth=ProviderAuth(api_key_env='HUGGINGFACE_API_KEY'),
             endpoints=ProviderEndpoint(completion='/chat/completions'),
-            models=['mistral-large', 'mistral-medium', 'mistral-small'],
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['meta-llama/Llama-2-7b', 'mistralai/Mistral-7B-Instruct-v0.1'],
+        ),
+        'lambda': ProviderSpec(
+            name='lambda',
+            display_name='Lambda',
+            base_url='https://api.lambda.xyz/v1',
+            api_type='openai_compatible',
+            auth=ProviderAuth(api_key_env='LAMBDA_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['llama-2-7b', 'mistral-7b'],
+        ),
+        'nscale': ProviderSpec(
+            name='nscale',
+            display_name='nScale',
+            base_url='https://api.nscale.ai/v1',
+            api_type='openai_compatible',
+            auth=ProviderAuth(api_key_env='NSCALE_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['nscale-1', 'nscale-7b'],
+        ),
+        'nvidia': ProviderSpec(
+            name='nvidia',
+            display_name='NVIDIA',
+            base_url='https://api.nv-api.com/v1',
+            api_type='openai_compatible',
+            auth=ProviderAuth(api_key_env='NVIDIA_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['nvidia-llama-70b', 'nvidia-mistral-7b'],
+        ),
+        'opencode': ProviderSpec(
+            name='opencode',
+            display_name='OpenCode',
+            base_url='https://api.opencode.ai/v1',
+            api_type='openai_compatible',
+            auth=ProviderAuth(api_key_env='OPENCODE_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['opencode-v1'],
+        ),
+        'perplexity': ProviderSpec(
+            name='perplexity',
+            display_name='Perplexity',
+            base_url='https://api.perplexity.ai/v1',
+            api_type='openai_compatible',
+            auth=ProviderAuth(api_key_env='PERPLEXITY_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
+            capabilities=ProviderCapabilities(streaming=True, vision=False, tool_use=False),
+            models=['pplx-70b-online', 'pplx-7b-online'],
         ),
     }
     
     def __init__(self):
-        """Initialize provider registry with lazy-loaded provider cache."""
+        """Initialize provider registry with YAML-loaded and fallback specs."""
         self._cache: dict[str, HttpProviderAdapter] = {}
         self._specs: dict[str, ProviderSpec] = {}
-        self._load_default_specs()
+        self._load_specs_from_yaml()
+        self._load_fallback_specs()
     
-    def _load_default_specs(self) -> None:
-        """Load default provider specs (Phase 6 P2: will load from YAML)."""
-        for name, spec in self._DEFAULT_SPECS.items():
-            self._specs[name] = spec
-        logger.debug(f"Loaded {len(self._specs)} provider specs")
+    def _load_specs_from_yaml(self) -> None:
+        """Load provider specs from YAML files in api_services directories."""
+        api_services_dir = Path(__file__).parent
+        
+        # Scan each provider directory for spec.yaml
+        for provider_dir in api_services_dir.iterdir():
+            if not provider_dir.is_dir() or provider_dir.name.startswith('_'):
+                continue
+            
+            spec_file = provider_dir / "spec.yaml"
+            if not spec_file.exists():
+                continue
+            
+            try:
+                spec = decode_provider_spec_file(spec_file)
+                self._specs[spec.name] = spec
+                logger.debug(f"Loaded spec for {spec.name} from {spec_file}")
+            except Exception as e:
+                logger.warning(f"Failed to load spec from {spec_file}: {e}")
+    
+    def _load_fallback_specs(self) -> None:
+        """Load fallback specs for providers without YAML files."""
+        for name, spec in self._FALLBACK_SPECS.items():
+            if name not in self._specs:
+                self._specs[name] = spec
+                logger.debug(f"Loaded fallback spec for {name}")
+        logger.info(f"Loaded {len(self._specs)} provider specs total")
+    
     
     def get_provider(self, provider_name: str) -> HttpProviderAdapter:
         """Get or instantiate a provider adapter.
