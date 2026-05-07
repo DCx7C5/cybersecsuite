@@ -32,6 +32,7 @@ class TaskAssignment(models.Model):
         description="Full task data (Query, metadata, etc.) for deserialization",
     )
     assigned_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
     started_at = fields.DatetimeField(null=True)
     completed_at = fields.DatetimeField(null=True)
     assigned_member_id = fields.CharField(max_length=256, null=True)
