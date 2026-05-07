@@ -49,9 +49,9 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 - **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
-- **ABSOLUTE: Python v3.14 discourages the use of typing**
 
 ### Code & Execution
+- **ABSOLUTE: **
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
 - **ABSOLUTE: `@dataclass + ABC` is deprecated pattern. Fix immediately when seen in existing codebase.**
 - **ABSOLUTE: keep thinking chat to bare essentials only** — No reasoning bloat, no hidden verbosity

@@ -4,9 +4,9 @@ from typing import Optional
 
 import logging
 from fastapi import APIRouter, HTTPException, Query, status
-from css.modules.marketplace.models import MarketplaceItem
-from css.modules.marketplace.enums import MarketplaceItemType, MarketplaceItemStatus
-from css.modules.marketplace.types import (
+from css.core.marketplace.models import MarketplaceItem
+from css.core.marketplace.enums import MarketplaceItemType, MarketplaceItemStatus
+from css.core.marketplace.types import (
     InstallRequest,
     InstallResponse,
     ToggleRequest,
@@ -33,7 +33,7 @@ async def install_item(request: InstallRequest) -> InstallResponse:
     4. Register with local registry
     5. Return installation path
     """
-    from css.modules.marketplace.installer import PackageInstaller
+    from css.core.marketplace.installer import PackageInstaller
 
     try:
         installer = PackageInstaller()
@@ -74,7 +74,7 @@ async def uninstall_item(request: UninstallRequest) -> UninstallResponse:
     4. Optionally remove configuration
     5. Deregister from registry
     """
-    from css.modules.marketplace.installer import PackageInstaller
+    from css.core.marketplace.installer import PackageInstaller
 
     try:
         installer = PackageInstaller()
@@ -275,7 +275,7 @@ async def list_items_by_tags(
     Returns:
         ``{"items": [...], "count": int}``
     """
-    from css.modules.marketplace.cache import marketplace_cache
+    from css.core.marketplace.cache import marketplace_cache
 
     tag_list = [t.strip() for t in tags.split(",") if t.strip()]
     cache_key = f"tags:{','.join(sorted(tag_list))}:{kind or 'any'}:{match_all}"

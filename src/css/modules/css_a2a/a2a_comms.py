@@ -1,22 +1,13 @@
-from __future__ import annotations
-
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 from datetime import UTC, datetime
 
-from css.modules.google_a2a.models import (
-    Message as A2AMessage,
-    Task,
-    TaskStatus,
-    TaskArtifact,
-    TextPart,
-    Part,
-)
-from css.modules.google_a2a.enums import TaskState, MessageRole
+from css.core.a2a.models import Message as A2AMessage, Task, TaskStatus, TaskArtifact, TextPart, Part
+from css.core.a2a.enums import TaskState, MessageRole
+from css.core.redis.messaging import Message as InternalMessage
 
 from .dispatcher import MessageDispatcher
-from css.modules.google_a2a.pydantic import InternalMessage
 
 log = logging.getLogger(__name__)
 
@@ -115,7 +106,7 @@ class A2ACommunicator:
         self,
         task_id: str,
         text: str,
-        parts: Optional[list[Part]] = None,
+        parts: list[Part] | None = None,
     ) -> A2AMessage:
         """Send an agents response message back into a task."""
         if parts is None:

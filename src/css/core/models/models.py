@@ -3,6 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Optional, Set
 
+from tortoise import Model
+
 from .enums import ModelProvider, ModelFamily, ModelCapability
 
 
@@ -12,6 +14,10 @@ class ModelPricing:
     input_tokens_per_1k: float  # Cost per 1000 input tokens
     output_tokens_per_1k: float  # Cost per 1000 output tokens
     currency: str = "USD"
+
+
+class LLMModel(Model):
+    # TODO: implement real database table; get rid off @dataclass ModelMetadata and ModelPricing. Find other ways to implement
 
 
 @dataclass

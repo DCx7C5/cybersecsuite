@@ -11,7 +11,7 @@ on each manual invalidation so observers (e.g. frontend WebSocket) can react.
 
 Usage::
 
-    from css.modules.marketplace.cache import marketplace_cache
+    from css.core.marketplace.cache import marketplace_cache
 
     # Populate
     marketplace_cache.set("items:all", items_list)

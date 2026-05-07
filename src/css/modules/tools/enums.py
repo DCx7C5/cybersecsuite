@@ -31,9 +31,9 @@ class ToolStatus(str, Enum):
 
 class ToolType(str, Enum):
     """Type of tool."""
-
-    BUILTIN = "builtin"
-    CUSTOM = "custom"
+    # TODO: Add comments
+    BUILTIN = "builtin"         #
+    CUSTOM = "custom"           #
     EXTERNAL = "external"
     MCP = "mcp"
 
@@ -43,6 +43,7 @@ class CompositionStrategy(str, Enum):
     
     Defines how component tools are combined and executed in a hybrid tool.
     """
+    # TODO: Add comments
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     CONDITIONAL = "conditional"

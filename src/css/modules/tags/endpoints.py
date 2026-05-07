@@ -6,7 +6,7 @@ from typing import Optional
 from tortoise.expressions import Q
 
 from css.modules.tags.models import Tag
-from css.modules.marketplace.models import MarketplaceItemTag, MarketplaceItem
+from css.core.marketplace.models import MarketplaceItemTag, MarketplaceItem
 from css.modules.tools.models import HybridToolDefinitionTag, HybridToolDefinition
 
 logger = logging.getLogger(__name__)

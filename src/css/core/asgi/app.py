@@ -116,7 +116,7 @@ def create_app() -> FastAPI:
 
     # Mount core endpoints (marketplace API)
     try:
-        from css.modules.marketplace.endpoints import router as marketplace_router
+        from css.core.marketplace.endpoints import router as marketplace_router
         _app.include_router(marketplace_router)
         log.info("Mounted core endpoints: marketplace")
     except Exception as e:

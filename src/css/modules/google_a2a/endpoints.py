@@ -1,17 +1,15 @@
-from __future__ import annotations
-
 import logging
 from enum import IntEnum
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from css.modules.a2a.models import Message as A2AMessage, TaskStatus
-from css.modules.internal_a2a.enums import TaskState
-from css.modules.internal_a2a.types import AgentCard
-from css.modules.internal_a2a.a2a_comms import A2ACommunicator
+from css.core.a2a.models import Message as A2AMessage, TaskStatus
+from css.core.a2a.enums import TaskState
+from css.core.a2a.types import AgentCard
+from css.modules.css_a2a import A2ACommunicator
 
 log = logging.getLogger(__name__)
 
@@ -232,7 +230,7 @@ async def agent_card_handler(request: Request) -> JSONResponse:
 def init_a2a_endpoints(
     app: FastAPI,
     a2a_comm: A2ACommunicator,
-    agent_card: Optional[AgentCard] = None,
+    agent_card: AgentCard | None = None,
 ) -> None:
     """Store A2A dependencies on app.state.
 
