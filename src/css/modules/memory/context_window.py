@@ -4,8 +4,6 @@ Implements sliding window of messages within a fixed token budget,
 with automatic eviction of oldest messages when context overflows.
 """
 
-from __future__ import annotations
-
 import msgspec
 from datetime import datetime
 from typing import Any
