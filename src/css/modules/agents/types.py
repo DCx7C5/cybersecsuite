@@ -1,6 +1,5 @@
 """Agent types — concrete implementation of BaseAgent with HTTP/remote capabilities."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any

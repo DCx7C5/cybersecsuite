@@ -6,13 +6,11 @@ from model context (what the model can do).
 Uses msgspec.Struct for efficient serialization/deserialization.
 """
 
-from __future__ import annotations
-
 import msgspec
 from datetime import datetime
 from typing import Any
 
-from .messages import BaseMessage
+from .base_messages import BaseMessage
 
 
 class ConversationContext(msgspec.Struct):

@@ -6,7 +6,7 @@ from typing import Callable, Optional, TypeVar, Generic, Awaitable
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from css.core.types.api_services import ProviderType
+from css.core.types.enums import ProviderType
 from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
 

@@ -1,6 +1,5 @@
 """Skill types — concrete implementation of BaseSkill with installation tracking."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime

@@ -1,53 +1,40 @@
 """Team types — dataclass entities for team scope and lifecycle."""
 
 from dataclasses import dataclass
-from typing import Optional
+
+from css.core.types.base_workflow import BaseTeam, BaseTeamScope
 from .enums import TeamStatus, OrchestratorMode
 
 
 @dataclass
-class TeamScope:
-    """TeamScope — immutable team context snapshot.
-    
-    Read-only representation of team state for operation context.
-    """
-    team_id: int
-    team_name: str
-    status: TeamStatus
-    session_id: int
-    max_orchestrators: int
-    current_orchestrators: int
-    completed_tasks: int = 0
-    created_at: Optional[str] = None
-    paused_at: Optional[str] = None
+class TeamScope(BaseTeamScope):
+    """TeamScope — immutable team context snapshot."""
+
+    status: TeamStatus = TeamStatus.PENDING
+    created_at: str | None = None
+    paused_at: str | None = None
 
 
 @dataclass
-class Team:
-    """Team entity — mutable team state with lifecycle management.
-    
-    Tracks orchestrator pool, task queue, and status transitions:
-    pending → active → paused ↔ active → completed
-    """
-    team_id: int
-    team_name: str
-    session_id: int
+class Team(BaseTeam):
+    """Team entity — mutable team state with lifecycle management."""
+
     status: TeamStatus = TeamStatus.PENDING
     orchestrator_mode: OrchestratorMode = OrchestratorMode.ROUND_ROBIN
     max_orchestrators: int = 5
     current_orchestrators: int = 0
     max_tasks: int = 100
     completed_tasks: int = 0
-    created_at: Optional[str] = None
-    paused_at: Optional[str] = None
+    created_at: str | None = None
+    paused_at: str | None = None
     
     def to_scope(self) -> TeamScope:
         """Convert Team entity to immutable TeamScope snapshot."""
         return TeamScope(
             team_id=self.team_id,
             team_name=self.team_name,
-            status=self.status,
             session_id=self.session_id,
+            status=self.status,
             max_orchestrators=self.max_orchestrators,
             current_orchestrators=self.current_orchestrators,
             completed_tasks=self.completed_tasks,

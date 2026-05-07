@@ -5,7 +5,7 @@ All headers are frozen (immutable) value types.
 """
 
 import msgspec
-from typing import List, Optional
+
 
 
 class BaseHeader(msgspec.Struct, frozen=True):
@@ -27,10 +27,10 @@ class BaseAgentHeader(BaseHeader):
     max_turns: int = 25
     effort: str = "medium"
     version: str = "0.1.0"
-    alias: Optional[str] = None
-    tools: List[str] = msgspec.field(default_factory=list)
-    disallowed_tools: List[str] = msgspec.field(default_factory=list)
-    base_url: Optional[str] = None
+    alias: str | None = None
+    tools: list[str] = msgspec.field(default_factory=list)
+    disallowed_tools: list[str] = msgspec.field(default_factory=list)
+    base_url: str | None = None
     streaming: bool = False
     push_notifications: bool = False
 
@@ -42,12 +42,12 @@ class BaseSkillHeader(BaseHeader):
     """
     
     version: str = "0.1.0"
-    domain: Optional[str] = None
-    tags: List[str] = msgspec.field(default_factory=list)
-    allowed_tools: List[str] = msgspec.field(default_factory=list)
-    source_url: Optional[str] = None
-    marketplace_id: Optional[str] = None
-    install_path: Optional[str] = None
+    domain: str | None = None
+    tags: list[str] = msgspec.field(default_factory=list)
+    allowed_tools: list[str] = msgspec.field(default_factory=list)
+    source_url: str | None = None
+    marketplace_id: str | None = None
+    install_path: str | None = None
 
 
 class BaseAccountHeader(BaseHeader):
@@ -72,12 +72,12 @@ class BaseToolHeader(BaseHeader):
     """
     
     version: str = "0.1.0"
-    tags: List[str] = msgspec.field(default_factory=list)
+    tags: list[str] = msgspec.field(default_factory=list)
     min_tier: str = "free"
     category: str = "general"
-    agent_source: Optional[str] = None
+    agent_source: str | None = None
     deprecated: bool = False
-    deprecated_at: Optional[str] = None
+    deprecated_at: str | None = None
 
 
 class BaseRoleHeader(BaseHeader):
@@ -92,7 +92,7 @@ class BaseRoleHeader(BaseHeader):
     
     role_id: str = ""
     scope: str = "global"
-    permissions: List[str] = msgspec.field(default_factory=list)
+    permissions: list[str] = msgspec.field(default_factory=list)
 
 
 __all__ = [

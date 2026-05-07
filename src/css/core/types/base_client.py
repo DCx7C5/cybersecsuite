@@ -5,19 +5,13 @@ Imports msgspec.Struct versions from messages.py (Phase 6 P1).
 
 import logging
 from abc import ABC, abstractmethod
-from typing import AsyncIterator, Optional
+from typing import AsyncIterator
 
 from aiohttp import ClientSession
 
 from css.core.config import ProviderDefaults
-from .messages import (  # Phase 6 P1: msgspec.Struct versions
-    ProviderType,
-    BaseMessage,
-    Tool,
-    ModelMetadata,
-    StreamChunk,
-    LLMResponse,
-)
+from .enums import ProviderType
+from .base_messages import BaseMessage, Tool, ModelMetadata, StreamChunk, LLMResponse
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +20,7 @@ logger = logging.getLogger(__name__)
 class StreamingHandler:
     """Mixin for providers that parse streaming responses."""
     
-    async def _parse_stream_chunk(self, line: str) -> Optional[StreamChunk]:
+    async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Parse a single line from stream. Override in provider subclass."""
         raise NotImplementedError(f"{self.__class__.__name__} must implement _parse_stream_chunk()")
 
@@ -37,8 +31,8 @@ class BaseApiServiceClient(ABC):
     def __init__(
         self,
         provider_id: ProviderType,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
@@ -47,7 +41,7 @@ class BaseApiServiceClient(ABC):
         self.base_url = base_url or self._default_base_url()
         self.timeout_seconds = timeout_seconds
         self.max_retries = max_retries
-        self._session: Optional[ClientSession] = None
+        self._session: ClientSession | None = None
     
     def _default_base_url(self) -> str:
         """Override in subclass to provide default base URL."""
@@ -79,10 +73,10 @@ class BaseApiServiceClient(ABC):
         self,
         model_id: str,
         messages: list[BaseMessage],
-        tools: Optional[list[Tool]] = None,
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk]:
@@ -98,10 +92,10 @@ class BaseApiServiceClient(ABC):
         self,
         model_id: str,
         messages: list[BaseMessage],
-        tools: Optional[list[Tool]] = None,
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         **kwargs,
     ) -> LLMResponse:
         """Buffered call: accumulate all chunks and return complete response."""

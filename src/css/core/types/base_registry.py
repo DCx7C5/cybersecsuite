@@ -1,7 +1,7 @@
 """Singleton base registry pattern for CyberSecSuite."""
 
 from abc import ABC, abstractmethod
-from typing import Optional, TypeVar, Generic, Type
+from typing import TypeVar, Generic
 
 T = TypeVar('T', bound='BaseRegistry')
 
@@ -24,7 +24,7 @@ class BaseRegistry(ABC, Generic[T]):
         registry = MyRegistry.get_instance()
     """
 
-    _instance: Optional[T] = None
+    _instance: T | None = None
     _initialized: bool = False
 
     def __new__(cls, *args, **kwargs):
@@ -47,7 +47,7 @@ class BaseRegistry(ABC, Generic[T]):
         pass
 
     @classmethod
-    def get_instance(cls: Type[T]) -> T | None:
+    def get_instance(cls: type[T]) -> T | None:
         """Get the singleton instance.
 
         Returns:

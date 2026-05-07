@@ -62,3 +62,114 @@ class BaseCommunicator(Protocol):
     async def unsubscribe(self, handler: Any) -> None:
         """Unsubscribe a handler from incoming messages."""
         ...
+
+
+@runtime_checkable
+class BaseAgentLike(Protocol):
+    """Protocol for agent-like entities (replaces AgentLike)."""
+
+    @property
+    def header(self) -> object: ...
+
+    @property
+    def communicator(self) -> object | None: ...
+
+    def to_dict(self) -> dict[str, Any]: ...
+
+    @property
+    def skill_ids(self) -> list[str]: ...
+
+    @property
+    def tools(self) -> list[object]: ...
+
+    @property
+    def is_orchestrator(self) -> bool: ...
+
+    @property
+    def is_default(self) -> bool: ...
+
+
+@runtime_checkable
+class BaseSkillLike(Protocol):
+    """Protocol for skill-like entities (replaces SkillLike)."""
+
+    @property
+    def header(self) -> object: ...
+
+    @property
+    def communicator(self) -> object | None: ...
+
+    def to_dict(self) -> dict[str, Any]: ...
+
+    @property
+    def kind(self) -> str: ...
+
+    @property
+    def provider(self) -> str: ...
+
+    @property
+    def source_path(self) -> str | None: ...
+
+    @property
+    def tools(self) -> list[object]: ...
+
+
+@runtime_checkable
+class BaseToolLike(Protocol):
+    """Protocol for tool-like entities (replaces ToolLike)."""
+
+    @property
+    def header(self) -> object: ...
+
+    @property
+    def communicator(self) -> object | None: ...
+
+    def to_dict(self) -> dict[str, Any]: ...
+
+    @property
+    def tool_name(self) -> str: ...
+
+    @property
+    def display_name(self) -> str: ...
+
+    @property
+    def tool_type(self) -> str: ...
+
+    @property
+    def input_schema(self) -> dict[str, Any]: ...
+
+    @property
+    def is_mcp(self) -> bool: ...
+
+    def is_available(self) -> bool: ...
+
+
+@runtime_checkable
+class BaseTeamMemberLike(Protocol):
+    """Protocol for team member entities (replaces TeamMemberLike)."""
+
+    @property
+    def header(self) -> object: ...
+
+    @property
+    def communicator(self) -> object | None: ...
+
+    def to_dict(self) -> dict[str, Any]: ...
+
+    @property
+    def agent_id(self) -> str: ...
+
+    @property
+    def team_id(self) -> str: ...
+
+    @property
+    def is_active(self) -> bool: ...
+
+
+__all__ = [
+    "BaseCommunicator",
+    "BaseAgentLike",
+    "BaseSkillLike",
+    "BaseToolLike",
+    "BaseTeamMemberLike",
+]

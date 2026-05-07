@@ -1,5 +1,5 @@
 import msgspec
-from typing import Any, List
+from typing import Any
 
 from .base_protocols import BaseCommunicator
 from .base_headers import (
@@ -48,7 +48,7 @@ class BaseTool(BaseEntity):
     sdk_type_string: str | None = None
     required_provider: str | None = None
     enabled_by_default: bool = True
-    tags: List[str] = msgspec.field(default_factory=list)
+    tags: list[str] = msgspec.field(default_factory=list)
     input_schema: dict[str, Any] = msgspec.field(default_factory=dict)
     
     def __post_init__(self):
@@ -75,8 +75,8 @@ class BaseAgent(BaseEntity):
     """A registered agent entity with its A2A endpoint and exposed skills references."""
     
     header: BaseAgentHeader | None = None
-    skill_ids: List[str] = msgspec.field(default_factory=list)
-    tools: List[BaseTool] = msgspec.field(default_factory=list)
+    skill_ids: list[str] = msgspec.field(default_factory=list)
+    tools: list[BaseTool] = msgspec.field(default_factory=list)
     
     def __post_init__(self):
         """Initialize agent-specific fields."""
@@ -98,7 +98,7 @@ class BaseSkill(BaseEntity):
     kind: str = "skills"
     provider: str = "universal"
     source_path: str | None = None
-    tools: List[BaseTool] = msgspec.field(default_factory=list)
+    tools: list[BaseTool] = msgspec.field(default_factory=list)
     
     def __post_init__(self):
         """Initialize skill-specific fields."""
@@ -113,7 +113,7 @@ class BaseRole(BaseEntity):
     can_orchestrate: bool = False
     can_broadcast: bool = False
     can_spawn_subagents: bool = False
-    allowed_tool_types: List[str] = msgspec.field(default_factory=list)
+    allowed_tool_types: list[str] = msgspec.field(default_factory=list)
     
     def __post_init__(self):
         """Initialize role-specific fields."""

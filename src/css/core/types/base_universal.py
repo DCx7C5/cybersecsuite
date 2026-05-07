@@ -7,11 +7,9 @@ Supports:
 - Caching after instantiation
 """
 
-from __future__ import annotations
-
 import asyncio
 import logging
-from typing import Optional, Type, Callable
+from typing import Callable
 
 from css.core.types import BaseApiServiceClient
 
@@ -23,14 +21,14 @@ class SDKRegistry:
 
     def __init__(self):
         """Initialize empty registry."""
-        self._registry: dict[str, Type[BaseApiServiceClient] | Callable] = {}
-        self._cache: dict[str, Type[BaseApiServiceClient]] = {}
+        self._registry: dict[str, type[BaseApiServiceClient] | Callable] = {}
+        self._cache: dict[str, type[BaseApiServiceClient]] = {}
         self._initializing: set[str] = set()  # Track in-flight initializations
 
     def register(
         self,
         provider_id: str,
-        sdk_class: Type[BaseApiServiceClient] | callable,
+        sdk_class: type[BaseApiServiceClient] | callable,
     ) -> None:
         """Register an SDK class or factory function for a provider.
 
@@ -100,7 +98,7 @@ class SDKRegistry:
         finally:
             self._initializing.discard(provider_id)
 
-    def clear_cache(self, provider_id: Optional[str] = None) -> None:
+    def clear_cache(self, provider_id: str | None = None) -> None:
         """Clear cached SDK instances.
 
         Args:
@@ -124,7 +122,7 @@ _registry = SDKRegistry()
 
 def register_sdk(
     provider_id: str,
-    sdk_class: Type[BaseApiServiceClient] | Callable,
+    sdk_class: type[BaseApiServiceClient] | Callable,
 ) -> None:
     """Register an SDK class or factory function globally.
 
@@ -155,7 +153,7 @@ async def get_sdk(
     return await _registry.get(provider_id, **kwargs)
 
 
-def clear_sdk_cache(provider_id: Optional[str] = None) -> None:
+def clear_sdk_cache(provider_id: str | None = None) -> None:
     """Clear cached SDK instances.
 
     Args:
@@ -207,7 +205,7 @@ class UniversalLLMClient:
         """
         return await self._registry.get(provider_id, **kwargs)
 
-    def clear_cache(self, provider_id: Optional[str] = None) -> None:
+    def clear_cache(self, provider_id: str | None = None) -> None:
         """Clear cached instances.
 
         Args:

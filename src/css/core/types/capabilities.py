@@ -4,27 +4,11 @@ Defines what features each model supports (streaming, vision, tools, etc.)
 and how to discover/register capabilities at runtime.
 """
 
-from enum import Enum
-from typing import Optional
 from datetime import datetime, timedelta
 
 from pydantic import BaseModel, Field
 
-
-class CapabilityType(str, Enum):
-    """11 capability types supported across LLM providers."""
-
-    STREAMING = "streaming"  # Text generation streaming
-    VISION = "vision"  # Image input processing
-    TOOL_USE = "tool_use"  # Function calling / tools use
-    VISION_AND_TOOL = "vision_and_tool"  # Combined vision + tools
-    JSON_MODE = "json_mode"  # Structured JSON output
-    LONG_CONTEXT = "long_context"  # Extended context windows (32k+)
-    BATCH_PROCESSING = "batch_processing"  # Batch API support
-    EMBEDDINGS = "embeddings"  # Text embeddings
-    RETRIEVAL = "retrieval"  # RAG / knowledge base retrieval
-    FINE_TUNING = "fine_tuning"  # Model fine-tuning support
-    REASONING = "reasoning"  # Extended reasoning (o1-style)
+from .enums import CapabilityType
 
 
 class Capability(BaseModel):
@@ -36,7 +20,7 @@ class Capability(BaseModel):
     metadata: dict = Field(default_factory=dict, description="Metadata about capability")
     version: str = Field(default="1.0", description="Capability API version")
     cost_multiplier: float = Field(default=1.0, description="Cost impact of using this capability")
-    notes: Optional[str] = Field(default=None, description="Human-readable notes about capability")
+    notes: str | None = Field(default=None, description="Human-readable notes about capability")
 
     class Config:
         """Pydantic config."""
@@ -69,7 +53,7 @@ class ModelCapabilities(BaseModel):
             for c in self.capabilities
         )
 
-    def get_capability(self, capability_type: CapabilityType) -> Optional[Capability]:
+    def get_capability(self, capability_type: CapabilityType) -> Capability | None:
         """Get capability details if supported."""
         for c in self.capabilities:
             if c.type == capability_type and c.supported:
@@ -101,7 +85,7 @@ class CapabilityRegistry(BaseModel):
         key = f"{model_caps.provider}:{model_caps.model_name}"
         self.capabilities[key] = model_caps
 
-    def get_capabilities(self, provider: str, model_name: str) -> Optional[ModelCapabilities]:
+    def get_capabilities(self, provider: str, model_name: str) -> ModelCapabilities | None:
         """Get capabilities for specific model."""
         key = f"{provider}:{model_name}"
         return self.capabilities.get(key)

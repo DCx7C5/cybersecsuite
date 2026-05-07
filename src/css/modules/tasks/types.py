@@ -2,23 +2,23 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
+from css.core.types.base_workflow import BaseTask, BaseTaskScope
 from css.core.types.query import Query
 from .enums import TaskStatus, TaskPriority
 
 
 @dataclass
-class TaskScope:
+class TaskScope(BaseTaskScope):
     """Immutable task snapshot (read-only context)."""
-    id: str
-    team_id: int
-    orchestrator_id: str
-    query: Query
+
+    team_id: int = 0
+    orchestrator_id: str = ""
+    query: Query = field(default_factory=lambda: None)  # type: ignore[arg-type]
     priority: TaskPriority = TaskPriority.NORMAL
     max_retries: int = 3
     timeout_seconds: int = 300
-    metadata: dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict."""
@@ -35,18 +35,18 @@ class TaskScope:
 
 
 @dataclass
-class Task:
+class Task(BaseTask):
     """Mutable task state machine."""
-    id: str
-    scope: TaskScope
+
+    scope: TaskScope = field(default_factory=TaskScope)
     status: TaskStatus = TaskStatus.PENDING
-    assigned_member_id: Optional[str] = None
-    assigned_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    assigned_member_id: str | None = None
+    assigned_at: datetime | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     retry_count: int = 0
-    result: Optional[Any] = None
-    error: Optional[str] = None
+    result: object | None = None
+    error: str | None = None
     
     def can_execute(self) -> bool:
         """Check if task can be executed."""
