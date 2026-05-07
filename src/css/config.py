@@ -203,7 +203,7 @@ ASGI_ACCESS_LOG = getenv('ASGI_ACCESS_LOG', 'true').lower() == 'true'
 BASE_DIR = PROJECT_DIR.parent.parent
 CSS_DIR = getenv('CSS_DIR', str(BASE_DIR / 'css'))
 CACHE_DIR = getenv('CACHE_DIR', CACHE_DISK_PATH)
-LOG_DIR = getenv('LOG_DIR', '/var/log/css/')
+LOG_DIR = getenv('LOG_DIR', str(Path.home() / '.css' / 'logs'))
 
 # Ensure directories exist
 Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
