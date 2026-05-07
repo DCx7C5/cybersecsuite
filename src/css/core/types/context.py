@@ -46,7 +46,8 @@ class ConversationContext(msgspec.Struct):
 
     def add_message(self, message: BaseMessage) -> None:
         """Add message to conversation history."""
-        self.messages.append(message)
+        new_messages = [*self.messages, message]
+        object.__setattr__(self, 'messages', new_messages)
         object.__setattr__(self, 'turn_number', self.turn_number + 1)
         object.__setattr__(self, 'updated_at', datetime.utcnow())
 

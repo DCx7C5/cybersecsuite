@@ -38,7 +38,17 @@ CACHE_DISK_SIZE_MB = int(getenv('CACHE_DISK_SIZE_MB', '1000'))
 
 
 # ── Redis Database (L2 Cache) ──────────────────────────────────────────────────
+DATABASES = {
+    "POSTGRES": {
+        "url": getenv('DATABASE_URL', None),
+    },
+    "REDIS": {
 
+    },
+    "OPENOBSERVE": {
+
+    }
+}
 REDIS_URL = getenv('REDIS_URL', 'redis://localhost:6379')
 REDIS_HOST = getenv('REDIS_HOST', 'localhost')
 REDIS_PORT = int(getenv('REDIS_PORT', '6379'))

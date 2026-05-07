@@ -121,15 +121,20 @@ class ContextWindow(msgspec.Struct):
         
         # Evict old messages until space is available
         new_total = self.total_tokens + tokens
-        while new_total > self.max_tokens and self.messages:
-            removed = self.messages.pop(0)
+        new_messages = list(self.messages)
+        evicted_delta = 0
+        while new_total > self.max_tokens and new_messages:
+            removed = new_messages[0]
             removed_tokens = self.get_message_tokens(removed)
             new_total -= removed_tokens
-            object.__setattr__(self, 'evicted_count', self.evicted_count + 1)
+            new_messages = new_messages[1:]
+            evicted_delta += 1
         
         # Add new message
-        self.messages.append(message)
+        new_messages.append(message)
+        object.__setattr__(self, 'messages', new_messages)
         object.__setattr__(self, 'total_tokens', new_total)
+        object.__setattr__(self, 'evicted_count', self.evicted_count + evicted_delta)
         object.__setattr__(self, 'updated_at', datetime.utcnow())
         return True
 

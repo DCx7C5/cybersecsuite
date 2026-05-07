@@ -3,9 +3,9 @@
 
 import logging
 
-from .enums import Permission
 from .types import ScopeContext
-from .exceptions import PermissionDenied
+from ..enums import Permission
+from ..exceptions import PermissionDenied
 
 logger = logging.getLogger(__name__)
 

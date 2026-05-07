@@ -134,3 +134,21 @@ Main Orchestrator Process
 - **After**: N tasks in parallel, organized by teams, fault-isolated
 
 ---
+
+## Phase 6 Alignment (2026-05-07)
+
+### Protocol-first runtime typing
+
+- Runtime value objects should be modeled with `msgspec.Struct` (immutable by default).
+- Contract boundaries should prefer protocol/interface behavior over inheritance-heavy base classes.
+
+### IPC + pipeline direction
+
+- Orchestrator/team IPC should move to `msgspec.msgpack` payloads for typed binary transport.
+- Execution flow is evolving toward composable async pipeline stages (`classify → route → execute → observe`).
+
+### CQRS/Event Store direction
+
+- Domain mutations are tracked as immutable domain events.
+- Event persistence + replay is the system-level source for forensic/audit reconstruction.
+- OTEL/OpenObserve spans should be derived from domain event flow, not ad-hoc log-only instrumentation.

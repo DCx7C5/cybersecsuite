@@ -165,6 +165,24 @@ On any provider failure:
 
 ---
 
+## Phase 6 Alignment (2026-05-07)
+
+### Typed provider spec and startup scan
+
+- Provider metadata should be loaded from `spec.yaml` files into typed
+  `ProviderSpec`/related `msgspec.Struct` definitions.
+- Startup scanning should prefer `entry_points`-registered provider modules
+  rather than hard-coded directory walking.
+
+### Registry loading direction
+
+1. Discover provider entry points.
+2. Load and validate provider YAML specs.
+3. Build normalized tool/provider catalog once at startup.
+4. Expose cached typed capability metadata to API routes.
+
+This keeps startup deterministic and consistent with the Phase 6 plugin architecture.
+
 ## Dependencies
 
 - ✅ ToolRegistry base class (audit-tools-registry)

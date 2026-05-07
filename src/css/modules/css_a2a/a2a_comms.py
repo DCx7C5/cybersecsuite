@@ -11,6 +11,20 @@ from .dispatcher import MessageDispatcher
 
 log = logging.getLogger(__name__)
 
+class DelegationMessage(msgspec.Struct, frozen=True):
+    """Typed IPC payload for team task delegation."""
+
+    task_id: str
+    data: Any
+
+
+class ResultMessage(msgspec.Struct, frozen=True):
+    """Typed IPC payload for task message forwarding."""
+
+    task_id: str
+    message: dict[str, Any]
+
+
 @msgspec.struct
 class A2ACommunicator:
     """High-level async interface for A2A protocol messaging.
@@ -133,11 +147,12 @@ class A2ACommunicator:
             raise ValueError(f"Task {task_id!r} not found")
 
         for member_id in team_members:
+            delegation = DelegationMessage(task_id=task_id, data=payload)
             msg = InternalMessage(
                 from_id=self.agent_id,
                 to_id=member_id,
                 type="a2a_task",
-                payload={"task_id": task_id, "data": payload},
+                payload=msgspec.to_builtins(delegation),
                 routing_mode="direct",
             )
             await self.dispatcher.send(msg)
@@ -197,11 +212,12 @@ class A2ACommunicationGroup:
         sender = from_agent or self.name
 
         for member_id in list(self.members):
+            result_payload = ResultMessage(task_id=task_id, message=message.model_dump(mode="json"))
             msg = InternalMessage(
                 from_id=sender,
                 to_id=member_id,
                 type="a2a_task_broadcast",
-                payload={"task_id": task_id, "message": message.model_dump()},
+                payload=msgspec.to_builtins(result_payload),
                 routing_mode="direct",
             )
             await dispatcher.send(msg)
@@ -221,11 +237,12 @@ class A2ACommunicationGroup:
         dispatcher = self._require_dispatcher()
         sender = from_agent or self.name
 
+        result_payload = ResultMessage(task_id=task_id, message=message.model_dump(mode="json"))
         msg = InternalMessage(
             from_id=sender,
             to_id=agent_id,
             type="a2a_task_direct",
-            payload={"task_id": task_id, "message": message.model_dump()},
+            payload=msgspec.to_builtins(result_payload),
             routing_mode="direct",
         )
         await dispatcher.send(msg)

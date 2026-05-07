@@ -13,7 +13,9 @@ Usage::
 
 import logging
 
-from .adapters import HttpProviderAdapter, ProviderSpec
+from css.core.types.providers import ProviderAuth, ProviderEndpoint, ProviderSpec
+
+from .adapters import HttpProviderAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -40,54 +42,54 @@ class ProviderRegistry:
             name='openai',
             display_name='OpenAI',
             base_url='https://api.openai.com/v1',
-            completion_endpoint='/chat/completions',
             api_type='openai_compatible',
-            api_key_env='OPENAI_API_KEY',
+            auth=ProviderAuth(api_key_env='OPENAI_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
             models=['gpt-4', 'gpt-3.5-turbo', 'gpt-4-turbo'],
         ),
         'anthropic': ProviderSpec(
             name='anthropic',
             display_name='Anthropic',
             base_url='https://api.anthropic.com/v1',
-            completion_endpoint='/messages',
             api_type='openai_compatible',  # Uses OpenAI-compatible adapter for now
-            api_key_env='ANTHROPIC_API_KEY',
+            auth=ProviderAuth(api_key_env='ANTHROPIC_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/messages'),
             models=['claude-3-opus', 'claude-3-sonnet', 'claude-2.1'],
         ),
         'gemini': ProviderSpec(
             name='gemini',
             display_name='Google Gemini',
             base_url='https://generativelanguage.googleapis.com/v1',
-            completion_endpoint='/models/{model}:generateContent',
             api_type='openai_compatible',
-            api_key_env='GEMINI_API_KEY',
+            auth=ProviderAuth(api_key_env='GEMINI_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/models/{model}:generateContent'),
             models=['gemini-pro', 'gemini-pro-vision'],
         ),
         'ollama': ProviderSpec(
             name='ollama',
             display_name='Ollama (Local)',
             base_url='http://localhost:11434/v1',
-            completion_endpoint='/chat/completions',
             api_type='openai_compatible',
-            api_key_env='',  # No key needed for local
+            auth=ProviderAuth(api_key_env=''),  # No key needed for local
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
             models=['llama3', 'mistral', 'codellama'],
         ),
         'groq': ProviderSpec(
             name='groq',
             display_name='Groq',
             base_url='https://api.groq.com/openai/v1',
-            completion_endpoint='/chat/completions',
             api_type='openai_compatible',
-            api_key_env='GROQ_API_KEY',
+            auth=ProviderAuth(api_key_env='GROQ_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
             models=['llama3-70b-8192', 'mixtral-8x7b-32768'],
         ),
         'mistral': ProviderSpec(
             name='mistral',
             display_name='Mistral AI',
             base_url='https://api.mistral.ai/v1',
-            completion_endpoint='/chat/completions',
             api_type='openai_compatible',
-            api_key_env='MISTRAL_API_KEY',
+            auth=ProviderAuth(api_key_env='MISTRAL_API_KEY'),
+            endpoints=ProviderEndpoint(completion='/chat/completions'),
             models=['mistral-large', 'mistral-medium', 'mistral-small'],
         ),
     }

@@ -120,3 +120,16 @@ Result: All 5 tasks executed in parallel across 3 separate processes
 - ✅ **Atomic Task Pull**: Database lock prevents duplicate task assignment
 
 ---
+
+## Phase 6 Alignment (2026-05-07)
+
+### Typed msgspec IPC
+
+Cross-process orchestrator/team messages should use typed `msgspec.Struct`
+contracts and `msgspec.msgpack` encoding instead of ad-hoc JSON dictionaries.
+
+### Agent loading via entry_points
+
+Orchestrator process startup should resolve available agents/modules through
+`importlib.metadata.entry_points()` groups (e.g. `css.modules`) to make module
+registration explicit and test-isolatable.

@@ -101,10 +101,17 @@ Messages (async channel: pipe/socket):
 5. Shutdown
    Orchestrator → Team:
    {
-     "type": "shutdown",
-     "graceful": true | false
+      "type": "shutdown",
+      "graceful": true | false
    }
 ```
+
+### Phase 6 Message Contract
+
+The logical message types above should be represented as `msgspec.Struct`
+contracts (`DelegateAgentMsg`, `ResultMsg`, `StatusMsg`, `HeartbeatMsg`,
+`ShutdownMsg`) and transported via `msgspec.msgpack`.
+This replaces untyped dict payloads while preserving the same delegation semantics.
 
 ### Delegation Modes
 
@@ -187,6 +194,14 @@ spec.loader.exec_module(module)
 agent = module.AgentClass(**config)
 result = await agent.run(params)
 ```
+
+### entry_points-based Agent Registry (Phase 6)
+
+Replace path-based dynamic import as default with entry-point discovery:
+
+1. Query `importlib.metadata.entry_points(group="css.modules")`.
+2. Build registry from declared entry-point names and callables.
+3. Limit team process loading to declared modules for predictable startup and test isolation.
 
 ### Agent Versioning (Future)
 ```

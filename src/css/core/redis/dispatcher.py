@@ -1,5 +1,3 @@
-
-import json
 import logging
 from collections.abc import Awaitable, Callable
 
@@ -60,9 +58,9 @@ class MessageDispatcher:
             return
 
         if scope == "global":
-            await self.redis.publish("channel:broadcast", msg.model_dump_json())
+            await self.redis.publish("channel:broadcast", msg.to_msgpack())
         elif scope == "team" and msg.to_id in self.team_leaders:
-            await self.redis.publish(f"channel:team:{msg.to_id}", msg.model_dump_json())
+            await self.redis.publish(f"channel:team:{msg.to_id}", msg.to_msgpack())
 
     # ==================== SMART ROUTING ====================
 
@@ -78,7 +76,7 @@ class MessageDispatcher:
 
     async def _send_direct(self, msg: Message) -> None:
         channel = f"channel:agents:{msg.to_id}"
-        await self.redis.publish(channel, msg.model_dump_json())
+        await self.redis.publish(channel, msg.to_msgpack())
         log.debug("dispatched %s → %s on %s", msg.from_id, msg.to_id, channel)
         handler = self.handlers.get(msg.to_id)
         if handler is not None:
@@ -153,7 +151,7 @@ class MessageDispatcher:
                 if raw["type"] != "message":
                     continue
                 try:
-                    msg = Message(**json.loads(raw["data"]))
+                    msg = Message.from_msgpack(raw["data"])
                 except Exception as exc:
                     log.error("listener [%s]: failed to parse message: %s", entity_id, exc)
                     continue

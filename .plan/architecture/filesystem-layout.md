@@ -115,6 +115,8 @@ src/css/
 ├── api_services/
 │   ├── <provider>/
 │   │   ├── __init__.py
+│   │   ├── spec.yaml          # ProviderSpec declaration (model aliases, endpoints, auth)
+│   │   ├── adapter.py         # Optional provider-specific adapter glue
 │   │   ├── client.py
 │   │   ├── response.py
 │   │   └── exceptions.py
@@ -168,3 +170,13 @@ src/css/
 
 
 ---
+
+## Phase 6 Alignment (2026-05-07)
+
+### API service provider declaration pattern
+
+`api_services` should standardize around declarative provider metadata:
+
+1. `spec.yaml` is the source of truth for provider capabilities and model mapping.
+2. `HttpProviderAdapter` consumes `ProviderSpec` and normalizes request/response behavior.
+3. Service startup composes providers from `entry_points` + YAML spec loading.

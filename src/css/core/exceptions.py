@@ -407,3 +407,77 @@ class GatewayError(UnifiedLLMError):
 class UnknownError(UnifiedLLMError):
     """Unclassified error (fallback for unmapped errors)."""
     pass
+
+
+class PermissionError(BaseCoreException):
+    """Base exception for permission-related errors."""
+
+    pass
+
+
+class PermissionDenied(PermissionError):
+    """Raised when an operation is not permitted."""
+
+    pass
+
+
+class TokenInvalid(PermissionError):
+    """Raised when a token is invalid or expired."""
+
+    pass
+
+
+class ScopeContextError(PermissionError):
+    """Raised when scope context is invalid."""
+
+    pass
+
+
+class RoleNotFound(PermissionError):
+    """Raised when a role is not found."""
+
+    pass
+
+
+class BaseRoleException(BaseModuleException):
+    """Base exception for the roles module."""
+
+    def __init__(self, message: str, **kwargs):
+        super().__init__(message, module_name="roles", **kwargs)
+
+
+class RoleNotFoundError(BaseRoleException):
+    """Raised when a role is not found."""
+
+    def __init__(self, role_id: str, **kwargs):
+        ctx = kwargs.get("context", {})
+        ctx["role_id"] = role_id
+        super().__init__(
+            f"Role not found: {role_id}",
+            context=ctx,
+            **kwargs
+        )
+
+
+class PermissionDeniedError(BaseRoleException):
+    """Raised when a role lacks required permissions."""
+
+    def __init__(self, role_id: str, permission: str, **kwargs):
+        ctx = kwargs.get("context", {})
+        ctx["role_id"] = role_id
+        ctx["permission"] = permission
+        super().__init__(
+            f"Permission denied for role {role_id}: {permission}",
+            context=ctx,
+            **kwargs
+        )
+
+
+class InvalidRoleError(BaseRoleException):
+    """Raised when attempting to create an invalid role."""
+
+    def __init__(self, message: str, **kwargs):
+        super().__init__(
+            message or "Invalid role specification",
+            **kwargs
+        )

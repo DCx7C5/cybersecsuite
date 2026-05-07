@@ -2,6 +2,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any, Literal
 
+import msgspec
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -15,3 +16,13 @@ class Message(BaseModel):
     payload: Any
     routing_mode: Literal["direct", "shortest_path"] = "shortest_path"
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    def to_msgpack(self) -> bytes:
+        """Serialize for Redis IPC transport using msgpack."""
+        return msgspec.msgpack.encode(self.model_dump(mode="json"))
+
+    @classmethod
+    def from_msgpack(cls, raw: bytes) -> "Message":
+        """Deserialize msgpack payload from Redis IPC transport."""
+        data = msgspec.msgpack.decode(raw)
+        return cls(**data)

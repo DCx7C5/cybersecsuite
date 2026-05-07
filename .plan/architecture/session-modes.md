@@ -7,6 +7,24 @@
 
 ---
 
+## Phase 6 Alignment (2026-05-07)
+
+### IPC Message Contract
+
+Session/orchestrator IPC contracts are standardized as immutable value objects:
+
+- Use `msgspec.Struct` for IPC payload schemas.
+- Encode transport payloads with `msgspec.msgpack` (binary, deterministic schema path).
+- Avoid ad-hoc `json.dumps` payload shapes between orchestrator/team processes.
+
+### Practical Contract Rules
+
+1. Session manager emits typed spawn/delegate/shutdown messages.
+2. Team-side handlers decode to typed structs before execution.
+3. Result messages carry idempotency/correlation identifiers in the typed payload.
+
+This keeps mode-specific execution behavior stable while allowing transport-level performance gains.
+
 ### Development Mode (Up to 3 Separate Processes)
 ```
 Session [mode=development]

@@ -173,3 +173,20 @@ HybridToolDefinition
 3. **Events** ← Tool execution audit trail
 4. **Capabilities** ← Feature detection for tools
 5. **Tasks** ← Tool execution context
+
+---
+
+## Phase 6 Alignment (2026-05-07)
+
+### CQRS EventStore as integration hub
+
+Cross-module write operations should emit immutable domain events and persist through EventStore.
+Read models/projections then provide module-specific query surfaces.
+
+### Updated relationship direction
+
+- **Write path**: module command handler → domain event(s) → EventStore append.
+- **Read path**: projection/materialized view → module API/query layer.
+- **Observability**: event stream is bridged to OTEL/OpenObserve for unified traces/audit.
+
+This reduces tight direct module-to-module coupling and makes replay/audit first-class.

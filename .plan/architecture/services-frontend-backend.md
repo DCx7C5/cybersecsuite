@@ -623,3 +623,25 @@ docker-compose down -v  # Remove all volumes
 ---
 
 **Status**: 📋 Active | **Last Updated**: 2026-05-03
+
+---
+
+## Phase 6 Alignment (2026-05-07)
+
+### Provider architecture context
+
+Service-level provider integration is moving toward:
+
+1. **ProviderSpec YAML declarations** for provider metadata, auth headers, endpoints, and model aliases.
+2. A shared **HttpProviderAdapter** for OpenAI-compatible and translated proprietary APIs.
+3. Reduced per-provider boilerplate in service classes.
+
+### Backend impact
+
+- Backend startup should register providers from declarative specs and expose normalized provider capabilities.
+- Existing provider-specific service implementations remain transitional during migration.
+
+### Frontend impact
+
+- Frontend provider/model views should consume normalized backend provider/model metadata rather than provider-specific assumptions.
+- Marketplace panel path is `@css/core/marketplace/templates`.

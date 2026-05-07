@@ -87,6 +87,16 @@ from .hook_events import HookContext  # noqa: F401
 # ── Query types ───────────────────────────────────────────────────────────────
 from .query import Query, QueryHeader  # noqa: F401
 
+# ── Provider spec types ───────────────────────────────────────────────────────
+from .providers import (  # noqa: F401
+    ProviderAuth,
+    ProviderEndpoint,
+    ProviderCapabilities,
+    ProviderSpec,
+    decode_provider_spec_yaml,
+    decode_provider_spec_file,
+)
+
 # ── Base workflow types ───────────────────────────────────────────────────────
 from .base_workflow import BaseTask, BaseTaskScope  # noqa: F401
 
@@ -153,6 +163,13 @@ __all__ = [
     # query
     "Query",
     "QueryHeader",
+    # provider specs
+    "ProviderAuth",
+    "ProviderEndpoint",
+    "ProviderCapabilities",
+    "ProviderSpec",
+    "decode_provider_spec_yaml",
+    "decode_provider_spec_file",
     # workflow bases (task only — team lives in modules/teams)
     "BaseTask",
     "BaseTaskScope",
