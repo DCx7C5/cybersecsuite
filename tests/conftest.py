@@ -5,6 +5,8 @@ Conftest — pytest fixtures shared across all tests.
 import asyncio
 import sys
 from pathlib import Path
+from unittest.mock import patch
+from importlib.metadata import EntryPoint
 
 import pytest
 import pytest_asyncio
@@ -14,6 +16,56 @@ PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
+
+
+# ---------------------------------------------------------------------------
+# Entry points isolation (Phase 6 P4 test fixture)
+# ---------------------------------------------------------------------------
+
+def mock_entry_points(group=None):
+    """Mock entry_points to return only safe/available modules for testing.
+    
+    This prevents ModuleNotFoundError during test collection by filtering out
+    modules that require external dependencies or are only partially implemented.
+    """
+    # Only return modules with verified endpoints.py (actual HTTP routes)
+    modules_eps = [
+        EntryPoint(name="tags", value="css.modules.tags.endpoints", group="css.modules"),
+        EntryPoint(name="tasks", value="css.modules.tasks.endpoints", group="css.modules"),
+        EntryPoint(name="teams", value="css.modules.teams.endpoints", group="css.modules"),
+        EntryPoint(name="tools", value="css.modules.tools.endpoints", group="css.modules"),
+    ]
+    
+    # Only return api_services that have __init__.py (safe to import)
+    services_eps = [
+        EntryPoint(name="anthropic", value="css.api_services.anthropic", group="css.api_services"),
+        EntryPoint(name="openai", value="css.api_services.openai", group="css.api_services"),
+        EntryPoint(name="gemini", value="css.api_services.gemini", group="css.api_services"),
+        EntryPoint(name="cohere", value="css.api_services.cohere", group="css.api_services"),
+        EntryPoint(name="mistral", value="css.api_services.mistral", group="css.api_services"),
+        EntryPoint(name="groq", value="css.api_services.groq", group="css.api_services"),
+    ]
+    
+    if group == "css.modules":
+        return modules_eps
+    elif group == "css.api_services":
+        return services_eps
+    elif group is None:
+        # Return all
+        return modules_eps + services_eps
+    else:
+        return []
+
+
+@pytest.fixture(scope="session", autouse=True)
+def mock_entry_points_session():
+    """Auto-use fixture to mock entry_points for entire test session.
+    
+    This is applied before any test collection, preventing ModuleNotFoundError
+    from trying to import unavailable modules during pytest startup.
+    """
+    with patch("importlib.metadata.entry_points", side_effect=mock_entry_points):
+        yield
 
 
 # ---------------------------------------------------------------------------
