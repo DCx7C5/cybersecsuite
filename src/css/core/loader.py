@@ -1,38 +1,26 @@
 """
-Auto-discovery loader for modules/<app>/endpoints.py modules.
+Auto-discovery loader for modules via entry_points (Phase 6 P4).
 
-Convention — each ``modules/<app>/endpoints.py`` may expose:
+Convention — each module entry point should expose:
 
 ``router: APIRouter``       (required)  — app-scoped routes, typically with a prefix
 ``root_router: APIRouter``  (optional) — root-level routes (e.g. /.well-known/...)
+``tortoise_models: list``   (optional) — Tortoise ORM models to register
 
-The loader discovers all sub-packages of the ``modules`` package, attempts to
-import ``modules.<app>.endpoints``, collects the routers, and mounts them onto
-a FastAPI application.
+Entry points are configured in pyproject.toml under [project.entry-points."css.modules"]
+and [project.entry-points."css.api_services"].
 
-Errors from app sub-packages that have no ``endpoints.py`` are silently
-ignored (not every app needs HTTP routes). Import errors from modules that
-*do* exist are logged and re-raised — broken endpoints are never silently
-swallowed so that startup failures surface immediately.
-
-Also supports auto-discovery of Tortoise ORM models:
-- ``modules/*/models.py``
-- ``api_services/*/models.py``
-- ``core/db/models/*.py``
+The loader discovers entry points, imports them, and collects routers and models.
 """
 
 import importlib
+import importlib.metadata
 import logging
-import pkgutil
 from collections.abc import Iterator
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Any
 
 from fastapi import APIRouter, FastAPI
-
-import css.modules as apps_pkg
-import css.api_services as api_services_pkg
-import css.core.db as core_db_pkg
 
 log = logging.getLogger(__name__)
 
@@ -75,112 +63,91 @@ def build_tortoise_db_url(db_config: dict) -> str:
         return f"asyncpg://{user}:{password}@/{database}?host=/var/run/postgresql"
 
 
-def iter_app_routers() -> Iterator[AppRouters]:
-    """Yield ``AppRouters`` for every sub-package of ``modules`` that has an
-    ``endpoints.py`` exposing a ``router`` or ``root_router``.
+def iter_app_routers(entry_point_group: str = "css.modules") -> Iterator[AppRouters]:
+    """Yield ``AppRouters`` for every entry point in css.modules or css.api_services.
+
+    Args:
+        entry_point_group: Entry point group name (default "css.modules")
 
     Raises:
-        Any exception raised by a broken endpoints module — fail-fast so
+        Any exception raised by a broken module — fail-fast so
         missing routes are never silently dropped in production.
     """
-    for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
-        module_name = f"css.modules.{app_name}.endpoints"
+    try:
+        entry_points = importlib.metadata.entry_points(group=entry_point_group)
+    except Exception as exc:
+        log.error("Failed to load entry_points group %s: %s", entry_point_group, exc)
+        raise
+
+    for ep in entry_points:
+        app_name = ep.name
 
         try:
-            mod = importlib.import_module(module_name)
-        except ModuleNotFoundError as exc:
-            # Only suppress "no endpoints.py" — re-raise internal import failures
-            if exc.name == module_name:
-                log.debug("modules/%s: no endpoints module — skipped", app_name)
-                continue
-            log.error("modules/%s: endpoints import failed: %s", app_name, exc)
-            raise
+            # Load the entry point value (module or callable)
+            mod_or_callable = ep.load()
+
+            # If it's a callable, call it to get the module
+            if callable(mod_or_callable):
+                mod = mod_or_callable()
+            else:
+                mod = mod_or_callable
+
         except Exception as exc:
-            log.error("modules/%s: endpoints import crashed: %s", app_name, exc)
+            log.error("%s: entry_point load failed: %s", app_name, exc)
             raise
 
         router = getattr(mod, "router", None)
         root_router = getattr(mod, "root_router", None)
 
         if router is None and root_router is None:
-            log.warning(
-                "modules/%s/endpoints.py has neither `router` nor `root_router` — skipped",
-                app_name,
-            )
+            log.debug("%s: no router/root_router exposed — skipped", app_name)
             continue
 
         route_count = len(getattr(router, "routes", [])) + len(getattr(root_router, "routes", []))
-        log.info("Discovered endpoints: modules/%s (%d routes)", app_name, route_count)
+        log.info("Discovered endpoints: %s (%d routes)", app_name, route_count)
         yield AppRouters(app_name=app_name, router=router, root_router=root_router)
 
 
-def iter_model_modules() -> Iterator[ModelModule]:
-    """Discover Tortoise ORM model modules.
+def iter_model_modules(entry_point_group: str = "css.modules") -> Iterator[ModelModule]:
+    """Discover Tortoise ORM model modules from entry points.
 
-    Searches:
-    - ``modules/*/models.py``
-    - ``api_services/*/models.py``
-    - ``core/db/models/*.py``
+    Args:
+        entry_point_group: Entry point group name (default "css.modules")
 
     Yields:
         ModelModule with module_name and Tortoise-compatible path
     """
-    # Search modules/*/models.py
-    for finder, app_name, ispkg in pkgutil.iter_modules(apps_pkg.__path__):
-        module_name = f"css.modules.{app_name}.models"
+    try:
+        entry_points = importlib.metadata.entry_points(group=entry_point_group)
+    except Exception as exc:
+        log.error("Failed to load entry_points group %s: %s", entry_point_group, exc)
+        return
+
+    for ep in entry_points:
+        app_name = ep.name
+
         try:
-            importlib.import_module(module_name)
-            yield ModelModule(
-                module_name=app_name,
-                model_path=f"css.modules.{app_name}.models",
-            )
-            log.info("Discovered model: %s", module_name)
-        except ModuleNotFoundError:
-            # No models.py in this module — skip
-            pass
-        except Exception as exc:
-            log.error("modules/%s: models import failed: %s", app_name, exc)
-            raise
+            mod_or_callable = ep.load()
+            if callable(mod_or_callable):
+                mod = mod_or_callable()
+            else:
+                mod = mod_or_callable
 
-    # Search api_services/*/models.py
-    for finder, svc_name, ispkg in pkgutil.iter_modules(api_services_pkg.__path__):
-        module_name = f"css.api_services.{svc_name}.models"
-        try:
-            importlib.import_module(module_name)
-            yield ModelModule(
-                module_name=svc_name,
-                model_path=f"css.api_services.{svc_name}.models",
-            )
-            log.info("Discovered model: %s", module_name)
-        except ModuleNotFoundError:
-            pass
-        except Exception as exc:
-            log.error("api_services/%s: models import failed: %s", svc_name, exc)
-            raise
-
-    # Search core/db/models/*.py
-    if isinstance(core_db_pkg.__file__, str):
-        core_db_path = Path(core_db_pkg.__file__).parent
-    else:
-        raise RuntimeError("core.db package has no __file__ attribute — cannot discover models")
-
-    db_models_path = core_db_path / "models"
-    if db_models_path.exists():
-        for model_file in db_models_path.glob("*.py"):
-            if model_file.name.startswith("_"):
-                continue
-            model_name = model_file.stem
-            module_name = f"css.core.db.models.{model_name}"
-            try:
-                importlib.import_module(module_name)
+            models = getattr(mod, "tortoise_models", None)
+            if models:
+                # Assume models list contains Tortoise model classes
+                # Convert to module paths (simplified: use module name)
+                module_path = getattr(mod, "__name__", f"css.modules.{app_name}")
                 yield ModelModule(
-                    module_name=model_name,
-                    model_path=module_name,
+                    module_name=app_name,
+                    model_path=module_path,
                 )
-                log.info("Discovered model: %s", module_name)
-            except Exception as exc:
-                log.error("core/db/models/%s: import failed: %s", model_name, exc)
-                raise
+                log.info("Discovered models: %s", app_name)
+
+        except Exception as exc:
+            log.error("%s: models discovery failed: %s", app_name, exc)
+            # Don't raise — missing models are non-fatal
+
 
 def build_tortoise_modules() -> dict[str, list[str]]:
     """Build Tortoise ORM modules dict for Tortoise.init().
@@ -190,23 +157,29 @@ def build_tortoise_modules() -> dict[str, list[str]]:
     """
     modules: dict[str, list[str]] = {}
 
-    for model_module in iter_model_modules():
-        if model_module.module_name not in modules:
-            modules[model_module.module_name] = []
-        if model_module.model_path not in modules[model_module.module_name]:
-            modules[model_module.module_name].append(model_module.model_path)
+    # Discover from both css.modules and css.api_services
+    for group in ["css.modules", "css.api_services"]:
+        for model_module in iter_model_modules(entry_point_group=group):
+            if model_module.module_name not in modules:
+                modules[model_module.module_name] = []
+            if model_module.model_path not in modules[model_module.module_name]:
+                modules[model_module.module_name].append(model_module.model_path)
 
     return modules
 
 
-def mount_app_routers(app: FastAPI) -> list[str]:
-    """Discover and mount all app routers onto ``app``.
+def mount_app_routers(app: FastAPI, entry_point_group: str = "css.modules") -> list[str]:
+    """Discover and mount all app routers from entry_points onto ``app``.
 
-    Returns the list of app names that were successfully mounted.
-    Call this once during app construction (not on every startup).
+    Args:
+        app: FastAPI application instance
+        entry_point_group: Entry point group name (default "css.modules")
+
+    Returns:
+        List of app names that were successfully mounted.
     """
     mounted: list[str] = []
-    for app_routers in iter_app_routers():
+    for app_routers in iter_app_routers(entry_point_group=entry_point_group):
         if app_routers.router is not None:
             app.include_router(app_routers.router)
         if app_routers.root_router is not None:
@@ -214,8 +187,9 @@ def mount_app_routers(app: FastAPI) -> list[str]:
         mounted.append(app_routers.app_name)
 
     if mounted:
-        log.info("Mounted app endpoints: %s", ", ".join(mounted))
+        log.info("Mounted %s endpoints: %s", entry_point_group, ", ".join(mounted))
     else:
-        log.warning("No app endpoints discovered — check modules/ sub-packages")
+        log.warning("No endpoints discovered in %s", entry_point_group)
 
     return mounted
+

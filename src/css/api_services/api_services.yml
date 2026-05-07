@@ -15,6 +15,7 @@ api-services:
       scheme: Bearer
     endpoints:
       completion: /messages
+      models: /models
     capabilities:
       streaming: true
       vision: true
@@ -35,6 +36,7 @@ api-services:
       scheme: Bearer
     endpoints:
       completion: /chat
+      models: /models
     capabilities:
       streaming: true
       vision: false
@@ -44,16 +46,14 @@ api-services:
     display_name: DeepInfra
     base_url: https://api.deepinfra.com/v1
     api_type: openai_compatible
-    models:
-      - meta-llama/Llama-2-70b-chat-hf
-      - mistralai/Mistral-7B-Instruct-v0.1
-      - Qwen/Qwen1.5-72B-Chat
+    models: auto
     auth:
       api_key_env: DEEPINFRA_API_KEY
       header: Authorization
       scheme: Bearer
     endpoints:
       completion: /openai/v1/chat/completions
+      models: /models
     capabilities:
       streaming: true
       vision: false
@@ -61,12 +61,62 @@ api-services:
 
 
   deepseek:
+    display_name: DeepSeek
+    base_url: https://api.deepseek.com/v1
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: DEEPSEEK_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+      models: /models
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: true
+
 
   fireworks:
+    display_name: Fireworks AI
+    base_url: https://api.fireworks.ai/inference/v1
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: FIREWORKS_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+      models: /models
+
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
+
 
   github:
+    display_name: GitHub Copilot
+    base_url: https://api.github.com/v1
+    api_type: openai_compatible
 
   gemini:
+    display_name: Google Gemini
+    base_url: https://generativelanguage.googleapis.com/v1beta
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: GEMINI_API_KEY
+      header: x-goog-api-key
+      scheme: ""
+    endpoints:
+      completion: /models/{model}:generateContent
+    capabilities:
+      streaming: true
+      vision: true
+      tool_use: true
 
   groq:
 
