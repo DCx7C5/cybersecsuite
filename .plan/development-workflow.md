@@ -56,12 +56,12 @@ for f, data in d.items():
 ```
 
 ### Where It Adds Value:
-| Workflow | Analyzer Use | Value |
-|----------|----------------|-------|
-| TODO | `consumed_by` on file you're editing | Avoid breaking files that depend on you |
-| TODO | `consumes` after editing | Catch illegal cross-module imports early |
-| TASK | Full module scan | Verify no circular deps before declaring task done |
-| PHASE | Full project scan | Impact analysis for PHASE completion |
+| Workflow | Analyzer Use                         | Value                                              |
+|----------|--------------------------------------|----------------------------------------------------|
+| TODO     | `consumed_by` on file you're editing | Avoid breaking files that depend on you            |
+| TODO     | `consumes` after editing             | Catch illegal cross-module imports early           |
+| TASK     | Full module scan                     | Verify no circular deps before declaring task done |
+| PHASE    | Full project scan                    | Impact analysis for PHASE completion               |
 
 ---
 
@@ -497,18 +497,18 @@ modules/<name>/
 
 ## 🚫 NEVER DO THESE
 
-| ❌ WRONG | ✅ RIGHT |
-|---------|---------|
-| `UPDATE tasks SET status = 'done'` | `UPDATE todos SET status = 'done'` — there is no tasks table |
-| `UPDATE todos SET completed_at = ...` | `UPDATE todos SET updated_at = datetime('now')` — no completed_at column |
-| `httpx.AsyncClient()` | `aiohttp.ClientSession()` |
-| `import npm` / `npx` | `bun run` / `bun install` |
-| Create `.md` files outside `.plan/` whitelist | Merge content into whitelisted files |
-| `@dataclass class Foo(ABC)` | Choose one: pure abstract `class Foo(ABC)` or pure concrete `@dataclass class Foo` |
-| Commit with `Co-authored-by:` trailer | Plain commit message, no trailer |
-| Test code during a phase | Test only after the entire phase is complete |
-| Cross-module imports | Import only from `core/` between modules |
-| Mix unrelated changes in one commit | **Logical and atomic commits** |
+| ❌ WRONG                                       | ✅ RIGHT                                                                            |
+|-----------------------------------------------|------------------------------------------------------------------------------------|
+| `UPDATE tasks SET status = 'done'`            | `UPDATE todos SET status = 'done'` — there is no tasks table                       |
+| `UPDATE todos SET completed_at = ...`         | `UPDATE todos SET updated_at = datetime('now')` — no completed_at column           |
+| `httpx.AsyncClient()`                         | `aiohttp.ClientSession()`                                                          |
+| `import npm` / `npx`                          | `bun run` / `bun install`                                                          |
+| Create `.md` files outside `.plan/` whitelist | Merge content into whitelisted files                                               |
+| `@dataclass class Foo(ABC)`                   | Choose one: pure abstract `class Foo(ABC)` or pure concrete `@dataclass class Foo` |
+| Commit with `Co-authored-by:` trailer         | Plain commit message, no trailer                                                   |
+| Test code during a phase                      | Test only after the entire phase is complete                                       |
+| Cross-module imports                          | Import only from `core/` between modules                                           |
+| Mix unrelated changes in one commit           | **Logical and atomic commits**                                                     |
 
 ---
 

@@ -23,7 +23,7 @@ docker-compose up -d
 **Environment**:
 ```bash
 PYTHONUNBUFFERED=1
-ENVIRONMENT=production
+ENVIRONMENT=development
 DATABASE_URL=postgresql://user:pass@cybersec-postgres:5432/cybersec
 REDIS_URL=redis://cybersec-redis:6379/1
 CACHE_BACKENDS=redis,postgres
@@ -135,7 +135,7 @@ healthcheck:
 - Audit trail for all cache operations
 - Session-scope cache persistence
 
----
+---production
 
 ### 4. **cybersec-redis** (Redis Cache)
 
