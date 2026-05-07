@@ -34,6 +34,9 @@ from .types.base_entity import BaseEntity, BaseAgent, BaseRole, BaseSkill, BaseT
 # Communication protocol
 from .types.base_protocols import BaseCommunicator
 
+# Pipeline infrastructure (Phase 6 T6.5)
+from .pipeline import pipe, Stage, PassthroughStage, BufferStage, FilterStage, MapStage
+
 # NOTE: Concrete entities (Account, Agent, Role, Skill, Tool) import from modules
 # and should NOT be re-exported from core to avoid circular imports.
 # Modules depend on core/types.base, so core/__init__ must not import from modules.
@@ -73,4 +76,11 @@ __all__ = [
     "BaseTool",
     # Infrastructure
     "BaseCommunicator",
+    # Pipeline (Phase 6 T6.5)
+    "pipe",
+    "Stage",
+    "PassthroughStage",
+    "BufferStage",
+    "FilterStage",
+    "MapStage",
 ]

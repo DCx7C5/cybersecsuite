@@ -101,6 +101,22 @@ api-services:
     display_name: GitHub Copilot
     base_url: https://api.github.com/v1
     api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: GITHUB_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+      models: /models
+    capabilities:
+      streaming: true
+      vision: true
+      tool_use: true
+
+  google:
+
+  google_palm:
 
   gemini:
     display_name: Google Gemini
@@ -119,10 +135,45 @@ api-services:
       tool_use: true
 
   groq:
+    display_name: Groq
+    base_url: https://api.groq.com/openai/v1
+    api_type: openai_compatible
+    models:
+      - mixtral-8x7b-32768
+      - llama-3-70b-8192
+      - llama-3-8b-8192
+    auth:
+      api_key_env: GROQ_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: false
 
   lambda_api:
 
   mistral:
+    display_name: Mistral AI
+    base_url: https://api.mistral.ai/v1
+    api_type: openai_compatible
+    models:
+      - mistral-large-2407
+      - mistral-medium-2312
+      - mistral-small-2312
+    auth:
+      api_key_env: MISTRAL_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+    capabilities:
+      streaming: true
+      vision: false
+      tool_use: true
+
 
   nscale:
 
@@ -131,6 +182,21 @@ api-services:
   ollama:
 
   openai:
+    display_name: OpenAI
+    base_url: https://api.openai.com/v1
+    api_type: openai_compatible
+    models: auto
+    auth:
+      api_key_env: OPENAI_API_KEY
+      header: Authorization
+      scheme: Bearer
+    endpoints:
+      completion: /chat/completions
+    capabilities:
+      streaming: true
+      vision: true
+      tool_use: true
+
 
   opencode:
 
