@@ -111,6 +111,13 @@ api-services:
       api_key_env: GITHUB_API_KEY
       header: Authorization
       scheme: Bearer
+    auth_methods:
+      oauth:
+        url: https://github.com/login/oauth/authorize
+      token:
+        url: https://github.com/login/oauth/access_token
+      device_flow:
+        url: https://github.com/login/device/code
     endpoints:
       completion: /chat/completions
       models: /models

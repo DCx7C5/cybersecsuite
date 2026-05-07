@@ -27,6 +27,11 @@ from .projections import (
     AuditTrailProjection,
     ProjectionManager,
 )
+# Phase 6 T6.5: OTel observability bridge
+from .otel_bridge import (
+    OtelBridge,
+    EventStoreObserver,
+)
 
 __all__ = [
     "DomainEvent",
@@ -50,4 +55,7 @@ __all__ = [
     "PermissionsProjection",
     "AuditTrailProjection",
     "ProjectionManager",
+    # OTel observability
+    "OtelBridge",
+    "EventStoreObserver",
 ]
