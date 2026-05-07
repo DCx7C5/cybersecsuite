@@ -31,6 +31,7 @@ from fastapi.responses import JSONResponse
 from tortoise import Tortoise
 
 from css.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
+from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
 from css.core.loader import build_tortoise_db_url, build_tortoise_modules, mount_app_routers
 from css.core.tools.base import get_tool_registry
 
@@ -143,6 +144,9 @@ def create_app() -> FastAPI:
         version="1.0.0",
         lifespan=lifespan,
     )
+    _app.add_middleware(HTTPSRedirectMiddleware, tls_enabled=TLS_AVAILABLE)
+    _app.add_middleware(TelemetryMiddleware)
+    _app.add_middleware(RateLimitMiddleware)
 
     # Health check
     @_app.get("/health", tags=["core"])

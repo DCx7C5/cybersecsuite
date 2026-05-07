@@ -1,18 +1,25 @@
-"""Starlette ASGI middleware that records HTTP request latency per endpoint."""
+"""Starlette ASGI middleware for telemetry, HTTPS redirect, and rate limiting."""
 
 
 import re
 import time
+import os
+from pathlib import Path
+from collections import defaultdict, deque
 from collections.abc import Callable
+from threading import Lock
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import Response, RedirectResponse
+from starlette.responses import JSONResponse, Response, RedirectResponse
 
-from .app import TLS_AVAILABLE, ASGI_TLS_PORT
 from telemetry import record_event
 
 PathPattern = tuple[re.Pattern, str]
+ASGI_TLS_PORT = int(os.environ.get("ASGI_TLS_PORT", "8433"))
+_TLS_CERT = os.environ.get("ASGI_TLS_CERT", str(Path.home() / ".css" / "certs" / "cert.pem"))
+_TLS_KEY = os.environ.get("ASGI_TLS_KEY", str(Path.home() / ".css" / "certs" / "key.pem"))
+TLS_AVAILABLE = Path(_TLS_CERT).is_file() and Path(_TLS_KEY).is_file()
 
 # Paths to skip
 _SKIP_PREFIXES = ("/health", "/static", "/favicon")
@@ -60,6 +67,73 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
                 latency_ms,
                 labels={"method": request.method, "status": str(status)},
             )
+        return response
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """In-memory request limiter keyed by team and provider.
+
+    Limits are request-per-minute windows and are enforced for API routes.
+    Team and provider are resolved from request headers/query params:
+      - team: ``x-team-id`` header or ``team_id`` query param
+      - provider: ``x-provider`` header or ``provider`` query param
+    """
+
+    def __init__(
+        self,
+        app,
+        team_limit_per_minute: int = 120,
+        provider_limit_per_minute: int = 240,
+    ) -> None:
+        super().__init__(app)
+        self.team_limit = max(1, team_limit_per_minute)
+        self.provider_limit = max(1, provider_limit_per_minute)
+        self._team_hits: dict[str, deque[float]] = defaultdict(deque)
+        self._provider_hits: dict[str, deque[float]] = defaultdict(deque)
+        self._lock = Lock()
+
+    def _check_limit(self, bucket: dict[str, deque[float]], key: str, limit: int, now: float) -> tuple[bool, int]:
+        window_start = now - 60.0
+        q = bucket[key]
+        while q and q[0] < window_start:
+            q.popleft()
+        if len(q) >= limit:
+            retry_after = max(1, int(60 - (now - q[0])))
+            return False, retry_after
+        q.append(now)
+        return True, 0
+
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        path = request.url.path
+        if not path.startswith("/api") or should_skip_path(path, _SKIP_PREFIXES):
+            return await call_next(request)
+
+        team_id = request.headers.get("x-team-id") or request.query_params.get("team_id") or "anonymous"
+        provider = request.headers.get("x-provider") or request.query_params.get("provider") or "default"
+        now = time.time()
+
+        with self._lock:
+            team_ok, team_retry_after = self._check_limit(self._team_hits, team_id, self.team_limit, now)
+            provider_ok, provider_retry_after = self._check_limit(
+                self._provider_hits, provider, self.provider_limit, now
+            )
+
+        if not team_ok:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Team rate limit exceeded", "team_id": team_id, "retry_after": team_retry_after},
+                headers={"Retry-After": str(team_retry_after)},
+            )
+        if not provider_ok:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Provider rate limit exceeded", "provider": provider, "retry_after": provider_retry_after},
+                headers={"Retry-After": str(provider_retry_after)},
+            )
+
+        response = await call_next(request)
+        response.headers["X-RateLimit-Team-Limit"] = str(self.team_limit)
+        response.headers["X-RateLimit-Provider-Limit"] = str(self.provider_limit)
         return response
 
 
