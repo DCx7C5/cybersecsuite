@@ -15,13 +15,13 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
-from css.core.types.providers import APIProviderBase
+from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
 
-class OpenRouterApiService(APIProviderBase, StreamingHandler):
+class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
     """OpenRouter API service with streaming support."""
     
     def __init__(

@@ -15,13 +15,13 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
-from css.core.types.providers import APIProviderBase
+from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
 
-class CloudflareApiService(APIProviderBase, StreamingHandler):
+class CloudflareApiService(BaseApiServiceClient, StreamingHandler):
     """Cloudflare Workers AI service using the OpenAI-compatible endpoint.
 
     Requires CLOUDFLARE_API_KEY and CLOUDFLARE_ACCOUNT_ID env vars.

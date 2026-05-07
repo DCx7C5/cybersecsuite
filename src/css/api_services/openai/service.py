@@ -17,13 +17,13 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
-from css.core.types.providers import APIProviderBase
+from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
 
-class OpenAIApiService(APIProviderBase, StreamingHandler):
+class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
     """OpenAI API service with streaming support."""
     
     def __init__(

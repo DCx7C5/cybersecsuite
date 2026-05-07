@@ -10,17 +10,17 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
     Tool,
     LLMResponse,
 )
-from css.core.types.providers import APIProviderBase
+from css.core.types.base_client import BaseApiServiceClient, StreamingHandler
 from css.core.config import ProviderDefaults
+
 
 logger = logging.getLogger(__name__)
 
 
-class AnthropicApiService(APIProviderBase, StreamingHandler):
+class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
     """Anthropic API service with streaming support."""
     
     def __init__(

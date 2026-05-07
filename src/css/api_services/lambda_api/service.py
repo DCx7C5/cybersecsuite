@@ -15,13 +15,13 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
-from css.core.types.providers import APIProviderBase
+from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
 
 
-class LambdaApiService(APIProviderBase, StreamingHandler):
+class LambdaApiService(BaseApiServiceClient, StreamingHandler):
     """Lambda API service with streaming support."""
     
     def __init__(
