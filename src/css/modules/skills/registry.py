@@ -5,6 +5,8 @@ import asyncio
 from typing import Any
 from datetime import datetime
 
+from css.core.types.context import ConversationContext
+from .base import BaseSkill
 from .models import SkillDefinition, SkillResult
 from .enums import SkillStatus, SkillCategory
 from .exceptions import SkillNotFoundError, SkillExecutionError, SkillConfigurationError
@@ -18,6 +20,7 @@ class SkillRegistry:
     def __init__(self):
         """Initialize skill registry."""
         self._skills: dict[str, SkillDefinition] = {}
+        self._runtime_skills: dict[str, BaseSkill] = {}
         self._execution_history: list[SkillResult] = []
     
     def register(self, skill: SkillDefinition) -> None:
@@ -35,6 +38,11 @@ class SkillRegistry:
         
         self._skills[skill.skill_id] = skill
         logger.info(f"Registered skill: {skill.skill_id} v{skill.version}")
+
+    def register_runtime(self, skill_id: str, skill: BaseSkill) -> None:
+        """Register executable runtime implementation for a skill ID."""
+        self._runtime_skills[skill_id] = skill
+        logger.info(f"Registered runtime skill implementation: {skill_id}")
     
     def get(self, skill_id: str) -> SkillDefinition | None:
         """Get skill definition by ID."""
@@ -117,6 +125,26 @@ class SkillRegistry:
             
             self._execution_history.append(result)
             logger.error(f"Skill execution failed: {skill_id} - {e}")
+            raise SkillExecutionError(str(e), skill_id)
+
+    async def execute_skill(
+        self,
+        skill_id: str,
+        params: dict[str, Any],
+        context: ConversationContext,
+    ) -> SkillResult:
+        """Execute a skill via BaseSkill protocol implementation."""
+        runtime_skill = self._runtime_skills.get(skill_id)
+        if runtime_skill is None:
+            # Backwards-compatible fallback: execute via SkillDefinition handler.
+            return await self.execute(skill_id, **params)
+
+        try:
+            result = await runtime_skill.execute(params=params, context=context)
+            self._execution_history.append(result)
+            return result
+        except Exception as e:
+            logger.error(f"Runtime skill execution failed: {skill_id} - {e}")
             raise SkillExecutionError(str(e), skill_id)
     
     def update_skill(self, skill_id: str, **updates) -> None:
