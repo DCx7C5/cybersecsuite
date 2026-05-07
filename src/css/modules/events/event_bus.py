@@ -1,13 +1,15 @@
 """Event bus — centralized event emission and handling."""
-
+import inspect
 from typing import Any, Callable, Dict, List
 import asyncio
 import logging
 
+from css.core.types.meta import TSSingletonMetaClass
+
 logger = logging.getLogger(__name__)
 
 
-class EventBus:
+class EventBus(metaclass=TSSingletonMetaClass):
     """Simple event bus for Phase 3 — emits events to registered handlers.
     
     Note: Phase 6 will replace this with CQRS/EventStore architecture.
@@ -29,7 +31,7 @@ class EventBus:
     async def _safe_call(self, handler: Callable, event_type: str, payload: Any) -> None:
         """Safely call a handler, catching exceptions."""
         try:
-            if asyncio.iscoroutinefunction(handler):
+            if inspect.iscoroutinefunction(handler):
                 await handler(event_type, payload)
             else:
                 handler(event_type, payload)
@@ -46,7 +48,3 @@ class EventBus:
         """Unregister a handler for an event type."""
         if event_type in self._handlers:
             self._handlers[event_type].remove(handler)
-
-
-# Global singleton
-event_bus = EventBus()
