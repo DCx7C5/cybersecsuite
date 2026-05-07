@@ -11,15 +11,12 @@ from aiohttp import ClientSession
 
 from css.core.config import ProviderDefaults
 from .messages import (  # Phase 6 P1: msgspec.Struct versions
-    MessageRole,
     ProviderType,
     BaseMessage,
     Tool,
     ModelMetadata,
     StreamChunk,
     LLMResponse,
-    ExecutorResult,
-    ErrorStrategy,
 )
 
 
@@ -159,17 +156,3 @@ class BaseApiServiceClient(ABC):
         }
         return feature_map.get(feature, False)
 
-
-__all__ = [
-    "ProviderType",
-    "MessageRole",
-    "BaseMessage",
-    "Tool",
-    "ModelMetadata",
-    "StreamChunk",
-    "LLMResponse",
-    "ExecutorResult",
-    "ErrorStrategy",
-    "StreamingHandler",
-    "BaseApiServiceClient",
-]

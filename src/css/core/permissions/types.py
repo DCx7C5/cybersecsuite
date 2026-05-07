@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .enums import ScopeLevel, Permission
 from css.core.types.base_entity import BaseRole
-from css.core.types.headers import BaseRoleHeader
+from css.core.types.base_headers import BaseRoleHeader
 
 
 @dataclass

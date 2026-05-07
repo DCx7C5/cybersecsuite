@@ -283,7 +283,7 @@ tools/
 
 - Namespace: `@instrument("tool.call.{tool_name}")` (e.g. `"tool.call.bash.execute"`)
 - The `@pre_hook("tool.call.*", priority=5)` registered in `permissions/hooks.py` blocks calls if the agent has no matching `ToolGrant`
-- The pre_hook raises `HookBlockedError` — the tool function itself **never runs**
+- The pre_hook raises `HookErrorStrategy` — the tool function itself **never runs**
 - Events fired: `tool.call.started`, `tool.call.completed`, `tool.call.failed`
 
 ---

@@ -62,6 +62,3 @@ class BaseCommunicator(Protocol):
     async def unsubscribe(self, handler: Any) -> None:
         """Unsubscribe a handler from incoming messages."""
         ...
-
-
-__all__ = ["BaseCommunicator"]

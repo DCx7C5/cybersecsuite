@@ -2,7 +2,7 @@ import msgspec
 from typing import Any, Dict, List
 
 from .base_protocols import BaseCommunicator
-from .headers import (
+from .base_headers import (
     BaseHeader,
     BaseAgentHeader,
     BaseRoleHeader,

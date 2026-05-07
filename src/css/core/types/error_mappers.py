@@ -11,7 +11,6 @@ Issue #3: Error Code Mapping — Map all SDK errors to standard types:
 
 import re
 from typing import Optional, Callable
-from css.core.types.api_services import ProviderType
 from css.core.exceptions import (
     AuthError,
     RateLimitError,
@@ -19,6 +18,7 @@ from css.core.exceptions import (
     GatewayError,
     UnknownError,
 )
+from css.core.types import ProviderType
 
 
 class ErrorMapper:

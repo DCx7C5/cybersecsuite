@@ -142,7 +142,7 @@ events = await event_store.replay_session(session_id="abc-123")
 - [ ] `events-hook-registry` — HookRegistry (glob pattern) — **observers only, telemetry**
 - [ ] `events-on-event-decorator` — @on_event shortcut
 - [ ] `events-hook-executor` — _safe_call fire-and-forget
-- [ ] `events-interceptor-context` — HookContext[Input, Output] + HookBlockedError
+- [ ] `events-interceptor-context` — HookContext[Input, Output] + HookErrorStrategy
 - [ ] `events-interceptor-registry` — InterceptorRegistry (priority + glob)
 - [ ] `events-pre-hook-decorator` — @pre_hook(pattern, priority)
 - [ ] `events-post-hook-decorator` — @post_hook(pattern, priority)

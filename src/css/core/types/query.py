@@ -10,7 +10,7 @@ import msgspec
 from datetime import datetime
 from typing import Any
 
-from .headers import BaseHeader
+from .base_headers import BaseHeader
 
 
 class QueryHeader(BaseHeader, frozen=True):

@@ -79,7 +79,7 @@ __all__ = ['AgentManager']
 - Namespace: `@instrument("agent.run.{agent_id}")`
 - Events fired: `agent.run.started`, `agent.run.completed`, `agent.run.failed`
 - All runs inherit `correlation_id` ContextVar (propagated from HTTP middleware — entry point 1)
-- Pre/post interceptors in `permissions/hooks.py` can mutate inputs or raise `HookBlockedError`
+- Pre/post interceptors in `permissions/hooks.py` can mutate inputs or raise `HookErrorStrategy`
 
 ---
 

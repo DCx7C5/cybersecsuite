@@ -50,5 +50,6 @@ class EventBus(metaclass=AsyncSafeSingletonMeta):
             self._handlers[event_type].remove(handler)
 
 
+# TODO: No need to instantiate, we have a singleton meta class implemented
 # Singleton instance for backward compatibility
 event_bus = EventBus()

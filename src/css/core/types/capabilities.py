@@ -6,7 +6,7 @@ and how to discover/register capabilities at runtime.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from datetime import datetime, timedelta
 
 from pydantic import BaseModel, Field
@@ -35,7 +35,7 @@ class Capability(BaseModel):
     name: str = Field(..., description="Capability name (e.g., 'streaming', 'vision')")
     type: CapabilityType = Field(..., description="Capability type")
     supported: bool = Field(default=True, description="Is this capability supported?")
-    metadata: dict[str, Any] = Field(default_factory=dict, description="Extra capability details")
+    metadata: dict = Field(default_factory=dict, description="Metadata about capability")
     version: str = Field(default="1.0", description="Capability API version")
     cost_multiplier: float = Field(default=1.0, description="Cost impact of using this capability")
     notes: Optional[str] = Field(default=None, description="Human-readable notes about capability")
@@ -88,7 +88,7 @@ class CapabilityRegistry(BaseModel):
     routing and orchestration decisions.
     """
 
-    capabilities: dict[str, ModelCapabilities] = Field(
+    capabilities: Dict[str, ModelCapabilities] = Field(
         default_factory=dict,
         description="Key: '{provider}:{model_name}', Value: ModelCapabilities",
     )

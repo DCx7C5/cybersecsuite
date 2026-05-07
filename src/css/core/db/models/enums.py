@@ -66,3 +66,21 @@ class IOCStatus(str, Enum):
     INVESTIGATING = "investigating"
     RESOLVED = "resolved"
     CLEARED = "cleared"
+
+
+class ScopeLevel(str, Enum):
+    """Scope hierarchy level."""
+    GLOBAL = "global"
+    PROJECT = "project"
+    SESSION = "session"
+    TEAM = "team"
+
+
+class OrchestratorStatus(str, Enum):
+    """Orchestrator instance status."""
+    STARTING = "starting"
+    IDLE = "idle"
+    BUSY = "busy"
+    PAUSED = "paused"
+    STOPPED = "stopped"
+    CRASHED = "crashed"

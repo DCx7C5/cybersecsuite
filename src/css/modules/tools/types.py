@@ -11,7 +11,7 @@ from typing import Any, Optional
 
 from css.modules.tools.enums import ParameterType
 from css.core.types.base_entity import BaseTool
-from css.core.types.headers import BaseToolHeader
+from css.core.types.base_headers import BaseToolHeader
 
 
 @dataclass
