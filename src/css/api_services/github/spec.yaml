@@ -1,0 +1,18 @@
+name: github
+display_name: GitHub Models
+base_url: https://models.inference.ai.azure.com/v1
+api_type: openai_compatible
+models:
+  - gpt-4
+  - gpt-4-turbo
+  - llama-2-7b
+auth:
+  api_key_env: GITHUB_TOKEN
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat/completions
+capabilities:
+  streaming: true
+  vision: true
+  tool_use: true

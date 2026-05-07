@@ -1,0 +1,17 @@
+name: sambanova
+display_name: SambaNova
+base_url: https://api.sambanova.ai/v1
+api_type: openai_compatible
+models:
+  - Meta-Llama-3-70B-Instruct
+  - Meta-Llama-3-8B-Instruct
+auth:
+  api_key_env: SAMBANOVA_API_KEY
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat/completions
+capabilities:
+  streaming: true
+  vision: false
+  tool_use: false

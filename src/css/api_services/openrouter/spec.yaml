@@ -1,0 +1,18 @@
+name: openrouter
+display_name: OpenRouter
+base_url: https://openrouter.ai/api/v1
+api_type: openai_compatible
+models:
+  - openai/gpt-4-turbo
+  - anthropic/claude-3-opus
+  - meta-llama/llama-2-70b-chat
+auth:
+  api_key_env: OPENROUTER_API_KEY
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat/completions
+capabilities:
+  streaming: true
+  vision: true
+  tool_use: true

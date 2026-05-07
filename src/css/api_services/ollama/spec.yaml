@@ -1,0 +1,18 @@
+name: ollama
+display_name: Ollama (Local)
+base_url: http://localhost:11434/v1
+api_type: openai_compatible
+models:
+  - llama2
+  - mistral
+  - neural-chat
+auth:
+  api_key_env: ""
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat/completions
+capabilities:
+  streaming: true
+  vision: false
+  tool_use: false

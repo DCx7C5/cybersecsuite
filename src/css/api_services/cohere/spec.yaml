@@ -1,0 +1,18 @@
+name: cohere
+display_name: Cohere
+base_url: https://api.cohere.ai/v1
+api_type: openai_compatible
+models:
+  - command-r-plus
+  - command-r
+  - command
+auth:
+  api_key_env: COHERE_API_KEY
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat
+capabilities:
+  streaming: true
+  vision: false
+  tool_use: true

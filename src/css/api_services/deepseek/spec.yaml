@@ -1,0 +1,17 @@
+name: deepseek
+display_name: DeepSeek
+base_url: https://api.deepseek.com/v1
+api_type: openai_compatible
+models:
+  - deepseek-chat
+  - deepseek-coder
+auth:
+  api_key_env: DEEPSEEK_API_KEY
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat/completions
+capabilities:
+  streaming: true
+  vision: false
+  tool_use: true

@@ -1,0 +1,18 @@
+name: gemini
+display_name: Google Gemini
+base_url: https://generativelanguage.googleapis.com/v1beta
+api_type: openai_compatible
+models:
+  - gemini-2.0-flash-exp
+  - gemini-1.5-pro
+  - gemini-1.5-flash
+auth:
+  api_key_env: GEMINI_API_KEY
+  header: x-goog-api-key
+  scheme: ""
+endpoints:
+  completion: /models/{model}:generateContent
+capabilities:
+  streaming: true
+  vision: true
+  tool_use: true

@@ -1,0 +1,16 @@
+name: xai
+display_name: xAI (Grok)
+base_url: https://api.x.ai/v1
+api_type: openai_compatible
+models:
+  - grok-beta
+auth:
+  api_key_env: XAI_API_KEY
+  header: Authorization
+  scheme: Bearer
+endpoints:
+  completion: /chat/completions
+capabilities:
+  streaming: true
+  vision: false
+  tool_use: false

@@ -148,13 +148,13 @@ WHERE id = 'TODO_ID';
 
 **Read these files** (based on the todo's `phase`/`task`):
 ```bash
-# Always read the local plan.md for the module you're working in:
+# Always read the local asgi.md for the module you're working in:
 cat "src/css/modules/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/api_services/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null
 
 # Read architecture doc if phase mentions it:
-# Phase 6 → read .plan/plan.md (Phase 6 section)
+# Phase 6 → read .plan/asgi.md (Phase 6 section)
 # Phase 14 → cat .plan/architecture/observability.md
 # Phase 21 → cat .plan/architecture/sdks.md
 
@@ -321,9 +321,9 @@ Fix the remaining errors of prior ruff run.
 
 **Step 1 — Update local plan.md**
 ```bash
-# Mark task complete in module's plan.md
+# Mark task complete in module's asgi.md
 sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/plan.md"
-# Add status line to the task section in plan.md:
+# Add status line to the task section in asgi.md:
 sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/modules/<module>/plan.md"
 ```
 
@@ -333,9 +333,9 @@ sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/module
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE task = 'TASK_NAME';
 ```
 ```bash
-# Update the phase section in .plan/plan.md:
+# Update the phase section in .plan/asgi.md:
 # Find the phase section, update todo counts to match session.db
-sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/plan.md
+sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/asgi.md
 ```
 
 **Step 3 — Update .plan/memory.md (MANDATORY after every task)**
@@ -445,17 +445,17 @@ Use Task tool with:
 
 **Step 1 — Update all .plan/ files (CHECKLIST)**
 ```bash
-# [ ] .plan/plan.md — mark phase ✅ DONE, update CURRENT STATUS
+# [ ] .plan/asgi.md — mark phase ✅ DONE, update CURRENT STATUS
 # [ ] .plan/memory.md — update phase table row (done count, blocked count)
 # [ ] .plan/checkpoints.md — add phase checkpoint entry
 # [ ] .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
 
-# Local plan.md files REQUIRED — update every directory you touched:
-# [ ] src/css/plan.md — if root-level changes
-# [ ] src/css/core/<subdir>/plan.md — for each core subdir touched
-# [ ] src/css/modules/<module>/plan.md — for each module touched
-# [ ] src/css/api_services/plan.md — if api_services touched
-# NOTE: local plan.md files are NOT part of .plan/ whitelist; they are codebase files
+# Local asgi.md files REQUIRED — update every directory you touched:
+# [ ] src/css/asgi.md — if root-level changes
+# [ ] src/css/core/<subdir>/asgi.md — for each core subdir touched
+# [ ] src/css/modules/<module>/asgi.md — for each module touched
+# [ ] src/css/api_services/asgi.md — if api_services touched
+# NOTE: local asgi.md files are NOT part of .plan/ whitelist; they are codebase files
 ```
 
 **Step 2 — Commit (logical and atomic)**

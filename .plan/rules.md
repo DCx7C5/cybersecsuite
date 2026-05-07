@@ -30,8 +30,8 @@ ORDER BY t.sort_order, t.task, t.id LIMIT 5;"
 # 4. Read the full spec for the todo you'll work on
 sqlite3 .plan/session.db "SELECT description FROM todos WHERE id = 'CHOSEN-ID';"
 
-# 5. Read the local plan.md for the module you're working in
-cat src/css/modules/<module_name>/plan.md
+# 5. Read the local asgi.md for the module you're working in
+cat src/css/modules/<module_name>/asgi.md
 ```
 
 
