@@ -9,7 +9,7 @@ The design uses Protocol (PEP 544) and wires to ProviderRegistry + HttpProviderA
 Replaces Claude SDK hardcode with provider-agnostic execution.
 """
 
-from typing import Protocol, runtime_checkable, TYPE_CHECKING
+from typing import Protocol, runtime_checkable, TYPE_CHECKING, Any
 import logging
 from datetime import datetime
 
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from css.modules.capabilities.capability_registry import DynamicCapabilityRegistry
 
 from .models import AgentResult
+from css.modules.tools.tool_call_loop import ToolCallLoop
 
 log = logging.getLogger(__name__)
 
@@ -108,16 +109,30 @@ class AgentExecutor:
         adapter = await self._get_adapter()
         
         start = time.time()
-        try:
-            result_dict = await adapter.complete(
-                prompt=prompt,
+        async def _call_provider(call_prompt: str) -> dict[str, Any]:
+            return await adapter.complete(
+                prompt=call_prompt,
                 model=self.model,
                 system=system,
                 **kwargs,
             )
+
+        try:
+            result_dict = await _call_provider(prompt)
         except Exception as e:
             log.error(f"AgentExecutor: Provider {self.provider}/{self.model} failed: {e}")
             raise
+
+        executed_tool_messages: list[dict[str, Any]] = []
+        if result_dict.get("tool_calls"):
+            loop = ToolCallLoop(max_iterations=int(kwargs.get("max_tool_iterations", 5)))
+            result_dict, executed_tool_messages = await loop.run(
+                initial_response=result_dict,
+                llm_caller=_call_provider,
+                base_prompt=prompt,
+                agent_id=str((context or {}).get("agent_id", "agent-executor")),
+                scope=(context or {}).get("scope"),
+            )
         
         duration_ms = (time.time() - start) * 1000
         
@@ -128,7 +143,7 @@ class AgentExecutor:
             session_id=str(context.get("session_id", "")),
             response=result_dict.get("response", ""),
             thinking=result_dict.get("thinking"),
-            tool_calls=result_dict.get("tool_calls", []),
+            tool_calls=executed_tool_messages or result_dict.get("tool_calls", []),
             stop_reason=result_dict.get("stop_reason", "unknown"),
             input_tokens=result_dict.get("input_tokens", 0),
             output_tokens=result_dict.get("output_tokens", 0),

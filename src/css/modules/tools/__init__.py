@@ -8,6 +8,7 @@ from .types import (
     HybridToolSchema,
     ManagedTool,
 )
+from .tool_call_loop import ToolCallLoop
 
 __all__ = [
     "Tool",
@@ -16,4 +17,5 @@ __all__ = [
     "ToolSchema",
     "HybridToolSchema",
     "ManagedTool",
+    "ToolCallLoop",
 ]
