@@ -168,6 +168,23 @@ ts-api-dev:  ## [DEPRECATED] Start TypeScript SDK API server with hot reload
 lint:  ## Lint with ruff
 	$(UV) run --group dev ruff check src/ tests/
 
+.PHONY: lint-all
+lint-all: lint-typing-rules lint  ## Run typing guardrails + ruff lint
+
+.PHONY: lint-typing-rules
+lint-typing-rules:  ## Enforce Python 3.14 typing normalization rules
+	@! rg --glob '*.py' '^from __future__ import annotations$$' src/css tests >/dev/null || \
+		(echo "❌ Found forbidden 'from __future__ import annotations' import(s)." && exit 1)
+	@! rg --glob '*.py' '^from typing import .*\\b(List|Dict|Tuple|Set|FrozenSet|Optional|Union)\\b' src/css tests >/dev/null || \
+		(echo "❌ Found forbidden legacy typing imports (List/Dict/Optional/etc)." && exit 1)
+	@! rg --glob '*.py' '\\btyping\\.(List|Dict|Tuple|Set|FrozenSet|Optional|Union)\\b' src/css tests >/dev/null || \
+		(echo "❌ Found forbidden typing.List/Dict/Optional/etc. usage." && exit 1)
+	@! rg --glob '*.py' '^\\s*@dataclass\\b|^\\s*@dataclasses\\.dataclass\\b' src/css tests >/dev/null || \
+		(echo "❌ Found forbidden dataclass decorators. Use msgspec.Struct instead." && exit 1)
+	@! rg --glob '*.py' '^\\s*from dataclasses import\\b.*\\b(dataclass|field)\\b|^\\s*import dataclasses\\b' src/css tests >/dev/null || \
+		(echo "❌ Found forbidden dataclass imports. Use msgspec.struct/msgspec.field." && exit 1)
+	@echo "✅ Typing normalization guardrails passed."
+
 .PHONY: fmt
 fmt:  ## Auto-format with ruff
 	$(UV) run --group dev ruff format src/ tests/

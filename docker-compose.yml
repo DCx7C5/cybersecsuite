@@ -85,35 +85,6 @@ services:
       start_period: 5s
       start_interval: 3s
 
-  cybersec-ollama:
-    image: ollama/ollama:latest
-    container_name: cybersec-ollama
-    profiles:
-      - default
-    <<: *common
-    entrypoint: /docker-entrypoint.sh
-    environment:
-      OLLAMA_HOST: 0.0.0.0
-    ports:
-      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-      - ./.docker/ollama/entrypoint.sh:/docker-entrypoint.sh:ro
-      - ./.docker/ollama/Modelfile:/modelfile/Modelfile:ro
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    healthcheck:
-      test: ["CMD", "curl", "-fs", "http://localhost:11434/api/tags"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-
   cybersec-openobserve:
     profiles:
       - default

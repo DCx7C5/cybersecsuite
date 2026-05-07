@@ -58,6 +58,8 @@ dependencies = [
     "deepinfra>=0.1.0",
     "openrouter>=0.1.0",
     "msgspec>=0.20.0",
+    "ruff>=0.15.5",
+    "tortoise>=0.1.1",
 ]
 
 [project.scripts]
@@ -110,33 +112,7 @@ packages = [
   "src/apps",
   "src/apps/streaming",
 
-  # BACKWARD COMPATIBILITY SHIMS (enable gradual migration)
-  "src/accounts",
-  "src/ai_proxy",
-  "src/asgi",
-  "src/checks",
-  "src/communicators",
-  "src/crypto",
-  "src/cssmcp",
-  "src/db",
-  "src/dbus",
-  "src/endpoints",
-  "src/entities",
-  "src/hooks",
-  "src/llm",
-  "src/marketplace",
-  "src/memory",
-  "src/openobserve",
-  "src/postgres",
-  "src/redis",
-  "src/registries",
-  "src/routes",
-  "src/startup",
-  "src/telemetry",
-  "src/tools",
-  "src/utils",
-  "src/agent",
-  
+
   # UTILITY PACKAGES
   "src/manage",
   "src/logger",
@@ -155,7 +131,7 @@ dev = [
     "pytest>=9.0.2",
     "pytest-asyncio>=1.3.0",
     "pytest-cov>=7.0.0",
-    "ruff>=0.9",
+    "ruff>=0.15.5",
     "typescript>=0.0.12",
 ]
 test = [

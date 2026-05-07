@@ -140,3 +140,4 @@ src/dashboard/static/js/
 *.json
 
 resume
+.ollama/

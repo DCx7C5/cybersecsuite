@@ -1,3 +1,11 @@
+# An .aiignore file follows the same syntax as a .gitignore file.
+# .gitignore documentation: https://git-scm.com/docs/gitignore
+
+# you can ignore files
+.DS_Store
+*.tmp
+
+
 # JetBrains AI Assistant — excluded from AI context
 # Syntax: same as .gitignore
 
@@ -58,7 +66,4 @@ dump.rdb
 
 resume
 legacy_docs/
-!src/css/modules/cache/
-!src/css/modules/cache/*.py
-!.plan/*.md
-!.plan/session.db
+src/legacy/
