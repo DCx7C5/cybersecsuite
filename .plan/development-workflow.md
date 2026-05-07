@@ -317,38 +317,75 @@ Fix the remaining errors of prior ruff run.
 
 ---
 
-### 🔵 POST-TASK (run AFTER task complete)
+### 🔵 POST-TASK (run AFTER task complete — ALL steps required)
 
-**Step 1 — Update plan.md**
+**Step 1 — Update local plan.md**
 ```bash
-# Update local plan.md (mark task complete)
+# Mark task complete in module's plan.md
 sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/plan.md"
-
-# Add to .plan/plan.md task section:
-echo "**Status**: ✅ DONE — $(date +%Y-%m-%d)" >> .plan/plan.md
+# Add status line to the task section in plan.md:
+sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/modules/<module>/plan.md"
 ```
 
-**Step 2 — Update memory.md**
+**Step 2 — Update .plan/plan.md**
+```sql
+-- Verify task done count for the phase
+SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE task = 'TASK_NAME';
+```
 ```bash
-# Update the phase table row (done count)
+# Update the phase section in .plan/plan.md:
+# Find the phase section, update todo counts to match session.db
+sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/plan.md
+```
+
+**Step 3 — Update .plan/memory.md (MANDATORY after every task)**
+```bash
+# Update the phase table row to match session.db exactly:
 .venv/bin/python -c "
 import sqlite3
 conn = sqlite3.connect('.plan/session.db')
 cur = conn.cursor()
-cur.execute('SELECT COUNT(*), SUM(status=\"done\") FROM todos WHERE phase = \"PHASE_NAME\"')
-total, done = cur.fetchone()
-print(f'Phase: {total} total, {done} done')
+cur.execute('SELECT COUNT(*), SUM(status=\"done\"), SUM(status=\"pending\"), SUM(status=\"blocked\") FROM todos WHERE phase = \"PHASE_NAME\"')
+total, done, pending, blocked = cur.fetchone()
+print(f'Updating memory.md: {total} total, {done} done, {pending} pending, {blocked} blocked')
 "
-# Edit .plan/memory.md: update the phase row
+# Edit .plan/memory.md: update the exact row in the phase table
+# Use sed to replace the correct table row:
+# | Phase X — NAME | TOTAL | DONE | PENDING | BLOCKED |
 ```
 
-**Step 3 — Commit (logical and atomic)**
+**Step 4 — Update .plan/checkpoints.md (MANDATORY after every task)**
+```bash
+# Append task completion entry to .plan/checkpoints.md:
+cat >> .plan/checkpoints.md << 'EOF'
+
+## Checkpoint XXX — TASK_NAME Completed ($(date +%Y-%m-%d))
+
+**Status**: ✅ COMPLETE
+
+### Work Done
+- Task: TASK_NAME
+- Phase: PHASE_NAME
+- Todos completed: N (list them)
+
+### session.db Changes
+- Phase progress: X/Y todos done (Z%)
+
+### Files Modified
+- list of files changed
+
+### Status
+- Ready for next task in phase
+EOF
+```
+
+**Step 5 — Commit (logical and atomic)**
 ```bash
 git add -A
 git commit -m "[TASK-TASK_NAME] Task complete
 
 - N todos completed
-- Ruff: clean (3 passes)"
+- Ruff: clean"
 ```
 
 ---
