@@ -1,6 +1,7 @@
 """Account ORM models — user accounts and authentication."""
 
 from tortoise import fields
+from tortoise.indexes import Index
 from tortoise.models import Model
 
 from css.core.db.models.enums import UserRoles
@@ -24,7 +25,7 @@ class User(Model):
     """
 
     id = fields.BigIntField(primary_key=True)
-    email = fields.CharField(max_length=255, unique=True)
+    username = fields.CharField(max_length=255, unique=True)
     hashed_password = fields.CharField(max_length=255)
     api_key_hash = fields.CharField(max_length=255, null=True)
     roles = fields.CharEnumField(enum_type=UserRoles, default=[])
@@ -35,9 +36,17 @@ class User(Model):
 
     class Meta:
         table = "users"
-        indexes = [
-            ("email", "is_active"),  # Composite index for active user lookup
-        ]
+        indexes = (
+            Index(fields=["username"]),
+            Index(fields=["api_key_hash"]),
+        )
+        ordering = ["id"]
+        unique_together = (
+            ("username", "api_key_hash"),
+            ("username", "is_active"),
+            ("api_key_hash", "is_active"),
+            ("username", "api_key_hash", "is_active"),
+        )
 
     def __str__(self) -> str:
-        return f"User({self.email})"
+        return f"User({self.username})"
