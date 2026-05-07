@@ -2,7 +2,6 @@
 
 from tortoise import fields
 from tortoise.models import Model
-from datetime import datetime
 
 
 class DomainEventRecord(Model):
@@ -62,5 +61,3 @@ class DomainEventRecord(Model):
         )
         store.append(event)
 
-
-__all__ = ["DomainEventRecord"]

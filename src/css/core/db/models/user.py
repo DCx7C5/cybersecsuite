@@ -79,4 +79,3 @@ class User(Model):
     def is_staff(self) -> bool:
         return self.is_admin or self.is_user or self.is_guest
 
-    
