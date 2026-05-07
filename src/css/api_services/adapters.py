@@ -10,7 +10,7 @@ Usage::
     result = await adapter.complete(prompt="Hello", model="gpt-4")
 """
 
-from typing import Any, Optional
+from typing import Any
 import logging
 from aiohttp import ClientSession, ClientTimeout
 import msgspec
@@ -30,7 +30,7 @@ class ProviderSpec(msgspec.Struct, frozen=True):
     display_name: str
     base_url: str
     api_type: str = "openai_compatible"
-    api_key_env: Optional[str] = None
+    api_key_env: str | None = None
     completion_endpoint: str = "/chat/completions"
     models: list[str] = msgspec.field(default_factory=list)
     streaming: bool = True
@@ -39,7 +39,7 @@ class ProviderSpec(msgspec.Struct, frozen=True):
 
 
 # Module-level singleton cache
-_adapters: dict[str, "HttpProviderAdapter"] = {}
+_adapters: dict[str, HttpProviderAdapter] = {}
 
 
 class HttpProviderAdapter:
@@ -60,7 +60,7 @@ class HttpProviderAdapter:
         """
         self.provider_name = provider_name
         self.spec = spec
-        self._session: Optional[ClientSession] = None
+        self._session: ClientSession | None = None
     
     async def _get_session(self) -> ClientSession:
         """Lazily initialize aiohttp session."""
@@ -73,7 +73,7 @@ class HttpProviderAdapter:
         self,
         prompt: str,
         model: str,
-        system: Optional[str] = None,
+        system: str | None = None,
         temperature: float = 0.7,
         max_tokens: int = 4096,
         stream: bool = False,
@@ -148,7 +148,7 @@ class HttpProviderAdapter:
         self,
         prompt: str,
         model: str,
-        system: Optional[str],
+        system: str | None,
         temperature: float,
         max_tokens: int,
         stream: bool,
@@ -212,7 +212,7 @@ class HttpProviderAdapter:
             self._session = None
 
 
-def get_adapter(provider_name: str, spec: Optional[ProviderSpec] = None) -> HttpProviderAdapter:
+def get_adapter(provider_name: str, spec: ProviderSpec | None = None) -> HttpProviderAdapter:
     """Get or create HttpProviderAdapter for provider.
     
     Args:

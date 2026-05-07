@@ -1,2 +1,55 @@
 
 api-services:
+  ai21:
+    type:
+    url:
+
+  anthropic:
+    type:
+    url:
+
+  cerebras:
+
+  cloudflare:
+
+  cohere:
+
+  deepinfra:
+
+  deepseek:
+
+  fireworks:
+
+  github:
+
+  gemini:
+
+  groq:
+
+  lambda_api:
+
+  mistral:
+
+  nscale:
+
+  nvidia:
+
+  ollama:
+
+  openai:
+
+  opencode:
+
+  openrouter:
+
+  perplexity:
+
+  sambanova:
+
+  together:
+
+  xai:
+
+  grok:
+
+  x:

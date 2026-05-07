@@ -11,7 +11,7 @@ Architecture:
 """
 
 import logging
-from typing import AsyncIterator, Optional, List
+from collections.abc import AsyncIterator
 
 from css.core.types.api_services import (
     BaseApiServiceClient,
@@ -27,7 +27,7 @@ from css.core.exceptions import (
     GatewayError,
     AuthError,
 )
-from css.core.retry import RetryOrchestrator, RetryConfig
+from css.core.resilience import RetryOrchestrator, RetryConfig
 from css.core.config import ProviderDefaults
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class OllamaClientCompat(BaseApiServiceClient):
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         enable_model_auto_load: bool = True,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ):
         """
         Initialize Ollama compatibility wrapper.
@@ -79,13 +79,13 @@ class OllamaClientCompat(BaseApiServiceClient):
         self.retry_orchestrator = RetryOrchestrator(
             RetryConfig(max_retries=max_retries)
         )
-        self._cached_models: Optional[List[ModelMetadata]] = None
+        self._cached_models: list[ModelMetadata] | None = None
     
     def _default_base_url(self) -> str:
         """Return default Ollama base URL."""
         return "http://localhost:11434/v1"
     
-    async def get_models(self) -> List[ModelMetadata]:
+    async def get_models(self) -> list[ModelMetadata]:
         """
         Get available models from local Ollama.
         
@@ -153,11 +153,11 @@ class OllamaClientCompat(BaseApiServiceClient):
     async def call_llm(
         self,
         model_id: str,
-        messages: List[BaseMessage],
-        tools: Optional[List[Tool]] = None,
+        messages: list[BaseMessage],
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk]:
@@ -291,7 +291,7 @@ class OllamaClientCompat(BaseApiServiceClient):
                 metadata={"error": str(e)}
             )
     
-    async def _parse_stream_chunk(self, line: str) -> Optional[StreamChunk]:
+    async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Parse SSE line to StreamChunk."""
         import json
         
@@ -374,9 +374,9 @@ class OllamaClientCompat(BaseApiServiceClient):
     
     @staticmethod
     def _format_messages(
-        messages: List[BaseMessage],
-        system_prompt: Optional[str] = None,
-    ) -> List[dict]:
+        messages: list[BaseMessage],
+        system_prompt: str | None = None,
+    ) -> list[dict]:
         """Format messages for Ollama API."""
         formatted = []
         if system_prompt:
@@ -391,7 +391,7 @@ class OllamaClientCompat(BaseApiServiceClient):
         return formatted
     
     @staticmethod
-    def _format_tools(tools: List[Tool]) -> List[dict]:
+    def _format_tools(tools: list[Tool]) -> list[dict]:
         """Format tools for Ollama API."""
         return [
             {

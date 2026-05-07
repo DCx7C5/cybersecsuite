@@ -11,7 +11,6 @@ Usage::
     spec = registry.get_spec('openai')
 """
 
-from typing import Dict, Optional
 import logging
 
 from .adapters import HttpProviderAdapter, ProviderSpec
@@ -19,7 +18,7 @@ from .adapters import HttpProviderAdapter, ProviderSpec
 logger = logging.getLogger(__name__)
 
 # Module-level singleton
-_registry: Optional["ProviderRegistry"] = None
+_registry: ProviderRegistry | None = None
 
 
 class ProviderRegistry:
@@ -95,8 +94,8 @@ class ProviderRegistry:
     
     def __init__(self):
         """Initialize provider registry with lazy-loaded provider cache."""
-        self._cache: Dict[str, HttpProviderAdapter] = {}
-        self._specs: Dict[str, ProviderSpec] = {}
+        self._cache: dict[str, HttpProviderAdapter] = {}
+        self._specs: dict[str, ProviderSpec] = {}
         self._load_default_specs()
     
     def _load_default_specs(self) -> None:
@@ -134,7 +133,7 @@ class ProviderRegistry:
         
         return self._cache[provider_name]
     
-    def get_spec(self, provider_name: str) -> Optional[ProviderSpec]:
+    def get_spec(self, provider_name: str) -> ProviderSpec | None:
         """Get provider spec by name.
         
         Args:
@@ -173,7 +172,7 @@ class ProviderRegistry:
         logger.debug("Cleared provider cache")
 
 
-def get_registry() -> ProviderRegistry:
+def get_registry() -> ProviderRegistry | None:
     """Get the global ProviderRegistry singleton."""
     global _registry
     if _registry is None:
@@ -182,4 +181,3 @@ def get_registry() -> ProviderRegistry:
 
 
 __all__ = ["ProviderRegistry", "get_registry"]
-

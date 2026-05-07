@@ -15,7 +15,7 @@
 | `css.core.types`         | → consumes    | Base types, Protocol contracts — ALL providers import from here             |
 | `css.core.resilience`    | → consumes    | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        |
 | `css.modules.llm_models` | ← consumed by | `UnifiedLLMClient` routes to provider SDKs via registry                     |
-| `css.core.events`     | ← wrapped by  | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        |
+| `css.core.events`        | ← wrapped by  | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        |
 | `css.core.prompt_cache`  | ← consumed by | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only |
 | `css.core.ollama`        | ← proxied by  | `OllamaProcessManager` must be running before any Ollama API calls          |
 
@@ -29,12 +29,12 @@
 
 ## SDK Tiers
 
-| Tier | Pattern | Providers |
-|------|---------|-----------|
-| **A — Native SDK** | Provider's own Python package | anthropic, cohere, gemini, openai (native), ollama |
+| Tier                      | Pattern                                  | Providers                                                                                                                                       |
+|---------------------------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **A — Native SDK**        | Provider's own Python package            | anthropic, cohere, gemini, openai (native), ollama                                                                                              |
 | **B — OpenAI-Compatible** | `AsyncOpenAI(base_url=..., api_key=...)` | ai21, cerebras, cloudflare, deepinfra, deepseek, fireworks, groq, lambda_api, mistral, nscale, openrouter, perplexity, sambanova, together, xai |
-| **C — Custom In-House** | `aiohttp` REST client written in-house | ollama (in-house aiohttp, see note), opencode |
-| **D — Complex Auth** | Non-standard token flow + JSON-RPC | github (Copilot CLI required) |
+| **C — Custom In-House**   | `aiohttp` REST client written in-house   | ollama (in-house aiohttp, see note), opencode                                                                                                   |
+| **D — Complex Auth**      | Non-standard token flow + JSON-RPC       | github (Copilot CLI required)                                                                                                                   |
 
 > **Note on ollama**: `api_services/ollama/` uses a custom in-house `aiohttp` client (NOT the `ollama` pip package). The `ollama` pip package is used exclusively in `core/ollama/client.py` for process management communication.
 
@@ -130,7 +130,7 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 **SDK Features**: Streaming ✅, Vision ✅, Embeddings ✅, Tool Use ⚠️, Local only ✅, Free ✅
 
-**Key note**: Uses custom `aiohttp` REST client against `http://localhost:11434`. NOT the `ollama` pip package. `core/ollama/` handles process lifecycle; this adapter handles LLM calls.
+**Keynote**: Uses custom `aiohttp` REST client against `http://localhost:11434`. NOT the `ollama` pip package. `core/ollama/` handles process lifecycle; this adapter handles LLM calls.
 
 **Dev models** (pull manually): `qwen3:0.6b`, `phi4-mini:3.8b-q4_K_M`, `qwen3:4b-q4_K_M`
 
@@ -262,11 +262,11 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ## Prompt Caching Summary
 
-| Provider | Cache Method | Status |
-|----------|-------------|--------|
-| Anthropic | `cache_control` breakpoints via `core/prompt_cache/` | ✅ Phase 11 |
-| Gemini | `cachedContent` NATIVE_RESOURCE | ⛔ Deferred (`cache-gemini-context-cache` blocked) |
-| All others | None (no provider-native cache) | — |
+| Provider   | Cache Method                                         | Status                                            |
+|------------|------------------------------------------------------|---------------------------------------------------|
+| Anthropic  | `cache_control` breakpoints via `core/prompt_cache/` | ✅ Phase 11                                        |
+| Gemini     | `cachedContent` NATIVE_RESOURCE                      | ⛔ Deferred (`cache-gemini-context-cache` blocked) |
+| All others | None (no provider-native cache)                      | —                                                 |
 
 ---
 

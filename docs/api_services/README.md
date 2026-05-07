@@ -49,7 +49,7 @@ class ModelRegistry:
 - Grouped by provider
 - UI shows models only from active ApiServices, grouped by tier
 
-See `docs/registries/README.md` (ApiServicesRegistry) and `docs/registries/MODELS.md` (ModelRegistry)
+See `src/css/api_services/plan.md` for provider registry planning and model/provider routing notes.
 
 ## From Legacy
 src/legacy/registries/ or src/legacy/ai_proxy/

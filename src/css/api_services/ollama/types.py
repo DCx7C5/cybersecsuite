@@ -8,7 +8,6 @@ This module is part of the Ollama provider package and should be imported from:
 """
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -20,8 +19,8 @@ class OllamaModel(BaseModel):
     full_name: str = Field(..., description="Full identifier with tag (e.g., 'llama2:7b')")
     size_gb: float = Field(default=0.0, description="Model size in GB")
     parameters: int = Field(default=0, description="Number of parameters")
-    quantization: Optional[str] = Field(default=None, description="Quantization level (e.g., 'Q4_0')")
-    description: Optional[str] = Field(default=None)
+    quantization: str | None = Field(default=None, description="Quantization level (e.g., 'Q4_0')")
+    description: str | None = Field(default=None)
     modified_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
@@ -101,7 +100,7 @@ class OllamaExecutionContext(BaseModel):
     model_name: str = Field(..., description="Which Ollama model was used")
     provider: str = Field(default="ollama", description="Always 'ollama'")
     started_at: datetime = Field(default_factory=datetime.utcnow)
-    ended_at: Optional[datetime] = Field(default=None)
+    ended_at: datetime | None = Field(default=None)
     tokens_generated: int = Field(default=0, description="Output tokens")
     tokens_prompted: int = Field(default=0, description="Input tokens")
     total_duration_ms: float = Field(default=0.0, description="Total execution time")
@@ -110,7 +109,7 @@ class OllamaExecutionContext(BaseModel):
     eval_count: int = Field(default=0, description="Tokens generated")
     streamed: bool = Field(default=True, description="Was this response streamed?")
     interrupted: bool = Field(default=False, description="Was streaming interrupted?")
-    error: Optional[str] = Field(default=None, description="Error message if failed")
+    error: str | None = Field(default=None, description="Error message if failed")
 
     class Config:
         """Pydantic config."""
@@ -147,7 +146,7 @@ class OllamaHealthCheck(BaseModel):
     models_available: int = Field(default=0, description="Number of models on disk")
     models_loaded: int = Field(default=0, description="Number of models in memory")
     last_check_at: datetime = Field(default_factory=datetime.utcnow)
-    error: Optional[str] = Field(default=None, description="Error message if health check failed")
+    error: str | None = Field(default=None, description="Error message if health check failed")
 
     class Config:
         """Pydantic config."""

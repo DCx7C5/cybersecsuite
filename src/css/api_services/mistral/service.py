@@ -3,7 +3,8 @@
 import json
 import logging
 import os
-from typing import Any, AsyncIterator, Optional
+from typing import Any
+from collections.abc import AsyncIterator
 
 from css.core.types import (
     BaseMessage,
@@ -26,8 +27,8 @@ class MistralApiService(BaseApiServiceClient, StreamingHandler):
     
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
@@ -82,10 +83,10 @@ class MistralApiService(BaseApiServiceClient, StreamingHandler):
         self,
         model_id: str,
         messages: list[BaseMessage],
-        tools: Optional[list[Tool]] = None,
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk] | LLMResponse:
@@ -107,7 +108,7 @@ class MistralApiService(BaseApiServiceClient, StreamingHandler):
         else:
             return await self._buffered_response(call_body)
     
-    async def _parse_stream_chunk(self, line: str) -> Optional[StreamChunk]:
+    async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Parse SSE line."""
         if not line.startswith("data: "):
             return None
@@ -207,7 +208,7 @@ class MistralApiService(BaseApiServiceClient, StreamingHandler):
     @staticmethod
     def _format_messages(
         messages: list[BaseMessage],
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
     ) -> list[dict[str, Any]]:
         """Format messages."""
         formatted = []

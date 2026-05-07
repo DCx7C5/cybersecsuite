@@ -1,6 +1,6 @@
 """Ollama client — wrapper for local Ollama HTTP API with streaming support."""
 
-from typing import Optional, List, AsyncIterator
+from collections.abc import AsyncIterator
 import logging
 
 from css.core.types.base_client import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
@@ -36,7 +36,7 @@ class OllamaClient(BaseApiServiceClient):
         base_url: str = 'http://localhost:11434',
         timeout_seconds: int = 300,
         enable_model_auto_load: bool = True,
-        config: Optional[OllamaConfig] = None,
+        config: OllamaConfig | None = None,
     ):
         """
         Initialize Ollama client.
@@ -54,7 +54,7 @@ class OllamaClient(BaseApiServiceClient):
         """Return default Ollama base URL."""
         pass
     
-    async def get_models(self) -> List[ModelMetadata]:
+    async def get_models(self) -> list[ModelMetadata]:
         """
         Get list of available models from local Ollama.
         
@@ -72,11 +72,11 @@ class OllamaClient(BaseApiServiceClient):
     async def call_llm(
         self,
         model_id: str,
-        messages: List[BaseMessage],
-        tools: Optional[List[Tool]] = None,
+        messages: list[BaseMessage],
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk]:

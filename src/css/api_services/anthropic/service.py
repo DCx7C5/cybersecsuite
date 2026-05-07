@@ -2,7 +2,8 @@
 
 import logging
 import os
-from typing import Any, AsyncIterator, Optional, List
+from typing import Any
+from collections.abc import AsyncIterator
 
 from css.core.types import (
     BaseMessage,
@@ -25,8 +26,8 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
     
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
     ):
@@ -106,11 +107,11 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
     async def call_llm(
         self,
         model_id: str,
-        messages: List[BaseMessage],
-        tools: Optional[List[Tool]] = None,
+        messages: list[BaseMessage],
+        tools: list[Tool] | None = None,
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        system_prompt: Optional[str] = None,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
     ) -> AsyncIterator[StreamChunk] | LLMResponse:
@@ -180,7 +181,7 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
                         stop_reason="stop",
                     )
     
-    async def _parse_stream_chunk(self, line: str) -> Optional[StreamChunk]:
+    async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Not used for Anthropic SDK (uses event stream)."""
         return None
     
