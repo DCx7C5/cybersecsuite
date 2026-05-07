@@ -49,18 +49,19 @@ cat src/css/modules/<module_name>/plan.md
 - **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 - **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
+- **ABSOLUTE: when creating new files or content keep pattern consistency in your mind**
 
 ### Code & Execution
-- **ABSOLUTE: **
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
-- **ABSOLUTE: `@dataclass + ABC` is deprecated pattern. Fix immediately when seen in existing codebase.**
+- **ABSOLUTE: `@dataclass` & `@dataclass + ABC` is deprecated pattern. Fix immediately when seen in existing codebase.**
 - **ABSOLUTE: keep thinking chat to bare essentials only** — No reasoning bloat, no hidden verbosity
 - **ABSOLUTE: keep every chat response under 500 words unless impossible**
 - **ABSOLUTE: explicitly announce whenever a TODO, TASK, or PHASE is completed**
 - **ABSOLUTE: every tool execution must have a clear headline**
 - **ABSOLUTE: always end with a normal summary**
 - **ABSOLUTE: always prefer async Python whenever possible**
-- **ABSOLUTE: we never use type `Any`. Only exception is second type in `Dict` type `Dict[str, Any]`.
+- **ABSOLUTE: we never use type `Any`, We create exact `TypedDict`s.**
+- **ABSOLUTE: we never use comments for typing, e.g `# type: XY`**
 - **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
 - **ABSOLUTE: always use `aiohttp`, never `httpx`**
 - **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**
@@ -105,7 +106,7 @@ cat src/css/modules/<module_name>/plan.md
 | **checkpoints.md**           | Phase summaries and completion records                |
 | **session.db**               | Todo tracker (SQLite) — ALWAYS KEEP IN SYNC!!!        |
 
-**❌ FORBIDDEN in `.plan/`**: Other .md files, subdirectories, staging files, temporary docs
+**❌ FORBIDDEN in `.plan/`**: Other .md files, subdirectories except `architecture/`, staging files, temporary docs
 **CONSOLIDATE**: If you need new content, merge into one of the 7 whitelisted files above.
 
 ### LOCAL `plan.md` Files (Throughout `src/css/`)
@@ -217,36 +218,36 @@ modules/<name>/
 
 ### Current Modules (22 total)
 
-| Module       | Purpose                                                     |
-|--------------|-------------------------------------------------------------|
-| accounts     | User account management & authentication                    |
-| agents       | Agent orchestration & execution                             |
-| cache        | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache)               |
-| capabilities | Capability definitions & registry                           |
-| chat         | Chat session management                                     |
-| css_a2a      | CSS-specific auth integration                               |
-| events       | Event bus & streaming                                       |
-| google_a2a   | Google Auth2App integration                                 |
-| llm_models   | LLM model registry & metadata                               |
-| marketplace  | Marketplace (plugins, integrations)                         |
-| mcps         | MCP server management (register/connect/call)               |
-| memory       | Memory & context management                                 |
-| permissions  | Role-based access control (PathGrant, ToolGrant)            |
-| planer       | Planning & task decomposition                               |
-| projects     | Project registration & session linking                      |
-| prompts      | Prompt registry, template engine, variable substitution     |
-| roles        | Role definitions & assignment                               |
-| ~~scopes~~   | ⚠️ DEPRECATED — 2-level model docs only (Phase 15 deletion) |
-| settings     | Settings management & config cascade                        |
-| skills       | Skill definitions & execution                               |
-| strategies   | Strategy selection & execution                              |
-| streaming    | Streaming & SSE support                                     |
-| tags         | Tag management & categorization                             |
-| tasks        | Task management & coordination                              |
-| teams        | Team management & isolation                                 |
-| tools        | Tool registry & execution (LLM + MCP)                       |
+| Module       | Purpose                                                                              |
+|--------------|--------------------------------------------------------------------------------------|
+| accounts     | User account management & authentication                                             |
+| agents       | Agent orchestration & execution                                                      |
+| cache        | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache)                                        |
+| capabilities | Capability definitions & registry                                                    |
+| chat         | Chat session management                                                              |
+| css_a2a      | CSS-specific auth integration                                                        |
+| events       | Event bus & streaming                                                                |
+| google_a2a   | Google Auth2App integration                                                          |
+| llm_models   | LLM model registry & metadata                                                        |
+| marketplace  | Marketplace (plugins, integrations)                                                  |
+| mcps         | MCP server management (register/connect/call)                                        |
+| memory       | Memory & context management                                                          |
+| permissions  | Role-based access control (PathGrant, ToolGrant)                                     |
+| planer       | Planning & task decomposition                                                        |
+| projects     | Project registration & session linking                                               |
+| prompts      | Prompt registry, template engine, variable substitution                              |
+| roles        | Role definitions & assignment                                                        |
+| ~~scopes~~   | ⚠️ DEPRECATED — 2-level model docs only (Phase 15 deletion)                          |
+| settings     | Settings management & config cascade                                                 |
+| skills       | Skill definitions & execution                                                        |
+| strategies   | Strategy selection & execution                                                       |
+| streaming    | Streaming & SSE support                                                              |
+| tags         | Tag management & categorization                                                      |
+| tasks        | Task management & coordination                                                       |
+| teams        | Team management & isolation                                                          |
+| tools        | Tool registry & execution (LLM + MCP)                                                |
 | triage       | ⚠️ PENDING RENAME → `modules/intelligence/` (todo: `triage-rename-module`, Phase 19) |
-| workflows    | Workflow management & orchestration                         | |
+| workflows    | Workflow management & orchestration                                                  | |
 
 **Moved to `core/` (infrastructure, not business logic)**:
 - `cache` → `core/cache/` (KV cache: L1 memory, L2 Redis, L3 PostgreSQL)
@@ -332,10 +333,7 @@ class Base(ABC):
     @abstractmethod
     def method(self): ...
 
-# Value / data container → @dataclass (acceptable) or msgspec.Struct (preferred)
-@dataclass
-class SkillDefinition:     # pure data — no ABC, fine as-is until Phase 6 P1 migration
-    field: str
+# Value / data container → msgspec.Struct (preferred)
 
 class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all value types
     session_id: str

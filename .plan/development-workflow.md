@@ -154,7 +154,7 @@ cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/api_services/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null
 
 # Read architecture doc if phase mentions it:
-# Phase 6 → cat .plan/architecture/core-audit-matrix.md
+# Phase 6 → read .plan/plan.md (Phase 6 section)
 # Phase 14 → cat .plan/architecture/observability.md
 # Phase 21 → cat .plan/architecture/sdks.md
 

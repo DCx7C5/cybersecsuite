@@ -51,7 +51,7 @@ Custom RetryOrchestrator
 
 #### 2.1: Retry Configuration
 
-**File:** `src/core/retry/config.py`
+**File:** `src/css/core/resilience/config.py`
 
 ```python
 from dataclasses import dataclass, field
@@ -112,7 +112,7 @@ class RetryConfig:
 
 #### 2.2: Retry Detection
 
-**File:** `src/core/retry/detection.py`
+**File:** `src/css/core/resilience/detection.py`
 
 ```python
 from core.types import ProviderType
@@ -163,7 +163,7 @@ class RetryDetector:
 
 #### 2.3: Retry Orchestrator
 
-**File:** `src/core/retry/orchestrator.py`
+**File:** `src/css/core/resilience/orchestrator.py`
 
 ```python
 import asyncio
@@ -568,4 +568,3 @@ def map_provider_error(provider_id: ProviderType, error: Exception) -> CyberSecS
 - Issue #3 (Errors) → Raised by all provider calls, caught by retry orchestrator
 - Issue #7 (Cleanup) → Applied to connection pooling in BaseApiServiceClient context manager
 - Issue #8 (Tokens) → Called during stream processing to estimate token counts
-
