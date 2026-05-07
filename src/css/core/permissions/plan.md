@@ -1,4 +1,4 @@
-# modules/permissions — Plan
+# core/permissions — Plan
 
 **Status**: Phase 15 redesign — NOT YET IMPLEMENTED
 **Phase**: 15 (depends on Phase 14 interceptors for enforcement)
@@ -82,7 +82,7 @@ Example: grant `"*"` to orchestrator, then deny `"bash.rm_rf"` → bash.rm_rf is
 ## File Layout (Phase 15 target)
 
 ```
-modules/permissions/
+core/permissions/
 ├── __init__.py          # exports: PermissionChecker, GrantManager, PathGrant, ToolGrant, PathOp
 ├── enums.py             # PathOp(Flag), GrantProfile enum
 ├── types.py             # PathGrant, ToolGrant (msgspec.Struct)

@@ -1,5 +1,8 @@
 # @streaming — Streaming & Real-time Processing
 
+> **MOVED TO CORE**: Originally `core/streaming/`, now at `src/css/core/streaming/`
+> Reflects infrastructure nature of streaming/real-time processing.
+
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
 ---
@@ -45,7 +48,7 @@ Claude SDK hardcode removed — provider-agnostic execution.
 ## Module Pattern
 
 ```python
-# src/css/modules/streaming/__init__.py
+# src/css/core/streaming/__init__.py
 """Streaming and real-time processing."""
 
 import logging
@@ -75,7 +78,7 @@ __all__ = ['StreamManager']
 `options_manager.py` currently imports `ScopeLevel` from the `@scopes` module (which is deleted in Phase 15). It must be replaced with a local enum:
 
 ```python
-# css/modules/streaming/options_manager.py
+# css/core/streaming/options_manager.py
 class ConfigLayer(str, Enum):
     """Local replacement for ScopeLevel — streaming config granularity only."""
     GLOBAL = "global"

@@ -84,7 +84,7 @@ Remote index at: `https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/h
 **Goal**: Track remote index hash locally, notify frontend when updates available
 
 ```python
-# In models.py
+# In user.py
 class MarketplaceMeta(Model):
     name = fields.CharField(max_length=255)
     version = fields.CharField(max_length=20)

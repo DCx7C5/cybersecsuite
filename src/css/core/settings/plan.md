@@ -1,5 +1,8 @@
 # @settings — Settings & Defaults Management
 
+> **MOVED TO CORE**: Originally `modules/settings/`, now at `src/css/core/settings/`
+> Reflects infrastructure nature of settings/cache configuration.
+
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
 ---
@@ -38,7 +41,7 @@ DB-backed runtime configuration registry — sits on top of `config.py` (static 
 ## File Layout
 
 ```
-src/css/modules/settings/
+src/css/core/settings/
 ├── __init__.py
 ├── plan.md                     ← this file
 ├── registry.py                 ← SettingsRegistry class + SETTINGS_REGISTRY singleton

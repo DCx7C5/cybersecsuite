@@ -1,5 +1,7 @@
 # @capabilities — Provider & Model Capability Discovery
 
+> **MOVED TO CORE**: Originally `core/capabilities/`, now at `src/css/core/capabilities/`
+
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
 ---
@@ -73,7 +75,7 @@ is_streaming = registry.has_capability('openai', 'gpt-4', CapabilityType.STREAMI
 ## Module Pattern
 
 ```python
-# src/css/modules/capabilities/__init__.py
+# src/css/core/capabilities/__init__.py
 """Dynamic capability discovery for LLM providers."""
 
 import logging

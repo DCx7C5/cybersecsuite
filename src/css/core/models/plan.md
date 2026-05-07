@@ -1,4 +1,7 @@
-# @llm_models — LLM Model Registry & Management
+# @models — LLM Model Registry & Management
+
+> **MOVED TO CORE**: Originally `modules/llm_models/`, now at `src/css/core/models/`
+> Renamed from `llm_models` to `models` for clarity.
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
@@ -13,7 +16,7 @@
 | `css.api_services.*` | ← consumed by | All 22 provider SDKs registered in this registry |
 | `css.modules.events` | → consumes | `@instrument("llm.call.{provider}.{model}")` — Phase 14 |
 | `UnifiedLLMClient` (Phase 10) | ← provides to | Registry drives provider SDK selection |
-| `css.modules.triage` | ← provides to | Triage module reads routing tier metadata |
+| `css.core.triage` | ← provides to | Triage module reads routing tier metadata |
 
 ---
 
@@ -81,7 +84,7 @@
 ## Module Pattern
 
 ```python
-# src/css/modules/llm_models/__init__.py
+# src/css/core/models/__init__.py
 """LLM model registry, validation, and management."""
 
 import logging
