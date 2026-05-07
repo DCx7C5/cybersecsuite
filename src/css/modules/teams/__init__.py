@@ -2,6 +2,7 @@
 
 from .enums import TeamStatus, OrchestratorMode
 from .types import Team, TeamScope
+from .orchestrator import TeamOrchestrator
 
 
 __all__ = [
@@ -9,4 +10,5 @@ __all__ = [
     "TeamScope",
     "TeamStatus",
     "OrchestratorMode",
+    "TeamOrchestrator",
 ]
