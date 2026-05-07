@@ -3,18 +3,18 @@
 Provides a high-level interface for running agents queries
 with session persistence, mode switching, and streaming support.
 
-Now uses AgentExecutor → ProviderRegistry → HttpProviderAdapter.
-Removed Claude SDK hardcode — agents are provider-agnostic.
+Uses AgentExecutor → ProviderRegistry → HttpProviderAdapter.
+TeamLeader delegation when team_id + orchestrator_id are set.
 """
 
-from legacy.logger import getLogger
+import logging
 from collections.abc import AsyncGenerator
-from typing import Any, Optional
+from typing import Any
 import uuid
 from datetime import datetime
 
 
-logger = getLogger("agents.runner")
+logger = logging.getLogger("agents.runner")
 
 _MODE_PREFIXES: dict[str, str] = {
     "blue":   "",
@@ -50,8 +50,8 @@ class QueryExecutor:
         mode: str = "blue",
         extra_tools: list[str] | None = None,
         pool: Any | None = None,
-        team_id: Optional[int] = None,
-        orchestrator_id: Optional[str] = None,
+        team_id: int | None = None,
+        orchestrator_id: str | None = None,
         provider: str = "openai",
         model: str = "gpt-4",
     ) -> None:

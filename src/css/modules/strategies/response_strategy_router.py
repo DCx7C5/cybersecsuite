@@ -5,7 +5,7 @@ Decides PREPEND vs INJECT vs CHAIN based on query complexity using local LLM.
 
 from enum import Enum
 
-from css.modules.google_a2a.enums import ResponseInjectionStrategy
+from css.core.a2a.enums import ResponseInjectionStrategy
 
 
 class QueryComplexity(str, Enum):

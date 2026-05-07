@@ -5,12 +5,12 @@ workflow: maps session IDs to cases, agents, and modes.
 """
 
 
-from legacy.logger import getLogger
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-logger = getLogger("agents.sessions")
+logger = logging.getLogger("agents.sessions")
 
 
 @dataclass

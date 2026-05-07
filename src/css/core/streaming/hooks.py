@@ -9,10 +9,10 @@ Provides four hooks for use in ClaudeAgentOptions.hooks:
 import re
 from typing import Any
 
-from legacy.logger import getLogger
+import logging
 
 
-logger = getLogger("agents.hooks")
+logger = logging.getLogger("agents.hooks")
 
 # ── Dangerous pattern blocklist ──────────────────────────────────────────────
 

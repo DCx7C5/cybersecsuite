@@ -1,16 +1,18 @@
-"""Streaming — High-level Claude Agent SDK integration for CyberSecSuite.
+"""core.streaming — Streaming infrastructure primitives.
+
+Provides: ClientPool, SessionManager, get_pool.
+QueryExecutor lives in modules/streaming/runner.py (depends on agent modules).
 
 Public API:
-    from streaming import QueryExecutor, SessionManager, getLogger, ClientPool, get_pool
-    from core.streaming.hooks import security_hook, audit_hook, cost_hook
-    from core.streaming.streaming import StreamingAdapter
+    from css.core.streaming import ClientPool, get_pool, SessionManager
+    from css.core.streaming.hooks import security_hook, audit_hook, cost_hook
 """
 
-from css.core.logger import getLogger
-from css.core.streaming.runner import QueryExecutor
+import logging
+
 from css.core.streaming.sessions import SessionManager
 from css.core.streaming.client_pool import ClientPool, get_pool
 
-logger = getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-__all__ = ["QueryExecutor", "SessionManager", "ClientPool", "get_pool", "logger"]
+__all__ = ["SessionManager", "ClientPool", "get_pool", "logger"]
