@@ -7,8 +7,8 @@ from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
-from css.modules.css_a2a.a2a_comms import A2ACommunicator
-from css.modules.css_a2a.dispatcher import MessageDispatcher
+from css.modules.a2a_internal.a2a_comms import A2ACommunicator
+from css.modules.a2a_internal.dispatcher import MessageDispatcher
 
 
 def _state_name(task: Any) -> str:

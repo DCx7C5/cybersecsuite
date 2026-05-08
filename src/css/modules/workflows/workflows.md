@@ -18,7 +18,7 @@
 
 - `core/memory`: workflow runs consume session context, summaries, and memory-backed state
 - `modules/triage`: local intelligence can classify incoming requests and influence which workflow path to trigger
-- `core/vector_rag`: workflow steps may request hybrid retrieval context, but retrieval remains a separate subsystem
+- `core/rag_vector`: workflow steps may request hybrid retrieval context, but retrieval remains a separate subsystem
 - `modules/graphs`: workflow state is projected into workflow/session/approval graph snapshots and live graph streams
 - `modules/ipc`: workflow execution coordinates across orchestrators, teams, and subprocesses
 

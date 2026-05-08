@@ -9,9 +9,9 @@ IOC storage, threat feed ingestion, and threat-match tracking.
 ## Planned Architecture Role
 
 - `modules/threat_intel/` remains the canonical relational/domain owner for threat-intel data.
-- Graph-native entities and relationships should additionally project into `src/css/core/graph_rag/`.
+- Graph-native entities and relationships should additionally project into `src/css/core/rag_graph/`.
 - Typical graph projection targets: actors, malware, campaigns, tools, observables, CVEs, infrastructure, and feed-derived links.
-- `core/vector_rag` consumes the graph retrieval path indirectly through `core/graph_rag` in `graph` and `hybrid` modes.
+- `core/rag_vector` consumes the graph retrieval path indirectly through `core/rag_graph` in `graph` and `hybrid` modes.
 
 ## Current State
 

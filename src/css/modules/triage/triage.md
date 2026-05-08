@@ -22,8 +22,8 @@
 This module is part of the wider memory/retrieval/graph architecture.
 
 - `core/memory`: Phase 21 `triage-memory-tagger` attaches semantic tags after memory writes.
-- `core/vector_rag`: Phase 21 may later provide `AUTO` retrieval route hints, but retrieval stays owned by `core/vector_rag`.
-- `core/graph_rag`: Phase 21 can emit stable extracted entities, ATT&CK candidate mappings, and confidence-scored links into graph ingest. Ephemeral routing or quality-gate state does not belong in Neo4j.
+- `core/rag_vector`: Phase 21 may later provide `AUTO` retrieval route hints, but retrieval stays owned by `core/rag_vector`.
+- `core/rag_graph`: Phase 21 can emit stable extracted entities, ATT&CK candidate mappings, and confidence-scored links into graph ingest. Ephemeral routing or quality-gate state does not belong in Neo4j.
 - `modules/workflows` + `modules/graphs`: triage can classify intent, complexity, or approvals, while workflow/graph state stays outside this module.
 - `core/prompt_cache`: local-model prompt/response caching belongs there, not in retrieval caches.
 

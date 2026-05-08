@@ -20,11 +20,12 @@ The core storage split is:
 | `css.core.events` | → consumes | EventStore, domain events, instrumentation |
 | `css.modules.mcps` | → consumes | MCP-backed SIEM/EDR connectors and response actions |
 | `css.core.observability` | → consumes | OpenObserve client + stream definitions for telemetry fan-out |
-| `css.core.graph_rag` | → consumes | Graph projection of entities, techniques, and attack paths |
-| `css.core.vector_rag` | → consumes | Similar incident and knowledge retrieval |
+| `css.core.rag_graph` | → consumes | Graph projection of entities, techniques, and attack paths |
+| `css.core.rag_vector` | → consumes | Similar incident and knowledge retrieval |
 | `css.modules.workflows` | → consumes | Response playbooks |
 | `css.modules.approvals` | → consumes | Human approval for destructive actions |
 | `css.modules.permissions` | → consumes | Policy/permission checks for response actions |
+| `css.core.cache` | note | No direct SIEM KV-cache ownership; OpenObserve, PostgreSQL, and GraphRAG stay primary while retrieval/prompt caches are consumed indirectly |
 
 ## Execution Flow
 

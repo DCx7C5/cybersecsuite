@@ -29,8 +29,9 @@ Legacy module package has been fully removed.
 ## Integration Role
 
 - `core/memory` is the meeting point between live conversation state and retrieval.
-- Phase 20 `rag-context-wire` makes memory-backed `ContextAssembler` a primary caller of `core/vector_rag`.
+- Phase 20 `rag-context-wire` makes memory-backed `ContextAssembler` a primary caller of `core/rag_vector`.
 - Phase 21 `triage-memory-tagger` attaches semantic tags to stored entries after `store()`.
 - Phase 27 `graph-session-flow` reads memory-backed conversation turns to build session graphs.
+- Prompt cache, retrieval cache, and Redis hot paths may accelerate memory access patterns, but `core/memory` remains the source-of-truth state layer.
 
 Memory remains source-of-truth state; retrieval, triage, and graph views consume it but do not replace it.

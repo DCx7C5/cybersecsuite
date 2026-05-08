@@ -12,8 +12,8 @@ Canonical MITRE ATT&CK domain ownership:
 ## Planned Architecture Role
 
 - `modules/mitre/` remains the canonical relational/domain owner for ATT&CK data.
-- Graph-native ATT&CK entities and relationships should additionally project into `src/css/core/graph_rag/`.
-- `core/vector_rag` consumes the resulting graph retrieval path indirectly through `graph` and `hybrid` modes.
+- Graph-native ATT&CK entities and relationships should additionally project into `src/css/core/rag_graph/`.
+- `core/rag_vector` consumes the resulting graph retrieval path indirectly through `graph` and `hybrid` modes.
 
 ## Key Planning Direction
 

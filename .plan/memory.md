@@ -1,27 +1,28 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-08T23:30:08+02:00 | **Session**: MCP/runtime tracker sync + SIEM/OpenObserve dependency wiring
+**Last Updated**: 2026-05-09T16:05:00+02:00 | **Session**: rename-sync and connectivity/cache audit in progress
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
 ⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use the nearest planning markdown, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work.  
-⚠️ **Architecture**: `accounts`, `events`, `marketplace`, `memory`, `vector_rag`, and `graph_rag` are core-owned or planned core-owned. `working_dir` is legacy terminology; use `core/workspace/`.  
+⚠️ **Architecture**: `accounts`, `events`, `marketplace`, `memory`, `rag_vector`, and `rag_graph` are core-owned or planned core-owned. `working_dir` is legacy terminology; use `core/workspace/`.  
 ⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve/neo4j). Ollama: native `ollama serve` via `core/ollama/OllamaProcessManager`. Frontend: `cd src/frontend && bun run dev`.
 ⚠️ **Memory sync rule**: `memory.md` is still phase-end by default, but it must also be refreshed immediately after major architecture, source-of-truth, or tracker-structure changes.
+⚠️ **Cleanup rule**: when changing code or plans, remove redundant scaffolding, stale exports, temp artifacts, dead docs, and superseded abstractions in the same pass whenever it is safe.
 
 ---
 
-## 📊 session.db State (2026-05-08)
+## 📊 session.db State (2026-05-09)
 
-**Total**: 809 todos | **Done**: 401 | **Pending**: 402 | **Blocked**: 6
+**Total**: 813 todos | **Done**: 401 | **Pending**: 406 | **Blocked**: 6
 
-**Last Verified**: 2026-05-08 (checked against live session.db totals)
+**Last Verified**: 2026-05-09 (checked against live session.db totals)
 
 **Selected active phases**:
 
 | Phase | Todos | Done | Pending | Blocked |
 |-------|-------|------|---------|---------|
-| Phase 9 — ORM/Manager/Registry | 28 | 16 | 12 | 0 |
+| Phase 9 — ORM/Manager/Registry | 32 | 16 | 16 | 0 |
 | Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 |
 | Phase 18 — Frontend Foundation | 19 | 0 | 19 | 0 |
 | Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 |
@@ -39,6 +40,13 @@
 
 ## 🔑 Recent Phase Key Points
 
+### DB Primitive Rollout Planning (2026-05-08)
+
+- Phase 9 now explicitly tracks rollout of `TimestampMixin`, `BaseFrontmatterMixin`, and `VersionMixin` instead of leaving the new primitives as unplanned implementation details.
+- A new guardrail todo, `db-frontmatter-field-semantics`, captures the main semantic trap: `NameField` currently behaves like an identifier field, not a general display-name field, so frontmatter/base-model rollout must wait for that split.
+- Architectural decision: keep `BaseFrontmatterMixin`, remove `BaseFBSModel`. The mixin is composable; the extra base class is unused and adds no real semantic value.
+- The DB source-of-truth docs now treat semantic field helpers and base-model adoption as a planned migration path, not just a coding preference.
+
 ### MCP + SIEM Planning Sync (2026-05-08)
 
 - Phase 9 now has an explicit prerequisite todo: `orm-registry-metaclass-fix`. This captures the import-time `AsyncSafeSingletonMeta` + `ABC` conflict across `BaseRegistry` / `BaseToolRegistry` before more registry work is stacked on top.
@@ -48,11 +56,18 @@
 
 ### GraphRAG Planning Baseline (2026-05-08)
 
-- `core/vector_rag/` now means vector retrieval + hybrid orchestration.
-- `core/graph_rag/` is now a dedicated planned sibling subsystem for graph ingest, graph traversal, and Neo4j-backed GraphRAG retrieval.
-- MITRE ATT&CK and threat-intel remain canonically owned by `modules/mitre/` and `modules/threat_intel/`, but now explicitly project graph-native entities/relationships into `core/graph_rag/`.
+- `core/rag_vector/` now means vector retrieval + hybrid orchestration.
+- `core/rag_graph/` is now a dedicated planned sibling subsystem for graph ingest, graph traversal, and Neo4j-backed GraphRAG retrieval.
+- MITRE ATT&CK and threat-intel remain canonically owned by `modules/mitre/` and `modules/threat_intel/`, but now explicitly project graph-native entities/relationships into `core/rag_graph/`.
 - Phase 21 now also plans a narrow intelligence→graph hook: only stable extracted entities, ATT&CK hints, and confidence-scored links go to graph ingest; ephemeral routing state does not.
 - the retrieval-ingestion tracker item is now `domain-rag-ingestion`, making it explicit that this is ingestion on top of the shared retrieval core.
+
+### Rename + Connectivity Audit (2026-05-09)
+
+- Local planning docs are being normalized to the active package names: `a2a_google`, `a2a_internal`, `rag_vector`, and `rag_graph`.
+- `modules/rag_vector/` is now only the module-side migration surface and planning stub; active retrieval runtime code lives in `core/rag_vector/`.
+- Cache posture is now explicit: not every business module should depend on `core/cache/` directly. Direct cache consumers are mainly `core/settings`, `core/permissions`, `core/marketplace`, `core/memory`, `core/rag_vector`, `core/rag_graph`, `modules/llm_proxy`, and `modules/triage`.
+- Canonical source-of-truth modules such as `mitre`, `threat_intel`, `incidents`, `evidence`, `reports`, and `siem` should persist to their own primary stores first and only consume cached retrieval/prompt layers indirectly.
 
 ### Prompt Cache Planning Correction (2026-05-08)
 

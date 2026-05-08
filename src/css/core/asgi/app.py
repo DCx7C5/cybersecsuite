@@ -1,7 +1,7 @@
 """
 ASGI application — combines:
   - App endpoint auto-discovery (modules/*/endpoints.py)  at app-defined prefixes
-  - A2A agents server (JSON-RPC)                        at /google_a2a/*
+  - A2A agents server (JSON-RPC)                        at /a2a_google/*
   - Agent card discovery                               at /.well-known/agents.json
   - Health endpoint                                    at /health
 

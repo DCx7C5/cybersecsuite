@@ -390,7 +390,7 @@ networks:
 
 ### How Modules Integrate in Services
 
-All modules (`@capabilities`, `@chat`, `@css_a2a`, `@events`, `@google_a2a`, `@llm_models`) run inside **cybersec-proxy** (FastAPI backend, port 8765):
+All modules (`@capabilities`, `@chat`, `@a2a_internal`, `@events`, `@a2a_google`, `@llm_models`) run inside **cybersec-proxy** (FastAPI backend, port 8765):
 
 **Module Startup** (initialization sequence):
 
@@ -398,8 +398,8 @@ All modules (`@capabilities`, `@chat`, `@css_a2a`, `@events`, `@google_a2a`, `@l
 2. **@capabilities** — Discover model capabilities from 12 LLM providers (via config.py API_KEYS)
 3. **@llm_models** — Load model registry & metadata
 4. **@events** — Start UniversalSDK event bus
-5. **@css_a2a** — Start MessageDispatcher (Redis-backed A2A routing)
-6. **@google_a2a** — Initialize Google A2A adapter (optional, if GOOGLE_A2A_ENABLED=true)
+5. **@a2a_internal** — Start MessageDispatcher (Redis-backed A2A routing)
+6. **@a2a_google** — Initialize Google A2A adapter (optional, if GOOGLE_A2A_ENABLED=true)
 7. **@chat** — Start chat endpoint handlers (depends on capabilities + cache)
 
 **Module Data Flow**:
@@ -444,7 +444,7 @@ await registry.discover()  # Queries provider /models endpoints
 
 ```
 Orchestrator Agent
-    ↓ @css_a2a (in-process)
+    ↓ @a2a_internal (in-process)
 Redis (cybersec-redis:6379, db=3)
     ↓ MessageDispatcher
 Team Member Agent
@@ -459,7 +459,7 @@ Team Member Agent
 Orchestrator Process (in cybersec-proxy pod)
 ├─ core/cache (L1 in-memory + Redis L2 + PostgreSQL L3)
 ├─ @capabilities (queries Redis cache db=1 for LLM models)
-├─ @css_a2a (uses Redis db=3 for A2A messages)
+├─ @a2a_internal (uses Redis db=3 for A2A messages)
 ├─ @events (broadcasts events, optional UniversalSDK forwarding)
 └─ @llm_models (in-memory registry)
 

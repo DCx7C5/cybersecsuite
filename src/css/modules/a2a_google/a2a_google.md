@@ -1,4 +1,4 @@
-# @google_a2a — Google A2A Protocol Integration
+# @a2a_google — Google A2A Protocol Integration
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
@@ -8,16 +8,18 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
-| `css.core.db` | → consumes | ORM models (if applicable) |
-| *(fill in module-specific relationships)* | | |
+| `css.modules.a2a_internal` | → consumes | Internal A2A request/result envelopes before federating to Google A2A |
+| `css.modules.agents` | ← consumed by | Agents that need to reach external Google-hosted A2A peers |
+| `css.core.resilience` | → consumes | Retry / backoff policy for external network calls |
+| `css.core.events` | ← instruments | External A2A call lifecycle, latency, and failures |
+| `css.core.cache` | note | No direct KV-cache dependency planned; cache prompt/retrieval state elsewhere, not in this transport adapter |
 
 ---
 
 ## Purpose
 
 - Enable CyberSecSuite agents to communicate with external Google A2A agents
-- Translate between CSS A2A protocol (internal) and Google A2A protocol (external)
+- Translate between `a2a_internal` message flow (internal) and Google A2A protocol (external)
 - Handle OAuth/service account authentication
 - Implement retry + rate limiting (50-500ms latency)
 - Graceful fallback if Google A2A unavailable
@@ -75,7 +77,7 @@ Our System (CyberSecSuite)     Google Cloud (External Agents)
 ## Implementation
 
 ```python
-# src/css/modules/google_a2a/adapter.py
+# src/css/modules/a2a_google/adapter.py
 class GoogleA2AAdapter:
     """Adapter for Google Auth2App direct agent communication"""
     
@@ -113,7 +115,7 @@ class GoogleA2AAdapter:
         )
         return messages
 
-# src/css/modules/google_a2a/endpoints.py
+# src/css/modules/a2a_google/endpoints.py
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/api/google-a2a", tags=["google-a2a"])
@@ -176,7 +178,7 @@ async def receive_from_google_agent():
 ## Module Pattern
 
 ```python
-# src/css/modules/google_a2a/__init__.py
+# src/css/modules/a2a_google/__init__.py
 """Google A2A protocol integration for external agent communication."""
 
 import logging

@@ -2,9 +2,9 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–37 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-08T23:30:08+02:00 (session current)  
+**Updated**: 2026-05-09T16:20:00+02:00 (session current)  
 **Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 809 total (401 done, 402 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 813 total (401 done, 406 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -45,12 +45,12 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ---
 
-## 📊 CURRENT STATUS (2026-05-08T23:30:08+02:00)
+## 📊 CURRENT STATUS (2026-05-08T23:57:24+02:00)
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 38 total (Phase 0–37) — Phase 0 + 1 complete, later phases mixed/planned  
-**Todos**: **809 total (401 done, 402 pending, 6 blocked)**  
-**Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
+**Todos**: **813 total (401 done, 406 pending, 6 blocked)**  
+**Consistent File Patterns**: 5/25 modules follow established patterns (`a2a_google`, `marketplace`, `tasks`, `teams`, `tools`)  
 **Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
 **Next**: Continue ready queue from `session.db` in `sort_order`
 
@@ -72,14 +72,14 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 **Binding ownership note (2026-05-08)**:
 - `accounts`, `events`, `marketplace`, and `memory` are core-owned packages.
 - `accounts` now exists only under `src/css/core/accounts/`; do not recreate `src/css/modules/accounts/`.
-- `vector_rag` is planned to move from `src/css/modules/vector_rag/` to `src/css/core/vector_rag/` as the vector + hybrid retrieval layer.
-- `graph_rag` is planned as a sibling core-owned graph retrieval package under `src/css/core/graph_rag/`.
+- `rag_vector` is the remaining module-side migration surface; active shared retrieval runtime code is being consolidated in `src/css/core/rag_vector/`.
+- `rag_graph` is the sibling core-owned graph retrieval package under `src/css/core/rag_graph/`.
 - `working_dir` is retired terminology. Use `core/workspace/` and the general session/project directory structure.
 
 **High-level package snapshot**:
 - Core-owned, active: `marketplace`, `events`
 - Core-owned, migration still incomplete: `memory`, `workspace`
-- Business modules with stable patterns: `google_a2a`, `tasks`, `teams`, `tools`
+- Business modules with stable patterns: `a2a_google`, `tasks`, `teams`, `tools`
 - Business modules still aligning: `agents`, `chat`, `skills`, `tags`, `triage`, `workflows`, others
 - Deprecated: `scopes`
 
@@ -113,28 +113,28 @@ See this file's **Module Status Snapshot** and phase sections for current core i
 ### ✅ BLOCKER #3: App Initialization Fails → RESOLVED
 - **Impact**: Cannot start app for testing; blocks Phase 5 integration tests + all downstream phases
 - **Root Causes (All Fixed)**:
-  1. ✅ **FIXED**: Removed deprecated `src/core/a2a` module → css_a2a & google_a2a now use local models/enums (commit 158da6bf)
+  1. ✅ **FIXED**: Removed deprecated `src/core/a2a` module → `a2a_internal` and `a2a_google` now use local models/enums (commit 158da6bf)
   2. ✅ **FIXED**: Removed circular imports in accounts/types.py ↔ core/types → deleted entity re-exports from core/__init__.py (commit b3c13e01)
   3. ✅ **FIXED**: Removed circular imports in scopes/context.py ↔ core/db → added TYPE_CHECKING guard in scope_utils (commit b3c13e01)
   4. ✅ **FIXED**: Added marketplace config exports → MARKETPLACE_CACHE_TTL_SECONDS module-level constant (commit b3c13e01)
 - **Fixes Applied**:
-  - ✅ Commit 158da6bf: Deleted deprecated src/core/a2a; fixed css_a2a/google_a2a imports; created A2A protocol models/enums
+  - ✅ Commit 158da6bf: Deleted deprecated src/core/a2a; fixed `a2a_internal` / `a2a_google` imports; created A2A protocol models/enums
   - ✅ Commit b3c13e01: Removed entity re-exports from core/types/__init__.py (Account, Agent, Role, Skill, Tool)
   - ✅ Commit b3c13e01: Added TYPE_CHECKING guard in core/db/scope_utils.py for ScopeContext import
   - ✅ Commit b3c13e01: Added module-level constants to core/config.py (MARKETPLACE_CACHE_TTL_SECONDS, etc.)
   - ✅ Commit 12808bde: Removed entity re-exports from core/__init__.py (future prevention)
-  - ✅ Proactive audit: Scanned for bidirectional cross-module imports; found a2a cycle is safe (css_a2a imports google_a2a, google_a2a/endpoints imports css_a2a — not circular because css_a2a doesn't import from endpoints)
+  - ✅ Proactive audit: Scanned for bidirectional cross-module imports; found the A2A cycle is safe (`a2a_internal` imports `a2a_google`, `a2a_google/endpoints` imports `a2a_internal`, but the transport layer does not import endpoint code)
 - **Verification**:
   - ✅ `from css.core.accounts import Account` — works
   - ✅ `from css.modules.scopes.context import ScopeContext` — works
   - ✅ `from css.core.config import MARKETPLACE_CACHE_TTL_SECONDS` — returns 300
-  - ✅ `from css.modules.css_a2a.a2a_comms import A2ACommunicator` — works
+  - ✅ `from css.modules.a2a_internal.a2a_comms import A2ACommunicator` — works
   - ✅ App initialization test: All critical imports successful
 - **Status**: ✅ COMPLETE — All app initialization blockers resolved
 - **Next Phase**: Phase 5 Integration Tests can now proceed
 
 ### 🟠 ACTIVE: 5-File Pattern Compliance
-- **Current**: 5/25 modules fully compliant (google_a2a, marketplace, tasks, teams, tools)
+- **Current**: 5/25 modules fully compliant (`a2a_google`, `marketplace`, `tasks`, `teams`, `tools`)
 - **Remaining**: 20 modules need endpoints.py, types.py or both
 - **Phase**: Phase 3 (modules) + Phase 4 (core subdirs)
 
@@ -157,7 +157,7 @@ All 7 critical app-init todos verified complete:
 |----|--------------|
 | `blocker-3-circular` | ✅ All 4 circular imports resolved; verified imports work |
 | `import-arch-circular-deps` | ✅ No problematic bidirectional cross-module imports found |
-| `import-arch-a2a-compat` | ✅ TaskState, MessageRole, Message, Task models present in google_a2a |
+| `import-arch-a2a-compat` | ✅ TaskState, MessageRole, Message, Task models present in `a2a_google` |
 | `import-arch-marketplace-models` | ✅ MARKETPLACE_CACHE_TTL_SECONDS = 300 (importable from config.py) |
 | `mod-css-a2a` | ✅ A2ACommunicator class defined and exportable |
 | `mod-google-a2a` | ✅ All 4 required modules exist: models.py, enums.py, types.py, endpoints.py |
@@ -1043,7 +1043,7 @@ PRIORITY 4 (Local Deployment):
 | **teams** | 10 | 4/4 ✅ | Phase 2 ✅ |
 | **tasks** | 5 | 4/4 ✅ | Phase 2 ✅ |
 | **marketplace** | 9 | 4/4 ✅ | Phase 2 ✅ |
-| **google_a2a** | 11 | 4/4 ✅ | Phase 2 ✅ |
+| **a2a_google** | 11 | 4/4 ✅ | Phase 2 ✅ |
 
 **Recommendation**: Deploy immediately in Phase 2
 
@@ -1078,7 +1078,7 @@ PRIORITY 4 (Local Deployment):
 | **memory** | 3 | core-owned | Working memory domain; migration to canonical core ownership pending |
 | **permissions** | 3 | 0 files | RBAC access control |
 | **workspace** | 3 | pending | General session/project directory structure (`core/workspace/`) |
-| **css_a2a** | 4+ | 0 files | Agent-to-agent comms |
+| **a2a_internal** | 4+ | 0 files | Agent-to-agent comms |
 | **planer** | 4+ | 0 files | Agent planning AI |
 
 **Status**: Mixed state; ownership note at the top of this file overrides older module-era naming.
@@ -1109,14 +1109,14 @@ TIER 3: Features (Week 3, depends on Tier 2)
 
 TIER 4: Ready Now (no dependencies)
 ├─ marketplace (core-owned)
-└─ google_a2a
+└─ a2a_google
 
 TIER 5: Advanced/Stubs (Phase 3-4+)
 ├─ events (core-owned)
 ├─ memory (core-owned)
 ├─ permissions
 ├─ workspace
-├─ css_a2a
+├─ a2a_internal
 └─ planer
 ```
 
@@ -1135,13 +1135,13 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 
 ### 5-FILE PATTERN COMPLIANCE
 
-**Excellent (4/4)**: tools, teams, tasks, marketplace, google_a2a (5 modules)
+**Excellent (4/4)**: tools, teams, tasks, marketplace, a2a_google (5 modules)
 
 **Good (3/4)**: tags, triage (2 modules)
 
 **Partial (2/4)**: agents, cache, capabilities, chat, roles, skills (6 modules)
 
-**Stub / migration-heavy**: css_a2a, llm_models, memory, permissions, scopes, streaming, workspace
+**Stub / migration-heavy**: a2a_internal, llm_models, memory, permissions, scopes, streaming, workspace
 
 **Recommendation**: Add missing files to partial modules in Phase 2
 
@@ -1164,11 +1164,11 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 **Phase 2 Week 1**: cache, roles, llm_models, scopes (Foundation)
 **Phase 2 Week 2**: agents, skills, tools, teams (Core)
 **Phase 2 Week 3**: chat, tags, triage, capabilities, streaming (Features)
-**Phase 2 Week 4**: marketplace, google_a2a (Deploy)
+**Phase 2 Week 4**: marketplace, a2a_google (Deploy)
 
 **Phase 3**: events, memory, permissions, workspace (advanced infrastructure; legacy todo ids may still say `working_dir`)
 
-**Phase 4+**: css_a2a, planer (Specialized systems)
+**Phase 4+**: a2a_internal, planer (Specialized systems)
 
 ---
 
@@ -1203,8 +1203,8 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 
 **Phases 0 + 1**: ✅ Complete (22 todos done, committed)  
 **session.db**: 542 total — 193 done, 348 pending, 1 blocked  
-**Module compliance**: 5/25 fully compliant (google_a2a, marketplace, tasks, teams, tools)  
-**Key decisions made**: Phase 19 module restructuring (rename planer→planner, css_a2a→ipc, remove scopes, absorb strategies→triage); scope hierarchy fully deleted; session files centralized at `~/.css/sessions/`
+**Module compliance**: 5/25 fully compliant (`a2a_google`, `marketplace`, `tasks`, `teams`, `tools`)  
+**Key decisions made**: Phase 19 module restructuring (rename `planer`→`planner`, `a2a_internal`→`ipc`, remove scopes, absorb strategies→triage); scope hierarchy fully deleted; session files centralized at `~/.css/sessions/`
 
 ---
 
@@ -1249,8 +1249,8 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 | ID | Feature | Why Critical |
 |----|---------|-------------|
 | `feat-incidents-module` | `modules/incidents/` | Incident lifecycle (create/track/close/timeline). A cybersec platform with no incidents module is just a chatbot. |
-| `feat-threat-intel-module` | `modules/threat_intel/` | IOC tracking (IP/domain/hash/URL), threat feed pulls (MISP, OTX, VirusTotal). Canonical relational ownership stays here; graph-native entities/relationships later project into `core/graph_rag/`. |
-| `feat-mitre-module` | `modules/mitre/` | MITRE ATT&CK framework. Canonical ATT&CK ownership stays here; ATT&CK entities and relationships later project into `core/graph_rag/`. |
+| `feat-threat-intel-module` | `modules/threat_intel/` | IOC tracking (IP/domain/hash/URL), threat feed pulls (MISP, OTX, VirusTotal). Canonical relational ownership stays here; graph-native entities/relationships later project into `core/rag_graph/`. |
+| `feat-mitre-module` | `modules/mitre/` | MITRE ATT&CK framework. Canonical ATT&CK ownership stays here; ATT&CK entities and relationships later project into `core/rag_graph/`. |
 | `feat-scan-module` | `modules/scans/` | Vulnerability scan lifecycle: target → orchestrated agent team → findings → incidents. Bridges triage → teams → reports. |
 
 ---
@@ -1270,7 +1270,7 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 
 | ID | Feature | Notes |
 |----|---------|-------|
-| `feat-vector-rag-core` | `core/vector_rag/` + `core/graph_rag/` | Hybrid retrieval foundation split into VectorRAG on PostgreSQL + pgvector and GraphRAG on graph storage, with toggleable retrieval modes (`vector`, `graph`, `hybrid`, `auto`), fused context for agents, and a clean boundary between shared retrieval core vs domain-specific cybersec ingestion. Sources: CVE feeds, PDFs, playbooks, MITRE ATT&CK, threat-intel entities/relationships, and extracted links. |
+| `feat-vector-rag-core` | `core/rag_vector/` + `core/rag_graph/` | Hybrid retrieval foundation split into VectorRAG on PostgreSQL + pgvector and GraphRAG on graph storage, with toggleable retrieval modes (`vector`, `graph`, `hybrid`, `auto`), fused context for agents, and a clean boundary between shared retrieval core vs domain-specific cybersec ingestion. Sources: CVE feeds, PDFs, playbooks, MITRE ATT&CK, threat-intel entities/relationships, and extracted links. |
 | `feat-evidence-module` | `modules/evidence/` | Chain-of-custody: Evidence model + EvidenceChain (immutable append via EventStore). Hash-verified, collector-attributed. |
 | `feat-audit-compliance-module` | `modules/compliance/` | NIST CSF / SOC2 / ISO27001 / MITRE framework control mapping. % coverage reports. Reads from scans + incidents. |
 
@@ -1283,7 +1283,7 @@ auth → accounts → sessions-persistence
 incidents → threat-intel → mitre → scan
 events (p6) → alerts → webhooks
 reports → incidents + scans + compliance
-vector_rag(core) + graph_rag(core) → memory + agent context assembly
+rag_vector(core) + rag_graph(core) → memory + agent context assembly
 evidence → incidents + EventStore (p6)
 ```
 
@@ -1368,8 +1368,8 @@ The 24-provider `ProviderRegistry`, `DynamicCapabilityRegistry`, and `ResponseSt
 
 | ID | Gap | Finding |
 |----|-----|---------|
-| `ai-a2a-internal-dispatch` | `css_a2a/dispatcher.py` — 3 LOC stub | Just re-exports `css.core.redis.dispatcher`. No real dispatch logic. |
-| `ai-team-orchestrator-wire` | No sub-agent delegation | `teams/orchestrator.py` not wired to `css_a2a`. Multi-agent teams don't actually delegate. |
+| `ai-a2a-internal-dispatch` | `a2a_internal/dispatcher.py` — 3 LOC stub | Just re-exports `css.core.redis.dispatcher`. No real dispatch logic. |
+| `ai-team-orchestrator-wire` | No sub-agent delegation | `teams/orchestrator.py` not wired to `a2a_internal`. Multi-agent teams don't actually delegate. |
 
 ---
 
@@ -1591,13 +1591,17 @@ class ToolRegistry:
 
 ---
 
-### 9 Todos in session.db
+### 13 Todos in session.db
 
 | ID | What |
 |----|------|
 | `orm-value-types-migration` | All runtime `@dataclass` → `msgspec.Struct` |
 | `orm-custom-managers` | Add `objects = FooManager()` to every Tortoise model |
 | `orm-to-from-domain` | `to_domain()` + `from_domain()` on every model |
+| `db-timestamp-mixin-rollout` | Roll out `TimestampMixin` across standard audit-pair ORM models |
+| `db-frontmatter-field-semantics` | Split identifier `NameField` from human display-name semantics |
+| `db-frontmatter-base-rollout` | Remove `BaseFBSModel`; roll out `BaseFrontmatterMixin` only where semantics fit |
+| `db-version-mixin-rollout` | Adopt `VersionMixin` for versioned artifacts with hash provenance |
 | `orm-registry-metaclass-fix` | Fix `AsyncSafeSingletonMeta` + `ABC` conflicts before more registry expansion |
 | `orm-registry-purge-crud` | Remove DB writes from all registries |
 | `orm-registry-invalidation` | Cache invalidation via DomainEvent subscription |
@@ -1922,7 +1926,7 @@ Wiring: UnifiedLLMClient.complete() / .stream()
 ```
 
 **Storage**: Pydantic models → msgspec.Struct (Ring 1). JSON files → Tortoise ORM (Ring 2).  
-**A2A**: Legacy `from a2a.models import A2AMessage` → `css_a2a.dispatcher`.  
+**A2A**: Legacy `from a2a.models import A2AMessage` → `a2a_internal.dispatcher`.  
 **Observability**: Legacy `from telemetry import record_event` → OpenObserve via new pipeline.
 
 ### Cache Key Change
@@ -1951,7 +1955,7 @@ If no toggles active: `toggle_hash = ""` (zero overhead, backward compatible).
 | `qol-injector-service` | T12.3 | QoLInjector: fragment build + inject_into_messages/system |
 | `qol-unified-client-middleware` | T12.3 | Wire QoLInjector into UnifiedLLMClient pre-request step |
 | `qol-cache-key-toggle-hash` | T12.4 | Add toggle_hash to PromptCacheManager cache key |
-| `qol-a2a-integration` | T12.5 | Port A2A publisher/subscriber to css_a2a.dispatcher |
+| `qol-a2a-integration` | T12.5 | Port A2A publisher/subscriber to `a2a_internal.dispatcher` |
 | `qol-openobserve-metrics` | T12.5 | Port observability to OpenObserve (qol.injection events) |
 | `qol-rest-endpoints` | T12.6 | CRUD REST endpoints for toggle/preset/agent-binding management |
 
@@ -4839,7 +4843,7 @@ Two options for where the Vite shell app lives:
 | Current | → New | Reason |
 |---------|-------|--------|
 | `planer/` | `planner/` | Typo. All references throughout codebase must be updated. |
-| `css_a2a/` | `ipc/` | "css_a2a" implies Google A2A protocol (it doesn't use it). This is fast in-process/IPC between CSS agents. Rename to `ipc` for clarity. |
+| `a2a_internal/` | `ipc/` | Current name is accurate enough for now, but long-term intent is explicit IPC naming. Keep the future `ipc/` rename separate from the current stabilization pass. |
 
 **Todos**:
 - `rename-planer-to-planner` — rename dir + update all imports, plan references, session.db phase refs
@@ -4937,7 +4941,7 @@ No notification layer. Security tools need to push alerts without requiring the 
 |----|------|-------|-----------|
 | `core-templates-cleanup` | T19.0 | Delete orphaned node_modules in core/templates/ | — |
 | `rename-planer-to-planner` | T19.2 | Rename planer/ → planner/ + update all imports/refs | — |
-| `rename-css-a2a-to-ipc` | T19.2 | Rename css_a2a/ → ipc/ + update all imports/refs | — |
+| `rename-css-a2a-to-ipc` | T19.2 | Rename `a2a_internal/` → `ipc/` + update all imports/refs | — |
 | `merge-strategies-into-triage` | T19.4 | Delete strategies/, create triage/strategies.py, update triage/plan.md | — |
 | `sessions-module-create` | T19.6 | New sessions/ module: Session model, SessionManager CRUD, ~/.css/sessions/ | `working-dir-manager` |
 | `reports-module-create` | T19.6 | ~~New reports/ module~~ **→ superseded by Phase 32 (full design)** | `sessions-module-create` |
@@ -5302,7 +5306,7 @@ Phase 15: scopes-module-remove ← git-scope-migration
 
 - `gap-agents-plan-stale` — fix agents/plan.md: rename `project_dir` → `session_dir`, add `prompts` row
 - `gap-events-missing-ns` — add `project.*`, `settings.changed`, `mcp.call.*` to events/plan.md planned events
-- `gap-integration-placeholders` — fill integration tables for 8 placeholder modules (cache, tags, skills, memory, roles, google_a2a, css_a2a, capabilities)
+- `gap-integration-placeholders` — fill integration tables for 8 placeholder modules (cache, tags, skills, memory, roles, `a2a_google`, `a2a_internal`, capabilities)
 - `gap-triage-integration` — rewrite triage/plan.md integration prose into a concise module-level matrix
 - `gap-chat-integration` — rewrite chat/plan.md integration prose into a formal matrix aligned with the WS-first MVP
 - `gap-cache-wiring` — add `@cache` row to all consuming module integration tables
@@ -5904,13 +5908,13 @@ Existing stubs: `memory/vault/manager.py` (Obsidian scaffold), `memory/vault/hot
 
 ### T20.9 — Hybrid Retrieval Core (VectorRAG + GraphRAG)
 
-- `rag-core-ownership` — promote `vector_rag` into `src/css/core/vector_rag/` as the vector retrieval + hybrid orchestration package; domain ingestion stays out of this layer
+- `rag-core-ownership` — promote the shared `rag_vector` runtime into `src/css/core/rag_vector/` as the vector retrieval + hybrid orchestration package; domain ingestion stays out of this layer
 - `rag-cache-layer` — retrieval cache layer via `core/cache`: embeddings, vector hits, graph traversals, fused results, route hints, TTL policy, and ingest/update invalidation
-- `graph-rag-core-ownership` — create `src/css/core/graph_rag/` as the dedicated GraphRAG subsystem with package surface, types, ingest/query boundaries, and local plan doc
-- `rag-vector-backend` — VectorRagBackend in `core/vector_rag/`: PostgreSQL + pgvector for document/chunk storage, embedding lookup, filters, similarity search, and normalized results
-- `graph-rag-backend` — GraphRagBackend in `core/graph_rag/`: Neo4j-backed entity/relationship ingest plus neighbor/path/community retrieval with provenance-preserving materialization
+- `graph-rag-core-ownership` — create `src/css/core/rag_graph/` as the dedicated GraphRAG subsystem with package surface, types, ingest/query boundaries, and local plan doc
+- `rag-vector-backend` — VectorRagBackend in `core/rag_vector/`: PostgreSQL + pgvector for document/chunk storage, embedding lookup, filters, similarity search, and normalized results
+- `graph-rag-backend` — GraphRagBackend in `core/rag_graph/`: Neo4j-backed entity/relationship ingest plus neighbor/path/community retrieval with provenance-preserving materialization
 - `rag-query-modes` — `RetrievalMode` selection with manual `vector` / `graph` / `hybrid` toggles plus an initial `auto` routing policy and a later hook for Phase 21 triage
-- `rag-fusion-layer` — merge, rerank, deduplicate, and preserve provenance across `vector_rag` + `graph_rag` results into one normalized retrieval payload
+- `rag-fusion-layer` — merge, rerank, deduplicate, and preserve provenance across `rag_vector` + `rag_graph` results into one normalized retrieval payload
 - `rag-context-wire` — wire hybrid retrieval into `ContextAssembler`, memory-backed context assembly, and agent execution so callers receive retrieval evidence before model invocation
 
 **Routing note**: `auto` mode should work with a simple routing policy first. Later, Phase 21 intelligence/triage can participate in backend choice for complex requests.
@@ -6178,8 +6182,8 @@ All of these are single-line todos with no implementation plan:
 - → Needs dedicated **Phase 29 — Workflow Engine**.
 
 **G6 — IPC / Agent-to-Agent protocol has no phase**
-- Phase 19 renames `css_a2a` → `ipc` but gives no design for what IPC actually does.
-- `css_a2a/dispatcher.py` = 3 LOC re-export stub. No actual dispatch logic.
+- Phase 19 plans `a2a_internal` → `ipc` but still gives no design for what IPC actually does.
+- `a2a_internal/dispatcher.py` = 3 LOC re-export stub. No actual dispatch logic.
 - **Missing**: in-process message bus (asyncio queues), cross-process via Redis pub/sub, message schema (`IPCMessage` msgspec.Struct), agent address book (who is reachable), broadcast vs unicast.
 - → Belongs in **Phase 29 — Workflow Engine** (IPC is the communication layer for workflow steps).
 
@@ -6253,7 +6257,7 @@ All of these are single-line todos with no implementation plan:
 | New Phase | Contents | Dependencies |
 |-----------|---------|-------------|
 | **Phase 28 — Auth & Accounts** | `modules/auth/` (JWT, API keys), `core/accounts/` (User ORM, profiles), row-level project isolation | Phase 15 (permissions), Phase 17 (settings/projects) |
-| **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, compliance, reports, cybersec retrieval ingestion on top of `core/vector_rag/` + `core/graph_rag/`, including MITRE/threat-intel graph projections | Phase 20 (hybrid retrieval core), Phase 28 (auth), Phase 14 (events) |
+| **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, compliance, reports, cybersec retrieval ingestion on top of `core/rag_vector/` + `core/rag_graph/`, including MITRE/threat-intel graph projections | Phase 20 (hybrid retrieval core), Phase 28 (auth), Phase 14 (events) |
 | **Phase 30 — Workflow Engine + IPC** | `modules/workflows/` DAG engine, `modules/ipc/` (A2A messaging), `modules/planner/` (goal decomposition) | Phase 20 (memory), Phase 26 (approvals), Phase 14 (events) |
 | **Phase 31 — Production Readiness** | Secrets management, rate limiting, task queue, deployment Dockerfile, OpenAPI polish, alerting/webhooks, multi-tenancy RLS | Phase 28 (auth), Phase 26 (approvals), Phase 27 (graphs) |
 

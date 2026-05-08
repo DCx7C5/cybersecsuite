@@ -225,9 +225,9 @@ modules/<name>/
 | cache        | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache)                                        |
 | capabilities | Capability definitions & registry                                                    |
 | chat         | Chat session management                                                              |
-| css_a2a      | CSS-specific auth integration                                                        |
+| a2a_internal | Fast internal agent-to-agent / IPC integration                                       |
 | events       | Event bus & streaming                                                                |
-| google_a2a   | Google Auth2App integration                                                          |
+| a2a_google   | Google A2A protocol integration                                                      |
 | llm_models   | LLM model registry & metadata                                                        |
 | marketplace  | Marketplace (plugins, integrations)                                                  |
 | mcps         | MCP server management (register/connect/call)                                        |

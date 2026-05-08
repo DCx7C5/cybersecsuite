@@ -75,7 +75,7 @@ The proxy facade must not bypass:
 | `css.modules.strategies` | → consumes | provider/model routing policy |
 | `css.core.resilience` | → consumes | retry/circuit-breaker behavior |
 | `css.core.memory` | → consumes | optional context assembly before provider call |
-| `css.core.vector_rag` / `css.core.graph_rag` | → consumes | retrieval-backed context for proxy requests when enabled |
+| `css.core.rag_vector` / `css.core.rag_graph` | → consumes | retrieval-backed context for proxy requests when enabled |
 | `css.core.events` | ← instruments | `llm.call.*`, proxy request lifecycle, usage |
 | frontend / external local clients | ← consumes | `/v1/*` compatibility surface |
 

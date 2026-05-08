@@ -1,4 +1,4 @@
-"""google_a2a enums."""
+"""a2a_google enums."""
 
 from enum import Enum, IntEnum
 

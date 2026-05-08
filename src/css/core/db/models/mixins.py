@@ -1,6 +1,11 @@
 from tortoise.fields import DatetimeField
 
-from ..fields import DescriptionField, NameField, SHA512SumField, VersionField
+from ..fields import (
+    DescriptionField,
+    NameField,
+    SHA512SumField,
+    VersionField,
+)
 
 
 class TimestampMixin:

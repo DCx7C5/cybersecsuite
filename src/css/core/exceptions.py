@@ -78,11 +78,11 @@ class BaseModuleException(CSSException):
     """
     Base exception for all modules/ module errors.
 
-    All module-specific exceptions (google_a2a, marketplace, streaming, etc.)
+    All module-specific exceptions (a2a_google, marketplace, streaming, etc.)
     should inherit from this class.
 
     Attributes:
-        module_name: Optional name of the module (e.g., 'google_a2a', 'marketplace')
+        module_name: Optional name of the module (e.g., 'a2a_google', 'marketplace')
         context: Optional dict with additional error context
     """
 

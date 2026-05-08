@@ -1,4 +1,4 @@
-# @css_a2a — Fast Internal Agent-to-Agent Communication
+# @a2a_internal — Fast Internal Agent-to-Agent Communication
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
 
@@ -8,9 +8,11 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
-| `css.core.db` | → consumes | ORM models (if applicable) |
-| *(fill in module-specific relationships)* | | |
+| `css.core.redis` | → consumes | Message dispatcher, pub/sub, and shared transport primitives |
+| `css.modules.teams` | ← consumed by | Team orchestration delegates work over the internal A2A transport |
+| `css.modules.agents` | ← consumed by | Agent-to-agent delegation, handoffs, and result fan-out |
+| `css.modules.workflows` | ← consumed by | Workflow steps that need local subprocess or cross-team IPC |
+| `css.core.cache` | note | Do not treat Redis transport state as a generic KV-cache contract; shared cache policy lives elsewhere |
 
 ---
 
@@ -20,7 +22,7 @@
 - Fast protocol (in-process + IPC, not HTTPS)
 - Task lifecycle management (SUBMITTED → WORKING → COMPLETED/FAILED)
 - Team broadcasting & direct messaging
-- Integration with @cache for task storage
+- Shared transport over Redis / local IPC, not over `core/cache`
 
 ---
 
@@ -29,11 +31,11 @@
 ```
 Agent A (Orchestrator)
     ↓ [A2ACommunicator]
-Redis MessageDispatcher (L2 cache, db=3)
+Redis MessageDispatcher (transport bus)
     ↓
 Agent B (Team Member)
     ↓
-Task execution + findings storage in @cache
+Task execution + findings handoff
 ```
 
 ---
@@ -428,10 +430,8 @@ await group.broadcast_task(task_id="t1", message=message)
 
 ## Implementation Checklist
 
-- [ ] ⚠️ **Move to `src/css/modules/css_a2a/`** (currently in google_a2a folder)
-  - Move `a2a_comms.py`, `dispatcher.py`, `int_comms.py` → `css_a2a/`
-  - Create `css_a2a/__init__.py` with public API
-  - Update imports in google_a2a to use css_a2a module
+- [x] Module move to `src/css/modules/a2a_internal/` completed
+- [ ] Replace remaining legacy naming in runtime/docs and keep future `ipc/` rename separate from this stabilization pass
 - [ ] Add integration tests
 - [ ] Add telemetry/metrics
 - [ ] Add logger initialization in `__init__.py`
@@ -441,7 +441,7 @@ await group.broadcast_task(task_id="t1", message=message)
 ## Module Pattern
 
 ```python
-# src/css/modules/css_a2a/__init__.py
+# src/css/modules/a2a_internal/__init__.py
 """Fast internal agent-to-agent communication (NOT Google A2A)."""
 
 import logging

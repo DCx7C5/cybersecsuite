@@ -35,6 +35,8 @@ Important correction: the codebase does **not** yet have first-class transport s
 
 Those paths exist in plan/docs assumptions, but not yet as an explicit ASGI architecture.
 
+There is also a **registration gap**: core-owned routable packages such as `marketplace`, `rag_vector`, future `settings`, and future `llm_proxy` cannot rely on module entry-point discovery alone. The root runtime needs an explicit policy for how core-owned routers/sub-apps are mounted.
+
 ---
 
 ## Target Topology
@@ -181,6 +183,7 @@ This area must be refactored toward transport-aware policy application instead o
 | `css.core.loader` | → consumes | router/model discovery |
 | `css.core.db` | → consumes | Tortoise init + shutdown |
 | `css.core.tools` | → consumes | startup registry initialization |
+| core-owned surfaces (`marketplace`, `rag_vector`, future `settings`, `llm_proxy`) | ← mounted by | require explicit core-surface registration instead of relying only on module discovery |
 | `css.core.prompt_cache` | ← feeds | `/v1/*` request/stream caching behavior |
 | `css.modules.chat` | ← mounted by | chat REST + WS surfaces |
 | `css.modules.llm_proxy` | ← mounted by | future `/v1/*` compatibility facade |

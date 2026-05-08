@@ -82,7 +82,7 @@ class TeamQuota(BaseModel):
     memory_quota_mb = fields.IntField(default=2048)
     current_concurrent_tasks = fields.IntField(default=0)
     daily_tasks_count = fields.IntField(default=0)
-    daily_reset_at = fields.DatetimeField(auto_now_add=True)
+    daily_reset_at = fields.DatetimeField(null=True)
 
     class Meta:
         table = "team_quotas"

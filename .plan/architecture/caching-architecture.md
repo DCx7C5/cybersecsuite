@@ -6,7 +6,7 @@ CyberSecSuite uses **three distinct caching concerns** that must stay conceptual
 
 1. **`core/cache/`** — platform-wide KV cache facade
 2. **`core/prompt_cache/`** — LLM prompt/response caching
-3. **`core/vector_rag/` retrieval cache** — query/result caching built on top of `core/cache/`
+3. **`core/rag_vector/` + `core/rag_graph/` retrieval cache** — query/result caching built on top of `core/cache/`
 
 They may share Redis and PostgreSQL infrastructure, but they are **not the same subsystem** and must not collapse into one generic “cache blob”.
 
@@ -40,7 +40,7 @@ flowchart TB
         Native["Native Provider Cache Hooks\nAnthropic explicit\nOpenAI/DeepSeek automatic\nGemini deferred"]
     end
 
-    subgraph RetrievalCore["core/vector_rag + core/graph_rag"]
+    subgraph RetrievalCore["core/rag_vector + core/rag_graph"]
         RCL["RetrievalCacheLayer"]
         VR["VectorRagBackend"]
         GR["GraphRagBackend"]
@@ -144,7 +144,7 @@ flowchart TB
 
 Prompt caching is about **LLM request/response reuse**, not general application object caching.
 
-## 3. Retrieval Cache on `core/vector_rag/`
+## 3. Retrieval Cache on `core/rag_vector/`
 
 ### Role
 
@@ -241,9 +241,18 @@ Retrieval caching additionally tracks:
 ## System Integration
 
 - `modules/triage/` uses `core/prompt_cache/` for repeated local-model prompt/response reuse; it should not store classification outputs in retrieval cache namespaces.
-- `core/vector_rag/` and `core/graph_rag/` use retrieval caching through `core/cache/` only; they must not bypass cache policy with ad-hoc Redis keys.
+- `core/rag_vector/` and `core/rag_graph/` use retrieval caching through `core/cache/` only; they must not bypass cache policy with ad-hoc Redis keys.
 - `core/memory/` remains the source of truth for session state; caches accelerate access but do not replace memory persistence.
 - `modules/graphs/` and `modules/workflows/` keep graph snapshots and workflow state in their own persistence models; if they later need hot caching, they should consume `core/cache/` rather than invent a fourth cache subsystem.
+
+## Cache Coverage Posture
+
+Not every module should receive a direct cache dependency.
+
+- Direct cache owners: `core/settings`, `core/permissions`, `core/marketplace`, `core/memory`, `core/rag_vector`, `core/rag_graph`, and `modules/llm_proxy`.
+- Prompt-cache callers: `modules/triage`, `modules/chat`, and future `/v1/*` proxy flows consume `core/prompt_cache/` through the LLM execution path.
+- Transport users: `modules/a2a_internal` uses Redis transport primitives from `core/redis`, but that is not the same thing as opting into `core/cache/`.
+- Canonical data domains such as `mitre`, `threat_intel`, `incidents`, `reports`, and `siem` stay source-of-truth first and consume cached retrieval/context only indirectly.
 
 See [intelligence-retrieval-graph.md](./intelligence-retrieval-graph.md) for how cache roles fit into the wider runtime.
 

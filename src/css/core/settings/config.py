@@ -16,7 +16,7 @@ LOG_LEVEL = 'DEBUG' if DEBUG else getenv('LOG_LEVEL', 'INFO').upper()
 
 MODULES = [
     # Foundation / orchestration dependencies
-    "css.modules.css_a2a",
+    "css.modules.a2a_internal",
     "css.modules.tools",
     "css.modules.skills",
     "css.modules.tasks",
@@ -29,13 +29,13 @@ MODULES = [
     "css.modules.chat",
     # Planning and external A2A
     "css.modules.planer",
-    "css.modules.google_a2a",
+    "css.modules.a2a_google",
     # Domain modules (mostly independent)
     "css.modules.alerts",
     "css.modules.compliance",
     "css.modules.evidence",
     "css.modules.incidents",
-    "css.modules.vector_rag",
+    "css.modules.rag_vector",
     "css.modules.local_assist",
     "css.modules.mcps",
     "css.modules.mitre",
@@ -172,12 +172,12 @@ LLM_CACHE_TTL = CACHE_LLM_TTL  # 30 days
 
 # ── A2A Communication (Agent-to-Agent) ──────────────────────────────────────────
 
-# Custom A2A (@css_a2a module)
+# Custom A2A (@a2a_internal module)
 CSS_A2A_ENABLED = bool(getenv('CSS_A2A_ENABLED', 'true'))
 CSS_A2A_KB_SIZE_MB = int(getenv('CSS_A2A_KB_SIZE_MB', '100'))
 CSS_A2A_MESSAGE_TIMEOUT_SEC = int(getenv('CSS_A2A_MESSAGE_TIMEOUT_SEC', '5'))
 
-# Google A2A (@google_a2a module)
+# Google A2A (@a2a_google module)
 GOOGLE_A2A_ENABLED = bool(getenv('GOOGLE_A2A_ENABLED', 'false'))
 
 A2A_SERVER = {

@@ -201,8 +201,8 @@ The current plan adds a second integration cluster on top of the older module ma
 |------|------|----------|----------|
 | **`core/memory`** | turns, summaries, session state, vault | user/agent messages | context input for retrieval, session flow data |
 | **`modules/triage`** | tagging, routing, confidence, quality gates | memory entries, user turns | tags, route hints, pre-filter decisions, stable graph-ingest hints |
-| **`core/vector_rag`** | vector retrieval + hybrid routing/fusion | memory context, knowledge docs, future route hints | fused retrieval context for agents |
-| **`core/graph_rag`** | graph ingest, graph traversal, graph retrieval | extracted entities, relationships, future graph exports | graph-side retrieval results for hybrid mode |
+| **`core/rag_vector`** | vector retrieval + hybrid routing/fusion | memory context, knowledge docs, future route hints | fused retrieval context for agents |
+| **`core/rag_graph`** | graph ingest, graph traversal, graph retrieval | extracted entities, relationships, future graph exports | graph-side retrieval results for hybrid mode |
 | **`modules/mitre`** | canonical ATT&CK data | ATT&CK imports, domain mappings | ATT&CK graph projection candidates |
 | **`modules/threat_intel`** | canonical intel entities + feeds | MISP/OTX/VT-style data | graph projection candidates for actors/malware/campaigns/tools/observables |
 | **`modules/graphs`** | workflow/session/approval graph snapshots + live views | events, tasks, approvals, memory turns | graph snapshots, live graph diffs, future graph exports |
@@ -211,19 +211,19 @@ The current plan adds a second integration cluster on top of the older module ma
 ### Current Direction of Coupling
 
 ```text
-memory -> triage -> vector_rag -> agent execution
-vector_rag -> graph_rag (graph / hybrid modes)
+memory -> triage -> rag_vector -> agent execution
+rag_vector -> rag_graph (graph / hybrid modes)
 events/tasks/approvals -> graphs
 workflows -> events -> graphs
 graphs/workflows -(later export)-> GraphRAG
-mitre/threat_intel/triage -(projection)-> graph_rag
+mitre/threat_intel/triage -(projection)-> rag_graph
 ```
 
 ### Boundary Rules
 
 - `modules/triage` may influence retrieval mode later, but does not own retrieval execution.
-- `core/vector_rag` may consume graph projections later, but does not own workflow graph builders.
-- `core/graph_rag` owns graph retrieval internals, but not workflow graph builders.
+- `core/rag_vector` may consume graph projections later, but does not own workflow graph builders.
+- `core/rag_graph` owns graph retrieval internals, but not workflow graph builders.
 - `modules/mitre` and `modules/threat_intel` stay canonical; GraphRAG receives projections, not domain ownership.
 - `modules/workflows` owns executable graph semantics; `modules/graphs` owns visualization/snapshots.
 - `core/cache` and `core/prompt_cache` remain infrastructure dependencies, not domain hubs.

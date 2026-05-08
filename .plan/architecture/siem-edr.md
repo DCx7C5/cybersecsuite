@@ -82,8 +82,8 @@ flowchart TD
 | `css.modules.mcps` | connector discovery, ingest, and action execution |
 | `css.core.observability` | OpenObserve client + stream definitions |
 | `css.core.events` | event stream + instrumentation |
-| `css.core.graph_rag` | graph ingest and retrieval |
-| `css.core.vector_rag` | similar incident retrieval |
+| `css.core.rag_graph` | graph ingest and retrieval |
+| `css.core.rag_vector` | similar incident retrieval |
 | `css.modules.workflows` | response orchestration |
 | `css.modules.approvals` | human approval gate |
 | `css.modules.permissions` | policy guardrails for actions |

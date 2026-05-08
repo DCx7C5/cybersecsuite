@@ -1,4 +1,4 @@
-# @graph_rag — Core Graph Retrieval Subsystem Plan
+# @rag_graph — Core Graph Retrieval Subsystem Plan
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: Track todo state in `.plan/session.db`. Keep this file aligned with live work when touching this directory.
 
@@ -8,7 +8,7 @@ Dedicated GraphRAG infrastructure for the whole platform:
 - graph ingest and entity projection
 - Neo4j-backed entity, relationship, and community retrieval
 - traversal and path-based retrieval for graph-heavy queries
-- graph-side retrieval results consumed by `core/vector_rag` in `graph` and `hybrid` modes
+- graph-side retrieval results consumed by `core/rag_vector` in `graph` and `hybrid` modes
 - graph projections from MITRE ATT&CK, threat-intel, and stable intelligence outputs
 
 This is planned as a **core-owned** subsystem because graph retrieval is a shared capability, not a feature-module concern.
@@ -20,17 +20,17 @@ This is planned as a **core-owned** subsystem because graph retrieval is a share
 - graph traversal, neighborhood, and path/community query contracts
 - Neo4j adapter boundaries and graph schema ownership
 - retrieval cache participation through `core/cache`
-- integration with `core/vector_rag` for `graph` and `hybrid` modes
+- integration with `core/rag_vector` for `graph` and `hybrid` modes
 
 ## Phase Ownership
 
-- **Phase 20**: establish `core/graph_rag/` and build the GraphRAG backend
+- **Phase 20**: establish `core/rag_graph/` and build the GraphRAG backend
 - **Phase 29**: connect cybersec entities, relationships, and retrieval-ingestion projections
-- **Phase 21**: optional intelligence/triage participation in `AUTO` route choice through `core/vector_rag`
+- **Phase 21**: optional intelligence/triage participation in `AUTO` route choice through `core/rag_vector`
 
 ## Integration Points
 
-- `core/vector_rag`: owns the hybrid retrieval entry point and calls into `core/graph_rag` for graph/hybrid retrieval.
+- `core/rag_vector`: owns the hybrid retrieval entry point and calls into `core/rag_graph` for graph/hybrid retrieval.
 - `core/memory`: graph retrieval results flow back into memory-backed context assembly through `rag-context-wire`.
 - `modules/mitre` + `modules/threat_intel`: canonical relational owners that project graph-native entities and relationships into GraphRAG.
 - `modules/triage`: may emit stable extracted entities, ATT&CK candidate mappings, and confidence-scored links into graph ingest.

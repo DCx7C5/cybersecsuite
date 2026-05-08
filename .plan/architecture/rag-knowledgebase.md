@@ -2,16 +2,16 @@
 
 ## Decision
 
-`vector_rag` and `graph_rag` are planned as **core-owned retrieval subsystems**, not long-term business modules.
+`rag_vector` and `rag_graph` are planned as **core-owned retrieval subsystems**, not long-term business modules.
 
 Target ownership:
 - Runtime homes:
-  - `src/css/core/vector_rag/`
-  - `src/css/core/graph_rag/`
-- Current legacy path until migration: `src/css/modules/vector_rag/`
+  - `src/css/core/rag_vector/`
+  - `src/css/core/rag_graph/`
+- Current legacy path until migration: `src/css/modules/rag_vector/`
 - Domain integrations stay in feature phases, but shared retrieval logic lives in `core/`
-- `core/vector_rag/` owns vector retrieval plus hybrid routing, fusion, cache integration, and context handoff
-- `core/graph_rag/` owns graph ingestion, graph queries, and Neo4j-backed traversal retrieval
+- `core/rag_vector/` owns vector retrieval plus hybrid routing, fusion, cache integration, and context handoff
+- `core/rag_graph/` owns graph ingestion, graph queries, and Neo4j-backed traversal retrieval
 
 ## Goal
 
@@ -34,7 +34,7 @@ flowchart TB
         Agent["AgentExecutor"]
     end
 
-    subgraph VectorCore["core/vector_rag"]
+    subgraph VectorCore["core/rag_vector"]
         HRS["HybridRetrievalService"]
         Router{"RetrievalMode Router\nvector | graph | hybrid | auto"}
         Policy["Auto Routing Policy"]
@@ -44,7 +44,7 @@ flowchart TB
         Fusion["Result Fusion Layer\nmerge + rerank + dedupe + provenance"]
     end
 
-    subgraph GraphCore["core/graph_rag"]
+    subgraph GraphCore["core/rag_graph"]
         Graph["GraphRagBackend"]
         GraphIngest["Graph ingest / entity projection"]
     end
@@ -137,7 +137,7 @@ Caller
 ## Core Components
 
 - `VectorRagBackend`: document/chunk ingestion, pgvector search, metadata filtering
-- `GraphRagBackend` (`core/graph_rag`): entity extraction pipeline, graph ingest/query, path/community retrieval
+- `GraphRagBackend` (`core/rag_graph`): entity extraction pipeline, graph ingest/query, path/community retrieval
 - `RetrievalCacheLayer`: query-result caching, embedding reuse, route hints, and invalidation rules via `core/cache`
 - `HybridRetrievalService`: single entry point for callers
 - `QueryRouter`: mode resolution for `VECTOR`, `GRAPH`, `HYBRID`, `AUTO`
@@ -175,18 +175,18 @@ Important boundary:
 ## Phase Mapping
 
 - **Phase 20**: core hybrid retrieval foundation (`rag-*` todos)
-- **Phase 29**: cybersec retrieval ingestion and domain-facing usage on top of `core/vector_rag/` + `core/graph_rag/`
+- **Phase 29**: cybersec retrieval ingestion and domain-facing usage on top of `core/rag_vector/` + `core/rag_graph/`
 - **Phase 21**: optional intelligence/triage participation in `AUTO` route choice
 - **Future workflow graph DB work**: may later feed GraphRAG as an additional graph source
 
 ## System Integration
 
-`core/vector_rag` sits between memory/intelligence on the input side and agent execution on the output side, while `core/graph_rag` supplies the graph retrieval implementation it can call in `graph` or `hybrid` mode.
+`core/rag_vector` sits between memory/intelligence on the input side and agent execution on the output side, while `core/rag_graph` supplies the graph retrieval implementation it can call in `graph` or `hybrid` mode.
 
 - `core/memory`: `ContextAssembler` and memory-backed session state are the main retrieval callers.
 - `modules/triage/`: Phase 21 can tag memory, pre-filter trivial requests, and later provide `AUTO` route hints.
 - `modules/graphs/` + `modules/workflows/`: operational workflow graphs stay separate from the knowledge graph, but later workflow graph exports may become an additional GraphRAG source.
-- `modules/mitre/` + `modules/threat_intel/`: retain canonical relational ownership and project graph-native entities/relationships into `core/graph_rag`.
+- `modules/mitre/` + `modules/threat_intel/`: retain canonical relational ownership and project graph-native entities/relationships into `core/rag_graph`.
 - `modules/triage/`: may emit stable extracted entities, ATT&CK hints, and confidence-scored relationships into the graph ingest path; ephemeral routing state should not be projected.
 - `core/cache/`: retrieval caching is required from day one for embeddings, query results, and route hints.
 - `core/prompt_cache/`: prompt caching remains separate and applies to LLM calls, not retrieval result storage.
@@ -196,6 +196,6 @@ See [intelligence-retrieval-graph.md](./intelligence-retrieval-graph.md) for the
 ## Immediate Planning Consequences
 
 - `domain-rag-ingestion` is an ingestion layer on top of the shared retrieval core
-- the shared retrieval substrate is planned under `core/vector_rag/` + `core/graph_rag/`
-- the old `modules/vector_rag/` package is now legacy migration surface until the core move lands
+- the shared retrieval substrate is planned under `core/rag_vector/` + `core/rag_graph/`
+- the old `modules/rag_vector/` package is now legacy migration surface until the core move lands
 - caching is part of the retrieval design from day one; it is not a later optimization pass

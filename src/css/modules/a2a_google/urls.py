@@ -1,4 +1,4 @@
-"""Route mounting helpers for google_a2a."""
+"""Route mounting helpers for a2a_google."""
 
 from fastapi import FastAPI
 

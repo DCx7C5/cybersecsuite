@@ -1,4 +1,4 @@
-# @vector_rag — Hybrid Retrieval / Legacy Module Staging
+# @rag_vector — Hybrid Retrieval / Legacy Module Staging
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: Track todo state in `.plan/session.db`. Keep this file aligned with live work when touching this directory.
 
@@ -7,16 +7,16 @@
 Current staging area for retrieval code that is planned to become shared core infrastructure.
 
 Long-term ownership target:
-- `src/css/core/vector_rag/`
-- `src/css/core/graph_rag/` for GraphRAG-specific code
+- `src/css/core/rag_vector/`
+- `src/css/core/rag_graph/` for GraphRAG-specific code
 
 Current legacy runtime path:
-- `src/css/modules/vector_rag/`
+- `src/css/modules/rag_vector/`
 
 ## Current State
 
-- The package still lives under `modules/`, but planning ownership now points toward `core/`.
-- The same-name markdown rule is now satisfied with `vector_rag.md`.
+- The package still lives under `modules/`, but only as a migration/planning surface; runtime code moved to `core/`.
+- The same-name markdown rule is now satisfied with `rag_vector.md`.
 - Phase 20 now owns the hybrid retrieval foundation:
   - `rag-core-ownership`
   - `rag-cache-layer`
@@ -31,7 +31,7 @@ Current legacy runtime path:
 ## Planned Architecture
 
 - **VectorRAG**: PostgreSQL + pgvector for documents, chunks, embeddings, and semantic retrieval
-- **GraphRAG**: graph-store-backed retrieval for entities, relationships, communities, and traversal-heavy queries under `src/css/core/graph_rag/`
+- **GraphRAG**: graph-store-backed retrieval for entities, relationships, communities, and traversal-heavy queries under `src/css/core/rag_graph/`
 - **Modes**: `vector`, `graph`, `hybrid`, `auto`
 - **Fusion**: merge, rerank, deduplicate, and preserve provenance across backends
 - **Caching**: shared retrieval cache via `core/cache` for query results, embedding reuse, route hints, and invalidation-aware acceleration
@@ -41,8 +41,8 @@ Current legacy runtime path:
 
 - `core/memory` is the main caller once `rag-context-wire` lands.
 - `modules/triage` can later influence `AUTO` routing, but remains separate from retrieval execution.
-- `core/graph_rag` will own graph retrieval code after the core split lands; `core/vector_rag` remains the hybrid coordinator.
-- `modules/mitre` and `modules/threat_intel` keep canonical cybersec data and project graph-native structures into `core/graph_rag`.
+- `core/rag_graph` owns graph retrieval code; `core/rag_vector` remains the hybrid coordinator.
+- `modules/mitre` and `modules/threat_intel` keep canonical cybersec data and project graph-native structures into `core/rag_graph`.
 - `modules/workflows` and `modules/graphs` may later project workflow/session graph data into GraphRAG, without coupling live graph builders directly to retrieval.
 - `core/cache` backs retrieval caching; `core/prompt_cache` remains an independent LLM caching concern.
 
@@ -51,5 +51,5 @@ Current legacy runtime path:
 - Current ORM models still inherit `css.core.db.models.base.BaseModel`
 - Module-owned `Enum` classes live in `enums.py`
 - Treat this directory as a migration surface until `rag-core-ownership` lands
-- GraphRAG-specific implementation should move toward `src/css/core/graph_rag/`, not stay in this staging package
+- GraphRAG-specific implementation should move toward `src/css/core/rag_graph/`, not stay in this staging package
 - Sync any planning or ownership changes here with `.plan/plan.md`, `.plan/architecture/rag-knowledgebase.md`, and `.plan/session.db`

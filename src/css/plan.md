@@ -23,7 +23,7 @@ src/css/
 
 ## Key Rules
 
-- `core/` = infrastructure plus core-owned cross-cutting packages (`accounts`, `events`, `marketplace`, `memory`, `workspace`, and planned retrieval core packages `vector_rag` / `graph_rag`)
+- `core/` = infrastructure plus core-owned cross-cutting packages (`accounts`, `events`, `marketplace`, `memory`, `workspace`, `rag_vector`, and `rag_graph`)
 - `modules/` = business logic only; `accounts`, `events`, `marketplace`, and `memory` are core-only and must not exist as module packages
 - `working_dir` is deprecated terminology; use the general directory structure owned by `core/workspace/`
 - `api_services/` = provider adapters (YAML-driven, Phase 6 P2)

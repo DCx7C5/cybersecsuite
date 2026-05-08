@@ -2,10 +2,10 @@ from css.core.exceptions import BaseModuleException
 
 
 class BaseA2AExceptions(BaseModuleException):
-    """Base exception for the google_a2a module."""
+    """Base exception for the a2a_google module."""
 
     def __init__(self, message: str, **kwargs):
-        super().__init__(message, module_name="google_a2a", **kwargs)
+        super().__init__(message, module_name="a2a_google", **kwargs)
 
 
 class A2AAgentError(BaseA2AExceptions):

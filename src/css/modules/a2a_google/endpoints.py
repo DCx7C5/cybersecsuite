@@ -20,11 +20,11 @@ log = getLogger(__name__)
 
 # ── Module-level routers (discovered by core/endpoints/loader.py) ────────────
 
-# App-scoped routes — mounted at /google_a2a/*
-router = APIRouter(prefix="/google_a2a", tags=["google_a2a"])
+# App-scoped routes — mounted at /a2a_google/*
+router = APIRouter(prefix="/a2a_google", tags=["a2a_google"])
 
 # Root-level routes — mounted without prefix (e.g. /.well-known/agents.json)
-root_router = APIRouter(tags=["google_a2a"])
+root_router = APIRouter(tags=["a2a_google"])
 
 
 # ── Dependency ───────────────────────────────────────────────────────────────

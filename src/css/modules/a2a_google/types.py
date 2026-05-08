@@ -1,4 +1,4 @@
-"""google_a2a typed value objects and protocols."""
+"""a2a_google typed value objects and protocols."""
 
 from collections.abc import Awaitable, Callable
 from typing import Protocol, runtime_checkable
@@ -55,7 +55,7 @@ class TaskQueryParams(BaseModel):
 
 
 class A2AConfig(BaseModel):
-    """Runtime configuration for google_a2a routing behavior."""
+    """Runtime configuration for a2a_google routing behavior."""
 
     allow_cancel_completed: bool = False
 

@@ -25,16 +25,38 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 ### Canonical ORM Primitives
 
 - Every ORM entity inherits `css.core.db.models.base.BaseModel`.
-- `BaseModel.id` is the canonical default primary key via `PrimaryKeyField()`.
+- `BaseModel.id` is the canonical default primary key via `BigIntField(primary_key=True)`.
+- `TimestampMixin` is the default source of truth for standard `created_at` / `updated_at` audit pairs.
+- `BaseFrontmatterMixin` is the reusable frontmatter contract for models that truly have canonical identifier-style `name` + `description` semantics.
+- `BaseUserModel` is for username-rooted identity records.
+- `VersionMixin` is for synced/versioned artifacts that should carry semantic version plus remote/local hash provenance.
 - Use semantic helpers from `css.core.db.fields` whenever the meaning matches:
   `NameField`, `DescriptionField`, `VersionField`, `SlugField`, `UrlField`,
   `PathField`, `SHA512SumField`, `IPv4Field`, `IPv6Field`, `QualityScoreField`,
   `CostField`.
 - Use raw Tortoise fields only when there is no helper with the correct domain semantics.
 
+### Important semantic caveat
+
+- `NameField` is currently an **identifier field**, not a generic UI label. It enforces ASCII, Python-identifier-style content, and uniqueness.
+- That means `BaseFrontmatterMixin` must **not** be rolled out blindly to every model with a `name` column.
+- Models with human-facing labels or display names should use lighter semantics than `NameField`, most likely a plain `CharField` or a small normalization wrapper at the application boundary rather than another heavy base-field abstraction.
+- `BaseFBSModel` is redundant convenience sugar over `BaseModel + BaseFrontmatterMixin` and should be removed instead of becoming another permanent base layer.
+
+### Planned primitive rollout
+
+- `db-timestamp-mixin-rollout` — replace repeated `created_at` / `updated_at` pairs with `TimestampMixin` where semantics are standard
+- `db-frontmatter-field-semantics` — split identifier-style `NameField` from human-facing display-label semantics before broad base adoption
+- `db-frontmatter-base-rollout` — standardize on `BaseFrontmatterMixin` and roll it out only where the field semantics truly fit
+- `db-version-mixin-rollout` — adopt `VersionMixin` for versioned/synced artifacts that also want hash provenance
+
 ### Tracked ORM Cleanup Gaps
 
-- `db-vector-rag-charenum-fields` — convert vector_rag model `choices=` string fields to canonical enums + `CharEnumField(...)`, matching the DB rules above.
+- `db-vector-rag-charenum-fields` — convert `rag_vector` model `choices=` string fields to canonical enums + `CharEnumField(...)`, matching the DB rules above.
+- `db-timestamp-mixin-rollout` — standardize timestamp fields on `TimestampMixin` instead of repeating them inline across ORM models.
+- `db-frontmatter-field-semantics` — split identifier-name semantics from display-name semantics before scaling `BaseFrontmatterMixin`.
+- `db-frontmatter-base-rollout` — remove `BaseFBSModel` and apply `BaseFrontmatterMixin` only to models that truly fit the canonical `name` + `description` pattern.
+- `db-version-mixin-rollout` — apply `VersionMixin` to versioned artifacts that should carry semantic version plus remote/local hash provenance.
 
 ---
 

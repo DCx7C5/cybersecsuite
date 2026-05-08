@@ -8,7 +8,7 @@ Available modules (auto-discovered):
 - cache: Caching backends (Redis, in-memory)
 - capabilities: Capability definitions and registry
 - chat: Chat message types and handlers
-- google_a2a: Google A2A protocol and endpoints
+- a2a_google: Google A2A protocol and endpoints
 - llm_proxy: LLM proxy and routing
 - orchestration: Multi-orchestrator coordination (TeamLeader, TeamMember, OrchestratorProcess)
 - permissions: Permission system and checks
