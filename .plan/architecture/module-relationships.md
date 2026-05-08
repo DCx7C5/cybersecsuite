@@ -1,7 +1,7 @@
 # Module Relationships & Dependencies
 
 **Status**: 🔵 Mapping  
-**Updated**: 2026-05-03  
+**Updated**: 2026-05-08  
 **Focus**: Cross-module data model relationships & integration points
 
 ---
@@ -190,3 +190,35 @@ Read models/projections then provide module-specific query surfaces.
 - **Observability**: event stream is bridged to OTEL/OpenObserve for unified traces/audit.
 
 This reduces tight direct module-to-module coupling and makes replay/audit first-class.
+
+---
+
+## Planned Retrieval, Intelligence & Graph Relationships
+
+The current plan adds a second integration cluster on top of the older module map:
+
+| Area | Owns | Consumes | Produces |
+|------|------|----------|----------|
+| **`core/memory`** | turns, summaries, session state, vault | user/agent messages | context input for retrieval, session flow data |
+| **`modules/triage`** | tagging, routing, confidence, quality gates | memory entries, user turns | tags, route hints, pre-filter decisions |
+| **`core/vector_rag`** | vector/graph/hybrid retrieval | memory context, knowledge docs, future route hints | fused retrieval context for agents |
+| **`modules/graphs`** | workflow/session/approval graph snapshots + live views | events, tasks, approvals, memory turns | graph snapshots, live graph diffs, future graph exports |
+| **`modules/workflows`** | executable DAG/workflow definitions | memory, approvals, agent/tool events | workflow state that can be visualized and later projected |
+
+### Current Direction of Coupling
+
+```text
+memory -> triage -> vector_rag -> agent execution
+events/tasks/approvals -> graphs
+workflows -> events -> graphs
+graphs/workflows -(later export)-> GraphRAG
+```
+
+### Boundary Rules
+
+- `modules/triage` may influence retrieval mode later, but does not own retrieval execution.
+- `core/vector_rag` may consume graph projections later, but does not own workflow graph builders.
+- `modules/workflows` owns executable graph semantics; `modules/graphs` owns visualization/snapshots.
+- `core/cache` and `core/prompt_cache` remain infrastructure dependencies, not domain hubs.
+
+See [intelligence-retrieval-graph.md](./intelligence-retrieval-graph.md) for the integrated architecture graph.

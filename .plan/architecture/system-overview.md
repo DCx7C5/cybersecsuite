@@ -1,7 +1,7 @@
 # CyberSecSuite Architecture
 
 **Status**: 🏗️ Detailed System Design  
-**Updated**: 2026-05-03  
+**Updated**: 2026-05-08  
 **Scope**: Multi-Orchestrator + TeamScope implementation
 
 ---
@@ -64,11 +64,10 @@ Process 2 (PID: 2002): Background Orchestrator (Intelligence)
 
 **Role Types (6 total):**
 1. **Planner** — Planning & analysis (read-only code, proposals/decisions)
-2. **Orchestrator** — Main process, delegates to teams, manages execution
+2. **Orchestrator** — Main process, delegates to teams, workers, other orchestrators, manages execution
 3. **TeamLeader** — Coordinates agents/workers within team subprocess
 4. **Worker** — Executes tasks, runs agents, performs work
 5. **Triage** — Routes tasks, prioritizes, background processing
-6. **TeamMember** — Individual agent/worker in team
 
 Each orchestrator process integrates **`core/cache`** for:
 - **Task Result Caching** (idempotency keys prevent re-execution)
@@ -152,3 +151,30 @@ Main Orchestrator Process
 - Domain mutations are tracked as immutable domain events.
 - Event persistence + replay is the system-level source for forensic/audit reconstruction.
 - OTEL/OpenObserve spans should be derived from domain event flow, not ad-hoc log-only instrumentation.
+
+---
+
+## Knowledge, Intelligence & Graph Loop (Planned)
+
+The current phase plan now treats memory, local intelligence, hybrid retrieval, and workflow graphs as one coordinated runtime loop:
+
+- `core/memory/` stores turns, summaries, session context, canvas state, and vault knowledge.
+- `modules/triage/` performs cheap local tagging, confidence checks, pre-filtering, and later may provide retrieval hints for `auto` mode.
+- `core/vector_rag/` provides `vector`, `graph`, `hybrid`, and `auto` retrieval for `ContextAssembler` and agent execution.
+- `modules/graphs/` builds workflow/session/approval graph views from events and persisted state.
+- `modules/workflows/` later owns graph-backed workflow authoring/execution, while keeping its graph domain distinct from GraphRAG knowledge graphs.
+
+Important graph boundary:
+- operational workflow graphs are not the same as GraphRAG knowledge graphs
+- they may share graph infrastructure later, but should stay separate by schema, namespace, and ownership
+- GraphRAG may consume workflow graph exports later, not live UI graph state
+
+Important cache boundary:
+- `core/cache/` backs retrieval and generic platform caching
+- `core/prompt_cache/` handles LLM prompt/response reuse
+- prompt caching and retrieval caching must stay separate even if both use Redis/PostgreSQL underneath
+
+See:
+- [intelligence-retrieval-graph.md](./intelligence-retrieval-graph.md)
+- [rag-knowledgebase.md](./rag-knowledgebase.md)
+- [caching-architecture.md](./caching-architecture.md)

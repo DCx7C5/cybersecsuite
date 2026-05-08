@@ -154,7 +154,7 @@ cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/api_services/api_services.md" 2>/dev/null
 
 # Read architecture doc if phase mentions it:
-# Phase 6 → read .plan/asgi.md (Phase 6 section)
+# Phase 6 → read .plan/core.md (Phase 6 section)
 # Phase 14 → cat .plan/architecture/observability.md
 # Phase 21 → cat .plan/architecture/sdks.md
 
@@ -238,6 +238,8 @@ sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<m
 -- Find the phase section and update todo count
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE phase = 'PHASE_NAME' GROUP BY phase;
 ```
+
+**Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` here. Those are phase-level sync documents and are updated only in WORKFLOW 3 after the full phase is complete.
 
 **Step 3 — Mark done**
 ```sql
@@ -337,53 +339,14 @@ sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/module
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE task = 'TASK_NAME';
 ```
 ```bash
-# Update the phase section in .plan/asgi.md:
+# Update the phase section in .plan/core.md:
 # Find the phase section, update todo counts to match session.db
-sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/asgi.md
+sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/core.md
 ```
 
-**Step 3 — Update .plan/memory.md (MANDATORY after every task)**
-```bash
-# Update the phase table row to match session.db exactly:
-.venv/bin/python -c "
-import sqlite3
-conn = sqlite3.connect('.plan/session.db')
-cur = conn.cursor()
-cur.execute('SELECT COUNT(*), SUM(status=\"done\"), SUM(status=\"pending\"), SUM(status=\"blocked\") FROM todos WHERE phase = \"PHASE_NAME\"')
-total, done, pending, blocked = cur.fetchone()
-print(f'Updating memory.md: {total} total, {done} done, {pending} pending, {blocked} blocked')
-"
-# Edit .plan/memory.md: update the exact row in the phase table
-# Use sed to replace the correct table row:
-# | Phase X — NAME | TOTAL | DONE | PENDING | BLOCKED |
-```
+**Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` at task completion. If this task finishes the phase, continue with WORKFLOW 3 and update both files there.
 
-**Step 4 — Update .plan/checkpoints.md (MANDATORY after every task)**
-```bash
-# Append task completion entry to .plan/checkpoints.md:
-cat >> .plan/checkpoints.md << 'EOF'
-
-## Checkpoint XXX — TASK_NAME Completed ($(date +%Y-%m-%d))
-
-**Status**: ✅ COMPLETE
-
-### Work Done
-- Task: TASK_NAME
-- Phase: PHASE_NAME
-- Todos completed: N (list them)
-
-### session.db Changes
-- Phase progress: X/Y todos done (Z%)
-
-### Files Modified
-- list of files changed
-
-### Status
-- Ready for next task in phase
-EOF
-```
-
-**Step 5 — Commit (logical and atomic)**
+**Step 3 — Commit (logical and atomic)**
 ```bash
 git add -A
 git commit -m "[TASK-TASK_NAME] Task complete
@@ -449,17 +412,16 @@ Use Task tool with:
 
 **Step 1 — Update all .plan/ files (CHECKLIST)**
 ```bash
-# [ ] .plan/asgi.md — mark phase ✅ DONE, update CURRENT STATUS
+# [ ] .plan/core.md — mark phase ✅ DONE, update CURRENT STATUS
 # [ ] .plan/memory.md — update phase table row (done count, blocked count)
 # [ ] .plan/checkpoints.md — add phase checkpoint entry
 # [ ] .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
 
-# Local asgi.md files REQUIRED — update every directory you touched:
-# [ ] src/css/asgi.md — if root-level changes
-# [ ] src/css/core/<subdir>/asgi.md — for each core subdir touched
-# [ ] src/css/modules/<module>/asgi.md — for each module touched
-# [ ] src/css/api_services/asgi.md — if api_services touched
-# NOTE: local asgi.md files are NOT part of .plan/ whitelist; they are codebase files
+# Update every touched local planning markdown:
+# [ ] src/css/core.md — if root-level changes
+# [ ] src/css/core/<subdir>/core.md or the nearest area planning markdown
+# [ ] src/css/modules/<module>/<module>.md
+# [ ] src/css/api_services/api_services.md
 ```
 
 **Step 2 — Commit (logical and atomic)**

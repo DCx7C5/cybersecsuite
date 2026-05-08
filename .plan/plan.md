@@ -2,9 +2,9 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-08T01:22:41+02:00 (session current)  
+**Updated**: 2026-05-08T17:24:58+02:00 (session current)  
 **Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 783 total (393 done, 384 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 790 total (393 done, 391 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -18,7 +18,7 @@
 
 When implementing or learning about components:
 - **API Providers**: `src/css/api_services/api_services.md` ← **Use this**
-- **Core Infrastructure**: `src/css/core/{area}/plan.md` ← **Use this**
+- **Core Infrastructure**: `src/css/core/{area}/plan.md` or the nearest same-area planning markdown ← **Use this**
 - **Modules**: `src/css/modules/{module}/{module}.md` ← **Use this**
 
 Each file contains:
@@ -49,7 +49,7 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 35 total (Phase 0–34) — Phase 0 + 1 complete, Phase 2+ pending  
-**Todos**: **783 total (393 done, 384 pending, 6 blocked)**  
+**Todos**: **790 total (393 done, 391 pending, 6 blocked)**  
 **Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
 **Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
 **Next**: Continue ready queue from `session.db` in `sort_order`
@@ -72,6 +72,7 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 **Binding ownership note (2026-05-08)**:
 - `accounts`, `events`, `marketplace`, and `memory` are core-owned packages.
 - `accounts` now exists only under `src/css/core/accounts/`; do not recreate `src/css/modules/accounts/`.
+- `vector_rag` is planned to move from `src/css/modules/vector_rag/` to `src/css/core/vector_rag/` as shared hybrid retrieval infrastructure.
 - `working_dir` is retired terminology. Use `core/workspace/` and the general session/project directory structure.
 
 **High-level package snapshot**:
@@ -1268,7 +1269,7 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 
 | ID | Feature | Notes |
 |----|---------|-------|
-| `feat-knowledge-module` | `modules/knowledge/` | RAG pipeline: KnowledgeDocument + pgvector (PostgreSQL) + KnowledgeRetriever. Sources: CVE feeds, PDFs, playbooks. |
+| `feat-vector-rag-core` | `core/vector_rag/` | Hybrid knowledgebase: VectorRAG on PostgreSQL + pgvector, GraphRAG on graph storage, toggleable retrieval modes (`vector`, `graph`, `hybrid`, `auto`), and fused context for agents. Sources: CVE feeds, PDFs, playbooks, extracted entities/relationships. |
 | `feat-evidence-module` | `modules/evidence/` | Chain-of-custody: Evidence model + EvidenceChain (immutable append via EventStore). Hash-verified, collector-attributed. |
 | `feat-audit-compliance-module` | `modules/compliance/` | NIST CSF / SOC2 / ISO27001 / MITRE framework control mapping. % coverage reports. Reads from scans + incidents. |
 
@@ -1281,7 +1282,7 @@ auth → accounts → sessions-persistence
 incidents → threat-intel → mitre → scan
 events (p6) → alerts → webhooks
 reports → incidents + scans + compliance
-knowledge → memory (agent RAG)
+vector_rag(core) → memory + agent context assembly
 evidence → incidents + EventStore (p6)
 ```
 
@@ -1291,7 +1292,7 @@ evidence → incidents + EventStore (p6)
 2. **After Phase 3**: `feat-auth-module`, `feat-accounts-module`, `feat-sessions-persistence`
 3. **After Phase 6 (CQRS)**:  `feat-incidents-module`, `feat-threat-intel-module`, `feat-evidence-module`
 4. **After incidents**: `feat-reports-module`, `feat-alerts-module`, `feat-webhooks-module`
-5. **After pgvector setup**: `feat-knowledge-module`, `feat-mitre-module`, `feat-audit-compliance-module`
+5. **After Phase 20 hybrid retrieval core**: `feat-vector-rag-core`, `feat-mitre-module`, `feat-audit-compliance-module`
 6. **Anytime**: `feat-strategies-impl`, `feat-planer-impl`, `feat-scheduler-module`
 
 
@@ -5872,15 +5873,33 @@ Existing stubs: `memory/vault/manager.py` (Obsidian scaffold), `memory/vault/hot
 - `mem-compression` — EpisodicCompressor: when cold tier > N turns, summarise oldest K turns into a single `MemoryEntry(type=SUMMARY)` using cheapest available LLM; store summary, discard originals. Keeps context window lean across long sessions.
 - `mem-memory-tagger-hook` — hook point for Phase 21 `triage-memory-tagger`: after every store(), call MemoryTagger.tag(entry) async (fire-and-forget), update entry tags in place
 
+### T20.9 — Hybrid Retrieval Core (VectorRAG + GraphRAG)
+
+- `rag-core-ownership` — promote `vector_rag` from a feature-module staging area to a core-owned retrieval subsystem under `src/css/core/vector_rag/`
+- `rag-cache-layer` — retrieval cache layer via `core/cache`: query-result caching, embedding reuse, route hints, TTLs, and ingest/update invalidation
+- `rag-vector-backend` — VectorRagBackend: PostgreSQL + pgvector for documents, chunks, embeddings, filters, and semantic retrieval
+- `rag-graph-backend` — GraphRagBackend: graph-store adapter (Neo4j first) for entities, relationships, communities, and traversal-based retrieval
+- `rag-query-modes` — `RetrievalMode` selection with manual `vector` / `graph` / `hybrid` toggles plus `auto` routing policy
+- `rag-fusion-layer` — merge, rerank, deduplicate, and preserve provenance across vector + graph retrieval results
+- `rag-context-wire` — wire hybrid retrieval into `ContextAssembler`, memory-backed context assembly, and agent execution
+
+**Routing note**: `auto` mode should work with a simple routing policy first. Later, Phase 21 intelligence/triage can participate in backend choice for complex requests.
+
 ### Dependencies (Phase 20 expanded)
 ```
 mem-protocol-struct → mem-canvas-model, mem-vault-orm, mem-pgvector-setup
 mem-pg-model → mem-canvas-orm, mem-vault-orm
 mem-canvas-manager → mem-canvas-orm
 mem-vault-backend → mem-vault-orm
-mem-pgvector-setup → mem-compression, mem-vault-backend (semantic search)
+mem-pgvector-setup → mem-compression, mem-vault-backend, rag-vector-backend
 mem-manager → mem-canvas-wire, mem-vault-wire
+rag-core-ownership → rag-cache-layer, rag-vector-backend, rag-graph-backend
+rag-cache-layer → rag-vector-backend, rag-graph-backend
+rag-vector-backend + rag-graph-backend → rag-query-modes → rag-fusion-layer
+mem-context-assembler + mem-agent-wire + rag-fusion-layer → rag-context-wire
+rag-context-wire → Phase 29 domain-knowledge
 Phase 21: triage-memory-tagger → mem-memory-tagger-hook
+Phase 21: intelligence/triage may later inform `AUTO` retrieval-mode choice
 ```
 
 ---
@@ -6202,7 +6221,7 @@ All of these are single-line todos with no implementation plan:
 | New Phase | Contents | Dependencies |
 |-----------|---------|-------------|
 | **Phase 28 — Auth & Accounts** | `modules/auth/` (JWT, API keys), `core/accounts/` (User ORM, profiles), row-level project isolation | Phase 15 (permissions), Phase 17 (settings/projects) |
-| **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, knowledge, compliance, reports | Phase 20 (memory/pgvector for knowledge RAG), Phase 28 (auth), Phase 14 (events) |
+| **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, compliance, reports, cybersec knowledge ingestion on top of `core/vector_rag/` | Phase 20 (hybrid retrieval core), Phase 28 (auth), Phase 14 (events) |
 | **Phase 30 — Workflow Engine + IPC** | `modules/workflows/` DAG engine, `modules/ipc/` (A2A messaging), `modules/planner/` (goal decomposition) | Phase 20 (memory), Phase 26 (approvals), Phase 14 (events) |
 | **Phase 31 — Production Readiness** | Secrets management, rate limiting, task queue, deployment Dockerfile, OpenAPI polish, alerting/webhooks, multi-tenancy RLS | Phase 28 (auth), Phase 26 (approvals), Phase 27 (graphs) |
 

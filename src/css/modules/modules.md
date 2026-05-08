@@ -17,6 +17,7 @@ When updating a module, treat that module's local same-name Markdown file as the
 - `accounts`, `events`, `marketplace`, and `memory` are core-owned domains under `src/css/core/`.
 - `accounts` is core-only now; there must not be a `src/css/modules/accounts/` package.
 - `events`, `memory`, and `marketplace` are core-only now; there must not be `src/css/modules/events/`, `src/css/modules/memory/`, or `src/css/modules/marketplace/` packages.
+- `vector_rag` is planned to become a core-owned retrieval subsystem under `src/css/core/vector_rag/`; the current `src/css/modules/vector_rag/` package is legacy migration surface until Phase 20 hybrid-retrieval work lands.
 - `working_dir` is retired; use `src/css/core/workspace/` for session/project directory management.
 
 ## Module Rules

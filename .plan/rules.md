@@ -1,6 +1,6 @@
 # Development Rules
 
-**Status**: 📋 Active Convention | **Updated**: 2026-05-04
+**Status**: 📋 Active Convention | **Updated**: 2026-05-08
 
 ---
 
@@ -36,56 +36,41 @@ cat src/css/core/<area>/settings.md 2>/dev/null || \
 cat src/css/api_services/api_services.md
 ```
 
-
 ---
 
 ## CRITICAL MOST IMPORTANT RULES NEVER FORGET
 
 ### Session & Project Planning
-- **ABSOLUTE: `.plan/plan.md` is the session workspace plan** — high-level project overview for THIS session's work (planning ONLY, not progress logs)
-- **ABSOLUTE: track all progress in [.plan/session.db](session.db) ONLY** — every todo status change goes here, never in markdown
-- **ABSOLUTE: local planning Markdown files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/modules.md`, `src/css/modules/*/<module>.md`, `src/css/api_services/api_services.md`, `src/css/core/*/plan.md`, etc.
-- **ABSOLUTE: keep EVERY local planning Markdown file synchronized with [.plan/session.db](session.db) while working in that directory** — each file reflects todos/milestones relevant to that module/subdirectory
-- **ABSOLUTE: when working in a module (e.g., `src/css/modules/agents/`), READ that module's local `<module>.md` FIRST; for core areas read the nearest `plan.md`** — understand what's planned, in-progress, and completed for that area
-- **ABSOLUTE: there is no such thing like "backwards compatibility". we are not yet in production.**
-- **ABSOLUTE: update local planning Markdown DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
-- **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
-- **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
-- **ABSOLUTE: when creating new files or content keep pattern consistency in your mind**
+- **ABSOLUTE: Git track everything. use worktrees for parallel working subagents if possible**
+- **ABSOLUTE: `.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
+- **ABSOLUTE: local planning Markdown exists across `src/css/` and must stay synchronized with `session.db` during work** — read the nearest file first (`<module>.md` in modules, nearest `plan.md` elsewhere) so each area document reflects current todos and milestones
+- **ABSOLUTE: there is no backwards compatibility requirement** — if your changes make code deprecated, delete the deprecated code directly
+- **ABSOLUTE: use lazy imports only when clearly justified, and preserve existing directory, file, and content patterns when adding or changing code**
 
 ### Code & Execution
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
-- **ABSOLUTE: `@dataclass` & `@dataclass + ABC` is deprecated pattern. Fix immediately when seen in existing codebase.**
-- **ABSOLUTE: keep thinking chat to bare essentials only** — No reasoning bloat, no hidden verbosity
-- **ABSOLUTE: keep every chat response under 500 words unless impossible**
-- **ABSOLUTE: explicitly announce whenever a TODO, TASK, or PHASE is completed**
-- **ABSOLUTE: every tool execution must have a clear headline**
-- **ABSOLUTE: always end with a normal summary**
+- **ABSOLUTE: `@dataclass` is legacy, and `@dataclass + ABC` is forbidden** — when you touch one, migrate it toward `msgspec.Struct`, and fix mixed patterns immediately
+- **ABSOLUTE: keep chat responses bare and under 500 words unless impossible**
+- **ABSOLUTE: explicitly announce every TODO, TASK, or PHASE completion, give every tool execution a clear headline, and always end with a normal summary**
 - **ABSOLUTE: always prefer async Python whenever possible**
-- **ABSOLUTE: we never use type `Any`, We create exact `TypedDict`s.**
-- **ABSOLUTE: we never use comments for typing, e.g `# type: XY`**
-- **ABSOLUTE: for frontend work, always use `bun`, never `npm`, unless impossible**
-- **ABSOLUTE: always use `aiohttp`, never `httpx`**
+- **ABSOLUTE: avoid `Any` and never use typing comments** — prefer exact `TypedDict`s over `Any`, and never write `# type: ...`
+- **ABSOLUTE: use the required stack choices** — `bun`, not `npm`; `aiohttp`, not `httpx`
 - **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**
 - **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
-- **ABSOLUTE: never use `Exception` only, create custom exception with help of base exceptions in `src/core/exceptions.py`**
-- **ABSOLUTE: use Singleton metaclass patterns in `src/core/types/meta.py`. No end of file instantiation.**
-- **ABSOLUTE: use explicit imports `from X import Y` if applicable.**
-- **ABSOLUTE: don't create warnings leading to `"Expected type XY, got None instead"`**
+- **ABSOLUTE: never use bare `Exception`** — create custom exceptions with help from `src/core/exceptions.py`
+- **ABSOLUTE: use Singleton metaclass patterns from `src/core/types/meta.py`** — no end-of-file instantiation
+- **ABSOLUTE: use explicit imports `from X import Y` where applicable, and do not create `"Expected type XY, got None instead"` warnings**
 
 ### Architecture & Structure
 - **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**
-- **ABSOLUTE: in planning mode, always structure work as PHASE > TASK > TODO**
-- **ABSOLUTE: every new TODO must belong to exactly one TASK and one PHASE**
-- **ABSOLUTE: [.plan/](../.plan) is the working directory** — never treat `~/.copilot/` or `~/.claude` as the working directory
-- **ABSOLUTE: use the project virtualenv at [.venv/bin/](../.venv/bin) whenever Python execution is needed**
-- **ABSOLUTE: follow all existing directory, documentation, and code patterns for consistency**
-- **ABSOLUTE: use [.plan/architecture/*.md](architecture) & the nearest local planning markdown (`plan.md` or module `<module>.md`) as the source of truth for general architecture**
+- **ABSOLUTE: planning hierarchy is always PHASE > TASK > TODO** — every new TODO must belong to exactly one TASK and exactly one PHASE
+- **ABSOLUTE: [.plan/](../.plan) is the working directory, and [.venv/bin/](../.venv/bin) is the Python entry point**
+- **ABSOLUTE: follow existing directory, documentation, and code patterns, and use [.plan/architecture/*.md](architecture) plus the nearest local planning markdown as the architecture source of truth**
 
 ### Workflow & Tooling
 - **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
-- **ABSOLUTE: in PLAN MODE, update every `.md` under `.plan/` and keep all of them synchronized with [.plan/session.db](session.db)**
-- **ABSOLUTE: keep also `memory.md` and `checkpoints.md` in sync with [.plan/session.db](session.db)** — but only at end-of-session, not during work
+- **ABSOLUTE: in PLAN MODE, keep `.plan/plan.md`, relevant `.plan/architecture/*.md`, and local planning Markdown synchronized with [.plan/session.db](session.db) while working**
+- **ABSOLUTE: update `memory.md` and `checkpoints.md` at the end of every PHASE** — not after every task and not only at end-of-session
 - **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
 - **ABSOLUTE: make multiple logical and atomic commits**
 
@@ -115,8 +100,8 @@ cat src/css/api_services/api_services.md
 
 **✅ REQUIRED**: Local planning markdown is mandatory throughout `src/css/`:
 - `src/css/plan.md` — CSS root planning
-- `src/css/core/plan.md` — core infrastructure planning
-- `src/css/core/*/plan.md` — each subdirectory (asgi, db, redis, otel, types, orchestration, etc.)
+- `src/css/core/core.md` — core infrastructure planning
+- `src/css/core/*/*.md` — each subdirectory (asgi, db, redis, otel, types, orchestration, etc.)
 - `src/css/modules/modules.md` — modules index
 - `src/css/modules/*/<module>.md` — each module (agents, permissions, skills, tools, chat, etc.)
 - `src/css/api_services/api_services.md` — provider planning
@@ -131,23 +116,26 @@ cat src/css/api_services/api_services.md
 
 ## 📊 Tech Stack Rules
 
-| Area                 | Decision                                                                             |
-|----------------------|--------------------------------------------------------------------------------------|
-| **Python**           | 3.14+ (async-first, no sync wrappers except CLI)                                     |
-| **Package Manager**  | `uv` (Python), `bun` (Node/JS)                                                       |
-| **ORM**              | Tortoise ORM (PostgreSQL) + asyncpg (async driver)                                   |
-| **Database**         | PostgreSQL (primary OLTP)                                                            |
-| **Cache**            | Redis (rate limiter, token cache)                                                    |
-| **Observability**    | OpenObserve (time-series: telemetry, audit, API usage, LLM calls)                    |
-| **Frontend**         | React 19.2+, TypeScript                                                              |
-| **API**              | FastAPI (async), Pydantic v2                                                         |
-| **Testing**          | pytest (unit/integration), only after phase complete                                 |
-| **Containerization** | Docker Compose (6 services: ASGI, Dashboard, PostgreSQL, Redis, Ollama, OpenObserve) |
+| Area                   | Decision                                                                             |
+|------------------------|--------------------------------------------------------------------------------------|
+| **Python**             | 3.14+ (async-first, no sync wrappers except CLI)                                     |
+| **Package Manager**    | `uv` (Python), `bun` (Node/JS)                                                       |
+| **ORM**                | Tortoise ORM (PostgreSQL) + asyncpg (async driver)                                   |
+| **Database**           | PostgreSQL (primary OLTP)                                                            |
+| **Cache**              | Redis (rate limiter, token cache)                                                    |
+| **Observability**      | OpenObserve (time-series: telemetry, audit, API usage, LLM calls)                    |
+| **Frontend**           | React 19.2+, TypeScript                                                              |
+| **API**                | FastAPI (async), Pydantic v2                                                         |
+| **Testing**            | pytest (unit/integration), only after phase complete                                 |
+| **Containerization**   | Docker Compose infra services: PostgreSQL, Redis, OpenObserve, Neo4j. App/frontend/Ollama run outside Docker. |
+| **Async HTTP library** | `aiohttp`, never `httpx`                                                             |
+ | **Vector RAG**         | Database: postgres via docker compose                                                |
+ | **Graph RAG**          | Database: neo4j via docker compose service cybersec-neo4j                            |
 
 ### Running the App
 
 ```bash
-# Start infra (postgres, redis, ollama, openobserve) — Docker-only
+# Start infra (postgres, redis, openobserve, neo4j) — Docker-only
 docker-compose up -d
 
 # Start ASGI app directly (NOT in Docker)
@@ -449,47 +437,75 @@ Tool       → modules/tools/types.py
 
 ## 🗄️ ORM Naming & Schema Rules
 
-| Rule                                 | Detail                                                                                                                                                                                                           |
-|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **No `Record` suffix**               | Model class is `LLMModel`, not `LLMModelRecord`. Table name is `llm_models`. Only suffix allowed is a domain noun (e.g., `ProviderCapability`, `ChatMessage`).                                                   |
-| **No migrations during dev**         | While phases are in progress we drop + reseed. `manage.py init-db` calls `generate_schemas(safe=False)` in dev, then runs all seed fixtures. Only consider Aerich migration tooling after all phases are locked. |
-| **BaseModel required**               | Every Tortoise ORM entity inherits `css.core.db.models.base.BaseModel`. The default primary key comes from `BaseModel.id`, not from repeating raw `fields.BigIntField(primary_key=True)` in each model.         |
-| **PrimaryKeyField default PK**       | `BaseModel.id` uses `PrimaryKeyField()` from `css.core.db.fields`. Override `id` only when a documented domain requirement truly needs a non-default primary key.                                                |
-| **CharEnumField for enums**          | All enum-valued columns use `CharEnumField(MyEnum)`, never raw `CharField` with manual choices.                                                                                                                  |
+| Rule                                 | Detail                                                                                                                                                                                                                                                                                                     |
+|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **No `Record` suffix**               | Model class is `LLMModel`, not `LLMModelRecord`. Table name is `llm_models`. Only suffix allowed is a domain noun (e.g., `ProviderCapability`, `ChatMessage`).                                                                                                                                             |
+| **No migrations during dev**         | While phases are in progress we drop + reseed. `manage.py init-db` calls `generate_schemas(safe=False)` in dev, then runs all seed fixtures. Only consider Aerich migration tooling after all phases are locked.                                                                                           |
+| **BaseModel required**               | Every Tortoise ORM entity inherits `css.core.db.models.base.BaseModel`. The default primary key comes from `BaseModel.id`, not from repeating raw `fields.BigIntField(primary_key=True)` in each model.                                                                                                    |
+| **PrimaryKeyField default PK**       | `BaseModel.id` uses `PrimaryKeyField()` from `css.core.db.fields`. Override `id` only when a documented domain requirement truly needs a non-default primary key.                                                                                                                                          |
+| **CharEnumField for enums**          | All enum-valued columns use `CharEnumField(MyEnum)`, never raw `CharField` with manual choices.                                                                                                                                                                                                            |
 | **Semantic field helpers required**  | When field meaning matches an existing helper, use `css.core.db.fields`: `NameField`, `DescriptionField`, `VersionField`, `SlugField`, `UrlField`, `PathField`, `SHA512SumField`, `IPv4Field`, `IPv6Field`, `QualityScoreField`, `CostField`. Use raw Tortoise fields only when no helper fits the domain. |
-| **Full Meta class**                  | Every model needs: `table`, `table_description`, `ordering`, `indexes` (as `models.Index(fields=[...])`), `unique_together` where applicable.                                                                    |
-| **Index syntax**                     | Always `models.Index(fields=["a", "b"])` — never tuple syntax `("a", "b")` (silently ignored).                                                                                                                   |
-| **auto_now timestamps**              | `created_at = fields.DatetimeField(auto_now_add=True)`, `updated_at = fields.DatetimeField(auto_now=True)` on every mutable model.                                                                               |
-| **Soft delete pattern**              | `is_active = BooleanField(default=True, db_index=True)` + `deleted_at = DatetimeField(null=True)`. Use `SoftDeleteMixin` once created.                                                                           |
-| **null=True only if truly nullable** | Don't use `null=True` as a default. Required fields must be non-null with a sensible default.                                                                                                                    |
-| **No duplicate enum names**          | One canonical enum per concept. Keep `Severity`, `Confidence`, `IOCStatus` — delete `SeverityLevel`, `ConfidenceLevel`, `ForensicIOCStatus`.                                                                     |
+| **Full Meta class**                  | Every model needs: `table`, `table_description`, `ordering`, `indexes` (as `models.Index(fields=[...])`), `unique_together` where applicable.                                                                                                                                                              |
+| **Index syntax**                     | Always `models.Index(fields=["a", "b"])` — never tuple syntax `("a", "b")` (silently ignored).                                                                                                                                                                                                             |
+| **auto_now timestamps**              | `created_at = fields.DatetimeField(auto_now_add=True)`, `updated_at = fields.DatetimeField(auto_now=True)` on every mutable model.                                                                                                                                                                         |
+| **Soft delete pattern**              | `is_active = BooleanField(default=True, db_index=True)` + `deleted_at = DatetimeField(null=True)`. Use `SoftDeleteMixin` once created.                                                                                                                                                                     |
+| **null=True only if truly nullable** | Don't use `null=True` as a default. Required fields must be non-null with a sensible default.                                                                                                                                                                                                              |
+| **No duplicate enum names**          | One canonical enum per concept. Keep `Severity`, `Confidence`, `IOCStatus` — delete `SeverityLevel`, `ConfidenceLevel`, `ForensicIOCStatus`.                                                                                                                                                               |
 
 ---
 
 ## 🚫 Anti-Patterns (NEVER)
 
-| Anti-Pattern                       | Fix                                                                   |
-|------------------------------------|-----------------------------------------------------------------------|
-| Create .md outside whitelist       | Consolidate to 7 files                                                |
-| Manual .env.example edits          | Regenerate from CONFIG_SPEC                                           |
-| Mix ABC + @dataclass on same class | Use ABC alone OR @dataclass alone OR msgspec.Struct                   |
-| @dataclass + BaseModel(Pydantic)   | Replace with msgspec.Struct (see gap-context-antipattern)             |
-| Test during phase                  | Test only after phase complete                                        |
-| Cross-module imports (non-core)    | Import only from core                                                 |
-| Hardcoded manager.py defaults      | Use CONFIG object                                                     |
-| Inconsistent file/naming structure | Follow patterns established in other modules for same domain          |
-| Skip commit validation             | Run validation checklist                                              |
-| `Record` suffix on ORM models      | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability` |
-| Aerich migrations during dev       | Drop + reseed via `manage.py init-db` until all phases locked         |
-| Tuple-syntax indexes in Meta       | Use `models.Index(fields=["a","b"])` — tuple syntax silently ignored  |
-| `class X(Model)` for ORM entities  | Use `class X(BaseModel)` from `css.core.db.models.base`               |
+| Anti-Pattern                           | Fix                                                                                                         |
+|----------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Create .md outside whitelist           | Consolidate to 7 files                                                                                      |
+| Manual .env.example edits              | Regenerate from CONFIG_SPEC                                                                                 |
+| Mix ABC + @dataclass on same class     | Use ABC alone OR @dataclass alone OR msgspec.Struct                                                         |
+| @dataclass + BaseModel(Pydantic)       | Replace with msgspec.Struct (see gap-context-antipattern)                                                   |
+| Test during phase                      | Test only after phase complete                                                                              |
+| Cross-module imports (non-core)        | Import only from core                                                                                       |
+| Hardcoded manager.py defaults          | Use CONFIG object                                                                                           |
+| Inconsistent file/naming structure     | Follow patterns established in other modules for same domain                                                |
+| Skip commit validation                 | Run validation checklist                                                                                    |
+| `Record` suffix on ORM models          | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability`                                       |
+| Aerich migrations during dev           | Drop + reseed via `manage.py init-db` until all phases locked                                               |
+| Tuple-syntax indexes in Meta           | Use `models.Index(fields=["a","b"])` — tuple syntax silently ignored                                        |
+| `class X(Model)` for ORM entities      | Use `class X(BaseModel)` from `css.core.db.models.base`                                                     |
 | Raw semantic fields when helper exists | Use `css.core.db.fields` helper classes for URLs, paths, versions, costs, scores, slugs, checksums, and IPs |
 
 
-# Python 3.14 Type Hints – Quick Reference
+---
 
-**Last Updated:** May 2026  
-**Target:** Python 3.14+
+
+### Tortoise ORM Best Practices
+
+| #  | Best Practice                                          | Why It Matters                          |
+|----|--------------------------------------------------------|-----------------------------------------|
+| 1  | Use `BigIntField(pk=True)` or custom `PrimaryKeyField` | Better than `IntField` for large tables |
+| 2  | Always use **async** methods (`await`)                 | Tortoise is async-native                |
+| 3  | Use **Aerich** for all migrations                      | Official and reliable migration tool    |
+| 4  | Use `tortoise.contrib.pydantic` for FastAPI            | Clean Pydantic schemas from models      |
+| 5  | Add indexes on frequently filtered fields              | Greatly improves query performance      |
+| 6  | Use `atomic()` for transactions                        | Ensures data consistency                |
+| 7  | Use `prefetch_related()` to avoid N+1 queries          | Critical for performance                |
+| 8  | Keep models focused (no business logic)                | Better separation of concerns           |
+| 9  | Use `JSONField` for flexible data                      | Good for metadata, params, etc.         |
+| 10 | Close connections properly in tests                    | Prevents connection leaks               |
+
+### Tortoise ORM Anti-Patterns (Avoid These)
+
+| #  | Anti-Pattern                                      | Problem                              |
+|----|---------------------------------------------------|--------------------------------------|
+| 1  | Using sync code inside async functions            | Blocks the event loop                |
+| 2  | Forgetting `prefetch_related()`                   | Causes N+1 query problem (very slow) |
+| 3  | Putting business logic inside models              | Hard to test and maintain            |
+| 4  | Not using Aerich for schema changes               | Manual SQL is error-prone            |
+| 5  | Overusing `raw()` SQL queries                     | Loses ORM benefits and safety        |
+| 6  | Creating too many connections without pooling     | Performance and resource issues      |
+| 7  | Using `IntField(pk=True)` on high-volume tables   | Risk of running out of IDs           |
+| 8  | Ignoring `Meta` class options (indexes, ordering) | Missed optimization opportunities    |
+| 9  | Mixing sync and async Tortoise code               | Causes runtime errors                |
+| 10 | Not handling database connection errors           | Poor error handling and crashes      |
 
 ---
 

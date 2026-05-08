@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-08T01:22:41+02:00 | **Session**: Module Markdown naming + module structure rules sync
+**Last Updated**: 2026-05-08T16:56:43+02:00 | **Session**: Planning workflow phase-sync rules update
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -202,8 +202,8 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **768 todos**, PHASE > TASK > TODO hierarchy (35 phases + unassigned)
+- `.plan/session.db` — **783 todos**, PHASE > TASK > TODO hierarchy (35 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (21 modules, ready-query, stack rules)
-- `.plan/checkpoints.md` — session history (007 checkpoints)
+- `.plan/checkpoints.md` — session history (012 checkpoints)
 - `src/css/modules/*/<module>.md` — module source-of-truth (23 module directories)
 - `src/css/api_services/*/plan.md` — provider source-of-truth (24 files)

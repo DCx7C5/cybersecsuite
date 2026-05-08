@@ -1,26 +1,32 @@
-# Triage → Intelligence Module: Local AI Assistance Layer
+# @triage — Local Intelligence Layer
 
-> ⚠️ **PENDING RENAME → `modules/intelligence/`** — Module does far more than routing/classification.
-> New location: `src/css/modules/intelligence/`
-> Todo: `triage-rename-module` in session.db (Phase 19)
-> Scope: quality gates, conversation health, cost analysis, memory tagging, tone adaptation.
+> **Current path**: `src/css/modules/triage/`
+> **Planned rename**: `src/css/modules/intelligence/`
+> **Tracking todo**: `triage-rename-module` in `.plan/session.db`
+> **Scope**: routing, memory tagging, confidence/quality gates, tone adaptation, and future retrieval hints.
 
-> **Ollama Docker removed** — Ollama now managed by `core/ollama/OllamaProcessManager` (Phase 33).
-> Models (pull manually via `ollama pull` — see `core/ollama/installer.py` for dev hint):
->   - `qwen3:0.6b`
->   - `phi4-mini:3.8b-q4_K_M`
->   - `qwen3:4b-q4_K_M`
+> **Ollama runtime**: managed natively via `core/ollama/`; no Docker dependency is assumed in current planning.
+> Expected local models include `qwen3:0.6b`, `phi4-mini:3.8b-q4_K_M`, and `qwen3:4b-q4_K_M`.
 
-> **MOVED TO CORE**: Originally `core/triage/`, now at `src/css/core/triage/`
-
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: Track TODO/TASK/PHASE state in `.plan/session.db`. Keep this file aligned with current planning, but use `session.db` as the actual progress tracker.
 
 ---
 
-**Status**: Phase 3 Foundation (Planning → Implementation)  
-**Model**: Qwen3 0.6B via Ollama  
-**Location**: `src/css/core/triage/`  
-**5-File Pattern**: ❌ 0/5 (only empty __init__.py)
+**Status**: Planned local intelligence expansion (major work in Phase 21)  
+**Model direction**: Qwen3 0.6B + small local helpers via Ollama  
+**Location**: `src/css/modules/triage/`  
+**5-file pattern**: Present in current module path
+
+## Integration Alignment
+
+This module is part of the wider memory/retrieval/graph architecture.
+
+- `core/memory`: Phase 21 `triage-memory-tagger` attaches semantic tags after memory writes.
+- `core/vector_rag`: Phase 21 may later provide `AUTO` retrieval route hints, but retrieval stays owned by `core/vector_rag`.
+- `modules/workflows` + `modules/graphs`: triage can classify intent, complexity, or approvals, while workflow/graph state stays outside this module.
+- `core/prompt_cache`: local-model prompt/response caching belongs there, not in retrieval caches.
+
+See `.plan/architecture/intelligence-retrieval-graph.md` for the combined system design.
 
 ---
 
@@ -66,30 +72,16 @@ The **triage module** is a lightweight background LLM service running locally vi
 
 ## Infrastructure
 
-### Ollama Docker Service
-- **Container**: `ollama/ollama:latest`
-- **Port**: 11434 (Ollama HTTP API)
-- **GPU Support**: NVIDIA devices (all GPUs) configured
-- **Model Storage**: `/root/.ollama` volume (persistent)
+### Native Ollama Runtime
+- **Runtime owner**: `core/ollama/OllamaProcessManager`
+- **API endpoint**: local Ollama HTTP API on port `11434`
+- **Model storage**: local Ollama model directory managed outside this module
 - **Healthcheck**: `curl -fs http://localhost:11434/api/tags`
-- **Status in docker-compose.yml**: Lines 149-176 ✅ READY
-
-### Model Deployment
-```yaml
-services:
-  cybersec-ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "127.0.0.1:11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    environment:
-      OLLAMA_HOST: 0.0.0.0
-```
+- **Planning stance**: native process management, not a required Docker service
 
 **Pull Qwen3 on First Run**:
 ```bash
-# Via docker-compose entrypoint or manual pull:
+# Manual local model pull:
 ollama pull qwen3:0.6b
 ollama list  # Verify model loaded
 curl -s http://localhost:11434/api/tags | jq .
@@ -578,7 +570,7 @@ logger.error(f"Triage inference failed: {error}")
 
 ### Hard Blockers (Must Fix First)
 1. ⚠️ **OllamaApiService completion** — `get_models()`, `call()` stubs (api_services/ollama/service.py)
-2. ❌ **Triage module structure** — Create 5-file pattern
+2. ⚠️ **Phase 21 wiring** — connect planned intelligence features into the live triage engine
 
 ### Soft Dependencies (Nice to Have)
 - @tasks module background queue (fallback: manual async)
@@ -586,7 +578,7 @@ logger.error(f"Triage inference failed: {error}")
 - Monitoring dashboard (fallback: log files)
 
 ### Infrastructure Dependencies
-- ✅ Ollama docker-compose service (already configured)
+- ✅ Native Ollama runtime via `core/ollama/`
 - ✅ OllamaClient (already implemented)
 - ✅ UniversalLLMClient (already ready)
 
