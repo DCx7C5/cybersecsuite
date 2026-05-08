@@ -14,8 +14,8 @@ api_router = APIRouter(
 
 
 a2a_router = APIRouter(
-    prefix="/google_a2a",
+    prefix="/a2a",
     tags=[
-        "marketplace",
+        "a2a",
     ]
 )

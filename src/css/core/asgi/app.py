@@ -3,8 +3,10 @@ ASGI application — combines:
   - App endpoint auto-discovery (modules/*/endpoints.py)  at app-defined prefixes
   - A2A agents server (JSON-RPC)                        at /google_a2a/*
   - Agent card discovery                               at /.well-known/agents.json
-  - AI proxy routes (OpenAI-compatible)                at /v1/*
   - Health endpoint                                    at /health
+
+Planned but not mounted yet:
+  - Local-compatible LLM proxy facade                  at /v1/*
 
 Run with:
     uvicorn core.asgi.app:app --host 0.0.0.0 --port 8000 --reload

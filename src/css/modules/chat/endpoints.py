@@ -3,7 +3,10 @@
 Provides three endpoints:
 - POST   /api/chat/sessions                  — Create new chat session
 - GET    /api/chat/sessions/{id}/messages    — Get session messages
-- WS     /ws/chat/{session_id}               — Real-time chat via WebSocket
+- WS     /api/chat/ws/{session_id}           — Current real-time chat path
+
+Note: Phase 36 plans a future transport split where realtime endpoints move
+under a dedicated `/ws/*` surface.
 """
 
 from css.core.logger import getLogger

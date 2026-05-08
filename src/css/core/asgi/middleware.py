@@ -13,7 +13,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, RedirectResponse
 
-from telemetry import record_event
 
 PathPattern = tuple[re.Pattern, str]
 ASGI_TLS_PORT = int(os.environ.get("ASGI_TLS_PORT", "8433"))
