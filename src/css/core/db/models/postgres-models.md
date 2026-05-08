@@ -22,7 +22,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - **Correct `NameField` usages**: `Account.username`, `LLMModel.name`, `MarketplaceItem.name`, `AppScope.name`, `ProjectScope.name`, `Organization.name`, `HybridToolDefinition.name`, `BaseFrontmatterMixin.name`
 - **Migrated to `LabelField`**: `UserProfile.first_name`, `UserProfile.last_name`, `ProjectFile.name`, `Project.name`, `Tag.name`, `WebhookEndpoint.name`
 - **Migrated to plain `CharField`**: `SessionScope.name` (default="", not an identifier), `SessionScope.phase` (not a name field)
-- [ ] `db-frontmatter-base-rollout` — Remove `BaseFBSModel`; apply `BaseFrontmatterMixin` only where semantic fit is correct
+- [x] `db-frontmatter-base-rollout` — Remove `BaseFBSModel`; `BaseFrontmatterMixin` kept for opt-in use by future identifier-style models
 - [ ] `db-version-mixin-rollout` — Roll out `VersionMixin` to versioned/synced artifact models
 - [ ] `orm-custom-managers` — Add custom Tortoise managers for Ring 2 query logic
 - [ ] `orm-to-from-domain` — Add `to_domain()` / `from_domain()` bridges for ORM models

@@ -6,7 +6,6 @@ database layer. Copied from legacy/db/models with localized imports.
 
 from .base import (
     BaseModel,
-    BaseFBSModel,
     BaseUserModel,
 )
 
@@ -36,7 +35,6 @@ from .scope import ProjectScope, SessionScope
 
 __all__ = [
     "BaseModel",
-    "BaseFBSModel",
     "BaseUserModel",
     "TimestampMixin",
     "VersionMixin",

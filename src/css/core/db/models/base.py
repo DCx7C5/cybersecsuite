@@ -3,8 +3,6 @@ from tortoise.fields import BigIntField
 from tortoise.models import Model
 
 from ..fields import NameField
-from .mixins import BaseFrontmatterMixin
-
 
 
 # BASEMODEL
@@ -13,13 +11,6 @@ class BaseModel(Model):
     """Canonical ORM base class for the project."""
 
     id = BigIntField(primary_key=True)
-
-    class Meta:
-        abstract = True
-
-
-class BaseFBSModel(BaseModel, BaseFrontmatterMixin):
-    """Abstract base model for items with name and description."""
 
     class Meta:
         abstract = True
