@@ -1603,7 +1603,7 @@ class ToolRegistry:
 | `db-frontmatter-base-rollout` | Remove `BaseFBSModel`; roll out `BaseFrontmatterMixin` only where semantics fit |
 | `db-version-mixin-rollout` | Adopt `VersionMixin` for versioned artifacts with hash provenance |
 | ~~`orm-registry-metaclass-fix`~~ | Fix `AsyncSafeSingletonMeta` + `ABC` conflicts before more registry expansion |
-| `orm-registry-purge-crud` | Remove DB writes from all registries |
+| ~~`orm-registry-purge-crud`~~ | Remove DB writes from all registries |
 | `orm-registry-invalidation` | Cache invalidation via DomainEvent subscription |
 | `orm-service-layer` | `service.py` per module — only entry point for business logic |
 | `orm-tag-manager-fix` | `TagManager` → wraps Tortoise, not in-memory dict |

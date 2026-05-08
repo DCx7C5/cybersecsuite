@@ -8,6 +8,7 @@ from css.core.logger import getLogger
 from fastapi import APIRouter, HTTPException, Query
 
 from css.core.tools.base import get_tool_registry
+from css.modules.tools.service import save_hybrid_tool
 from css.modules.tools.types import HybridToolSchema
 from css.modules.tools.exceptions import ToolNotFoundError
 
@@ -99,8 +100,8 @@ async def create_hybrid_tool(schema: dict) -> dict:
         registry = get_tool_registry()
         registry.register_hybrid_tool(hybrid_schema)
         
-        # Persist to database
-        await registry.save_hybrid_tool(hybrid_schema)
+        # Persist to database via service layer
+        await save_hybrid_tool(hybrid_schema)
         
         return {"status": "created", "tool_id": hybrid_schema.tool_id}
     except ValueError as e:
@@ -126,7 +127,7 @@ async def update_hybrid_tool(tool_id: str, schema: dict) -> dict:
         
         hybrid_schema = HybridToolSchema(**schema)
         registry.hybrid_tools[tool_id].schema = hybrid_schema
-        await registry.save_hybrid_tool(hybrid_schema)
+        await save_hybrid_tool(hybrid_schema)
         
         return {"status": "updated", "tool_id": tool_id}
     except Exception as e:

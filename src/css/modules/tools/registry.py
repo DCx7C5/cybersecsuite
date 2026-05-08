@@ -221,21 +221,5 @@ class ToolRegistry(BaseToolRegistry):
             except ValueError as exc:
                 logger.warning("Skipping hybrid tool %s from DB: %s", schema.tool_id, exc)
 
-    async def save_hybrid_tool(self, hybrid_schema: HybridToolSchema) -> None:
-        from css.modules.tools.models import HybridToolDefinition
 
-        existing = await HybridToolDefinition.get_or_none(name=hybrid_schema.name)
-        if existing is None:
-            record = HybridToolDefinition.from_schema(hybrid_schema)
-            await record.save()
-            return
-
-        existing.description = hybrid_schema.description
-        existing.component_tools = hybrid_schema.component_tools
-        existing.composition_strategy = hybrid_schema.composition_strategy
-        existing.fallback_provider = hybrid_schema.fallback_provider
-        existing.requires_coordination = hybrid_schema.requires_coordination
-        existing.metadata = hybrid_schema.metadata
-        existing.enabled = hybrid_schema.enabled
-        await existing.save()
 

@@ -6,7 +6,6 @@ from css.core.types.meta import AsyncSafeSingletonMeta
 
 if TYPE_CHECKING:
     from .types import McpServerConfig, McpCallResult
-    from .enums import McpTransportType
 
 
 class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
@@ -32,18 +31,8 @@ class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
         server_id: str,
         config: "McpServerConfig",
     ) -> None:
-        """Register a MCP server configuration."""
+        """Register a MCP server configuration in memory."""
         self._servers[server_id] = config
-        # Persist to DB if models are available
-        try:
-            from .models import McpServerConfigRecord
-
-            await McpServerConfigRecord.update_or_create(
-                server_id=server_id,
-                defaults=config.__dict__,
-            )
-        except ImportError:
-            pass  # Models not yet created
 
     async def connect(self, server_id: str) -> None:
         """Connect to a registered MCP server using its transport type."""

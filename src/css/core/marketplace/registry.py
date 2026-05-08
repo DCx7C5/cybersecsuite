@@ -8,10 +8,10 @@ from .exceptions import PackageNotFoundError
 
 
 class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
-    """Singleton registry for marketplace items backed by Tortoise ORM.
+    """In-memory registry for marketplace items.
 
     Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
-    Registry operations read from/write to PostgreSQL via Tortoise ORM.
+    Pure in-memory cache — persistence is handled by the service layer.
     """
 
     _initialized: bool = False
@@ -20,43 +20,43 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         if getattr(self, '_initialized', False):
             return
         self._initialized = True
+        self._items: dict[str, MarketplaceItem] = {}
 
     async def register(self, item: MarketplaceItem) -> MarketplaceItem:
-        """Register (save) a marketplace item.
+        """Register an item in the in-memory registry.
 
         Args:
             item: The MarketplaceItem to register
 
         Returns:
-            The saved MarketplaceItem instance
+            The registered MarketplaceItem instance
         """
-        await item.save()
+        self._items[item.slug] = item
         return item
 
     async def unregister(self, item_id: str) -> None:
-        """Unregister (delete) a marketplace item.
+        """Remove an item from the in-memory registry.
 
         Args:
-            item_id: The ID of the item to unregister
+            item_id: The slug of the item to unregister
 
         Raises:
             PackageNotFoundError: If item not found
         """
-        item = await MarketplaceItem.get_or_none(slug=item_id)
-        if not item:
+        if item_id not in self._items:
             raise PackageNotFoundError(item_id=item_id)
-        await item.delete()
+        del self._items[item_id]
 
     async def get(self, item_id: str) -> MarketplaceItem | None:
-        """Get a marketplace item by ID.
+        """Get a marketplace item by slug from the in-memory cache.
 
         Args:
-            item_id: The ID of the item to retrieve
+            item_id: The slug of the item to retrieve
 
         Returns:
             MarketplaceItem instance or None if not found
         """
-        return await MarketplaceItem.get_or_none(slug=item_id)
+        return self._items.get(item_id)
 
     async def list_all(
         self,
@@ -64,7 +64,7 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         status: MarketplaceItemStatus | None = None,
         installed_only: bool = False,
     ) -> list[MarketplaceItem]:
-        """List all marketplace items with optional filtering.
+        """List all cached marketplace items with optional filtering.
 
         Args:
             kind: Filter by item type (agent, skill, etc.)
@@ -74,16 +74,16 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         Returns:
             List of MarketplaceItem instances
         """
-        query = MarketplaceItem.all()
+        items = list(self._items.values())
 
         if kind:
-            query = query.filter(kind=kind)
+            items = [i for i in items if i.kind == kind]
         if status:
-            query = query.filter(status=status)
+            items = [i for i in items if i.status == status]
         if installed_only:
-            query = query.filter(installed_at__isnull=False)
+            items = [i for i in items if i.installed_at is not None]
 
-        return await query.all()
+        return items
 
     # Convenience methods that wrap the base interface
 
@@ -111,10 +111,10 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
     async def update_item_status(
         self, item_id: str, status: MarketplaceItemStatus
     ) -> MarketplaceItem:
-        """Update the status of a marketplace item.
+        """Update the status of a marketplace item in the cache.
 
         Args:
-            item_id: The ID of the item to update
+            item_id: The slug of the item to update
             status: The new status
 
         Returns:
@@ -128,7 +128,6 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
             raise PackageNotFoundError(item_id=item_id)
 
         item.status = status
-        await item.save()
         return item
 
     # ------------------------------------------------------------------
@@ -172,7 +171,6 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
             raise PackageNotFoundError(item_id=item_slug)
 
         item.meta = {**item.meta, "tool_ids": tool_ids}
-        await item.save()
         marketplace_cache.invalidate(f"item:{item_slug}")
         marketplace_cache.invalidate_prefix("items:")
 
