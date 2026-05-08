@@ -6,15 +6,14 @@ from tortoise import fields, models
 from css.core.db.fields import DescriptionField, NameField, PathField
 from .base import BaseModel
 from .enums import RedBlueMode, ScopeLevel
+from .mixins import SoftDeleteMixin
 
 
-class AppScope(BaseModel):
+class AppScope(BaseModel, SoftDeleteMixin):
     """Application scope — top-level global container."""
     name = NameField(max_length=256, db_index=True, unique=True)
     description = DescriptionField(default="")
     working_dir = PathField(max_length=1024, default="", db_index=True)
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -28,13 +27,11 @@ class AppScope(BaseModel):
         ]
 
 
-class ProjectScope(BaseModel):
+class ProjectScope(BaseModel, SoftDeleteMixin):
     """Project scope — organizational container within app scope."""
     name = NameField(max_length=256, db_index=True, unique=True)
     description = DescriptionField(default="")
     working_dir = PathField(max_length=1024, default="", db_index=True)
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -48,7 +45,7 @@ class ProjectScope(BaseModel):
         ]
 
 
-class SessionScope(BaseModel):
+class SessionScope(BaseModel, SoftDeleteMixin):
     """Forensic root session — UUID-keyed anchor for all forensic artifacts.
 
     Every :class:`Finding`, :class:`IOC`, :class:`AuditLog`, :class:`Artifact`,
@@ -75,8 +72,6 @@ class SessionScope(BaseModel):
     agent = fields.CharField(max_length=128, default="", db_index=True)
     mode = fields.CharEnumField(RedBlueMode, default=RedBlueMode.BLUE, db_index=True)
     phase = fields.CharField(max_length=64, default="init")
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
     started_at = fields.DatetimeField(null=True)
     completed_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -92,7 +87,7 @@ class SessionScope(BaseModel):
         ]
 
 
-class ScopedEntry(BaseModel):
+class ScopedEntry(BaseModel, SoftDeleteMixin):
     """Abstract base for all scoped data.
 
     5-level scopes columns (T045 / scope_v2):
@@ -127,8 +122,6 @@ class ScopedEntry(BaseModel):
     )
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
 
     # T045: 5-level scopes fields
     runtime_id = fields.CharField(

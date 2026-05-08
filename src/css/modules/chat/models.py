@@ -7,6 +7,7 @@ from tortoise import fields, models
 from tortoise.models import Model
 
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import SoftDeleteMixin
 
 from .enums import ChatRole, ChatMessageType, ChatStatus
 
@@ -58,7 +59,7 @@ class ChatSession:
         return result
 
 
-class ChatSessionModel(BaseModel):
+class ChatSessionModel(BaseModel, SoftDeleteMixin):
     """Persistent chat session row."""
 
     session_uuid = fields.CharField(max_length=128, unique=True, db_index=True)
@@ -76,8 +77,6 @@ class ChatSessionModel(BaseModel):
     message_count = fields.IntField(default=0)
     total_tokens = fields.IntField(default=0)
     extra_meta = fields.JSONField(default=dict)
-    is_active = fields.BooleanField(default=True, db_index=True)
-    deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 

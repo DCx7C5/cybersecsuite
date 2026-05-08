@@ -28,6 +28,7 @@ from .enums import (
 from .mixins import (
     TimestampMixin,
     VersionMixin,
+    SoftDeleteMixin,
     BaseFrontmatterMixin,
 )
 
@@ -38,6 +39,7 @@ __all__ = [
     "BaseUserModel",
     "TimestampMixin",
     "VersionMixin",
+    "SoftDeleteMixin",
     "BaseFrontmatterMixin",
     "Account",
     "UserProfile",
