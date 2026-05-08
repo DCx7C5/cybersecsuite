@@ -33,7 +33,7 @@ Prompts are:
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.modules.marketplace` | ← catalogues | `MarketplaceItemType.prompt` items point to PromptDefinition |
+| `css.core.marketplace` | ← catalogues | `MarketplaceItemType.prompt` items point to PromptDefinition |
 | `css.modules.agents` | → consumes | Agents resolve prompt IDs → rendered strings at runtime |
 | `css.modules.tags` | → consumes | Prompts are taggable (tags module manages tag entities) |
 | `css.core.types.query` | → feeds | `Query.prompt` field populated from rendered PromptDefinition |
@@ -53,7 +53,7 @@ prompts/
 ├── renderer.py        ← PromptRenderer — {{var}} substitution + {{> partial}} includes
 ├── models.py          ← Tortoise ORM: PromptDefinition, PromptVersion (DB persistence)
 ├── endpoints.py       ← FastAPI: /api/prompts/* (CRUD + render + search)
-└── plan.md            ← this file
+└── prompts.md         ← this file
 ```
 
 ---
@@ -167,7 +167,7 @@ registry.get("sec-audit-system", version="1.0.0")
 | `prompt-models` | Tortoise ORM PromptDefinition + PromptVersionRecord | T23.3-persistence |
 | `prompt-endpoints` | FastAPI /api/prompts/* (CRUD + render + search) | T23.4-api |
 | `prompt-marketplace-wire` | Link PromptDefinition ↔ MarketplaceItemType.prompt | T23.5-integration |
-| `prompt-module-plan` | Write prompts/plan.md (this file — DONE) | T23.0-docs |
+| `prompt-module-plan` | Write prompts/prompts.md (this file — DONE) | T23.0-docs |
 | `prompt-rules-update` | Add prompts to rules.md modules table (21 modules) | T23.0-docs |
 
 ---
