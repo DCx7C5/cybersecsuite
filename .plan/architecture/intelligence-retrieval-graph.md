@@ -6,7 +6,8 @@ CyberSecSuite will treat **local intelligence, memory, hybrid retrieval, and wor
 
 - `src/css/core/memory/` owns conversation turns, summaries, session state, canvas, and vault persistence
 - `src/css/modules/triage/` owns lightweight local intelligence: tagging, complexity/routing, confidence, and future retrieval hints
-- `src/css/core/vector_rag/` owns vector, graph, hybrid, and auto retrieval
+- `src/css/core/vector_rag/` owns vector retrieval plus hybrid routing, fusion, and context handoff
+- `src/css/core/graph_rag/` owns graph ingestion, graph queries, and GraphRAG retrieval
 - `src/css/modules/graphs/` owns workflow/session/approval graph building, snapshots, and live graph APIs
 - `src/css/modules/workflows/` owns executable workflow definitions and graph-backed workflow authoring later
 - `src/css/core/cache/` and `src/css/core/prompt_cache/` provide cache infrastructure, not business logic
@@ -30,6 +31,8 @@ flowchart TB
     subgraph Inputs["Inputs"]
         User["User turns / agent requests"]
         Docs["Docs / CVEs / playbooks / feeds"]
+        Mitre["MITRE ATT&CK data"]
+        Intel["Threat-intel entities / feeds"]
         Events["Task / tool / approval / LLM events"]
     end
 
@@ -51,8 +54,12 @@ flowchart TB
         Router{"Mode Router\nvector | graph | hybrid | auto"}
         Cache["Retrieval cache\nvia core/cache"]
         Vec["VectorRagBackend"]
-        Graph["GraphRagBackend"]
         Fuse["Fusion layer"]
+    end
+
+    subgraph GraphRag["core/graph_rag"]
+        Graph["GraphRagBackend"]
+        GraphIngest["Graph ingest / entity projection"]
     end
 
     subgraph Graphs["modules/graphs + modules/workflows"]
@@ -80,6 +87,11 @@ flowchart TB
     User --> Pre
     Docs --> Vec
     Docs --> Graph
+    Docs --> GraphIngest
+    Mitre --> Graph
+    Mitre --> GraphIngest
+    Intel --> Graph
+    Intel --> GraphIngest
     Events --> Flow
     Events --> Session
     Events --> Approval
@@ -99,6 +111,7 @@ flowchart TB
     Router --> Graph
     Vec <--> PG
     Graph <--> Neo
+    GraphIngest <--> Neo
     Vec --> Fuse
     Graph --> Fuse
     Fuse --> CW
@@ -130,26 +143,30 @@ flowchart TB
 
 1. A user turn is stored in `core/memory`.
 2. Phase 21 intelligence can tag the turn, score confidence, and later provide route hints.
-3. `ContextAssembler` asks `core/vector_rag` for supporting context.
-4. `HybridRetrievalService` chooses `vector`, `graph`, `hybrid`, or `auto`.
-5. Results are fused, deduplicated, and returned to the agent context.
-6. The agent calls the LLM through `UnifiedLLMClient`, with prompt caching handled separately.
-7. Execution events feed workflow/session/approval graph builders for live and historical graph views.
+3. Stable intelligence outputs can also emit extracted entities, ATT&CK hints, and confidence-scored relationships into the graph ingest path.
+4. `ContextAssembler` asks `core/vector_rag` for supporting context.
+5. `HybridRetrievalService` chooses `vector`, `graph`, `hybrid`, or `auto`.
+6. Results are fused, deduplicated, and returned to the agent context.
+7. The agent calls the LLM through `UnifiedLLMClient`, with prompt caching handled separately.
+8. Execution events feed workflow/session/approval graph builders for live and historical graph views.
 
 ## Boundary Rules
 
 - `modules/triage/` does not own retrieval or graph persistence.
-- `core/vector_rag/` does not own workflow authoring or graph UI.
+- `core/vector_rag/` does not own workflow authoring, graph persistence, or graph UI.
+- `core/graph_rag/` owns graph retrieval internals, not workflow authoring or graph UI.
 - `modules/graphs/` does not decide retrieval mode.
 - `modules/workflows/` owns executable DAG logic; `modules/graphs/` owns rendering/snapshots.
 - Workflow graphs may enrich GraphRAG only through explicit projection/export.
+- MITRE and threat-intel remain canonically owned by their domain modules; graph ingest is a projection layer.
+- Only stable intelligence outputs belong in graph ingest; ephemeral routing or quality-gate state does not.
 
 ## Phase Mapping
 
 - **Phase 20**: memory expansion + hybrid retrieval core
 - **Phase 21**: local intelligence features, memory tagging, pre-filtering, future `auto` retrieval hints
 - **Phase 27**: workflow/session/approval graph builders and telemetry graphs
-- **Phase 29**: cybersec knowledge ingestion on top of `core/vector_rag/`
+- **Phase 29**: cybersec retrieval ingestion on top of `core/vector_rag/` + `core/graph_rag/`
 - **Phase 30**: workflow engine + IPC on top of memory, events, approvals, and graph infrastructure
 
 ## Related Docs

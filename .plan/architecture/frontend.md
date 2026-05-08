@@ -165,7 +165,7 @@ apiPut<T>(path, body)
 apiDelete(path)
 // All throw ApiError({ status, message, detail }) on non-2xx
 ```
-Dev server proxies `/api/*`, `/ws/*`, `/v1/*` to `http://localhost:8000` — no CORS in dev. Backend runs locally via `make serve`.
+Dev server proxies `/api/*`, `/ws/*`, `/sse/*`, `/v1/*` to `http://localhost:8000` — no CORS in dev. Backend runs locally via `make serve`.
 
 ### WebSocket (`ws-manager.ts`)
 ```typescript
@@ -271,6 +271,7 @@ export default defineConfig({
     proxy: {
       '/api': { target: 'http://localhost:8000', changeOrigin: true },
       '/ws':  { target: 'ws://localhost:8000',  ws: true },
+      '/sse': { target: 'http://localhost:8000', changeOrigin: true },
       '/v1':  { target: 'http://localhost:8000', changeOrigin: true },
     }
   }
@@ -313,19 +314,25 @@ bunx shadcn add table scroll-area resizable collapsible
 T18.1 vite-scaffold  →  T18.2 tailwind-shadcn  →  T18.3 appshell
                                                          │
 T18.4a port-hooks ──────────────────────────────────────┤
-T18.4 ws/sse/store ─────────────────────────────────────┤
+T18.4 api/ws/store ─────────────────────────────────────┤
                                                          ▼
                                               T18.5 module-registry
                                                     │
                                     ┌───────────────┼───────────────────┐
                                     ▼               ▼                   ▼
-                              T18.11 dashboard  T18.6 settings     T18.7 marketplace
-                                    │           (blocks: P17)
+                              T18.7 marketplace  T18.6 settings     T18.8 chat
+                                                  (blocks: P17)      (WS-first MVP)
+                                    │
+                                    ▼
+                              T18.10 dev-tooling
+                                    │
+                                    ▼
+                              T18.11 dashboard
+                                    │
                                     ▼
                               T18.12 live-graphs
 
-T18.8 chat  ←  T18.5 + T18.4 sse-client
-T18.10 dev-tooling  ←  alongside T18.2
+T18.4 sse-client  ← later generic utility for `/sse/*` and `/v1/*` streams
 ```
 
 **Minimum to get something in the browser**: T18.1 + T18.2 + T18.3
@@ -341,22 +348,23 @@ T18.10 dev-tooling  ←  alongside T18.2
 | `frontend-appshell` | AppShell, Sidebar, TopBar, PanelContainer | tailwind-shadcn |
 | `frontend-api-client` | REST client + ApiError class | vite-scaffold |
 | `frontend-ws-manager` | PORT useSocket.ts from ahs-admin-panel | vite-scaffold |
-| `frontend-sse-client` | SSE AsyncGenerator + useSSE hook | vite-scaffold |
+| `frontend-sse-client` | SSE AsyncGenerator + useSSE hook for later generic `/sse/*` and `/v1/*` streams | vite-scaffold |
 | `frontend-zustand-store` | Zustand store (wsStatus, activeAgents, recentEvents, metricsSlice) | vite-scaffold |
 | `frontend-port-hooks` | PORT 9 hooks + SocketProvider from ahs-admin-panel | vite-scaffold |
 | `frontend-module-registry` | ModulePanel type + MODULE_PANELS + TanStack Router routes | appshell |
 | `frontend-panel-colocated-structure` | Scaffold `templates/` stubs in settings/marketplace/chat | module-registry |
-| `frontend-landing-dashboard` | Dashboard `/` — 6 widgets, responsive grid, Skeleton states | appshell + port-hooks + zustand-store |
+| `frontend-landing-dashboard` | Dashboard `/` — 6 widgets, responsive grid, Skeleton states | appshell + port-hooks + zustand-store + sessions-endpoints |
 | `frontend-live-graphs` | Recharts + 4 chart components + metricsSlice + useDashboardMetrics | landing-dashboard + ws-manager |
-| `frontend-settings-panel` | Settings panel (accordion, search, inline edit, masking, restart badge) | panel-colocated-structure + **settings-rest-routes** |
-| `frontend-settings-hooks` | TanStack Query hooks for /api/settings/* | api-client |
-| `frontend-marketplace-panel` | Marketplace panel (grid, search, install button) | panel-colocated-structure |
+| `frontend-settings-panel` | Settings panel (accordion, search, inline edit, masking, restart badge) | panel-colocated-structure + settings-hooks + **settings-rest-routes** |
+| `frontend-settings-hooks` | TanStack Query hooks for /api/settings/* | api-client + settings-rest-routes |
+| `frontend-marketplace-panel` | Marketplace panel (grid, search, install button) | panel-colocated-structure + marketplace-hooks |
 | `frontend-marketplace-hooks` | TanStack Query hooks for marketplace API | api-client |
-| `frontend-chat-panel` | Chat panel (SSE stream, tool blocks, markdown, model selector) | panel-colocated-structure + sse-client + port-hooks |
-| `frontend-chat-hooks` | useChat hook (SSE stream, history, tool blocks) | sse-client |
+| `frontend-chat-panel` | Chat panel (WS-first MVP, tool blocks, markdown, model selector) | panel-colocated-structure + chat-hooks + port-hooks |
+| `frontend-chat-hooks` | useChat hook (REST + WebSocket MVP, later SSE/proxy-ready) | api-client + ws-manager |
 | `frontend-dev-tooling` | TanStack devtools overlays, package.json scripts, tsc check | tailwind-shadcn |
 
 **`frontend-settings-panel` blocked by Phase 17 (`settings-rest-routes`).  
+Chat MVP should target the current REST + WebSocket backend first; generic SSE/proxy transport comes later.  
 All other todos: no upstream blockers — implement in order above.**
 
 ---
@@ -366,4 +374,3 @@ All other todos: no upstream blockers — implement in order above.**
 `src/frontend/` is the confirmed shell location (Option A).  
 `src/css/core/templates/` contains only orphaned `node_modules` — tracked as `core-templates-cleanup` (Phase 19) to delete them.  
 Docker/Nginx static serving: deferred post-MVP. Use `bun run dev` during development.
-

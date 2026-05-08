@@ -1,39 +1,73 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-08T16:56:43+02:00 | **Session**: Planning workflow phase-sync rules update
+**Last Updated**: 2026-05-08T23:30:08+02:00 | **Session**: MCP/runtime tracker sync + SIEM/OpenObserve dependency wiring
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
-⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use `plan.md`, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work (not end-of-session).  
-⚠️ **Architecture**: `accounts`, `events`, `marketplace`, and `memory` are core-owned. `working_dir` is legacy terminology; use `core/workspace/`.  
-⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve). Ollama: native `ollama serve` via `core/ollama/OllamaProcessManager`. Frontend: `cd src/frontend && bun run dev`.
+⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use the nearest planning markdown, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work.  
+⚠️ **Architecture**: `accounts`, `events`, `marketplace`, `memory`, `vector_rag`, and `graph_rag` are core-owned or planned core-owned. `working_dir` is legacy terminology; use `core/workspace/`.  
+⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve/neo4j). Ollama: native `ollama serve` via `core/ollama/OllamaProcessManager`. Frontend: `cd src/frontend && bun run dev`.
+⚠️ **Memory sync rule**: `memory.md` is still phase-end by default, but it must also be refreshed immediately after major architecture, source-of-truth, or tracker-structure changes.
 
 ---
 
 ## 📊 session.db State (2026-05-08)
 
-**Total**: 783 todos | **Done**: 393 | **Pending**: 384 | **Blocked**: 6
+**Total**: 809 todos | **Done**: 401 | **Pending**: 402 | **Blocked**: 6
 
-**Last Verified**: 2026-05-08 (matches session.db exactly)
+**Last Verified**: 2026-05-08 (checked against live session.db totals)
 
-| Phase                                        | Todos | Done | Pending | Blocked |
-|----------------------------------------------|-------|------|---------|---------|
-| Phase 0 — TeamScope Foundation               | 12    | 12   | 0       | 0       |
-| Phase 1 — Multi-Orchestrator Core            | 16    | 16   | 0       | 0       |
-| Phase 2 — SDK Architecture                   | 64    | 64   | 0       | 0       |
-| Phase 3 — Module Consistency                 | 151   | 149  | 0       | 2       |
-| Phase 4 — Core Consistency + Types           | 24    | 22   | 0       | 2       |
-| Phase 5 — Integration & Testing              | 32    | 32   | 0       | 0       |
-| Phase 6 — Architecture Overhaul              | 37    | 37   | 0       | 0       |
-| Phase 9 — ORM/Manager/Registry               | 27    | 16   | 11      | 0       |
-| Phase 28 — Auth & Accounts                   | 6     | 1    | 5       | 0       |
-| Phase 34 — Dependency Map                    | 19    | 1    | 18      | 0       |
+**Selected active phases**:
+
+| Phase | Todos | Done | Pending | Blocked |
+|-------|-------|------|---------|---------|
+| Phase 9 — ORM/Manager/Registry | 28 | 16 | 12 | 0 |
+| Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 |
+| Phase 18 — Frontend Foundation | 19 | 0 | 19 | 0 |
+| Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 |
+| Phase 20 — Persistent Memory Layer | 33 | 0 | 33 | 0 |
+| Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 |
+| Phase 22 — MCP Protocol Layer | 15 | 3 | 12 | 0 |
+| Phase 25 — Integration Hardening | 8 | 2 | 6 | 0 |
+| Phase 34 — Dependency Map | 19 | 1 | 18 | 0 |
+| Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 |
+| Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### MCP + SIEM Planning Sync (2026-05-08)
+
+- Phase 9 now has an explicit prerequisite todo: `orm-registry-metaclass-fix`. This captures the import-time `AsyncSafeSingletonMeta` + `ABC` conflict across `BaseRegistry` / `BaseToolRegistry` before more registry work is stacked on top.
+- Phase 22 docs and tracker items now use **server-scoped MCP runtime IDs**: `mcp:{server_id}:{tool_name}`. Marketplace/catalog state stays in `core/marketplace`; runtime connect/discover/call stays in `modules/mcps`; shared registry exposure stays in `modules/tools`.
+- `mcp-module-plan`, `mcp-tools-plan-update`, and `mcp-rules-update` are now marked done in `session.db` because the corresponding planning docs/rules were brought in sync with the live codebase.
+- Phase 37 SIEM work is now wired explicitly to OpenObserve. `siem-models` depends on `db-oo-client-implementation` and `db-oo-stream-definitions`, and the SIEM docs now state that OpenObserve is the primary telemetry surface, with PostgreSQL and GraphRAG layered on top.
+
+### GraphRAG Planning Baseline (2026-05-08)
+
+- `core/vector_rag/` now means vector retrieval + hybrid orchestration.
+- `core/graph_rag/` is now a dedicated planned sibling subsystem for graph ingest, graph traversal, and Neo4j-backed GraphRAG retrieval.
+- MITRE ATT&CK and threat-intel remain canonically owned by `modules/mitre/` and `modules/threat_intel/`, but now explicitly project graph-native entities/relationships into `core/graph_rag/`.
+- Phase 21 now also plans a narrow intelligence→graph hook: only stable extracted entities, ATT&CK hints, and confidence-scored links go to graph ingest; ephemeral routing state does not.
+- the retrieval-ingestion tracker item is now `domain-rag-ingestion`, making it explicit that this is ingestion on top of the shared retrieval core.
+
+### Prompt Cache Planning Correction (2026-05-08)
+
+- Anthropic prompt caching is now tracked as **automatic top-level `cache_control` by default**, with explicit block breakpoints kept as an advanced override for mixed-cadence prompt layouts.
+- OpenAI remains native automatic caching, but the plan now also captures `prompt_cache_key` / retention hints instead of treating it as passive usage parsing only.
+- Phase 11 live todos were rewritten to point at `core/prompt_cache/` and to spell out the provider-specific request shaping and usage parsing steps.
+
+### ASGI + Local Proxy Prep (2026-05-08)
+
+- `core/asgi/asgi.md` now treats the backend as a **single local ASGI runtime** with explicit future transport families: `/api/*`, `/ws/*`, `/sse/*`, `/v1/*`, discovery, and `/health`.
+- `modules/llm_proxy` is now planned as an **in-process local-compatible proxy facade**, not a Docker or sidecar service.
+- New **Phase 36 — Local Proxy & Transport Surfaces** now tracks ASGI transport prep plus the proxy facade work. Phase 36 starts with `2 done / 6 pending`.
+- `frontend-sse-client` was intentionally pushed behind the first usable settings/marketplace/chat panels; the current MVP path is REST + WebSocket first, SSE/proxy later.
+- Frontend dev-proxy expectations were aligned to include `/sse/*` in addition to `/api/*`, `/ws/*`, and `/v1/*`.
+- Compose review found one real infra prerequisite: the custom Postgres image is based on `postgres:18-alpine` but does **not** yet install the `pgvector` extension package. Phase 20 `mem-pgvector-setup` now explicitly tracks the image work as well as the migration work.
 
 ### ✅ Phase N0 — Python 3.14 Typing Normalization (Completed 2026-05-07)
 
@@ -109,7 +143,7 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 - **Gap C** (HIGH): `core/types/projects.py` missing — projects/plan.md references it
 - **Gap D** (BLOCKED): `context.py` uses `@dataclass + BaseModel` anti-pattern on 4 classes
 - **Gap E** (BLOCKED): `ScopeLevel` defined independently in 3 places (core/db, scopes, permissions)
-- **Gap H/I**: 8 modules have placeholder integration tables; triage/llm_proxy/chat/workflows have NO section
+- **Gap H/I**: 8 modules still have placeholder integration tables; `chat` and `triage` still need formalized matrices, while `llm_proxy` and `workflows` are already covered
 - **Gap J**: `@cache` not referenced in any consuming module's integration table
 - **Two todos BLOCKED** (`gap-scopelevel-deduplicate`, `gap-context-antipattern`) pending user decision
 
@@ -186,12 +220,14 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 
 ## ⚠️ Structural Debt (open)
 
-- **`core/caching/` renamed → `core/prompt_cache/`**: Clearer name. Two-tier only (Redis + Anthropic `cache_control`). Gemini `NATIVE_RESOURCE` deferred — complex separate billing model. Tracked: `cache-gemini-context-cache` blocked.
+- **`core/caching/` renamed → `core/prompt_cache/`**: Clearer name. Two-tier only (Redis + provider-native prompt caching). Anthropic uses automatic top-level `cache_control` by default with explicit breakpoints only when needed; OpenAI/DeepSeek native tracking is also part of Phase 11. Gemini `NATIVE_RESOURCE` stays deferred. Tracked: `cache-gemini-context-cache` blocked.
 - **`core/retry/` renamed → `core/resilience/`**: Already has `detection.py`, `orchestrator.py`, `config.py` — broader than retry alone.
 - **`working_dir` module deleted → `core/workspace/` pending**: `WorkspaceRegistry` tracks N `WorkspaceDirHandle` entries per entity. Default `~/.css/sessions/<sid>/` + optional project dir, both WRITE. List expandable. Todos rewritten under Phase 15.
 - **`modules/cache/` → `core/cache/` pending**: L4 SQLite removed. 3-layer (L1 memory, L2 redis.asyncio, L3 PostgreSQL). `cache-move-to-core` todo gates L4-removal + redis.asyncio migration. All tracked in Phase 3.
 - **`core/triage/` → `modules/intelligence/` pending**: Rename tracked as `triage-rename-module` (Phase 19). Phase 21 broadened to full local AI assistance.
 - Tool Registry partially implemented (provider normalization + execution path still pending) — Phase 3
+- **`mcps` ↔ `tools` bridge is now planned precisely but still not implemented**: `modules/mcps/registry.py` exists, the runtime/tool/marketplace boundaries are documented, and the runtime ID contract is `mcp:{server_id}:{tool_name}`. What is still missing is the actual `McpToolBridge` implementation plus MCP delegation in the tool execution path.
+- **Registry singleton standardization has an unresolved metaclass issue**: `BaseRegistry` / `BaseToolRegistry` currently combine `AsyncSafeSingletonMeta` with `ABC`, which causes import-time conflicts in dependent registries. This is now tracked explicitly as `orm-registry-metaclass-fix`.
 - Permissions not implemented — Phase 15
 - Events module missing (0/5 files) — Phase 6 P3
 - 5-file pattern: only 3/48 components compliant — Phase 3/4
@@ -202,7 +238,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **783 todos**, PHASE > TASK > TODO hierarchy (35 phases + unassigned)
+- `.plan/session.db` — **809 todos**, PHASE > TASK > TODO hierarchy (37 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (21 modules, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (012 checkpoints)
 - `src/css/modules/*/<module>.md` — module source-of-truth (23 module directories)

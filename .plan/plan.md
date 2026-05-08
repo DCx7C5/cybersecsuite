@@ -1,10 +1,10 @@
 # CyberSecSuite: Implementation Plan
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
-**Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-08T17:24:58+02:00 (session current)  
+**Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–37 Pending | 5 Architecture Proposals Approved  
+**Updated**: 2026-05-08T23:30:08+02:00 (session current)  
 **Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 790 total (393 done, 391 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 809 total (401 done, 402 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -45,11 +45,11 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ---
 
-## 📊 CURRENT STATUS (2026-05-08T00:55 UTC+2)
+## 📊 CURRENT STATUS (2026-05-08T23:30:08+02:00)
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
-**Phases**: 35 total (Phase 0–34) — Phase 0 + 1 complete, Phase 2+ pending  
-**Todos**: **790 total (393 done, 391 pending, 6 blocked)**  
+**Phases**: 38 total (Phase 0–37) — Phase 0 + 1 complete, later phases mixed/planned  
+**Todos**: **809 total (401 done, 402 pending, 6 blocked)**  
 **Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
 **Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
 **Next**: Continue ready queue from `session.db` in `sort_order`
@@ -72,7 +72,8 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 **Binding ownership note (2026-05-08)**:
 - `accounts`, `events`, `marketplace`, and `memory` are core-owned packages.
 - `accounts` now exists only under `src/css/core/accounts/`; do not recreate `src/css/modules/accounts/`.
-- `vector_rag` is planned to move from `src/css/modules/vector_rag/` to `src/css/core/vector_rag/` as shared hybrid retrieval infrastructure.
+- `vector_rag` is planned to move from `src/css/modules/vector_rag/` to `src/css/core/vector_rag/` as the vector + hybrid retrieval layer.
+- `graph_rag` is planned as a sibling core-owned graph retrieval package under `src/css/core/graph_rag/`.
 - `working_dir` is retired terminology. Use `core/workspace/` and the general session/project directory structure.
 
 **High-level package snapshot**:
@@ -1248,8 +1249,8 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 | ID | Feature | Why Critical |
 |----|---------|-------------|
 | `feat-incidents-module` | `modules/incidents/` | Incident lifecycle (create/track/close/timeline). A cybersec platform with no incidents module is just a chatbot. |
-| `feat-threat-intel-module` | `modules/threat_intel/` | IOC tracking (IP/domain/hash/URL), threat feed pulls (MISP, OTX, VirusTotal). Essential for threat hunting sessions. |
-| `feat-mitre-module` | `modules/mitre/` | MITRE ATT&CK framework. Triage decisions → ATT&CK tactics. Incidents → techniques. Required for forensic narrative generation. |
+| `feat-threat-intel-module` | `modules/threat_intel/` | IOC tracking (IP/domain/hash/URL), threat feed pulls (MISP, OTX, VirusTotal). Canonical relational ownership stays here; graph-native entities/relationships later project into `core/graph_rag/`. |
+| `feat-mitre-module` | `modules/mitre/` | MITRE ATT&CK framework. Canonical ATT&CK ownership stays here; ATT&CK entities and relationships later project into `core/graph_rag/`. |
 | `feat-scan-module` | `modules/scans/` | Vulnerability scan lifecycle: target → orchestrated agent team → findings → incidents. Bridges triage → teams → reports. |
 
 ---
@@ -1269,7 +1270,7 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 
 | ID | Feature | Notes |
 |----|---------|-------|
-| `feat-vector-rag-core` | `core/vector_rag/` | Hybrid knowledgebase: VectorRAG on PostgreSQL + pgvector, GraphRAG on graph storage, toggleable retrieval modes (`vector`, `graph`, `hybrid`, `auto`), and fused context for agents. Sources: CVE feeds, PDFs, playbooks, extracted entities/relationships. |
+| `feat-vector-rag-core` | `core/vector_rag/` + `core/graph_rag/` | Hybrid retrieval foundation split into VectorRAG on PostgreSQL + pgvector and GraphRAG on graph storage, with toggleable retrieval modes (`vector`, `graph`, `hybrid`, `auto`), fused context for agents, and a clean boundary between shared retrieval core vs domain-specific cybersec ingestion. Sources: CVE feeds, PDFs, playbooks, MITRE ATT&CK, threat-intel entities/relationships, and extracted links. |
 | `feat-evidence-module` | `modules/evidence/` | Chain-of-custody: Evidence model + EvidenceChain (immutable append via EventStore). Hash-verified, collector-attributed. |
 | `feat-audit-compliance-module` | `modules/compliance/` | NIST CSF / SOC2 / ISO27001 / MITRE framework control mapping. % coverage reports. Reads from scans + incidents. |
 
@@ -1282,7 +1283,7 @@ auth → accounts → sessions-persistence
 incidents → threat-intel → mitre → scan
 events (p6) → alerts → webhooks
 reports → incidents + scans + compliance
-vector_rag(core) → memory + agent context assembly
+vector_rag(core) + graph_rag(core) → memory + agent context assembly
 evidence → incidents + EventStore (p6)
 ```
 
@@ -1590,13 +1591,14 @@ class ToolRegistry:
 
 ---
 
-### 8 Todos in session.db
+### 9 Todos in session.db
 
 | ID | What |
 |----|------|
 | `orm-value-types-migration` | All runtime `@dataclass` → `msgspec.Struct` |
 | `orm-custom-managers` | Add `objects = FooManager()` to every Tortoise model |
 | `orm-to-from-domain` | `to_domain()` + `from_domain()` on every model |
+| `orm-registry-metaclass-fix` | Fix `AsyncSafeSingletonMeta` + `ABC` conflicts before more registry expansion |
 | `orm-registry-purge-crud` | Remove DB writes from all registries |
 | `orm-registry-invalidation` | Cache invalidation via DomainEvent subscription |
 | `orm-service-layer` | `service.py` per module — only entry point for business logic |
@@ -1696,8 +1698,11 @@ Tier 1 — App-Level Exact Cache (ALL providers)
   Works for: repeated tool calls, dev/test, idempotent agents.
 
 Tier 2 — Native Provider Caching (where supported)
-  Anthropic  → inject cache_control blocks at breakpoints (explicit, 90% cost reduction)
-  OpenAI     → automatic — no opt-in; tracks cached_tokens in usage response
+  Anthropic  → automatic top-level cache_control by default; optional explicit breakpoints
+                for mixed-cadence prefixes; tracks cache_read_input_tokens and
+                cache_creation_input_tokens in usage
+  OpenAI     → automatic prefix caching; optionally set prompt_cache_key and
+                prompt_cache_retention; tracks cached_tokens in usage response
   DeepSeek   → automatic — tracks prompt_cache_hit_tokens / prompt_cache_miss_tokens
   Gemini     → explicit cachedContent resource: create via REST, reference by name
   Groq       → announced (similar to OpenAI — monitor for GA)
@@ -1720,12 +1725,12 @@ calls `cache_manager.get_or_compute(adapter, messages, model, **kw)` — caching
 completely transparent to all callers.
 
 ```python
-# core/caching/manager.py
+# core/prompt_cache/manager.py
 class PromptCacheManager:
     def __init__(self, redis: Redis, config: CacheConfig):
         self._redis = redis
         self._config = config
-        self._injector = CacheBreakpointInjector()  # Anthropic-specific
+        self._injector = CacheBreakpointInjector()  # Anthropic explicit mode only
         self._gemini_cache = GeminiContextCacheClient()
 
     async def get_or_compute(
@@ -1740,16 +1745,20 @@ class PromptCacheManager:
         if (hit := await self._redis.get(key)):
             return LLMResponse(**msgspec.json.decode(hit)) | cache_source="redis"
 
-        # --- Tier 2a: inject native cache markers (Anthropic) ---
-        if adapter.caching_capability == CachingCapability.NATIVE_EXPLICIT:
-            messages = self._injector.inject(messages)
-
-        # --- Tier 2b: resolve Gemini cachedContent (if applicable) ---
+        # --- Tier 2a: prepare provider-native caching ---
+        if adapter.caching_capability == CachingCapability.NATIVE_AUTOMATIC_WITH_EXPLICIT:
+            if self._config.prefer_explicit_breakpoints(adapter.provider, model, messages):
+                messages, kwargs = self._injector.inject(messages, kwargs)
+            else:
+                kwargs["cache_control"] = {"type": "ephemeral"}
+        elif adapter.caching_capability == CachingCapability.NATIVE_AUTOMATIC:
+            kwargs = self._prepare_automatic_cache_kwargs(adapter.provider, kwargs)
         if adapter.caching_capability == CachingCapability.NATIVE_RESOURCE:
             kwargs["cached_content"] = await self._gemini_cache.resolve(messages)
 
         # --- Compute ---
         response = await adapter.complete(messages, model, **kwargs)
+        response.cache_stats = self._native_tracker.extract(adapter.provider, response)
 
         # --- Tier 1: store in Redis ---
         ttl = self._config.ttl_for(adapter.provider)
@@ -1761,37 +1770,46 @@ class PromptCacheManager:
 ```python
 # CachingCapability on each adapter
 class CachingCapability(enum.Enum):
-    NONE             = "none"           # no native caching
-    NATIVE_AUTOMATIC = "native_auto"    # OpenAI, DeepSeek — happens automatically
-    NATIVE_EXPLICIT  = "native_explicit" # Anthropic — must inject cache_control
-    NATIVE_RESOURCE  = "native_resource" # Gemini — must create cachedContent object
+    NONE = "none"  # no native caching
+    NATIVE_AUTOMATIC = "native_auto"  # OpenAI, DeepSeek — provider handles prefix caching
+    NATIVE_AUTOMATIC_WITH_EXPLICIT = "native_auto_explicit"  # Anthropic — automatic by default, explicit breakpoints available
+    NATIVE_RESOURCE = "native_resource"  # Gemini — must create cachedContent object
 ```
 
 ---
 
 ### Anthropic: `CacheBreakpointInjector`
 
-Anthropic caches everything UP TO a `cache_control: {"type": "ephemeral"}` marker.
-Up to 4 breakpoints allowed. Strategy: use 2 (system + stable message prefix).
+Anthropic now supports both automatic and explicit prompt caching. The default harness
+path should be automatic top-level `cache_control`, because that is the simplest way to
+cache a stable prefix. Use explicit breakpoints only when:
+
+- different prompt sections change at different cadences
+- you need multiple cache boundaries
+- the 20-block lookback window would make one automatic breakpoint too coarse
+
+Model-specific minimum token thresholds apply, and only 4 breakpoints may exist on a
+single request.
 
 ```python
-# core/caching/anthropic_injector.py
+# core/prompt_cache/anthropic_injector.py
 class CacheBreakpointInjector:
     """
-    Marks stable portions of the message list with cache_control breakpoints.
+    Adds explicit Anthropic cache_control breakpoints for advanced prompt layouts.
     Strategy:
-      - System prompt last block → always marked (tools/docs are stable)
-      - Last message of the stable prefix (messages[:-2]) → marked
+      - Keep top-level cache_control as the default path
+      - Mark the system/tools prefix only when it changes less often than the chat body
+      - Mark the last message of the stable prefix when the conversation has a long
+        static prefix and a short active suffix
       - Recent 2 messages (active window) → never marked
     """
-    def inject(self, messages: list[dict]) -> list[dict]:
-        # Mark system prompt
-        # Mark stable prefix boundary
-        # Leave active window unmarked
+    def inject(self, messages: list[dict], kwargs: dict) -> tuple[list[dict], dict]:
+        # Add block-level cache_control where explicit mode helps more than automatic mode
         ...
 ```
 
-Minimum token threshold to cache: 1024 tokens (Anthropic requirement).
+Default TTL is 5 minutes. Anthropic also supports a 1-hour TTL when the caller opts into
+it via `cache_control.ttl`.
 
 ---
 
@@ -1799,7 +1817,7 @@ Minimum token threshold to cache: 1024 tokens (Anthropic requirement).
 
 ```python
 class CacheStats(msgspec.Struct):
-    tier: Literal["none", "redis", "native_auto", "native_explicit", "native_resource"]
+    tier: Literal["none", "redis", "native_auto", "native_auto_explicit", "native_resource"]
     cache_read_tokens: int = 0
     cache_write_tokens: int = 0
     estimated_savings_usd: float = 0.0
@@ -1822,10 +1840,10 @@ class LLMResponse(msgspec.Struct):
 
 | Provider | Tier 1 Redis | Tier 2 Native | Native Type | Cost Reduction |
 |----------|-------------|---------------|-------------|----------------|
-| Anthropic | ✅ | ✅ | Explicit breakpoints | 90% (read) / +25% (write) |
-| OpenAI | ✅ | ✅ | Automatic prefix | 50% (cached) |
-| DeepSeek | ✅ | ✅ | Automatic | Reports in usage |
-| Gemini | ✅ | ✅ | Explicit resource | ~75% (cache storage fee applies) |
+| Anthropic | ✅ | ✅ | Automatic top-level + optional explicit breakpoints | Native read/write stats in usage |
+| OpenAI | ✅ | ✅ | Automatic prefix + optional cache key / retention hints | Cached tokens reported in usage |
+| DeepSeek | ✅ | ✅ | Automatic | Provider-reported cache hit/miss usage |
+| Gemini | ✅ | ✅ | Explicit resource | Resource lifecycle + provider billing |
 | Groq | ✅ | 🔜 | Auto (announced) | TBD |
 | All others | ✅ | ❌ | — | Redis only (dev/test gains) |
 | Ollama | ✅ | N/A | Local KV cache | No API cost anyway |
@@ -1837,13 +1855,13 @@ class LLMResponse(msgspec.Struct):
 
 | ID | Task | What |
 |----|------|------|
-| `cache-caching-capability-enum` | T11.1 | `CachingCapability` enum on `LLMAdapter` |
+| `cache-caching-capability-enum` | T11.1 | `CachingCapability` metadata on `LLMAdapter` (including Anthropic auto+explicit support) |
 | `cache-response-stats-struct` | T11.1 | Add `CacheStats` to `LLMResponse` |
 | `cache-prompt-cache-manager` | T11.1 | `PromptCacheManager` (orchestrates all 3 tiers) |
 | `cache-redis-exact-match` | T11.2 | Redis Tier 1 exact-match (all providers) |
 | `cache-redis-streaming-buffer` | T11.2 | Buffer stream → store complete response in Redis |
-| `cache-anthropic-breakpoint-injector` | T11.3 | `CacheBreakpointInjector` for Anthropic |
-| `cache-automatic-native-tracking` | T11.4 | Parse OpenAI/DeepSeek `cached_tokens` from usage |
+| `cache-anthropic-breakpoint-injector` | T11.3 | `CacheBreakpointInjector` for advanced Anthropic explicit-cache layouts |
+| `cache-automatic-native-tracking` | T11.4 | Parse Anthropic/OpenAI/DeepSeek native cache usage fields |
 | `cache-gemini-context-cache` | T11.5 | Gemini `cachedContent` create/resolve/reuse |
 | `cache-cost-savings-tracker` | T11.6 | Compute `estimated_savings_usd` per response |
 | `cache-metrics-openobserve` | T11.6 | Emit `cache.hit`/`miss`/`native` events to OpenObserve |
@@ -2676,7 +2694,7 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 Two orthogonal grant types, both `msgspec.Struct`, both immutable.
 
 ```python
-# core/permissions/types.py
+# core/permissions/types.py.py
 
 import msgspec
 from enum import Flag, auto
@@ -4314,7 +4332,7 @@ cd /home/daen/Projects/cybersecsuite
 bun create vite src/frontend --template react-ts
 cd src/frontend
 bun add react@19 react-dom@19
-bun add -d @types/react@19 @types/react-dom@19 vite typescript
+bun add -d @types.py/react@19 @types.py/react-dom@19 vite typescript
 bun add @tanstack/react-router @tanstack/react-query zustand lucide-react
 bun add -d @tanstack/router-devtools @tanstack/query-devtools
 ```
@@ -4339,6 +4357,7 @@ export default defineConfig({
     proxy: {
       '/api': { target: 'http://localhost:8000', changeOrigin: true },
       '/ws':  { target: 'ws://localhost:8000', ws: true },
+      '/sse': { target: 'http://localhost:8000', changeOrigin: true },
       '/v1':  { target: 'http://localhost:8000', changeOrigin: true },
     }
   }
@@ -4441,7 +4460,7 @@ export async function apiDelete(path: string): Promise<void>
 **WebSocket manager** (`ws-manager.ts`):
 ```typescript
 // Singleton. Connects to /ws on mount. Auto-reconnects with expo backoff.
-// Typed message bus — subscribe to event types:
+// Typed message bus — subscribe to event types.py:
 wsManager.subscribe('agent.output', (msg: AgentOutputMsg) => void)
 wsManager.subscribe('tool.call', (msg: ToolCallMsg) => void)
 wsManager.subscribe('settings.changed', (msg: SettingsChangedMsg) => void)
@@ -4450,7 +4469,7 @@ wsManager.subscribe('settings.changed', (msg: SettingsChangedMsg) => void)
 
 **SSE client** (`sse-client.ts`):
 ```typescript
-// For streaming LLM output via HTTP SSE (OpenAI-compatible /v1/chat streams)
+// Reusable SSE client for /sse/* and future /v1/* proxy streams
 export async function* streamSSE<T>(url: string, body: unknown): AsyncGenerator<T>
 // useSSE hook consumes this and updates React state token-by-token
 ```
@@ -4641,8 +4660,12 @@ The most complex panel — real-time streaming agent conversation.
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+**MVP transport**:
+- first version should use the existing chat REST + WebSocket session transport
+- the hook/state shape should stay transport-agnostic so `/sse/*` or `/v1/*` proxy streaming can be swapped in later
+
 **Features**:
-- SSE streaming: tokens appear one-by-one as they arrive
+- real-time assistant output over the current chat transport
 - Tool call blocks: collapsible, syntax-highlighted input/output
 - Model selector dropdown (from `@llm_models` registry via REST)
 - Session history sidebar (toggle)
@@ -4650,8 +4673,8 @@ The most complex panel — real-time streaming agent conversation.
 - Markdown rendering with syntax highlighting (shiki)
 
 **Todos**:
-- `frontend-chat-panel` — Chat panel with SSE streaming, tool call blocks, markdown rendering, model selector
-- `frontend-chat-hooks` — `useChat()` hook managing SSE stream, message history, tool blocks
+- `frontend-chat-panel` — Chat panel with WS-first MVP transport, tool call blocks, markdown rendering, model selector
+- `frontend-chat-hooks` — `useChat()` hook managing REST + WebSocket MVP transport, later proxy/SSE-ready
 
 ---
 
@@ -4712,7 +4735,7 @@ The root route. A live ops dashboard — dark, information-dense, feature-rich. 
 **Files**: `src/frontend/src/core/charts/`
 
 ```bash
-bun add recharts @types/recharts
+bun add recharts @types.py/recharts
 ```
 
 All charts: dark zinc palette, `ResponsiveContainer width="100%"`, custom tooltip styling, no mock data — empty Skeleton until first real WS event.
@@ -4733,15 +4756,19 @@ All charts: dark zinc palette, `ResponsiveContainer width="100%"`, custom toolti
 ### Phase 18 Implementation Order (no blockers — start immediately)
 
 ```
-T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (ws/sse/store)
+T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (api/ws/store)
                 ↓
-         T18.5 (registry) → T18.11 (landing/dashboard)
-                                  ↓
-                           T18.12 (live graphs)
-                           T18.6 (settings) ← First real panel
-                           T18.7 (marketplace)
-                           T18.8 (chat)
-T18.10 (DX) — alongside T18.2
+         T18.5 (registry + colocated panel stubs)
+                ↓
+         T18.7 (marketplace)  ← first live panel, backend already exists
+         T18.6 (settings)     ← after Phase 17 settings REST
+         T18.8 (chat)         ← WS-first MVP, proxy/SSE later
+         T18.10 (DX)          ← alongside active frontend work
+         T18.4 SSE client     ← later generic utility for /sse/* and /v1/* streams
+                ↓
+         T18.11 (landing/dashboard)  ← after sessions/events backend surfaces are ready
+                ↓
+         T18.12 (live graphs)
 ```
 
 **Minimum to get something running in the browser**: T18.1 + T18.2 + T18.3 = scaffold + dark shell. Run locally with `bun run dev`. Every task after that adds a live panel.
@@ -4757,22 +4784,23 @@ T18.10 (DX) — alongside T18.2
 | `frontend-appshell` | T18.3 | AppShell, Sidebar (ref ahs-admin-panel/Sidebar), TopBar, PanelContainer | `frontend-tailwind-shadcn` |
 | `frontend-api-client` | T18.4 | REST client + ApiError | `frontend-vite-scaffold` |
 | `frontend-ws-manager` | T18.4 | PORT useSocket.ts from ahs-admin-panel → ws-manager.ts | `frontend-vite-scaffold` |
-| `frontend-sse-client` | T18.4 | SSE AsyncGenerator + useSSE hook | `frontend-vite-scaffold` |
+| `frontend-sse-client` | T18.4 | SSE AsyncGenerator + useSSE hook for later generic `/sse/*` and `/v1/*` streams | `frontend-vite-scaffold` |
 | `frontend-zustand-store` | T18.4 | Zustand store for WS state + metricsSlice | `frontend-vite-scaffold` |
 | `frontend-port-hooks` | T18.4a | PORT 9 hooks from ahs-admin-panel + SocketProvider | `frontend-vite-scaffold` |
 | `frontend-module-registry` | T18.5 | ModulePanel registry (incl `/` dashboard) + TanStack Router routes | `frontend-appshell` |
 | `frontend-panel-colocated-structure` | T18.5 | Scaffold `templates/` stubs in settings/marketplace/chat modules | `frontend-module-registry` |
-| `frontend-landing-dashboard` | T18.11 | Landing dashboard at `/` with 6 widgets + live graphs | `frontend-appshell`, `frontend-port-hooks`, `frontend-zustand-store` |
+| `frontend-landing-dashboard` | T18.11 | Landing dashboard at `/` with 6 widgets + live graphs | `frontend-appshell`, `frontend-port-hooks`, `frontend-zustand-store`, `sessions-endpoints` |
 | `frontend-live-graphs` | T18.12 | Recharts + 4 chart components + metricsSlice + useDashboardMetrics | `frontend-landing-dashboard`, `frontend-ws-manager` |
-| `frontend-settings-panel` | T18.6 | Settings panel (accordion, search, inline edit, masking) | `frontend-panel-colocated-structure`, `settings-rest-routes` |
-| `frontend-settings-hooks` | T18.6 | TanStack Query hooks for /api/settings/* | `frontend-api-client` |
-| `frontend-marketplace-panel` | T18.7 | Marketplace panel (grid, search, install) | `frontend-panel-colocated-structure` |
+| `frontend-settings-panel` | T18.6 | Settings panel (accordion, search, inline edit, masking) | `frontend-panel-colocated-structure`, `frontend-settings-hooks`, `settings-rest-routes` |
+| `frontend-settings-hooks` | T18.6 | TanStack Query hooks for /api/settings/* | `frontend-api-client`, `settings-rest-routes` |
+| `frontend-marketplace-panel` | T18.7 | Marketplace panel (grid, search, install) | `frontend-panel-colocated-structure`, `frontend-marketplace-hooks` |
 | `frontend-marketplace-hooks` | T18.7 | TanStack Query hooks for marketplace API | `frontend-api-client` |
-| `frontend-chat-panel` | T18.8 | Chat panel (xterm.js terminal ref, SSE stream, tool blocks, model selector) | `frontend-panel-colocated-structure`, `frontend-sse-client`, `frontend-port-hooks` |
-| `frontend-chat-hooks` | T18.8 | useChat hook (SSE stream, history, tool blocks) | `frontend-sse-client` |
+| `frontend-chat-panel` | T18.8 | Chat panel (WS-first MVP, tool blocks, markdown, model/session controls) | `frontend-panel-colocated-structure`, `frontend-chat-hooks`, `frontend-port-hooks` |
+| `frontend-chat-hooks` | T18.8 | useChat hook (REST + WebSocket MVP, later SSE/proxy-ready) | `frontend-api-client`, `frontend-ws-manager` |
 | `frontend-dev-tooling` | T18.10 | Devtools overlays, package.json scripts, tsc check | `frontend-tailwind-shadcn` |
 
 **BLOCKED by Phase 17** (settings REST): `frontend-settings-panel`
+**Chat note**: build the first chat panel against the current chat REST + WebSocket backend; Phase 36 proxy/SSE work is an enhancement path, not a blocker for the MVP.
 **All others: no blockers — implement in order above.**
 **T18.9 (Docker/Nginx/proxy): deferred, not in scope yet.**
 
@@ -5060,6 +5088,7 @@ User Message → AgentExecutor
 | 10 | `triage-fallback-whisperer` | Fallback Whisperer — instant local answer on big model fail | ★★★★★ |
 | 11 | `triage-paraphrase-suggester` | Paraphrase Suggester — 2-3 alternatives on echo detection | ★★★★ |
 | 12 | `triage-pre-filter` | Pre-Filter — route trivial to 0.6B, escalate complex | ★★★★★ |
+| 13 | `triage-graph-rag-entity-projection` | Graph Projection Hook — emit stable entities, ATT&CK hints, and relationships into graph ingest | ★★★★ |
 
 ### T21.1 — Micro-Router
 - `triage-micro-router` — MessageTagger: async tag() → 4-6 labels in <3s via Qwen3-0.6B
@@ -5087,7 +5116,8 @@ User Message → AgentExecutor
 
 ### T21.7 — Integration
 - `triage-intelligence-wire` — orchestrate all sub-systems in triage/engine.py TriageEngine
-- `triage-module-plan-update` — update src/css/core/triage/plan.md
+- `triage-graph-rag-entity-projection` — emit only stable extracted entities, ATT&CK candidate mappings, confidence-scored links, and provenance into the GraphRAG ingest queue; do not project ephemeral routing state or write directly to Neo4j
+- `triage-module-plan-update` — update `src/css/modules/triage/triage.md`
 
 ### Dependencies
 ```
@@ -5096,6 +5126,7 @@ Phase 13: routing-qwen-triage-router ← budget analyst + pre-filter
 Phase 20: mem-protocol-struct ← memory-tagger
 Phase 21: echo-detector ← paraphrase-suggester
 Phase 21: triage-intelligence-wire ← micro-router + pre-filter + fallback-whisperer
+Phase 21: triage-graph-rag-entity-projection ← triage-intelligence-wire + graph-rag-backend
 ```
 
 ---
@@ -5109,9 +5140,9 @@ Phase 21: triage-intelligence-wire ← micro-router + pre-filter + fallback-whis
 **Key design**: `PYTHON_DIRECT` transport uses `fastmcp.Client(FastMCP_instance)` — passes a FastMCP server object directly, no subprocess, no HTTP, no JSON serialization overhead.
 
 ### T22.0 — Documentation
-- `mcp-module-plan` — write mcps/plan.md (full design)
-- `mcp-tools-plan-update` — update tools/plan.md (remove MCP, note bridge)
-- `mcp-rules-update` — add mcps to rules.md modules table
+- `mcp-module-plan` — done: `src/css/modules/mcps/mcps.md` now documents the MCP runtime layer, server-scoped IDs, and runtime/tool/marketplace boundaries
+- `mcp-tools-plan-update` — done: `src/css/modules/tools/tools.md` now reflects the MCP bridge boundary and current registry reality
+- `mcp-rules-update` — done: `mcps` is already present in `rules.md` module inventory
 
 ### T22.1 — Foundation Types
 - `mcp-enums` — McpTransportType (PYTHON_DIRECT/STDIO/SSE/STREAMABLE_HTTP) + McpServerStatus
@@ -5123,8 +5154,8 @@ Phase 21: triage-intelligence-wire ← micro-router + pre-filter + fallback-whis
 - `mcp-python-direct` — PYTHON_DIRECT: `importlib` → FastMCP instance → `Client(instance)` (in-process)
 
 ### T22.3 — Registry + Bridge
-- `mcp-server-registry` — McpServerRegistry singleton (multi-server config + lazy connect)
-- `mcp-tool-bridge` — McpToolBridge: MCP tools → ToolRegistry as ToolType.MCP
+- `mcp-server-registry` — finish the existing `mcps/registry.py` as `McpRuntimeRegistry` (server config, connect/disconnect, restore/load, tool routing)
+- `mcp-tool-bridge` — `McpToolBridge`: register server-scoped MCP tools into `ToolRegistry` as `ToolType.MCP`
 
 ### T22.4 — Persistence
 - `mcp-models` — Tortoise ORM McpServerConfigRecord (persisted server configs)
@@ -5138,6 +5169,7 @@ Phase 21: triage-intelligence-wire ← micro-router + pre-filter + fallback-whis
 
 ### Dependencies
 ```
+Phase 9: orm-registry-metaclass-fix ← mcp-server-registry, mcp-tool-bridge, mcp-startup-wire
 Phase 3: mod-tools registry ← mcp-tool-bridge
 Phase 6: p6-pipeline-asgi ← mcp-startup-wire, mcp-endpoints
 mcp-enums + mcp-exceptions + mcp-types-struct ← mcp-client ← mcp-server-registry ← mcp-tool-bridge, mcp-endpoints, mcp-startup-wire
@@ -5261,7 +5293,7 @@ Phase 15: scopes-module-remove ← git-scope-migration
 | F | `agents/agents.md` | Integration table: stale `project_dir` + missing `prompts` row | MEDIUM |
 | G | `events/events.md` | Planned events list missing `project.*`, `settings.changed`, `mcp.call.*` | MEDIUM |
 | H | 8 module markdown files | `*(fill in module-specific relationships)*` placeholder tables | MEDIUM |
-| I | triage, llm_proxy, chat, workflows | **No integration section at all** in the local module markdown | MEDIUM |
+| I | chat, triage | Integration prose exists, but the module-level boundaries are still not formalized into concise matrices. `llm_proxy` and `workflows` are already covered. | MEDIUM |
 | J | cache | Referenced by nobody in integration tables despite being needed by 4+ modules | MEDIUM |
 
 ---
@@ -5271,10 +5303,8 @@ Phase 15: scopes-module-remove ← git-scope-migration
 - `gap-agents-plan-stale` — fix agents/plan.md: rename `project_dir` → `session_dir`, add `prompts` row
 - `gap-events-missing-ns` — add `project.*`, `settings.changed`, `mcp.call.*` to events/plan.md planned events
 - `gap-integration-placeholders` — fill integration tables for 8 placeholder modules (cache, tags, skills, memory, roles, google_a2a, css_a2a, capabilities)
-- `gap-triage-integration` — write triage/plan.md integration section
-- `gap-llm-proxy-integration` — write llm_proxy/plan.md integration section
-- `gap-chat-integration` — write chat/plan.md integration section
-- `gap-workflows-integration` — write workflows/plan.md integration section
+- `gap-triage-integration` — rewrite triage/plan.md integration prose into a concise module-level matrix
+- `gap-chat-integration` — rewrite chat/plan.md integration prose into a formal matrix aligned with the WS-first MVP
 - `gap-cache-wiring` — add `@cache` row to all consuming module integration tables
 
 ### T25.db — Missing ORM Models (routed to module phases)
@@ -5291,7 +5321,6 @@ Phase 15: scopes-module-remove ← git-scope-migration
 naming-clarity-docs → gap-agents-plan-stale
 gap-integration-placeholders → gap-cache-wiring
 gap-triage-integration → gap-cache-wiring
-gap-llm-proxy-integration → gap-cache-wiring
 gap-core-types-projects → gap-orm-projects-models
 ```
 
@@ -5875,13 +5904,14 @@ Existing stubs: `memory/vault/manager.py` (Obsidian scaffold), `memory/vault/hot
 
 ### T20.9 — Hybrid Retrieval Core (VectorRAG + GraphRAG)
 
-- `rag-core-ownership` — promote `vector_rag` from a feature-module staging area to a core-owned retrieval subsystem under `src/css/core/vector_rag/`
-- `rag-cache-layer` — retrieval cache layer via `core/cache`: query-result caching, embedding reuse, route hints, TTLs, and ingest/update invalidation
-- `rag-vector-backend` — VectorRagBackend: PostgreSQL + pgvector for documents, chunks, embeddings, filters, and semantic retrieval
-- `rag-graph-backend` — GraphRagBackend: graph-store adapter (Neo4j first) for entities, relationships, communities, and traversal-based retrieval
-- `rag-query-modes` — `RetrievalMode` selection with manual `vector` / `graph` / `hybrid` toggles plus `auto` routing policy
-- `rag-fusion-layer` — merge, rerank, deduplicate, and preserve provenance across vector + graph retrieval results
-- `rag-context-wire` — wire hybrid retrieval into `ContextAssembler`, memory-backed context assembly, and agent execution
+- `rag-core-ownership` — promote `vector_rag` into `src/css/core/vector_rag/` as the vector retrieval + hybrid orchestration package; domain ingestion stays out of this layer
+- `rag-cache-layer` — retrieval cache layer via `core/cache`: embeddings, vector hits, graph traversals, fused results, route hints, TTL policy, and ingest/update invalidation
+- `graph-rag-core-ownership` — create `src/css/core/graph_rag/` as the dedicated GraphRAG subsystem with package surface, types, ingest/query boundaries, and local plan doc
+- `rag-vector-backend` — VectorRagBackend in `core/vector_rag/`: PostgreSQL + pgvector for document/chunk storage, embedding lookup, filters, similarity search, and normalized results
+- `graph-rag-backend` — GraphRagBackend in `core/graph_rag/`: Neo4j-backed entity/relationship ingest plus neighbor/path/community retrieval with provenance-preserving materialization
+- `rag-query-modes` — `RetrievalMode` selection with manual `vector` / `graph` / `hybrid` toggles plus an initial `auto` routing policy and a later hook for Phase 21 triage
+- `rag-fusion-layer` — merge, rerank, deduplicate, and preserve provenance across `vector_rag` + `graph_rag` results into one normalized retrieval payload
+- `rag-context-wire` — wire hybrid retrieval into `ContextAssembler`, memory-backed context assembly, and agent execution so callers receive retrieval evidence before model invocation
 
 **Routing note**: `auto` mode should work with a simple routing policy first. Later, Phase 21 intelligence/triage can participate in backend choice for complex requests.
 
@@ -5893,11 +5923,13 @@ mem-canvas-manager → mem-canvas-orm
 mem-vault-backend → mem-vault-orm
 mem-pgvector-setup → mem-compression, mem-vault-backend, rag-vector-backend
 mem-manager → mem-canvas-wire, mem-vault-wire
-rag-core-ownership → rag-cache-layer, rag-vector-backend, rag-graph-backend
-rag-cache-layer → rag-vector-backend, rag-graph-backend
-rag-vector-backend + rag-graph-backend → rag-query-modes → rag-fusion-layer
+rag-core-ownership → rag-cache-layer, rag-vector-backend
+rag-core-ownership → graph-rag-core-ownership
+rag-cache-layer → rag-vector-backend, graph-rag-backend
+graph-rag-core-ownership → graph-rag-backend
+rag-vector-backend + graph-rag-backend → rag-query-modes → rag-fusion-layer
 mem-context-assembler + mem-agent-wire + rag-fusion-layer → rag-context-wire
-rag-context-wire → Phase 29 domain-knowledge
+rag-context-wire → Phase 29 domain-rag-ingestion
 Phase 21: triage-memory-tagger → mem-memory-tagger-hook
 Phase 21: intelligence/triage may later inform `AUTO` retrieval-mode choice
 ```
@@ -6183,13 +6215,13 @@ All of these are single-line todos with no implementation plan:
 - **Missing**: bootstrap migration — on first startup, seed `SettingRecord` table from env vars; on subsequent startups, `SettingRegistry` overrides env-defaults from DB. Prevents config.py creep.
 
 **G12 — LLM proxy module missing**
-- `modules/llm_proxy` dir doesn't exist despite being listed as an active module.
-- Plan mentions it in context as "OpenAI-compatible proxy". Zero design, zero todos.
-- **Missing**: decision — is this a pass-through proxy for external clients (OpenAI-compat API surface), or is it the internal routing layer? If the former: needs its own phase with auth, model aliasing, usage tracking.
+- This is now promoted into **Phase 36 — Local Proxy & Transport Surfaces**.
+- `modules/llm_proxy` is planned as an **in-process local facade**, not a separate service.
+- Remaining work is implementation, not architecture ownership: `/v1/*` compatibility breadth, routing bridge, streaming normalization, and local trust boundary.
 
 **G13 — Streaming multi-provider gap**
 - `streaming/runner.py` hardcodes Claude (tracked as `ai-provider-routing` in Phase 8).
-- But broader streaming design (SSE vs WS, per-provider delta format normalisation, mid-stream model switch, stream cancellation) is not documented anywhere.
+- Phase 36 now adds an explicit transport split (`/ws/*`, `/sse/*`, `/v1/*`) plus streaming normalization work, but provider delta compatibility and cancellation behavior still need implementation.
 
 ---
 
@@ -6221,7 +6253,7 @@ All of these are single-line todos with no implementation plan:
 | New Phase | Contents | Dependencies |
 |-----------|---------|-------------|
 | **Phase 28 — Auth & Accounts** | `modules/auth/` (JWT, API keys), `core/accounts/` (User ORM, profiles), row-level project isolation | Phase 15 (permissions), Phase 17 (settings/projects) |
-| **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, compliance, reports, cybersec knowledge ingestion on top of `core/vector_rag/` | Phase 20 (hybrid retrieval core), Phase 28 (auth), Phase 14 (events) |
+| **Phase 29 — Cybersec Domain Layer** | incidents, threat_intel, mitre, scans, evidence, compliance, reports, cybersec retrieval ingestion on top of `core/vector_rag/` + `core/graph_rag/`, including MITRE/threat-intel graph projections | Phase 20 (hybrid retrieval core), Phase 28 (auth), Phase 14 (events) |
 | **Phase 30 — Workflow Engine + IPC** | `modules/workflows/` DAG engine, `modules/ipc/` (A2A messaging), `modules/planner/` (goal decomposition) | Phase 20 (memory), Phase 26 (approvals), Phase 14 (events) |
 | **Phase 31 — Production Readiness** | Secrets management, rate limiting, task queue, deployment Dockerfile, OpenAPI polish, alerting/webhooks, multi-tenancy RLS | Phase 28 (auth), Phase 26 (approvals), Phase 27 (graphs) |
 
@@ -6395,3 +6427,155 @@ On error:                    → Report(status=FAILED, error_message=...) + fire
 | `reports-background-task` | T32.9 | `BackgroundTask` wrapper: PENDING→GENERATING→READY/FAILED + event fire | `reports-endpoints`, `prod-task-queue` |
 | `reports-events` | T32.10 | Hook events: `report.generation.*` + `report.deleted` | `reports-background-task`, `events-core-impl` |
 | `reports-frontend` | T32.11 | `ReportsPanel`, `GenerateReportModal`, `ReportViewer`, `TemplateEditor` | `reports-endpoints` |
+
+---
+
+## 🚧 Phase 36 — Local Proxy & Transport Surfaces
+
+**Rationale**: The platform already assumes `/api/*`, `/ws/*`, SSE token streams, and an eventual `/v1/*` proxy facade, but the current ASGI runtime still treats routing as one flat HTTP router tree. This phase prepares `core/asgi/` and `modules/llm_proxy/` for a single-process, local-only transport architecture.
+
+### Transport Topology
+
+```text
+localhost:8000
+├── /api/*          platform REST + CRUD
+├── /ws/*           browser/session realtime channels
+├── /sse/*          one-way stream endpoints
+├── /v1/*           local-compatible LLM proxy facade
+├── /.well-known/*  discovery surfaces
+└── /health         process health
+```
+
+Rules:
+- compose stays infra-only
+- `llm_proxy` is in-process, not a compose service
+- host-local operation stays the default assumption
+- transport policy must work for HTTP, WebSocket, SSE, and proxy streaming explicitly
+
+### Starlette Position
+
+FastAPI remains the right tool for typed API surfaces and OpenAPI, but the root transport shell should use **Starlette-style composition**:
+- mounted sub-apps or transport-specific router trees
+- raw ASGI middleware where HTTP-only middleware is insufficient
+- WebSocket lifecycle management
+- `StreamingResponse`-based SSE output where needed
+
+This is not a rewrite to pure Starlette. It is a transport-boundary design choice.
+
+### Task Breakdown — Phase 36
+
+| ID | T# | What | Deps |
+|----|-----|------|------|
+| `asgi-transport-topology` | T36.1 | Document and lock route families (`/api`, `/ws`, `/sse`, `/v1`, root/discovery) plus loader expectations in `core/asgi/` | — |
+| `asgi-mounted-surfaces` | T36.1 | Refactor the root ASGI runtime toward dedicated transport-aware mounted surfaces or router trees inside one local process | `asgi-transport-topology` |
+| `asgi-transport-policy` | T36.2 | Unify auth, rate-limit, telemetry, heartbeat, cancellation, and backpressure policy across HTTP/WS/SSE/proxy | `asgi-mounted-surfaces` |
+| `proxy-module-plan` | T36.3 | Create `modules/llm_proxy/llm_proxy.md` with purpose, integration matrix, and local-only scope | `asgi-transport-topology` |
+| `proxy-openai-surface` | T36.3 | Minimal `/v1/models` + `/v1/chat/completions` compatibility facade for local clients like Claude Code and other tooling | `proxy-module-plan`, `sdk-unified-client` |
+| `proxy-routing-bridge` | T36.4 | Translate proxy requests into `UnifiedLLMClient`, prompt cache, routing, and optional memory/retrieval context assembly | `proxy-openai-surface`, `routing-unified-client-wire`, `rag-context-wire` |
+| `proxy-streaming-normalization` | T36.4 | Normalize provider streaming deltas into one SSE-compatible outward shape with cancellation and usage trailers | `proxy-openai-surface`, `cache-redis-streaming-buffer` |
+| `proxy-local-trust-boundary` | T36.5 | Localhost-first bind policy, optional local bearer token, per-project routing overrides, and proxied-call audit trail | `proxy-module-plan`, `asgi-transport-policy` |
+
+
+---
+
+## 🚨 Phase 37 — SIEM/EDR Integration
+
+**Rationale**: CyberSecSuite needs native SIEM/EDR integration to compete with Vigil and CyberStrikeAI. Leverages existing stack: OpenObserve (time-series), PostgreSQL (relational), Neo4j (graph).
+
+### Data Store Allocation
+
+| Data Store | Purpose |
+|------------|---------|
+| **OpenObserve (5080)** | High-volume EDR telemetry, metrics (alert counts, MTTR), SOC dashboards, traces via OTel Bridge |
+| **PostgreSQL + Tortoise** | \`siem_alerts\`, \`edr_detections\`, \`incidents\` tables with JSONB payloads, alert state tracking, structured queries |
+| **Neo4j (7474/7687)** | Entity graph (IP→Host→Process→File), attack path analysis, MITRE ATT&CK technique mapping via relationships |
+
+### Architecture Flow
+
+```
+External SIEM/EDR (Splunk, CrowdStrike, SentinelOne)
+        ↓ (MCP Phase 22 clients)
+Ingest Service → Normalize to SecurityEvent (msgspec.Struct)
+        ↓
+┌───────┴───────┬──────────────┬─────────────┐
+▼               ▼              ▼             ▼
+PostgreSQL    OpenObserve    Neo4j    EventStore
+(alerts/      (telemetry/    (attack    (.append →
+ incidents)    metrics/       paths/    Redis Streams
+               dashboards)   MITRE)    → AI Analyzer)
+```
+
+### Task Breakdown — Phase 37
+
+| ID | T# | What | Deps |
+|----|-----|------|------|
+| \`siem-types\` | T37.1 | SecurityEvent contract + SIEM event namespaces | — |
+| \`siem-module\` | T37.2 | `modules/siem/` package: ORM, API, enums, exceptions, exports | `siem-types` |
+| \`siem-ingest\` | T37.3 | MCP-based SIEM/EDR ingest normalization service | `siem-types`, `mcp-tool-bridge`, `mcp-startup-wire` |
+| \`siem-models\` | T37.4 | OpenObserve-first storage pipeline + Postgres + GraphRAG fan-out | `siem-types`, `siem-module`, `db-oo-client-implementation`, `db-oo-stream-definitions`, `graph-rag-backend` |
+| \`siem-analyzer\` | T37.5 | Correlate OO telemetry with GraphRAG + VectorRAG for remediation context | `siem-ingest`, `siem-models`, `events-event-bus-module`, `rag-vector-backend`, `graph-rag-backend`, `rag-context-wire` |
+| \`siem-response\` | T37.6 | Workflow-backed response actions with approval gating | `siem-analyzer`, `workflow-runner`, `approval-gate`, `approval-agentexecutor-wire`, `mcp-tool-bridge`, `mcp-startup-wire` |
+
+### Implementation Details
+
+**T37.1** — \`core/siem/types.py\`:
+\`\`\`python
+class SecurityEvent(msgspec.Struct, frozen=True):
+    source: str              # "splunk", "crowdstrike", "sentinelone"
+    severity: str            # "critical", "high", "medium", "low"
+    timestamp: float
+    source_ip: str | None
+    host_id: str | None
+    process_id: str | None
+    mitre_technique: str | None
+    raw_data: dict
+    payload: dict
+\`\`\`
+
+Extend \`EventType\` in \`core/events/domain_event.py\`:
+- \`SIEM_ALERT_CREATED\`, \`EDR_DETECTION_NEW\`, \`INCIDENT_CREATED\`
+
+**T37.2** — \`modules/siem/\` (5-file pattern):
+- \`models.py\`: \`SiemAlert\`, \`EdrDetection\`, \`Incident\` (inherit BaseModel)
+- \`endpoints.py\`: FastAPI routes \`/api/siem/alerts\`, \`/incidents\`, \`/graph/attack-path\`
+- \`types.py\`, \`enums.py\`, \`exceptions.py\`, \`__init__.py\`
+
+**T37.3** — \`core/siem/ingest.py\`:
+- \`SiemIngestService\` using \`McpToolBridge\` (Phase 22)
+- Normalize external alerts to \`SecurityEvent\`
+- Preserve source server/tool provenance and prepare the event for OpenObserve-first fan-out
+
+**T37.4** — Storage:
+- OpenObserve first: raw telemetry, dashboards, operational search, and audit visibility
+- PostgreSQL: curated \`siem_alerts\` / \`incidents\` application records with indexes on timestamp, severity, status, mitre_technique
+- Neo4j / GraphRAG: project entities as nodes (IP, Host, Process, File, Technique) with relationships
+
+**T37.5** — \`core/siem/analyzer.py\`:
+- \`SiemAnalyzerAgent\` subscribes to Redis Streams \`css:events\`
+- Correlates OpenObserve telemetry with GraphRAG + VectorRAG
+- Uses LLM (existing provider-agnostic client) to generate remediation steps
+
+**T37.6** — \`core/siem/response.py\`:
+- \`SiemResponseManager\` using Phase 30 Workflow Engine + Phase 26 Human Approval
+- Actions: isolate endpoint, block IP, kill process
+- Wire to \`modules/siem/endpoints.py\`
+
+### Integration Points
+
+- Extends \`EventType\` in \`core/events/domain_event.py\`
+- EventStore.append() / SIEM fan-out → OpenObserve + PostgreSQL + GraphRAG
+- Reuses the Phase 35 OpenObserve client + stream definitions as the primary telemetry path
+- Reuses \`McpToolBridge\` (Phase 22) for external SIEM/EDR connections and response actions
+- Uses Phase 30 Workflow Engine for response playbooks
+- Uses Phase 26 Human Approval Workflows for actions
+
+### Success Criteria
+
+- [x] 6 todos added to session.db
+- [ ] \`core/siem/types.py\` with SecurityEvent struct
+- [ ] \`modules/siem/\` with 5-file pattern
+- [ ] Ingest from at least 1 SIEM + 1 EDR via MCP
+- [ ] PostgreSQL models with indexes
+- [ ] Neo4j graph projections working
+- [ ] AI analyzer correlating events
+- [ ] Response playbooks with human approval

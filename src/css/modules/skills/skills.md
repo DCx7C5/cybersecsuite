@@ -43,6 +43,8 @@
 
 ## Module Pattern
 
+**Note**: `SkillRegistry` (in `registry.py`) uses `AsyncSafeSingletonMeta` for async-safe singleton pattern.
+
 ```python
 # src/css/modules/skills/__init__.py
 """Skill registry and execution."""
@@ -56,6 +58,16 @@ from .registry import SkillRegistry
 
 __all__ = ['SkillRegistry']
 ```
+
+**Registry Classes Using AsyncSafeSingletonMeta**:
+- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta`
+- `ModelRegistry` (`core/models/registry.py`) - inherits BaseRegistry`
+- `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry`
+- `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta`
+- `ToolRegistry` (`modules/tools/registry.py`) - inherits BaseToolRegistry`
+- `ProviderRegistry` (`api_services/registry.py`) - metaclass=AsyncSafeSingletonMeta`
+- `SkillRegistry` (`modules/skills/registry.py`) - metaclass=AsyncSafeSingletonMeta`
+- `McpRuntimeRegistry` (`modules/mcps/registry.py`) - metaclass=AsyncSafeSingletonMeta`
 
 ---
 

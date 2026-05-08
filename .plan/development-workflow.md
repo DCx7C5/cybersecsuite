@@ -50,7 +50,7 @@ for f, data in d.items():
 {
   "src/css/modules/foo/types.py": {
     "consumed_by": ["src/css/modules/foo/endpoints.py"],
-    "consumes": ["src/css/core/types/base_entity.py"]
+    "consumes": ["src/css/core/types.py/base_entity.py"]
   }
 }
 ```
@@ -239,7 +239,7 @@ sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<m
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE phase = 'PHASE_NAME' GROUP BY phase;
 ```
 
-**Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` here. Those are phase-level sync documents and are updated only in WORKFLOW 3 after the full phase is complete.
+**Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` here in normal TODO flow. Exception: if you just changed architecture baselines, source-of-truth rules, or tracker structure in a way that would mislead the next session, refresh `.plan/memory.md` immediately.
 
 **Step 3 — Mark done**
 ```sql
@@ -344,7 +344,7 @@ SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE task = 'TASK_NAME';
 sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/core.md
 ```
 
-**Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` at task completion. If this task finishes the phase, continue with WORKFLOW 3 and update both files there.
+**Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` at task completion in normal flow. If this task finishes the phase, continue with WORKFLOW 3. Exception: refresh `.plan/memory.md` immediately if the task changed architecture baselines or planning/source-of-truth rules.
 
 **Step 3 — Commit (logical and atomic)**
 ```bash
@@ -423,6 +423,8 @@ Use Task tool with:
 # [ ] src/css/modules/<module>/<module>.md
 # [ ] src/css/api_services/api_services.md
 ```
+
+**Exception rule**: even if the phase is not finished, update `.plan/memory.md` immediately after major architecture, source-of-truth, or tracker-structure changes so the next session starts from an accurate baseline.
 
 **Step 2 — Commit (logical and atomic)**
 ```bash

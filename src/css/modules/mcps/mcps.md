@@ -1,224 +1,122 @@
-# @mcps — MCP Protocol Layer
+# @mcps — MCP Runtime Layer
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly.
 
 ---
 
 ## Purpose
 
-The `@mcps` module manages **MCP (Model Context Protocol) servers** — connecting to them, discovering their tools, and executing tool calls. It is **distinct from `@tools`**:
+`@mcps` owns the **runtime side** of MCP:
+- server configuration
+- transport selection
+- connect/disconnect lifecycle
+- tool discovery
+- tool invocation
+- bridging discovered tools into `@tools`
 
-| `@tools`                                                       | `@mcps`                                       |
-|----------------------------------------------------------------|-----------------------------------------------|
-| LLM provider builtin tools (code_interpreter, computer_use, …) | MCP server management (connect/discover/call) |
-| Static definitions from api_services/                          | Dynamic server connections                    |
-| ToolSchema registry                                            | McpServerRegistry                             |
-| Provider-scoped                                                | Server-scoped (any MCP-compatible server)     |
+It is distinct from:
+- `core/marketplace` = catalog/install metadata
+- `@tools` = provider builtin tools + shared tool registry surface
 
-**Key capability**: `@mcps` bridges both worlds — when a MCP server is connected, its tools are automatically registered into `@tools`'s `ToolRegistry` with `ToolType.MCP`, making them indistinguishable from builtin tools to the agent layer.
+## Runtime Identity Contract
 
----
+Use **server-scoped runtime IDs**. Do not use bare `mcp:{tool_name}` IDs.
 
-## 🔗 Integration Points
+| Thing | Format | Meaning |
+|------|--------|---------|
+| Marketplace/server slug | `mcp:{server_id}` | Installed/configured MCP server package or config entry |
+| Tool provider string | `mcp:{server_id}` | Provider namespace stored on `ToolSchema` |
+| Runtime tool ID | `mcp:{server_id}:{tool_name}` | Exact callable tool target |
 
-| Component                      | Direction        | Relationship                                                        |
-|--------------------------------|------------------|---------------------------------------------------------------------|
-| `css.modules.tools`            | → pushes into    | McpToolBridge registers MCP tools as `ToolType.MCP` in ToolRegistry |
-| `css.core.types.entities.tool` | → uses           | `Tool.fn_path` is dotted path for PYTHON_DIRECT dispatch            |
-| `css.core.db`                  | → persists to    | McpServerConfigRecord Tortoise ORM                                  |
-| `css.core.events`              | → emits into     | `@instrument("mcp.call.{server}.{tool}")` — Phase 14                |
-| ASGI startup                   | → initialized by | load_from_db() + auto_connect on app start                          |
-| `fastmcp` (v3.1.0+)            | → wraps          | All transport logic delegated to fastmcp.Client                     |
+Example:
+- server: `mcp:splunk`
+- provider: `mcp:splunk`
+- tool call: `mcp:splunk:search_alerts`
 
----
+This avoids collisions when two servers expose the same tool name.
 
-## Transport Architecture
+## Current Code Reality
 
-Three transport types. All use the same `fastmcp.Client` API — only the argument differs:
+The module is **planned but not import-clean yet**.
 
-### 1. PYTHON_DIRECT — In-process (zero HTTP, zero subprocess)
+| File | Status | Reality |
+|------|--------|---------|
+| `__init__.py` | ⚠️ present | Exports names that do not all exist yet |
+| `registry.py` | ⚠️ partial | `McpRuntimeRegistry` exists, but depends on missing types/models and needs Phase 9 registry foundation cleanup |
+| `enums.py` | ❌ empty | still to implement |
+| `types.py` | ❌ empty | still to implement |
+| `models.py` | ❌ empty | still to implement |
+| `exceptions.py` | ❌ missing | still to implement |
+| `client.py` | ❌ missing | still to implement |
+| `bridge.py` | ❌ missing | still to implement |
+| `endpoints.py` | ❌ missing | still to implement |
 
-```python
-from fastmcp import Client
-from importlib import import_module
+### Current blockers
 
-module, attr = config.module_path.rsplit(":", 1)
-factory = getattr(import_module(module), attr)
-server = factory()  # returns FastMCP instance
+- `BaseRegistry` / `BaseToolRegistry` still mix `ABC` with `AsyncSafeSingletonMeta`, which currently causes import-time metaclass conflicts in dependent registries.
+- `registry.py` already exists, so Phase 22 should **finish and normalize it**, not recreate it from scratch.
+- `McpRuntimeRegistry` must not become the package catalog. Installed package state remains in `core/marketplace`.
 
-async with Client(server) as client:          # FastMCPTransport — no subprocess, no HTTP
-    tools = await client.list_tools()
-    result = await client.call_tool("name", args)
+## Integration Points
+
+| Component | Direction | Relationship |
+|-----------|-----------|--------------|
+| `css.core.marketplace` | ← configured by | Installed/enabled MCP server packages feed runtime config |
+| `css.modules.tools` | → bridges into | MCP tools become `ToolType.MCP` entries in `ToolRegistry` |
+| `css.core.db` | → persists to | `McpServerConfigRecord` stores runtime config |
+| `css.core.asgi` | → started by | ASGI lifespan restores server configs and auto-connects enabled servers |
+| `fastmcp` | → wraps | Transport client for PYTHON_DIRECT, STDIO, SSE, Streamable HTTP |
+
+## Transport Contract
+
+### `PYTHON_DIRECT`
+- trusted in-process FastMCP server factory
+- zero subprocess
+- zero HTTP
+- canonical local-first path for built-in cybersec MCP servers
+
+### `STDIO`
+- subprocess-based MCP servers
+- preferred external local tool/server path
+
+### `SSE` / `STREAMABLE_HTTP`
+- remote MCP servers when needed
+- still optional in a local-first deployment
+
+## Planned Runtime Flow
+
+```text
+Marketplace item/config (`mcp:{server_id}`)
+        ↓
+McpRuntimeRegistry restores enabled servers from DB
+        ↓
+McpClient connects using transport-specific adapter
+        ↓
+McpToolBridge registers discovered tools into ToolRegistry
+        ↓
+Agents / SIEM / future proxy call `mcp:{server_id}:{tool_name}`
 ```
 
-**When to use**: Trusted in-process MCP servers (e.g. `cssmcp` cybersec tools, any FastMCP server in the same Python process). ~10× faster than stdio, no serialization overhead for large results.
+## Phase 22 Todo Map
 
-**`module_path` format**: `"css.modules.mcps.servers.cybersec:create_server"` (importable path + colon + callable name)
-
-### 2. STDIO — Subprocess (most common for external MCPs)
-
-```python
-from fastmcp.client.transports import PythonStdioTransport, UvStdioTransport
-
-# Python subprocess
-async with Client(PythonStdioTransport(config.command, env=config.env)) as client:
-    ...
-
-# Or: uv run (preferred for our stack)
-async with Client(UvStdioTransport(config.command, env=config.env)) as client:
-    ...
-```
-
-**When to use**: Any MCP server not in our Python process — filesystem tools, git tools, external services.
-
-### 3. SSE / StreamableHTTP — Remote (standard MCP over HTTP)
-
-```python
-from fastmcp.client.transports import SSETransport, StreamableHttpTransport
-
-async with Client(SSETransport(config.url)) as client:      # legacy SSE
-    ...
-async with Client(StreamableHttpTransport(config.url)) as client:  # MCP 2025-03 spec
-    ...
-```
-
-**When to use**: Remote MCP servers, hosted services, multi-tenant deployments.
-
----
-
-## Module Files (Target)
-
-```
-mcps/
-├── __init__.py        ← exports McpClient, McpServerRegistry, get_mcp_registry
-├── enums.py           ← McpTransportType, McpServerStatus
-├── exceptions.py      ← McpConnectionError, McpCallError, McpNotFoundError, McpProtocolError
-├── types.py           ← McpServerConfig, McpToolDef, McpCallResult (msgspec.Struct, frozen)
-├── client.py          ← McpClient — wraps fastmcp.Client, handles all 3 transports
-├── registry.py        ← McpServerRegistry singleton — multi-server management
-├── bridge.py          ← McpToolBridge — MCP tools → ToolRegistry as ToolType.MCP
-├── models.py          ← Tortoise ORM: McpServerConfigRecord (persistence)
-├── endpoints.py       ← FastAPI: /api/mcps/* (server CRUD + tool proxy)
-└── mcps.md            ← this file
-```
-
----
-
-## Key Types
-
-### McpServerConfig (msgspec.Struct, frozen)
-
-```python
-class McpServerConfig(msgspec.Struct, frozen=True):
-    server_id: str
-    transport: McpTransportType
-    # STDIO
-    command: list[str] | None = None
-    env: dict[str, str] = {}
-    # SSE / StreamableHTTP
-    url: str | None = None
-    # PYTHON_DIRECT
-    module_path: str | None = None   # e.g. "css.modules.mcps.servers.cybersec:create_server"
-    # Common
-    timeout: int = 30
-    auto_connect: bool = True
-```
-
-### McpToolDef (msgspec.Struct, frozen)
-
-```python
-class McpToolDef(msgspec.Struct, frozen=True):
-    server_id: str
-    name: str
-    description: str
-    input_schema: dict    # JSON Schema for args
-```
-
-### McpCallResult (msgspec.Struct, frozen)
-
-```python
-class McpCallResult(msgspec.Struct, frozen=True):
-    server_id: str
-    tool_name: str
-    content: str
-    is_error: bool = False
-```
-
----
-
-## McpServerRegistry API
-
-```python
-registry = get_mcp_registry()
-
-# Register a PYTHON_DIRECT server
-await registry.register(McpServerConfig(
-    server_id="cybersec",
-    transport=McpTransportType.PYTHON_DIRECT,
-    module_path="css.modules.mcps.servers.cybersec:create_server",
-))
-
-# Register a stdio server (e.g. mcp-server-filesystem)
-await registry.register(McpServerConfig(
-    server_id="filesystem",
-    transport=McpTransportType.STDIO,
-    command=["uvx", "mcp-server-filesystem", "/workspace"],
-))
-
-# Connect and list tools
-await registry.connect("cybersec")
-tools = await registry.list_tools("cybersec")
-
-# Call a tool
-result = await registry.call_tool("cybersec", "vault_scaffold", {"name": "test"})
-
-# Bridge tools into ToolRegistry
-McpToolBridge().sync_server("cybersec", get_tool_registry())
-```
-
----
-
-## ToolBridge — How MCP tools appear in @tools
-
-After `McpToolBridge().sync_server(server_id, tool_registry)`:
-
-- Each `McpToolDef` becomes a `ToolSchema(provider="mcp:cybersec", name="vault_scaffold", ...)`
-- Tagged with `["mcp", "cybersec"]`
-- `ToolType.MCP` marker
-- Execution: `tool_registry.call("mcp:cybersec:vault_scaffold", args)` → delegates to `mcp_registry.call_tool("cybersec", "vault_scaffold", args)`
-- From the agent layer: **indistinguishable from builtin tools**
-
----
-
-## Phase 22 Todos
-
-| Todo ID               | Description                                  | Task              |
-|-----------------------|----------------------------------------------|-------------------|
-| `mcp-enums`           | McpTransportType + McpServerStatus           | T22.1-foundation  |
-| `mcp-exceptions`      | Connection/call/protocol exceptions          | T22.1-foundation  |
-| `mcp-types-struct`    | McpServerConfig + McpToolDef + McpCallResult | T22.1-foundation  |
-| `mcp-client`          | McpClient wrapping fastmcp.Client            | T22.2-client      |
-| `mcp-python-direct`   | PYTHON_DIRECT in-process bypass              | T22.2-client      |
-| `mcp-server-registry` | McpServerRegistry singleton                  | T22.3-registry    |
-| `mcp-tool-bridge`     | MCP tools → ToolRegistry bridge              | T22.3-registry    |
-| `mcp-models`          | Tortoise ORM McpServerConfigRecord           | T22.4-persistence |
-| `mcp-endpoints`       | FastAPI /api/mcps/*                          | T22.5-api         |
-| `mcp-startup-wire`    | ASGI startup integration                     | T22.6-integration |
-| `mcp-builtin-servers` | Built-in PYTHON_DIRECT (cssmcp)              | T22.6-integration |
-
----
+| Todo ID | What it must do |
+|---------|-----------------|
+| `mcp-enums` | Define transport/status enums used by every MCP runtime type |
+| `mcp-exceptions` | Define module-specific connection/call/protocol errors |
+| `mcp-types-struct` | Create frozen runtime structs: config, tool definition, call result |
+| `mcp-client` | Wrap `fastmcp.Client` behind one async client API |
+| `mcp-python-direct` | Implement the trusted in-process FastMCP path |
+| `mcp-server-registry` | Finish the existing `registry.py` so it manages configs, status, connections, and tool lookup cleanly |
+| `mcp-tool-bridge` | Register discovered MCP tools into `ToolRegistry` as `ToolType.MCP` |
+| `mcp-models` | Persist server configs and enable ASGI restore-on-start |
+| `mcp-endpoints` | Expose server CRUD, connect/disconnect, tool discovery, and call proxy endpoints |
+| `mcp-startup-wire` | Load configs on startup, auto-connect enabled servers, sync tools |
+| `mcp-builtin-servers` | Register local built-in cybersec MCP servers via `PYTHON_DIRECT` |
 
 ## Rules
 
-- HTTP client for SSE: `aiohttp` not `httpx` (but fastmcp.Client handles this internally via httpx — this is acceptable since we don't write the HTTP code, fastmcp does)
-- All async: `async def`, `asyncio.gather` for parallel server connects
-- msgspec.Struct for all value types (not dataclass)
-- `Protocol` for McpTransport ABC (not ABC class)
-- Loader.py auto-discovers `endpoints.py` and `models.py`
-
----
-
-## 🔄 Sync Reminder
-
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.  
-> Phase 22 — MCP Protocol Layer | 14 todos | All pending as of 2026-05-04
+- Use `msgspec.Struct` for runtime value types.
+- Use `aiohttp` in our own code; third-party `fastmcp` internals are exempt.
+- Keep runtime tool IDs server-scoped.
+- Keep marketplace/catalog concerns out of `@mcps`.
+- Do not assume the current partial registry is production-ready until the Phase 9 registry foundation fix lands.

@@ -1,7 +1,7 @@
 # src/css — CyberSecSuite Package Root
 
 **Location**: `src/css/`  
-**Status**: 🟡 Active Development | Phases 0–4 partially complete, Phases 5–35 in progress
+**Status**: 🟡 Active Development | See `.plan/memory.md` and `.plan/session.db` for exact phase status
 
 ---
 
@@ -23,7 +23,7 @@ src/css/
 
 ## Key Rules
 
-- `core/` = infrastructure plus core-owned cross-cutting packages (`accounts`, `events`, `marketplace`, `memory`, `workspace`)
+- `core/` = infrastructure plus core-owned cross-cutting packages (`accounts`, `events`, `marketplace`, `memory`, `workspace`, and planned retrieval core packages `vector_rag` / `graph_rag`)
 - `modules/` = business logic only; `accounts`, `events`, `marketplace`, and `memory` are core-only and must not exist as module packages
 - `working_dir` is deprecated terminology; use the general directory structure owned by `core/workspace/`
 - `api_services/` = provider adapters (YAML-driven, Phase 6 P2)
@@ -33,21 +33,21 @@ src/css/
 
 ## Phase Progress
 
-See `.plan/memory.md` for full phase table and `.plan/session.db` for all todos.
+See `.plan/memory.md` for full phase table and `.plan/session.db` for all todos. Avoid copying exact counts into this file unless you are explicitly refreshing them from the tracker.
 
 | Phase | Status |
 |-------|--------|
 | Phase 0 — TeamScope Foundation | ✅ Done |
 | Phase 1 — Multi-Orchestrator Core | ✅ Done |
 | Phase 2 — SDK Architecture | ✅ Done |
-| Phase 3 — Module Consistency | 🟡 140/149 done |
-| Phase 4 — Core Consistency + Types | 🟡 21/24 done |
+| Phase 3 — Module Consistency | 🟡 In progress |
+| Phase 4 — Core Consistency + Types | 🟡 In progress |
 | Phase 5 — Integration & Testing | 🟡 In progress |
-| Phase 6 — Architecture Overhaul | 🟡 5/37 done |
-| Phases 7–35 | 🔴 Pending |
+| Phase 6 — Architecture Overhaul | ✅ Done |
+| Phase 7–37 | 🔴 Pending / mixed planning state |
 
 ---
 
 ## Local Planning Docs
 
-Core areas use `plan.md`. Module directories under `src/css/modules/` use same-name docs like `agents/agents.md`. Read the nearest local planning markdown before working in that area.
+Core areas use the nearest planning markdown (`core.md`, `plan.md`, or area-specific markdown). Module directories under `src/css/modules/` use same-name docs like `agents/agents.md`. Read the nearest local planning markdown before working in that area.

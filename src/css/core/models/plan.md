@@ -83,6 +83,8 @@
 
 ## Module Pattern
 
+**Note**: `ModelRegistry` uses `AsyncSafeSingletonMeta` (defined in `core/types/base_registry.py`).
+
 ```python
 # src/css/core/models/__init__.py
 """LLM model registry, validation, and management."""
@@ -96,6 +98,16 @@ from .registry import ModelRegistry
 
 __all__ = ['ModelRegistry']
 ```
+
+**Registry Classes Using AsyncSafeSingletonMeta**:
+- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta
+- `ModelRegistry` (`core/models/registry.py`) - inherits BaseRegistry
+- `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry
+- `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta
+- `ToolRegistry` (`modules/tools/registry.py`) - inherits BaseToolRegistry
+- `ProviderRegistry` (`api_services/registry.py`) - metaclass=AsyncSafeSingletonMeta
+- `SkillRegistry` (`modules/skills/registry.py`) - metaclass=AsyncSafeSingletonMeta`
+- `McpRuntimeRegistry` (`modules/mcps/registry.py`) - metaclass=AsyncSafeSingletonMeta`
 
 ---
 

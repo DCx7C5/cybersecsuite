@@ -64,7 +64,7 @@ class RetryStrategy(str, Enum):
     PRESERVE = "preserve"   # Provider retry is configurable, preserve it
 
 class RetryableErrorType(str, Enum):
-    """Error types that warrant retrying."""
+    """Error types.py that warrant retrying."""
     TIMEOUT = "timeout"
     RATE_LIMIT = "rate_limit"
     SERVICE_UNAVAILABLE = "service_unavailable"
@@ -220,7 +220,7 @@ class RetryOrchestrator:
         error_str = str(error).lower()
         error_type = type(error).__name__.lower()
         
-        # Map error patterns to types
+        # Map error patterns to types.py
         if any(word in error_str for word in ['timeout', 'timed out']):
             return RetryableErrorType.TIMEOUT
         

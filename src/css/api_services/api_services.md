@@ -16,7 +16,7 @@
 | `css.core.resilience`   | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        | → consumes    |
 | `css.core.models`       | `UnifiedLLMClient` routes to provider SDKs via registry                     | ← consumed by |
 | `css.core.events`       | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        | ← wrapped by  |
-| `css.core.prompt_cache` | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only | ← consumed by |
+| `css.core.prompt_cache` | shapes native prompt-cache requests and parses native cache usage stats; Anthropic explicit breakpoints are only one advanced path | ← consumed by |
 | `css.core.ollama`       | `OllamaProcessManager` must be running before any Ollama API calls          | ← proxied by  |
 
 ---
@@ -24,6 +24,8 @@
 ## Current State
 
 🟡 **Partial** — most providers have `service.py` + `client.py` skeleton; Anthropic/OpenAI are most complete
+
+**Note**: `ProviderRegistry` (in `registry.py`) uses `AsyncSafeSingletonMeta` for async-safe singleton pattern.
 
 ---
 
@@ -54,7 +56,7 @@
 | Tool Use | ✅ |
 | JSON Mode | ✅ |
 | Embeddings | ✅ |
-| Prompt Caching | ✅ `cache_control` |
+| Prompt Caching | ✅ automatic top-level + explicit `cache_control` |
 | Token Counting | ✅ |
 | Async | ✅ |
 
@@ -66,9 +68,10 @@
 ```python
 system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 ```
-- Cache TTL: 5 min ephemeral. Cached tokens = 10% cost; cache write = 25% extra (once per TTL).
-- Implementation: in `api_services/anthropic/` wrapper. NOT in `core/cache/`.
-- `core/prompt_cache/` injects `cache_control` breakpoints via `CacheBreakpointInjector`.
+- Default harness path: top-level `cache_control={"type": "ephemeral"}` on requests with a stable prefix.
+- Explicit block-level `cache_control` remains available for mixed-cadence prompts or long static prefixes where one automatic breakpoint is too coarse.
+- Native stats come from `usage.cache_read_input_tokens` and `usage.cache_creation_input_tokens`.
+- Implementation belongs in `core/prompt_cache/`, not in `core/cache/`.
 
 ---
 
@@ -86,9 +89,14 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 | Batch API | ✅ |
 | Fine-tuning | ✅ |
 | Embeddings | ✅ |
+| Prompt Caching | ✅ automatic (`cached_tokens`, `prompt_cache_key`, retention) |
 | Async | ✅ |
 
 **Models**: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `o1-preview`, `o1-mini`
+
+**Prompt Caching** (OpenAI-specific):
+- Native prompt caching is automatic for supported models; the harness should not mutate message content.
+- `core/prompt_cache/` should pass through `prompt_cache_key` and `prompt_cache_retention` when configured, then parse `usage.prompt_tokens_details.cached_tokens`.
 
 ---
 

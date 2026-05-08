@@ -15,9 +15,12 @@
 CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 
 **Services**:
-- **cybersec-postgres**: PostgreSQL 15 (port 5432 internal)
+- **cybersec-postgres**: custom PostgreSQL 18-alpine build (port 5432 internal)
 - **Connection pooling**: Managed by asyncpg (Tortoise default)
 - **Migrations**: Via Tortoise migrations or Alembic (TBD)
+
+**Current infra note**:
+- Phase 20 plans PostgreSQL + `pgvector` for VectorRAG, but the current custom image does not yet install the extension package. `mem-pgvector-setup` now explicitly includes the Docker image prerequisite.
 
 ### Canonical ORM Primitives
 
@@ -31,7 +34,7 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 
 ### Tracked ORM Cleanup Gaps
 
-- `db-knowledge-charenum-fields` — convert knowledge-model `choices=` string fields to canonical enums + `CharEnumField(...)`, matching the DB rules above.
+- `db-vector-rag-charenum-fields` — convert vector_rag model `choices=` string fields to canonical enums + `CharEnumField(...)`, matching the DB rules above.
 
 ---
 

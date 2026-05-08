@@ -14,6 +14,15 @@ Runtime outside Docker:
 - ASGI app / orchestrators
 - frontend dev server
 - Ollama via `core/ollama/OllamaProcessManager`
+- planned local `llm_proxy` surface under `/v1/*` inside the same ASGI runtime
+
+Planned routing clarification:
+- `/api/*` = platform REST
+- `/ws/*` = realtime browser/session channels
+- `/sse/*` = unidirectional stream endpoints
+- `/v1/*` = local-compatible proxy facade
+
+The planned proxy is **not** a `docker-compose` service. It is an in-process module mounted by `core/asgi/`.
 
 Treat this file as historical context until it is fully rewritten. For the live storage topology, use [database-architecture.md](./database-architecture.md).
 
@@ -70,9 +79,9 @@ healthcheck:
 
 ### 3. **cybersec-postgres** (PostgreSQL Database)
 
-**Purpose**: Primary OLTP database + L3 cache persistence
+**Purpose**: Primary OLTP database + durable cache persistence + future pgvector host
 
-**Container**: `postgres:15-alpine`
+**Container**: custom `cybersec-postgres` build based on `postgres:18-alpine`
 
 **Port**: `5432` (Unix socket inside network, not exposed)
 
@@ -294,7 +303,10 @@ services:
     restart: unless-stopped
 
   cybersec-postgres:
-    image: postgres:15-alpine
+    build:
+      context: .docker/postgres
+      dockerfile: Dockerfile
+    image: cybersec-postgres
     container_name: cybersec-postgres
     environment:
       - POSTGRES_USER=cybersec

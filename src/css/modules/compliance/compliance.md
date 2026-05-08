@@ -12,6 +12,6 @@ Documentation stub created to satisfy the module markdown naming rule.
 
 ## Local Rules
 
-- ORM table models inherit `css.core.db.models.base.BaseModel`
+- ORM table models inherit from `css.core.db.models.base`
 - Module-owned `Enum` classes live in `enums.py`
 - Module documentation in `src/css/modules/` uses the same-name file rule: `compliance/compliance.md`

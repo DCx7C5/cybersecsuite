@@ -26,7 +26,17 @@ Core types module exports:
 
 Core abstractions:
 
+**Note**: `BaseRegistry` (in this file) uses `AsyncSafeSingletonMeta` for async-safe singleton pattern.
+
 ```python
+class BaseRegistry(ABC, Generic[T], metaclass=AsyncSafeSingletonMeta):
+    """Abstract base class for singleton registries.
+    
+    Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
+    Subclasses like ModelRegistry, MarketplaceItemRegistry inherit this.
+    """
+    ...
+
 class BaseApiServiceClient:
     """Base class for LLM API clients."""
     pass
@@ -78,6 +88,16 @@ class Tool:
     """Tool available to agent."""
     pass
 ```
+
+**Registry Classes Using AsyncSafeSingletonMeta**:
+- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta
+- `ModelRegistry` (`core/models/registry.py`) - inherits BaseRegistry
+- `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry
+- `ProviderRegistry` (`api_services/registry.py`) - metaclass=AsyncSafeSingletonMeta
+- `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta
+- `ToolRegistry` (`modules/tools/registry.py`) - inherits BaseToolRegistry
+- `SkillRegistry` (`modules/skills/registry.py`) - metaclass=AsyncSafeSingletonMeta
+- `McpRuntimeRegistry` (`modules/mcps/registry.py`) - metaclass=AsyncSafeSingletonMeta
 
 ### 2. **capabilities.py**
 
@@ -265,7 +285,7 @@ class LocalSDKBase:
 **File**: `src/css/core/types/__init__.py`
 
 ```python
-"""Core types for CyberSecSuite — base classes, enums, data models."""
+"""Core types.py for CyberSecSuite — base classes, enums, data models."""
 
 from .base import (
     BaseApiServiceClient,

@@ -471,11 +471,14 @@ Subsequent calls to `getLogger(name)` return cached instance (no re-initializati
 
 ### Overview
 
-Two-tier prompt cache managed by `PromptCacheManager`. Gemini `NATIVE_RESOURCE` deferred.
+Two-tier prompt cache managed by `PromptCacheManager`. Tier 2 uses native provider
+caching where supported: Anthropic automatic top-level caching by default with
+explicit breakpoints only when needed, OpenAI/DeepSeek automatic caching, Gemini
+`NATIVE_RESOURCE` deferred.
 
 ```
 Tier 1: Redis exact-match (all providers)
-Tier 2: Native provider caching — Anthropic only (Phase 11)
+Tier 2: Native provider caching — Anthropic / OpenAI / DeepSeek (Phase 11)
 ```
 
 ### Files
@@ -491,10 +494,11 @@ core/prompt_cache/
 ### Key todos (session.db)
 | Todo ID | Description |
 |---------|-------------|
-| `cache-caching-capability-enum` | CachingCapability enum on LLMAdapter |
+| `cache-caching-capability-enum` | CachingCapability metadata on LLMAdapter |
 | `cache-prompt-cache-manager` | PromptCacheManager class |
 | `cache-redis-exact-match` | Tier 1 Redis exact-match |
-| `cache-anthropic-breakpoint-injector` | CacheBreakpointInjector |
+| `cache-anthropic-breakpoint-injector` | Anthropic explicit-cache helper for advanced layouts |
+| `cache-automatic-native-tracking` | Parse Anthropic/OpenAI/DeepSeek native cache stats |
 
 ---
 

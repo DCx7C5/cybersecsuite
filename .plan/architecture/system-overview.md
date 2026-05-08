@@ -160,7 +160,9 @@ The current phase plan now treats memory, local intelligence, hybrid retrieval, 
 
 - `core/memory/` stores turns, summaries, session context, canvas state, and vault knowledge.
 - `modules/triage/` performs cheap local tagging, confidence checks, pre-filtering, and later may provide retrieval hints for `auto` mode.
-- `core/vector_rag/` provides `vector`, `graph`, `hybrid`, and `auto` retrieval for `ContextAssembler` and agent execution.
+- `core/vector_rag/` provides vector retrieval plus hybrid/auto orchestration for `ContextAssembler` and agent execution.
+- `core/graph_rag/` provides the graph retrieval implementation behind `graph` and `hybrid` modes.
+- `modules/mitre/` and `modules/threat_intel/` keep canonical cybersec domain data while projecting graph-native structures into `core/graph_rag/`.
 - `modules/graphs/` builds workflow/session/approval graph views from events and persisted state.
 - `modules/workflows/` later owns graph-backed workflow authoring/execution, while keeping its graph domain distinct from GraphRAG knowledge graphs.
 

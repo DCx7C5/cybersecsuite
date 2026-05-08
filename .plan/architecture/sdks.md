@@ -38,7 +38,7 @@ entry point for all LLM calls in the system.
 ## LLMAdapter Protocol
 
 ```python
-# core/types/providers/adapter.py
+# core/types.py/providers/adapter.py
 from typing import AsyncIterator, Protocol, runtime_checkable
 import msgspec
 
@@ -102,7 +102,7 @@ class LLMAdapter(Protocol):
 
 | Provider | SDK Package | Features that require the SDK |
 |----------|-------------|-------------------------------|
-| **Anthropic** | `anthropic >= 0.38.0` | `prompt_caching` (cache_control blocks), `computer_use` beta tools (bash_tool, computer, text_editor_20250124), `extended_thinking` (budget_tokens), streaming event types |
+| **Anthropic** | `anthropic >= 0.38.0` | `prompt_caching` (automatic top-level `cache_control` plus explicit block breakpoints), `computer_use` beta tools (bash_tool, computer, text_editor_20250124), `extended_thinking` (budget_tokens), streaming event types |
 | **OpenAI** | `openai` (optional) | Strict structured output (`response_format` with json_schema), Assistants API threads, `code_interpreter` sandbox |
 
 ```python
@@ -190,7 +190,7 @@ Providers: `groq`, `together`, `fireworks`, `deepinfra`, `openrouter`, `deepseek
 Each proprietary provider registers a request/response translator:
 
 ```python
-# core/types/providers/http_adapter.py
+# core/types.py/providers/http_adapter.py
 _REQUEST_TRANSLATORS: dict[str, Callable[[CommonRequest], dict]] = {
     "gemini":  _translate_gemini_request,
     "cohere":  _translate_cohere_request,
@@ -354,7 +354,7 @@ class BrowserRelayAdapter:
 ## ProviderSpec Schema (for Type 2)
 
 ```python
-# core/types/providers/spec.py
+# core/types.py/providers/spec.py
 class ProviderAuth(msgspec.Struct):
     env_var: str
     header: str = "Authorization"
@@ -471,8 +471,10 @@ Tier 1 — Redis Exact-Match (ALL providers, always active)
   miss → fall through to Tier 2 then compute
 
 Tier 2 — Native Provider Caching (where supported)
-  Anthropic  → NATIVE_EXPLICIT   — inject cache_control breakpoints into messages
-  OpenAI     → NATIVE_AUTOMATIC  — no modification; parse cached_tokens from usage
+  Anthropic  → NATIVE_AUTOMATIC_WITH_EXPLICIT — top-level cache_control by default,
+                explicit breakpoints for advanced multi-prefix prompts
+  OpenAI     → NATIVE_AUTOMATIC  — no prompt mutation required; optionally set
+                prompt_cache_key / retention and parse cached_tokens from usage
   DeepSeek   → NATIVE_AUTOMATIC  — parse prompt_cache_hit_tokens / prompt_cache_miss_tokens
   Gemini     → deferred (NATIVE_RESOURCE model is complex: explicit server-side
                 state management, separate quota + billing — add in future phase)
@@ -486,7 +488,7 @@ Tier 3 — Semantic Cache (future Phase 13+, not planned yet)
 ```
 core/prompt_cache/
 ├── manager.py              # PromptCacheManager — orchestrates Tier 1 + Tier 2
-├── anthropic_injector.py   # CacheBreakpointInjector (Anthropic cache_control)
+├── anthropic_injector.py   # CacheBreakpointInjector (Anthropic explicit-cache helper)
 └── __init__.py
 ```
 
@@ -497,10 +499,10 @@ core/prompt_cache/
 
 ```python
 class CachingCapability(enum.Enum):
-    NONE             = "none"             # redis only
-    NATIVE_AUTOMATIC = "native_auto"      # OpenAI, DeepSeek — happens automatically
-    NATIVE_EXPLICIT  = "native_explicit"  # Anthropic — must inject cache_control
-    NATIVE_RESOURCE  = "native_resource"  # Gemini — deferred (not in Phase 11)
+    NONE = "none"  # redis only
+    NATIVE_AUTOMATIC = "native_auto"  # OpenAI, DeepSeek — provider handles prefix caching
+    NATIVE_AUTOMATIC_WITH_EXPLICIT = "native_auto_explicit"  # Anthropic — automatic top-level cache plus optional explicit breakpoints
+    NATIVE_RESOURCE = "native_resource"  # Gemini — deferred (not in Phase 11)
 ```
 
 ### PromptCacheManager Flow
@@ -513,12 +515,18 @@ async def get_or_compute(adapter, messages, model, **kw) -> LLMResponse:
         return decode(hit) with cache_stats.tier = "redis"
 
     # 2. Tier 2 preparation
-    if adapter.caching_capability == NATIVE_EXPLICIT:      # Anthropic
-        messages = CacheBreakpointInjector().inject(messages)
+    if adapter.caching_capability == NATIVE_AUTOMATIC_WITH_EXPLICIT:  # Anthropic
+        if config.prefer_explicit_breakpoints(adapter.provider, model, messages):
+            messages, kw = CacheBreakpointInjector().inject(messages, kw)
+        else:
+            kw["cache_control"] = {"type": "ephemeral"}
+    elif adapter.caching_capability == NATIVE_AUTOMATIC:  # OpenAI / DeepSeek
+        kw = prepare_provider_cache_kwargs(adapter.provider, kw)
     # NATIVE_RESOURCE (Gemini) — deferred, raises NotImplementedError until added
 
     # 3. Compute
     response = await adapter.complete(messages, model, **kw)
+    response.cache_stats = native_tracker.extract(adapter.provider, response)
 
     # 4. Store in Redis
     await redis.setex(key, ttl, encode(response))
@@ -529,7 +537,7 @@ async def get_or_compute(adapter, messages, model, **kw) -> LLMResponse:
 
 ```python
 class CacheStats(msgspec.Struct):
-    tier: Literal["none", "redis", "native_auto", "native_explicit", "native_resource"]
+    tier: Literal["none", "redis", "native_auto", "native_auto_explicit", "native_resource"]
     cache_read_tokens: int = 0
     cache_write_tokens: int = 0
     estimated_savings_usd: float = 0.0
@@ -549,9 +557,9 @@ class LLMResponse(msgspec.Struct):
 
 | Provider | Tier 1 | Tier 2 | Type | Savings |
 |----------|--------|--------|------|---------|
-| Anthropic | ✅ | ✅ | EXPLICIT — cache_control breakpoints | 90% reads / +25% writes |
-| OpenAI | ✅ | ✅ | AUTOMATIC — prefix cache | 50% on cached tokens |
-| DeepSeek | ✅ | ✅ | AUTOMATIC — usage tracking | similar |
+| Anthropic | ✅ | ✅ | AUTOMATIC + EXPLICIT — top-level cache_control by default, explicit breakpoints when needed | usage reports cache reads/writes |
+| OpenAI | ✅ | ✅ | AUTOMATIC — prefix cache plus optional prompt_cache_key / retention | usage reports cached_tokens |
+| DeepSeek | ✅ | ✅ | AUTOMATIC — provider usage tracking | prompt_cache_hit/miss tokens |
 | Gemini | ✅ | ✅ | RESOURCE — cachedContent object | ~75% |
 | Groq | ✅ | 🔜 | AUTOMATIC (announced) | TBD |
 | All others (×18) | ✅ | ❌ | — | Redis saves only |
@@ -562,13 +570,13 @@ class LLMResponse(msgspec.Struct):
 
 | ID | Task | What |
 |----|------|------|
-| `cache-caching-capability-enum` | T11.1 | `CachingCapability` enum on `LLMAdapter` |
+| `cache-caching-capability-enum` | T11.1 | `CachingCapability` metadata on `LLMAdapter` |
 | `cache-response-stats-struct` | T11.1 | `CacheStats` field in `LLMResponse` |
 | `cache-prompt-cache-manager` | T11.1 | `PromptCacheManager` orchestrator |
 | `cache-redis-exact-match` | T11.2 | Redis Tier 1 (all providers) |
 | `cache-redis-streaming-buffer` | T11.2 | Buffer stream → store in Redis |
-| `cache-anthropic-breakpoint-injector` | T11.3 | `CacheBreakpointInjector` |
-| `cache-automatic-native-tracking` | T11.4 | Parse OpenAI/DeepSeek cached token counts |
+| `cache-anthropic-breakpoint-injector` | T11.3 | `CacheBreakpointInjector` for advanced Anthropic explicit-cache layouts |
+| `cache-automatic-native-tracking` | T11.4 | Parse Anthropic/OpenAI/DeepSeek native cache usage fields |
 | `cache-gemini-context-cache` | T11.5 | Gemini `cachedContent` lifecycle |
 | `cache-cost-savings-tracker` | T11.6 | `estimated_savings_usd` per response |
 | `cache-metrics-openobserve` | T11.6 | Emit cache events to OpenObserve |

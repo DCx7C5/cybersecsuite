@@ -40,7 +40,7 @@ flowchart TB
         Native["Native Provider Cache Hooks\nAnthropic explicit\nOpenAI/DeepSeek automatic\nGemini deferred"]
     end
 
-    subgraph RetrievalCore["core/vector_rag"]
+    subgraph RetrievalCore["core/vector_rag + core/graph_rag"]
         RCL["RetrievalCacheLayer"]
         VR["VectorRagBackend"]
         GR["GraphRagBackend"]
@@ -125,7 +125,7 @@ flowchart TB
 
 - **Tier 1 Redis exact-match** for all supported providers
 - **Tier 2 provider-native caching**
-  - Anthropic explicit cache breakpoints
+  - Anthropic automatic top-level caching by default, with explicit breakpoints as an advanced override
   - OpenAI / DeepSeek automatic native caching stats
   - Gemini deferred for now
 
@@ -241,7 +241,7 @@ Retrieval caching additionally tracks:
 ## System Integration
 
 - `modules/triage/` uses `core/prompt_cache/` for repeated local-model prompt/response reuse; it should not store classification outputs in retrieval cache namespaces.
-- `core/vector_rag/` uses retrieval caching through `core/cache/` only; it must not bypass cache policy with ad-hoc Redis keys.
+- `core/vector_rag/` and `core/graph_rag/` use retrieval caching through `core/cache/` only; they must not bypass cache policy with ad-hoc Redis keys.
 - `core/memory/` remains the source of truth for session state; caches accelerate access but do not replace memory persistence.
 - `modules/graphs/` and `modules/workflows/` keep graph snapshots and workflow state in their own persistence models; if they later need hot caching, they should consume `core/cache/` rather than invent a fourth cache subsystem.
 

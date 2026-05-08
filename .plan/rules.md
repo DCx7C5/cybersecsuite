@@ -71,8 +71,10 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
 - **ABSOLUTE: in PLAN MODE, keep `.plan/plan.md`, relevant `.plan/architecture/*.md`, and local planning Markdown synchronized with [.plan/session.db](session.db) while working**
 - **ABSOLUTE: update `memory.md` and `checkpoints.md` at the end of every PHASE** — not after every task and not only at end-of-session
+- **ABSOLUTE: exception for `memory.md`** — refresh it immediately after major architecture, source-of-truth, or tracker-structure changes that would otherwise mislead the next session
 - **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
 - **ABSOLUTE: make multiple logical and atomic commits**
+- **ABSOLUTE: rule violations are fixed on the fly, or if implications too big a TODO in session.db is created.**
 
 # CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
@@ -342,7 +344,7 @@ class Base(ABC):
 
 # Value / data container → msgspec.Struct (preferred)
 
-class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all value types
+class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all value types.py
     session_id: str
 ```
 
