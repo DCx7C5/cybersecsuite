@@ -120,7 +120,7 @@ class VaultManager:
 
     vault_path/
       .raw/          — immutable source documents
-      wiki/          — Claude-generated knowledge base
+      wiki/          — Claude-generated vector_rag base
       memories/      — SDK memory tools root
     """
 
@@ -300,7 +300,7 @@ Vault Path: {vault_path}
 
 ```
 .raw/           immutable source documents (malware reports, articles, intel, logs, pcaps)
-wiki/           Claude-generated knowledge base
+wiki/           Claude-generated vector_rag base
   entities/     threat actors, malware families, orgs
   iocs/         indicators of compromise (IPs, hashes, domains)
   ttps/         MITRE ATT&CK techniques (TxxYY pages)

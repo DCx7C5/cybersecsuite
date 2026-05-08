@@ -7,7 +7,7 @@ from datetime import datetime
 from .models import KnowledgeDocument, KnowledgeTag, SearchLog
 from .retriever import KnowledgeRetriever
 
-router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])
+router = APIRouter(prefix="/api/vector_rag", tags=["vector_rag"])
 retriever = KnowledgeRetriever()
 
 
@@ -57,7 +57,7 @@ async def create_document(
     req: DocumentCreate,
     org_id: int = Query(..., description="Organization ID"),
 ):
-    """Create knowledge document."""
+    """Create vector_rag document."""
     # TODO: Check org authorization
     
     try:
@@ -91,7 +91,7 @@ async def list_documents(
     tag: Optional[str] = None,
     limit: int = Query(50, ge=1, le=500),
 ):
-    """List knowledge documents."""
+    """List vector_rag documents."""
     # TODO: Check org authorization
     
     query = KnowledgeDocument.filter(organization_id=org_id)
@@ -149,7 +149,7 @@ async def search_knowledge(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """
-    Search knowledge base.
+    Search vector_rag base.
     
     Supports:
     - keyword: Full-text search on titles and content
@@ -178,7 +178,7 @@ async def list_tags(
     org_id: int = Query(..., description="Organization ID"),
     category: Optional[str] = None,
 ):
-    """List knowledge tags."""
+    """List vector_rag tags."""
     # TODO: Check org authorization
     
     query = KnowledgeTag.filter(organization_id=org_id)
@@ -195,7 +195,7 @@ async def create_tag(
     category: str = Query("custom", regex="^(tactic|technique|threat_actor|malware|tool|vulnerability|custom)$"),
     org_id: int = Query(..., description="Organization ID"),
 ):
-    """Create knowledge tag."""
+    """Create vector_rag tag."""
     # TODO: Check org authorization
     
     existing = await KnowledgeTag.get_or_none(organization_id=org_id, tag=tag)
@@ -220,7 +220,7 @@ async def get_search_log(
     agent_id: Optional[str] = None,
     limit: int = Query(50, ge=1, le=500),
 ):
-    """Get knowledge search history for analytics."""
+    """Get vector_rag search history for analytics."""
     # TODO: Check org authorization
     
     query = SearchLog.filter(organization_id=org_id)

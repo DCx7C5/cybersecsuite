@@ -1,14 +1,14 @@
-"""Knowledge module — RAG knowledge base for LLM agents (Phase 7)."""
+"""Knowledge module — RAG vector_rag base for LLM agents (Phase 7)."""
 from tortoise.indexes import Index
 from tortoise import fields
 
 from css.core.db.fields import DescriptionField, QualityScoreField
 from css.core.db.models.base import BaseModel
-from css.modules.knowledge.enums import DocumentType, DocumentStatus
+from css.modules.vector_rag.enums import DocumentType, DocumentStatus
 
 
 class KnowledgeDocument(BaseModel):
-    """Searchable knowledge document with embeddings."""
+    """Searchable vector_rag document with embeddings."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
@@ -131,7 +131,7 @@ class KnowledgeIndex(BaseModel):
 
 
 class KnowledgeTag(BaseModel):
-    """Taxonomy tags for knowledge organization."""
+    """Taxonomy tags for vector_rag organization."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
@@ -153,7 +153,7 @@ class KnowledgeTag(BaseModel):
 
 
 class SearchLog(BaseModel):
-    """Log of agent/user knowledge base searches for analytics."""
+    """Log of agent/user vector_rag base searches for analytics."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",

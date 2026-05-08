@@ -35,7 +35,7 @@ MODULES = [
     "css.modules.compliance",
     "css.modules.evidence",
     "css.modules.incidents",
-    "css.modules.knowledge",
+    "css.modules.vector_rag",
     "css.modules.local_assist",
     "css.modules.mcps",
     "css.modules.mitre",

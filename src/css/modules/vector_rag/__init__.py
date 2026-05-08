@@ -1,4 +1,4 @@
-"""Knowledge module — RAG knowledge base (Phase 7)."""
+"""Knowledge module — RAG vector_rag base (Phase 7)."""
 
 from .models import (
     DocumentType,

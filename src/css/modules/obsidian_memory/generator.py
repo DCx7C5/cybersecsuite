@@ -425,7 +425,7 @@ class CanvasGenerator:
 
     STANDARD_ARCHETYPES = [
         "presentation", "flowchart", "mind-map", "gallery", "dashboard",
-        "storyboard", "knowledge-graph", "mood-board", "timeline",
+        "storyboard", "vector_rag-graph", "mood-board", "timeline",
         "comparison", "kanban", "project-brief",
     ]
 

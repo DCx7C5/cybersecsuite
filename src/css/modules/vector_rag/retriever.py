@@ -8,7 +8,7 @@ logger = getLogger(__name__)
 
 
 class KnowledgeRetriever:
-    """Retrieve relevant documents from knowledge base for agent context."""
+    """Retrieve relevant documents from vector_rag base for agent context."""
     
     def __init__(self, embedding_model: str = "sentence-transformers/all-mpnet-base-v2"):
         self.embedding_model = embedding_model
@@ -158,7 +158,7 @@ class KnowledgeRetriever:
         tags: List[str],
         created_by: str = "system",
     ) -> Dict:
-        """Ingest new document into knowledge base."""
+        """Ingest new document into vector_rag base."""
         from .models import KnowledgeDocument, KnowledgeIndex
         
         try:
