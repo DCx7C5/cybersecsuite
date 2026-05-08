@@ -1,6 +1,8 @@
 """OpenCTI intelligence models normalized from exported feeds."""
 
 from tortoise import fields
+from tortoise.indexes import Index
+
 from models import BaseModel
 from css.core.db.fields import DescriptionField
 
@@ -38,7 +40,15 @@ class OpenCTIIndicatorIntel(BaseModel):
     class Meta:
         table = "intel_opencti_indicators"
         ordering = ["-updated_at"]
-        indexes = (("name",), ("pattern_type",), ("revoked",))
+        unique_together = (
+            # TODO: Later add more fields to this unique constraint if needed
+            ("indicator_type", "name"),
+        )
+        indexes = (
+            Index(fields=["name"]),
+            Index(fields=["pattern_type"]),
+            Index(fields=["revoked"]),
+        )
 
 
 class OpenCTIEntityIntel(BaseModel):

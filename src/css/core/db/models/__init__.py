@@ -4,7 +4,7 @@ This module exports the core models and enums needed for the CyberSecSuite
 database layer. Copied from legacy/db/models with localized imports.
 """
 
-from .base import BaseModel
+from .base import BaseModel, BaseItemModel
 from .accounts import (
     Account,
     Organization,
@@ -24,6 +24,7 @@ from .scope import ProjectScope, SessionScope
 
 __all__ = [
     "BaseModel",
+    "BaseItemModel",
     "Account",
     "UserProfile",
     "Organization",

@@ -2,8 +2,11 @@ import re
 from ipaddress import IPv6Address, AddressValueError
 from pathlib import Path
 
-from pydantic import AnyHttpUrl, ValidationError, TypeAdapter
+from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
 from tortoise.fields import CharField, TextField
+
+
+URL_ADAPTER = TypeAdapter(AnyHttpUrl)
 
 
 class NameField(CharField):
@@ -25,8 +28,6 @@ class NameField(CharField):
         if not value.isidentifier():
             raise ValueError(f"Invalid Python identifier: {value}")
 
-url_adapter = TypeAdapter(AnyHttpUrl)
-
 class UrlField(CharField):
     """
     A CharField that validates that the value is a valid URL.
@@ -43,7 +44,7 @@ class UrlField(CharField):
         if not value.isascii():
             raise ValueError(f"URL must contain only ASCII characters: {value}")
         try:
-            url_adapter.validate_python(value)
+            URL_ADAPTER.validate_python(value)
         except ValidationError as e:
             raise ValueError(f"Invalid URL: {value}") from e
 
@@ -117,10 +118,9 @@ class VersionField(CharField):
         r'^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
     )
 
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("max_length", 32)
+    def __init__(self, *args, max_length: int = 32, **kwargs):
         kwargs.setdefault("default", "0.1.0")
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, max_length=max_length, **kwargs)
         self.validators.append(self._validate_version)
 
     @staticmethod
