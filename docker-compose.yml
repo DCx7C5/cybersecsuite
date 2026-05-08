@@ -11,23 +11,19 @@ x-db-env: &db-env
   CYBERSEC_DB_PASSWORD: ${CYBERSEC_DB_PASSWORD:-cybersec_default}
   CYBERSEC_DB_NAME: ${CYBERSEC_DB_NAME:-cybersec_forensics}
 
-x-ai-keys: &ai-keys
-  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-  DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
-  GROQ_API_KEY: ${GROQ_API_KEY:-}
-  MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
-  XAI_API_KEY: ${XAI_API_KEY:-}
-  TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
-  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-  NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
-
 x-oo-env: &oo-env
   OPENOBSERVE_HOST: ${OPENOBSERVE_HOST:-http://cybersec-openobserve:5080}
   OPENOBSERVE_ORG: ${OPENOBSERVE_ORG:-default}
   OPENOBSERVE_EMAIL: ${OPENOBSERVE_ROOT_EMAIL:-admin@cybersec.local}
   OPENOBSERVE_PASSWORD: ${OPENOBSERVE_ROOT_PASSWORD:-cYb3rS3c!}
+
+x-neo-env: &neo-env
+  NEO4J_USER: ${NEO4J_USER:-neo4j}
+  NEO4J_PASSWORD: ${NEO4J_PASSWORD:-change_me}
+  NEO4J_HOST: ${NEO4J_HOST:-cybersec-neo4j}
+  NEO4J_HTTP_PORT: ${NEO4J_HTTP_PORT:-7474}
+  NEO4J_PORT: ${NEO4J_PORT:-7687}
+  NEO4J_AUTH: ${NEO4J_USER:-neo4j}:${NEO4J_PASSWORD:-change_me}
 
 x-crypto-env: &crypto-env
   DYSTOPIAN_VAULT_PASSWORD: ${DYSTOPIAN_VAULT_PASSWORD:-change_me}
@@ -55,6 +51,8 @@ services:
       - pg_socket:/tmp
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - cybersec
     healthcheck:
       test: [ "CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 30s
@@ -77,6 +75,8 @@ services:
     volumes:
       - redis_data:/data
       - redis_socket:/var/run/redis
+    networks:
+      - cybersec
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
@@ -102,6 +102,8 @@ services:
       - "127.0.0.1:${OPENOBSERVE_PORT:-5080}:5080"
     volumes:
       - oo_data:/data
+    networks:
+      - cybersec
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:5080/healthz" ]
       interval: 30s
@@ -109,6 +111,31 @@ services:
       retries: 5
       start_period: 40s
 
+  cybersec-neo4j:
+    profiles:
+      - default
+    image: neo4j:5-community
+    container_name: cybersec-neo4j
+    <<: *common
+    restart: unless-stopped
+    environment:
+      <<: *neo-env
+    volumes:
+      - neo_data:/data
+      - neo_logs:/logs
+      - neo_import:/import
+      - neo_plugins:/plugins
+    ports:
+      - "127.0.0.1:${NEO4J_HTTP_PORT:-7474}:7474"
+      - "127.0.0.1:${NEO4J_PORT:-7687}:7687"
+    networks:
+      - cybersec
+    healthcheck:
+      test: [ "CMD", "cypher-shell", "-a", "bolt://localhost:7687", "-u", "$${NEO4J_USER}", "-p", "$${NEO4J_PASSWORD}", "RETURN 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
 
 volumes:
@@ -117,4 +144,13 @@ volumes:
   redis_data:
   redis_socket:
   oo_data:
-  ollama_data:
+  neo_data:
+  neo_logs:
+  neo_import:
+  neo_plugins:
+
+networks:
+  cybersec:
+    driver: bridge
+    ipam:
+      driver: default

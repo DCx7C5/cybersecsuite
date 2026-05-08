@@ -2,7 +2,20 @@
 
 ### Overview
 
-CyberSecSuite runs 6 containerized services via `docker-compose`:
+Current source of truth: `docker-compose.yml` runs **infra only**, not the ASGI app or frontend.
+
+Active compose services:
+- `cybersec-postgres`
+- `cybersec-redis`
+- `cybersec-openobserve`
+- `cybersec-neo4j`
+
+Runtime outside Docker:
+- ASGI app / orchestrators
+- frontend dev server
+- Ollama via `core/ollama/OllamaProcessManager`
+
+Treat this file as historical context until it is fully rewritten. For the live storage topology, use [database-architecture.md](./database-architecture.md).
 
 ```
 docker-compose up -d
@@ -52,45 +65,6 @@ healthcheck:
 **Role in Caching**:
 - Orchestrator processes run here (in-memory L1 cache)
 - Access to Redis (L2) and PostgreSQL (L3) backends
-
----
-
-### 2. **cybersec-dashboard** (Frontend)
-
-**Purpose**: React 19.2+ TypeScript dashboard UI
-
-**Container**: `cybersec-dashboard:latest`
-
-**Ports**:
-- `8000` (HTTP)
-- `8443` (HTTPS/TLS)
-
-**Environment**:
-```bash
-REACT_APP_API_URL=http://localhost:8765
-REACT_APP_WS_URL=ws://localhost:8765/ws
-NODE_ENV=production
-```
-
-**Volumes**:
-- `/app/src/frontend/` (application code)
-- `/app/build/` (compiled output, persist for hot reload)
-
-**Healthcheck**:
-```yaml
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
-```
-
-**Features**:
-- Real-time WebSocket connection to backend
-- Session management (cookies)
-- Team/agent monitoring dashboard
-- Task progress tracking
-- Cache statistics visualization
 
 ---
 
