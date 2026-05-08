@@ -1,8 +1,27 @@
 """TeamScope model — team isolation, orchestrator pool, task queues, resource quotas."""
 
+from datetime import datetime
+
+import msgspec
 from tortoise import fields, models
+
 from css.core.db.models.base import BaseModel
 from .enums import TeamStatus
+
+
+class TeamInfo(msgspec.Struct):
+    """Domain value type for team data."""
+    id: int
+    session_id: int
+    team_name: str
+    status: str
+    orchestrator_mode: str
+    max_orchestrators: int
+    current_orchestrators: int
+    max_tasks: int
+    completed_tasks: int
+    created_at: datetime
+    paused_at: datetime | None
 
 
 class Team(BaseModel):
@@ -46,6 +65,38 @@ class Team(BaseModel):
     completed_tasks = fields.IntField(default=0)
     created_at = fields.DatetimeField(auto_now_add=True)
     paused_at = fields.DatetimeField(null=True)
+
+    def to_domain(self) -> TeamInfo:
+        """Convert ORM record to domain value type."""
+        return TeamInfo(
+            id=self.id,
+            session_id=self.session_id,
+            team_name=self.team_name,
+            status=self.status.value if hasattr(self.status, 'value') else self.status,
+            orchestrator_mode=self.orchestrator_mode,
+            max_orchestrators=self.max_orchestrators,
+            current_orchestrators=self.current_orchestrators,
+            max_tasks=self.max_tasks,
+            completed_tasks=self.completed_tasks,
+            created_at=self.created_at,
+            paused_at=self.paused_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: TeamInfo) -> "Team":
+        """Create ORM instance from domain value type."""
+        return cls(
+            session_id=info.session_id,
+            team_name=info.team_name,
+            status=info.status,
+            orchestrator_mode=info.orchestrator_mode,
+            max_orchestrators=info.max_orchestrators,
+            current_orchestrators=info.current_orchestrators,
+            max_tasks=info.max_tasks,
+            completed_tasks=info.completed_tasks,
+            created_at=info.created_at,
+            paused_at=info.paused_at,
+        )
 
     class Meta:
         table = "teams"

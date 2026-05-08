@@ -1,5 +1,8 @@
 """Marketplace ORM models."""
 
+from datetime import datetime
+
+import msgspec
 from tortoise import fields
 from tortoise.fields import CharEnumField
 from tortoise.indexes import Index
@@ -16,6 +19,24 @@ from css.core.db.fields import (
 from css.core.enums import MarketplaceItemType, MarketplaceStatus
 
 from .base import BaseModel
+
+
+class MarketplaceItemInfo(msgspec.Struct):
+    """Domain value type for marketplace item data."""
+    id: int
+    name: str
+    description: str | None
+    slug: str
+    kind: str
+    version: str
+    status: str
+    meta_data: dict
+    install_path: str | None
+    source_url: str | None
+    installed_at: datetime | None
+    update_available: bool
+    created_at: datetime
+    updated_at: datetime
 
 
 class BaseMarketPlace(BaseModel):
@@ -59,6 +80,42 @@ class MarketplaceItem(BaseMarketPlace):
     installed_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
+
+    def to_domain(self) -> MarketplaceItemInfo:
+        """Convert ORM record to domain value type."""
+        return MarketplaceItemInfo(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            slug=self.slug,
+            kind=self.kind.value if hasattr(self.kind, 'value') else self.kind,
+            version=self.version,
+            status=self.status.value if hasattr(self.status, 'value') else self.status,
+            meta_data=self.meta or {},
+            install_path=self.install_path,
+            source_url=self.source_url,
+            installed_at=self.installed_at,
+            update_available=self.update_available,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: MarketplaceItemInfo) -> "MarketplaceItem":
+        """Create ORM instance from domain value type."""
+        return cls(
+            name=info.name,
+            description=info.description,
+            slug=info.slug,
+            kind=info.kind,
+            version=info.version,
+            status=info.status,
+            meta=info.meta_data,
+            install_path=info.install_path,
+            source_url=info.source_url,
+            installed_at=info.installed_at,
+            update_available=info.update_available,
+        )
 
     class Meta:
         table = "marketplace_item"

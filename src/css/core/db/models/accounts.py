@@ -10,12 +10,27 @@ Models:
 Integrated with core/roles for RBAC enforcement via path permissions.
 """
 
+from datetime import datetime
+
+import msgspec
 from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
 from css.core.enums import Role
 from .mixins import TimestampMixin
 from fields import LabelField, NameField, UrlField, DescriptionField, SlugField
+
+
+class AccountInfo(msgspec.Struct):
+    """Domain value type for account data."""
+    id: int
+    username: str
+    email: str
+    is_active: bool
+    is_verified: bool
+    last_login: datetime | None
+    created_at: datetime
+    updated_at: datetime
 
 
 class Account(BaseModel, TimestampMixin):
@@ -27,6 +42,28 @@ class Account(BaseModel, TimestampMixin):
     is_active = fields.BooleanField(default=True, db_index=True)
     is_verified = fields.BooleanField(default=False)
     last_login = fields.DatetimeField(null=True)
+
+    def to_domain(self) -> AccountInfo:
+        return AccountInfo(
+            id=self.id,
+            username=self.username,
+            email=self.email,
+            is_active=self.is_active,
+            is_verified=self.is_verified,
+            last_login=self.last_login,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: AccountInfo) -> "Account":
+        return cls(
+            username=info.username,
+            email=info.email,
+            is_active=info.is_active,
+            is_verified=info.is_verified,
+            last_login=info.last_login,
+        )
 
     class Meta:
         table = "account"
@@ -62,6 +99,21 @@ class UserProfile(BaseModel, TimestampMixin):
         table_verbose_plural = "User Profiles"
 
 
+class OrganizationInfo(msgspec.Struct):
+    """Domain value type for organization data."""
+    id: int
+    name: str
+    slug: str
+    description: str
+    logo_url: str | None
+    max_members: int
+    is_active: bool
+    tier: str
+    metadata: dict
+    created_at: datetime
+    updated_at: datetime
+
+
 class Organization(BaseModel, TimestampMixin):
     """Multi-tenant organization container."""
 
@@ -81,6 +133,34 @@ class Organization(BaseModel, TimestampMixin):
 
     # Metadata
     metadata = fields.JSONField(default=dict)
+
+    def to_domain(self) -> OrganizationInfo:
+        return OrganizationInfo(
+            id=self.id,
+            name=self.name,
+            slug=self.slug,
+            description=self.description,
+            logo_url=self.logo_url,
+            max_members=self.max_members,
+            is_active=self.is_active,
+            tier=self.tier,
+            metadata=self.metadata or {},
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: OrganizationInfo) -> "Organization":
+        return cls(
+            name=info.name,
+            slug=info.slug,
+            description=info.description,
+            logo_url=info.logo_url,
+            max_members=info.max_members,
+            is_active=info.is_active,
+            tier=info.tier,
+            metadata=info.metadata,
+        )
 
     class Meta:
         table = "organizations"

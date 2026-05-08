@@ -38,7 +38,7 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
         return self.name
 
 
-    def to_schema(self):
+    def to_domain(self):
         """Convert ORM model to HybridToolSchema."""
         from css.modules.tools.types import HybridToolSchema
         return HybridToolSchema(
@@ -53,8 +53,10 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
             tags=[],
         )
 
+    to_schema = to_domain
+
     @staticmethod
-    def from_schema(schema):
+    def from_domain(schema):
         """Create ORM model from HybridToolSchema."""
         return HybridToolDefinition(
             name=schema.name,
@@ -66,6 +68,8 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
             metadata=schema.metadata,
             enabled=schema.enabled,
         )
+
+    from_schema = from_domain
 
 
 class HybridToolDefinitionTag(BaseModel):

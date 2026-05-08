@@ -25,7 +25,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - [x] `db-frontmatter-base-rollout` — Remove `BaseFBSModel`; `BaseFrontmatterMixin` kept for opt-in use by future identifier-style models
 - [x] `db-version-mixin-rollout` — Audit complete: no model is an exact fit for `VersionMixin` without renaming. `BaseMarketPlace` has the contract but with domain-specific names (`remote_index_hash`/`local_index_hash`). Mixin kept for future opt-in use.
 - [x] `orm-custom-managers` — Add custom Tortoise managers for Ring 2 query logic
-- [ ] `orm-to-from-domain` — Add `to_domain()` / `from_domain()` bridges for ORM models
+- [x] `orm-to-from-domain` — Add `to_domain()` / `from_domain()` bridges for ORM models
 
 ## Dependencies
 - `src/css/core/db/`

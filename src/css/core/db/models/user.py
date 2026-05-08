@@ -1,10 +1,24 @@
 """Account ORM models — user accounts and authentication."""
 
+from datetime import datetime
+
+import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
 from css.core.db.models.base import BaseModel
 from css.core.db.models.enums import UserRoles
+
+
+class UserInfo(msgspec.Struct):
+    """Domain value type for user data."""
+    id: int
+    username: str
+    roles: list
+    is_active: bool
+    last_login: datetime | None
+    created_at: datetime
+    updated_at: datetime
 
 
 class User(BaseModel):
@@ -32,6 +46,25 @@ class User(BaseModel):
     last_login = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
+
+    def to_domain(self) -> UserInfo:
+        return UserInfo(
+            id=self.id,
+            username=self.username,
+            roles=list(self.roles) if hasattr(self.roles, '__iter__') else [],
+            is_active=self.is_active,
+            last_login=self.last_login,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: UserInfo) -> "User":
+        return cls(
+            username=info.username,
+            is_active=info.is_active,
+            last_login=info.last_login,
+        )
 
     class Meta:
         table = "users"
