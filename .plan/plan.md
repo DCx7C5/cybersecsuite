@@ -1595,17 +1595,17 @@ class ToolRegistry:
 
 | ID | What |
 |----|------|
-| `orm-value-types-migration` | All runtime `@dataclass` → `msgspec.Struct` |
-| `orm-custom-managers` | Add `objects = FooManager()` to every Tortoise model |
-| `orm-to-from-domain` | `to_domain()` + `from_domain()` on every model |
-| `db-timestamp-mixin-rollout` | Roll out `TimestampMixin` across standard audit-pair ORM models |
-| `db-frontmatter-field-semantics` | Split identifier `NameField` from human display-name semantics |
-| `db-frontmatter-base-rollout` | Remove `BaseFBSModel`; roll out `BaseFrontmatterMixin` only where semantics fit |
-| `db-version-mixin-rollout` | Adopt `VersionMixin` for versioned artifacts with hash provenance |
+| ~~`orm-value-types-migration`~~ | All runtime `@dataclass` → `msgspec.Struct` |
+| ~~`orm-custom-managers`~~ | Add `objects = FooManager()` to every Tortoise model |
+| ~~`orm-to-from-domain`~~ | `to_domain()` + `from_domain()` on every model |
+| ~~`db-timestamp-mixin-rollout`~~ | Roll out `TimestampMixin` across standard audit-pair ORM models |
+| ~~`db-frontmatter-field-semantics`~~ | Split identifier `NameField` from human display-name semantics |
+| ~~`db-frontmatter-base-rollout`~~ | Remove `BaseFBSModel`; roll out `BaseFrontmatterMixin` only where semantics fit |
+| ~~`db-version-mixin-rollout`~~ | Adopt `VersionMixin` for versioned artifacts with hash provenance |
 | ~~`orm-registry-metaclass-fix`~~ | Fix `AsyncSafeSingletonMeta` + `ABC` conflicts before more registry expansion |
 | ~~`orm-registry-purge-crud`~~ | Remove DB writes from all registries |
 | ~~`orm-registry-invalidation`~~ | Cache invalidation via DomainEvent subscription |
-| `orm-service-layer` | `service.py` per module — only entry point for business logic |
+| ~~`orm-service-layer`~~ | `service.py` per module — only entry point for business logic |
 | ~~`orm-tag-manager-fix`~~ | `TagManager` → wraps Tortoise, not in-memory dict |
 | ~~`orm-base-registry-cleanup`~~ | `BaseRegistry` → pure in-memory `Protocol`, no DB |
 
