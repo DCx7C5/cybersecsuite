@@ -20,3 +20,39 @@ class DocumentStatus(str, Enum):
     PUBLISHED = "published"
     ARCHIVED = "archived"
     SUPERSEDED = "superseded"
+
+
+class SourceType(str, Enum):
+    """Source type for knowledge documents."""
+    URL = "url"
+    INTERNAL_FILE = "internal_file"
+    USER_UPLOADED = "user_uploaded"
+    API_SYNC = "api_sync"
+
+
+class SearchType(str, Enum):
+    """Search method for knowledge base queries."""
+    KEYWORD = "keyword"
+    SEMANTIC = "semantic"
+    TAG_FILTER = "tag_filter"
+
+
+class RelevanceFeedback(str, Enum):
+    """User feedback on search result relevance."""
+    RELEVANT = "relevant"
+    IRRELEVANT = "irrelevant"
+    PARTIALLY_RELEVANT = "partially_relevant"
+    NONE = "none"
+
+
+class TagCategory(str, Enum):
+    """Knowledge tag category."""
+    TECHNIQUE = "technique"
+    TOOL = "tool"
+    ACTOR = "actor"
+    MALWARE = "malware"
+    CVE = "cve"
+    MITIGATION = "mitigation"
+    DETECTION = "detection"
+    COMPLIANCE = "compliance"
+    CUSTOM = "custom"

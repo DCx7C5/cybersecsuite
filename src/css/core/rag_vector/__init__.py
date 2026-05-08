@@ -1,8 +1,14 @@
 """Knowledge module — RAG rag_vector base (Phase 7)."""
 
-from .models import (
-    DocumentType,
+from .enums import (
     DocumentStatus,
+    DocumentType,
+    RelevanceFeedback,
+    SearchType,
+    SourceType,
+    TagCategory,
+)
+from .models import (
     KnowledgeDocument,
     KnowledgeIndex,
     KnowledgeTag,
@@ -12,12 +18,16 @@ from .retriever import KnowledgeRetriever
 from .endpoints import router
 
 __all__ = [
-    "DocumentType",
     "DocumentStatus",
+    "DocumentType",
     "KnowledgeDocument",
     "KnowledgeIndex",
     "KnowledgeTag",
+    "RelevanceFeedback",
     "SearchLog",
+    "SearchType",
+    "SourceType",
+    "TagCategory",
     "KnowledgeRetriever",
     "router",
 ]

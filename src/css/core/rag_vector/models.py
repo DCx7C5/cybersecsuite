@@ -1,11 +1,19 @@
 """Knowledge module — RAG rag_vector base for LLM agents (Phase 7)."""
 from tortoise.indexes import Index
 from tortoise import fields
+from tortoise.fields import CharEnumField
 
 from css.core.db.fields import DescriptionField, QualityScoreField
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
-from css.core.rag_vector.enums import DocumentType, DocumentStatus
+from css.core.rag_vector.enums import (
+    DocumentStatus,
+    DocumentType,
+    RelevanceFeedback,
+    SearchType,
+    SourceType,
+    TagCategory,
+)
 
 
 class KnowledgeDocument(BaseModel, TimestampMixin):
@@ -22,9 +30,8 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
     content = fields.TextField()
     
     # Classification
-    document_type = fields.CharField(
-        max_length=32,
-        choices=[t.value for t in DocumentType],
+    document_type = CharEnumField(
+        DocumentType,
         db_index=True,
     )
     
@@ -33,10 +40,9 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
         max_length=512,
         help_text="URL or internal path where document came from"
     )
-    source_type = fields.CharField(
-        max_length=64,
-        choices=["url", "internal_file", "user_uploaded", "api_sync"],
-        default="internal_file",
+    source_type = CharEnumField(
+        SourceType,
+        default=SourceType.INTERNAL_FILE,
     )
     
     # Tagging
@@ -67,10 +73,9 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
     )
     
     # Status
-    status = fields.CharField(
-        max_length=32,
-        choices=[s.value for s in DocumentStatus],
-        default="published",
+    status = CharEnumField(
+        DocumentStatus,
+        default=DocumentStatus.PUBLISHED,
         db_index=True,
     )
     
@@ -139,8 +144,9 @@ class KnowledgeTag(BaseModel):
     )
     
     tag = fields.CharField(max_length=128, db_index=True)
-    category = fields.CharEnumField(
-        # TODO: always implement CharEnumField / never choices list
+    category = CharEnumField(
+        TagCategory,
+        default=TagCategory.CUSTOM,
     )
     
     description = DescriptionField(default="")
@@ -162,10 +168,9 @@ class SearchLog(BaseModel):
     
     # Search query
     query = fields.TextField()
-    search_type = fields.CharField(
-        max_length=32,
-        choices=["keyword", "semantic", "tag_filter"],
-        default="keyword",
+    search_type = CharEnumField(
+        SearchType,
+        default=SearchType.KEYWORD,
     )
     
     # Result
@@ -180,10 +185,9 @@ class SearchLog(BaseModel):
     user_id = fields.CharField(max_length=255, null=True)
     
     # Metadata
-    relevance_feedback = fields.CharField(
-        max_length=16,
-        choices=["relevant", "irrelevant", "partially_relevant", "none"],
-        default="none",
+    relevance_feedback = CharEnumField(
+        RelevanceFeedback,
+        default=RelevanceFeedback.NONE,
     )
     
     searched_at = fields.DatetimeField(auto_now_add=True)
