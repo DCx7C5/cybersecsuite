@@ -1,14 +1,13 @@
 """Singleton base registry pattern for CyberSecSuite."""
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import TypeVar, Generic
 
 from .meta import AsyncSafeSingletonMeta
 
 T = TypeVar('T')
-# TODO: Proper Type Implementation
 
-class BaseRegistry(ABC, Generic[T], metaclass=AsyncSafeSingletonMeta):
+class BaseRegistry(Generic[T], metaclass=AsyncSafeSingletonMeta):
     """Abstract base class for singleton registries.
 
     Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
@@ -25,8 +24,6 @@ class BaseRegistry(ABC, Generic[T], metaclass=AsyncSafeSingletonMeta):
         # Get singleton instance
         registry = MyRegistry()
     """
-
-    _instances = None
 
     def __init__(self):
         """Initialize the registry (runs setup only once)."""

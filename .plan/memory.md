@@ -49,7 +49,7 @@
 
 ### MCP + SIEM Planning Sync (2026-05-08)
 
-- Phase 9 now has an explicit prerequisite todo: `orm-registry-metaclass-fix`. This captures the import-time `AsyncSafeSingletonMeta` + `ABC` conflict across `BaseRegistry` / `BaseToolRegistry` before more registry work is stacked on top.
+- Phase 9 prerequisite ~~`orm-registry-metaclass-fix`~~ is now resolved: removed `ABC` from `BaseRegistry` / `BaseToolRegistry` bases (redundant — `AsyncSafeSingletonMeta(ABCMeta)` already enables `@abstractmethod`). Also deleted dead `modules/tools/base.py` duplicate and removed `_instances = None` shadowing from `BaseRegistry`.
 - Phase 22 docs and tracker items now use **server-scoped MCP runtime IDs**: `mcp:{server_id}:{tool_name}`. Marketplace/catalog state stays in `core/marketplace`; runtime connect/discover/call stays in `modules/mcps`; shared registry exposure stays in `modules/tools`.
 - `mcp-module-plan`, `mcp-tools-plan-update`, and `mcp-rules-update` are now marked done in `session.db` because the corresponding planning docs/rules were brought in sync with the live codebase.
 - Phase 37 SIEM work is now wired explicitly to OpenObserve. `siem-models` depends on `db-oo-client-implementation` and `db-oo-stream-definitions`, and the SIEM docs now state that OpenObserve is the primary telemetry surface, with PostgreSQL and GraphRAG layered on top.
@@ -242,7 +242,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - **`core/triage/` → `modules/intelligence/` pending**: Rename tracked as `triage-rename-module` (Phase 19). Phase 21 broadened to full local AI assistance.
 - Tool Registry partially implemented (provider normalization + execution path still pending) — Phase 3
 - **`mcps` ↔ `tools` bridge is now planned precisely but still not implemented**: `modules/mcps/registry.py` exists, the runtime/tool/marketplace boundaries are documented, and the runtime ID contract is `mcp:{server_id}:{tool_name}`. What is still missing is the actual `McpToolBridge` implementation plus MCP delegation in the tool execution path.
-- **Registry singleton standardization has an unresolved metaclass issue**: `BaseRegistry` / `BaseToolRegistry` currently combine `AsyncSafeSingletonMeta` with `ABC`, which causes import-time conflicts in dependent registries. This is now tracked explicitly as `orm-registry-metaclass-fix`.
+- ~~**Registry singleton standardization had an unresolved metaclass issue**: `BaseRegistry` / `BaseToolRegistry` combined `AsyncSafeSingletonMeta` with `ABC`, causing import-time conflicts. Fixed by removing `ABC` from both bases (redundant — `AsyncSafeSingletonMeta(ABCMeta)` already provides abstract method support).~~ ✅
 - Permissions not implemented — Phase 15
 - Events module missing (0/5 files) — Phase 6 P3
 - 5-file pattern: only 3/48 components compliant — Phase 3/4

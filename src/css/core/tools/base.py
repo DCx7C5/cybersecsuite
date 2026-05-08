@@ -1,10 +1,10 @@
 """Core tool registry contracts and singleton access."""
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from css.core.types.meta import AsyncSafeSingletonMeta
 
 
-class BaseToolRegistry(ABC, metaclass=AsyncSafeSingletonMeta):
+class BaseToolRegistry(metaclass=AsyncSafeSingletonMeta):
     """Abstract contract for tool registries."""
 
     @abstractmethod

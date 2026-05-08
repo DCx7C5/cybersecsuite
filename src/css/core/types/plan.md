@@ -90,11 +90,11 @@ class Tool:
 ```
 
 **Registry Classes Using AsyncSafeSingletonMeta**:
-- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta
-- `ModelRegistry` (`core/models/registry.py`) - inherits BaseRegistry
+- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta, no ABC
+- `ModelRegistry` (`core/models/registry.py`) - metaclass=AsyncSafeSingletonMeta directly
 - `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry
 - `ProviderRegistry` (`api_services/registry.py`) - metaclass=AsyncSafeSingletonMeta
-- `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta
+- `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta, no ABC
 - `ToolRegistry` (`modules/tools/registry.py`) - inherits BaseToolRegistry
 - `SkillRegistry` (`modules/skills/registry.py`) - metaclass=AsyncSafeSingletonMeta
 - `McpRuntimeRegistry` (`modules/mcps/registry.py`) - metaclass=AsyncSafeSingletonMeta

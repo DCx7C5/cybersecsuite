@@ -7,7 +7,7 @@ All endpoints use async aiohttp patterns.
 from css.core.logger import getLogger
 from fastapi import APIRouter, HTTPException, Query
 
-from css.modules.tools.registry import get_tool_registry
+from css.core.tools.base import get_tool_registry
 from css.modules.tools.types import HybridToolSchema
 from css.modules.tools.exceptions import ToolNotFoundError
 
