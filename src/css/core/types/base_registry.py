@@ -1,54 +1,31 @@
-"""Singleton base registry pattern for CyberSecSuite."""
+"""Registry Protocol — pure in-memory registry interface (no DB)."""
 
-from abc import abstractmethod
-from typing import TypeVar, Generic
+from typing import Protocol, TypeVar
 
-from .meta import AsyncSafeSingletonMeta
+T = TypeVar('T', covariant=True)
 
-T = TypeVar('T')
 
-class BaseRegistry(Generic[T], metaclass=AsyncSafeSingletonMeta):
-    """Abstract base class for singleton registries.
+class BaseRegistry(Protocol[T]):
+    """Protocol for pure in-memory registries.
 
-    Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
-    Subclasses should implement the _setup method for initialization.
-
-    Usage:
-        class MyRegistry(BaseRegistry[MyItem]):
-            def _setup(self):
-                self._items: dict[str, MyItem] = {}
-
-            async def register(self, key: str, item: MyItem):
-                self._items[key] = item
-
-        # Get singleton instance
-        registry = MyRegistry()
+    Concrete registries use their own singleton pattern
+    (AsyncSafeSingletonMeta) independently.  This Protocol
+    defines the structural interface only — no base class
+    inheritance, no singleton boilerplate, no DB writes.
     """
 
-    def __init__(self):
-        """Initialize the registry (runs setup only once)."""
-        if not getattr(self, '_initialized', False):
-            self._initialized = True
-            self._setup()
+    async def register(self, item: T) -> None:
+        """Register an item in the registry."""
+        ...
 
-    def _setup(self) -> None:
-        """Setup method called once during first initialization.
+    async def unregister(self, identifier: str) -> None:
+        """Remove an item from the registry by identifier."""
+        ...
 
-        Override this method to perform registry-specific setup.
-        """
-        pass
+    async def get(self, identifier: str) -> T | None:
+        """Retrieve an item by identifier, or None."""
+        ...
 
-    @classmethod
-    def reset_instance(cls) -> None:
-        """Reset the singleton instance (useful for testing)."""
-        if hasattr(cls, "_instances") and cls in cls._instances:
-            del cls._instances[cls]
-        cls._initialized = False
-
-    @abstractmethod
-    async def register(self, *args, **kwargs):
-        """Register an item in the registry.
-
-        Must be implemented by subclasses.
-        """
+    async def list_all(self) -> list[T]:
+        """List all registered items."""
         ...

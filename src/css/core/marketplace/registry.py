@@ -1,28 +1,28 @@
-"""Registry for marketplace items (DB-backed), adapted to use BaseRegistry."""
+"""Registry for marketplace items (DB-backed)."""
 
-
-from css.core.types.base_registry import BaseRegistry
+from css.core.types.meta import AsyncSafeSingletonMeta
 from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 
 from .exceptions import PackageNotFoundError
 
 
-class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
+class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
     """Singleton registry for marketplace items backed by Tortoise ORM.
 
-    Inherits from BaseRegistry to provide singleton pattern and standard interface.
-    Use MarketplaceItemRegistry.get_instance() to get the singleton.
+    Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
+    Registry operations read from/write to PostgreSQL via Tortoise ORM.
     """
 
-    def _setup(self) -> None:
-        """Setup method called once during first initialization."""
-        pass  # No special setup needed for DB-backed registry
+    _initialized: bool = False
+
+    def __init__(self) -> None:
+        if getattr(self, '_initialized', False):
+            return
+        self._initialized = True
 
     async def register(self, item: MarketplaceItem) -> MarketplaceItem:
         """Register (save) a marketplace item.
-
-        Implements BaseRegistry.register().
 
         Args:
             item: The MarketplaceItem to register
@@ -35,8 +35,6 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
 
     async def unregister(self, item_id: str) -> None:
         """Unregister (delete) a marketplace item.
-
-        Implements BaseRegistry.unregister().
 
         Args:
             item_id: The ID of the item to unregister
@@ -51,8 +49,6 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
 
     async def get(self, item_id: str) -> MarketplaceItem | None:
         """Get a marketplace item by ID.
-
-        Implements BaseRegistry.get().
 
         Args:
             item_id: The ID of the item to retrieve
@@ -69,8 +65,6 @@ class MarketplaceItemRegistry(BaseRegistry['MarketplaceItemRegistry']):
         installed_only: bool = False,
     ) -> list[MarketplaceItem]:
         """List all marketplace items with optional filtering.
-
-        Implements BaseRegistry.list_all().
 
         Args:
             kind: Filter by item type (agent, skill, etc.)
