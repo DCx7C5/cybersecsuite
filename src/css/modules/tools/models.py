@@ -1,14 +1,11 @@
-"""Tortoise ORM models for tool persistence (database layer).
-
-Complements types.py dataclasses with database persistence.
-Follows hybrid pattern: dataclass (runtime) + ORM model (persistence).
-"""
+"""Tortoise ORM models for tool persistence."""
 
 from tortoise import fields, models
 
 from css.core.db.fields import DescriptionField, NameField
-from models import BaseModel
-from enums import CompositionStrategy
+from css.core.db.models.base import BaseModel
+
+from .enums import CompositionStrategy
 
 
 class HybridToolDefinition(BaseModel):
@@ -43,7 +40,7 @@ class HybridToolDefinition(BaseModel):
 
 
     def to_schema(self):
-        """Convert ORM model to HybridToolSchema dataclass."""
+        """Convert ORM model to HybridToolSchema."""
         from css.modules.tools.types import HybridToolSchema
         return HybridToolSchema(
             name=self.name,
@@ -59,7 +56,7 @@ class HybridToolDefinition(BaseModel):
 
     @staticmethod
     def from_schema(schema):
-        """Create ORM model from HybridToolSchema dataclass."""
+        """Create ORM model from HybridToolSchema."""
         return HybridToolDefinition(
             name=schema.name,
             description=schema.description,
