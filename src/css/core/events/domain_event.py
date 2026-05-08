@@ -1,9 +1,7 @@
 """Domain event types for Phase 6 CQRS EventStore."""
 
-from __future__ import annotations
-
 from datetime import datetime, UTC
-from typing import Any, Literal
+from typing import Any
 from uuid import uuid4
 
 import msgspec
@@ -16,10 +14,10 @@ class DomainEvent(msgspec.Struct, frozen=True):
     Events are the source of truth; read models are derived from event streams.
     """
 
-    id: str = msgspec.field(default_factory=lambda: str(uuid4()))
     kind: str
     aggregate_type: str
     aggregate_id: str
+    id: str = msgspec.field(default_factory=lambda: str(uuid4()))
     data: dict[str, Any] = msgspec.field(default_factory=dict)
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     timestamp: datetime = msgspec.field(default_factory=lambda: datetime.now(UTC))

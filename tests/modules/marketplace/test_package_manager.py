@@ -4,12 +4,9 @@ import asyncio
 import hashlib
 import pytest
 import tarfile
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime
+from unittest.mock import AsyncMock, patch
 
-from css.modules.marketplace import (
-    PackageMetadata,
+from css.core.marketplace import (
     PackageInstallResult,
     fetch_index,
     verify_hash,
@@ -18,7 +15,6 @@ from css.modules.marketplace import (
     batch_install,
     PackageNotFoundError,
     HashVerificationError,
-    ExtractionError,
 )
 
 
@@ -136,7 +132,7 @@ class TestCheckForUpdates:
             }
         }
 
-        with patch("css.modules.marketplace.package_manager.fetch_index") as mock_fetch:
+        with patch("css.core.marketplace.package_manager.fetch_index") as mock_fetch:
             mock_fetch.return_value = index_data
 
             result = await check_for_updates(installed, "https://example.com/index.json")
@@ -158,7 +154,7 @@ class TestCheckForUpdates:
             }
         }
 
-        with patch("css.modules.marketplace.package_manager.fetch_index") as mock_fetch:
+        with patch("css.core.marketplace.package_manager.fetch_index") as mock_fetch:
             mock_fetch.return_value = index_data
 
             result = await check_for_updates(installed, "https://example.com/index.json")
@@ -168,7 +164,7 @@ class TestCheckForUpdates:
     @pytest.mark.asyncio
     async def test_check_for_updates_index_not_found(self):
         """Test check_for_updates with index not found."""
-        with patch("css.modules.marketplace.package_manager.fetch_index") as mock_fetch:
+        with patch("css.core.marketplace.package_manager.fetch_index") as mock_fetch:
             mock_fetch.side_effect = PackageNotFoundError("Index not found")
 
             result = await check_for_updates({"package-a": "1.0.0"}, "https://example.com/index.json")
@@ -185,7 +181,7 @@ class TestInstallPackage:
         """Test successful package installation."""
         # Create a test archive
         archive_path = tmp_path / "package.tar.gz"
-        with tarfile.open(archive_path, "w:gz") as tar:
+        with tarfile.open(archive_path, "w:gz"):
             # Add dummy file
             pass
 
@@ -193,7 +189,7 @@ class TestInstallPackage:
         install_base = tmp_path / "install"
 
         with patch("aiohttp.ClientSession") as mock_session_class, \
-             patch("css.modules.marketplace.package_manager.extract_archive") as mock_extract:
+             patch("css.core.marketplace.package_manager.extract_archive") as mock_extract:
             
             mock_session = AsyncMock()
             mock_response = AsyncMock()
@@ -257,7 +253,7 @@ class TestInstallPackage:
     async def test_install_package_hash_mismatch(self, tmp_path):
         """Test install_package with checksum mismatch."""
         archive_path = tmp_path / "package.tar.gz"
-        with tarfile.open(archive_path, "w:gz") as tar:
+        with tarfile.open(archive_path, "w:gz"):
             pass
 
         install_base = tmp_path / "install"
@@ -342,7 +338,7 @@ class TestBatchInstall:
             ("package-b", "https://example.com/b.tar.gz", "hash_b"),
         ]
 
-        with patch("css.modules.marketplace.package_manager.install_package") as mock_install:
+        with patch("css.core.marketplace.package_manager.install_package") as mock_install:
             mock_install.side_effect = [
                 PackageInstallResult("package-a", "1.0.0", True, "/path/a"),
                 PackageInstallResult("package-b", "1.0.0", True, "/path/b"),
@@ -363,7 +359,7 @@ class TestBatchInstall:
             ("package-b", "https://example.com/b.tar.gz", "hash_b"),
         ]
 
-        with patch("css.modules.marketplace.package_manager.install_package") as mock_install:
+        with patch("css.core.marketplace.package_manager.install_package") as mock_install:
             mock_install.side_effect = [
                 PackageInstallResult("package-a", "1.0.0", True, "/path/a"),
                 PackageInstallResult("package-b", "1.0.0", False, error="404 Not Found"),
@@ -385,7 +381,7 @@ class TestBatchInstall:
             for i in range(5)
         ]
 
-        with patch("css.modules.marketplace.package_manager.install_package") as mock_install:
+        with patch("css.core.marketplace.package_manager.install_package") as mock_install:
             mock_install.return_value = PackageInstallResult("test", "1.0.0", True)
 
             call_count = 0
