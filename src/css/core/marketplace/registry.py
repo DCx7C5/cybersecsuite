@@ -8,10 +8,11 @@ from .exceptions import PackageNotFoundError
 
 
 class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
-    """In-memory registry for marketplace items.
+    """Read-through cache registry for marketplace items.
 
     Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
-    Pure in-memory cache — persistence is handled by the service layer.
+    Reads fall back to PostgreSQL via Tortoise ORM on cache miss.
+    Persistence (writes) are handled by the service layer.
     """
 
     _initialized: bool = False
@@ -21,6 +22,11 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
             return
         self._initialized = True
         self._items: dict[str, MarketplaceItem] = {}
+
+    async def _load_all(self) -> None:
+        """Load all marketplace items from DB into the in-memory cache."""
+        items = await MarketplaceItem.all()
+        self._items = {item.slug: item for item in items}
 
     async def register(self, item: MarketplaceItem) -> MarketplaceItem:
         """Register an item in the in-memory registry.
@@ -48,7 +54,9 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         del self._items[item_id]
 
     async def get(self, item_id: str) -> MarketplaceItem | None:
-        """Get a marketplace item by slug from the in-memory cache.
+        """Get a marketplace item by slug — read-through cache.
+
+        Checks in-memory cache first, falls back to DB on miss.
 
         Args:
             item_id: The slug of the item to retrieve
@@ -56,7 +64,12 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         Returns:
             MarketplaceItem instance or None if not found
         """
-        return self._items.get(item_id)
+        if item_id in self._items:
+            return self._items[item_id]
+        item = await MarketplaceItem.get_or_none(slug=item_id)
+        if item is not None:
+            self._items[item_id] = item
+        return item
 
     async def list_all(
         self,
@@ -64,7 +77,9 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         status: MarketplaceItemStatus | None = None,
         installed_only: bool = False,
     ) -> list[MarketplaceItem]:
-        """List all cached marketplace items with optional filtering.
+        """List marketplace items with optional filtering — read-through cache.
+
+        If the in-memory cache is empty, loads all items from DB first.
 
         Args:
             kind: Filter by item type (agent, skill, etc.)
@@ -74,6 +89,8 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
         Returns:
             List of MarketplaceItem instances
         """
+        if not self._items:
+            await self._load_all()
         items = list(self._items.values())
 
         if kind:
@@ -219,7 +236,33 @@ class MarketplaceItemRegistry(metaclass=AsyncSafeSingletonMeta):
 
     async def invalidate_item_cache(self, item_slug: str) -> None:
         """Invalidate all cache entries related to *item_slug*."""
+        self._items.pop(item_slug, None)
         from .cache import marketplace_cache
 
         marketplace_cache.invalidate(f"item:{item_slug}")
         marketplace_cache.invalidate_prefix("items:")
+
+    async def invalidate_all(self) -> None:
+        """Clear the entire in-memory cache."""
+        self._items.clear()
+        from .cache import marketplace_cache
+
+        marketplace_cache.invalidate_all()
+
+
+def wire_registry_events() -> None:
+    """Subscribe registry cache invalidation to marketplace events on the EventBus.
+
+    Call once at startup so that in-memory registry caches are invalidated
+    whenever marketplace items are installed/uninstalled/updated.
+    """
+    from css.core.events.event_bus import event_bus
+
+    registry = MarketplaceItemRegistry()
+
+    async def _on_marketplace_change(event_type: str, payload: object) -> None:
+        await registry.invalidate_all()
+
+    event_bus.register("marketplace.install", _on_marketplace_change)
+    event_bus.register("marketplace.uninstall", _on_marketplace_change)
+    event_bus.register("marketplace.updated", _on_marketplace_change)

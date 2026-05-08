@@ -119,6 +119,15 @@ def create_app() -> FastAPI:
             len(tool_registry.hybrid_tools),
         )
 
+        # Wire registry cache invalidation to marketplace events.
+        try:
+            from css.core.marketplace.registry import wire_registry_events
+
+            wire_registry_events()
+            log.info("Registry event invalidation wired")
+        except Exception as exc:
+            log.warning("Failed to wire registry events: %s", exc)
+
         try:
             from css.core.marketplace.seeder import seed_marketplace_on_startup
 
