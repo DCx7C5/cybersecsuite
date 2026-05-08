@@ -9,12 +9,11 @@ Provides commands for:
 
 import asyncio
 import logging
-from types import CoroutineType
-from typing import Any
+import os
+from typing import Any, Protocol, cast
 
 import click
 import uvicorn
-from tortoise.context import TortoiseContext
 
 from css.config import POSTGRES_DATABASE, A2A_SERVER
 from css.core.loader import build_tortoise_modules, build_tortoise_db_url
@@ -22,8 +21,65 @@ from css.core.loader import build_tortoise_modules, build_tortoise_db_url
 log = logging.getLogger(__name__)
 
 
-def init_tortoise_db(db_config: dict, apps: dict[str, list[str]] | None = None) -> CoroutineType[
-    Any, Any, TortoiseContext]:
+class _TortoiseApi(Protocol):
+    @staticmethod
+    async def init(*, config: dict[str, Any]) -> None: ...
+
+    @staticmethod
+    async def generate_schemas() -> None: ...
+
+    @staticmethod
+    async def close_connections() -> None: ...
+
+
+def _tortoise_api() -> _TortoiseApi:
+    from tortoise import Tortoise
+
+    return cast(_TortoiseApi, cast(object, Tortoise))
+
+
+def _require_str(value: object, key_name: str) -> str:
+    if value is None:
+        raise click.ClickException(f"Missing required config value: {key_name}")
+    if not isinstance(value, str):
+        raise click.ClickException(f"Invalid config value type for {key_name}: expected str")
+    return value
+
+
+def _serve_impl(
+    host: str | None,
+    port: int | None,
+    reload: bool,
+    workers: int,
+    log_level: str | None,
+) -> None:
+    from css.config import LOG_LEVEL
+
+    configured_host = A2A_SERVER.get("host", "127.0.0.1")
+    server_host = str(host or os.environ.get("ASGI_HOST") or configured_host)
+
+    configured_port = A2A_SERVER.get("port", 8000)
+    server_port = int(port if port is not None else (os.environ.get("ASGI_PORT") or configured_port))
+    effective_log_level = str(log_level or LOG_LEVEL).lower()
+
+    click.echo(f"Starting CyberSecSuite on http://{server_host}:{server_port}")
+    if reload:
+        click.echo("  Hot-reload enabled (dev mode)")
+    elif workers > 1:
+        click.echo(f"  Workers: {workers}")
+
+    uvicorn.run(
+        # String import required for --reload; fine for normal start too
+        "css.core.asgi.app:app",
+        host=server_host,
+        port=server_port,
+        reload=reload,
+        workers=workers if not reload else 1,
+        log_level=effective_log_level,
+    )
+
+
+async def init_tortoise_db(db_config: dict[str, Any], apps: dict[str, list[str]] | None = None) -> None:
     """Initialize Tortoise ORM with the given database configuration.
 
     Supports both TCP (host:port) and Unix socket modes.
@@ -32,17 +88,16 @@ def init_tortoise_db(db_config: dict, apps: dict[str, list[str]] | None = None) 
         db_config: Database configuration dict with host, port, user, password, database
         apps: Optional Tortoise apps dict. Auto-discovered if None.
     """
-    from tortoise import Tortoise
-
     db_url = build_tortoise_db_url(db_config)
 
-    tortoise_config = {
+    tortoise_config: dict[str, Any] = {
         "connections": {"default": db_url},
         "apps": apps or build_tortoise_modules(),
     }
 
-    log.info("Initializing Tortoise ORM with %s", db_url.replace(db_config.get("password", ""), "***"))
-    return Tortoise.init(config=tortoise_config)
+    password = str(db_config.get("password") or "")
+    log.info("Initializing Tortoise ORM with %s", db_url.replace(password, "***"))
+    await _tortoise_api().init(config=tortoise_config)
 
 
 @click.group()
@@ -54,15 +109,21 @@ def cli():
 
 @cli.command()
 @click.option("--db-host", default=None, help="PostgreSQL host (default: from config)")
-@click.option("--db-port", default=None, help="PostgreSQL port (default: from config)")
+@click.option("--db-port", default=None, type=int, help="PostgreSQL port (default: from config)")
 @click.option("--db-user", default=None, help="PostgreSQL user (default: from config)")
 @click.option("--db-password", default=None, help="PostgreSQL password (default: from config)")
 @click.option("--db-name", default=None, help="Database name (default: from config)")
 @click.option("--generate-schemas/--no-generate-schemas", default=True, help="Generate DB schemas")
-def init_db(db_host, db_port, db_user, db_password, db_name, generate_schemas):
+def init_db(
+    db_host: str | None,
+    db_port: int | None,
+    db_user: str | None,
+    db_password: str | None,
+    db_name: str | None,
+    generate_schemas: bool,
+) -> None:
     """Initialize the database and create tables."""
-    from css.config import POSTGRES_DATABASE
-    
+
     db_config = {
         "host": db_host or POSTGRES_DATABASE.get("host"),
         "port": db_port or POSTGRES_DATABASE.get("port"),
@@ -83,11 +144,9 @@ def init_db(db_host, db_port, db_user, db_password, db_name, generate_schemas):
     async def _init():
         await init_tortoise_db(db_config, apps)
         if generate_schemas:
-            from tortoise import Tortoise
-            await Tortoise.generate_schemas()
+            await _tortoise_api().generate_schemas()
         click.echo("Database initialized successfully!")
-        from tortoise import Tortoise
-        await Tortoise.close_connections()
+        await _tortoise_api().close_connections()
 
     asyncio.run(_init())
 
@@ -98,72 +157,71 @@ def init_db(db_host, db_port, db_user, db_password, db_name, generate_schemas):
 @click.option("--reload", is_flag=True, default=False, help="Enable hot-reload (dev only)")
 @click.option("--workers", default=1, type=int, help="Number of worker processes (prod, no reload)")
 @click.option("--log-level", default=None, help="Log level: debug|info|warning|error|critical")
-def serve(host, port, reload, workers, log_level):
+def serve(
+    host: str | None,
+    port: int | None,
+    reload: bool,
+    workers: int,
+    log_level: str | None,
+) -> None:
     """Start the CyberSecSuite ASGI server."""
-    import os
-    from css.config import LOG_LEVEL
-
-    server_host = host or os.environ.get("ASGI_HOST", A2A_SERVER.get("host", "127.0.0.1"))
-    server_port = int(port or os.environ.get("ASGI_PORT", A2A_SERVER.get("port", 8000)))
-    effective_log_level = log_level or LOG_LEVEL
-
-    click.echo(f"Starting CyberSecSuite on http://{server_host}:{server_port}")
-    if reload:
-        click.echo("  Hot-reload enabled (dev mode)")
-    elif workers > 1:
-        click.echo(f"  Workers: {workers}")
-
-    uvicorn.run(
-        # String import required for --reload; fine for normal start too
-        "css.core.asgi.app:app",
-        host=server_host,
-        port=server_port,
-        reload=reload,
-        workers=workers if not reload else 1,
-        log_level=effective_log_level,
-    )
+    _serve_impl(host, port, reload, workers, log_level)
 
 
 @cli.command(name="run")
-@click.pass_context
-def run_alias(ctx):
+@click.option("--host", default=None, help="Bind host (default: from config / ASGI_HOST env)")
+@click.option("--port", default=None, type=int, help="Bind port (default: from config / ASGI_PORT env)")
+@click.option("--reload", is_flag=True, default=False, help="Enable hot-reload (dev only)")
+@click.option("--workers", default=1, type=int, help="Number of worker processes (prod, no reload)")
+@click.option("--log-level", default=None, help="Log level: debug|info|warning|error|critical")
+def run_alias(
+    host: str | None,
+    port: int | None,
+    reload: bool,
+    workers: int,
+    log_level: str | None,
+) -> None:
     """Alias for 'serve'."""
-    ctx.invoke(serve)
+    _serve_impl(host, port, reload, workers, log_level)
 
 
 
 @cli.command()
-def check():
+def check() -> None:
     """Run system health checks."""
     click.echo("CyberSecSuite health check:")
-    
+
     # Check database connection
-    async def _check():
+    async def _check() -> None:
         import asyncpg
-        
+
         db_config = POSTGRES_DATABASE
+        db_host = _require_str(db_config.get("host"), "POSTGRES_DATABASE.host")
+        db_user = _require_str(db_config.get("user"), "POSTGRES_DATABASE.user")
+        db_name = _require_str(db_config.get("database"), "POSTGRES_DATABASE.database")
+
         try:
             conn = await asyncpg.connect(
-                host=db_config.get("host"),
+                host=db_host,
                 port=int(db_config.get("port", 5432)),
-                user=db_config.get("user"),
+                user=db_user,
                 password=db_config.get("password"),
-                database=db_config.get("database"),
+                database=db_name,
             )
             await conn.close()
             click.echo("  ✓ Database connection: OK")
-        except Exception as e:
-            click.echo(f"  ✗ Database connection: {e}")
-    
+        except (asyncpg.PostgresError, OSError, ValueError) as exc:
+            click.echo(f"  ✗ Database connection: {exc}")
+
     asyncio.run(_check())
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     cli()
 
 
-def main_sync():
+def main_sync() -> None:
     """Sync wrapper for pyproject.toml script entry."""
     main()
 

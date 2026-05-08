@@ -39,7 +39,6 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-http>=1.28",
     "opentelemetry-instrumentation>=0.49",
     "opentelemetry-instrumentation-httpx>=0.49",
-    "opentelemetry-instrumentation-openai>=0.53.0",
     "opentelemetry-semantic-conventions>=0.49",
     "click>=8.3.1",
     "aiohttp>=3.13.3",
@@ -48,12 +47,10 @@ dependencies = [
     "anthropic[aiohttp]",
     "openai>=1.80.0",
     "ai21>=2.0.0",
-    "cerebras-sdk>=2.10.0",
     "cohere>=5.0.0",
     "mistralai>=0.0.19",
     "groq>=0.4.0",
     "google-generativeai>=0.3.0",
-    "google-copilot-sdk>=0.1.32",
     "together>=1.0.0",
     "fireworks-ai==0.19.20",
     "ollama>=0.1.0",
@@ -64,7 +61,6 @@ dependencies = [
     "tortoise>=0.1.1",
     "deepseek==1.0.0",
     "github-copilot-sdk>=0.1.32",
-    "xai-sdk",
 ]
 
 [project.entry-points."css.modules"]
