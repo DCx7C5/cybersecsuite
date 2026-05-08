@@ -4,10 +4,11 @@ from tortoise import fields
 
 from css.core.db.fields import DescriptionField, QualityScoreField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from css.core.rag_vector.enums import DocumentType, DocumentStatus
 
 
-class KnowledgeDocument(BaseModel):
+class KnowledgeDocument(BaseModel, TimestampMixin):
     """Searchable rag_vector document with embeddings."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -82,8 +83,6 @@ class KnowledgeDocument(BaseModel):
     
     # Tracking
     created_by = fields.CharField(max_length=255, default="system")
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     last_accessed_at = fields.DatetimeField(null=True)
     
     # Metadata for vector search optimization

@@ -12,10 +12,11 @@ Multi-channel delivery: email (SMTP), Slack, webhooks.
 from tortoise import fields
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import AlertSeverity, AlertChannel
 
 
-class AlertRule(BaseModel):
+class AlertRule(BaseModel, TimestampMixin):
     """Alert rule — trigger condition + notification channels."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -59,10 +60,6 @@ class AlertRule(BaseModel):
         default=0,
         help_text="Minimum minutes between alerts for same event type"
     )
-    
-    # Metadata
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "alert_rules"
@@ -111,7 +108,7 @@ class AlertHistory(BaseModel):
         ]
 
 
-class ChannelConfig(BaseModel):
+class ChannelConfig(BaseModel, TimestampMixin):
     """Configuration for alert delivery channels."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -140,9 +137,6 @@ class ChannelConfig(BaseModel):
     is_active = fields.BooleanField(default=True)
     last_test_at = fields.DatetimeField(null=True)
     last_test_status = fields.CharField(max_length=16, null=True)  # success/failed
-    
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "alert_channel_configs"

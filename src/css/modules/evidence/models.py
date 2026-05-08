@@ -9,10 +9,11 @@ Models:
 from tortoise import fields
 from css.core.db.fields import DescriptionField, QualityScoreField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import EvidenceStatus, EvidenceType, ChainEventType
 
 
-class Evidence(BaseModel):
+class Evidence(BaseModel, TimestampMixin):
     """Individual evidence item — forensic artifact."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -100,10 +101,6 @@ class Evidence(BaseModel):
         help_text="Evidence classification level"
     )
     
-    # Metadata
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-    
     class Meta:
         table = "evidence"
         unique_together = (("organization", "evidence_id"),)
@@ -175,7 +172,7 @@ class EvidenceChain(BaseModel):
         ]
 
 
-class EvidenceTagging(BaseModel):
+class EvidenceTagging(BaseModel, TimestampMixin):
     """Tag evidence by incident, case, or classification."""
 
     evidence: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -204,10 +201,6 @@ class EvidenceTagging(BaseModel):
         help_text="How relevant to incident/case (0.0-1.0)"
     )
     notes = fields.TextField(default="")
-    
-    # Metadata
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "evidence_tagging"

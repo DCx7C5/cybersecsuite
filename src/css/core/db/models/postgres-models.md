@@ -12,7 +12,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - [x] `db-add-taskassignment-updated-at` — Add `updated_at` to `TaskAssignment` (completed 2026-05-07)
 - [x] `db-fix-teamquota-reset-at` — Fix `TeamQuota.daily_reset_at` to nullable
 - [x] `db-soft-delete-mixin` — Add `SoftDeleteMixin` and apply to soft-delete models
-- [ ] `db-timestamp-mixin-rollout` — Roll out `TimestampMixin` to standard audit-pair ORM models
+- [x] `db-timestamp-mixin-rollout` — Roll out `TimestampMixin` to standard audit-pair ORM models
 - [x] `db-frontmatter-field-semantics` — Split identifier `NameField` from human display-label semantics
 
 ### Field Semantics Decision (2026-05-09)

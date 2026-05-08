@@ -2,9 +2,10 @@
 
 from tortoise import fields
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 
 
-class ChatSessionRecord(BaseModel):
+class ChatSessionRecord(BaseModel, TimestampMixin):
     """Persistent chat session record."""
 
     session_id = fields.CharField(max_length=64, unique=True, db_index=True)
@@ -13,9 +14,6 @@ class ChatSessionRecord(BaseModel):
     model_id = fields.CharField(max_length=128, null=True)
     system_prompt = fields.TextField(default="")
     metadata = fields.JSONField(default=dict)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
     class Meta:
         table = "chat_sessions"
 

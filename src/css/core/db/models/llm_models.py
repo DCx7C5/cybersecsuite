@@ -1,11 +1,12 @@
 
-from tortoise.fields import ManyToManyField, DatetimeField
+from tortoise.fields import ManyToManyField
 from tortoise.indexes import Index
 from css.core.db.fields.char_fields import DescriptionField, NameField
-from models.base import BaseModel
+from css.core.db.models.base import BaseModel
+from .mixins import TimestampMixin
 
 
-class LLMModel(BaseModel):
+class LLMModel(BaseModel, TimestampMixin):
     """
     Database model for LLM models.
     """
@@ -17,9 +18,6 @@ class LLMModel(BaseModel):
         through='llm_model_capability',
         through_fields=('llm_model', 'capability')
     )
-
-    created_at = DatetimeField(auto_now_add=True)
-    updated_at = DatetimeField(auto_now=True)
 
 
 

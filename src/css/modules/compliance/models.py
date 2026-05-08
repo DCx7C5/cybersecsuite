@@ -10,10 +10,11 @@ Models:
 from tortoise import fields
 from css.core.db.fields import DescriptionField, VersionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import FrameworkType, ComplianceStatus
 
 
-class ComplianceFramework(BaseModel):
+class ComplianceFramework(BaseModel, TimestampMixin):
     """Compliance framework definition."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -37,16 +38,12 @@ class ComplianceFramework(BaseModel):
     # Status
     is_active = fields.BooleanField(default=True, db_index=True)
     
-    # Tracking
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-    
     class Meta:
         table = "compliance_frameworks"
         unique_together = (("organization", "framework_type"),)
 
 
-class FrameworkControl(BaseModel):
+class FrameworkControl(BaseModel, TimestampMixin):
     """Individual control within compliance framework."""
 
     framework: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -81,9 +78,6 @@ class FrameworkControl(BaseModel):
     )
     risk_impact = fields.CharField(max_length=255, default="")
     
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-    
     class Meta:
         table = "framework_controls"
         unique_together = (("framework", "control_id"),)
@@ -92,7 +86,7 @@ class FrameworkControl(BaseModel):
         ]
 
 
-class ControlMapping(BaseModel):
+class ControlMapping(BaseModel, TimestampMixin):
     """Map findings/incidents/scans to compliance controls."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -134,9 +128,6 @@ class ControlMapping(BaseModel):
     found_at = fields.DatetimeField(db_index=True)
     remediated_at = fields.DatetimeField(null=True)
     verified_at = fields.DatetimeField(null=True)
-    
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "control_mappings"

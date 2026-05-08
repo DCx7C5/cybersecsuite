@@ -3,10 +3,11 @@
 from tortoise import fields
 from css.core.db.fields import DescriptionField, QualityScoreField, UrlField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import IOCType, ThreatLevel
 
 
-class IOC(BaseModel):
+class IOC(BaseModel, TimestampMixin):
     """Indicator of Compromise."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -48,9 +49,6 @@ class IOC(BaseModel):
     
     # Status
     is_active = fields.BooleanField(default=True, db_index=True)
-    
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "iocs"

@@ -14,10 +14,11 @@ from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
 from css.core.enums import Role
+from .mixins import TimestampMixin
 from fields import LabelField, NameField, UrlField, DescriptionField, SlugField
 
 
-class Account(BaseModel):
+class Account(BaseModel, TimestampMixin):
     """User account — identity record for authentication."""
 
     username = NameField(max_length=128, unique=True, db_index=True)
@@ -26,8 +27,6 @@ class Account(BaseModel):
     is_active = fields.BooleanField(default=True, db_index=True)
     is_verified = fields.BooleanField(default=False)
     last_login = fields.DatetimeField(null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "account"
@@ -40,7 +39,7 @@ class Account(BaseModel):
         ]
 
 
-class UserProfile(BaseModel):
+class UserProfile(BaseModel, TimestampMixin):
     """Extended user profile information."""
 
     account: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
@@ -56,8 +55,6 @@ class UserProfile(BaseModel):
     phone = fields.CharField(max_length=20, null=True)
     timezone = fields.CharField(max_length=50, default="UTC")
     preferences = fields.JSONField(default=dict)  # UI theme, notifications, etc.
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "user_profile"
@@ -65,7 +62,7 @@ class UserProfile(BaseModel):
         table_verbose_plural = "User Profiles"
 
 
-class Organization(BaseModel):
+class Organization(BaseModel, TimestampMixin):
     """Multi-tenant organization container."""
 
     name = NameField(max_length=255, db_index=True)
@@ -84,8 +81,6 @@ class Organization(BaseModel):
 
     # Metadata
     metadata = fields.JSONField(default=dict)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "organizations"
@@ -139,7 +134,7 @@ class OrganizationMembership(BaseModel):
         ]
 
 
-class RoleAssignment(BaseModel):
+class RoleAssignment(BaseModel, TimestampMixin):
     """Bind Account to Role at Organization scope (for core.roles RBAC)."""
 
     account: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
@@ -168,9 +163,6 @@ class RoleAssignment(BaseModel):
     is_active = fields.BooleanField(default=True)
     activated_at = fields.DatetimeField(auto_now_add=True)
     expires_at = fields.DatetimeField(null=True)  # Optional time-bound role
-
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "role_assignments"

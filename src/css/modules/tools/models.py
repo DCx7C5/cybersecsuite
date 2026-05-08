@@ -4,11 +4,12 @@ from tortoise import fields, models
 
 from css.core.db.fields import DescriptionField, NameField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 
 from .enums import CompositionStrategy
 
 
-class HybridToolDefinition(BaseModel):
+class HybridToolDefinition(BaseModel, TimestampMixin):
     """Persisted hybrid tool definition in database.
     
     Maps to HybridToolSchema dataclass for runtime use.
@@ -24,8 +25,6 @@ class HybridToolDefinition(BaseModel):
     requires_coordination = fields.BooleanField(default=False)
     metadata = fields.JSONField(default=dict)
     enabled = fields.BooleanField(default=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     created_by = fields.CharField(max_length=256, null=True)
     
     class Meta:

@@ -6,6 +6,7 @@ import msgspec
 from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 
 
 class CacheEntry(msgspec.Struct):
@@ -40,15 +41,13 @@ class CacheStats(msgspec.Struct):
         return self.hits / total
 
 
-class CacheEntryModel(BaseModel):
+class CacheEntryModel(BaseModel, TimestampMixin):
     """Persistent cache entry with TTL expiration support."""
 
     cache_key = fields.CharField(max_length=512, unique=True, db_index=True)
     cache_value = fields.JSONField(default=dict)
     namespace = fields.CharField(max_length=128, default="default", db_index=True)
     ttl_seconds = fields.IntField(default=0)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     expires_at = fields.DatetimeField(null=True, db_index=True)
 
     class Meta:

@@ -3,9 +3,10 @@
 from tortoise import fields
 
 from .base import BaseModel
+from .mixins import TimestampMixin
 
 
-class PermissionGrant(BaseModel):
+class PermissionGrant(BaseModel, TimestampMixin):
     """Permission grant mapping role to permissions at scope level.
     
     Supports both action-based permissions (tool_permissions) and 
@@ -22,8 +23,6 @@ class PermissionGrant(BaseModel):
     read_paths = fields.JSONField(default=list)
     write_paths = fields.JSONField(default=list)
     base_permissions = fields.JSONField(default=dict)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "permission_grants"
@@ -51,15 +50,13 @@ class PermissionGrant(BaseModel):
         return False
 
 
-class ScopeSession(BaseModel):
+class ScopeSession(BaseModel, TimestampMixin):
     """Session scope tracking for TTL and auto-cleanup."""
 
     session_id = fields.CharField(max_length=255, unique=True, db_index=True)
     scope_level = fields.CharField(max_length=32)
     parent_scope_id = fields.CharField(max_length=255, null=True)
     role = fields.CharField(max_length=32)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     expires_at = fields.DatetimeField(null=True)
     auto_cleanup_at = fields.DatetimeField(null=True)
 

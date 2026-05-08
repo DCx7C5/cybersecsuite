@@ -3,12 +3,13 @@
 from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 
 from .enums import MemoryEntryKind, MemoryScope, MemoryTier
 from .types import MemoryEntry, MemorySnapshot
 
 
-class MemoryEntryRecord(BaseModel):
+class MemoryEntryRecord(BaseModel, TimestampMixin):
     """Persisted memory entry."""
 
     entry_id = fields.CharField(max_length=128, unique=True, db_index=True)
@@ -19,9 +20,6 @@ class MemoryEntryRecord(BaseModel):
     kind = fields.CharEnumField(MemoryEntryKind, default=MemoryEntryKind.NOTE)
     content = fields.TextField()
     metadata = fields.JSONField(default=dict)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
     class Meta:
         table = "memory_entry"
         table_description = "Persistent memory entries across sessions and agents"
@@ -47,7 +45,7 @@ class MemoryEntryRecord(BaseModel):
         )
 
 
-class MemorySnapshotRecord(BaseModel):
+class MemorySnapshotRecord(BaseModel, TimestampMixin):
     """Persisted snapshot for rollback and replay."""
 
     snapshot_id = fields.CharField(max_length=128, unique=True, db_index=True)
@@ -55,9 +53,6 @@ class MemorySnapshotRecord(BaseModel):
     summary = fields.TextField()
     entries = fields.JSONField(default=list)
     metadata = fields.JSONField(default=dict)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
     class Meta:
         table = "memory_snapshot"
         table_description = "Session memory snapshots for rollback and replay"

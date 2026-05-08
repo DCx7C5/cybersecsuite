@@ -3,9 +3,10 @@
 from tortoise import fields
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import Tactic
 
-class MITRETechnique(BaseModel):
+class MITRETechnique(BaseModel, TimestampMixin):
     """MITRE ATT&CK technique."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -38,9 +39,7 @@ class MITRETechnique(BaseModel):
         help_text="URLs to MITRE and other resources"
     )
     
-    # Tracking
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+
     
     class Meta:
         table = "mitre_techniques"
@@ -50,7 +49,7 @@ class MITRETechnique(BaseModel):
         ]
 
 
-class ThreatActor(BaseModel):
+class ThreatActor(BaseModel, TimestampMixin):
     """Threat actor/campaign/group."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -89,9 +88,6 @@ class ThreatActor(BaseModel):
         default=list,
         help_text="Industries/sectors targeted"
     )
-    
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "threat_actors"

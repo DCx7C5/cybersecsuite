@@ -4,10 +4,11 @@ from tortoise import fields
 
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import TaskType
 
 
-class ScheduledTask(BaseModel):
+class ScheduledTask(BaseModel, TimestampMixin):
     """Cron-scheduled task."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -54,8 +55,7 @@ class ScheduledTask(BaseModel):
     
     # Metadata
     created_by = fields.CharField(max_length=255, default="system")
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+
     
     class Meta:
         table = "scheduled_tasks"

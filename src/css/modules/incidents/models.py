@@ -11,10 +11,11 @@ from tortoise.indexes import Index
 
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from css.modules.incidents.enums import IncidentSource, SeverityLevel, IncidentStatus, TimelineEventType
 
 
-class Incident(BaseModel):
+class Incident(BaseModel, TimestampMixin):
     """Incident — security event requiring response."""
     
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -120,10 +121,7 @@ class Incident(BaseModel):
         help_text="What we learned / improvements made"
     )
     
-    # Metadata
     created_by = fields.CharField(max_length=255, default="system")
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "incidents"
@@ -186,7 +184,7 @@ class IncidentTimeline(BaseModel):
         ordering = ["incident", "sequence_number"]
 
 
-class IncidentTask(BaseModel):
+class IncidentTask(BaseModel, TimestampMixin):
     """Task items within incident investigation/containment/remediation."""
 
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -234,9 +232,7 @@ class IncidentTask(BaseModel):
     started_at = fields.DatetimeField(null=True)
     completed_at = fields.DatetimeField(null=True)
     
-    # Metadata
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+
     
     class Meta:
         table = "incident_tasks"

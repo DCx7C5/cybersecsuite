@@ -7,6 +7,7 @@ from tortoise import fields, models
 
 from css.core.db.fields import DescriptionField, VersionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 
 from .enums import SkillStatus, SkillCategory
 
@@ -81,7 +82,7 @@ class SkillDefinition:
         return errors
 
 
-class SkillDefinitionModel(BaseModel):
+class SkillDefinitionModel(BaseModel, TimestampMixin):
     """Persistent skill definition in the database (Ring 2 ORM model)."""
 
     skill_id = fields.CharField(max_length=255, unique=True, db_index=True)
@@ -96,9 +97,6 @@ class SkillDefinitionModel(BaseModel):
     tags = fields.JSONField(default=list)
     dependencies = fields.JSONField(default=list)
     custom_metadata = fields.JSONField(default=dict)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
     class Meta:
         table = "skill_definitions"
         table_description = "Persistent skill definitions and metadata"

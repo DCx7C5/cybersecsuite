@@ -3,9 +3,10 @@
 from tortoise import fields
 from css.core.db.models.base import BaseModel
 from css.core.db.fields import LabelField, UrlField
+from css.core.db.models.mixins import TimestampMixin
 
 
-class WebhookEndpoint(BaseModel):
+class WebhookEndpoint(BaseModel, TimestampMixin):
     """Configured outbound webhook endpoint."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -19,9 +20,6 @@ class WebhookEndpoint(BaseModel):
     event_filter = fields.JSONField(default=list)
     retry_policy = fields.JSONField(default={"max_attempts": 3, "base_delay_seconds": 2})
     is_active = fields.BooleanField(default=True, db_index=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-
     class Meta:
         table = "webhook_endpoint"
         table_verbose = "Webhook Endpoint"

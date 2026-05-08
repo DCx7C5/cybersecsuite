@@ -3,10 +3,11 @@
 from tortoise import fields
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
+from css.core.db.models.mixins import TimestampMixin
 from .enums import ScanType, ScanStatus, SeverityRating
 
 
-class Scan(BaseModel):
+class Scan(BaseModel, TimestampMixin):
     """Vulnerability/compliance scan."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -57,15 +58,12 @@ class Scan(BaseModel):
     scanner_name = fields.CharField(max_length=128, default="")
     scanner_version = fields.CharField(max_length=32, default="")
     
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
-    
     class Meta:
         table = "scans"
         unique_together = (("organization", "scan_id"),)
 
 
-class Finding(BaseModel):
+class Finding(BaseModel, TimestampMixin):
     """Individual vulnerability/compliance finding."""
 
     scan: fields.ForeignKeyRelation = fields.ForeignKeyField(
@@ -102,9 +100,6 @@ class Finding(BaseModel):
         default="open",
         db_index=True,
     )
-    
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     
     class Meta:
         table = "scan_findings"
