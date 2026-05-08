@@ -3,22 +3,14 @@
 import asyncio
 import logging
 from typing import Dict, List, Optional
-from enum import Enum
 import aiohttp
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
+from .enums import DeliveryStatus
 
 logger = logging.getLogger(__name__)
-
-
-class DeliveryStatus(str, Enum):
-    """Alert delivery status."""
-    PENDING = "pending"
-    SENT = "sent"
-    FAILED = "failed"
-    SKIPPED = "skipped"
 
 
 class AlertDispatcher:

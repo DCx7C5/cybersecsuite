@@ -1,8 +1,7 @@
 """Compliance module — regulatory framework mapping (Phase 7)."""
 
+from .enums import FrameworkType, ComplianceStatus
 from .models import (
-    FrameworkType,
-    ComplianceStatus,
     ComplianceFramework,
     FrameworkControl,
     ControlMapping,

@@ -1,6 +1,7 @@
 """Strategies module — response injection and routing strategies."""
 
-from .response_strategy_router import QueryComplexity, ResponseStrategyRouter
+from .enums import QueryComplexity
+from .response_strategy_router import ResponseStrategyRouter
 # Phase 6 T6.5: Pipeline stages
 from .pipeline import RouteStage, route
 from .implementations import (

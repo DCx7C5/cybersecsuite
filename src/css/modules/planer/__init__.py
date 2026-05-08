@@ -2,7 +2,8 @@
 
 from css.core.logger import getLogger
 
-from .models import PlanStep, PlanStepStatus, PlannerSession
+from .enums import PlanStepStatus
+from .models import PlanStep, PlannerSession
 from .store import ProposalStore
 from .analyzer import ArchitectureAnalyzer
 from .decision_log import DecisionLog

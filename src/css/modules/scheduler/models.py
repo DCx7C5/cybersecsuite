@@ -1,23 +1,13 @@
 """Scheduler module — cron-based task execution (Phase 7)."""
 
-from tortoise import Model, fields
+from tortoise import fields
 from datetime import datetime
-from enum import Enum
+
+from css.core.db.models.base import BaseModel
+from .enums import TaskType
 
 
-class TaskType(str, Enum):
-    """Types of scheduled tasks."""
-    SCAN = "scan"
-    THREAT_FEED_SYNC = "threat_feed_sync"
-    REPORT_GENERATION = "report_generation"
-    BACKUP = "backup"
-    CLEANUP = "cleanup"
-    COMPLIANCE_CHECK = "compliance_check"
-    RED_TEAM_DRILL = "red_team_drill"
-    CUSTOM = "custom"
-
-
-class ScheduledTask(Model):
+class ScheduledTask(BaseModel):
     """Cron-scheduled task."""
     
     id = fields.BigIntField(primary_key=True)
@@ -73,7 +63,7 @@ class ScheduledTask(Model):
         unique_together = (("organization", "task_id"),)
 
 
-class TaskExecution(Model):
+class TaskExecution(BaseModel):
     """Record of task execution."""
     
     id = fields.BigIntField(primary_key=True)

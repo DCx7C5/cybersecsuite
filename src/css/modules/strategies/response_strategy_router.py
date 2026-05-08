@@ -3,18 +3,9 @@
 Decides PREPEND vs INJECT vs CHAIN based on query complexity using local LLM.
 """
 
-from enum import Enum
-
 from css.core.a2a.enums import ResponseInjectionStrategy
 from css.modules.triage import TriageCategory, TriageEngine, TriageRequest
-
-
-class QueryComplexity(str, Enum):
-    """Query complexity level for strategy selection."""
-
-    SIMPLE = "simple"      # Binary yes/no, validation → INJECT
-    MODERATE = "moderate"  # Routing decision, classification → PREPEND
-    COMPLEX = "complex"    # Multi-step reasoning, synthesis → CHAIN
+from .enums import QueryComplexity
 
 
 class ResponseStrategyRouter:

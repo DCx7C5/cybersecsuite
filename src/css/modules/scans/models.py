@@ -1,42 +1,11 @@
 """Scans module — vulnerability assessment lifecycle (Phase 7)."""
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
+from tortoise import fields
+from css.core.db.models.base import BaseModel
+from .enums import ScanType, ScanStatus, SeverityRating
 
 
-class ScanType(str, Enum):
-    """Types of security scans."""
-    VULNERABILITY = "vulnerability"
-    COMPLIANCE = "compliance"
-    CONFIGURATION = "configuration"
-    MALWARE = "malware"
-    WEB_APPLICATION = "web_application"
-    NETWORK = "network"
-    CODE = "code"
-    CONTAINER = "container"
-
-
-class ScanStatus(str, Enum):
-    """Scan lifecycle status."""
-    SCHEDULED = "scheduled"
-    RUNNING = "running"
-    PAUSED = "paused"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
-
-
-class SeverityRating(str, Enum):
-    """Finding severity."""
-    CRITICAL = "critical"
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
-    INFO = "info"
-
-
-class Scan(Model):
+class Scan(BaseModel):
     """Vulnerability/compliance scan."""
     
     id = fields.BigIntField(primary_key=True)
@@ -96,7 +65,7 @@ class Scan(Model):
         unique_together = (("organization", "scan_id"),)
 
 
-class Finding(Model):
+class Finding(BaseModel):
     """Individual vulnerability/compliance finding."""
     
     id = fields.BigIntField(primary_key=True)

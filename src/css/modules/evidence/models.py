@@ -6,48 +6,12 @@ Models:
 - EvidenceTagging: Tag evidence by incident/case/type
 """
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
-import hashlib
+from tortoise import fields
+from css.core.db.models.base import BaseModel
+from .enums import EvidenceStatus, EvidenceType, ChainEventType
 
 
-class EvidenceStatus(str, Enum):
-    """Evidence lifecycle status."""
-    COLLECTED = "collected"
-    VERIFIED = "verified"
-    SEALED = "sealed"
-    ARCHIVED = "archived"
-    DESTROYED = "destroyed"
-
-
-class EvidenceType(str, Enum):
-    """Classification of evidence source."""
-    LOG_FILE = "log_file"
-    NETWORK_CAPTURE = "network_capture"
-    DISK_IMAGE = "disk_image"
-    MEMORY_DUMP = "memory_dump"
-    FILE_SYSTEM = "file_system"
-    SYSTEM_STATE = "system_state"
-    CONFIG = "config"
-    METADATA = "metadata"
-    OTHER = "other"
-
-
-class ChainEventType(str, Enum):
-    """Chain-of-custody event types."""
-    COLLECTED = "collected"
-    TRANSFERRED = "transferred"
-    ACCESSED = "accessed"
-    VERIFIED = "verified"
-    SEALED = "sealed"
-    UNSEALED = "unsealed"
-    ARCHIVED = "archived"
-    RESTORED = "restored"
-    DESTROYED = "destroyed"
-
-
-class Evidence(Model):
+class Evidence(BaseModel):
     """Individual evidence item — forensic artifact."""
     
     id = fields.BigIntField(primary_key=True)
@@ -150,7 +114,7 @@ class Evidence(Model):
         ]
 
 
-class EvidenceChain(Model):
+class EvidenceChain(BaseModel):
     """Immutable chain-of-custody transaction log."""
     
     id = fields.BigIntField(primary_key=True)
@@ -212,7 +176,7 @@ class EvidenceChain(Model):
         ]
 
 
-class EvidenceTagging(Model):
+class EvidenceTagging(BaseModel):
     """Tag evidence by incident, case, or classification."""
     
     id = fields.BigIntField(primary_key=True)

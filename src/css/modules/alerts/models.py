@@ -9,27 +9,12 @@ Alert Dispatcher subscribes to EventStore and fires alerts based on rules.
 Multi-channel delivery: email (SMTP), Slack, webhooks.
 """
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
+from tortoise import fields
+from css.core.db.models.base import BaseModel
+from .enums import AlertSeverity, AlertChannel
 
 
-class AlertSeverity(str, Enum):
-    """Alert severity levels."""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
-
-
-class AlertChannel(str, Enum):
-    """Alert delivery channels."""
-    EMAIL = "email"
-    SLACK = "slack"
-    WEBHOOK = "webhook"
-
-
-class AlertRule(Model):
+class AlertRule(BaseModel):
     """Alert rule — trigger condition + notification channels."""
     
     id = fields.BigIntField(primary_key=True)
@@ -84,7 +69,7 @@ class AlertRule(Model):
         unique_together = (("organization", "name"),)
 
 
-class AlertHistory(Model):
+class AlertHistory(BaseModel):
     """History of fired alerts with delivery status per channel."""
     
     id = fields.BigIntField(primary_key=True)
@@ -127,7 +112,7 @@ class AlertHistory(Model):
         ]
 
 
-class ChannelConfig(Model):
+class ChannelConfig(BaseModel):
     """Configuration for alert delivery channels."""
     
     id = fields.BigIntField(primary_key=True)

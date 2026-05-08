@@ -1,13 +1,12 @@
 """Alerts module — multi-channel alert dispatch (Phase 7)."""
 
+from .enums import AlertSeverity, AlertChannel, DeliveryStatus
 from .models import (
-    AlertSeverity,
-    AlertChannel,
     AlertRule,
     AlertHistory,
     ChannelConfig,
 )
-from .dispatcher import AlertDispatcher, DeliveryStatus
+from .dispatcher import AlertDispatcher
 from .endpoints import router
 
 __all__ = [

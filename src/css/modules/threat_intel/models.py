@@ -1,30 +1,11 @@
 """Threat Intelligence module — IOC tracking (Phase 7)."""
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
+from tortoise import fields
+from css.core.db.models.base import BaseModel
+from .enums import IOCType, ThreatLevel
 
 
-class IOCType(str, Enum):
-    """Indicator of Compromise types."""
-    IP_ADDRESS = "ip_address"
-    DOMAIN = "domain"
-    URL = "url"
-    FILE_HASH = "file_hash"
-    EMAIL = "email"
-    REGISTRY_KEY = "registry_key"
-    USER_AGENT = "user_agent"
-
-
-class ThreatLevel(str, Enum):
-    """IOC threat level."""
-    CRITICAL = "critical"
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
-
-
-class IOC(Model):
+class IOC(BaseModel):
     """Indicator of Compromise."""
     
     id = fields.BigIntField(primary_key=True)
@@ -76,7 +57,7 @@ class IOC(Model):
         unique_together = (("organization", "ioc_type", "value"),)
 
 
-class ThreatFeed(Model):
+class ThreatFeed(BaseModel):
     """External threat feed integration."""
     
     id = fields.BigIntField(primary_key=True)
@@ -104,7 +85,7 @@ class ThreatFeed(Model):
         unique_together = (("organization", "name"),)
 
 
-class IOCMatch(Model):
+class IOCMatch(BaseModel):
     """Record of IOC matched against observables."""
     
     id = fields.BigIntField(primary_key=True)
