@@ -2,7 +2,7 @@
 
 from tortoise import fields
 from css.core.db.models.base import BaseModel
-from fields import UrlField, NameField
+from css.core.db.fields import LabelField, UrlField
 
 
 class WebhookEndpoint(BaseModel):
@@ -13,7 +13,7 @@ class WebhookEndpoint(BaseModel):
         related_name="webhook_endpoints",
         on_delete=fields.CASCADE,
     )
-    name = NameField(max_length=255)
+    name = LabelField()
     url = UrlField(max_length=1024)
     secret = fields.CharField(max_length=255, default="")
     event_filter = fields.JSONField(default=list)

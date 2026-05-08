@@ -14,7 +14,7 @@ from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
 from css.core.enums import Role
-from fields import NameField, UrlField, DescriptionField, SlugField
+from fields import LabelField, NameField, UrlField, DescriptionField, SlugField
 
 
 class Account(BaseModel):
@@ -48,8 +48,8 @@ class UserProfile(BaseModel):
         related_name="profile",
         on_delete=fields.CASCADE,
     )
-    first_name = NameField(max_length=128, null=True)
-    last_name = NameField(max_length=128, null=True)
+    first_name = LabelField(null=True)
+    last_name = LabelField(null=True)
     display_name = fields.CharField(max_length=255, null=True)
     avatar_url = UrlField(max_length=512, null=True)
     bio = DescriptionField(default="")

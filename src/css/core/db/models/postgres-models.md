@@ -13,7 +13,15 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - [x] `db-fix-teamquota-reset-at` — Fix `TeamQuota.daily_reset_at` to nullable
 - [ ] `db-soft-delete-mixin` — Add `SoftDeleteMixin` and apply to soft-delete models
 - [ ] `db-timestamp-mixin-rollout` — Roll out `TimestampMixin` to standard audit-pair ORM models
-- [ ] `db-frontmatter-field-semantics` — Split identifier `NameField` from human display-label semantics
+- [x] `db-frontmatter-field-semantics` — Split identifier `NameField` from human display-label semantics
+
+### Field Semantics Decision (2026-05-09)
+- **`NameField`**: Identifier semantics — ASCII Python identifier, unique, for programmatic keys (tool names, scope keys, model codenames, usernames, marketplace slugs, mixin `name` fields).
+- **`LabelField`**: Display-name semantics — human-readable CharField, no identifier/uniqueness constraint, for entity names shown to users (human names, project names, webhook labels, tag display names).
+- **Semantic boundary**: Input validation/sanitization belongs at the application boundary, not in the ORM field layer. HTML safety belongs at the output/render boundary.
+- **Correct `NameField` usages**: `Account.username`, `LLMModel.name`, `MarketplaceItem.name`, `AppScope.name`, `ProjectScope.name`, `Organization.name`, `HybridToolDefinition.name`, `BaseFrontmatterMixin.name`
+- **Migrated to `LabelField`**: `UserProfile.first_name`, `UserProfile.last_name`, `ProjectFile.name`, `Project.name`, `Tag.name`, `WebhookEndpoint.name`
+- **Migrated to plain `CharField`**: `SessionScope.name` (default="", not an identifier), `SessionScope.phase` (not a name field)
 - [ ] `db-frontmatter-base-rollout` — Remove `BaseFBSModel`; apply `BaseFrontmatterMixin` only where semantic fit is correct
 - [ ] `db-version-mixin-rollout` — Roll out `VersionMixin` to versioned/synced artifact models
 - [ ] `orm-custom-managers` — Add custom Tortoise managers for Ring 2 query logic

@@ -1,6 +1,7 @@
 from css.core.db.fields.char_fields import (
     DescriptionField,
     IPv6Field,
+    LabelField,
     NameField,
     PathField,
     UrlField,
@@ -19,6 +20,7 @@ __all__ = [
     "DescriptionField",
     "IPv4Field",
     "IPv6Field",
+    "LabelField",
     "NameField",
     "PathField",
     "QualityScoreField",

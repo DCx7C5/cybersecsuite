@@ -11,7 +11,10 @@ URL_ADAPTER = TypeAdapter(AnyHttpUrl)
 
 class NameField(CharField):
     """
-    A CharField that validates that the value is a valid Python identifier and is unique.
+    Identifier-style field: validates that the value is a valid Python identifier and is unique.
+
+    Use for programmatic identifiers (e.g., tool names, scope keys, model codenames).
+    For human-readable display names, use ``LabelField`` instead.
     """
 
     def __init__(self, *args, **kwargs):
@@ -27,6 +30,21 @@ class NameField(CharField):
             raise ValueError(f"Name must contain only ASCII characters: {value}")
         if not value.isidentifier():
             raise ValueError(f"Invalid Python identifier: {value}")
+
+
+class LabelField(CharField):
+    """
+    Display-name / label field for human-readable names.
+
+    Unlike ``NameField``, this does not enforce Python-identifier rules or uniqueness.
+    Use for entity names that are displayed to users (project names, webhook labels,
+    human names, etc.). Input validation (trimming, sanitization) belongs at the
+    application boundary, not in the ORM field layer.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 255)
+        super().__init__(*args, **kwargs)
 
 class UrlField(CharField):
     """

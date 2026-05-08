@@ -2,13 +2,13 @@ from tortoise.indexes import Index
 from tortoise import fields
 from css.core.db.fields import DescriptionField, PathField
 from css.core.db.models.base import BaseModel
-from fields import NameField
+from css.core.db.fields import LabelField
 
 
 class ProjectFile(BaseModel):
     """Database model for a project file."""
 
-    name = NameField(max_length=255)
+    name = LabelField()
     path = PathField(max_length=255)
     permissions = 1 # TODO: relation to PermissionTable
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -24,7 +24,7 @@ class ProjectFile(BaseModel):
 class Project(BaseModel):
     """Database model for a project."""
 
-    name = NameField(max_length=255)
+    name = LabelField()
     description = DescriptionField(null=True)
     project_dir = PathField(max_length=255)
     created_at = fields.DatetimeField(auto_now_add=True)
