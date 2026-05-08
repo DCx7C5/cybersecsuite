@@ -19,6 +19,20 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 - **Connection pooling**: Managed by asyncpg (Tortoise default)
 - **Migrations**: Via Tortoise migrations or Alembic (TBD)
 
+### Canonical ORM Primitives
+
+- Every ORM entity inherits `css.core.db.models.base.BaseModel`.
+- `BaseModel.id` is the canonical default primary key via `PrimaryKeyField()`.
+- Use semantic helpers from `css.core.db.fields` whenever the meaning matches:
+  `NameField`, `DescriptionField`, `VersionField`, `SlugField`, `UrlField`,
+  `PathField`, `SHA512SumField`, `IPv4Field`, `IPv6Field`, `QualityScoreField`,
+  `CostField`.
+- Use raw Tortoise fields only when there is no helper with the correct domain semantics.
+
+### Tracked ORM Cleanup Gaps
+
+- `db-knowledge-charenum-fields` — convert knowledge-model `choices=` string fields to canonical enums + `CharEnumField(...)`, matching the DB rules above.
+
 ---
 
 ## Core Files
@@ -58,7 +72,7 @@ class FindingStatus(str, Enum):
 Tortoise ORM models for forensic scope isolation:
 
 ```python
-class ProjectScope(Model):
+class ProjectScope(BaseModel):
     """Project-level scope — persistent forensic workspace."""
     
     name: str
@@ -70,7 +84,7 @@ class ProjectScope(Model):
     class Meta:
         table = "project_scope"
 
-class SessionScope(Model):
+class SessionScope(BaseModel):
     """Session-level scope — ephemeral investigation context."""
     
     project: ForeignKeyField = ForeignKey(ProjectScope)
@@ -87,7 +101,7 @@ class SessionScope(Model):
 Team/agent management models:
 
 ```python
-class Team(Model):
+class Team(BaseModel):
     """Team of agents working together."""
     
     name: str
@@ -104,7 +118,7 @@ class Team(Model):
 Orchestrator instance tracking:
 
 ```python
-class OrchestratorInstance(Model):
+class OrchestratorInstance(BaseModel):
     """Running orchestrator process."""
     
     name: str
@@ -246,7 +260,7 @@ TORTOISE_ORM = {
         "models": {
             "models": [
                 "css.core.db.models",
-                "css.modules.marketplace.models",
+                "css.core.db.models.marketplace",
                 # ... other discovered models
             ],
             "default_connection": "default",

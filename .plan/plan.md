@@ -2,24 +2,24 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–32 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-07T23:29 (session current)  
+**Updated**: 2026-05-08T01:22:41+02:00 (session current)  
 **Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 780 total (393 done, 381 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 783 total (393 done, 384 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
 ## 📚 START HERE: Source-of-Truth Pattern
 
-⚠️ **IMPORTANT**: Each module/provider/component owns its own documentation via **local `plan.md` files**.
+⚠️ **IMPORTANT**: Each module/provider/component owns its own documentation via local planning markdown files. Core areas use `plan.md`; modules use same-name docs like `agents/agents.md`.
 
 **Central `.plan/` directory** provides meta-level overview only. **DO NOT** refer to centralized matrices or audit summaries in `.plan/api_services/` or `.plan/modules/` — those are **outputs, not sources-of-truth**.
 
 ### Source of Truth Locations
 
 When implementing or learning about components:
-- **API Providers**: `src/css/api_services/plan.md` ← **Use this**
+- **API Providers**: `src/css/api_services/api_services.md` ← **Use this**
 - **Core Infrastructure**: `src/css/core/{area}/plan.md` ← **Use this**
-- **Modules**: `src/css/modules/{module}/plan.md` ← **Use this**
+- **Modules**: `src/css/modules/{module}/{module}.md` ← **Use this**
 
 Each file contains:
 - Purpose & design rationale
@@ -45,14 +45,14 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ---
 
-## 📊 CURRENT STATUS (2026-05-07T19:46 UTC+2)
+## 📊 CURRENT STATUS (2026-05-08T00:55 UTC+2)
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 35 total (Phase 0–34) — Phase 0 + 1 complete, Phase 2+ pending  
-**Todos**: **780 total (323 done, 449 pending, 7 blocked)**  
+**Todos**: **783 total (393 done, 384 pending, 6 blocked)**  
 **Consistent File Patterns**: 5/25 modules follow established patterns (google_a2a, marketplace, tasks, teams, tools)  
 **Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
-**Next**: Continue ready queue from `session.db` (`mod-working-dir` first by `sort_order`)
+**Next**: Continue ready queue from `session.db` in `sort_order`
 
 ### Normalization Status (2026-05-07)
 
@@ -69,19 +69,17 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 ### Module Status Snapshot
 
-| Module | Files | Pattern Complete? |
-|--------|-------|---|
-| google_a2a | 8 | ✅ (consistent, >5 files OK) |
-| marketplace | 8 | ✅ (consistent, >5 files OK) |
-| teams | 10 | ✅ (consistent, >5 files OK) |
-| tools | 7 | ✅ (consistent, >5 files OK) |
-| tasks | 5 | ✅ (consistent, baseline) |
-| streaming, tags, triage, permissions | 3–7 | 🟡 emerging patterns |
-| agents, cache, chat, skills, llm_models | 2–5 | 🟡 stubs, needs pattern alignment |
-| events | 0 | ❌ empty — HIGH PRIORITY |
-| settings, working_dir, workflows | 0 | ❌ empty — Phase 17/15 |
-| planer, strategies | 0 | ❌ empty stubs — Phase 19 rename/absorb |
-| scopes | 4 | ⛔ DEPRECATED — Phase 19 deletion |
+**Binding ownership note (2026-05-08)**:
+- `accounts`, `events`, `marketplace`, and `memory` are core-owned packages.
+- `accounts` now exists only under `src/css/core/accounts/`; do not recreate `src/css/modules/accounts/`.
+- `working_dir` is retired terminology. Use `core/workspace/` and the general session/project directory structure.
+
+**High-level package snapshot**:
+- Core-owned, active: `marketplace`, `events`
+- Core-owned, migration still incomplete: `memory`, `workspace`
+- Business modules with stable patterns: `google_a2a`, `tasks`, `teams`, `tools`
+- Business modules still aligning: `agents`, `chat`, `skills`, `tags`, `triage`, `workflows`, others
+- Deprecated: `scopes`
 
 ### API Provider Status
 
@@ -98,16 +96,16 @@ See this file's **Module Status Snapshot** and phase sections for current core i
 
 ## 🚨 ACTIVE BLOCKERS
 
-### 🔴 BLOCKER #1: Events Module Missing
+### 🔴 BLOCKER #1: Event System Incomplete
 - **Impact**: Audit trail missing, agent update notifications broken, OTEL bridge blocked
-- **Location**: `src/css/core/events/` — 0 files
-- **Fix**: Implement EventBus, @on_event decorator, streaming layer (todos: `events-*`)
+- **Location**: Canonical ownership is `src/css/core/events/`; legacy module package removed
+- **Fix**: Finish the core event system and Phase 14 instrumentation/interceptor layers (todos: `events-*`)
 - **Blocks**: Phase 6 CQRS event store, `notifications-module-create`, agent observability
 
 ### 🔴 BLOCKER #2: Permissions Stubs Only
 - **Impact**: No RBAC, no path enforcement, no tool gating — security critical
 - **Location**: `src/css/core/permissions/` — 4 files but no working enforcement
-- **Fix**: Phase 15 working_dir + PathGrant/ToolGrant + PermissionChecker (todos: `perm-*`, `working-dir-*`)
+- **Fix**: Phase 15 `core/workspace/` + PathGrant/ToolGrant + PermissionChecker (todos: `perm-*`, legacy `working-dir-*`)
 - **Blocks**: All session execution, Phase 16 native tools, Phase 19 sessions module
 
 ### ✅ BLOCKER #3: App Initialization Fails → RESOLVED
@@ -125,7 +123,7 @@ See this file's **Module Status Snapshot** and phase sections for current core i
   - ✅ Commit 12808bde: Removed entity re-exports from core/__init__.py (future prevention)
   - ✅ Proactive audit: Scanned for bidirectional cross-module imports; found a2a cycle is safe (css_a2a imports google_a2a, google_a2a/endpoints imports css_a2a — not circular because css_a2a doesn't import from endpoints)
 - **Verification**:
-  - ✅ `from css.modules.accounts.types import Account` — works
+  - ✅ `from css.core.accounts import Account` — works
   - ✅ `from css.modules.scopes.context import ScopeContext` — works
   - ✅ `from css.core.config import MARKETPLACE_CACHE_TTL_SECONDS` — returns 300
   - ✅ `from css.modules.css_a2a.a2a_comms import A2ACommunicator` — works
@@ -199,7 +197,7 @@ All 7 critical app-init todos verified complete:
 
 ### 🔗 Integration Point Circular Import Audit (2026-05-05T09:50)
 
-**Scope**: Scanned all 22 module plan.md files for documented integration points and circular import risks
+**Scope**: Scanned all 22 module markdown files for documented integration points and circular import risks
 
 **Findings**:
 
@@ -209,7 +207,7 @@ All 7 critical app-init todos verified complete:
 | Documented bidirectional dependencies | 2 | ⚠️ See below |
 | Actual code-level circular imports | 0 | ✅ VERIFIED SAFE |
 
-**Documented Bidirectional Dependencies** (in plan.md files only):
+**Documented Bidirectional Dependencies** (in local module markdown files only):
 - `agents ↔ events` — agents imports events; events does NOT import agents in code ✅ SAFE
 - `events ↔ tools` — Neither imports the other in production code ✅ SAFE
 
@@ -249,7 +247,7 @@ All 7 critical app-init todos verified complete:
 ```
 
 > ⚠️ **`ProjectScope` / `ApplicationScope` / `SessionScope` are DELETED.** The old 5-level SaaS scope
-> hierarchy never fit a cybersec tool. Replaced by: `SessionContext` struct + `working_dir` module +
+> hierarchy never fit a cybersec tool. Replaced by: `SessionContext` struct + `core/workspace/` +
 > `ProjectManager`. All session files live centrally at `~/.css/sessions/`.
 
 ### Target State (After Phase 1)
@@ -661,27 +659,27 @@ Modified:
 
 ## 🤖 RUBBER-DUCK SYNCHRONIZATION PLAN (2026-05-03) — COMPLETED ✅
 
-**Objective**: Synchronize all 48 local plan.md files with session.db
+**Objective**: Synchronize all 48 local planning markdown files with session.db
 
 **Three Parallel Agents** (All Completed):
 1. **Agent 1: API Services Auditor** — Analyzed 22 `src/css/api_services/*/plan.md`
    - 12 providers ready for Phase 2 refactoring
    - 10 providers TBD (Q3 research)
-   - Individual provider details in their local plan.md files
+   - Individual provider details in their local planning markdown files
 
 2. **Agent 2: Core Infrastructure Auditor** — Analyzed 4 `src/css/core/*/plan.md`
    - 3/4 components production-ready
    - 1 stub (otel) for Phase 4
-   - Individual component details in their local plan.md files
+   - Individual component details in their local planning markdown files
 
-3. **Agent 3: Module Consistency Auditor** — Analyzed 22 `src/css/modules/*/plan.md`
+3. **Agent 3: Module Consistency Auditor** — Analyzed 22 `src/css/modules/*/<module>.md` files
    - 5 production-ready (23%)
    - 11 pending Phase 2-3 (50%)
    - 6 blocked/stubs (27%)
-   - Individual module details in their local plan.md files
+   - Individual module details in their local module markdown files
 
 **Results**:
-- ✅ 48/48 source plan.md files synced with audit timestamps
+- ✅ 48/48 source planning markdown files synced with audit timestamps
 - ✅ session.db: now 542 total (193 done, 348 pending, 1 blocked)
 - ✅ Critical path determined (4-tier implementation strategy)
 - ✅ Dependencies tracked (12 critical path dependencies)
@@ -1074,14 +1072,14 @@ PRIORITY 4 (Local Deployment):
 
 | Module | Phase | Status | Design |
 |--------|-------|--------|--------|
-| **events** | 3 | 0 files | Async event system |
-| **memory** | 3 | 0 files | Vector storage backend |
+| **events** | 3 | core-owned | Async event system in `core/events/` |
+| **memory** | 3 | core-owned | Working memory domain; migration to canonical core ownership pending |
 | **permissions** | 3 | 0 files | RBAC access control |
-| **working_dir** | 3 | 0 files | Execution context |
+| **workspace** | 3 | pending | General session/project directory structure (`core/workspace/`) |
 | **css_a2a** | 4+ | 0 files | Agent-to-agent comms |
 | **planer** | 4+ | 0 files | Agent planning AI |
 
-**Status**: Design phase, no implementation yet
+**Status**: Mixed state; ownership note at the top of this file overrides older module-era naming.
 
 ---
 
@@ -1108,14 +1106,14 @@ TIER 3: Features (Week 3, depends on Tier 2)
 └─ streaming (after refactoring)
 
 TIER 4: Ready Now (no dependencies)
-├─ marketplace
+├─ marketplace (core-owned)
 └─ google_a2a
 
 TIER 5: Advanced/Stubs (Phase 3-4+)
-├─ events
-├─ memory
+├─ events (core-owned)
+├─ memory (core-owned)
 ├─ permissions
-├─ working_dir
+├─ workspace
 ├─ css_a2a
 └─ planer
 ```
@@ -1141,7 +1139,7 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 
 **Partial (2/4)**: agents, cache, capabilities, chat, roles, skills (6 modules)
 
-**Stub (1/4)**: css_a2a, events, llm_models, memory, permissions, scopes, streaming, working_dir (8 modules)
+**Stub / migration-heavy**: css_a2a, llm_models, memory, permissions, scopes, streaming, workspace
 
 **Recommendation**: Add missing files to partial modules in Phase 2
 
@@ -1166,7 +1164,7 @@ TIER 5: Advanced/Stubs (Phase 3-4+)
 **Phase 2 Week 3**: chat, tags, triage, capabilities, streaming (Features)
 **Phase 2 Week 4**: marketplace, google_a2a (Deploy)
 
-**Phase 3**: events, memory, permissions, working_dir (Advanced infrastructure)
+**Phase 3**: events, memory, permissions, workspace (advanced infrastructure; legacy todo ids may still say `working_dir`)
 
 **Phase 4+**: css_a2a, planer (Specialized systems)
 
@@ -1226,7 +1224,7 @@ Deep audit of existing modules vs cybersecurity platform requirements revealed *
 |----|--------|--------|-------------|
 | `feat-chat-endpoints` | `chat/endpoints.py` | ❌ MISSING | No WebSocket or REST endpoint for chat — the chat module has no API surface |
 | `feat-memory-impl` | `memory/` | ❌ 0 LOC | Agent context + conversation memory — in-memory ChatSessionManager loses state on restart |
-| `feat-working-dir-impl` | `working_dir/` | ❌ 0 LOC | Agent filesystem workspace — agents have nowhere to write files |
+| `feat-working-dir-impl` | `core/workspace/` | ❌ 0 LOC | Agent filesystem workspace — agents have nowhere to write files |
 | `feat-planer-impl` | `planer/` | ❌ 0 LOC | Planner orchestrator — the "dev mode" Planner process in system-overview.md has no implementation |
 | `feat-strategies-impl` | `strategies/` | ❌ 0 LOC | Response routing strategies — `core/orchestration/response_strategy_router.py` exists (68 LOC) but module is empty stub |
 
@@ -2378,7 +2376,7 @@ on_event = hook_registry.on_event  # exported shortcut
 ```
 
 **Todos (T14.4)**:
-- `events-hook-registry` — `HookRegistry` class with glob-pattern matching (`fnmatch`); `register(pattern, handler)` + `fire(event)`; exported from `modules/events`
+- `events-hook-registry` — `HookRegistry` class with glob-pattern matching (`fnmatch`); `register(pattern, handler)` + `fire(event)`; exported from `core/events`
 - `events-on-event-decorator` — `@on_event("llm.call.*")` decorator shortcut; auto-registers sync and async handlers with `hook_registry`
 - `events-hook-executor` — `HookExecutor` / `_safe_call`: fire-and-forget with `asyncio.wait_for(..., timeout=5.0)`; converts sync handlers via `asyncio.to_thread`; catches + logs all errors silently
 
@@ -2614,8 +2612,8 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 **Todos (T14.5)**:
 - `events-interceptor-context` — `HookContext[Input, Output]` generic dataclass; `HookErrorStrategy` exception; in `core/events/interceptors.py`
 - `events-interceptor-registry` — `InterceptorRegistry` with priority-sorted pre/post lists, glob pattern matching, `run_pre()` + `run_post()`; module-level `interceptor_registry` singleton
-- `events-pre-hook-decorator` — `@pre_hook(pattern, priority=50)` shortcut exported from `modules/events`
-- `events-post-hook-decorator` — `@post_hook(pattern, priority=50)` shortcut exported from `modules/events`
+- `events-pre-hook-decorator` — `@pre_hook(pattern, priority=50)` shortcut exported from `core/events`
+- `events-post-hook-decorator` — `@post_hook(pattern, priority=50)` shortcut exported from `core/events`
 - `events-instrument-interceptor-wire` — Update `@instrument` wrapper in T14.1 to call `run_pre()` before the call and `run_post()` after (including on error path); dep: `events-instrument-decorator` + `events-interceptor-registry`
 
 ### Updated Todos Table (Phase 14, all tasks)
@@ -2666,7 +2664,7 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 @permissions     — access control only: PathGrant + ToolGrant + PermissionChecker
                    no scope hierarchy, no filesystem path building, no JWT
 
-@working_dir     — working directory management
+@workspace       — session/project directory management
                    consumes @permissions PathGrant to enforce what agent can read/write
 ```
 
@@ -2941,11 +2939,11 @@ class GrantManager:
 
 class GrantProfile:
     """Predefined grant sets. Apply to agent on spawn."""
-    WORKER = "worker"           # session working_dir only, no elevation
+    WORKER = "worker"           # session workspace only, no elevation
     TEAM_LEADER = "team_leader" # project dir + tool suite, no elevation
     ORCHESTRATOR = "orchestrator"  # full project access + elevated where needed
     PENTESTER = "pentester"     # specific pentest tools + network paths
-    SANDBOXED = "sandboxed"     # working_dir only, deny all tools except approved set
+    SANDBOXED = "sandboxed"     # workspace only, deny all tools except approved set
 ```
 
 **Todos (T15.5)**:
@@ -2972,18 +2970,18 @@ async def enforce_tool_permission(ctx: HookContext) -> HookContext:
     return ctx
 
 @pre_hook("agent.run.*", priority=5)
-async def enforce_working_dir_access(ctx: HookContext) -> HookContext:
+async def enforce_workspace_access(ctx: HookContext) -> HookContext:
     agent_id = ctx.metadata.get("agent_id")
-    working_dir = ctx.input.get("kwargs", {}).get("working_dir")
-    if agent_id and working_dir:
-        if not await checker.can_path(agent_id, str(working_dir), PathOp.READ):
-            raise HookErrorStrategy(f"Path access denied: {working_dir}")
+    workspace_root = ctx.input.get("kwargs", {}).get("workspace_root")
+    if agent_id and workspace_root:
+        if not await checker.can_path(agent_id, str(workspace_root), PathOp.READ):
+            raise HookErrorStrategy(f"Path access denied: {workspace_root}")
     return ctx
 ```
 
 **Todos (T15.6)**:
 - `perm-hook-tool-enforcement` — `@pre_hook("tool.call.*", priority=5)` in `core/permissions/hooks.py`. Extracts agent_id from HookContext.metadata. Calls `checker.can_tool()`. Raises HookErrorStrategy on deny. Dep: `events-instrument-decorator` (Phase 14) + `perm-checker-can-tool`.
-- `perm-hook-path-enforcement` — `@pre_hook("agent.run.*", priority=5)` for working_dir path access check. Dep: `perm-checker-can-path`.
+- `perm-hook-path-enforcement` — `@pre_hook("agent.run.*", priority=5)` for workspace path access checks. Dep: `perm-checker-can-path`.
 
 ---
 
@@ -3014,7 +3012,7 @@ POST /permissions/profiles/apply             — apply a GrantProfile to an agen
 | Can agent X use tool Y? | `@permissions` | `PermissionChecker.can_tool()` |
 | Can agent X run as sudo? | `@permissions` | `PermissionChecker.can_elevated()` |
 | Manage path/tool grants | `@permissions` | `GrantManager` |
-| File lifecycle in working dir | `@working_dir` | `WorkingDirManager` — consumes PathGrant |
+| File lifecycle in workspace | `@workspace` | Workspace layer — consumes PathGrant |
 | Enforce at every entry point | `@events` (Phase 14) | `@pre_hook` wired to `PermissionChecker` |
 
 **`@scopes` gets REMOVED of all permission logic.** It only answers: "what is the current namespace context?" It never says "is this allowed."
@@ -3076,7 +3074,7 @@ The simplified model:
 - `ScopeLevel` enum: ONLY {GLOBAL, SESSION}
 - `SessionContext` — plain struct: session_id, agent_id, project_dir, target
 - Config cascade: `~/.css/config.yaml` (GLOBAL) → `~/.css/sessions/{session_id}/config.yaml` (SESSION)
-- `@working_dir` module — manages project folder lifecycle
+- `core/workspace/` — manages the general session/project directory lifecycle
 
 ---
 
@@ -3092,7 +3090,7 @@ from pathlib import Path
 class SessionContext(msgspec.Struct, frozen=True):
     """Minimal context for one pentest/threat-hunt session.
     
-    Created at session start by WorkingDirManager.create().
+    Created at session start by the workspace layer.
     Does NOT carry permission logic — that is @permissions.
     Does NOT carry a scope hierarchy — there is none.
     """
@@ -3108,11 +3106,13 @@ Replaces: `ScopeContext` (all 7 fields collapse to these 5).
 
 ---
 
-### @working_dir Module — Project Dir + Planner Mode
+### `core/workspace/` — Project Dir + General Layout
 
-`WorkingDirManager` is the ONLY place that knows directory layout. Other modules never mkdir themselves.
+`WorkspaceRegistry` is the ONLY place that knows directory layout. Other modules never mkdir themselves.
 
-**Directory layout created by WorkingDirManager.create():**
+Legacy Phase 15 todo IDs still use the `working-dir-*` prefix for continuity in `session.db`.
+
+**Directory layout created by the workspace layer:**
 ```
 ~/.css/sessions/{session_id}/          ← session root (centralized, NOT /workspace/)
 ├── plan.md                            ← planner mode only
@@ -3130,7 +3130,7 @@ Three modes:
 - **`search`** — minimal: `findings/` + `artifacts/` only. Used for "hunt threat-xy" tasks
 - **`minimal`** — just the session root dir, no sub-structure
 
-WorkingDirManager.create() ALSO registers the **only automatic PathGrant**:
+Workspace creation ALSO registers the **only automatic PathGrant**:
 - `agent_id → ~/.css/sessions/{session_id}/** → READ+WRITE`
 - Everything outside this dir: DENIED by default
 
@@ -3141,7 +3141,7 @@ WorkingDirManager.create() ALSO registers the **only automatic PathGrant**:
 Default state for a NEW agent: **zero path access beyond session dir, zero tool access**.
 
 ```
-STEP 1: WorkingDirManager.create(session_id, agent_id, target, mode="planner")
+STEP 1: WorkspaceRegistry.create_session_workspace(session_id, agent_id, target, mode="planner")
   → creates ~/.css/sessions/{session_id}/ + subdirs based on mode
   → calls grant_manager.grant_path(agent_id, f"{session_dir}/**", {READ,WRITE}, session_id)
   → returns SessionContext(session_id, agent_id, project_dir, target)
@@ -3192,14 +3192,16 @@ Simplification order:
 
 ### New Todos (Phase 15 Addendum — 9 todos)
 
+These IDs are legacy names. Interpret every `working-dir-*` todo as work on `core/workspace/`.
+
 | ID | Task | Description |
 |----|------|-------------|
 | `session-context-create` | Create SessionContext | Create `css/core/session.py`. Define `SessionContext(msgspec.Struct, frozen=True)` with fields: session_id:str, agent_id:str, project_dir:Path, target:str\|None=None, parent_session_id:str\|None=None. No logic, just the struct. |
-| `working-dir-manager` | WorkingDirManager.create() | Create `modules/working_dir/manager.py`. Async method `create(session_id, agent_id, target, mode)` that: (1) mkdir session_dir, (2) calls layout fn based on mode, (3) calls grant_manager.grant_path(agent_id, str(session_dir/"**"), {READ,WRITE}, session_id=session_id), (4) returns SessionContext. |
-| `working-dir-planner-layout` | Planner mode layout | Method `_setup_planner_layout(session_dir, session_id, target)`. Creates: findings/, artifacts/, tools/, agents/{agent_id}/scratch/, agents/{agent_id}/output/. Writes plan.md with template: "# Session {session_id}\nTarget: {target}\nCreated: {iso_now}\n\n## Objectives\n\n". |
-| `working-dir-search-layout` | Search mode layout | Method `_setup_search_layout(session_dir, target)`. Creates findings/ and artifacts/ only. No plan.md. |
-| `working-dir-agent-subdir` | Per-agent sub-dir | Method `agent_subdir(ctx: SessionContext) -> Path`. Creates agents/{ctx.agent_id}/scratch/ and agents/{ctx.agent_id}/output/ inside ctx.project_dir. Returns agents/{ctx.agent_id}/. |
-| `working-dir-cleanup` | Session cleanup | Method `cleanup(session_id, keep_findings=True)`. If keep_findings: move findings/ to `~/.css/archive/{session_id}/`. Then shutil.rmtree(session_dir). |
+| `working-dir-manager` | WorkspaceRegistry session workspace creation | Create `core/workspace/registry.py`. Async method `create_session_workspace(session_id, agent_id, target, mode)` that: (1) mkdir session_dir, (2) applies the layout fn based on mode, (3) grants `READ+WRITE` for the session tree, (4) returns `SessionContext`. |
+| `working-dir-planner-layout` | Planner workspace layout | Create planner layout helper in `core/workspace/layouts.py`. Creates: findings/, artifacts/, tools/, agents/{agent_id}/scratch/, agents/{agent_id}/output/. Writes starter `plan.md`. |
+| `working-dir-search-layout` | Search workspace layout | Create search layout helper in `core/workspace/layouts.py`. Creates findings/ and artifacts/ only. No plan.md. |
+| `working-dir-agent-subdir` | Per-agent workspace handle | Add helper that provisions `agents/{agent_id}/scratch/` and `agents/{agent_id}/output/` inside the session workspace and returns the agent-scoped handle. |
+| `working-dir-cleanup` | Session workspace cleanup | Add workspace cleanup/release flow for a session. If `keep_findings=True`, archive findings before removing the session tree. |
 | `perm-rename-scope-to-session` | Rename scope_id to session_id | In core/permissions/ only: rename field `scope_id` → `session_id` on PathGrant, ToolGrant, PathGrantRecord, ToolGrantRecord, and all PermissionChecker method signatures. Update GrantCache key from "perm:agent:{id}" to "perm:agent:{id}" (key unchanged, just field rename). |
 | `streaming-decouple-from-scopes` | Remove scopes import from streaming | In `streaming/options_manager.py`: add local `ConfigLayer(str, Enum)` enum at top of file with values GLOBAL="global", SESSION="session". Replace any `ScopeLevel` reference with `ConfigLayer`. No import from @scopes. Remove PROJECT entirely. |
 | `scopes-module-simplify` | Simplify @scopes to 2-level | After `perm-rename-scope-to-session` and `streaming-decouple-from-scopes`: (1) update enums.py ScopeLevel to {GLOBAL, SESSION}, (2) simplify context.py validation, (3) simplify manager.py for 2-level model. Keep directory (GLOBAL scope config). |
@@ -3441,7 +3443,7 @@ class BetaAbstractMemoryTool(BetaBuiltinFunctionTool):
 This is a **pluggable memory backend** for Claude. The model calls these methods to store/retrieve notes across a session. You implement the storage layer.
 
 **Design:**
-- Implement `CSSMemoryTool(BetaAbstractMemoryTool)` in `modules/memory/`  
+- Implement `CSSMemoryTool(BetaAbstractMemoryTool)` in the core-owned memory domain  
 - Storage: use `@memory` module's existing store (PostgreSQL or Redis)  
 - `view` → `MemoryStore.get_notes(agent_id, session_id)`  
 - `create/insert/str_replace/delete` → corresponding MemoryStore mutations  
@@ -3595,6 +3597,17 @@ get_subagent_messages(session_id, subagent_id)
 
 ---
 
+### T16.15 — xAI Provider Completion
+
+`api_services/xai/service.py` still has two hard TODOs in executable code:
+
+- `_default_base_url()` must resolve from the provider config source of truth instead of returning a stub
+- `get_models()` must return concrete `ModelMetadata` so xAI participates in startup seeding and provider discovery like the other OpenAI-compatible adapters
+
+**Todos:** `T16.15` (2 todos)
+
+---
+
 ### Phase 16 New Todos Summary
 
 | ID | Task | Description | Deps |
@@ -3619,7 +3632,7 @@ get_subagent_messages(session_id, subagent_id)
 | `rerank-cohere` | Cohere rerank implementation | Implement `RerankAdapter` using `cohere.v2.rerank()`. Cache results in @cache L3. Emit `EVENT_RERANK_DONE` with `top_score, latency_ms, provider`. | `rerank-adapter` |
 | `gemini-cache-manager` | GeminiCacheManager | Add `GeminiCacheManager` to `api_services/gemini/`. Methods: `create_cache(contents, ttl_seconds) → str`, `get_cache(name) → CachedContent`, `delete_cache(name)`. Store cache names in @cache L3 with TTL. |  |
 | `gemini-cache-adapter` | Use Gemini cache in L5 | In `@cache` L5 handler for Gemini: check for existing `CachedContent` before creating new one. Pass `cached_content_name` in model call. Track `provider_cache_id` in `CacheEntry`. | `gemini-cache-manager` |
-| `memory-tool-bridge` | CSSMemoryTool implementation | Implement `CSSMemoryTool(BetaAbstractMemoryTool)` in `modules/memory/`. Bridge view/create/insert/str_replace/delete/rename to `MemoryStore` operations. Fire `EVENT_MEMORY_WRITTEN` on mutations. |  |
+| `memory-tool-bridge` | CSSMemoryTool implementation | Implement `CSSMemoryTool(BetaAbstractMemoryTool)` in the core-owned memory domain. Bridge view/create/insert/str_replace/delete/rename to `MemoryStore` operations. Fire `EVENT_MEMORY_WRITTEN` on mutations. |  |
 | `memory-tool-grant` | Memory tool permission | Add `ToolGrant("anthropic.memory_tool")` to `GrantProfile.DEVELOPMENT_AGENT`. `CSSMemoryTool()` added to tool list only when this grant is present. | `memory-tool-bridge`, `perm-grant-manager` |
 | `ollama-model-manager` | OllamaModelManager | Add `OllamaModelManager` to `core/models/`. Methods: `pull(model_name, stream=True)`, `list() → list[ModelInfo]`, `delete(model_name)`, `is_available(model_name) → bool`. Auto-pull S10 model if not installed. Emit `EVENT_MODEL_DOWNLOAD_PROGRESS`. |  |
 | `ollama-router-check` | Router skips unavailable Ollama models | In Phase 13 router: before routing to Ollama tier, call `OllamaModelManager.is_available()`. If False: auto-pull (if config allows) or skip to next tier. | `ollama-model-manager` |
@@ -3630,6 +3643,8 @@ get_subagent_messages(session_id, subagent_id)
 | `groq-audio-adapter` | AudioAdapter protocol + Groq impl | Add `AudioAdapter` protocol to `core/types/`. Methods: `transcribe(file, language) → str`, `translate(file, target) → str`. Groq implements via `audio.transcriptions.create(model="whisper-large-v3")`. Register as `BuiltinTool("audio.transcribe")` requiring `ToolGrant`. |  |
 | `claude-sdk-hook-bridge` | CSSHookBridge for claude_agent_sdk | Add `CSSHookBridge` to `core/events/`. Maps `claude_agent_sdk` hook callbacks to CSS event interceptors: `PreToolUseHookInput` → `INTERCEPTOR_BEFORE_TOOL`, `PermissionRequestHookInput` → `@permissions.can_tool()`, etc. |  |
 | `claude-sdk-session-bridge` | Claude SDK session operations | Map `claude_agent_sdk` session ops to CSS session ops: `fork_session()` → `@tasks ForkSession`, `tag_session()` → session metadata update, `list_subagents()` → `@agents list` for session. | `claude-sdk-hook-bridge` |
+| `xai-config-base-url-yaml` | Load xAI base URL from provider config | Replace the xAI adapter base-url stub with a lookup from the provider YAML/config source of truth so the service does not drift from registry metadata. |  |
+| `xai-get-models-list` | Implement xAI model metadata listing | Replace the xAI `get_models()` stub with concrete `ModelMetadata` generation or fetch logic compatible with startup seeding and provider discovery. | `xai-config-base-url-yaml` |
 
 ---
 
@@ -3727,7 +3742,7 @@ get_subagent_messages(session_id, subagent_id)
 │  FS:  ~/.css/projects/<id>/metadata.json  (sync with DB)        │
 └─────────────────────────────────────────────────────────────────┘
                  ▲
-     consumed by WorkingDirManager, Sessions, REST API
+     consumed by the workspace layer, Sessions, REST API
 ```
 
 ---
@@ -4096,17 +4111,17 @@ GET    /api/projects/search/?path=<dir>       → find project by source_dir
 
 ---
 
-### T17.12 — WorkingDirManager Integration
+### T17.12 — Workspace Integration
 
-**Files**: update `src/css/modules/working_dir/manager.py`
+**Files**: update the `core/workspace/` layer used by session creation
 
-When `WorkingDirManager.create(session_id, mode, project_id=X)` is called:
+When the session workspace is created with `project_id=X`:
 1. Auto-calls `ProjectManager.add_session(project_id, session_id)`
 2. Stores `project.source_dir` in session metadata (read-only path reference)
 3. Auto-applies project-level settings overrides via `SettingsManager.get(..., scope=PROJECT, scope_id=project_id)`
 
 **Todos**:
-- `projects-workingdir-integration` — WorkingDirManager auto-links session to project + applies project settings
+- `projects-workingdir-integration` — workspace layer auto-links session to project + applies project settings
 
 ---
 
@@ -4149,12 +4164,12 @@ After Phase 14 events module is implemented:
 | `projects-manager-sessions` | T17.10 | Session linking methods | `projects-manager-crud` |
 | `projects-manager-fs-sync` | T17.10 | FS metadata sync | `projects-manager-crud` |
 | `projects-rest-routes` | T17.11 | Projects REST endpoints | `projects-manager-crud` |
-| `projects-workingdir-integration` | T17.12 | WorkingDirManager auto-link | `projects-manager-sessions`, Phase 15 `working-dir-manager` |
+| `projects-workingdir-integration` | T17.12 | workspace auto-link | `projects-manager-sessions`, Phase 15 `working-dir-manager` |
 | `settings-event-emission` | T17.13 | settings.changed events | `settings-manager-core`, Phase 14 |
 | `projects-event-emission` | T17.13 | project lifecycle events | `projects-manager-crud`, Phase 14 |
 
 **BLOCKED by Phase 14** (events): `settings-event-emission`, `projects-event-emission`
-**BLOCKED by Phase 15** (working_dir): `projects-workingdir-integration`
+**BLOCKED by Phase 15** (workspace layer): `projects-workingdir-integration`
 **All others: no blockers — ready to implement.**
 
 ### T17.14 — Startup Seeding (added 2026-05-04)
@@ -4807,7 +4822,7 @@ Two options for where the Vite shell app lives:
 
 | Module | Action | Reason |
 |--------|--------|--------|
-| `scopes/` | **DELETE** | Already marked `⛔ DEPRECATED` in plan.md. The 5-level SaaS scope hierarchy was removed in favour of `working_dir` + `permissions`. Todo `scopes-module-remove` already exists in session.db. |
+| `scopes/` | **DELETE** | Already marked `⛔ DEPRECATED` in plan.md. The 5-level SaaS scope hierarchy was removed in favour of `core/workspace/` + `permissions`. Todo `scopes-module-remove` already exists in session.db. |
 
 ---
 
@@ -4835,7 +4850,7 @@ Two options for where the Vite shell app lives:
 | Module | Issue | Clarification |
 |--------|-------|--------------|
 | `streaming/` | Has `sessions.py` + `session_linking.py` — scope confusion | These are **streaming sessions** (SSE/WS connection state), NOT agent sessions. Rename internally to `StreamingSession` to avoid confusion with the missing `sessions` module (see 19.6). |
-| `memory/` | Generic name overlaps with `context` | Memory = task-scoped working state (findings buffer, scratch). NOT session persistence (that's `sessions`). Clarify in plan.md. |
+| `memory/` | Generic name overlaps with `context` | Memory = task-scoped working state (findings buffer, scratch). It is a core-owned domain, not a long-term business module. NOT session persistence (that's `sessions`). |
 | `tasks/` vs `workflows/` | Both are stubs; boundary unclear | `tasks` = single discrete unit of work (atomic). `workflows` = ordered/conditional sequence of tasks (DAG or linear chain). workflows depends on tasks. |
 | `roles/` | Has role enums but unclear if RBAC or agent roles | These are **agent roles** (Orchestrator, TeamLeader, Worker, Planner, Triage), NOT user RBAC. Keep name but clarify in plan.md. |
 
@@ -4847,16 +4862,16 @@ Three confirmed missing modules with no existing home:
 
 #### `sessions/` — Session Lifecycle Manager ⚠️ HIGH PRIORITY
 
-Referenced in `working_dir`, `agents`, `tasks`, `planner`, `projects` — but no module owns the `Session` entity itself.
+Referenced in the workspace layer, `agents`, `tasks`, `planner`, `projects` — but no module owns the `Session` entity itself.
 
 **Responsibilities**:
-- `Session` ORM model: `id`, `project_id` (nullable), `agent_id`, `mode`, `status`, `started_at`, `ended_at`, `working_dir`
+- `Session` ORM model: `id`, `project_id` (nullable), `agent_id`, `mode`, `status`, `started_at`, `ended_at`, `workspace_root`
 - `SessionManager.create(agent_id, mode, project_id?)` → `Session`
 - `SessionManager.end(session_id)` → cleanup trigger
 - `SessionManager.resume(session_id)` → restore state
 - `SessionManager.list(project_id?)` → active/recent sessions
-- Filesystem: `~/.css/sessions/<session_id>/` (delegated to `working_dir`)
-- Connects: `projects.project_sessions` junction table, `working_dir.WorkingDirManager`
+- Filesystem: `~/.css/sessions/<session_id>/` (delegated to `core/workspace/`)
+- Connects: `projects.project_sessions` junction table, `core/workspace/`
 
 **todos**: `sessions-module-create`
 
@@ -5018,7 +5033,7 @@ User Message → AgentExecutor
 ### T20.5 — Integration
 - `mem-session-wire` — Wire into SessionManager lifecycle hooks
 - `mem-agent-wire` — Wire into AgentExecutor pre/post turn
-- `mem-module-files` — modules/memory/ full 5-file pattern (types, enums, exceptions, models, endpoints)
+- `mem-module-files` — core-owned memory package surface (types, enums, exceptions, models, endpoints)
 
 ---
 
@@ -5190,14 +5205,14 @@ Each layer answers a different audit question. Git alone can't tell you WHY. Eve
 - Stash-based → serial only, not parallel
 - **Verdict**: git worktrees + event store + session turns = best stack
 
-**Legacy note**: `scope.py` already had `worktree_path` field (computed: `/var/css/{runtime_id}/worktree-{session_id}`). This concept is migrated to `working_dir/` in Phase 24.
+**Legacy note**: `scope.py` already had `worktree_path` field (computed: `/var/css/{runtime_id}/worktree-{session_id}`). This concept is migrated to `core/workspace/` in Phase 24.
 
 ### T24.0 — Documentation
-- `git-tracking-docs` — update working_dir/plan.md with git design
+- `git-tracking-docs` — update workspace design docs with the git/worktree lifecycle
 - `git-rules-update` — add git principles + branch convention to memory.md
 
 ### T24.1 — Tracking
-- `git-session-init` — init git repo in session dir on WorkingDirManager.create()
+- `git-session-init` — init git repo when the session workspace is created
 - `git-tracker` — GitTracker: `git add -A && git commit` after each agent turn (fire-and-forget)
 - `git-tracker-hook` — wire GitTracker into AgentExecutor via Phase 14 @post_hook
 
@@ -5209,7 +5224,7 @@ Each layer answers a different audit question. Git alone can't tell you WHY. Eve
 - `git-merge-manager` — SessionMergeManager: SQUASH/REBASE/OURS/MANUAL strategies; called on session end
 
 ### T24.4 — Migration
-- `git-scope-migration` — remove worktree_path from deprecated scope.py, adopt working_dir/ convention
+- `git-scope-migration` — remove worktree_path from deprecated scope.py, adopt `core/workspace/` convention
 
 ### Branch Convention
 ```
@@ -5237,15 +5252,15 @@ Phase 15: scopes-module-remove ← git-scope-migration
 
 | ID | Location | Gap | Severity |
 |----|----------|-----|----------|
-| A | `css.core.session` | File missing — `SessionContext` referenced by agents, planer, working_dir, scopes | CRITICAL (tracked Phase 15 as `session-context-create`) |
+| A | `css.core.session` | File missing — `SessionContext` referenced by agents, planer, workspace, scopes | CRITICAL (tracked Phase 15 as `session-context-create`) |
 | B | `core/db/models/` | ORM models missing: `ProjectRecord`, `McpServerConfigRecord`, `PromptDefinitionRecord` | HIGH |
 | C | `core/types/projects.py` | File missing — projects/plan.md references it | HIGH |
 | D | `core/types/context.py` | `@dataclass + BaseModel` anti-pattern on 4 classes | HIGH (BLOCKED) |
 | E | `` | 5-level ScopeLevel hierarchy (GLOBAL→APP→PROJECT→RUNTIME→SESSION) | RESOLVED (simplified to 2-level: GLOBAL + SESSION) |
-| F | `agents/plan.md` | Integration table: stale `project_dir` + missing `prompts` row | MEDIUM |
-| G | `events/plan.md` | Planned events list missing `project.*`, `settings.changed`, `mcp.call.*` | MEDIUM |
-| H | 8 module plan.mds | `*(fill in module-specific relationships)*` placeholder tables | MEDIUM |
-| I | triage, llm_proxy, chat, workflows | **No integration section at all** in plan.md | MEDIUM |
+| F | `agents/agents.md` | Integration table: stale `project_dir` + missing `prompts` row | MEDIUM |
+| G | `events/events.md` | Planned events list missing `project.*`, `settings.changed`, `mcp.call.*` | MEDIUM |
+| H | 8 module markdown files | `*(fill in module-specific relationships)*` placeholder tables | MEDIUM |
+| I | triage, llm_proxy, chat, workflows | **No integration section at all** in the local module markdown | MEDIUM |
 | J | cache | Referenced by nobody in integration tables despite being needed by 4+ modules | MEDIUM |
 
 ---
@@ -5625,7 +5640,7 @@ key fields:
 indexes: (is_active, deleted_at), (mode, is_active)
 ```
 
-**`MemoryEntry`** — `src/css/modules/memory/models.py` (Phase 20 — stub recommended now)
+**`MemoryEntry`** — core-owned memory model surface in `src/css/core/memory/models.py` (Phase 20 — stub recommended now)
 ```
 table: memory_entry
 purpose: Provider-agnostic persistent memory entries for cross-session context recall

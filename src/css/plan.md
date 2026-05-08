@@ -23,8 +23,9 @@ src/css/
 
 ## Key Rules
 
-- `core/` = infrastructure only (no business logic)
-- `modules/` = business logic (22+ modules)
+- `core/` = infrastructure plus core-owned cross-cutting packages (`accounts`, `events`, `marketplace`, `memory`, `workspace`)
+- `modules/` = business logic only; `accounts`, `events`, `marketplace`, and `memory` are core-only and must not exist as module packages
+- `working_dir` is deprecated terminology; use the general directory structure owned by `core/workspace/`
 - `api_services/` = provider adapters (YAML-driven, Phase 6 P2)
 - See `.plan/rules.md` for full absolute rules
 
@@ -47,6 +48,6 @@ See `.plan/memory.md` for full phase table and `.plan/session.db` for all todos.
 
 ---
 
-## Local plan.md Files
+## Local Planning Docs
 
-Every subdirectory has its own `plan.md`. Read it before working in that area.
+Core areas use `plan.md`. Module directories under `src/css/modules/` use same-name docs like `agents/agents.md`. Read the nearest local planning markdown before working in that area.

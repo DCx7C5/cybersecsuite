@@ -3,6 +3,8 @@
 **Status:** Active  
 **Location:** `src/css/core/marketplace/`
 
+Legacy path `src/css/modules/marketplace/` is removed; do not import from `css.modules.marketplace`.
+
 ## Architecture rules
 
 1. Common enums come from `src/css/core/enums.py`.

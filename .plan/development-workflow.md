@@ -148,10 +148,10 @@ WHERE id = 'TODO_ID';
 
 **Read these files** (based on the todo's `phase`/`task`):
 ```bash
-# Always read the local asgi.md for the module you're working in:
-cat "src/css/modules/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
+# Always read the local planning markdown for the area you're working in:
+cat "src/css/modules/$(echo TODO_ID | cut -d'-' -f1)/$(echo TODO_ID | cut -d'-' -f1).md" 2>/dev/null || \
 cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
-cat "src/css/api_services/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null
+cat "src/css/api_services/api_services.md" 2>/dev/null
 
 # Read architecture doc if phase mentions it:
 # Phase 6 → read .plan/asgi.md (Phase 6 section)
@@ -192,6 +192,10 @@ for p in pathlib.Path('src/css/').rglob('*.py'):
 **Step 2 — Implement the code**
 - Edit files in `src/css/` or `src/frontend/` (if exists) only
 - Follow **consistent file naming and patterns** across modules. Baseline structure includes `models.py`, `types.py`, `enums.py`, `exceptions.py`, `__init__.py`, but the number of files is flexible: use more files if domain complexity requires it; use fewer if certain file types aren't needed. The goal is consistency in naming and patterns within each domain.
+- In `src/css/modules/`, the local planning document is `src/css/modules/<module>/<module>.md`, not `plan.md`
+- In `src/css/modules/*/models.py`, all Tortoise ORM table entities inherit `css.core.db.models.base.BaseModel`
+- If a module defines `Enum` classes, put them in `enums.py`
+- Never (re)create `src/css/modules/accounts/`, `src/css/modules/events/`, `src/css/modules/memory/`, or `src/css/modules/marketplace/`; these are core-owned only.
 - Always `async def` for any I/O (never sync wrappers)
 - HTTP clients: always `aiohttp`, NEVER `httpx`
 - Structs/value types: `msgspec.Struct`, not `@dataclass`
@@ -222,11 +226,11 @@ for f, data in d.items():
 
 ### 🔵 POST-TODO (run AFTER implementation)
 
-**Step 1 — Update local plan.md**
+**Step 1 — Update local module markdown**
 ```bash
 # Find the checklist item and mark it checked (use sed, not nano!)
-sed -i 's/- \[ \] \(.*TODO_ID.*\)/- [x] \1/' "src/css/modules/<module>/plan.md"
-sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/plan.md"
+sed -i 's/- \[ \] \(.*TODO_ID.*\)/- [x] \1/' "src/css/modules/<module>/<module>.md"
+sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/<module>.md"
 ```
 
 **Step 2 — Update .plan/plan.md**
@@ -319,12 +323,12 @@ Fix the remaining errors of prior ruff run.
 
 ### 🔵 POST-TASK (run AFTER task complete — ALL steps required)
 
-**Step 1 — Update local plan.md**
+**Step 1 — Update local module markdown**
 ```bash
-# Mark task complete in module's asgi.md
-sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/plan.md"
-# Add status line to the task section in asgi.md:
-sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/modules/<module>/plan.md"
+# Mark task complete in the module's markdown file
+sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/<module>.md"
+# Add status line to the task section:
+sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/modules/<module>/<module>.md"
 ```
 
 **Step 2 — Update .plan/plan.md**
@@ -428,7 +432,7 @@ Use Task tool with:
     1. Read .plan/plan.md (phase section)
     2. Read .plan/memory.md (phase table)
     3. Read .plan/checkpoints.md
-    4. Read all src/css/modules/<module>/plan.md for modules in this phase
+    4. Read all src/css/modules/<module>/<module>.md files for modules in this phase
     5. Run: python .plan/codebase_dependency_analyzer.py . --path src/css/<module>/
     6. Check: Are all todos really done? Any missing integration points?
     7. Report: Phase completeness score (0-100%), any gaps found, recommendations
@@ -489,6 +493,8 @@ modules/<name>/
 - `__all__` lives **only** in `__init__.py`
 - Never mix `@dataclass` with `ABC` on the same class — pick one
 - `msgspec.Struct` for value types, `Protocol` for structural contracts
+- In `models.py`, inherit ORM entities from `css.core.db.models.base.BaseModel`, not raw `tortoise.models.Model`
+- In `models.py`, use semantic helpers from `css.core.db.fields` whenever the column meaning matches an existing helper
 - All I/O must be `async def` — never sync
 - Never `httpx` — always `aiohttp`
 - Never `npm` — always `bun` for frontend

@@ -556,9 +556,9 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Planning Docs Synced
 - Updated stale marketplace path references across planning docs:
-  - `src/css/modules/marketplace/*` → `src/css/core/marketplace/*` where applicable
-  - `src/css/modules/marketplace/models.py` → `src/css/core/db/models/marketplace.py`
-  - `@css/modules/marketplace/templates` → `@css/core/marketplace/templates`
+  - `src/css/core/marketplace/*` as canonical runtime location
+  - `src/css/core/db/models/marketplace.py` as canonical ORM location
+  - `@css/core/marketplace/templates` as canonical template location
 - Updated `.plan/plan.md` and `.plan/memory.md` headline todo counts to current session.db values.
 
 ### session.db Current State

@@ -181,7 +181,7 @@ All dependencies form a **Directed Acyclic Graph (DAG)**:
    python -c "
    from css.modules.agents.types import Agent
    from css.modules.tools.registry import get_tool_registry
-   from css.modules.marketplace.models import MarketplaceItem
+   from css.core.db.models.marketplace import MarketplaceItem
    from css.core.events import EventBus
    print('✅ All imports work')
    "
@@ -202,7 +202,7 @@ All dependencies form a **Directed Acyclic Graph (DAG)**:
 ## 📎 References
 
 - **Integration todos**: `.plan/session.db` (8 todos: `integration-*`)
-- **Module docs**: `src/css/modules/{module}/plan.md` (each module)
+- **Module docs**: `src/css/modules/{module}/{module}.md` (each module)
 - **App startup check**: `.venv/bin/python -c "from css.modules import ..."`
 - **Circular import audit**: `.plan/plan.md` (Integration Point Circular Import Audit section)
 

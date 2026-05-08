@@ -29,7 +29,7 @@ class ModuleBase(ABC):
 - Manage
 
 ## Notes
-- Marketplace runtime is now under `src/css/core/marketplace/` (core service), not `src/css/modules/marketplace/`.
+- Marketplace runtime is under `src/css/core/marketplace/` (core service).
 
 ## Testing
 - [ ] Unit tests: initialize, shutdown

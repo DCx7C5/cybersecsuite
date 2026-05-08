@@ -107,14 +107,15 @@ Models are discovered from:
 **File**: `src/css/core/db/models/marketplace.py`
 
 ```python
-from tortoise import Model, fields
+from tortoise import fields
+from css.core.db.fields import NameField, SlugField
+from css.core.db.models.base import BaseModel
 
-class MarketplaceItem(Model):
+class MarketplaceItem(BaseModel):
     """Marketplace package."""
-    
-    id = fields.BigIntField(primary_key=True)
-    slug = fields.CharField(max_length=255, unique=True, db_index=True)
-    name = fields.CharField(max_length=255)
+
+    slug = SlugField(max_length=255, unique=True, db_index=True)
+    name = NameField(max_length=255, db_index=True)
     # ... other fields
     
     class Meta:
@@ -206,7 +207,7 @@ TORTOISE_ORM = {
         "models": {
             "models": [
                 "css.core.db.models",
-                "css.modules.marketplace.models",
+                "css.core.db.models.marketplace",
                 "css.modules.chat.models",
                 # ... auto-discovered models
             ],
@@ -451,7 +452,7 @@ Module loggers are cached in `_loggers` dict:
 ```python
 _loggers = {
     "cybersecsuite": <root logger>,
-    "css.modules.marketplace": <marketplace logger>,
+    "css.core.marketplace": <marketplace logger>,
     "css.modules.chat": <chat logger>,
     # ... all other module loggers
 }
@@ -615,5 +616,6 @@ uv pip install llama-cpp-python --reinstall --no-cache-dir --force-reinstall
 > - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
 > - Never mix `@dataclass` with `ABC` on the same class
 > - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
+> - ORM entities inherit `css.core.db.models.base.BaseModel`; use `css.core.db.fields` helpers when semantics match
 > - HTTP clients: always `aiohttp`, never `httpx`
 > - Package manager: always `uv`/`bun`, never `pip`/`npm`

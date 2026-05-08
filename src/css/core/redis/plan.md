@@ -26,7 +26,7 @@ Inter-entity messaging over Redis pub/sub. Lives in `core/` — consumed by agen
 | Consumer | What it uses |
 |----------|-------------|
 | `modules/agents/` | `RedisCommunicator` for agent ↔ agent messaging |
-| `modules/memory/` | `MessageDispatcher` for memory event broadcasting |
+| `css.core.memory` | `MessageDispatcher` for memory event broadcasting |
 | `core/cache/` | Separate Redis connection pool (not this module) |
 
 ---

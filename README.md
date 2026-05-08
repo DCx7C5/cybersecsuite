@@ -17,3 +17,8 @@ CyberSecSuite is an async-first Python platform for orchestrated cybersecurity w
 - Checkpoint File: `.plan/checkpoint.md`
 - Session/Tracking Database: `.plan/session.db`
 - Module and core plans: `src/css/**/plan.md`
+
+## Ownership notes
+
+- `marketplace` is **core-owned only** at `src/css/core/marketplace/`.
+- Legacy module package `src/css/modules/marketplace/` has been removed.

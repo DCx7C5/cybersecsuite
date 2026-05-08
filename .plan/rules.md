@@ -30,8 +30,10 @@ ORDER BY t.sort_order, t.task, t.id LIMIT 5;"
 # 4. Read the full spec for the todo you'll work on
 sqlite3 .plan/session.db "SELECT description FROM todos WHERE id = 'CHOSEN-ID';"
 
-# 5. Read the local asgi.md for the module you're working in
-cat src/css/modules/<module_name>/asgi.md
+# 5. Read the local planning markdown for the area you're working in
+cat src/css/modules/<module_name>/<module_name>.md 2>/dev/null || \
+cat src/css/core/<area>/settings.md 2>/dev/null || \
+cat src/css/api_services/api_services.md
 ```
 
 
@@ -42,11 +44,11 @@ cat src/css/modules/<module_name>/asgi.md
 ### Session & Project Planning
 - **ABSOLUTE: `.plan/plan.md` is the session workspace plan** — high-level project overview for THIS session's work (planning ONLY, not progress logs)
 - **ABSOLUTE: track all progress in [.plan/session.db](session.db) ONLY** — every todo status change goes here, never in markdown
-- **ABSOLUTE: local `plan.md` files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/*/plan.md`, `src/css/api_services/plan.md`, `src/css/core/*/plan.md`, etc.
-- **ABSOLUTE: keep EVERY local plan.md synchronized with [.plan/session.db](session.db) while working in that directory** — each plan.md reflects todos/milestones relevant to that module/subdirectory
-- **ABSOLUTE: when working in a module (e.g., `src/css/core/permissions/`), READ that module's local `plan.md` FIRST** — understand what's planned, in-progress, and completed for that area
+- **ABSOLUTE: local planning markdown files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/modules.md`, `src/css/modules/*/<module>.md`, `src/css/api_services/api_services.md`, `src/css/core/*/plan.md`, etc.
+- **ABSOLUTE: keep EVERY local planning markdown file synchronized with [.plan/session.db](session.db) while working in that directory** — each file reflects todos/milestones relevant to that module/subdirectory
+- **ABSOLUTE: when working in a module (e.g., `src/css/modules/agents/`), READ that module's local `<module>.md` FIRST; for core areas read the nearest `plan.md`** — understand what's planned, in-progress, and completed for that area
 - **ABSOLUTE: there is no such thing like "backwards compatibility". we are not yet in production.**
-- **ABSOLUTE: update local plan.md DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
+- **ABSOLUTE: update local planning markdown DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 - **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
 - **ABSOLUTE: when creating new files or content keep pattern consistency in your mind**
@@ -78,7 +80,7 @@ cat src/css/modules/<module_name>/asgi.md
 - **ABSOLUTE: [.plan/](../.plan) is the working directory** — never treat `~/.copilot/` or `~/.claude` as the working directory
 - **ABSOLUTE: use the project virtualenv at [.venv/bin/](../.venv/bin) whenever Python execution is needed**
 - **ABSOLUTE: follow all existing directory, documentation, and code patterns for consistency**
-- **ABSOLUTE: use [.plan/architecture/*.md](architecture) & nearest `plan.md` as the source of truth for general architecture**
+- **ABSOLUTE: use [.plan/architecture/*.md](architecture) & the nearest local planning markdown (`plan.md` or module `<module>.md`) as the source of truth for general architecture**
 
 ### Workflow & Tooling
 - **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
@@ -109,16 +111,17 @@ cat src/css/modules/<module_name>/asgi.md
 **❌ FORBIDDEN in `.plan/`**: Other .md files, subdirectories except `architecture/`, staging files, temporary docs
 **CONSOLIDATE**: If you need new content, merge into one of the 7 whitelisted files above.
 
-### LOCAL `plan.md` Files (Throughout `src/css/`)
+### LOCAL Planning Markdown Files (Throughout `src/css/`)
 
-**✅ REQUIRED**: Every directory in the `src/css/` tree has its own `plan.md`:
+**✅ REQUIRED**: Local planning markdown is mandatory throughout `src/css/`:
 - `src/css/plan.md` — CSS root planning
 - `src/css/core/plan.md` — core infrastructure planning
 - `src/css/core/*/plan.md` — each subdirectory (asgi, db, redis, otel, types, orchestration, etc.)
-- `src/css/modules/*/plan.md` — each module (agents, permissions, skills, tools, chat, etc.)
-- `src/css/api_services/plan.md` — api_services planning
+- `src/css/modules/modules.md` — modules index
+- `src/css/modules/*/<module>.md` — each module (agents, permissions, skills, tools, chat, etc.)
+- `src/css/api_services/api_services.md` — provider planning
 
-**These are NOT part of `.plan/` whitelist.** They are organizational files within the codebase structure. Each local `plan.md`:
+**These are NOT part of `.plan/` whitelist.** They are organizational files within the codebase structure. Each local planning markdown file:
 - Reflects todos/milestones relevant to that directory
 - Must be kept synchronized with files in `.plan/`, very important is `.plan/session.db` while working there
 - Should be updated DURING work, not at end-of-session
@@ -212,9 +215,16 @@ modules/<name>/
 ├── types.py              # Dataclasses, types (organizational structure only, manually imported)
 ├── enums.py              # Enumerations (organizational structure only, manually imported)
 ├── exceptions.py         # Custom exceptions (organizational structure only, manually imported)
+├── <name>.md             # Required module planning/ownership document
 |-- other files 
 └── __init__.py
 ```
+
+### Module-Specific Structural Rules
+
+- Every directory under `src/css/modules/` must contain `<module>.md` with the same basename as the module directory.
+- Every Tortoise ORM table model in `src/css/modules/*/models.py` must inherit `css.core.db.models.base.BaseModel`, never raw `tortoise.Model`.
+- If a module defines `Enum` classes, they belong in `enums.py`, not in `models.py`, `endpoints.py`, or ad-hoc utility files.
 
 ### Current Modules (22 total)
 
@@ -249,8 +259,17 @@ modules/<name>/
 | triage       | ⚠️ PENDING RENAME → `modules/intelligence/` (todo: `triage-rename-module`, Phase 19) |
 | workflows    | Workflow management & orchestration                                                  | |
 
+**Binding ownership overrides**:
+- `accounts`, `events`, `marketplace`, and `memory` belong in `src/css/core/`.
+- `accounts`, `events`, `marketplace`, and `memory` are core-only now; corresponding legacy module directories must not exist under `src/css/modules/`.
+- `working_dir` is retired terminology; use `src/css/core/workspace/` and the general session/project directory structure instead.
+
 **Moved to `core/` (infrastructure, not business logic)**:
+- `accounts` → `core/accounts/`
 - `cache` → `core/cache/` (KV cache: L1 memory, L2 Redis, L3 PostgreSQL)
+- `events` → `core/events/`
+- `marketplace` → `core/marketplace/`
+- `memory` → `core/memory/` (legacy module package removed)
 - `working_dir` → `core/workspace/` (multi-workspace registry with per-entity expandable dir list)
 
 **Loader.py auto-discovers**:
@@ -434,8 +453,10 @@ Tool       → modules/tools/types.py
 |--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **No `Record` suffix**               | Model class is `LLMModel`, not `LLMModelRecord`. Table name is `llm_models`. Only suffix allowed is a domain noun (e.g., `ProviderCapability`, `ChatMessage`).                                                   |
 | **No migrations during dev**         | While phases are in progress we drop + reseed. `manage.py init-db` calls `generate_schemas(safe=False)` in dev, then runs all seed fixtures. Only consider Aerich migration tooling after all phases are locked. |
-| **BigIntField PK always**            | `id = fields.BigIntField(primary_key=True)` on every model. No `IntField`, no `CharField` PK.                                                                                                                    |
+| **BaseModel required**               | Every Tortoise ORM entity inherits `css.core.db.models.base.BaseModel`. The default primary key comes from `BaseModel.id`, not from repeating raw `fields.BigIntField(primary_key=True)` in each model.         |
+| **PrimaryKeyField default PK**       | `BaseModel.id` uses `PrimaryKeyField()` from `css.core.db.fields`. Override `id` only when a documented domain requirement truly needs a non-default primary key.                                                |
 | **CharEnumField for enums**          | All enum-valued columns use `CharEnumField(MyEnum)`, never raw `CharField` with manual choices.                                                                                                                  |
+| **Semantic field helpers required**  | When field meaning matches an existing helper, use `css.core.db.fields`: `NameField`, `DescriptionField`, `VersionField`, `SlugField`, `UrlField`, `PathField`, `SHA512SumField`, `IPv4Field`, `IPv6Field`, `QualityScoreField`, `CostField`. Use raw Tortoise fields only when no helper fits the domain. |
 | **Full Meta class**                  | Every model needs: `table`, `table_description`, `ordering`, `indexes` (as `models.Index(fields=[...])`), `unique_together` where applicable.                                                                    |
 | **Index syntax**                     | Always `models.Index(fields=["a", "b"])` — never tuple syntax `("a", "b")` (silently ignored).                                                                                                                   |
 | **auto_now timestamps**              | `created_at = fields.DatetimeField(auto_now_add=True)`, `updated_at = fields.DatetimeField(auto_now=True)` on every mutable model.                                                                               |
@@ -461,6 +482,8 @@ Tool       → modules/tools/types.py
 | `Record` suffix on ORM models      | Use domain noun only: `LLMModel`, `ChatMessage`, `ProviderCapability` |
 | Aerich migrations during dev       | Drop + reseed via `manage.py init-db` until all phases locked         |
 | Tuple-syntax indexes in Meta       | Use `models.Index(fields=["a","b"])` — tuple syntax silently ignored  |
+| `class X(Model)` for ORM entities  | Use `class X(BaseModel)` from `css.core.db.models.base`               |
+| Raw semantic fields when helper exists | Use `css.core.db.fields` helper classes for URLs, paths, versions, costs, scores, slugs, checksums, and IPs |
 
 
 # Python 3.14 Type Hints – Quick Reference
