@@ -1,9 +1,10 @@
 """Webhook endpoint and delivery models."""
 
-from tortoise import Model, fields
+from tortoise import fields
+from css.core.db.models.base import BaseModel
 
 
-class WebhookEndpoint(Model):
+class WebhookEndpoint(BaseModel):
     """Configured outbound webhook endpoint."""
 
     id = fields.BigIntField(primary_key=True)
@@ -22,11 +23,13 @@ class WebhookEndpoint(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
-        table = "webhook_endpoints"
+        table = "webhook_endpoint"
+        table_verbose = "Webhook Endpoint"
+        table_verbose_plural = "Webhook Endpoints"
         unique_together = (("organization", "name"),)
 
 
-class WebhookDelivery(Model):
+class WebhookDelivery(BaseModel):
     """Delivery attempt log for each webhook call."""
 
     id = fields.BigIntField(primary_key=True)

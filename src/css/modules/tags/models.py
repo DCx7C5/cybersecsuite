@@ -1,10 +1,10 @@
 from tortoise import fields, models
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 from .enums import TagColor
 
 
-class Tag(Model):
+class Tag(BaseModel):
     """Reusable tag that can be applied to any entity."""
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=128, db_index=True)

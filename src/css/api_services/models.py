@@ -1,6 +1,6 @@
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class ApiServiceProvider(Model):
+class ApiServiceProvider(BaseModel):
     id = fields.BigIntField(primary_key=True)

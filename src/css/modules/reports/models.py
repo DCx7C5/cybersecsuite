@@ -1,9 +1,10 @@
 """Report persistence models."""
 
-from tortoise import Model, fields
+from tortoise import fields
+from css.core.db.models.base import BaseModel
 
 
-class ReportRecord(Model):
+class ReportRecord(BaseModel):
     """Generated report metadata and payload."""
 
     id = fields.BigIntField(primary_key=True)

@@ -2,12 +2,12 @@
 
 from tortoise import fields
 from tortoise.indexes import Index
-from tortoise.models import Model
 
+from css.core.db.models.base import BaseModel
 from css.core.db.models.enums import UserRoles
 
 
-class User(Model):
+class User(BaseModel):
     """User account ORM model.
     
     Represents internal system users with authentication and authorization.
@@ -78,4 +78,3 @@ class User(Model):
     @property
     def is_staff(self) -> bool:
         return self.is_admin or self.is_user or self.is_guest
-

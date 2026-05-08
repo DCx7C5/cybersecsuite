@@ -1,10 +1,10 @@
 from tortoise.indexes import Index
-from tortoise.models import Model
 from tortoise import fields
+from css.core.db.models.base import BaseModel
 
 
 
-class ProjectFile(Model):
+class ProjectFile(BaseModel):
     """Database model for a project file."""
 
     id = fields.BigIntField(max_length=255, primary_key=True)
@@ -20,7 +20,7 @@ class ProjectFile(Model):
 
 
 
-class Project(Model):
+class Project(BaseModel):
     """Database model for a project."""
 
     id = fields.BigIntField(max_length=255, primary_key=True)

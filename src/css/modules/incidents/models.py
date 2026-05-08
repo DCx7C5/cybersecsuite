@@ -6,63 +6,16 @@ Models:
 - IncidentTask: Task items within incident (investigation, containment, recovery)
 """
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
+from tortoise import fields
+from tortoise.indexes import Index
+
+from css.core.db.models.base import BaseModel
+from css.modules.incidents.enums import IncidentSource, SeverityLevel, IncidentStatus, TimelineEventType
 
 
-class SeverityLevel(str, Enum):
-    """Incident severity classification."""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
-
-
-class IncidentStatus(str, Enum):
-    """Incident lifecycle status."""
-    OPEN = "open"
-    INVESTIGATING = "investigating"
-    CONTAINED = "contained"
-    REMEDIATED = "remediated"
-    RESOLVED = "resolved"
-    CLOSED = "closed"
-    REOPENED = "reopened"
-
-
-class IncidentSource(str, Enum):
-    """How incident was detected."""
-    ALERT = "alert"
-    SCAN = "scan"
-    MANUAL_REPORT = "manual_report"
-    THREAT_INTEL = "threat_intel"
-    HUNT = "hunt"
-    LOG_ANALYSIS = "log_analysis"
-    EDR = "edr"
-    OTHER = "other"
-
-
-class TimelineEventType(str, Enum):
-    """Incident timeline event types."""
-    CREATED = "created"
-    UPDATED = "updated"
-    ESCALATED = "escalated"
-    ASSIGNED = "assigned"
-    STATUS_CHANGED = "status_changed"
-    INVESTIGATION_STARTED = "investigation_started"
-    CONTAINMENT_STARTED = "containment_started"
-    CONTAINMENT_COMPLETED = "containment_completed"
-    REMEDIATION_STARTED = "remediation_started"
-    REMEDIATION_COMPLETED = "remediation_completed"
-    RESOLVED = "resolved"
-    CLOSED = "closed"
-    COMMENT = "comment"
-
-
-class Incident(Model):
+class Incident(BaseModel):
     """Incident — security event requiring response."""
     
-    id = fields.BigIntField(primary_key=True)
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="incidents",
@@ -175,13 +128,13 @@ class Incident(Model):
         table = "incidents"
         unique_together = (("organization", "incident_id"),)
         indexes = [
-            fields.Index(["organization", "status", "-detected_at"]),
-            fields.Index(["organization", "severity", "-detected_at"]),
-            fields.Index(["assigned_team_id", "status"]),
+            Index(["organization", "status", "-detected_at"]),
+            Index(["organization", "severity", "-detected_at"]),
+            Index(["assigned_team_id", "status"]),
         ]
 
 
-class IncidentTimeline(Model):
+class IncidentTimeline(BaseModel):
     """Append-only incident progression log."""
     
     id = fields.BigIntField(primary_key=True)
@@ -233,7 +186,7 @@ class IncidentTimeline(Model):
         ordering = ["incident", "sequence_number"]
 
 
-class IncidentTask(Model):
+class IncidentTask(BaseModel):
     """Task items within incident investigation/containment/remediation."""
     
     id = fields.BigIntField(primary_key=True)
@@ -290,17 +243,6 @@ class IncidentTask(Model):
         table = "incident_tasks"
         ordering = ["-priority", "due_date"]
         indexes = [
-            fields.Index(["incident", "status"]),
-            fields.Index(["assigned_to", "status"]),
+            Index(["incident", "status"]),
+            Index(["assigned_to", "status"]),
         ]
-
-
-__all__ = [
-    "SeverityLevel",
-    "IncidentStatus",
-    "IncidentSource",
-    "TimelineEventType",
-    "Incident",
-    "IncidentTimeline",
-    "IncidentTask",
-]

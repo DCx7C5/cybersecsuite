@@ -1,9 +1,10 @@
 """Tortoise models for durable chat session persistence."""
 
-from tortoise import Model, fields
+from tortoise import fields
+from css.core.db.models.base import BaseModel
 
 
-class ChatSessionRecord(Model):
+class ChatSessionRecord(BaseModel):
     """Persistent chat session record."""
 
     id = fields.BigIntField(primary_key=True)
@@ -20,7 +21,7 @@ class ChatSessionRecord(Model):
         table = "chat_sessions"
 
 
-class ChatMessageRecord(Model):
+class ChatMessageRecord(BaseModel):
     """Persistent chat message record."""
 
     id = fields.BigIntField(primary_key=True)

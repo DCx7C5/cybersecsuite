@@ -3,8 +3,7 @@ import msgspec
 
 from typing import Any
 
-from tortoise import Model
-
+from css.core.db.models.base import BaseModel
 from .enums import ModelProvider, ModelFamily, ModelCapability
 
 @msgspec.struct
@@ -14,7 +13,7 @@ class ModelPricing:
     output_tokens_per_1k: float  # Cost per 1000 output tokens
     currency: str = "USD"
 
-class LLMModel(Model):
+class LLMModel(BaseModel):
     # TODO: implement real database table; get rid off @dataclass ModelMetadata and ModelPricing. Find other ways to implement
     ...
 

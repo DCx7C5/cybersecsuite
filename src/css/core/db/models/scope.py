@@ -1,13 +1,13 @@
 """Scope hierarchy — the foundation every other model depends on."""
 
 
-from tortoise.models import Model
 from tortoise import fields, models
 
+from .base import BaseModel
 from .enums import RedBlueMode, ScopeLevel
 
 
-class AppScope(Model):
+class AppScope(BaseModel):
     """Application scope — top-level global container."""
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
@@ -28,7 +28,7 @@ class AppScope(Model):
         ]
 
 
-class ProjectScope(Model):
+class ProjectScope(BaseModel):
     """Project scope — organizational container within app scope."""
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
@@ -49,7 +49,7 @@ class ProjectScope(Model):
         ]
 
 
-class SessionScope(Model):
+class SessionScope(BaseModel):
     """Forensic root session — UUID-keyed anchor for all forensic artifacts.
 
     Every :class:`Finding`, :class:`IOC`, :class:`AuditLog`, :class:`Artifact`,
@@ -93,7 +93,7 @@ class SessionScope(Model):
         ]
 
 
-class ScopedEntry(Model):
+class ScopedEntry(BaseModel):
     """Abstract base for all scoped data.
 
     5-level scopes columns (T045 / scope_v2):

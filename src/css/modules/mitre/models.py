@@ -1,29 +1,10 @@
 """MITRE ATT&CK module — threat framework mapping (Phase 7)."""
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
+from tortoise import fields
+from css.core.db.models.base import BaseModel
+from .enums import Tactic
 
-
-class Tactic(str, Enum):
-    """MITRE ATT&CK tactics."""
-    RECONNAISSANCE = "reconnaissance"
-    RESOURCE_DEVELOPMENT = "resource_development"
-    INITIAL_ACCESS = "initial_access"
-    EXECUTION = "execution"
-    PERSISTENCE = "persistence"
-    PRIVILEGE_ESCALATION = "privilege_escalation"
-    DEFENSE_EVASION = "defense_evasion"
-    CREDENTIAL_ACCESS = "credential_access"
-    DISCOVERY = "discovery"
-    LATERAL_MOVEMENT = "lateral_movement"
-    COLLECTION = "collection"
-    COMMAND_AND_CONTROL = "command_and_control"
-    EXFILTRATION = "exfiltration"
-    IMPACT = "impact"
-
-
-class MITRETechnique(Model):
+class MITRETechnique(BaseModel):
     """MITRE ATT&CK technique."""
     
     id = fields.BigIntField(primary_key=True)
@@ -69,7 +50,7 @@ class MITRETechnique(Model):
         ]
 
 
-class ThreatActor(Model):
+class ThreatActor(BaseModel):
     """Threat actor/campaign/group."""
     
     id = fields.BigIntField(primary_key=True)
@@ -118,7 +99,7 @@ class ThreatActor(Model):
         unique_together = (("organization", "actor_name"),)
 
 
-class IncidentTechniqueMaping(Model):
+class IncidentTechniqueMaping(BaseModel):
     """Link incident to ATT&CK techniques."""
     
     id = fields.BigIntField(primary_key=True)
