@@ -1,6 +1,6 @@
 """Permission management and access control (RBAC)."""
 
-import logging
+from css.core.logger import getLogger
 
 from .enums import ScopeLevel, Permission, Role as RoleEnum
 from .types import Role, PermissionPolicy, ScopeContext, TokenPayload
@@ -13,7 +13,7 @@ from .exceptions import (
     RoleNotFound,
 )
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 __all__ = [
     "Role",

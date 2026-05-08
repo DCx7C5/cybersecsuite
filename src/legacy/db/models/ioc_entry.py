@@ -1,10 +1,10 @@
 """IOC knowledge database entry model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class IOCDatabaseEntry(Model):
+class IOCDatabaseEntry(BaseModel):
     """IOC knowledge entries from ioc-db.md (or future structured exports)."""
 
     id = fields.BigIntField(primary_key=True)

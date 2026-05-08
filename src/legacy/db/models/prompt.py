@@ -1,9 +1,9 @@
 """Prompt model — stores reusable prompts for agents and the asgi."""
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class Prompt(Model):
+class Prompt(BaseModel):
     """A named, versioned prompt template."""
 
     id = fields.BigIntField(primary_key=True)

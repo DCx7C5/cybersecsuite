@@ -19,8 +19,8 @@ Ports (env-configurable):
     ASGI_TLS_KEY   — PEM key path     (default: ~/.css/certs/key.pem)
 """
 
+from css.core.logger import getLogger
 import asyncio
-import logging
 import os
 import ssl
 from contextlib import asynccontextmanager
@@ -35,7 +35,7 @@ from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddlewar
 from css.core.loader import build_tortoise_db_url, build_tortoise_modules, mount_app_routers
 from css.core.tools.base import get_tool_registry
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 # ── Port / TLS configuration ─────────────────────────────────────────────────

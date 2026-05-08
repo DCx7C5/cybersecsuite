@@ -1,10 +1,11 @@
 """NIST AI Risk Management Framework 1.0 control model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField
 
 
-class NistAiRmfControl(Model):
+class NistAiRmfControl(BaseModel):
     """NIST AI RMF 1.0 subcategory — 72 entries across 4 functions."""
 
     id = fields.BigIntField(primary_key=True)
@@ -12,7 +13,7 @@ class NistAiRmfControl(Model):
     function = fields.CharField(max_length=16, db_index=True)   # Govern/Map/Measure/Manage
     category = fields.CharField(max_length=128, db_index=True)
     title = fields.TextField(default="")
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     section_about = fields.TextField(default="")
     suggested_actions = fields.JSONField(default=list)          # list[str]
     ai_actors = fields.JSONField(default=list)                  # list[str]

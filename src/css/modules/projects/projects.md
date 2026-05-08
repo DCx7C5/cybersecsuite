@@ -38,7 +38,7 @@
 ```
 src/css/modules/projects/
 ├── __init__.py
-├── plan.md                ← this file
+├── projects.md            ← this file
 └── manager.py             ← ProjectManager class
     routes.py              ← REST endpoints (/api/projects/*)
 ```

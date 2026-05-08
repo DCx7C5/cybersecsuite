@@ -8,11 +8,11 @@ Public API:
     from css.core.streaming.hooks import security_hook, audit_hook, cost_hook
 """
 
-import logging
+from css.core.logger import getLogger
 
 from css.core.streaming.sessions import SessionManager
 from css.core.streaming.client_pool import ClientPool, get_pool
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 __all__ = ["SessionManager", "ClientPool", "get_pool", "logger"]

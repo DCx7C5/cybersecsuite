@@ -30,6 +30,7 @@ Example:
         print(result)
 """
 
+from css.core.logger import getLogger
 from typing import AsyncGenerator, Callable, TypeVar, Any
 
 T_in = TypeVar("T_in")
@@ -245,8 +246,7 @@ class ExecuteStage(Stage):
                 yield message
 
             except Exception as e:
-                import logging
-                log = logging.getLogger(__name__)
+                log = getLogger(__name__)
                 log.error(f"Execute stage error: {e}")
 
                 if isinstance(message, dict):
@@ -289,15 +289,13 @@ class ObserveStage(Stage):
                 msg_id = message.get("id") if isinstance(message, dict) else getattr(message, "id", "unknown")
                 span.set_attribute("message.id", str(msg_id))
         except Exception as e:
-            import logging
-            log = logging.getLogger(__name__)
+            log = getLogger(__name__)
             log.debug(f"Span emission failed: {e}")
 
     async def _default_emit_log(self, message):
         """Default logging of message metadata."""
         try:
-            import logging
-            log = logging.getLogger(__name__)
+            log = getLogger(__name__)
             msg_type = (
                 message.get("type")
                 if isinstance(message, dict)
@@ -310,8 +308,7 @@ class ObserveStage(Stage):
             )
             log.debug(f"Message processed: type={msg_type}, id={msg_id}")
         except Exception as e:
-            import logging
-            log = logging.getLogger(__name__)
+            log = getLogger(__name__)
             log.debug(f"Log emission failed: {e}")
 
     async def __call__(self, stream):
@@ -329,8 +326,7 @@ class ObserveStage(Stage):
                 await self.emit_span(message)
                 await self.emit_log(message)
             except Exception as e:
-                import logging
-                log = logging.getLogger(__name__)
+                log = getLogger(__name__)
                 log.debug(f"Observe stage error (non-blocking): {e}")
 
             yield message

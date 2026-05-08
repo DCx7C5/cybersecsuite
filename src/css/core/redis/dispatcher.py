@@ -1,11 +1,11 @@
-import logging
+from css.core.logger import getLogger
 from collections.abc import Awaitable, Callable
 
 import redis.asyncio as aioredis
 
 from .messaging import Message
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 class MessageDispatcher:

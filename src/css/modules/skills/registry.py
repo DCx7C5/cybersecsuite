@@ -1,6 +1,6 @@
 """Skill registry and execution engine."""
 
-import logging
+from css.core.logger import getLogger
 import asyncio
 from typing import Any
 from datetime import datetime
@@ -11,7 +11,7 @@ from .models import SkillDefinition, SkillResult
 from .enums import SkillStatus, SkillCategory
 from .exceptions import SkillNotFoundError, SkillExecutionError, SkillConfigurationError
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class SkillRegistry:

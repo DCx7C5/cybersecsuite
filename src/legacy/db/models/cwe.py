@@ -1,10 +1,11 @@
 """CWE intelligence model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField
 
 
-class CWEIntel(Model):
+class CWEIntel(BaseModel):
     """Canonical CWE weakness definitions from CWE feeds/XML extractions."""
 
     id = fields.BigIntField(primary_key=True)
@@ -12,7 +13,7 @@ class CWEIntel(Model):
     name = fields.CharField(max_length=255, db_index=True)
     abstraction = fields.CharField(max_length=64, null=True, db_index=True, description="Pillar/Class/Base/Variant.")
     status = fields.CharField(max_length=64, null=True, db_index=True)
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     extended_description = fields.TextField(null=True)
     likelihood_of_exploit = fields.CharField(max_length=64, null=True, description="High/Medium/Low.")
     common_consequences = fields.JSONField(default=list)

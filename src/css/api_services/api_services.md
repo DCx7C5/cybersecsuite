@@ -10,14 +10,14 @@
 
 ## 🔗 Integration Points
 
-| Component                | Direction     | Relationship                                                                |
-|--------------------------|---------------|-----------------------------------------------------------------------------|
-| `css.core.types`         | → consumes    | Base types, Protocol contracts — ALL providers import from here             |
-| `css.core.resilience`    | → consumes    | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        |
-| `css.modules.llm_models` | ← consumed by | `UnifiedLLMClient` routes to provider SDKs via registry                     |
-| `css.core.events`        | ← wrapped by  | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        |
-| `css.core.prompt_cache`  | ← consumed by | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only |
-| `css.core.ollama`        | ← proxied by  | `OllamaProcessManager` must be running before any Ollama API calls          |
+| Component               | Relationship                                                                | Direction     |
+|-------------------------|-----------------------------------------------------------------------------|---------------|
+| `css.core.types`        | Base types, Protocol contracts — ALL providers import from here             | → consumes    |
+| `css.core.resilience`   | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        | → consumes    |
+| `css.core.models`       | `UnifiedLLMClient` routes to provider SDKs via registry                     | ← consumed by |
+| `css.core.events`       | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        | ← wrapped by  |
+| `css.core.prompt_cache` | `CacheBreakpointInjector` injects `cache_control` into Anthropic calls only | ← consumed by |
+| `css.core.ollama`       | `OllamaProcessManager` must be running before any Ollama API calls          | ← proxied by  |
 
 ---
 
@@ -250,7 +250,11 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ### xAI (`xai`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 Completion gaps tracked
+
+**Open gaps**:
+- `xai-config-base-url-yaml` — load the default base URL from the provider config source of truth instead of a local stub
+- `xai-get-models-list` — implement `get_models()` with concrete `ModelMetadata` so startup model seeding can treat xAI like the other providers
 
 ---
 

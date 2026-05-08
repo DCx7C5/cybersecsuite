@@ -5,18 +5,19 @@ Follows hybrid pattern: dataclass (runtime) + ORM model (persistence).
 """
 
 from tortoise import fields, models
-from tortoise.models import Model
-from css.core.db.enums import CompositionStrategy
+
+from css.core.db.fields import DescriptionField, NameField
+from models import BaseModel
+from enums import CompositionStrategy
 
 
-class HybridToolDefinition(Model):
+class HybridToolDefinition(BaseModel):
     """Persisted hybrid tool definition in database.
     
     Maps to HybridToolSchema dataclass for runtime use.
     """
-    id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=256, unique=True, db_index=True)
-    description = fields.TextField()
+    name = NameField(max_length=256, unique=True, db_index=True)
+    description = DescriptionField()
     component_tools = fields.JSONField()
     composition_strategy = fields.CharEnumField(
         CompositionStrategy,
@@ -71,9 +72,8 @@ class HybridToolDefinition(Model):
         )
 
 
-class HybridToolDefinitionTag(Model):
+class HybridToolDefinitionTag(BaseModel):
     """M2M junction table linking HybridToolDefinition to Tag."""
-    id = fields.BigIntField(primary_key=True)
     hybrid_tool = fields.ForeignKeyField(
         "css.HybridToolDefinition",
         related_name="tags_m2m"

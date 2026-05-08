@@ -8,12 +8,8 @@ Available modules (auto-discovered):
 - cache: Caching backends (Redis, in-memory)
 - capabilities: Capability definitions and registry
 - chat: Chat message types and handlers
-- events: Event system and handlers
 - google_a2a: Google A2A protocol and endpoints
-- models: LLM model registry and metadata
 - llm_proxy: LLM proxy and routing
-- marketplace: Plugin marketplace, installer, registry
-- memory: Memory and context managers
 - orchestration: Multi-orchestrator coordination (TeamLeader, TeamMember, OrchestratorProcess)
 - permissions: Permission system and checks
 - roles: Orchestration-specific roles (Orchestrator, TeamLeader, TeamMember)
@@ -28,10 +24,10 @@ Available modules (auto-discovered):
 """
 
 import sys
-from css.core.logger import getLogger
 from pathlib import Path
 from typing import Any
 
+from css.core.logger import getLogger
 logger = getLogger("modules")
 
 # Track imported modules

@@ -1,6 +1,6 @@
 """Anthropic API service provider."""
 
-import logging
+from css.core.logger import getLogger
 import os
 from typing import Any
 from collections.abc import AsyncIterator
@@ -18,7 +18,7 @@ from css.core.types.base_client import BaseApiServiceClient, StreamingHandler
 from css.core.config import ProviderDefaults
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class AnthropicApiService(BaseApiServiceClient, StreamingHandler):

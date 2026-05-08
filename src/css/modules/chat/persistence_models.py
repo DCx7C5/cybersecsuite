@@ -7,7 +7,6 @@ from css.core.db.models.base import BaseModel
 class ChatSessionRecord(BaseModel):
     """Persistent chat session record."""
 
-    id = fields.BigIntField(primary_key=True)
     session_id = fields.CharField(max_length=64, unique=True, db_index=True)
     title = fields.CharField(max_length=255)
     status = fields.CharField(max_length=32, default="active", db_index=True)
@@ -24,7 +23,6 @@ class ChatSessionRecord(BaseModel):
 class ChatMessageRecord(BaseModel):
     """Persistent chat message record."""
 
-    id = fields.BigIntField(primary_key=True)
     message_id = fields.CharField(max_length=64, unique=True, db_index=True)
     session: fields.ForeignKeyRelation[ChatSessionRecord] = fields.ForeignKeyField(
         "css.ChatSessionRecord",

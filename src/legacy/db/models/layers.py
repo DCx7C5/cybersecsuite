@@ -1,9 +1,9 @@
 """Session investigation layer model — tracks active phase and context per session."""
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
 
-class SessionLayer(Model):
+class SessionLayer(BaseModel):
     """Tracks the active investigation phase, hypotheses, and focus for a session."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField(

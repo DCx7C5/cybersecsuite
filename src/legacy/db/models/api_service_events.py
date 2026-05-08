@@ -13,10 +13,10 @@ This is an append-only event log (no updates) that enables full audit trail
 and service history analysis per session.
 """
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class ApiServiceEvent(Model):
+class ApiServiceEvent(BaseModel):
     """
     Immutable audit trail of API service events per session.
 

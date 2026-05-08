@@ -9,6 +9,7 @@ Models:
 from tortoise import fields
 from tortoise.indexes import Index
 
+from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from css.modules.incidents.enums import IncidentSource, SeverityLevel, IncidentStatus, TimelineEventType
 
@@ -32,7 +33,7 @@ class Incident(BaseModel):
     
     # Description
     title = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     
     # Classification
     severity = fields.CharField(
@@ -110,11 +111,11 @@ class Incident(BaseModel):
     )
     
     # Analysis
-    root_cause = fields.TextField(
+    root_cause = DescriptionField(
         default="",
         help_text="Post-incident analysis of root cause"
     )
-    lessons_learned = fields.TextField(
+    lessons_learned = DescriptionField(
         default="",
         help_text="What we learned / improvements made"
     )
@@ -136,8 +137,7 @@ class Incident(BaseModel):
 
 class IncidentTimeline(BaseModel):
     """Append-only incident progression log."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Incident",
         related_name="timeline_events",
@@ -158,7 +158,7 @@ class IncidentTimeline(BaseModel):
     
     # Details
     title = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     
     # Context (varies by event_type)
     metadata = fields.JSONField(
@@ -188,8 +188,7 @@ class IncidentTimeline(BaseModel):
 
 class IncidentTask(BaseModel):
     """Task items within incident investigation/containment/remediation."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Incident",
         related_name="tasks",
@@ -198,7 +197,7 @@ class IncidentTask(BaseModel):
     
     # Task definition
     title = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     
     # Task type/phase
     task_type = fields.CharField(

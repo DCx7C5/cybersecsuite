@@ -3,13 +3,28 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Protocol
 
-from css.modules.working_dir import WorkingDirectoryManager
 
 from .analyzer import ArchitectureAnalyzer
 from .decision_log import DecisionLog
-from .models import PlanStep, PlanStepStatus, PlannerSession
+from .enums import PlanStepStatus
+from .models import PlanStep, PlannerSession
 from .store import ProposalStore
+
+
+class PlannerWorkingDirs(Protocol):
+    """Abstraction for planner working directory management."""
+
+    def create(self, session_id: str, agent_id: str, mode: str) -> object:
+        """Create planner workspace for a session."""
+
+
+class NoopWorkingDirs:
+    """Fallback working directory manager when workspace module is unavailable."""
+
+    def create(self, session_id: str, agent_id: str, mode: str) -> object:
+        return {"session_id": session_id, "agent_id": agent_id, "mode": mode}
 
 
 class PlannerOrchestrator:
@@ -20,12 +35,12 @@ class PlannerOrchestrator:
         proposal_store: ProposalStore | None = None,
         analyzer: ArchitectureAnalyzer | None = None,
         decision_log: DecisionLog | None = None,
-        working_dirs: WorkingDirectoryManager | None = None,
+        working_dirs: PlannerWorkingDirs | None = None,
     ):
         self.proposal_store = proposal_store or ProposalStore()
         self.analyzer = analyzer or ArchitectureAnalyzer()
         self.decision_log = decision_log or DecisionLog()
-        self.working_dirs = working_dirs or WorkingDirectoryManager()
+        self.working_dirs = working_dirs or NoopWorkingDirs()
 
     def create_session(self, session_id: str, agent_id: str, objective: str, steps: list[str]) -> PlannerSession:
         self.working_dirs.create(session_id=session_id, agent_id=agent_id, mode="planner")

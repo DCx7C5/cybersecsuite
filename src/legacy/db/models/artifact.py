@@ -1,18 +1,19 @@
 """
 Artifact model with SSL signature tracking and version history.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField
 
-class Artifact(Model):
+class Artifact(BaseModel):
     """
     Represents a versioned, cryptographically-signed artifact.
     Each change generates a new signature automatically.
     """
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=512, db_index=True)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
 
     # Content and checksums
     content = fields.JSONField(default={})
@@ -62,7 +63,7 @@ class Artifact(Model):
         return hashlib.sha256(content_str.encode()).hexdigest()
 
 
-class ArtifactSignatureLog(Model):
+class ArtifactSignatureLog(BaseModel):
     """
     Audit log for all signature operations on artifacts.
     """
@@ -100,4 +101,3 @@ class ArtifactSignatureLog(Model):
     class Meta:
         table = "artifact_signature_logs"
         ordering = ["-created_at"]
-

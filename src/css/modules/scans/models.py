@@ -1,14 +1,14 @@
 """Scans module — vulnerability assessment lifecycle (Phase 7)."""
 
 from tortoise import fields
+from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from .enums import ScanType, ScanStatus, SeverityRating
 
 
 class Scan(BaseModel):
     """Vulnerability/compliance scan."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="scans",
@@ -67,8 +67,7 @@ class Scan(BaseModel):
 
 class Finding(BaseModel):
     """Individual vulnerability/compliance finding."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     scan: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Scan",
         related_name="findings",
@@ -80,7 +79,7 @@ class Finding(BaseModel):
     
     # Issue details
     title = fields.CharField(max_length=512)
-    description = fields.TextField()
+    description = DescriptionField()
     severity = fields.CharField(
         max_length=16,
         choices=[s.value for s in SeverityRating],

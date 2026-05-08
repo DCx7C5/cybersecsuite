@@ -37,10 +37,9 @@ from .types.base_protocols import BaseCommunicator
 # Pipeline infrastructure (Phase 6 T6.5)
 from .pipeline import pipe, Stage, PassthroughStage, BufferStage, FilterStage, MapStage, ExecuteStage, ObserveStage
 
-# NOTE: Concrete entities (Account, Agent, Role, Skill, Tool) import from modules
-# and should NOT be re-exported from core to avoid circular imports.
-# Modules depend on core/types.base, so core/__init__ must not import from modules.
-# Users should import entities directly: from css.modules.accounts.types import Account
+# NOTE: Concrete entities (Account, Agent, Role, Skill, Tool) should not be
+# re-exported from core/__init__ to avoid circular imports. Import them from
+# their canonical packages directly, e.g. css.core.accounts.
 
 __all__ = [
     # Exceptions (Layer 1-2-3)

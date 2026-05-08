@@ -16,8 +16,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 from tortoise import fields
-from tortoise.models import Model
 from tortoise.transactions import in_transaction
+from css.core.db.models.base import BaseModel as ORMBaseModel
 
 logger = logging.getLogger("llm.ai_provider_context")
 
@@ -112,7 +112,7 @@ class AIProviderContext:
         }
 
     @classmethod
-    def from_headers(cls, headers: dict[str, str]) -> AIProviderContext:
+    def from_headers(cls, headers: dict[str, str]) -> "AIProviderContext":
         """Create context from HTTP headers."""
         return cls(
             provider=AIProviderType(headers.get("X-AI-Provider", "claude")),
@@ -149,7 +149,7 @@ class AIProviderContextSchema(BaseModel):
         use_enum_values = True
 
 
-class AIProviderContextDB(Model):
+class AIProviderContextDB(ORMBaseModel):
     """
     Tortoise ORM model for persisting AIProviderContext.
 
@@ -209,7 +209,9 @@ class AIProviderContextDB(Model):
         )
 
     @classmethod
-    async def from_context(cls, context: AIProviderContext) -> AIProviderContextDB:
+    async def from_context(
+        cls, context: AIProviderContext
+    ) -> "AIProviderContextDB":
         """Create DB model from runtime AIProviderContext."""
         return cls(
             request_id=context.request_id,
@@ -232,7 +234,7 @@ class AIProviderContextDB(Model):
     @classmethod
     async def get_or_create_from_context(
         cls, context: AIProviderContext
-    ) -> tuple[AIProviderContextDB, bool]:
+    ) -> tuple["AIProviderContextDB", bool]:
         """
         Get or create a DB record from context.
 
@@ -265,7 +267,9 @@ class AIProviderContextDB(Model):
             return obj, created
 
     @classmethod
-    async def list_by_session(cls, session_id: str) -> list[AIProviderContextDB]:
+    async def list_by_session(
+        cls, session_id: str
+    ) -> list["AIProviderContextDB"]:
         """
         List all contexts for a session.
 

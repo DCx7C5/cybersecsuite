@@ -1,4 +1,5 @@
 from tortoise import fields, models
+from css.core.db.fields import DescriptionField, NameField, SlugField
 from css.core.db.models.base import BaseModel
 
 from .enums import TagColor
@@ -6,12 +7,11 @@ from .enums import TagColor
 
 class Tag(BaseModel):
     """Reusable tag that can be applied to any entity."""
-    id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=128, db_index=True)
-    slug = fields.CharField(max_length=128, db_index=True, default="", unique=True)
+    name = NameField(max_length=128, db_index=True)
+    slug = SlugField(max_length=128, db_index=True, default="", unique=True)
     color = fields.CharEnumField(TagColor, default=TagColor.GRAY)
     parent_tag = fields.ForeignKeyField("models.Tag", related_name="children", null=True)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 

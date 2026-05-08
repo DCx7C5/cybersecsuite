@@ -1,18 +1,19 @@
 """
 Forensic session & project models — extended scope for deep investigations.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
+from css.core.db.fields import DescriptionField, PathField
 from db.models.enums import (
     SeverityLevel, ConfidenceLevel, SessionPhase, SessionStatus,
 )
 
 
-class ForensicProject(Model):
+class ForensicProject(BaseModel):
     """Extended project model with threat-intel and case-tracking metadata."""
     id = fields.BigIntField(primary_key=True)
     project_name = fields.CharField(max_length=255, db_index=True)
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     case_id = fields.CharField(max_length=100, unique=True, db_index=True, null=True)
     classification = fields.CharField(max_length=64, default="", description="TLP or custom classification.")
     lead_investigator = fields.CharField(max_length=255, default="")
@@ -51,7 +52,7 @@ class ForensicProject(Model):
         return f"ForensicProject({self.case_id}: {self.project_name})"
 
 
-class ForensicSession(Model):
+class ForensicSession(BaseModel):
     """Individual forensic investigation session with full system context."""
     id = fields.BigIntField(primary_key=True)
     session_id = fields.CharField(max_length=100, unique=True, db_index=True)
@@ -95,7 +96,7 @@ class ForensicSession(Model):
     verdict_confidence = fields.CharEnumField(ConfidenceLevel, null=True)
     executive_summary = fields.TextField(default="")
     lessons_learned = fields.TextField(default="")
-    storage_path = fields.CharField(max_length=500, null=True)
+    storage_path = PathField(max_length=500, null=True)
     tags = fields.JSONField(default=list)
 
     class Meta:
@@ -118,7 +119,7 @@ class ForensicSession(Model):
         return f"ForensicSession({self.session_id} [{self.phase}])"
 
 
-class ForensicFinding(Model):
+class ForensicFinding(BaseModel):
     """Extended finding with evidence, chain-of-custody, and cross-validation."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.ForensicSession", related_name="forensic_findings", db_index=True)
@@ -128,7 +129,7 @@ class ForensicFinding(Model):
     confidence = fields.CharEnumField(ConfidenceLevel, default=ConfidenceLevel.MEDIUM)
     status = fields.CharField(max_length=50, default="open", db_index=True)
     location = fields.CharField(max_length=500, null=True)
-    description = fields.TextField()
+    description = DescriptionField()
     evidence = fields.TextField(null=True)
     command_output = fields.TextField(null=True)
     cross_validation = fields.TextField(null=True)

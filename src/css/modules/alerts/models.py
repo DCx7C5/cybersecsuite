@@ -10,14 +10,14 @@ Multi-channel delivery: email (SMTP), Slack, webhooks.
 """
 
 from tortoise import fields
+from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from .enums import AlertSeverity, AlertChannel
 
 
 class AlertRule(BaseModel):
     """Alert rule — trigger condition + notification channels."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="alert_rules",
@@ -26,7 +26,7 @@ class AlertRule(BaseModel):
     
     # Rule definition
     name = fields.CharField(max_length=255, db_index=True)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     is_active = fields.BooleanField(default=True, db_index=True)
     
     # Trigger condition
@@ -71,8 +71,7 @@ class AlertRule(BaseModel):
 
 class AlertHistory(BaseModel):
     """History of fired alerts with delivery status per channel."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="alert_history",
@@ -114,8 +113,7 @@ class AlertHistory(BaseModel):
 
 class ChannelConfig(BaseModel):
     """Configuration for alert delivery channels."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="alert_channels",

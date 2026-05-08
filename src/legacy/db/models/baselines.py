@@ -4,6 +4,7 @@ Network, Process, Kernel, and Persistence baselines.
 """
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField, SHA512SumField
 from db.models.scope import ScopedEntry
 
 
@@ -12,7 +13,7 @@ class NetworkBaseline(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
-    snapshot_hash = fields.CharField(max_length=128, default="")
+    snapshot_hash = SHA512SumField(default="")
     confirmed_clean = fields.BooleanField(default=False)
 
     interfaces = fields.JSONField(default=list)
@@ -20,8 +21,8 @@ class NetworkBaseline(ScopedEntry):
     listening_ports = fields.JSONField(default=list)
     established_connections = fields.JSONField(default=list)
     routes = fields.JSONField(default=list)
-    firewall_rules_hash = fields.CharField(max_length=128, default="")
-    notes = fields.TextField(default="")
+    firewall_rules_hash = SHA512SumField(default="")
+    notes = DescriptionField(default="")
 
     class Meta:
         table = "network_baselines"
@@ -36,7 +37,7 @@ class ProcessBaseline(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
-    snapshot_hash = fields.CharField(max_length=128, default="")
+    snapshot_hash = SHA512SumField(default="")
     confirmed_clean = fields.BooleanField(default=False)
 
     ps_count = fields.IntField(default=0)
@@ -49,7 +50,7 @@ class ProcessBaseline(ScopedEntry):
     lsmod_count = fields.IntField(default=0)
     proc_modules_count = fields.IntField(default=0)
     module_delta = fields.IntField(default=0)
-    notes = fields.TextField(default="")
+    notes = DescriptionField(default="")
 
     class Meta:
         table = "process_baselines"
@@ -64,7 +65,7 @@ class KernelBaseline(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
-    snapshot_hash = fields.CharField(max_length=128, default="")
+    snapshot_hash = SHA512SumField(default="")
     confirmed_clean = fields.BooleanField(default=False)
 
     kernel_version = fields.CharField(max_length=255, default="")
@@ -75,7 +76,7 @@ class KernelBaseline(ScopedEntry):
     ebpf_programs = fields.JSONField(default=list)
     ebpf_maps = fields.JSONField(default=list)
     security_settings = fields.JSONField(default=dict)
-    notes = fields.TextField(default="")
+    notes = DescriptionField(default="")
 
     class Meta:
         table = "kernel_baselines"
@@ -90,7 +91,7 @@ class PersistenceBaseline(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     captured_at = fields.DatetimeField(auto_now_add=True)
     is_active_baseline = fields.BooleanField(default=True, db_index=True)
-    snapshot_hash = fields.CharField(max_length=128, default="")
+    snapshot_hash = SHA512SumField(default="")
     confirmed_clean = fields.BooleanField(default=False)
 
     systemd_system_units = fields.JSONField(default=list)
@@ -100,7 +101,7 @@ class PersistenceBaseline(ScopedEntry):
     autostart_entries = fields.JSONField(default=list)
     cron_entries = fields.JSONField(default=list)
     udev_rules = fields.JSONField(default=list)
-    notes = fields.TextField(default="")
+    notes = DescriptionField(default="")
 
     class Meta:
         table = "persistence_baselines"

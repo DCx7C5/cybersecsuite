@@ -15,14 +15,13 @@ The loader discovers entry points, imports them, and collects routers and models
 
 import importlib
 import importlib.metadata
-import logging
 from collections.abc import Iterator
-from pathlib import Path
-from typing import NamedTuple, Any
+from typing import NamedTuple
 
 from fastapi import APIRouter, FastAPI
 
-log = logging.getLogger(__name__)
+from css.core.logger import getLogger
+log = getLogger(__name__)
 
 
 class AppRouters(NamedTuple):
@@ -192,4 +191,3 @@ def mount_app_routers(app: FastAPI, entry_point_group: str = "css.modules") -> l
         log.warning("No endpoints discovered in %s", entry_point_group)
 
     return mounted
-

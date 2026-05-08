@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from pathlib import Path
+
+import msgspec
 
 from .models import PlannerSession
 
@@ -18,7 +19,7 @@ class ProposalStore:
 
     def write(self, plan: PlannerSession) -> Path:
         path = self.base_dir / f"{plan.session_id}.json"
-        path.write_text(json.dumps(asdict(plan), default=str, indent=2), encoding="utf-8")
+        path.write_text(json.dumps(msgspec.to_builtins(plan), default=str, indent=2), encoding="utf-8")
         return path
 
     def read(self, session_id: str) -> dict:

@@ -1,9 +1,9 @@
 """Settings and configuration storage models."""
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
 
-class ScopedEntry(Model):
+class ScopedEntry(BaseModel):
     """Key-value store for project/app-scoped settings."""
     entry_type = fields.CharField(max_length=64, db_index=True)
     project = fields.ForeignKeyField("models.Project", related_name=False, null=True, on_delete=fields.CASCADE, db_index=True)
@@ -18,7 +18,7 @@ class ScopedEntry(Model):
         table = "scoped_entries"
 
 
-class GlobalSettings(Model):
+class GlobalSettings(BaseModel):
     """Global application settings."""
     key = fields.CharField(max_length=128, primary_key=True)
     value = fields.JSONField(default=dict)

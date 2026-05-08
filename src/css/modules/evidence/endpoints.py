@@ -1,6 +1,6 @@
 """Evidence management endpoints — chain-of-custody, collection, verification."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime
@@ -10,7 +10,6 @@ from .models import (
     EvidenceChain,
     EvidenceTagging,
     EvidenceStatus,
-    EvidenceType,
     ChainEventType,
 )
 

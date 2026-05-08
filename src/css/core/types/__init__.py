@@ -103,9 +103,6 @@ from .providers import (  # noqa: F401
 # ── Base workflow types ───────────────────────────────────────────────────────
 from .base_workflow import BaseTask, BaseTaskScope  # noqa: F401
 
-# ── Core domain entities ──────────────────────────────────────────────────────
-from css.core.accounts.types import Account  # noqa: F401
-
 __all__ = [
     # enums
     "MessageRole",
@@ -177,6 +174,4 @@ __all__ = [
     # workflow bases (task only — team lives in modules/teams)
     "BaseTask",
     "BaseTaskScope",
-    # accounts
-    "Account",
 ]

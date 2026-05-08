@@ -1,9 +1,9 @@
 """Triage: Background LLM for classification and routing."""
 
-from css.core.logger import getLogger
 from .engine import TriageEngine
 from .models import TriageRequest, TriageResult
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
+from css.core.logger import getLogger
 from .exceptions import (
     BaseTriageException,
     TriageExecutionError,

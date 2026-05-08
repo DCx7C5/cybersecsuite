@@ -1,10 +1,10 @@
 """Cross-reference intelligence models that belong together."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class CVECWEReference(Model):
+class CVECWEReference(BaseModel):
     """Many-to-many mapping between CVE and CWE records."""
 
     id = fields.BigIntField(primary_key=True)
@@ -21,7 +21,7 @@ class CVECWEReference(Model):
 
 
 
-class CVEMitreTechniqueReference(Model):
+class CVEMitreTechniqueReference(BaseModel):
     """Many-to-many mapping between CVE and MITRE technique records."""
 
     id = fields.BigIntField(primary_key=True)
@@ -35,7 +35,7 @@ class CVEMitreTechniqueReference(Model):
         unique_together = (("cve_id", "technique_id"),)
 
 
-class CWECAPECReference(Model):
+class CWECAPECReference(BaseModel):
     """Mapping between CWE weaknesses and CAPEC attack patterns."""
 
     id = fields.BigIntField(primary_key=True)
@@ -53,7 +53,7 @@ class CWECAPECReference(Model):
         ordering_field = "id"
 
 
-class CAPECMitreTechniqueReference(Model):
+class CAPECMitreTechniqueReference(BaseModel):
     """Mapping between CAPEC attack patterns and ATT&CK techniques."""
 
     id = fields.BigIntField(primary_key=True)
@@ -67,7 +67,7 @@ class CAPECMitreTechniqueReference(Model):
         unique_together = (("capec_id", "technique_id"),)
 
 
-class ThreatActorTechniqueReference(Model):
+class ThreatActorTechniqueReference(BaseModel):
     """Mapping between threat actors and techniques they are associated with."""
 
     id = fields.BigIntField(primary_key=True)
@@ -82,7 +82,7 @@ class ThreatActorTechniqueReference(Model):
         unique_together = (("actor_id", "technique_id"),)
 
 
-class ThreatActorSoftwareReference(Model):
+class ThreatActorSoftwareReference(BaseModel):
     """Mapping between threat actors and the software families they use."""
 
     id = fields.BigIntField(primary_key=True)
@@ -98,7 +98,7 @@ class ThreatActorSoftwareReference(Model):
         unique_together = (("actor_id", "software_id", "relationship_type"),)
 
 
-class SoftwareTechniqueReference(Model):
+class SoftwareTechniqueReference(BaseModel):
     """Mapping between ATT&CK software families and techniques they use."""
 
     id = fields.BigIntField(primary_key=True)

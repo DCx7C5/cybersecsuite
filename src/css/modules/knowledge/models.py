@@ -1,35 +1,15 @@
 """Knowledge module — RAG knowledge base for LLM agents (Phase 7)."""
+from tortoise.indexes import Index
+from tortoise import fields
 
-from tortoise import Model, fields
-from datetime import datetime
-from enum import Enum
-
-
-class DocumentType(str, Enum):
-    """Knowledge document source types."""
-    CVE_FEED = "cve_feed"
-    PLAYBOOK = "playbook"
-    THREAT_REPORT = "threat_report"
-    RUNBOOK = "runbook"
-    INCIDENT_RETROSPECTIVE = "incident_retrospective"
-    POLICY = "policy"
-    TOOL_DOCUMENTATION = "tool_documentation"
-    VENDOR_ADVISORY = "vendor_advisory"
-    CUSTOM = "custom"
+from css.core.db.fields import DescriptionField, QualityScoreField
+from css.core.db.models.base import BaseModel
+from css.modules.knowledge.enums import DocumentType, DocumentStatus
 
 
-class DocumentStatus(str, Enum):
-    """Document lifecycle status."""
-    DRAFT = "draft"
-    PUBLISHED = "published"
-    ARCHIVED = "archived"
-    SUPERSEDED = "superseded"
-
-
-class KnowledgeDocument(Model):
+class KnowledgeDocument(BaseModel):
     """Searchable knowledge document with embeddings."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="knowledge_documents",
@@ -59,7 +39,7 @@ class KnowledgeDocument(Model):
     )
     
     # Tagging
-    tags = fields.JSONField(
+    tags = fields.JSONField( # TODO: relation to tags 
         default=list,
         help_text="searchable tags (cve, malware, lateral_movement, etc.)"
     )
@@ -69,7 +49,7 @@ class KnowledgeDocument(Model):
     )
     
     # Relevance
-    relevance_score = fields.FloatField(
+    relevance_score = QualityScoreField(
         default=0.5,
         help_text="How relevant to org's context (0.0-1.0)"
     )
@@ -116,15 +96,14 @@ class KnowledgeDocument(Model):
     class Meta:
         table = "knowledge_documents"
         indexes = [
-            fields.Index(["organization", "document_type", "status"]),
-            fields.Index(["organization", "-updated_at"]),
+            Index(fields=["organization", "document_type", "status"]),
+            Index(fields=["organization", "-updated_at"]),
         ]
 
 
-class KnowledgeIndex(Model):
+class KnowledgeIndex(BaseModel):
     """Index entry for full-text search across documents."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     document: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.KnowledgeDocument",
         related_name="index_entries",
@@ -140,13 +119,20 @@ class KnowledgeIndex(Model):
     
     class Meta:
         table = "knowledge_index"
-        unique_together = (("document", "term"),)
+        table_verbose = "Knowledge Index"
+        table_verbose_plural = "Knowledge Indices"
+        ordering = ["-document__updated_at"]
+        indexes = [
+            Index(fields=["document", "term"]),
+        ]
+        unique_together = (
+            ("document", "term"),
+        )
 
 
-class KnowledgeTag(Model):
+class KnowledgeTag(BaseModel):
     """Taxonomy tags for knowledge organization."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="knowledge_tags",
@@ -154,13 +140,11 @@ class KnowledgeTag(Model):
     )
     
     tag = fields.CharField(max_length=128, db_index=True)
-    category = fields.CharField(
-        max_length=64,
-        choices=["tactic", "technique", "threat_actor", "malware", "tool", "vulnerability", "custom"],
-        default="custom",
+    category = fields.CharEnumField(
+        # TODO: always implement CharEnumField / never choices list
     )
     
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     usage_count = fields.IntField(default=0)
     
     class Meta:
@@ -168,10 +152,9 @@ class KnowledgeTag(Model):
         unique_together = (("organization", "tag"),)
 
 
-class SearchLog(Model):
+class SearchLog(BaseModel):
     """Log of agent/user knowledge base searches for analytics."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="knowledge_searches",

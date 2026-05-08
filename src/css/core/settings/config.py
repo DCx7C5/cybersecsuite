@@ -10,7 +10,45 @@ PROJECT_DIR = Path(__file__).resolve().parent
 PYTHONUNBUFFERED = True
 
 AUTO_CREATE_POSTGRES_DB = bool(getenv('AUTO_CREATE_DATABASE', 'true'))
-LOG_LEVEL = getenv('LOG_LEVEL', 'info').upper()
+LOG_LEVEL = 'DEBUG' if DEBUG else getenv('LOG_LEVEL', 'INFO').upper()
+
+# ── Module Import Order ──────────────────────────────────────────────────────────
+
+MODULES = [
+    # Foundation / orchestration dependencies
+    "css.modules.css_a2a",
+    "css.modules.tools",
+    "css.modules.skills",
+    "css.modules.tasks",
+    "css.modules.teams",
+    "css.modules.agents",
+    "css.modules.tags",
+    # Routing/classification chain (triage -> strategies -> chat)
+    "css.modules.triage",
+    "css.modules.strategies",
+    "css.modules.chat",
+    # Planning and external A2A
+    "css.modules.planer",
+    "css.modules.google_a2a",
+    # Domain modules (mostly independent)
+    "css.modules.alerts",
+    "css.modules.compliance",
+    "css.modules.evidence",
+    "css.modules.incidents",
+    "css.modules.knowledge",
+    "css.modules.local_assist",
+    "css.modules.mcps",
+    "css.modules.mitre",
+    "css.modules.obsidian_memory",
+    "css.modules.projects",
+    "css.modules.prompts",
+    "css.modules.reports",
+    "css.modules.scans",
+    "css.modules.scheduler",
+    "css.modules.threat_intel",
+    "css.modules.webhooks",
+    "css.modules.workflows",
+]
 
 
 # ── Cache Configuration (Unified @cache Module) ────────────────────────────────
@@ -68,7 +106,7 @@ REDIS_DATABASE = {
 
 # Redis configuration for multi-orchestrator shared cache
 REDIS_CONFIG = {
-    'maxmemory': '512mb',
+    'maxmemory': '1024mb',
     'maxmemory_policy': 'allkeys-lru',
     'appendonly': 'yes',
     'appendfsync': 'everysec',
@@ -193,7 +231,13 @@ ASGI_ACCESS_LOG = bool(getenv('ASGI_ACCESS_LOG', 'true'))
 
 # ── Logging Configuration ──────────────────────────────────────────────────────
 
-# TODO: Add configuration and connect with src/css/core/logger.py
+LOG_FILE_NAME = getenv('LOG_FILE_NAME', 'asgi.log')
+LOG_FORMAT = getenv('LOG_FORMAT', '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+LOG_DATE_FORMAT = getenv('LOG_DATE_FORMAT', '%Y-%m-%d %H:%M:%S')
+LOG_FILE_MAX_BYTES = int(getenv('LOG_FILE_MAX_BYTES', str(1024 * 1024)))
+LOG_FILE_BACKUP_COUNT = int(getenv('LOG_FILE_BACKUP_COUNT', '5'))
+LOG_TO_STDOUT = getenv('LOG_TO_STDOUT', 'true').lower() == 'true'
+LOG_TO_FILE = getenv('LOG_TO_FILE', 'true').lower() == 'true'
 
 # ── File Paths & Directories ───────────────────────────────────────────────────
 
@@ -201,10 +245,14 @@ BASE_DIR = PROJECT_DIR.parent.parent
 CSS_DIR = getenv('CSS_DIR', str(BASE_DIR / 'css'))
 CACHE_DIR = getenv('CACHE_DIR', CACHE_DISK_PATH)
 LOG_DIR = getenv('LOG_DIR', str(Path.home() / '.css' / 'logs'))
+LOG_FILE_PATH = str(Path(LOG_DIR) / LOG_FILE_NAME)
 
 # Ensure directories exist
-Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
-Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
+if not Path(CACHE_DIR).exists():
+    Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+
+if not Path(LOG_DIR).exists():
+    Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
 
 # ── Security & Secrets ─────────────────────────────────────────────────────────

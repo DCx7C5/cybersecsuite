@@ -1,13 +1,15 @@
 """OpenAI API service provider."""
 
 import json
-import logging
 import os
 from typing import Any
 from collections.abc import AsyncIterator
 
+
+
 import aiohttp
 
+from css.core.logger import getLogger
 from css.core.types import (
     BaseMessage,
     MessageRole,
@@ -21,7 +23,7 @@ from css.core.types import (
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
@@ -33,6 +35,7 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         base_url: str | None = None,
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
+        http_client = aiohttp.ClientSession,
     ):
         super().__init__(
             provider_id=ProviderType.OPENAI,
@@ -44,56 +47,12 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         self._session: aiohttp.AsyncClient | None = None
 
     def _default_base_url(self) -> str:
-        return "https://api.openai.com/v1"
+        return "https://api.openai.com/v1" # TODO: import from api_services.yml
 
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
-        return [
-            ModelMetadata(
-                id="gpt-4o",
-                provider=ProviderType.OPENAI,
-                display_name="GPT-4o",
-                context_window=128000,
-                max_output_tokens=4096,
-                streaming=True,
-                vision=True,
-                tool_use=True,
-                batch_api=True,
-                structured_output=True,
-                files_api=True,
-                input_cost_per_mtok=5.0,
-                output_cost_per_mtok=15.0,
-            ),
-            ModelMetadata(
-                id="gpt-4-turbo",
-                provider=ProviderType.OPENAI,
-                display_name="GPT-4 Turbo",
-                context_window=128000,
-                max_output_tokens=4096,
-                streaming=True,
-                vision=True,
-                tool_use=True,
-                batch_api=True,
-                structured_output=True,
-                files_api=True,
-                input_cost_per_mtok=10.0,
-                output_cost_per_mtok=30.0,
-            ),
-            ModelMetadata(
-                id="gpt-3.5-turbo",
-                provider=ProviderType.OPENAI,
-                display_name="GPT-3.5 Turbo",
-                context_window=16384,
-                max_output_tokens=4096,
-                streaming=True,
-                tool_use=True,
-                batch_api=True,
-                structured_output=True,
-                files_api=True,
-                input_cost_per_mtok=0.5,
-                output_cost_per_mtok=1.5,
-            ),
-        ]
+        # TODO:
+        ...
 
     async def call_llm(
         self,

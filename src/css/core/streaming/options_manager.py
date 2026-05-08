@@ -14,7 +14,7 @@ Scope = Literal["global", "app", "project"]
 class RuntimeOptionsManager:
     """Singleton manager for runtime options with scopes hierarchy."""
 
-    _instance: RuntimeOptionsManager | None = None
+    _instance: "RuntimeOptionsManager | None" = None
     _lock = asyncio.Lock()
 
     def __init__(self) -> None:
@@ -26,7 +26,7 @@ class RuntimeOptionsManager:
         }
 
     @classmethod
-    def get_instance(cls) -> RuntimeOptionsManager:
+    def get_instance(cls) -> "RuntimeOptionsManager":
         """Get singleton instance."""
         if cls._instance is None:
             cls._instance = cls()

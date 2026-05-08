@@ -18,14 +18,14 @@ Usage::
 """
 
 
-import logging
+from css.core.logger import getLogger
 from typing import Any
 
 from css.core.tools.base import get_tool_registry
 from css.core.tools.exceptions import ToolNotFoundError, ToolExecutionError
 from css.core.events.instrument import instrument
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class AgentToolExecutor:

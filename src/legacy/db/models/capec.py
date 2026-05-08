@@ -1,16 +1,17 @@
 """CAPEC attack-pattern intelligence model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField, UrlField
 
 
-class CapecAttackPatternIntel(Model):
+class CapecAttackPatternIntel(BaseModel):
     """Canonical CAPEC attack patterns for detection engineering and threat hunting."""
 
     id = fields.BigIntField(primary_key=True)
     capec_id = fields.CharField(max_length=32, unique=True, db_index=True)
     name = fields.CharField(max_length=255, db_index=True)
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     abstraction = fields.CharField(max_length=64, default="", db_index=True)
     domains = fields.JSONField(default=list)
     prerequisites = fields.JSONField(default=list)
@@ -23,7 +24,7 @@ class CapecAttackPatternIntel(Model):
     child_capec_ids = fields.JSONField(default=list)
     likelihood_of_attack = fields.CharField(max_length=64, default="", db_index=True)
     severity = fields.CharField(max_length=64, default="", db_index=True)
-    url = fields.CharField(max_length=512, default="")
+    url = UrlField(max_length=512, default="")
     source_file = fields.CharField(max_length=500, null=True)
     raw_record = fields.JSONField(default=dict)
     tags = fields.JSONField(default=list)
@@ -37,4 +38,3 @@ class CapecAttackPatternIntel(Model):
 
     def __str__(self):
         return f"{self.capec_id}: {self.name}"
-

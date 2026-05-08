@@ -1,7 +1,7 @@
 """xAI (Grok) API service provider."""
 
+from css.core.logger import getLogger
 import json
-import logging
 import os
 from typing import Any
 from collections.abc import AsyncIterator
@@ -19,7 +19,7 @@ from css.core.types import (
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class xAIApiService(BaseApiServiceClient, StreamingHandler):
@@ -41,24 +41,14 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         )
     
     def _default_base_url(self) -> str:
-        return "https://api.x.ai/v1"
+        # TODO: must be loaded from api_services.yml
+        ...
     
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
-        return [
-            ModelMetadata(
-                id="grok-vision-beta",
-                provider=ProviderType.XAI,
-                display_name="Grok Vision",
-                context_window=131072,
-                max_output_tokens=8192,
-                streaming=True,
-                vision=True,
-                tool_use=True,
-                structured_output=True,
-            ),
-        ]
-    
+        # TODO: implement sdk method to fetch available models
+        ...
+
     async def call_llm(
         self,
         model_id: str,

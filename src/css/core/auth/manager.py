@@ -8,8 +8,7 @@ Provides:
 - Logout/revocation
 """
 
-import logging
-import hashlib
+from css.core.logger import getLogger
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional
@@ -18,7 +17,7 @@ import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 # JWT algorithms supported
 ALGORITHM_HS256 = "HS256"

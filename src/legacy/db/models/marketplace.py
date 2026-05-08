@@ -1,9 +1,10 @@
 """Marketplace models for asset and MCP tracking."""
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField, UrlField, VersionField
 
 
-class MarketplaceAsset(Model):
+class MarketplaceAsset(BaseModel):
     """Base model for all marketplace assets (MCPs, skills, agents, plugins, workflows, prompts)."""
 
     id = fields.BigIntField(primary_key=True)
@@ -13,8 +14,8 @@ class MarketplaceAsset(Model):
         db_index=True,
         description="Type: mcp, skill, agent, prompt, plugin, workflow"
     )
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="0.1.0", db_index=True)
     status = fields.CharField(
         max_length=32,
         default="available",
@@ -32,13 +33,13 @@ class MarketplaceAsset(Model):
         indexes = [("asset_type", "status"), ("asset_type", "version")]
 
 
-class MarketplaceMCP(Model):
+class MarketplaceMCP(BaseModel):
     """Model for externalized MCP packages."""
 
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="0.1.0", db_index=True)
     status = fields.CharField(
         max_length=32,
         default="available",
@@ -47,8 +48,8 @@ class MarketplaceMCP(Model):
     )
     tools_count = fields.IntField(default=0)
     size_mb = fields.DecimalField(max_digits=10, decimal_places=2, default=0)
-    repository_url = fields.CharField(max_length=512, default="", description="Git repository URL")
-    documentation_url = fields.CharField(max_length=512, default="", description="Documentation link")
+    repository_url = UrlField(max_length=512, default="", description="Git repository URL")
+    documentation_url = UrlField(max_length=512, default="", description="Documentation link")
     category = fields.CharField(max_length=128, default="core", db_index=True)
     tags = fields.JSONField(default=list, description="Tags for discovery (e.g. forensics, network)")
     metadata = fields.JSONField(default=dict, description="MCP-specific metadata")
@@ -62,13 +63,13 @@ class MarketplaceMCP(Model):
         indexes = [("category", "status"), ("category", "version")]
 
 
-class MarketplaceSkill(Model):
+class MarketplaceSkill(BaseModel):
     """Model for marketplace skills."""
 
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="0.1.0", db_index=True)
     status = fields.CharField(
         max_length=32,
         default="available",
@@ -89,13 +90,13 @@ class MarketplaceSkill(Model):
         indexes = [("category", "status"), ("category", "version")]
 
 
-class MarketplaceAgent(Model):
+class MarketplaceAgent(BaseModel):
     """Model for marketplace agents."""
 
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="0.1.0", db_index=True)
     status = fields.CharField(
         max_length=32,
         default="available",
@@ -117,13 +118,13 @@ class MarketplaceAgent(Model):
         indexes = [("category", "status"), ("category", "model")]
 
 
-class MarketplacePlugin(Model):
+class MarketplacePlugin(BaseModel):
     """Model for marketplace browser plugins."""
 
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="0.1.0", db_index=True)
     status = fields.CharField(
         max_length=32,
         default="available",
@@ -144,13 +145,13 @@ class MarketplacePlugin(Model):
         indexes = [("category", "status"), ("category", "browser_types")]
 
 
-class MarketplaceWorkflow(Model):
+class MarketplaceWorkflow(BaseModel):
     """Model for marketplace workflows."""
 
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="0.1.0", db_index=True)
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="0.1.0", db_index=True)
     status = fields.CharField(
         max_length=32,
         default="available",

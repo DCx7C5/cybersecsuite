@@ -1,10 +1,10 @@
 """Knowledge retriever — semantic search for LLM agent context."""
 
+from css.core.logger import getLogger
 import hashlib
-from typing import List, Dict, Optional
-import logging
+from typing import List, Dict
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class KnowledgeRetriever:
@@ -33,7 +33,7 @@ class KnowledgeRetriever:
         Returns:
             List of document dicts with scores + metadata
         """
-        from .models import KnowledgeDocument, KnowledgeIndex, SearchLog
+        from .models import SearchLog
         
         try:
             if search_type == "keyword":
@@ -64,7 +64,7 @@ class KnowledgeRetriever:
     
     async def _keyword_search(self, query: str, org_id: int, limit: int) -> List[Dict]:
         """Keyword-based search using inverted index."""
-        from .models import KnowledgeDocument, KnowledgeIndex
+        from .models import KnowledgeIndex
         
         # Tokenize query
         terms = query.lower().split()

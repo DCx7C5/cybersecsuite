@@ -7,13 +7,13 @@ Supports:
 - Caching after instantiation
 """
 
+from css.core.logger import getLogger
 import asyncio
-import logging
 from collections.abc import Callable
 
 from css.core.types import BaseApiServiceClient
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class SDKRegistry:

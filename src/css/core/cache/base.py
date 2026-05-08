@@ -1,14 +1,15 @@
 """Abstract cache backend interface and implementations."""
 
+from css.core.logger import getLogger
 import logging
 from abc import ABC, abstractmethod
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from .exceptions import CacheExecutionError
 from .models import CacheEntry, CacheStats
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class CacheBackend(ABC):
@@ -271,28 +272,28 @@ class L3PostgresCache(CacheBackend):
     """L3: PostgreSQL-backed persistent cache via Tortoise ORM."""
 
     @staticmethod
-    def _is_expired(ttl_seconds: int | None, created_at: datetime) -> bool:
-        if ttl_seconds is None:
+    def _is_expired(expires_at: datetime | None) -> bool:
+        if expires_at is None:
             return False
         now = datetime.now(UTC)
-        created = created_at.astimezone(UTC) if created_at.tzinfo else created_at.replace(tzinfo=UTC)
-        return (now - created).total_seconds() > ttl_seconds
+        expiry = expires_at.astimezone(UTC) if expires_at.tzinfo else expires_at.replace(tzinfo=UTC)
+        return now > expiry
 
     async def get(self, key: str) -> Any | None:
         """Get value from PostgreSQL cache."""
         try:
             from .models import CacheEntryModel
 
-            entry = await CacheEntryModel.filter(namespace=self.namespace, key=key).first()
+            entry = await CacheEntryModel.filter(namespace=self.namespace, cache_key=self._make_key(key)).first()
             if entry is None:
                 self.stats.misses += 1
                 return None
-            if self._is_expired(entry.ttl_seconds, entry.created_at):
+            if self._is_expired(entry.expires_at):
                 await entry.delete()
                 self.stats.misses += 1
                 return None
             self.stats.hits += 1
-            return entry.value
+            return entry.cache_value
         except Exception as e:
             logger.error(f"L3 cache get error: {e}")
             self.stats.errors += 1
@@ -303,10 +304,18 @@ class L3PostgresCache(CacheBackend):
         try:
             from .models import CacheEntryModel
 
+            expires_at = None
+            if ttl_seconds is not None and ttl_seconds > 0:
+                expires_at = datetime.now(UTC) + timedelta(seconds=ttl_seconds)
+
             await CacheEntryModel.update_or_create(
-                defaults={"value": value, "ttl_seconds": ttl_seconds},
+                defaults={
+                    "cache_value": value,
+                    "ttl_seconds": ttl_seconds or 0,
+                    "expires_at": expires_at,
+                },
                 namespace=self.namespace,
-                key=key,
+                cache_key=self._make_key(key),
             )
             self.stats.sets += 1
             return True
@@ -320,7 +329,7 @@ class L3PostgresCache(CacheBackend):
         try:
             from .models import CacheEntryModel
 
-            deleted = await CacheEntryModel.filter(namespace=self.namespace, key=key).delete()
+            deleted = await CacheEntryModel.filter(namespace=self.namespace, cache_key=self._make_key(key)).delete()
             if deleted:
                 self.stats.deletes += 1
             return bool(deleted)
@@ -346,10 +355,10 @@ class L3PostgresCache(CacheBackend):
         try:
             from .models import CacheEntryModel
 
-            entry = await CacheEntryModel.filter(namespace=self.namespace, key=key).first()
+            entry = await CacheEntryModel.filter(namespace=self.namespace, cache_key=self._make_key(key)).first()
             if entry is None:
                 return False
-            if self._is_expired(entry.ttl_seconds, entry.created_at):
+            if self._is_expired(entry.expires_at):
                 await entry.delete()
                 return False
             return True

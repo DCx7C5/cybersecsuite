@@ -3,7 +3,6 @@
 
 import msgspec
 from datetime import datetime
-from typing import Any
 
 
 class TokenUsage(msgspec.Struct):
@@ -58,7 +57,7 @@ class AgentResult(msgspec.Struct):
     session_id: str = ""
     response: str = ""
     thinking: str | None = None
-    tool_calls: list[dict[str, Any]] = msgspec.field(default_factory=list)
+    tool_calls: list[dict[str, object]] = msgspec.field(default_factory=list)
     usage: TokenUsage | None = None
     input_tokens: int = 0
     output_tokens: int = 0
@@ -81,7 +80,7 @@ class AgentResult(msgspec.Struct):
                 ),
             )
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         return {
             "agent_id": self.agent_id,
             "session_id": self.session_id,
@@ -125,7 +124,7 @@ class AgentTurn(msgspec.Struct):
     turn_index: int
     request: str
     result: AgentResult
-    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    metadata: dict[str, object] = msgspec.field(default_factory=dict)
 
 
 class ConversationContext(msgspec.Struct):
@@ -144,7 +143,7 @@ class ConversationContext(msgspec.Struct):
     turns: list[AgentTurn] = msgspec.field(default_factory=list)
     created_at: datetime | None = None
     updated_at: datetime | None = None
-    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    metadata: dict[str, object] = msgspec.field(default_factory=dict)
 
     def __post_init__(self) -> None:
         now = datetime.now()

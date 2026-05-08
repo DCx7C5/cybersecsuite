@@ -1,11 +1,11 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
 from datetime import datetime
-import logging
 
 from css.core.types.capabilities import CapabilityType
 
-logger = logging.getLogger(__name__)
+from css.core.logger import getLogger
+logger = getLogger(__name__)
 
 
 class DynamicCapabilityRegistry:
@@ -256,4 +256,3 @@ class DynamicCapabilityRegistry:
         """
         # TODO: Implement provider endpoint querying
         logger.debug("Provider endpoint querying not yet implemented")
-

@@ -1,6 +1,6 @@
 """Incident management endpoints — CRUD, timeline, tasks."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime
@@ -8,9 +8,6 @@ from .models import (
     Incident,
     IncidentTimeline,
     IncidentTask,
-    SeverityLevel,
-    IncidentStatus,
-    IncidentSource,
     TimelineEventType,
 )
 

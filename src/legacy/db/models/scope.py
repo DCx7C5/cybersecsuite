@@ -1,18 +1,19 @@
 """Scope hierarchy — the foundation every other model depends on."""
 
 
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields, models
 
+from css.core.db.fields import DescriptionField, NameField, PathField
 from db.models.enums import RedBlueMode
 
 
-class ProjectScope(Model):
+class ProjectScope(BaseModel):
     """Project scope level — organizational container."""
     id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
+    name = NameField(max_length=256, db_index=True, unique=True)
+    description = DescriptionField(default="")
+    path = PathField(max_length=1024, default="")
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -28,12 +29,12 @@ class ProjectScope(Model):
         ]
 
 
-class ApplicationScope(Model):
+class ApplicationScope(BaseModel):
     """Application scope level — top-level application container."""
     id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
+    name = NameField(max_length=256, db_index=True, unique=True)
+    description = DescriptionField(default="")
+    path = PathField(max_length=1024, default="")
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -49,7 +50,7 @@ class ApplicationScope(Model):
         unique_together = ["name"]
 
 
-class SessionScope(Model):
+class SessionScope(BaseModel):
     """Forensic root session — UUID-keyed anchor for all forensic artifacts.
 
     Every :class:`Finding`, :class:`IOC`, :class:`AuditLog`, :class:`Artifact`,
@@ -71,8 +72,8 @@ class SessionScope(Model):
     session_id = fields.CharField(max_length=128, unique=True, db_index=True)
     sdk_session_id = fields.CharField(max_length=128, null=True, db_index=True)
     name = fields.CharField(max_length=256, default="")
-    description = fields.TextField(default="")
-    path = fields.CharField(max_length=1024, default="")
+    description = DescriptionField(default="")
+    path = PathField(max_length=1024, default="")
     agent = fields.CharField(max_length=128, default="", db_index=True)
     mode = fields.CharEnumField(RedBlueMode, default=RedBlueMode.BLUE, db_index=True)
     phase = fields.CharField(max_length=64, default="init")
@@ -93,7 +94,7 @@ class SessionScope(Model):
         ]
 
 
-class ScopedEntry(Model):
+class ScopedEntry(BaseModel):
     """Abstract base for all scoped data.
 
     5-level scope columns (T045 / scope_v2):
@@ -138,7 +139,7 @@ class ScopedEntry(Model):
         db_index=True,
         description="Container/pod runtime identity for RUNTIME+ scopes",
     )
-    worktree_path = fields.CharField(
+    worktree_path = PathField(
         max_length=1024,
         null=True,
         description="Absolute path to .css/<runtime-id>/worktree-<SID>/",
@@ -152,4 +153,3 @@ class ScopedEntry(Model):
 
     class Meta:
         abstract = True
-

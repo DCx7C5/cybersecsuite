@@ -1,5 +1,5 @@
+from css.core.logger import getLogger
 import msgspec
-import logging
 from typing import Any
 from datetime import UTC, datetime
 
@@ -9,7 +9,7 @@ from css.core.redis.messaging import Message as InternalMessage
 
 from .dispatcher import MessageDispatcher
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 class DelegationMessage(msgspec.Struct, frozen=True):
     """Typed IPC payload for team task delegation."""

@@ -1,13 +1,14 @@
 """
 Timeline and forensic artifact models.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
+from css.core.db.fields import PathField
 from db.models.enums import Severity
 
 
-class Timeline(Model):
+class Timeline(BaseModel):
     """Investigation timeline entries."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="timeline_entries", db_index=True)
@@ -26,13 +27,13 @@ class Timeline(Model):
         ordering = ["timestamp"]
 
 
-class ForensicArtifact(Model):
+class ForensicArtifact(BaseModel):
     """Collected forensic artifacts."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="artifacts", db_index=True)
     name = fields.CharField(max_length=255)
     artifact_type = fields.CharField(max_length=100, db_index=True)
-    file_path = fields.CharField(max_length=1000)
+    file_path = PathField(max_length=1000)
     file_size = fields.BigIntField(null=True)
     sha256_hash = fields.CharField(max_length=64, db_index=True)
     collected_at = fields.DatetimeField(auto_now_add=True)

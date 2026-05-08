@@ -10,7 +10,7 @@ Architecture:
 - Both return AsyncIterator[StreamChunk] consistently
 """
 
-import logging
+from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 
 from css.core.types.api_services import (
@@ -30,7 +30,7 @@ from css.core.exceptions import (
 from css.core.resilience import RetryOrchestrator, RetryConfig
 from css.core.config import ProviderDefaults
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class OllamaClientCompat(BaseApiServiceClient):

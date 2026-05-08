@@ -1,13 +1,13 @@
 """
 Network models — IP addresses, domains, hosts, certificates, connections.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
 from db.models.scope import ScopedEntry
 
 
-class IPAddress(Model):
+class IPAddress(BaseModel):
     id = fields.BigIntField(primary_key=True)
     address = fields.CharField(max_length=45, unique=True, db_index=True)
     version = fields.SmallIntField(default=4)

@@ -7,8 +7,8 @@ Provides commands for:
 - Health checks
 """
 
+from css.core.logger import getLogger
 import asyncio
-import logging
 import os
 from typing import Any, Protocol, cast
 
@@ -18,7 +18,7 @@ import uvicorn
 from css.config import POSTGRES_DATABASE, A2A_SERVER
 from css.core.loader import build_tortoise_modules, build_tortoise_db_url
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 class _TortoiseApi(Protocol):

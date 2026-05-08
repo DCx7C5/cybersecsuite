@@ -1,14 +1,14 @@
 """
 Forensic IOC models — IOCEntry, watchlist, cleared items.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 from db.models.enums import (
     IOCType, SeverityLevel, ConfidenceLevel, ForensicIOCStatus,
 )
 
 
-class IOCEntry(Model):
+class IOCEntry(BaseModel):
     """Indicators of Compromise with full forensic context."""
     id = fields.BigIntField(primary_key=True)
     ioc_id = fields.CharField(max_length=50, unique=True, db_index=True, null=True)
@@ -60,7 +60,7 @@ class IOCEntry(Model):
         return f"IOC({self.ioc_type}: {self.value[:60]})"
 
 
-class ForensicWatchlistItem(Model):
+class ForensicWatchlistItem(BaseModel):
     """Items under active monitoring (forensic extension)."""
     id = fields.BigIntField(primary_key=True)
     watchlist_id = fields.CharField(max_length=50, unique=True, db_index=True)
@@ -92,7 +92,7 @@ class ForensicWatchlistItem(Model):
         return f"Watch({self.item_type}: {self.value[:60]})"
 
 
-class ClearedItem(Model):
+class ClearedItem(BaseModel):
     """Confirmed false positives and known-good items."""
     id = fields.BigIntField(primary_key=True)
     cleared_id = fields.CharField(max_length=50, unique=True, db_index=True)

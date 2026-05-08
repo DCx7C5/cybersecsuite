@@ -1,9 +1,9 @@
 """A2A Task persistence model — stores agent tasks in PostgreSQL via Tortoise ORM."""
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class A2ATask(Model):
+class A2ATask(BaseModel):
     """Persisted A2A task for durability and cross-session queries."""
     id = fields.BigIntField(max_length=128, pk=True)
     session_id = fields.CharField(max_length=128, null=True, db_index=True)

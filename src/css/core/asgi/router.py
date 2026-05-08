@@ -1,8 +1,8 @@
-import logging
 
+from css.core.logger import getLogger
 from fastapi import APIRouter
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 api_router = APIRouter(

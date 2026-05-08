@@ -1,7 +1,6 @@
 from collections.abc import Callable
-from typing import Any
 
-from .types import ToolMetadata
+from .types import JsonObject, ToolMetadata
 
 _A2A_TOOLS: list[ToolMetadata] = []
 
@@ -9,7 +8,7 @@ _A2A_TOOLS: list[ToolMetadata] = []
 def register_tool(
     name: str,
     description: str,
-    input_schema: dict[str, Any],
+    input_schema: JsonObject,
 ) -> Callable[[Callable], Callable]:
     """Decorator — registers an async callable as an A2A tools.
 
@@ -20,7 +19,14 @@ def register_tool(
             return {"status": "ok"}
     """
     def decorator(fn: Callable) -> Callable:
-        _A2A_TOOLS.append(ToolMetadata(name=name, description=description, schema=input_schema, fn=fn))
+        _A2A_TOOLS.append(
+            ToolMetadata(
+                name=name,
+                description=description,
+                input_schema=input_schema,
+                fn=fn,
+            )
+        )
         fn._a2a_tool_name = name
         fn._a2a_tool_description = description
         fn._a2a_tool_schema = input_schema

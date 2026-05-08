@@ -1,17 +1,17 @@
 """Database models for permissions module."""
 
 from tortoise import fields
-from tortoise.models import Model
+
+from .base import BaseModel
 
 
-class PermissionGrant(Model):
+class PermissionGrant(BaseModel):
     """Permission grant mapping role to permissions at scope level.
     
     Supports both action-based permissions (tool_permissions) and 
     path-based permissions (read_paths, write_paths) for filesystem access control.
     """
 
-    id = fields.BigIntField(primary_key=True)
     role = fields.CharField(max_length=32)
     scope_level = fields.CharField(max_length=32)
     scope_id = fields.CharField(max_length=255)
@@ -51,10 +51,9 @@ class PermissionGrant(Model):
         return False
 
 
-class ScopeSession(Model):
+class ScopeSession(BaseModel):
     """Session scope tracking for TTL and auto-cleanup."""
 
-    id = fields.BigIntField(primary_key=True)
     session_id = fields.CharField(max_length=255, unique=True, db_index=True)
     scope_level = fields.CharField(max_length=32)
     parent_scope_id = fields.CharField(max_length=255, null=True)
@@ -72,10 +71,9 @@ class ScopeSession(Model):
 
 
 
-class RolePermissionCache(Model):
+class RolePermissionCache(BaseModel):
     """Cache computed role permissions for performance."""
 
-    id = fields.BigIntField(primary_key=True)
     role = fields.CharField(max_length=32)
     scope_level = fields.CharField(max_length=32)
     cache_key = fields.CharField(max_length=512, unique=True)

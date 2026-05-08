@@ -6,12 +6,13 @@ Tables:
   account_models      — per-account model access, tier overrides, rate limits
 """
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
+from css.core.db.fields import CostField, DescriptionField
 from db.models.enums import ModelTier, ModelStatus
 
 
-class ApiServiceModel(Model):
+class ApiServiceModel(BaseModel):
     """
     A single AI model offered by an API service.
 
@@ -27,17 +28,17 @@ class ApiServiceModel(Model):
     # Identity
     model_id = fields.CharField(max_length=128)          # e.g. "claude-opus-4-5"
     display_name = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
 
     # Context / output limits
     context_window = fields.IntField(null=True)           # tokens
     max_output_tokens = fields.IntField(null=True)        # tokens
 
     # Pricing (per million tokens, USD)
-    input_cost_per_mtok = fields.DecimalField(max_digits=14, decimal_places=6, null=True)
-    output_cost_per_mtok = fields.DecimalField(max_digits=14, decimal_places=6, null=True)
-    cache_read_cost_per_mtok = fields.DecimalField(max_digits=14, decimal_places=6, null=True)
-    cache_write_cost_per_mtok = fields.DecimalField(max_digits=14, decimal_places=6, null=True)
+    input_cost_per_mtok = CostField(max_digits=14, decimal_places=6, null=True)
+    output_cost_per_mtok = CostField(max_digits=14, decimal_places=6, null=True)
+    cache_read_cost_per_mtok = CostField(max_digits=14, decimal_places=6, null=True)
+    cache_write_cost_per_mtok = CostField(max_digits=14, decimal_places=6, null=True)
 
     # Capabilities
     supports_vision = fields.BooleanField(default=False)
@@ -79,7 +80,7 @@ class ApiServiceModel(Model):
         return f"ApiServiceModel({self.api_service_id}/{self.model_id})"
 
 
-class AccountModel(Model):
+class AccountModel(BaseModel):
     """
     Model access state for a specific API account.
 

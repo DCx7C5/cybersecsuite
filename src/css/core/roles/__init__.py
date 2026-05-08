@@ -7,6 +7,7 @@ Defines roles for orchestration architecture:
 - Planner: planning & decision-making
 """
 
+from css.core.logger import getLogger
 from .role_types import (
     OrchestrationRole,
     OrchestratorRole,
@@ -26,7 +27,6 @@ from .exceptions import (
     PermissionDeniedError,
     InvalidRoleError,
 )
-from css.core.logger import getLogger
 
 logger = getLogger(__name__)
 

@@ -1,6 +1,6 @@
 """Alert management endpoints — CRUD for rules and channels."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 from datetime import datetime

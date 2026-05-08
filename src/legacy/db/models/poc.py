@@ -1,12 +1,13 @@
 """Proof of Concept (PoC) model — links exploits/PoCs to CVE records."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
+from css.core.db.fields import DescriptionField, QualityScoreField, UrlField
 from db.models.enums import PocStatus, Severity
 
 
-class ProofOfConcept(Model):
+class ProofOfConcept(BaseModel):
     """A known public PoC or exploit code linked to a CVE."""
 
     id = fields.BigIntField(primary_key=True)
@@ -18,13 +19,13 @@ class ProofOfConcept(Model):
         on_delete=fields.SET_NULL,
     )
     title = fields.CharField(max_length=512, default="", db_index=True)
-    description = fields.TextField(default="")
-    poc_url = fields.CharField(max_length=2048, default="", db_index=True, description="Primary PoC / exploit URL.")
+    description = DescriptionField(default="")
+    poc_url = UrlField(max_length=2048, default="", db_index=True, description="Primary PoC / exploit URL.")
     source = fields.CharField(max_length=256, default="", description="ExploitDB, GitHub, PacketStorm, etc.")
     language = fields.CharField(max_length=64, default="", description="Primary language (python, c, ruby, …).")
     status = fields.CharEnumField(PocStatus, default=PocStatus.UNVERIFIED, db_index=True)
     severity = fields.CharEnumField(Severity, null=True, db_index=True)
-    reliability_score = fields.FloatField(null=True, description="0.0–1.0; community reliability estimate.")
+    reliability_score = QualityScoreField(null=True, description="0.0–1.0; community reliability estimate.")
     is_weaponized = fields.BooleanField(default=False, db_index=True)
     requires_auth = fields.BooleanField(default=False)
     requires_interaction = fields.BooleanField(default=False)

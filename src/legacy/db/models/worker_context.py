@@ -16,10 +16,10 @@ Enables:
 """
 from datetime import datetime, timedelta
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class WorkerContext(Model):
+class WorkerContext(BaseModel):
     """
     Session-scoped background worker state and context tracking.
 

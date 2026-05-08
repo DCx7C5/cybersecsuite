@@ -5,8 +5,9 @@ Lifecycle:
   DRAFT → (yara_rule_generator.py) → TESTED → (yara_rule_optimizer.py) → OPTIMIZED → ACTIVE
                                            ↘ (yara_rule_tester.py) ↗
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
+from css.core.db.fields import DescriptionField, PathField, QualityScoreField
 
 from db.models.enums import (
     YaraRuleStatus,
@@ -16,7 +17,7 @@ from db.models.enums import (
 )
 
 
-class YaraRule(Model):
+class YaraRule(BaseModel):
     """A YARA rule generated or imported during a forensic investigation."""
 
     id = fields.BigIntField(primary_key=True)
@@ -26,13 +27,13 @@ class YaraRule(Model):
     # Identity
     name = fields.CharField(max_length=255, db_index=True,
                             description="Rule name as it appears in the .yar file")
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     author = fields.CharField(max_length=255, default="cybersec-agent")
     tags = fields.JSONField(default=list, description="Free-form tags, e.g. ['rootkit', 'ebpf']")
 
     # Content
     rule_text = fields.TextField(description="Full YARA rule source (one or more rules)")
-    rule_file_path = fields.CharField(max_length=500, null=True,
+    rule_file_path = PathField(max_length=500, null=True,
                                       description="Path on disk, relative to project root")
 
     # Classification
@@ -75,7 +76,7 @@ class YaraRule(Model):
 
     # Optimization metadata (populated by yara_rule_optimizer.py)
     optimization_notes = fields.TextField(default="")
-    performance_score = fields.FloatField(null=True,
+    performance_score = QualityScoreField(null=True,
                                           description="0.0–1.0: higher = faster / fewer FPs")
 
     # Lifecycle
@@ -95,7 +96,7 @@ class YaraRule(Model):
         return f"YaraRule({self.rule_id}: {self.name} [{self.status}])"
 
 
-class YaraTestRun(Model):
+class YaraTestRun(BaseModel):
     """Individual test run record — one row per yara-test invocation."""
 
     id = fields.BigIntField(primary_key=True)
@@ -113,7 +114,7 @@ class YaraTestRun(Model):
         on_delete=fields.SET_NULL,
     )
 
-    target_path = fields.CharField(max_length=500, description="Scanned path / artifact")
+    target_path = PathField(max_length=500, description="Scanned path / artifact")
     hits = fields.IntField(default=0)
     false_positives = fields.IntField(default=0)
     scan_duration_ms = fields.IntField(null=True)
@@ -131,4 +132,3 @@ class YaraTestRun(Model):
 
     def __str__(self):
         return f"YaraTestRun({self.run_id}: {self.verdict} on {self.target_path})"
-

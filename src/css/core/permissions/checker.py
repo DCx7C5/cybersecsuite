@@ -1,13 +1,13 @@
 """Permission checker — gate tool access via ScopeContext / PermissionGrant rules."""
 
 
-import logging
 
+from css.core.logger import getLogger
 from .types import ScopeContext
 from ..enums import Permission
 from ..exceptions import PermissionDenied
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class PermissionChecker:

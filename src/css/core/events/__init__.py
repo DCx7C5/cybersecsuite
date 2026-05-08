@@ -1,32 +1,80 @@
-"""Event system module — event bus and hook registry for Phase 3.
+"""Core event system exports."""
 
-This is a Phase 3 placeholder. Phase 6 will replace this with a full CQRS/EventStore
-architecture with PostgreSQL + Redis Streams + OTEL instrumentation.
-
-For now, provides basic EventBus (Singleton) and hook registration capability.
-"""
-
-from .event_bus import EventBus
+from .command_bus import (
+    AgentCommand,
+    Command,
+    CommandBus,
+    CommandHandler,
+    CompleteTaskCommand,
+    CreateTaskCommand,
+    CreateTeamCommand,
+    SpawnAgentCommand,
+    TaskCommand,
+    TeamCommand,
+)
+from .domain_event import (
+    DomainEvent,
+    event_permission_granted,
+    event_task_completed,
+    event_task_delegated,
+    event_task_failed,
+    event_team_shutdown,
+    event_team_spawned,
+)
+from .event_bus import EventBus, event_bus
 from .hooks import HookRegistry, hook_registry, on_event
-from .types import ALL_EVENT_TYPES, EVENT_TYPES_PHASE3, EVENT_TYPES_PHASE6, EVENT_TYPES_PHASE14
+from .otel_bridge import EventStoreObserver, OtelBridge
+from .projections import (
+    AuditTrailProjection,
+    PermissionsProjection,
+    Projection,
+    ProjectionManager,
+)
+from .store import EventStore
+from .types import (
+    ALL_EVENT_TYPES,
+    EVENT_TYPES_PHASE3,
+    EVENT_TYPES_PHASE5,
+    EVENT_TYPES_PHASE6,
+    EVENT_TYPES_PHASE14,
+)
 from .exceptions import EventError, HookRegistrationError, HookTimeoutError, EventBusError
 
 __all__ = [
-    # Event bus (Singleton)
+    "DomainEvent",
+    "event_team_spawned",
+    "event_team_shutdown",
+    "event_task_delegated",
+    "event_task_completed",
+    "event_task_failed",
+    "event_permission_granted",
+    "EventStore",
+    "Command",
+    "TeamCommand",
+    "TaskCommand",
+    "AgentCommand",
+    "CreateTeamCommand",
+    "CreateTaskCommand",
+    "CompleteTaskCommand",
+    "SpawnAgentCommand",
+    "CommandHandler",
+    "CommandBus",
+    "Projection",
+    "PermissionsProjection",
+    "AuditTrailProjection",
+    "ProjectionManager",
+    "OtelBridge",
+    "EventStoreObserver",
     "EventBus",
-    
-    # Hooks
+    "event_bus",
     "HookRegistry",
     "hook_registry",
     "on_event",
-    
-    # Types
     "ALL_EVENT_TYPES",
     "EVENT_TYPES_PHASE3",
+    "EVENT_TYPES_PHASE5",
     "EVENT_TYPES_PHASE6",
     "EVENT_TYPES_PHASE14",
-    
-    # Exceptions
     "EventError",
     "HookRegistrationError",
     "HookTimeoutError",

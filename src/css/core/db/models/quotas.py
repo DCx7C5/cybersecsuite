@@ -1,10 +1,11 @@
 """Task assignment, team quota, and task result models."""
 
 from tortoise import fields, models
+from css.core.db.models.base import BaseModel
 from .enums import TaskAssignmentStatus, TaskPriority
 
 
-class TaskAssignment(models.Model):
+class TaskAssignment(BaseModel):
     """Task assignment tracking with team isolation."""
     id = fields.BigIntField(primary_key=True)
     team = fields.ForeignKeyField(
@@ -46,7 +47,7 @@ class TaskAssignment(models.Model):
         ]
 
 
-class TaskResult(models.Model):
+class TaskResult(BaseModel):
     """Task execution result storage."""
     id = fields.BigIntField(primary_key=True)
     task_assignment = fields.OneToOneField(
@@ -67,7 +68,7 @@ class TaskResult(models.Model):
         ]
 
 
-class TeamQuota(models.Model):
+class TeamQuota(BaseModel):
     """Team resource quotas enforcement."""
     id = fields.BigIntField(primary_key=True)
     team = fields.OneToOneField(

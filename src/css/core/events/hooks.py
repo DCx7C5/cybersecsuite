@@ -1,12 +1,12 @@
 """Hook registry — register event handlers using decorators."""
 
+from css.core.logger import getLogger
 from typing import Any, TypeVar
 from collections.abc import Callable
-import logging
 
 from .event_bus import event_bus
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 F = TypeVar("F", bound=Callable[..., Any])
 

@@ -1,10 +1,9 @@
 """Backend layer for frontend chat with QoL injections."""
 
-from css.core.logger import getLogger
 from .manager import ChatSessionManager
-from .models import ChatMessage, ChatSession
-from .persistence_models import ChatMessageRecord, ChatSessionRecord
+from .models import ChatMessage, ChatMessageModel, ChatSession, ChatSessionModel
 from .enums import ChatRole, ChatMessageType, ChatStatus
+from css.core.logger import getLogger
 from .exceptions import (
     BaseChatException,
     ChatSessionNotFoundError,
@@ -20,8 +19,8 @@ __all__ = [
     # Models
     "ChatMessage",
     "ChatSession",
-    "ChatSessionRecord",
-    "ChatMessageRecord",
+    "ChatSessionModel",
+    "ChatMessageModel",
     
     # Enums
     "ChatRole",

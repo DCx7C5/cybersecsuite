@@ -3,13 +3,13 @@
 Bridges claude_agent_sdk session functions to the forensic investigation
 workflow: maps session IDs to cases, agents, and modes.
 """
+from css.core.logger import getLogger
 import msgspec
 
-import logging
 from datetime import datetime, timezone
 from typing import Any
 
-logger = logging.getLogger("agents.sessions")
+logger = getLogger("agents.sessions")
 
 @msgspec.struct
 class SessionRecord:

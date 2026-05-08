@@ -6,6 +6,7 @@ Soft-delete pattern added (is_active + deleted_at).
 """
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField, SHA512SumField
 from db.models.enums import (
     Severity, FindingStatus, IOCStatus, Confidence,
     WatchlistPriority, BaselineDomain,
@@ -17,7 +18,7 @@ class Finding(ScopedEntry):
     """Main security finding model."""
     id = fields.BigIntField(primary_key=True)
     title = fields.CharField(max_length=512, db_index=True)
-    description = fields.TextField()
+    description = DescriptionField()
     severity = fields.CharEnumField(Severity, default=Severity.MEDIUM, db_index=True)
     status = fields.CharEnumField(FindingStatus, default=FindingStatus.OPEN, db_index=True)
     confidence = fields.CharEnumField(Confidence, default=Confidence.MEDIUM, db_index=True)
@@ -87,7 +88,7 @@ class Risk(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     risk_id = fields.CharField(max_length=128, db_index=True)
     title = fields.CharField(max_length=512, default="")
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     impact = fields.CharField(max_length=64, default="")
     likelihood = fields.CharField(max_length=64, default="")
     mitigation = fields.TextField(default="")
@@ -102,7 +103,7 @@ class MITRETechnique(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     technique_id = fields.CharField(max_length=32, db_index=True)
     name = fields.CharField(max_length=256)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     tactic = fields.CharField(max_length=64, default="")
     finding = fields.ForeignKeyField("models.Finding", related_name="primary_mitre_techniques", null=True, on_delete=fields.SET_NULL)
 
@@ -114,7 +115,7 @@ class Baseline(ScopedEntry):
     id = fields.BigIntField(primary_key=True)
     domain = fields.CharEnumField(BaselineDomain, db_index=True)
     snapshot_data = fields.JSONField(default=dict)
-    snapshot_hash = fields.CharField(max_length=128, default="")
+    snapshot_hash = SHA512SumField(default="")
     confirmed_clean = fields.BooleanField(default=False)
     session_ref = fields.CharField(max_length=128, default="")
     notes = fields.TextField(default="")

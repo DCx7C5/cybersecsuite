@@ -12,15 +12,15 @@ Usage::
 """
 
 
+from css.core.logger import getLogger
 import time
-import logging
 from contextlib import asynccontextmanager
 from typing import Any
 from collections.abc import AsyncIterator
 
 from .event_bus import event_bus
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 @asynccontextmanager

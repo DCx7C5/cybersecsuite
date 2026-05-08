@@ -1,10 +1,9 @@
 """MITRE ATT&CK endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Query, status
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
-from .models import MITRETechnique, ThreatActor, IncidentTechniqueMaping, Tactic
+from .models import MITRETechnique, ThreatActor, Tactic
 
 router = APIRouter(prefix="/api/mitre", tags=["mitre"])
 

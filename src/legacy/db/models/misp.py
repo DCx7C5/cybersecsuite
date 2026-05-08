@@ -1,10 +1,10 @@
 """MISP intelligence models normalized from feed snapshots."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class MISPEventIntel(Model):
+class MISPEventIntel(BaseModel):
     """Normalized MISP event metadata."""
 
     id = fields.BigIntField(primary_key=True)
@@ -39,7 +39,7 @@ class MISPEventIntel(Model):
         indexes = (("published",), ("orgc_name",), ("threat_level",))
 
 
-class MISPAttributeIntel(Model):
+class MISPAttributeIntel(BaseModel):
     """Normalized MISP attributes extracted from events."""
 
     id = fields.BigIntField(primary_key=True)

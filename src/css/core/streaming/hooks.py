@@ -6,13 +6,13 @@ Provides four hooks for use in ClaudeAgentOptions.hooks:
 """
 
 
+from css.core.logger import getLogger
 import re
 from typing import Any
 
-import logging
 
 
-logger = logging.getLogger("agents.hooks")
+logger = getLogger("agents.hooks")
 
 # ── Dangerous pattern blocklist ──────────────────────────────────────────────
 

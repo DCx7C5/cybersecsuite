@@ -1,19 +1,20 @@
 """
 Generic tagging system.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField, SlugField
 from db.models.enums import TagColor
 
 
-class Tag(Model):
+class Tag(BaseModel):
     """Reusable tag that can be applied to any entity."""
     id = fields.BigIntField(primary_key=True)
     name = fields.CharField(max_length=128, db_index=True)
-    slug = fields.CharField(max_length=128, db_index=True, default="", unique=True)
+    slug = SlugField(max_length=128, db_index=True, default="", unique=True)
     color = fields.CharEnumField(TagColor, default=TagColor.GRAY)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
@@ -22,4 +23,3 @@ class Tag(Model):
         table_description_plural = "Tags"
         table_description_singular = "Tag"
         ordering = ["name"]
-

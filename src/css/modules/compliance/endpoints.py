@@ -1,15 +1,13 @@
 """Compliance management endpoints — frameworks, controls, mappings, reports."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
 from datetime import datetime
 from .models import (
     ComplianceFramework,
     FrameworkControl,
     ControlMapping,
     ComplianceReport,
-    FrameworkType,
     ComplianceStatus,
 )
 from .generator import ComplianceReportGenerator
@@ -42,8 +40,8 @@ class FrameworkControlCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     description: str = ""
     category: str = Field(..., min_length=1, max_length=128)
-    cwe_ids: List[str] = Field(default_factory=list)
-    mitre_techniques: List[str] = Field(default_factory=list)
+    cwe_ids: list[str] = Field(default_factory=list)
+    mitre_techniques: list[str] = Field(default_factory=list)
     priority: str = Field("medium", regex="^(critical|high|medium|low)$")
     risk_impact: str = ""
 
@@ -54,8 +52,8 @@ class FrameworkControlResponse(BaseModel):
     name: str
     description: str
     category: str
-    cwe_ids: List[str]
-    mitre_techniques: List[str]
+    cwe_ids: list[str]
+    mitre_techniques: list[str]
     priority: str
     risk_impact: str
 
@@ -67,14 +65,14 @@ class ControlMappingCreate(BaseModel):
     status: str = Field(..., regex="^(compliant|non_compliant|partially_compliant|not_applicable|unknown)$")
     evidence: str = ""
     remediation_notes: str = ""
-    found_at: Optional[datetime] = None
+    found_at: datetime | None = None
 
 
 class ControlMappingUpdate(BaseModel):
-    status: Optional[str] = None
-    evidence: Optional[str] = None
-    remediation_notes: Optional[str] = None
-    verified_at: Optional[datetime] = None
+    status: str | None = None
+    evidence: str | None = None
+    remediation_notes: str | None = None
+    verified_at: datetime | None = None
 
 
 class ControlMappingResponse(BaseModel):
@@ -86,8 +84,8 @@ class ControlMappingResponse(BaseModel):
     evidence: str
     remediation_notes: str
     found_at: datetime
-    remediated_at: Optional[datetime]
-    verified_at: Optional[datetime]
+    remediated_at: datetime | None
+    verified_at: datetime | None
 
 
 class ComplianceReportResponse(BaseModel):
@@ -126,10 +124,10 @@ async def create_framework(
         raise HTTPException(status_code=400, detail=f"Failed to create framework: {str(e)}")
 
 
-@router.get("/frameworks", response_model=List[ComplianceFrameworkResponse])
+@router.get("/frameworks", response_model=list[ComplianceFrameworkResponse])
 async def list_frameworks(
     org_id: int = Query(..., description="Organization ID"),
-    is_active: Optional[bool] = None,
+    is_active: bool | None = None,
 ):
     """List compliance frameworks for organization."""
     # TODO: Check org authorization
@@ -189,11 +187,11 @@ async def create_control(
         raise HTTPException(status_code=400, detail=f"Failed to create control: {str(e)}")
 
 
-@router.get("/frameworks/{framework_id}/controls", response_model=List[FrameworkControlResponse])
+@router.get("/frameworks/{framework_id}/controls", response_model=list[FrameworkControlResponse])
 async def list_controls(
     framework_id: int,
     org_id: int = Query(..., description="Organization ID"),
-    category: Optional[str] = None,
+    category: str | None = None,
 ):
     """List controls in framework."""
     # TODO: Check org authorization + framework ownership
@@ -245,11 +243,11 @@ async def create_mapping(
         raise HTTPException(status_code=400, detail=f"Failed to create mapping: {str(e)}")
 
 
-@router.get("/mappings", response_model=List[ControlMappingResponse])
+@router.get("/mappings", response_model=list[ControlMappingResponse])
 async def list_mappings(
     org_id: int = Query(..., description="Organization ID"),
-    status_filter: Optional[str] = Query(None, alias="status"),
-    finding_type: Optional[str] = None,
+    status_filter: str | None = Query(None, alias="status"),
+    finding_type: str | None = None,
 ):
     """List control mappings for organization."""
     # TODO: Check org authorization
@@ -315,7 +313,7 @@ async def generate_report(
         raise HTTPException(status_code=400, detail=f"Failed to generate report: {str(e)}")
 
 
-@router.get("/reports/{framework_id}", response_model=List[ComplianceReportResponse])
+@router.get("/reports/{framework_id}", response_model=list[ComplianceReportResponse])
 async def list_reports(
     framework_id: int,
     org_id: int = Query(..., description="Organization ID"),

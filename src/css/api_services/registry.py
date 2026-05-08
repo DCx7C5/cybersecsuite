@@ -11,7 +11,7 @@ Usage::
     spec = registry.get_spec('openai')
 """
 
-import logging
+from css.core.logger import getLogger
 from pathlib import Path
 
 from css.core.types.providers import (
@@ -24,7 +24,7 @@ from css.core.types.providers import (
 
 from .adapters import HttpProviderAdapter
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 # Module-level singleton
 _registry: "ProviderRegistry | None" = None

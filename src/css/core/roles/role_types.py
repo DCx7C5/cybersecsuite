@@ -5,8 +5,7 @@ the orchestration architecture (process-level and in-process roles).
 """
 import msgspec
 
-@msgspec.struct
-class OrchestrationRole:
+class OrchestrationRole(msgspec.Struct):
     """Base class for orchestration-specific roles (not tied to system-wide roles)."""
 
     role_id: str
@@ -19,7 +18,6 @@ class OrchestrationRole:
     can_delegate: bool = False
     can_execute_tasks: bool = False
 
-@msgspec.struct
 class OrchestratorRole(OrchestrationRole):
     """Orchestrator: process-level coordinator — spawns sub-processes, monitors heartbeat."""
 
@@ -53,7 +51,6 @@ class OrchestratorRole(OrchestrationRole):
     can_delegate: bool = True
     can_execute_tasks: bool = False
 
-@msgspec.struct
 class TeamLeaderRole(OrchestrationRole):
     """TeamLeader: in-process coordinator — delegates tasks, retries on failure, manages team."""
 
@@ -88,7 +85,6 @@ class TeamLeaderRole(OrchestrationRole):
     can_delegate: bool = True
     can_execute_tasks: bool = False
 
-@msgspec.struct
 class TeamMemberRole(OrchestrationRole):
     """TeamMember/Worker: in-process executor — executes Task objects, reports completion."""
 
@@ -119,7 +115,6 @@ class TeamMemberRole(OrchestrationRole):
     can_delegate: bool = False
     can_execute_tasks: bool = True
 
-@msgspec.struct
 class PlannerRole(OrchestrationRole):
     """Planner: planning & decision-making for PlanScope — read project, write .css/plan/ only."""
 

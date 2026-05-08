@@ -19,6 +19,19 @@ from .types import (
     UpgradeRequest,
     UpgradeResponse,
 )
+from .package_manager import (
+    ExtractionError,
+    HashVerificationError,
+    MarketplaceError,
+    PackageInstallResult,
+    PackageMetadata,
+    PackageNotFoundError,
+    batch_install,
+    check_for_updates,
+    fetch_index,
+    install_package,
+    verify_hash,
+)
 
 # Import seeder and models
 try:
@@ -56,6 +69,17 @@ __all__ = [
     "ToggleResponse",
     "UpgradeRequest",
     "UpgradeResponse",
+    "PackageMetadata",
+    "PackageInstallResult",
+    "MarketplaceError",
+    "PackageNotFoundError",
+    "HashVerificationError",
+    "ExtractionError",
+    "fetch_index",
+    "verify_hash",
+    "check_for_updates",
+    "install_package",
+    "batch_install",
     "MarketplaceSeeder",
     "seed_marketplace_on_startup",
     "MarketplaceItem",

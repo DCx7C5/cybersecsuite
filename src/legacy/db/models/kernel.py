@@ -1,7 +1,7 @@
 """
 Kernel models — kernel snapshots and loaded modules.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
 from db.models.enums import ModuleStatus
@@ -26,7 +26,7 @@ class Kernel(ScopedEntry):
         ordering = ["-captured_at"]
 
 
-class KernelModule(Model):
+class KernelModule(BaseModel):
     id = fields.BigIntField(primary_key=True)
     kernel = fields.ForeignKeyField("models.Kernel", related_name="modules", on_delete=fields.CASCADE)
     name = fields.CharField(max_length=256, db_index=True)

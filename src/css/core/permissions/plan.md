@@ -12,7 +12,7 @@ Fine-grained access control for agents. Two orthogonal axes:
 1. **Path access**: can agent X read/write/execute filesystem path Y? Can they do it as root?
 2. **Tool access**: can agent X use tool Y?
 
-Nothing else. Scope hierarchy is `@scopes`. Working directory lifecycle is `@working_dir`.
+Nothing else. Scope hierarchy is `@scopes`. Session/project directory lifecycle is owned by `core/workspace/` (legacy todo IDs still use the `working-dir-*` prefix).
 
 ---
 
@@ -46,7 +46,7 @@ class ToolGrant(msgspec.Struct, frozen=True):
 ### The PermissionChecker (only import other modules need)
 
 ```python
-from css.modules.permissions import PermissionChecker
+from css.core.permissions import PermissionChecker
 
 checker = PermissionChecker(cache)
 
@@ -105,7 +105,7 @@ core/permissions/
 | ❌ Do NOT put in @permissions | ✅ Put here instead |
 |-------------------------------|-------------------|
 | Scope hierarchy (GLOBAL→SESSION) | `@scopes` |
-| Working directory building | `@working_dir` |
+| Working directory building | `core/workspace/` |
 | JWT / auth token validation | `@asgi` middleware |
 | Role definitions (ADMIN, etc.) | `@roles` |
 

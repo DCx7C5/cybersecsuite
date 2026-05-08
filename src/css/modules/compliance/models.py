@@ -8,14 +8,14 @@ Models:
 """
 
 from tortoise import fields
+from css.core.db.fields import DescriptionField, VersionField
 from css.core.db.models.base import BaseModel
 from .enums import FrameworkType, ComplianceStatus
 
 
 class ComplianceFramework(BaseModel):
     """Compliance framework definition."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="compliance_frameworks",
@@ -31,8 +31,8 @@ class ComplianceFramework(BaseModel):
     
     # Metadata
     name = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
-    version = fields.CharField(max_length=32, default="1.0")
+    description = DescriptionField(default="")
+    version = VersionField(max_length=32, default="1.0.0")
     
     # Status
     is_active = fields.BooleanField(default=True, db_index=True)
@@ -48,8 +48,7 @@ class ComplianceFramework(BaseModel):
 
 class FrameworkControl(BaseModel):
     """Individual control within compliance framework."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     framework: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.ComplianceFramework",
         related_name="controls",
@@ -61,7 +60,7 @@ class FrameworkControl(BaseModel):
     
     # Details
     name = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     category = fields.CharField(max_length=128, db_index=True)
     
     # Mapping to attack surfaces
@@ -95,8 +94,7 @@ class FrameworkControl(BaseModel):
 
 class ControlMapping(BaseModel):
     """Map findings/incidents/scans to compliance controls."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="control_mappings",
@@ -151,8 +149,7 @@ class ControlMapping(BaseModel):
 
 class ComplianceReport(BaseModel):
     """Compliance report snapshot — % coverage per framework."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="compliance_reports",

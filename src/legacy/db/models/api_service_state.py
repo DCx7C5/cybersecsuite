@@ -12,10 +12,11 @@ Session lifecycle:
 - Cleaned up when session ends or times out
 """
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import CostField
 
 
-class ApiServiceState(Model):
+class ApiServiceState(BaseModel):
     """
     Session-scoped AI API service state tracking.
 
@@ -105,7 +106,7 @@ class ApiServiceState(Model):
         default=0,
         description="Total output tokens used this session"
     )
-    total_cost_usd = fields.DecimalField(
+    total_cost_usd = CostField(
         max_digits=14,
         decimal_places=8,
         default=0,

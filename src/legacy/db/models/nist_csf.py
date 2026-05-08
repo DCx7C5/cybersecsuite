@@ -1,10 +1,10 @@
 """NIST Cybersecurity Framework 2.0 control model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class NistCsfControl(Model):
+class NistCsfControl(BaseModel):
     """NIST CSF 2.0 subcategory — 185 entries across 6 functions."""
 
     id = fields.BigIntField(primary_key=True)

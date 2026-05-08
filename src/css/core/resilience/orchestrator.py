@@ -1,7 +1,7 @@
 """Retry orchestrator with hybrid provider-aware strategy selection."""
 
+from css.core.logger import getLogger
 import asyncio
-import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -12,7 +12,7 @@ from css.core.types.enums import ProviderType
 from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 T = TypeVar("T")
 

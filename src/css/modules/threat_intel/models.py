@@ -1,14 +1,14 @@
 """Threat Intelligence module — IOC tracking (Phase 7)."""
 
 from tortoise import fields
+from css.core.db.fields import DescriptionField, QualityScoreField, UrlField
 from css.core.db.models.base import BaseModel
 from .enums import IOCType, ThreatLevel
 
 
 class IOC(BaseModel):
     """Indicator of Compromise."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="iocs",
@@ -38,7 +38,7 @@ class IOC(BaseModel):
     )
     
     # Context
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     tags = fields.JSONField(default=list)
     threat_actors = fields.JSONField(default=list)
     
@@ -59,8 +59,7 @@ class IOC(BaseModel):
 
 class ThreatFeed(BaseModel):
     """External threat feed integration."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="threat_feeds",
@@ -68,7 +67,7 @@ class ThreatFeed(BaseModel):
     )
     
     name = fields.CharField(max_length=256)
-    feed_url = fields.CharField(max_length=512)
+    feed_url = UrlField(max_length=512)
     feed_type = fields.CharField(
         max_length=32,
         choices=["misp", "otx", "virustotal", "custom"],
@@ -87,8 +86,7 @@ class ThreatFeed(BaseModel):
 
 class IOCMatch(BaseModel):
     """Record of IOC matched against observables."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     ioc: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.IOC",
         related_name="matches",
@@ -103,7 +101,7 @@ class IOCMatch(BaseModel):
         help_text="Where observable came from (log, scan, etc.)"
     )
     
-    match_confidence = fields.FloatField(default=1.0)
+    match_confidence = QualityScoreField(default=1.0)
     
     matched_at = fields.DatetimeField(auto_now_add=True)
     

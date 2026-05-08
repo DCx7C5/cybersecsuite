@@ -1,13 +1,14 @@
 """ApiService and auth method models - DB mirror of ProviderConfig registry."""
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import UrlField
 
 
-class ApiService(Model):
+class ApiService(BaseModel):
     """AI API service configuration stored in DB."""
     id = fields.CharField(max_length=40, pk=True)
     name = fields.CharField(max_length=80, unique=True)
-    base_url = fields.CharField(max_length=255, unique=True)
+    base_url = UrlField(max_length=255, unique=True)
     auth_type = fields.CharField(max_length=12, default="web")
     auth_header = fields.CharField(max_length=20, default="Authorization")
     auth_prefix = fields.CharField(max_length=10, default="Bearer")
@@ -35,7 +36,7 @@ class ApiService(Model):
         return f"ApiService({self.id})"
 
 
-class ApiServiceAuthMethod(Model):
+class ApiServiceAuthMethod(BaseModel):
     """M2M: ApiService ↔ supported auth methods."""
     api_service = fields.ForeignKeyField(
         "models.ApiService", related_name="auth_methods", on_delete=fields.CASCADE

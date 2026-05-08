@@ -1,12 +1,12 @@
 """Client pool for SDK agent client instances — concurrent session management."""
 
+from css.core.logger import getLogger
 import asyncio
-import logging
 from typing import Protocol, runtime_checkable
 
 from css.core.types.meta import SingletonMetaClass
 
-logger = logging.getLogger("agents.client_pool")
+logger = getLogger("agents.client_pool")
 
 try:
     from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions as _ClaudeAgentOptions

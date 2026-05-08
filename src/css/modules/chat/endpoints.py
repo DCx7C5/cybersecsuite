@@ -6,19 +6,18 @@ Provides three endpoints:
 - WS     /ws/chat/{session_id}               — Real-time chat via WebSocket
 """
 
+from css.core.logger import getLogger
 import json
-import logging
-from typing import Any
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
 from pydantic import BaseModel, Field
 
 from .manager import ChatSessionManager
-from .enums import ChatRole, ChatMessageType, ChatStatus
+from .enums import ChatRole, ChatMessageType
 from .exceptions import ChatSessionNotFoundError
 from .pipeline_endpoint import process_chat_message
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 # Global session manager (could be DI'd from container in future)
 _session_manager = ChatSessionManager()
@@ -198,7 +197,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str) -> None
             }
     """
     try:
-        session = await _session_manager.get_session_or_fail(session_id)
+        await _session_manager.get_session_or_fail(session_id)
     except ChatSessionNotFoundError:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return

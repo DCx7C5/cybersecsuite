@@ -1,16 +1,16 @@
 """Alert dispatcher — sends alerts via multiple channels (email, Slack, webhooks)."""
 
+from css.core.logger import getLogger
 import asyncio
-import logging
-from typing import Dict, List, Optional
+from typing import Dict
 import aiohttp
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, timedelta
+from datetime import datetime
 from .enums import DeliveryStatus
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class AlertDispatcher:

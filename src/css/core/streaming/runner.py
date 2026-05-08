@@ -7,7 +7,7 @@ Uses AgentExecutor → ProviderRegistry → HttpProviderAdapter.
 TeamLeader delegation when team_id + orchestrator_id are set.
 """
 
-import logging
+from css.core.logger import getLogger
 from collections.abc import AsyncGenerator
 from typing import TYPE_CHECKING
 import uuid
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from css.modules.teams.orchestrator import TeamLeader
 
 
-logger = logging.getLogger("agents.runner")
+logger = getLogger("agents.runner")
 
 _MODE_PREFIXES: dict[str, str] = {
     "blue":   "",

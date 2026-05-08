@@ -22,9 +22,10 @@ import socket
 import platform
 from typing import TYPE_CHECKING
 
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField, PathField
 from db.models.enums import (
     MachineType,
     DriveType,
@@ -41,12 +42,12 @@ if TYPE_CHECKING:
 # Network  —  subnet / VLAN / broadcast domain
 # ══════════════════════════════════════════════════════════════════════════════
 
-class Network(Model):
+class Network(BaseModel):
     """A layer-3 network segment (subnet or VLAN)."""
 
     id          = fields.IntField(primary_key=True)
     name        = fields.CharField(max_length=128, db_index=True)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     cidr        = fields.CharField(max_length=49, default="", db_index=True)  # e.g. 192.168.1.0/24
     vlan_id     = fields.SmallIntField(null=True, db_index=True)               # 802.1Q VLAN tag
     gateway     = fields.CharField(max_length=45, default="")               # default GW IP
@@ -89,7 +90,7 @@ def _detect_virtual() -> bool:
         return False
 
 
-class Machine(Model):
+class Machine(BaseModel):
     """Physical or virtual host with full hardware inventory."""
 
     id          = fields.IntField(primary_key=True)
@@ -229,7 +230,7 @@ class Machine(Model):
 # CPU
 # ══════════════════════════════════════════════════════════════════════════════
 
-class CPUInfo(Model):
+class CPUInfo(BaseModel):
     """One physical CPU socket / package in a Machine."""
 
     id         = fields.IntField(primary_key=True)
@@ -259,7 +260,7 @@ class CPUInfo(Model):
 # Memory
 # ══════════════════════════════════════════════════════════════════════════════
 
-class MemoryModule(Model):
+class MemoryModule(BaseModel):
     """One physical RAM DIMM / memory slot in a Machine."""
 
     id           = fields.IntField(primary_key=True)
@@ -285,7 +286,7 @@ class MemoryModule(Model):
 # Network Interface  →  Network  +  InterfaceAddress
 # ══════════════════════════════════════════════════════════════════════════════
 
-class NetworkInterface(Model):
+class NetworkInterface(BaseModel):
     """A NIC / network device on a Machine."""
 
     id           = fields.IntField(primary_key=True)
@@ -317,7 +318,7 @@ class NetworkInterface(Model):
         ordering        = ["machine_id", "name"]
 
 
-class InterfaceAddress(Model):
+class InterfaceAddress(BaseModel):
     """An IP address (v4 or v6) assigned to a NetworkInterface."""
 
     id          = fields.IntField(primary_key=True)
@@ -344,12 +345,12 @@ class InterfaceAddress(Model):
 # Storage
 # ══════════════════════════════════════════════════════════════════════════════
 
-class StorageDrive(Model):
+class StorageDrive(BaseModel):
     """A storage device (HDD / SSD / NVMe / USB…) attached to a Machine."""
 
     id            = fields.IntField(primary_key=True)
     machine       = fields.ForeignKeyField("models.Machine", related_name="drives", on_delete=fields.CASCADE)
-    device_path   = fields.CharField(max_length=64,  db_index=True)  # /dev/sda, /dev/nvme0n1
+    device_path   = PathField(max_length=64,  db_index=True)  # /dev/sda, /dev/nvme0n1
     drive_type    = fields.CharEnumField(DriveType, default=DriveType.SSD, db_index=True)
     health        = fields.CharEnumField(DriveHealth, default=DriveHealth.UNKNOWN, db_index=True)
 
@@ -387,12 +388,12 @@ class StorageDrive(Model):
         ordering        = ["machine_id", "device_path"]
 
 
-class StoragePartition(Model):
+class StoragePartition(BaseModel):
     """A partition on a StorageDrive."""
 
     id           = fields.IntField(primary_key=True)
     drive        = fields.ForeignKeyField("models.StorageDrive", related_name="partitions", on_delete=fields.CASCADE)
-    device_path  = fields.CharField(max_length=64, db_index=True)   # /dev/sda1, /dev/nvme0n1p1
+    device_path  = PathField(max_length=64, db_index=True)   # /dev/sda1, /dev/nvme0n1p1
     partition_number = fields.SmallIntField(default=1)
     partition_type   = fields.CharField(max_length=64, default="")  # Linux, EFI System, swap…
     filesystem   = fields.CharField(max_length=32, default="", db_index=True)  # ext4, xfs, ntfs…
@@ -416,7 +417,7 @@ class StoragePartition(Model):
 # PCI devices
 # ══════════════════════════════════════════════════════════════════════════════
 
-class PCIDevice(Model):
+class PCIDevice(BaseModel):
     """A PCI / PCIe device (GPU, RAID card, capture card…) in a Machine."""
 
     id           = fields.IntField(primary_key=True)
@@ -438,4 +439,3 @@ class PCIDevice(Model):
         table          = "pci_devices"
         unique_together = [("machine_id", "bus_address")]
         ordering        = ["machine_id", "bus_address"]
-

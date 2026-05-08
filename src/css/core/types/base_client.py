@@ -3,7 +3,6 @@
 Imports msgspec.Struct versions from messages.py (Phase 6 P1).
 """
 
-import logging
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
 
@@ -14,7 +13,8 @@ from .enums import ProviderType
 from .base_messages import BaseMessage, Tool, ModelMetadata, StreamChunk, LLMResponse
 
 
-logger = logging.getLogger(__name__)
+from css.core.logger import getLogger
+logger = getLogger(__name__)
 
 
 class StreamingHandler:
@@ -149,4 +149,3 @@ class BaseApiServiceClient(ABC):
             "tool_use_caching": model_metadata.tool_use_caching,
         }
         return feature_map.get(feature, False)
-

@@ -4,14 +4,14 @@ Provides CRUD operations for hybrid tools and smart resolution endpoints.
 All endpoints use async aiohttp patterns.
 """
 
-import logging
+from css.core.logger import getLogger
 from fastapi import APIRouter, HTTPException, Query
 
 from css.modules.tools.registry import get_tool_registry
 from css.modules.tools.types import HybridToolSchema
 from css.modules.tools.exceptions import ToolNotFoundError
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 router = APIRouter(prefix="/api/tools", tags=["tools"])
 
 

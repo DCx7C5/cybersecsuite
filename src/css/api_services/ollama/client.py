@@ -1,13 +1,13 @@
 """Ollama client — wrapper for local Ollama HTTP API with streaming support."""
 
+from css.core.logger import getLogger
 from collections.abc import AsyncIterator
-import logging
 
 from css.core.types.base_client import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
 from .types import OllamaConfig, OllamaExecutionContext
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class OllamaClient(BaseApiServiceClient):

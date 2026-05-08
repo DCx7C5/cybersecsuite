@@ -1,10 +1,10 @@
 """LLM model registry and management."""
 
-from css.core.logger import getLogger
 from .enums import ModelProvider, ModelFamily, ModelCapability
 from .models import ModelMetadata, ModelPricing
 from .registry import ModelRegistry, DEFAULT_MODELS
 
+from css.core.logger import getLogger
 logger = getLogger(__name__)
 
 __all__ = [

@@ -1,6 +1,6 @@
 """Tool registry and persistence bridge for builtin and hybrid tools."""
 
-import logging
+from css.core.logger import getLogger
 import pkgutil
 from pathlib import Path
 
@@ -9,7 +9,7 @@ from css.modules.tools.enums import CompositionStrategy, ParameterType
 from css.modules.tools.exceptions import ToolExecutionError, ToolNotFoundError
 from css.modules.tools.types import HybridToolSchema, ManagedTool, ToolParameter, ToolReturnType, ToolSchema
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class ToolRegistry(BaseToolRegistry):

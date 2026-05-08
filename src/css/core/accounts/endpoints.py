@@ -11,16 +11,20 @@ Endpoints:
 - GET    /api/organizations/{org_id}/members  — List org members
 """
 
-import logging
+from css.core.logger import getLogger
 from typing import Optional
-from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
-from .models import Account, UserProfile, Organization, OrganizationMembership, RoleAssignment
+from css.core.db.models.accounts import (
+    Account,
+    Organization,
+    OrganizationMembership,
+    UserProfile,
+)
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Request/Response Models

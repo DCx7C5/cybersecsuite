@@ -7,7 +7,6 @@ from css.core.db.models.base import BaseModel
 class ReportRecord(BaseModel):
     """Generated report metadata and payload."""
 
-    id = fields.BigIntField(primary_key=True)
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="reports",

@@ -1,16 +1,15 @@
 """Scheduler module — cron-based task execution (Phase 7)."""
 
 from tortoise import fields
-from datetime import datetime
 
+from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from .enums import TaskType
 
 
 class ScheduledTask(BaseModel):
     """Cron-scheduled task."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="scheduled_tasks",
@@ -26,7 +25,7 @@ class ScheduledTask(BaseModel):
     )
     
     name = fields.CharField(max_length=256)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     
     # Schedule
     cron_expression = fields.CharField(
@@ -65,8 +64,7 @@ class ScheduledTask(BaseModel):
 
 class TaskExecution(BaseModel):
     """Record of task execution."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     task: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.ScheduledTask",
         related_name="executions",

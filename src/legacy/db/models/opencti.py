@@ -1,18 +1,18 @@
 """OpenCTI intelligence models normalized from exported feeds."""
 
 from tortoise import fields
-from tortoise.models import Model
+from models import BaseModel
+from css.core.db.fields import DescriptionField
 
 
-class OpenCTIIndicatorIntel(Model):
+class OpenCTIIndicatorIntel(BaseModel):
     """Normalized OpenCTI indicators."""
 
-    id = fields.BigIntField(primary_key=True)
     stix_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     opencti_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     indicator_type = fields.CharField(max_length=64, default="", db_index=True)
     name = fields.CharField(max_length=255, default="", db_index=True)
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     pattern = fields.TextField()
     pattern_type = fields.CharField(max_length=64, default="")
     indicator_types = fields.JSONField(default=list)
@@ -41,15 +41,14 @@ class OpenCTIIndicatorIntel(Model):
         indexes = (("name",), ("pattern_type",), ("revoked",))
 
 
-class OpenCTIEntityIntel(Model):
+class OpenCTIEntityIntel(BaseModel):
     """Normalized non-indicator STIX/OpenCTI entities."""
 
-    id = fields.BigIntField(primary_key=True)
     stix_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     opencti_id = fields.CharField(max_length=128, unique=True, db_index=True, null=True)
     entity_type = fields.CharField(max_length=64, db_index=True)
     name = fields.CharField(max_length=255, default="", db_index=True)
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     aliases = fields.JSONField(default=list)
     labels = fields.JSONField(default=list)
     confidence = fields.IntField(null=True)
@@ -72,4 +71,3 @@ class OpenCTIEntityIntel(Model):
         table = "intel_opencti_entities"
         ordering = ["entity_type", "name"]
         indexes = (("entity_type",), ("name",), ("confidence",))
-

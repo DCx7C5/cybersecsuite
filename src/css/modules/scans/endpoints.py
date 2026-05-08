@@ -1,10 +1,10 @@
 """Scan management endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from .models import Scan, Finding, ScanType, ScanStatus, SeverityRating
+from .models import Scan, Finding
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
 

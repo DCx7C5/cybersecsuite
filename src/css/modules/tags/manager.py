@@ -1,6 +1,6 @@
 """Tag management and assignment."""
 
-import logging
+from css.core.logger import getLogger
 import re
 from typing import Any
 from datetime import datetime
@@ -10,7 +10,7 @@ from .enums import TagColor
 from .exceptions import TagNotFoundError, TagCreationError, TagValidationError
 from .types import TagConflictResolution, TagSuggestion
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def normalize_slug(text: str) -> str:

@@ -1,8 +1,9 @@
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import CostField
 
 
-class LlmSession(Model):
+class LlmSession(BaseModel):
     """One row per git-worktree lifecycle — tracks LLM API cost and token usage.
 
     Distinct from :class:`db.models.scope.Session` (forensic root) and
@@ -21,7 +22,7 @@ class LlmSession(Model):
     closed_at = fields.DatetimeField(null=True)
     total_input_tokens = fields.BigIntField(default=0)
     total_output_tokens = fields.BigIntField(default=0)
-    total_cost_usd = fields.DecimalField(max_digits=14, decimal_places=8, default=0)
+    total_cost_usd = CostField(max_digits=14, decimal_places=8, default=0)
     total_calls = fields.IntField(default=0)
 
     class Meta:

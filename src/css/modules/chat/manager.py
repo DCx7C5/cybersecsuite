@@ -2,13 +2,13 @@
 
 import uuid
 from datetime import datetime
-from typing import Any
 
-from . import getLogger
-from .models import ChatMessage, ChatSession
+
+from .models import ChatMessage, ChatMessageModel, ChatSession, ChatSessionModel
 from .enums import ChatRole, ChatMessageType, ChatStatus
 from .exceptions import ChatSessionNotFoundError
 
+from css.core.logger import getLogger
 logger = getLogger(__name__)
 
 
@@ -105,7 +105,7 @@ class ChatSessionManager:
         logger.info(f"Deleted chat session: {session_id}")
         return True
     
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> dict[str, object]:
         """Get chat statistics."""
         total_sessions = len(self._sessions)
         total_messages = sum(len(s.messages) for s in self._sessions.values())
@@ -123,69 +123,74 @@ class ChatSessionManager:
         }
 
     async def _persist_session(self, session: ChatSession) -> None:
-        from .persistence_models import ChatSessionRecord
-
-        record = await ChatSessionRecord.get_or_none(session_id=session.session_id)
+        record = await ChatSessionModel.get_or_none(session_uuid=session.session_id)
+        message_count = len(session.messages)
+        total_tokens = sum(message.tokens for message in session.messages)
         payload = {
             "title": session.title,
-            "status": session.status.value,
+            "status": session.status,
             "model_id": session.model_id,
             "system_prompt": session.system_prompt,
-            "metadata": session.metadata,
+            "message_count": message_count,
+            "total_tokens": total_tokens,
+            "extra_meta": session.metadata,
             "updated_at": session.updated_at,
         }
         if record:
             await record.update_from_dict(payload).save()
             return
 
-        await ChatSessionRecord.create(
-            session_id=session.session_id,
+        await ChatSessionModel.create(
+            session_uuid=session.session_id,
             created_at=session.created_at,
             **payload,
         )
 
     async def _persist_message(self, session_id: str, message: ChatMessage) -> None:
-        from .persistence_models import ChatSessionRecord, ChatMessageRecord
-
-        session_record = await ChatSessionRecord.get_or_none(session_id=session_id)
+        session_record = await ChatSessionModel.get_or_none(session_uuid=session_id)
         if not session_record:
             raise ChatSessionNotFoundError(session_id)
 
-        await ChatMessageRecord.create(
-            message_id=message.id,
-            session_id=session_record.id,
-            role=message.role.value,
-            message_type=message.message_type.value,
+        await ChatMessageModel.create(
+            message_uuid=message.id,
+            chat_session_id=session_record.id,
+            role=message.role,
+            message_type=message.message_type,
             content=message.content,
-            metadata=message.metadata,
+            extra_meta=message.metadata,
             tokens=message.tokens,
             created_at=message.created_at,
         )
+        await session_record.update_from_dict(
+            {
+                "message_count": session_record.message_count + 1,
+                "total_tokens": session_record.total_tokens + message.tokens,
+                "updated_at": datetime.utcnow(),
+            }
+        ).save()
 
     async def _load_session_from_db(self, session_id: str) -> ChatSession | None:
-        from .persistence_models import ChatSessionRecord, ChatMessageRecord
-
-        session_record = await ChatSessionRecord.get_or_none(session_id=session_id)
+        session_record = await ChatSessionModel.get_or_none(session_uuid=session_id)
         if not session_record:
             return None
 
-        message_records = await ChatMessageRecord.filter(session_id=session_record.id).order_by("created_at")
+        message_records = await ChatMessageModel.filter(chat_session_id=session_record.id).order_by("created_at")
         session = ChatSession(
-            session_id=session_record.session_id,
+            session_id=session_record.session_uuid,
             title=session_record.title,
-            status=ChatStatus(session_record.status),
+            status=session_record.status,
             model_id=session_record.model_id,
             system_prompt=session_record.system_prompt,
-            metadata=session_record.metadata,
+            metadata=session_record.extra_meta if isinstance(session_record.extra_meta, dict) else {},
             created_at=session_record.created_at,
             updated_at=session_record.updated_at,
             messages=[
                 ChatMessage(
-                    id=msg.message_id,
-                    role=ChatRole(msg.role),
-                    message_type=ChatMessageType(msg.message_type),
+                    id=msg.message_uuid,
+                    role=msg.role,
+                    message_type=msg.message_type,
                     content=msg.content,
-                    metadata=msg.metadata,
+                    metadata=msg.extra_meta if isinstance(msg.extra_meta, dict) else {},
                     created_at=msg.created_at,
                     tokens=msg.tokens,
                 )
@@ -196,17 +201,13 @@ class ChatSessionManager:
         return session
 
     async def _load_recent_sessions(self, limit: int = 100) -> None:
-        from .persistence_models import ChatSessionRecord
-
-        records = await ChatSessionRecord.all().order_by("-updated_at").limit(limit)
+        records = await ChatSessionModel.all().order_by("-updated_at").limit(limit)
         for record in records:
-            if record.session_id in self._sessions:
+            if record.session_uuid in self._sessions:
                 continue
-            await self._load_session_from_db(record.session_id)
+            await self._load_session_from_db(record.session_uuid)
 
     async def _delete_session_record(self, session_id: str) -> None:
-        from .persistence_models import ChatSessionRecord
-
-        record = await ChatSessionRecord.get_or_none(session_id=session_id)
+        record = await ChatSessionModel.get_or_none(session_uuid=session_id)
         if record:
             await record.delete()

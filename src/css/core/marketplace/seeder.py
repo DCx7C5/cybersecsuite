@@ -1,9 +1,9 @@
 """Marketplace seeder — seeds DB from remote index on first startup."""
 
+from css.core.logger import getLogger
 from datetime import UTC, datetime
 import hashlib
 import json
-import logging
 from pathlib import Path
 
 import aiohttp
@@ -13,7 +13,7 @@ from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
 from css.core.enums import MarketplaceItemType
 from .exceptions import MarketplaceSeedingError
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 # Load URLs from configuration
 INDEX_URL = MARKETPLACE_CONFIG['index_url']

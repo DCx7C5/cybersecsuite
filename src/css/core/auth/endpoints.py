@@ -9,7 +9,7 @@ Endpoints:
 - DELETE /api/auth/keys/{id}      — Revoke API key
 """
 
-import logging
+from css.core.logger import getLogger
 import os
 from typing import Optional
 
@@ -19,13 +19,12 @@ from pydantic import BaseModel, Field
 from .manager import (
     JWTManager,
     APIKeyManager,
-    PasswordManager,
     TokenRevocationStore,
     AccessTokenResponse,
     APIKeyResponse,
 )
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 # Global auth managers (should be DI'd from container in production)
 _jwt_manager = JWTManager(

@@ -1,10 +1,10 @@
 """Knowledge base management endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-from .models import KnowledgeDocument, KnowledgeTag, SearchLog, DocumentType, DocumentStatus
+from .models import KnowledgeDocument, KnowledgeTag, SearchLog
 from .retriever import KnowledgeRetriever
 
 router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])

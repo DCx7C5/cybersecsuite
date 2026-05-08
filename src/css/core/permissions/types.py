@@ -30,12 +30,12 @@ class PermissionPolicy:
 class ScopeContext:
     """Encapsulates permission context for current operation."""
 
-    role: Role
+    role: "Role"
     scope_level: ScopeLevel
     scope_id: str
     timestamp: datetime = msgspec.field(default_factory=datetime.utcnow)
     token: str | None = None
-    parent_scope: ScopeContext | None = None
+    parent_scope: "ScopeContext | None" = None
 
     def get_filesystem_path(self) -> Path:
         """Get filesystem path for this scope."""
@@ -52,7 +52,7 @@ class ScopeContext:
             return Path("/tmp/cybersec") / f"runtime_{runtime_id}" / "sessions" / self.scope_id
         return Path("/tmp/cybersec")
 
-    def get_parent_scope(self) -> ScopeContext | None:
+    def get_parent_scope(self) -> "ScopeContext | None":
         """Get parent scope context."""
         return self.parent_scope
 

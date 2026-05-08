@@ -7,14 +7,14 @@ Models:
 """
 
 from tortoise import fields
+from css.core.db.fields import DescriptionField, QualityScoreField
 from css.core.db.models.base import BaseModel
 from .enums import EvidenceStatus, EvidenceType, ChainEventType
 
 
 class Evidence(BaseModel):
     """Individual evidence item — forensic artifact."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="evidence_items",
@@ -65,7 +65,7 @@ class Evidence(BaseModel):
     )
     
     # Descriptive information
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     tags = fields.JSONField(default=list, help_text="Searchable tags (incident_type, severity, etc.)")
     
     # Physical properties
@@ -116,8 +116,7 @@ class Evidence(BaseModel):
 
 class EvidenceChain(BaseModel):
     """Immutable chain-of-custody transaction log."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     evidence: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Evidence",
         related_name="chain_events",
@@ -178,8 +177,7 @@ class EvidenceChain(BaseModel):
 
 class EvidenceTagging(BaseModel):
     """Tag evidence by incident, case, or classification."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     evidence: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Evidence",
         related_name="incident_tags",
@@ -201,7 +199,7 @@ class EvidenceTagging(BaseModel):
     )
     
     # Relevance
-    relevance_score = fields.FloatField(
+    relevance_score = QualityScoreField(
         default=0.0,
         help_text="How relevant to incident/case (0.0-1.0)"
     )

@@ -9,8 +9,8 @@ The design uses Protocol (PEP 544) and wires to ProviderRegistry + HttpProviderA
 Replaces Claude SDK hardcode with provider-agnostic execution.
 """
 
+from css.core.logger import getLogger
 from typing import Protocol, runtime_checkable, TYPE_CHECKING, Any
-import logging
 from datetime import datetime
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 from .models import AgentResult
 from css.modules.tools.tool_call_loop import ToolCallLoop
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 @runtime_checkable

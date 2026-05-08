@@ -6,45 +6,35 @@ and how to discover/register capabilities at runtime.
 
 from datetime import datetime, timedelta
 
-from pydantic import BaseModel, Field
+import msgspec
 
 from .enums import CapabilityType
 
 
-class Capability(BaseModel):
+class Capability(msgspec.Struct):
     """Single capability supported by a model."""
 
-    name: str = Field(..., description="Capability name (e.g., 'streaming', 'vision')")
-    type: CapabilityType = Field(..., description="Capability type")
-    supported: bool = Field(default=True, description="Is this capability supported?")
-    metadata: dict = Field(default_factory=dict, description="Metadata about capability")
-    version: str = Field(default="1.0", description="Capability API version")
-    cost_multiplier: float = Field(default=1.0, description="Cost impact of using this capability")
-    notes: str | None = Field(default=None, description="Human-readable notes about capability")
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    name: str
+    type: CapabilityType
+    supported: bool = True
+    metadata: dict[str, object] = msgspec.field(default_factory=dict)
+    version: str = "1.0"
+    cost_multiplier: float = 1.0
+    notes: str | None = None
 
 
-class ModelCapabilities(BaseModel):
+class ModelCapabilities(msgspec.Struct):
     """Complete capability set for a single model."""
 
-    provider: str = Field(..., description="Provider name (e.g., 'openai', 'anthropic')")
-    model_name: str = Field(..., description="Model identifier (e.g., 'gpt-4', 'claude-3-sonnet')")
-    capabilities: list[Capability] = Field(default_factory=list, description="List of supported capabilities")
-    max_tokens: int = Field(default=4000, description="Max tokens in single request")
-    context_window: int = Field(default=4000, description="Total context window size")
-    estimated_cost_per_1k_tokens: float = Field(default=0.0, description="Cost per 1k tokens")
-    latency_ms: float = Field(default=0.0, description="Estimated latency in milliseconds")
-    discovered_at: datetime = Field(default_factory=datetime.utcnow, description="When capabilities were discovered")
-    cache_ttl: timedelta = Field(default=timedelta(hours=24), description="How long to cache these capabilities")
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    provider: str
+    model_name: str
+    capabilities: list[Capability] = msgspec.field(default_factory=list)
+    max_tokens: int = 4000
+    context_window: int = 4000
+    estimated_cost_per_1k_tokens: float = 0.0
+    latency_ms: float = 0.0
+    discovered_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    cache_ttl: timedelta = timedelta(hours=24)
 
     def has_capability(self, capability_type: CapabilityType) -> bool:
         """Check if model supports a capability."""
@@ -61,24 +51,16 @@ class ModelCapabilities(BaseModel):
         return None
 
 
-class CapabilityRegistry(BaseModel):
+class CapabilityRegistry(msgspec.Struct):
     """Registry of capabilities for all providers/models.
 
     Used to discover what features each model supports, enabling dynamic
     routing and orchestration decisions.
     """
 
-    capabilities: dict[str, ModelCapabilities] = Field(
-        default_factory=dict,
-        description="Key: '{provider}:{model_name}', Value: ModelCapabilities",
-    )
-    last_sync: datetime = Field(default_factory=datetime.utcnow, description="Last time capabilities were synced")
-    cache_ttl: timedelta = Field(default=timedelta(hours=24), description="How long to cache registry")
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    capabilities: dict[str, ModelCapabilities] = msgspec.field(default_factory=dict)
+    last_sync: datetime = msgspec.field(default_factory=datetime.utcnow)
+    cache_ttl: timedelta = timedelta(hours=24)
 
     def register_capability(self, model_caps: ModelCapabilities) -> None:
         """Register capabilities for a model."""

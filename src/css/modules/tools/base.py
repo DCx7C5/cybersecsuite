@@ -1,6 +1,6 @@
 """Base classes for the tools module."""
 
-import logging
+from css.core.logger import getLogger
 from typing import Any
 
 from css.core.tools.base import BaseToolRegistry
@@ -27,4 +27,4 @@ class ToolRegistry(BaseToolRegistry):
         return list(self._tools.values())
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)

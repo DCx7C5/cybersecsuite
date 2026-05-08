@@ -1,9 +1,9 @@
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
 
-class ApiAccount(Model):
+class ApiAccount(BaseModel):
     """API account with vault-backed key, linked to ApiService."""
 
     vault_key = fields.CharField(max_length=255, pk=True)

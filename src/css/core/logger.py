@@ -4,17 +4,19 @@
 import logging
 import logging.handlers
 import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-ASGI_LOG = PROJECT_ROOT / "asgi.log"
-
-_log_level = logging.INFO
 _loggers: dict[str, logging.Logger] = {}
+
+
+def _get_log_level() -> int:
+    from css.core.settings.config import LOG_LEVEL
+
+    level_name = str(LOG_LEVEL).upper()
+    return getattr(logging, level_name, logging.INFO)
 
 
 def _ensure_root() -> logging.Logger:
@@ -23,24 +25,41 @@ def _ensure_root() -> logging.Logger:
     if "cybersecsuite" in _loggers:
         return _loggers["cybersecsuite"]
 
+    from css.core.settings.config import (
+        LOG_DATE_FORMAT,
+        LOG_FILE_BACKUP_COUNT,
+        LOG_FILE_MAX_BYTES,
+        LOG_FILE_PATH,
+        LOG_FORMAT,
+        LOG_TO_FILE,
+        LOG_TO_STDOUT,
+    )
+
+    log_level = _get_log_level()
     root = logging.getLogger("cybersecsuite")
-    root.setLevel(_log_level)
+    root.setLevel(log_level)
+    root.propagate = False
 
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
     )
 
-    file_handler = logging.handlers.RotatingFileHandler(
-        filename=ASGI_LOG, maxBytes=1024 * 1024, backupCount=5, encoding="utf-8"
-    )
-    file_handler.setFormatter(formatter)
+    if LOG_TO_FILE:
+        file_handler = logging.handlers.RotatingFileHandler(
+            filename=LOG_FILE_PATH,
+            maxBytes=LOG_FILE_MAX_BYTES,
+            backupCount=LOG_FILE_BACKUP_COUNT,
+            encoding="utf-8",
+        )
+        file_handler.setFormatter(formatter)
+        root.addHandler(file_handler)
 
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(formatter)
+    if LOG_TO_STDOUT:
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setFormatter(formatter)
+        root.addHandler(stream_handler)
 
-    root.addHandler(file_handler)
-    root.addHandler(stream_handler)
     _loggers["cybersecsuite"] = root
 
     return root
@@ -64,7 +83,8 @@ def getLogger(name: str) -> Logger:
         return _loggers[name]
 
     _ensure_root()
+    log_level = _get_log_level()
     logger = logging.getLogger(name)
-    logger.setLevel(_log_level)
+    logger.setLevel(log_level)
     _loggers[name] = logger
     return logger

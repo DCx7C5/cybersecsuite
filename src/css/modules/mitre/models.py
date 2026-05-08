@@ -1,13 +1,13 @@
 """MITRE ATT&CK module — threat framework mapping (Phase 7)."""
 
 from tortoise import fields
+from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from .enums import Tactic
 
 class MITRETechnique(BaseModel):
     """MITRE ATT&CK technique."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="mitre_techniques",
@@ -30,7 +30,7 @@ class MITRETechnique(BaseModel):
     
     # Details
     name = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     
     # References
     external_references = fields.JSONField(
@@ -52,8 +52,7 @@ class MITRETechnique(BaseModel):
 
 class ThreatActor(BaseModel):
     """Threat actor/campaign/group."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="threat_actors",
@@ -85,7 +84,7 @@ class ThreatActor(BaseModel):
     )
     
     # Metadata
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     targets = fields.JSONField(
         default=list,
         help_text="Industries/sectors targeted"
@@ -101,8 +100,7 @@ class ThreatActor(BaseModel):
 
 class IncidentTechniqueMaping(BaseModel):
     """Link incident to ATT&CK techniques."""
-    
-    id = fields.BigIntField(primary_key=True)
+
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Incident",
         related_name="attck_mappings",

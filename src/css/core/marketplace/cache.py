@@ -25,14 +25,14 @@ Usage::
 """
 
 
+from css.core.logger import getLogger
 import time
 import asyncio
-import logging
 from typing import Any
 
 from css.core.config import MarketplaceConfig
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class MarketplaceCache:

@@ -24,7 +24,6 @@ class User(BaseModel):
         updated_at: Last modification timestamp
     """
 
-    id = fields.BigIntField(primary_key=True)
     username = fields.CharField(max_length=255, unique=True)
     hashed_password = fields.CharField(max_length=255)
     api_key_hash = fields.CharField(max_length=255, null=True)

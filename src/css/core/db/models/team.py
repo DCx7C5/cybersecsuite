@@ -1,10 +1,11 @@
 """TeamScope model — team isolation, orchestrator pool, task queues, resource quotas."""
 
 from tortoise import fields, models
+from css.core.db.models.base import BaseModel
 from .enums import TeamStatus
 
 
-class Team(models.Model):
+class Team(BaseModel):
     """Team scope — isolated team context with orchestrator pool and task queue.
     
     Fields:

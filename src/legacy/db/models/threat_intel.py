@@ -5,7 +5,7 @@ All reference/intelligence data (CVE, CWE, MITRE, Threat Profiles) lives here.
 These are canonical knowledge-base records, not scoped operational data.
 """
 
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
 from db.models.enums import Confidence, ConfidenceLevel, ThreatActorSophistication, MITRETactic
@@ -14,7 +14,7 @@ from db.models.enums import Confidence, ConfidenceLevel, ThreatActorSophisticati
 # ----------------------------------------------------------------------
 # Threat Actor / Profile
 # ----------------------------------------------------------------------
-class ThreatProfile(Model):
+class ThreatProfile(BaseModel):
     """Threat actor intelligence profile."""
     id = fields.BigIntField(primary_key=True)
     actor_name = fields.CharField(max_length=255, db_index=True)
@@ -38,7 +38,7 @@ class ThreatProfile(Model):
         ordering = ["-updated_at"]
 
 
-class ForensicMITRETechnique(Model):
+class ForensicMITRETechnique(BaseModel):
     """Operational MITRE technique catalog used by forensic sessions and findings."""
     id = fields.BigIntField(primary_key=True)
     technique_id = fields.CharField(max_length=32, unique=True, db_index=True)
@@ -61,7 +61,7 @@ class ForensicMITRETechnique(Model):
         ordering = ["technique_id"]
 
 
-class IOCMITREMapping(Model):
+class IOCMITREMapping(BaseModel):
     """Analyst-confirmed mapping between a forensic IOC and ATT&CK technique."""
     id = fields.BigIntField(primary_key=True)
     ioc = fields.ForeignKeyField("models.IOCEntry", related_name="mitre_mappings", on_delete=fields.CASCADE, db_index=True)

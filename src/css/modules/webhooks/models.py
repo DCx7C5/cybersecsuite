@@ -2,19 +2,19 @@
 
 from tortoise import fields
 from css.core.db.models.base import BaseModel
+from fields import UrlField, NameField
 
 
 class WebhookEndpoint(BaseModel):
     """Configured outbound webhook endpoint."""
 
-    id = fields.BigIntField(primary_key=True)
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
         "css.Organization",
         related_name="webhook_endpoints",
         on_delete=fields.CASCADE,
     )
-    name = fields.CharField(max_length=255)
-    url = fields.CharField(max_length=1024)
+    name = NameField(max_length=255)
+    url = UrlField(max_length=1024)
     secret = fields.CharField(max_length=255, default="")
     event_filter = fields.JSONField(default=list)
     retry_policy = fields.JSONField(default={"max_attempts": 3, "base_delay_seconds": 2})
@@ -32,7 +32,6 @@ class WebhookEndpoint(BaseModel):
 class WebhookDelivery(BaseModel):
     """Delivery attempt log for each webhook call."""
 
-    id = fields.BigIntField(primary_key=True)
     endpoint: fields.ForeignKeyRelation[WebhookEndpoint] = fields.ForeignKeyField(
         "css.WebhookEndpoint",
         related_name="deliveries",
@@ -48,5 +47,7 @@ class WebhookDelivery(BaseModel):
     dispatched_at = fields.DatetimeField(auto_now_add=True)
 
     class Meta:
-        table = "webhook_deliveries"
+        table = "webhook_delivery"
+        table_verbose = "Webhook Delivery"
+        table_verbose_plural = "Webhook Deliveries"
         indexes = [("endpoint_id", "event_type", "dispatched_at")]

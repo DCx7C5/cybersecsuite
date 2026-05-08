@@ -1,10 +1,11 @@
 """Threat profile entry model from shared intelligence markdown."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import QualityScoreField
 
 
-class ThreatProfileEntry(Model):
+class ThreatProfileEntry(BaseModel):
     """Structured threat profiles from threat-profile.md."""
 
     id = fields.BigIntField(primary_key=True)
@@ -15,7 +16,7 @@ class ThreatProfileEntry(Model):
     sectors = fields.JSONField(default=list)
     regions = fields.JSONField(default=list)
     ttps = fields.JSONField(default=list)
-    confidence_score = fields.FloatField(null=True)
+    confidence_score = QualityScoreField(null=True)
     source_file = fields.CharField(max_length=500, default="data/cybersec-shared/intelligence/threat-profile.md")
     raw_record = fields.JSONField(default=dict)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -26,5 +27,4 @@ class ThreatProfileEntry(Model):
         table_description_plural = "Threat Profile Entries"
         table_description_singular = "Threat Profile Entry"
         indexes = (("profile_name",),)
-
 

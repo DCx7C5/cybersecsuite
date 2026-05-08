@@ -9,12 +9,13 @@ UserSuggestion stores free-form context the operator feeds into a
 session (words, sentences, paragraphs) with an optional weight.
 """
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
+from css.core.db.fields import DescriptionField
 from db.models.enums import RuleChain, RuleAction, SuggestionCategory
 
 
-class UserRule(Model):
+class UserRule(BaseModel):
     """Session-scoped rule evaluated like a netfilter chain entry.
 
     Lower ``index`` = higher priority.  Rules in the same chain are
@@ -58,7 +59,7 @@ class UserRule(Model):
     )
 
     # ── metadata ──
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     enabled = fields.BooleanField(default=True, db_index=True)
     hit_count = fields.IntField(default=0, description="How often this rule matched.")
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -77,7 +78,7 @@ class UserRule(Model):
         return f"Rule #{self.index} [{self.chain}] {self.action} → {self.target_pattern}"
 
 
-class UserSuggestion(Model):
+class UserSuggestion(BaseModel):
     """Free-form context the operator adds to a session.
 
     Can be anything: a sentence, a keyword, a paragraph.
@@ -116,4 +117,3 @@ class UserSuggestion(Model):
     def __str__(self):
         preview = self.content[:60] + "…" if len(self.content) > 60 else self.content
         return f"Suggestion({self.category}: {preview})"
-

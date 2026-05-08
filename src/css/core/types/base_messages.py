@@ -4,7 +4,7 @@ Replaces @dataclass BaseMessage, Tool, ModelMetadata, StreamChunk, LLMResponse, 
 Uses msgspec.Struct for 10-40× faster serialization.
 """
 
-import logging
+from css.core.logger import getLogger
 from typing import Any
 from collections.abc import AsyncIterator
 
@@ -12,7 +12,7 @@ import msgspec
 
 from .enums import MessageRole, ProviderType
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 class BaseMessage(msgspec.Struct, frozen=True):
     """A message in the conversation."""

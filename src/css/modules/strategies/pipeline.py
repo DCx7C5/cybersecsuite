@@ -1,10 +1,11 @@
 """Response strategy routing pipeline stages (Phase 6 T6.5)."""
 
+from css.core.logger import getLogger
 from typing import AsyncGenerator, Any, Optional
 
 from css.core.pipeline import Stage
 from css.core.a2a.enums import ResponseInjectionStrategy
-from .response_strategy_router import ResponseStrategyRouter, QueryComplexity
+from .response_strategy_router import ResponseStrategyRouter
 
 
 class RouteStage(Stage):
@@ -89,8 +90,7 @@ class RouteStage(Stage):
                 yield message
 
             except Exception as e:
-                import logging
-                log = logging.getLogger(__name__)
+                log = getLogger(__name__)
                 log.error(f"Route stage error: {e}")
 
                 # Yield message with default strategy

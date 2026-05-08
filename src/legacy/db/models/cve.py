@@ -1,10 +1,11 @@
 """CVE intelligence model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField
 
 
-class CVEIntel(Model):
+class CVEIntel(BaseModel):
     """Canonical CVE records from intelligence CVE feeds."""
 
     id = fields.BigIntField(primary_key=True)
@@ -12,7 +13,7 @@ class CVEIntel(Model):
     cvss_score = fields.FloatField(null=True, db_index=True)
     cvss_vector = fields.CharField(max_length=128, default="", description="CVSS vector string.")
     severity = fields.CharField(max_length=16, default="", db_index=True, description="Derived: low/medium/high/critical.")
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     affected_products = fields.JSONField(default=list, description="CPE strings or product names.")
     references = fields.JSONField(default=list, description="External reference URLs.")
     exploit_available = fields.BooleanField(default=False, db_index=True)

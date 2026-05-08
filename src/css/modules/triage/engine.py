@@ -1,6 +1,6 @@
 """Triage classification and routing engine."""
 
-import logging
+from css.core.logger import getLogger
 from datetime import datetime
 import uuid
 import json
@@ -13,7 +13,7 @@ from .models import TriageRequest, TriageResult
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
 from .exceptions import TriageExecutionError
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class TriageEngine:

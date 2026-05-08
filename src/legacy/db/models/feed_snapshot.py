@@ -1,10 +1,11 @@
 """Generic feed snapshot model for shared intelligence feeds."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import UrlField
 
 
-class ThreatIntelFeedSnapshot(Model):
+class ThreatIntelFeedSnapshot(BaseModel):
     """Generic snapshots for arbitrary intelligence feeds under feeds/."""
 
     id = fields.BigIntField(primary_key=True)
@@ -13,7 +14,7 @@ class ThreatIntelFeedSnapshot(Model):
     feed_kind = fields.CharField(max_length=64, default="snapshot", db_index=True)
     snapshot_id = fields.CharField(max_length=64)
     source_file = fields.CharField(max_length=500, unique=True)
-    source_url = fields.CharField(max_length=512, default="")
+    source_url = UrlField(max_length=512, default="")
     record_count = fields.IntField(default=0)
     payload = fields.JSONField(default=dict)
     collected_at = fields.DatetimeField(auto_now_add=True)
@@ -22,5 +23,4 @@ class ThreatIntelFeedSnapshot(Model):
         table = "intel_feed_snapshots"
         unique_together = (("feed_name", "snapshot_id"),)
         indexes = (("provider",), ("feed_name",), ("feed_kind",), ("snapshot_id",))
-
 

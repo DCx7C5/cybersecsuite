@@ -1,13 +1,13 @@
 """Agent management and coordination."""
 
-import logging
+from css.core.logger import getLogger
 from datetime import datetime
 
 from .models import AgentConfig, AgentMetrics, AgentState, AgentMessage
 from .enums import AgentStatus, AgentType
 from .exceptions import AgentNotFoundError, AgentExecutionError, AgentConfigurationError
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class AgentRegistry:

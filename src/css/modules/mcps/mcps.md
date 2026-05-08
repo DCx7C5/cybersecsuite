@@ -8,12 +8,12 @@
 
 The `@mcps` module manages **MCP (Model Context Protocol) servers** — connecting to them, discovering their tools, and executing tool calls. It is **distinct from `@tools`**:
 
-| `@tools` | `@mcps` |
-|----------|---------|
+| `@tools`                                                       | `@mcps`                                       |
+|----------------------------------------------------------------|-----------------------------------------------|
 | LLM provider builtin tools (code_interpreter, computer_use, …) | MCP server management (connect/discover/call) |
-| Static definitions from api_services/ | Dynamic server connections |
-| ToolSchema registry | McpServerRegistry |
-| Provider-scoped | Server-scoped (any MCP-compatible server) |
+| Static definitions from api_services/                          | Dynamic server connections                    |
+| ToolSchema registry                                            | McpServerRegistry                             |
+| Provider-scoped                                                | Server-scoped (any MCP-compatible server)     |
 
 **Key capability**: `@mcps` bridges both worlds — when a MCP server is connected, its tools are automatically registered into `@tools`'s `ToolRegistry` with `ToolType.MCP`, making them indistinguishable from builtin tools to the agent layer.
 
@@ -21,14 +21,14 @@ The `@mcps` module manages **MCP (Model Context Protocol) servers** — connecti
 
 ## 🔗 Integration Points
 
-| Component | Direction | Relationship |
-|-----------|-----------|--------------|
-| `css.modules.tools` | → pushes into | McpToolBridge registers MCP tools as `ToolType.MCP` in ToolRegistry |
-| `css.core.types.entities.tool` | → uses | `Tool.fn_path` is dotted path for PYTHON_DIRECT dispatch |
-| `css.core.db` | → persists to | McpServerConfigRecord Tortoise ORM |
-| `css.core.events` | → emits into | `@instrument("mcp.call.{server}.{tool}")` — Phase 14 |
-| ASGI startup | → initialized by | load_from_db() + auto_connect on app start |
-| `fastmcp` (v3.1.0+) | → wraps | All transport logic delegated to fastmcp.Client |
+| Component                      | Direction        | Relationship                                                        |
+|--------------------------------|------------------|---------------------------------------------------------------------|
+| `css.modules.tools`            | → pushes into    | McpToolBridge registers MCP tools as `ToolType.MCP` in ToolRegistry |
+| `css.core.types.entities.tool` | → uses           | `Tool.fn_path` is dotted path for PYTHON_DIRECT dispatch            |
+| `css.core.db`                  | → persists to    | McpServerConfigRecord Tortoise ORM                                  |
+| `css.core.events`              | → emits into     | `@instrument("mcp.call.{server}.{tool}")` — Phase 14                |
+| ASGI startup                   | → initialized by | load_from_db() + auto_connect on app start                          |
+| `fastmcp` (v3.1.0+)            | → wraps          | All transport logic delegated to fastmcp.Client                     |
 
 ---
 
@@ -99,7 +99,7 @@ mcps/
 ├── bridge.py          ← McpToolBridge — MCP tools → ToolRegistry as ToolType.MCP
 ├── models.py          ← Tortoise ORM: McpServerConfigRecord (persistence)
 ├── endpoints.py       ← FastAPI: /api/mcps/* (server CRUD + tool proxy)
-└── plan.md            ← this file
+└── mcps.md            ← this file
 ```
 
 ---
@@ -192,19 +192,19 @@ After `McpToolBridge().sync_server(server_id, tool_registry)`:
 
 ## Phase 22 Todos
 
-| Todo ID | Description | Task |
-|---------|-------------|------|
-| `mcp-enums` | McpTransportType + McpServerStatus | T22.1-foundation |
-| `mcp-exceptions` | Connection/call/protocol exceptions | T22.1-foundation |
-| `mcp-types-struct` | McpServerConfig + McpToolDef + McpCallResult | T22.1-foundation |
-| `mcp-client` | McpClient wrapping fastmcp.Client | T22.2-client |
-| `mcp-python-direct` | PYTHON_DIRECT in-process bypass | T22.2-client |
-| `mcp-server-registry` | McpServerRegistry singleton | T22.3-registry |
-| `mcp-tool-bridge` | MCP tools → ToolRegistry bridge | T22.3-registry |
-| `mcp-models` | Tortoise ORM McpServerConfigRecord | T22.4-persistence |
-| `mcp-endpoints` | FastAPI /api/mcps/* | T22.5-api |
-| `mcp-startup-wire` | ASGI startup integration | T22.6-integration |
-| `mcp-builtin-servers` | Built-in PYTHON_DIRECT (cssmcp) | T22.6-integration |
+| Todo ID               | Description                                  | Task              |
+|-----------------------|----------------------------------------------|-------------------|
+| `mcp-enums`           | McpTransportType + McpServerStatus           | T22.1-foundation  |
+| `mcp-exceptions`      | Connection/call/protocol exceptions          | T22.1-foundation  |
+| `mcp-types-struct`    | McpServerConfig + McpToolDef + McpCallResult | T22.1-foundation  |
+| `mcp-client`          | McpClient wrapping fastmcp.Client            | T22.2-client      |
+| `mcp-python-direct`   | PYTHON_DIRECT in-process bypass              | T22.2-client      |
+| `mcp-server-registry` | McpServerRegistry singleton                  | T22.3-registry    |
+| `mcp-tool-bridge`     | MCP tools → ToolRegistry bridge              | T22.3-registry    |
+| `mcp-models`          | Tortoise ORM McpServerConfigRecord           | T22.4-persistence |
+| `mcp-endpoints`       | FastAPI /api/mcps/*                          | T22.5-api         |
+| `mcp-startup-wire`    | ASGI startup integration                     | T22.6-integration |
+| `mcp-builtin-servers` | Built-in PYTHON_DIRECT (cssmcp)              | T22.6-integration |
 
 ---
 

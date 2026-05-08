@@ -1,13 +1,14 @@
 """Plan and task management models (3-level schema: Plan → PlanTask → PlanTodo)."""
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField
 
 
-class Plan(Model):
+class Plan(BaseModel):
     """Top-level plan container."""
     id = fields.BigIntField(primary_key=True)
     title = fields.CharField(max_length=256)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     scope = fields.CharField(max_length=128, default="general")
     status = fields.CharField(max_length=32, default="draft")  # draft, active, complete, archived
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -20,12 +21,12 @@ class Plan(Model):
         return f"Plan({self.id}, {self.title!r}, status={self.status})"
 
 
-class PlanTask(Model):
+class PlanTask(BaseModel):
     """Tasks grouped by plan, with optional sequencing and assignment."""
     id = fields.BigIntField(primary_key=True)
     plan = fields.ForeignKeyField("models.Plan", related_name="tasks", on_delete=fields.CASCADE)
     title = fields.CharField(max_length=256)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     assigned_to = fields.CharField(max_length=128, null=True, default=None)  # User or team assignment
     sequence = fields.IntField(default=0)  # For ordering tasks within plan
     status = fields.CharField(max_length=32, default="pending")  # pending, in_progress, done, blocked
@@ -59,7 +60,7 @@ class PlanTask(Model):
         self.target_files = json.dumps(files)
 
 
-class PlanTodo(Model):
+class PlanTodo(BaseModel):
     """Sub-task items within a PlanTask for granular tracking."""
     id = fields.BigIntField(primary_key=True)
     task = fields.ForeignKeyField("models.PlanTask", related_name="todos", on_delete=fields.CASCADE)

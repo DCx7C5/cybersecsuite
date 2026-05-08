@@ -1,15 +1,16 @@
 """MITRE threat actor intelligence model."""
 
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField, UrlField
 
 
-class MitreThreatActorIntel(Model):
+class MitreThreatActorIntel(BaseModel):
     """MITRE ATT&CK threat actor/group catalog from shared actor snapshots."""
 
     id = fields.BigIntField(primary_key=True)
     actor_name = fields.CharField(max_length=255, unique=True, db_index=True)
-    description = fields.TextField(null=True)
+    description = DescriptionField(null=True)
     aliases = fields.JSONField(default=list, description="Known alternative names.")
     country_of_origin = fields.CharField(max_length=3, default="", description="ISO 3166-1 alpha-2.")
     motivation = fields.CharField(max_length=128, default="", description="Financial, espionage, …")
@@ -19,7 +20,7 @@ class MitreThreatActorIntel(Model):
     target_regions = fields.JSONField(default=list, description="Targeted geographic regions.")
     associated_groups = fields.JSONField(default=list, description="Related group IDs/names.")
     tools_used = fields.JSONField(default=list, description="Known tools and malware families.")
-    url = fields.CharField(max_length=512, default="", description="ATT&CK actor URL.")
+    url = UrlField(max_length=512, default="", description="ATT&CK actor URL.")
     source_file = fields.CharField(max_length=500, null=True)
     raw_record = fields.JSONField(default=dict)
     tags = fields.JSONField(default=list)

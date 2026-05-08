@@ -14,8 +14,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from css.modules import getLogger
-
+from css.core.logger import getLogger
 logger = getLogger("vault")
 
 _DEFAULT_VAULT_PATH = str(

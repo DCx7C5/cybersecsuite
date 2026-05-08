@@ -1,13 +1,13 @@
 """Session linking - connects DB Session model to Claude SDK session IDs."""
 
 
-import logging
+from css.core.logger import getLogger
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     pass
 
-logger = logging.getLogger("agents.session_linking")
+logger = getLogger("agents.session_linking")
 
 
 async def link_to_sdk(db_session_id: int, sdk_session_id: str) -> bool:

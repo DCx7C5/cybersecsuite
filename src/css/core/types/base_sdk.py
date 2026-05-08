@@ -7,7 +7,7 @@ Enables consistent error handling, retry logic, and streaming support across all
 Subclasses: OllamaApiService, NScaleApiService, and future local providers.
 """
 
-import logging
+from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 from abc import ABC, abstractmethod
 
@@ -16,7 +16,7 @@ from css.core.exceptions import GatewayError
 from css.core.resilience import RetryOrchestrator, RetryConfig
 from css.core.types import BaseApiServiceClient, ProviderType, ModelMetadata, BaseMessage, StreamChunk, Tool
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class LocalSDKBase(BaseApiServiceClient, ABC):

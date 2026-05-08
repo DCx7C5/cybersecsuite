@@ -3,16 +3,16 @@
 
 from tortoise import fields, models
 
+from css.core.db.fields import DescriptionField, NameField, PathField
 from .base import BaseModel
 from .enums import RedBlueMode, ScopeLevel
 
 
 class AppScope(BaseModel):
     """Application scope — top-level global container."""
-    id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    working_dir = fields.CharField(max_length=1024, default="", db_index=True)
+    name = NameField(max_length=256, db_index=True, unique=True)
+    description = DescriptionField(default="")
+    working_dir = PathField(max_length=1024, default="", db_index=True)
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -30,10 +30,9 @@ class AppScope(BaseModel):
 
 class ProjectScope(BaseModel):
     """Project scope — organizational container within app scope."""
-    id = fields.BigIntField(primary_key=True)
-    name = fields.CharField(max_length=256, db_index=True, unique=True)
-    description = fields.TextField(default="")
-    working_dir = fields.CharField(max_length=1024, default="", db_index=True)
+    name = NameField(max_length=256, db_index=True, unique=True)
+    description = DescriptionField(default="")
+    working_dir = PathField(max_length=1024, default="", db_index=True)
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -70,12 +69,12 @@ class SessionScope(BaseModel):
     )
     session_id = fields.CharField(max_length=128, unique=True, db_index=True)
     sdk_session_id = fields.CharField(max_length=128, null=True, db_index=True)
-    name = fields.CharField(max_length=256, default="")
-    description = fields.TextField(default="")
-    working_dir = fields.CharField(max_length=1024, default="", db_index=True)
+    name = NameField(max_length=256, default="")
+    description = DescriptionField(default="")
+    working_dir = PathField(max_length=1024, default="", db_index=True)
     agent = fields.CharField(max_length=128, default="", db_index=True)
     mode = fields.CharEnumField(RedBlueMode, default=RedBlueMode.BLUE, db_index=True)
-    phase = fields.CharField(max_length=64, default="init")
+    phase = NameField(max_length=64, default="init")
     is_active = fields.BooleanField(default=True, db_index=True)
     deleted_at = fields.DatetimeField(null=True)
     started_at = fields.DatetimeField(null=True)
@@ -85,8 +84,8 @@ class SessionScope(BaseModel):
 
     class Meta:
         table = "sessions"
-        table_description_singular = "Session Scope"
-        table_description_plural = "Session Scopes"
+        table_verbose = "Session Scope"
+        table_verbose_plural = "Session Scopes"
         indexes = [
             models.Index(fields=["project_id", "is_active"]),
             models.Index(fields=["session_id", "project_id"]),
@@ -138,7 +137,7 @@ class ScopedEntry(BaseModel):
         db_index=True,
         description="Container/pod runtime identity for RUNTIME+ scopes",
     )
-    worktree_path = fields.CharField(
+    worktree_path = PathField(
         max_length=1024,
         null=True,
         description="Absolute path to .css/<runtime-id>/worktree-<SID>/",

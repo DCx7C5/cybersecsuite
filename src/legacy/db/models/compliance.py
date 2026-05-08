@@ -3,21 +3,22 @@ Compliance & Agent Permission Models
 - Regulatory compliance rules
 - Agent permission & root/sudo control (reference layer only)
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField
 from db.models.enums import Severity
 
 
 # =====================================================================
 # Regulatory / Compliance (unchanged from previous version)
 # =====================================================================
-class ComplianceRule(Model):
+class ComplianceRule(BaseModel):
     """Compliance and regulatory requirements."""
     id = fields.BigIntField(primary_key=True)
     rule_id = fields.CharField(max_length=100, unique=True, db_index=True)
     title = fields.CharField(max_length=255)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     framework = fields.CharField(max_length=100)
     severity = fields.CharEnumField(Severity, null=True)
     check_procedures = fields.JSONField(default=list)
@@ -32,7 +33,7 @@ class ComplianceRule(Model):
         table = "compliance_rules"
 
 
-class ComplianceCheck(Model):
+class ComplianceCheck(BaseModel):
     """Compliance check results."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="compliance_checks")
@@ -51,7 +52,7 @@ class ComplianceCheck(Model):
 # =====================================================================
 # AGENT PERMISSION & ROOT CONTROL (NEW)
 # =====================================================================
-class AgentRootPermission(Model):
+class AgentRootPermission(BaseModel):
     """Controls which agents are allowed to request root/sudo execution.
     This is a REFERENCE / POLICY layer only — agents MUST check these rules themselves.
     """
@@ -103,7 +104,7 @@ class AgentRootPermission(Model):
     requires_user_approval = fields.BooleanField(default=True)
     max_duration_seconds = fields.IntField(default=60)
 
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 

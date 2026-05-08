@@ -1,13 +1,13 @@
 """Event bus — centralized event emission and handling."""
+from css.core.logger import getLogger
 import inspect
 from typing import Any
 from collections.abc import Callable
 import asyncio
-import logging
 
 from css.core.types.meta import AsyncSafeSingletonMeta
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class EventBus(metaclass=AsyncSafeSingletonMeta):

@@ -1,7 +1,7 @@
 """Marketplace endpoints — install/uninstall/toggle/upgrade operations."""
 
-import logging
 
+from css.core.logger import getLogger
 from fastapi import APIRouter, HTTPException, Query, status
 
 from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
@@ -18,7 +18,7 @@ from css.core.marketplace.types import (
     UpgradeResponse,
 )
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 router = APIRouter(prefix="/marketplace", tags=["marketplace"])
 

@@ -1,10 +1,9 @@
 """Compliance report generation and endpoints."""
 
-import logging
-from typing import List, Dict, Optional
-from datetime import datetime
+from css.core.logger import getLogger
+from typing import Dict
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class ComplianceReportGenerator:

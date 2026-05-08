@@ -44,11 +44,11 @@ cat src/css/api_services/api_services.md
 ### Session & Project Planning
 - **ABSOLUTE: `.plan/plan.md` is the session workspace plan** — high-level project overview for THIS session's work (planning ONLY, not progress logs)
 - **ABSOLUTE: track all progress in [.plan/session.db](session.db) ONLY** — every todo status change goes here, never in markdown
-- **ABSOLUTE: local planning markdown files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/modules.md`, `src/css/modules/*/<module>.md`, `src/css/api_services/api_services.md`, `src/css/core/*/plan.md`, etc.
-- **ABSOLUTE: keep EVERY local planning markdown file synchronized with [.plan/session.db](session.db) while working in that directory** — each file reflects todos/milestones relevant to that module/subdirectory
+- **ABSOLUTE: local planning Markdown files exist throughout the codebase** — `src/css/plan.md`, `src/css/core/plan.md`, `src/css/modules/modules.md`, `src/css/modules/*/<module>.md`, `src/css/api_services/api_services.md`, `src/css/core/*/plan.md`, etc.
+- **ABSOLUTE: keep EVERY local planning Markdown file synchronized with [.plan/session.db](session.db) while working in that directory** — each file reflects todos/milestones relevant to that module/subdirectory
 - **ABSOLUTE: when working in a module (e.g., `src/css/modules/agents/`), READ that module's local `<module>.md` FIRST; for core areas read the nearest `plan.md`** — understand what's planned, in-progress, and completed for that area
 - **ABSOLUTE: there is no such thing like "backwards compatibility". we are not yet in production.**
-- **ABSOLUTE: update local planning markdown DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
+- **ABSOLUTE: update local planning Markdown DURING work (not end-of-session)** — keep it fresh as todos move through pending → in_progress → done
 - **ABSOLUTE: if you edit files that lead to other code becoming deprecated, delete the deprecated code directly**
 - **ABSOLUTE: lazy import strategy only if absolutely efficient in given scenario** 
 - **ABSOLUTE: when creating new files or content keep pattern consistency in your mind**

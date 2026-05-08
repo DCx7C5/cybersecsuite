@@ -21,7 +21,9 @@ import json
 from enum import Enum
 from typing import Any
 
-from tortoise import fields, models
+from tortoise import fields
+from css.core.db.models.base import BaseModel
+from css.core.db.fields import DescriptionField
 
 
 class WorkerState(str, Enum):
@@ -33,7 +35,7 @@ class WorkerState(str, Enum):
     FAILED = "failed"          # Task failed with error
 
 
-class WorkerStateTransition(models.Model):
+class WorkerStateTransition(BaseModel):
     """
     Track worker state transitions with timestamp, reason, and context.
     
@@ -128,7 +130,7 @@ class WorkerStateTransition(models.Model):
         )
 
 
-class WorkerSession(models.Model):
+class WorkerSession(BaseModel):
     """
     Worker session context and execution state.
     
@@ -153,7 +155,7 @@ class WorkerSession(models.Model):
         default="",
         description="Human-readable worker name"
     )
-    description = fields.TextField(
+    description = DescriptionField(
         default="",
         description="Worker description"
     )
@@ -346,7 +348,7 @@ class WorkerSession(models.Model):
         return (len(failures) == 0, failures)
 
 
-class WorkerAuditLog(models.Model):
+class WorkerAuditLog(BaseModel):
     """
     Audit trail for worker operations per scope (t368).
     

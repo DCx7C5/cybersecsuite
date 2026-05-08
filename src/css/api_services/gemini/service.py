@@ -1,7 +1,7 @@
 """Gemini API service provider."""
 
+from css.core.logger import getLogger
 import json
-import logging
 import os
 from typing import Any
 from collections.abc import AsyncIterator
@@ -19,7 +19,7 @@ from css.core.types import (
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class GeminiApiService(BaseApiServiceClient, StreamingHandler):

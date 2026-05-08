@@ -14,9 +14,9 @@ Usage::
         print(chunk.content)
 """
 
+from css.core.logger import getLogger
 from typing import Any
 from collections.abc import AsyncIterator
-import logging
 import os
 import time
 from aiohttp import ClientSession, ClientTimeout
@@ -28,10 +28,10 @@ from css.core.types.base_messages import BaseMessage, ModelMetadata, StreamChunk
 from css.core.types.enums import ProviderType
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 # Module-level singleton cache
-_adapters: dict[str, HttpProviderAdapter] = {}
+_adapters: dict[str, "HttpProviderAdapter"] = {}
 
 
 class HttpProviderAdapter(BaseApiServiceClient):

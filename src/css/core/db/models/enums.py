@@ -87,7 +87,28 @@ class OrchestratorStatus(str, Enum):
 
 
 class UserRoles(str, Enum):
-    """"""
+    """User roles."""
     ADMIN = "admin"
     USER = "user"
     GUEST = "guest"
+
+
+
+
+
+class TaskAssignmentStatus(str, Enum):
+    """Task assignment status."""
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class TaskPriority(str, Enum):
+    """Task priority levels."""
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    URGENT = "urgent"
+
+# TODO: No ProviderTypes Enum here. ProviderTypes is loaded dynamically from api_services.yml

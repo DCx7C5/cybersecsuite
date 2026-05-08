@@ -13,14 +13,14 @@ Usage::
 """
 
 
-import logging
 
+from css.core.logger import getLogger
 from css.modules.skills.types import Skill
 from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemType, MarketplaceItemStatus
 from css.core.marketplace.cache import marketplace_cache
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 async def skill_to_marketplace_item(skill: Skill):

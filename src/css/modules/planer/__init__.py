@@ -1,6 +1,5 @@
 """Structured multi-step planning orchestration."""
 
-from css.core.logger import getLogger
 
 from .enums import PlanStepStatus
 from .models import PlanStep, PlannerSession
@@ -9,6 +8,7 @@ from .analyzer import ArchitectureAnalyzer
 from .decision_log import DecisionLog
 from .planner import PlannerOrchestrator
 
+from css.core.logger import getLogger
 logger = getLogger(__name__)
 
 __all__ = [

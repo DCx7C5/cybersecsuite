@@ -8,12 +8,13 @@ Tables:
   account_tool_access  — which tools an account+tier can use
 """
 from tortoise import fields
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 
+from css.core.db.fields import DescriptionField, VersionField
 from db.models.enums import ModelTier, ToolType, ToggleScopeType
 
 
-class ToolRegistry(Model):
+class ToolRegistry(BaseModel):
     """
     Unified catalog of every tool available in CyberSecSuite.
 
@@ -31,7 +32,7 @@ class ToolRegistry(Model):
     # Identity
     tool_name = fields.CharField(max_length=128, unique=True)
     display_name = fields.CharField(max_length=255, default="")
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     tool_type = fields.CharEnumField(ToolType)
 
     # MCP server name if tool_type is mcp_* (e.g. "cybersec", "dystopian")
@@ -64,7 +65,7 @@ class ToolRegistry(Model):
     deprecated_at = fields.DatetimeField(null=True)
 
     # Schema version / last sync
-    version = fields.CharField(max_length=32, default="1")
+    version = VersionField(max_length=32, default="1.0.0")
     tags = fields.JSONField(default=list)           # e.g. ["forensics", "vault", "canvas"]
 
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -84,7 +85,7 @@ class ToolRegistry(Model):
         return f"Tool({self.tool_name} [{self.tool_type}])"
 
 
-class ToolToggleState(Model):
+class ToolToggleState(BaseModel):
     """
     Per-scope toggle state for a tool.
 
@@ -119,7 +120,7 @@ class ToolToggleState(Model):
         unique_together = (("tool_id", "scope_type", "scope_id"),)
 
 
-class ToolToggleRegistry(Model):
+class ToolToggleRegistry(BaseModel):
     """
     Exclusivity index — tracks which scope currently holds the *active* (enabled=True)
     toggle for each tool.
@@ -152,7 +153,7 @@ class ToolToggleRegistry(Model):
 
 
 
-class AccountToolAccess(Model):
+class AccountToolAccess(BaseModel):
     """
     Records which tools an API account can access, and under what conditions.
 
@@ -195,5 +196,4 @@ class AccountToolAccess(Model):
         indexes = [
             ("account_id", "tool_id"),
         ]
-
 

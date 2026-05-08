@@ -7,18 +7,18 @@ This endpoint receives messages from clients, processes them through
 the pipeline stages, and streams results back.
 """
 
+from css.core.logger import getLogger
 from typing import AsyncGenerator, Any
-import logging
 
 from css.core import pipe
 from css.modules.triage import classify
 from css.modules.strategies import route
 from css.core.pipeline import ExecuteStage, ObserveStage
 from css.modules.agents.base import AgentExecutor
-from css.modules.events import EventStore, DomainEvent
+from css.core.events import DomainEvent, EventStore
 from css.config import OLLAMA_MODEL
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 _EVENT_STORE = EventStore()
 
 

@@ -1,14 +1,14 @@
 """RedisCommunicator — implements BaseCommunicator protocol for Redis-backed messaging."""
+from css.core.logger import getLogger
 import msgspec
 
-import logging
 from typing import Any, Literal
 from collections.abc import Callable
 
 from .dispatcher import MessageDispatcher
 from .messaging import Message
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 @msgspec.struct
 class RedisCommunicator:

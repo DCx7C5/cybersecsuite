@@ -1,16 +1,17 @@
 """Tortoise ORM model for persisting DomainEvents."""
 
 from tortoise import fields
-from tortoise.models import Model
+from tortoise.indexes import Index
+
+from css.core.db.models.base import BaseModel
 
 
-class DomainEventRecord(Model):
+class DomainEventRecord(BaseModel):
     """Persistent domain event record in PostgreSQL.
 
     Denormalized from DomainEvent struct for efficient querying.
     """
 
-    id = fields.TextField(pk=True)
     kind = fields.CharField(max_length=100, index=True)
     aggregate_type = fields.CharField(max_length=100, index=True)
     aggregate_id = fields.CharField(max_length=255, index=True)
@@ -21,12 +22,19 @@ class DomainEventRecord(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
 
     class Meta:
-        table = "domain_events"
-        indexes = [
-            ("aggregate_type", "aggregate_id"),
-            ("kind", "timestamp"),
-            ("timestamp",),
-        ]
+        table = "domain_event_record"
+        table_verbose = "Domain Event Record"
+        table_verbose_plural = "Domain Event Records"
+
+        indexes = ([
+            Index(fields=["kind", "aggregate_type", "aggregate_id"]),
+            Index(fields=["version", "timestamp"]),
+        ])
+        unique_together = (
+            ("kind", "aggregate_type", "aggregate_id"),
+        )
+
+
 
     @classmethod
     async def from_domain_event(cls, event) -> "DomainEventRecord":
@@ -47,7 +55,7 @@ class DomainEventRecord(Model):
         await self.save()
 
         # Also append to in-memory store for current session
-        from css.modules.events import DomainEvent
+        from css.core.events import DomainEvent
 
         event = DomainEvent(
             id=self.id,
@@ -60,4 +68,3 @@ class DomainEventRecord(Model):
             metadata=self.metadata,
         )
         store.append(event)
-

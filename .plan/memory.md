@@ -1,30 +1,31 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-07T19:46+02:00 | **Session**: Marketplace architecture alignment + planning sync
+**Last Updated**: 2026-05-08T01:22:41+02:00 | **Session**: Module Markdown naming + module structure rules sync
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
-⚠️ **Remember**: Every directory in `src/css/` has a local `plan.md` — read it FIRST before working there, update it DURING work (not end-of-session).  
+⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use `plan.md`, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work (not end-of-session).  
+⚠️ **Architecture**: `accounts`, `events`, `marketplace`, and `memory` are core-owned. `working_dir` is legacy terminology; use `core/workspace/`.  
 ⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve). Ollama: native `ollama serve` via `core/ollama/OllamaProcessManager`. Frontend: `cd src/frontend && bun run dev`.
 
 ---
 
-## 📊 session.db State (2026-05-07)
+## 📊 session.db State (2026-05-08)
 
-**Total**: 780 todos | **Done**: 323 | **Pending**: 449 | **Blocked**: 7
+**Total**: 783 todos | **Done**: 393 | **Pending**: 384 | **Blocked**: 6
 
-**Last Verified**: 2026-05-07 (matches session.db exactly)
+**Last Verified**: 2026-05-08 (matches session.db exactly)
 
 | Phase                                        | Todos | Done | Pending | Blocked |
 |----------------------------------------------|-------|------|---------|---------|
 | Phase 0 — TeamScope Foundation               | 12    | 12   | 0       | 0       |
 | Phase 1 — Multi-Orchestrator Core            | 16    | 16   | 0       | 0       |
 | Phase 2 — SDK Architecture                   | 64    | 64   | 0       | 0       |
-| Phase 3 — Module Consistency                 | 151   | 148  | 1       | 2       |
-| Phase 4 — Core Consistency + Types           | 24    | 21   | 0       | 2       |
-| Phase 5 — Integration & Testing              | 32    | 28   | 4       | 0       |
-| Phase 6 — Architecture Overhaul              | 37    | 6    | 31      | 0       |
-| Phase 9 — ORM/Manager/Registry               | 26    | 11   | 15      | 0       |
+| Phase 3 — Module Consistency                 | 151   | 149  | 0       | 2       |
+| Phase 4 — Core Consistency + Types           | 24    | 22   | 0       | 2       |
+| Phase 5 — Integration & Testing              | 32    | 32   | 0       | 0       |
+| Phase 6 — Architecture Overhaul              | 37    | 37   | 0       | 0       |
+| Phase 9 — ORM/Manager/Registry               | 27    | 16   | 11      | 0       |
 | Phase 28 — Auth & Accounts                   | 6     | 1    | 5       | 0       |
 | Phase 34 — Dependency Map                    | 19    | 1    | 18      | 0       |
 
@@ -113,13 +114,13 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 - **Two todos BLOCKED** (`gap-scopelevel-deduplicate`, `gap-context-antipattern`) pending user decision
 
 ### Phase 24 — Git Tracking & Worktree Isolation
-- **Every session dir is a git repo** — `git-session-init` runs on WorkingDirManager.create()
+- **Every session dir is a git repo** — `git-session-init` runs when the workspace layer creates the session root
 - **Auto-commit per turn** — `GitTracker.commit_turn()` fires as @post_hook priority=100 (non-blocking, fire-and-forget)
 - **One agent = one worktree = one branch** — `WorktreeManager.create()` on SessionManager.add_agent()
 - **Branch convention**: `agent/{session_id[:8]}/{agent_id}`
 - **Merge at session end**: MergeStrategy SQUASH (default) / REBASE / OURS / MANUAL
 - **3-layer audit**: L1 git (files) + L2 Phase 6 P3 events (domain) + L3 Phase 19 turns (reasoning)
-- **Migration**: legacy `scope.py` had `worktree_path` → moves to `working_dir/WorktreeManager`
+- **Migration**: legacy `scope.py` had `worktree_path` → moves to the workspace-layer worktree manager
 - **Gates**: depends on Phase 15 (working-dir-manager) + Phase 19 (session-manager-create)
 
 ### Phase 23 — Prompt Registry
@@ -204,5 +205,5 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - `.plan/session.db` — **768 todos**, PHASE > TASK > TODO hierarchy (35 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (21 modules, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (007 checkpoints)
-- `src/css/modules/*/plan.md` — module source-of-truth (23 module directories)
+- `src/css/modules/*/<module>.md` — module source-of-truth (23 module directories)
 - `src/css/api_services/*/plan.md` — provider source-of-truth (24 files)

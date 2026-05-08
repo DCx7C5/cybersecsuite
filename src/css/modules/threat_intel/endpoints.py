@@ -1,10 +1,10 @@
 """Threat Intelligence endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Query, status
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-from .models import IOC, ThreatFeed, IOCMatch, IOCType, ThreatLevel
+from .models import IOC, ThreatFeed
 
 router = APIRouter(prefix="/api/threat-intel", tags=["threat-intel"])
 

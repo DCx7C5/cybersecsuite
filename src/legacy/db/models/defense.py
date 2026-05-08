@@ -1,13 +1,14 @@
 """
 Defense models — anti-forensic techniques and hardening recommendations.
 """
-from tortoise.models import Model
+from css.core.db.models.base import BaseModel
 from tortoise import fields
 
+from css.core.db.fields import DescriptionField
 from db.models.enums import Severity, Confidence
 
 
-class AntiForensicTechnique(Model):
+class AntiForensicTechnique(BaseModel):
     """Detected anti-forensic or evasion technique."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="anti_forensic_techniques", db_index=True, null=True, on_delete=fields.SET_NULL)
@@ -15,7 +16,7 @@ class AntiForensicTechnique(Model):
     category = fields.CharField(max_length=100, db_index=True, default="")
     severity = fields.CharEnumField(Severity, db_index=True, null=True)
     confidence = fields.CharEnumField(Confidence, db_index=True, null=True)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     mitre_technique_id = fields.CharField(max_length=32, default="", db_index=True)
     indicators = fields.JSONField(default=list)
     detection_methods = fields.JSONField(default=list)
@@ -26,14 +27,14 @@ class AntiForensicTechnique(Model):
         table = "anti_forensic_techniques"
 
 
-class HardeningRecommendation(Model):
+class HardeningRecommendation(BaseModel):
     """Hardening recommendation for the system."""
     id = fields.BigIntField(primary_key=True)
     session = fields.ForeignKeyField("models.Session", related_name="hardening_recommendations", db_index=True, null=True, on_delete=fields.SET_NULL)
     title = fields.CharField(max_length=255)
     category = fields.CharField(max_length=100, default="")
     priority = fields.CharEnumField(Severity, db_index=True)
-    description = fields.TextField(default="")
+    description = DescriptionField(default="")
     implementation_steps = fields.JSONField(default=list)
     current_risk = fields.CharEnumField(Severity, null=True)
     residual_risk = fields.CharEnumField(Severity, null=True)
