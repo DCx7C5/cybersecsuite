@@ -5,6 +5,7 @@ import asyncio
 from typing import Any
 from datetime import datetime
 
+from css.core.types.meta import AsyncSafeSingletonMeta
 from css.core.types.context import ConversationContext
 from .base import BaseSkill
 from .models import SkillDefinition, SkillResult
@@ -14,7 +15,7 @@ from .exceptions import SkillNotFoundError, SkillExecutionError, SkillConfigurat
 logger = getLogger(__name__)
 
 
-class SkillRegistry:
+class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
     """Registry for managing skill definitions and execution."""
     
     def __init__(self):

@@ -3,39 +3,34 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
-T = TypeVar('T', bound='BaseRegistry')
+from .meta import AsyncSafeSingletonMeta
 
+T = TypeVar('T')
+# TODO: Proper Type Implementation
 
-class BaseRegistry(ABC, Generic[T]):
+class BaseRegistry(ABC, Generic[T], metaclass=AsyncSafeSingletonMeta):
     """Abstract base class for singleton registries.
 
-    Implements thread-safe singleton pattern suitable for async Python.
-    Subclasses should implement abstract methods for specific registry behavior.
+    Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
+    Subclasses should implement the _setup method for initialization.
 
     Usage:
-        class MyRegistry(BaseRegistry):
+        class MyRegistry(BaseRegistry[MyItem]):
             def _setup(self):
-                self.items = {}
+                self._items: dict[str, MyItem] = {}
 
-            def register(self, key, value):
-                self.items[key] = value
+            async def register(self, key: str, item: MyItem):
+                self._items[key] = item
 
         # Get singleton instance
-        registry = MyRegistry.get_instance()
+        registry = MyRegistry()
     """
 
-    _instance: T | None = None
-    _initialized: bool = False
-
-    def __new__(cls, *args, **kwargs):
-        """Create or return the singleton instance."""
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+    _instances = None
 
     def __init__(self):
         """Initialize the registry (runs setup only once)."""
-        if not self._initialized:
+        if not getattr(self, '_initialized', False):
             self._initialized = True
             self._setup()
 
@@ -47,52 +42,15 @@ class BaseRegistry(ABC, Generic[T]):
         pass
 
     @classmethod
-    def get_instance(cls: type[T]) -> T | None:
-        """Get the singleton instance.
-
-        Returns:
-            The singleton instance of the registry.
-        """
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-
-    @classmethod
     def reset_instance(cls) -> None:
-        """Reset the singleton instance (useful for testing).
-
-        This allows fresh state for each test.
-        """
-        cls._instance = None
+        """Reset the singleton instance (useful for testing)."""
+        if hasattr(cls, "_instances") and cls in cls._instances:
+            del cls._instances[cls]
         cls._initialized = False
 
     @abstractmethod
     async def register(self, *args, **kwargs):
         """Register an item in the registry.
-
-        Must be implemented by subclasses.
-        """
-        ...
-
-    @abstractmethod
-    async def unregister(self, *args, **kwargs):
-        """Unregister an item from the registry.
-
-        Must be implemented by subclasses.
-        """
-        ...
-
-    @abstractmethod
-    async def get(self, *args, **kwargs):
-        """Get an item from the registry.
-
-        Must be implemented by subclasses.
-        """
-        ...
-
-    @abstractmethod
-    async def list_all(self, *args, **kwargs):
-        """List all items in the registry.
 
         Must be implemented by subclasses.
         """

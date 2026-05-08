@@ -1,3 +1,4 @@
+from abc import ABCMeta
 import asyncio
 
 
@@ -20,7 +21,7 @@ class SingletonMetaClass(type):
         return cls._instances[cls]
 
 
-class AsyncSafeSingletonMeta(type):
+class AsyncSafeSingletonMeta(ABCMeta):
     """Async-Safe Singleton Metaclass.
     
     Uses asyncio.Lock() to prevent race conditions when instantiating
@@ -37,4 +38,3 @@ class AsyncSafeSingletonMeta(type):
             if not cls._lock.locked():
                 cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
-

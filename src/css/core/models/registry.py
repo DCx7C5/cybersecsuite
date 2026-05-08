@@ -7,9 +7,10 @@ the api_services/ directory so that HybridTool provider validation works
 without a running database.
 """
 
-
 import pkgutil
 from pathlib import Path
+
+from css.core.types.meta import AsyncSafeSingletonMeta
 
 from .models import ModelMetadata
 from .enums import ModelCapability
@@ -34,9 +35,10 @@ _KNOWN_PROVIDERS: set[str] = _known_provider_ids()
 DEFAULT_MODELS: dict[str, ModelMetadata] = {}
 
 
-class ModelRegistry:
+class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
     """In-memory registry mapping model IDs to ModelMetadata.
 
+    Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
     Acts as both a lookup table (get_model) and a provider validator
     (is_known_provider).  The latter is used by ToolRegistry to validate
     HybridToolSchema.fallback_provider before registration.
@@ -86,16 +88,9 @@ class ModelRegistry:
         return len(self._models)
 
 
-# Module-level singleton
-_model_registry: ModelRegistry | None = None
-
-
 def get_model_registry() -> ModelRegistry:
     """Return the global ModelRegistry singleton."""
-    global _model_registry
-    if _model_registry is None:
-        _model_registry = ModelRegistry()
-    return _model_registry
+    return ModelRegistry()
 
 
 __all__ = ["ModelRegistry", "DEFAULT_MODELS", "get_model_registry"]

@@ -16,6 +16,7 @@ class ToolRegistry(BaseToolRegistry):
     """Registry for provider builtin tools and database-backed hybrid tools."""
 
     def __init__(self) -> None:
+        super().__init__()
         self.tools: dict[str, ManagedTool] = {}
         self.hybrid_tools: dict[str, ManagedTool] = {}
         self.providers: set[str] = set()
@@ -29,9 +30,7 @@ class ToolRegistry(BaseToolRegistry):
     def _discover_provider_ids(self) -> set[str]:
         api_services = Path(__file__).resolve().parents[2] / "api_services"
         return {
-            name
-            for _, name, is_pkg in pkgutil.iter_modules([str(api_services)])
-            if is_pkg and not name.startswith("_")
+            name for _, name, is_pkg in pkgutil.iter_modules([str(api_services)]) if is_pkg and not name.startswith("_")
         }
 
     def _load_builtin_tools(self) -> None:
