@@ -568,3 +568,82 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 | Done         | 323   |
 | Pending      | 449   |
 | Blocked      | 7     |
+
+---
+
+## Checkpoint 013 — plan.md Cleanup (2026-05-09)
+
+**Status**: 🧹 HOUSEKEEPING COMPLETE
+
+### Work Done
+- Removed 4 deprecated/completed sections from `.plan/plan.md`:
+  1. **BLOCKER #3: App Initialization Fails → RESOLVED** — all fixes applied, app starts successfully
+  2. **✅ RESOLVED table** — historical audit-blocker tracking, no longer relevant
+  3. **✅ FACT-CHECKED + sub-sections** — 2026-05-05 audit results archived
+  4. **🔍 AUDIT FINDINGS (Archived)** — 2026-05-03 audit snapshot
+- Moved preserved content to this checkpoint entry for historical reference
+
+### Historical Reference (preserved from removed sections)
+
+**BLOCKER #3 Resolution** (2026-05-04):
+- Fixed: deprecated `src/core/a2a` module removal, circular import in accounts/types.py, circular import in scopes/context.py, marketplace config exports
+- 4 root causes fixed across commits 158da6bf, b3c13e01, 12808bde
+- Verified: all critical imports work, app init passes
+
+**System Fact-Check** (2026-05-05):
+- 92-94% confidence that all 284 "done" todos were actually complete
+- 30-todo random sample: 97% pass rate
+- Zero problematic circular imports found across 22 modules
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 832   |
+| Done         | 447   |
+| Pending      | 379   |
+| Blocked      | 6     |
+
+**Next**: Phase 12 — QoL Output Controls Migration (starting `qol-models-msgspec`)
+
+---
+
+## Checkpoint 014 — Phase 18 Frontend + Marketplace Initial Slice (2026-05-09T16:28+0200)
+
+**Status**: 🟢 PARTIAL PHASE EXECUTION COMPLETE
+
+### Work Done
+- Completed the first executable frontend tranche in `Phase 18 — Frontend Foundation`:
+  - `frontend-vite-scaffold`
+  - `frontend-tailwind-shadcn`
+  - `frontend-appshell`
+  - `frontend-api-client`
+  - `frontend-module-registry`
+  - `frontend-panel-colocated-structure`
+  - `frontend-marketplace-hooks`
+  - `frontend-marketplace-panel`
+- Wired a functional marketplace UI path:
+  - UI implementation: `src/frontend/src/panels/marketplace/*`
+  - Colocated module bridge: `src/css/core/marketplace/templates/{index,hooks,types}.ts*`
+- Added Vite proxy route for `/marketplace` to match live backend route ownership (`core/marketplace/endpoints.py` uses `/marketplace/*` prefix).
+
+### Dependency Analyzer Sync
+- Ran `scripts/codebase_dependency_analyzer.py` on:
+  - `src/css/core/marketplace/`
+  - `src/css/core/settings/`
+  - `src/css/modules/chat/`
+  - `src/frontend/`
+- Result highlights:
+  - No cross-module import violations in analyzed Python areas.
+  - Marketplace/settings/chat markdown references detected and updated where stale.
+  - Frontend path currently yields `0` analyzer Python files (expected; TS/TSX surface).
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 832   |
+| Done         | 464   |
+| Pending      | 362   |
+| Blocked      | 6     |
+
+### Next Step
+- Continue remaining Phase 18 todos (`frontend-ws-manager`, `frontend-zustand-store`, `frontend-port-hooks`, settings/chat panels, dev tooling, dashboard/graphs).

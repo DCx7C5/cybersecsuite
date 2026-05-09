@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T16:55:00+02:00 | **Session**: final pydantic→msgspec cleanup + lint fixes
+**Last Updated**: 2026-05-09T16:37:03+0200 | **Session**: Phase 18 Frontend Foundation — shell + marketplace slice
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,31 +14,55 @@
 
 ## 📊 session.db State (2026-05-09)
 
-**Total**: 813 todos | **Done**: 401 | **Pending**: 406 | **Blocked**: 6
+**Total**: 832 todos | **Done**: 464 | **Pending**: 362 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-09 (checked against live session.db totals)
 
 **Selected active phases**:
 
-| Phase | Todos | Done | Pending | Blocked |
-|-------|-------|------|---------|---------|
-| Phase 9 — ORM/Manager/Registry | 32 | 16 | 16 | 0 |
-| Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 |
-| Phase 18 — Frontend Foundation | 19 | 0 | 19 | 0 |
-| Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 |
-| Phase 20 — Persistent Memory Layer | 33 | 0 | 33 | 0 |
-| Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 |
-| Phase 22 — MCP Protocol Layer | 15 | 3 | 12 | 0 |
-| Phase 25 — Integration Hardening | 8 | 2 | 6 | 0 |
-| Phase 34 — Dependency Map | 19 | 1 | 18 | 0 |
-| Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 |
-| Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 |
+| Phase | Todos | Done | Pending | Blocked | In Progress |
+|-------|-------|------|---------|---------|-------------|
+| Phase 9 — ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
+| Phase 10 — Unified SDK Architecture | 13 | 11 | 2 | 0 | 0 |
+| Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 | 0 |
+| Phase 18 — Frontend Foundation | 19 | 8 | 11 | 0 | 0 |
+| Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 | 0 |
+| Phase 20 — Persistent Memory Layer | 33 | 0 | 33 | 0 | 0 |
+| Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
+| Phase 22 — MCP Protocol Layer | 15 | 3 | 12 | 0 | 0 |
+| Phase 25 — Integration Hardening | 8 | 2 | 6 | 0 | 0 |
+| Phase 34 — Dependency Map | 19 | 1 | 18 | 0 | 0 |
+| Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
+| Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Phase 18 Frontend Foundation — 8 todos completed (2026-05-09)
+
+- Frontend shell scaffolded in `src/frontend/` with React 19 + Vite + strict TypeScript + Tailwind v4 + shadcn/ui.
+- Core layout implemented: AppShell, Sidebar, TopBar, and PanelContainer with lazy route rendering.
+- Module registry wired to dashboard/settings/marketplace/chat panel routes.
+- Colocated template stubs added in:
+  - `src/css/core/settings/templates/`
+  - `src/css/core/marketplace/templates/`
+  - `src/css/modules/chat/templates/`
+- Marketplace frontend hooks + panel implemented via `src/frontend/src/panels/marketplace/*` and re-exported through `core/marketplace/templates/*`.
+- Vite dev proxy now includes `/marketplace` in addition to `/api` and `/ws`.
+
+### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
+
+- **T10.2 NativeSDK**: `AnthropicNativeAdapter` (prompt caching, computer_use, extended thinking) + `OpenAINativeAdapter` (structured output, assistants API) in `core/sdks/adapters/`
+- **T10.3 HTTP Provider**: `HttpProviderAdapter` in `core/sdks/adapters/http_provider.py` — YAML-driven, supports OpenAI-compatible + Anthropic `/messages` format via `ProviderSpec.api_type`
+- **T10.4 Ollama**: `OllamaAdapter` in `core/sdks/adapters/ollama.py` — wraps `ollama.AsyncClient`, model lifecycle (pull/list/delete)
+- **T10.6 Unified Client**: `CSSLLMClient` with `call()`/`call_buffered()` routing + `UniversalLLMClient` alias; `SDKRegistry` singleton with lazy-load + thundering-herd protection
+- **T10.6 Tools Bridge**: `modules/tools/adapter_bridge.py` — `register_adapter_tools()` converts adapter `builtin_tools()` → ToolRegistry
+- **ModelNameMapper**: `core/sdks/model_mapper.py` — 20+ canonical model mappings across 10+ providers
+- **Remaining**: `sdk-browser-relay-adapter` + `sdk-browser-relay-polling` (deferred)
+- `sdk-replace-queryexecutor` confirmed already done (code already provider-agnostic)
 
 ### DB Primitive Rollout Planning (2026-05-08)
 
@@ -68,6 +92,7 @@
 - `modules/rag_vector/` is now only the module-side migration surface and planning stub; active retrieval runtime code lives in `core/rag_vector/`.
 - Cache posture is now explicit: not every business module should depend on `core/cache/` directly. Direct cache consumers are mainly `core/settings`, `core/permissions`, `core/marketplace`, `core/memory`, `core/rag_vector`, `core/rag_graph`, `modules/llm_proxy`, and `modules/triage`.
 - Canonical source-of-truth modules such as `mitre`, `threat_intel`, `incidents`, `evidence`, `reports`, and `siem` should persist to their own primary stores first and only consume cached retrieval/prompt layers indirectly.
+- The repository dependency analyzer now lives in `scripts/codebase_dependency_analyzer.py`; module-scope scans currently report **9 live cross-module imports** across `agents`, `chat`, `strategies`, `tags`, `teams`, and `tools`, so the Phase 25/34 cleanup remains real, not theoretical.
 
 ### Prompt Cache Planning Correction (2026-05-08)
 
@@ -253,8 +278,8 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **809 todos**, PHASE > TASK > TODO hierarchy (37 phases + unassigned)
-- `.plan/rules.md` — absolute dev rules (21 modules, ready-query, stack rules)
-- `.plan/checkpoints.md` — session history (012 checkpoints)
-- `src/css/modules/*/<module>.md` — module source-of-truth (23 module directories)
-- `src/css/api_services/*/plan.md` — provider source-of-truth (24 files)
+- `.plan/session.db` — **832 todos**, PHASE > TASK > TODO hierarchy (37 phases + unassigned)
+- `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
+- `.plan/checkpoints.md` — session history (014 checkpoints)
+- `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
+- `src/css/api_services/api_services.md` — provider source-of-truth index

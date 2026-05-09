@@ -2,12 +2,33 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09 (plan.md cleanup — removed deprecated/completed sections)  
-**Todos**: 832 total (447 done, 379 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Updated**: 2026-05-09 (Phase 18 frontend + marketplace slice synced)  
+**Todos**: 832 total (464 done, 362 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: Phase 10 SDK Architecture — 9 todos completed (T10.1-T10.4, T10.6)  
-**Next**: pick the next ready todo from `session.db` by `sort_order`
+**Last Update**: Phase 18 Frontend Foundation — initial shell + marketplace slice (8 todos)  
+**Next**: Continue Phase 18 remaining transport/state/hooks/dashboard todos
+
+### PLAN MODE Active Focus (2026-05-09)
+
+- Synchronize markdown + tracker state for analyzer-identified coverage gaps.
+- Queue frontend theming follow-up: remove outer viewport margins (top/left/bottom/right) while preserving internal panel spacing.
+- Visualization mapping contracts active: Neo4j→NVL, Postgres→ECharts, OpenObserve→native dashboards.
+- Visualization planning artifacts updated in session plan: mapping contracts, component policy, React interfaces, and rollout acceptance criteria.
+- Current tracker state in `.plan/session.db`:
+  - `md-gap-remediation`: ready to close (local planning markdown coverage updates applied)
+  - `sessiondb-sync-tracking`: ready to close after status sync
+- Coverage targets addressed in local planning markdown:
+  - `src/css/core/types/base_workflow.py`
+  - `src/css/modules/a2a_google/urls.py`
+  - `src/css/modules/a2a_internal/int_comms.py`
+  - `src/css/modules/skills/marketplace_bridge.py`
+- New frontend/backend integration focus:
+  - Sidebar should follow a shadcn-style admin pattern and be backed by runtime `MenuItem` data.
+  - `MenuItem` startup behavior must seed empty table and upsert all known routes every boot.
+  - Planning commitment includes:
+    - **TanStack Query + WebSocket / Supabase Realtime (Recommended)**
+    - **Best choice: Apache ECharts (with echarts-for-react or direct useEffect control)**
 
 ### Normalization Status (2026-05-07)
 
@@ -124,7 +145,7 @@ See this file's **Module Status Snapshot** and phase sections for current core i
 | 15 | Permissions + WorkingDir | 🟡 Pending |
 | 16 | Provider SDK Features | 🟡 Pending |
 | 17 | Settings & Projects | 🟡 Pending |
-| 18 | Frontend Foundation | 🟡 Pending |
+| 18 | Frontend Foundation | 🟡 8/19 done |
 | 19 | Module Restructuring + Sessions | 🟡 Pending |
 | 20 | Persistent Memory Layer | 🟡 Pending |
 | 21 | Qwen3-0.6B Triage Intelligence | 🟡 Pending |
@@ -3980,6 +4001,27 @@ After Phase 14 events module is implemented:
 **Core principle**: Code that belongs together stays together. `src/css/core/settings/templates/` lives next to `settings/manager.py`. The frontend shell discovers panels via a central registry, not file-system scanning.
 
 > **Naming rule**: Module-colocated React panel dirs are called `templates/` (not `frontend/`). Exception: YAML profiles in `@settings` live in `profiles/` to avoid collision.
+
+### Execution Snapshot (2026-05-09)
+
+**Tracker status**: `Phase 18 — Frontend Foundation` = **8 done / 11 pending** (session.db)
+
+**Completed todos**:
+- `frontend-vite-scaffold`
+- `frontend-tailwind-shadcn`
+- `frontend-appshell`
+- `frontend-api-client`
+- `frontend-module-registry`
+- `frontend-panel-colocated-structure`
+- `frontend-marketplace-hooks`
+- `frontend-marketplace-panel`
+
+**Implemented surfaces**:
+- `src/frontend/` Vite + React 19 + TS shell with strict type checks.
+- App shell layout + route registry + lazy panel loading.
+- Colocated `templates/` stubs under settings/marketplace/chat.
+- Marketplace panel + hooks wired to install/uninstall and list endpoints.
+- Dev proxy includes `/api`, `/ws`, and `/marketplace`.
 
 ---
 
