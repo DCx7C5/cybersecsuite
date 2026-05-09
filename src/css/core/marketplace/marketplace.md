@@ -59,10 +59,12 @@ siem/ consumes installed MCP connectors
 - `MarketplaceItemRegistry` currently performs DB CRUD directly. Phase 9 will split this into:
   - a pure cache/registry contract
   - a DB-writing service layer
+- ORM source currently split between `core/db/models/marketplace_catalog.py` (active runtime imports) and `core/db/models/marketplace.py` (richer model surface). Phase 40 lane B tracks canonical merge + duplicate removal (`db40-marketplace-*`).
 - Registry invalidation wiring now reacts to item-level change events (`marketplace.item.changed`) and supports targeted cache eviction + `reload()` from manager-backed DB reads.
 - Registry surface is now read/cache focused (`get`, `list`, `invalidate`, `reload`) with no DB write operations.
 - Registry list filtering now happens through read-side predicates/service filters instead of ad-hoc CRUD helpers.
 - The local cache is process memory today. Redis remains optional future infrastructure, not current behavior.
+- Frontend refinement now targets shadcn-admin pattern reuse (`frontend-marketplace-ux-refine`) while keeping module-colocated `templates/` contract.
 
 ## Practical Rule
 

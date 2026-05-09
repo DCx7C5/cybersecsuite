@@ -43,6 +43,7 @@ DB-backed runtime configuration registry — sits on top of `config.py` (static 
   - `src/css/core/settings/templates/hooks.ts`
   - `src/css/core/settings/templates/types.ts`
 - This is scaffold-level wiring only. Full `frontend-settings-hooks` and `frontend-settings-panel` behavior remains blocked by `settings-rest-routes`.
+- Navigation follow-up is tracked in `frontend-settings-nav-runtime`: settings navigation should be runtime-composed from `MenuItem(menu_id=\"settings\")` and aligned with the shared sidebar/topnav shell contract.
 
 ---
 
