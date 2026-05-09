@@ -443,6 +443,7 @@ class ChatResponse(BaseModel):
 - **API endpoints**: Use for request/response validation
 - **ORM models**: Extend BaseEntity for Tortoise models
 - **Type hints**: Used throughout for type safety
+- **Workflow contracts**: `base_workflow.py` defines `BaseTask` and `BaseTaskScope` as `msgspec.Struct` base contracts used by task/workflow modules.
 
 ---
 

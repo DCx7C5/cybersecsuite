@@ -25,6 +25,14 @@ It is **not** the runtime execution layer for MCP, tools, or SIEM integrations. 
 | `installer.py` / `package_manager.py` | Package install/uninstall and local package orchestration |
 | `types.py` | Request/response schemas |
 
+## Frontend Template Surface (Phase 18)
+
+- Colocated template entrypoint: `src/css/core/marketplace/templates/index.tsx`
+- Colocated hooks/types bridge:
+  - `src/css/core/marketplace/templates/hooks.ts`
+  - `src/css/core/marketplace/templates/types.ts`
+- Runtime UI implementation currently lives in `src/frontend/src/panels/marketplace/` and is re-exported through the colocated template files above so the module-colocated contract stays intact.
+
 ## Architectural Role
 
 Marketplace sits between planning/distribution and runtime modules:

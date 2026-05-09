@@ -36,6 +36,14 @@ DB-backed runtime configuration registry — sits on top of `config.py` (static 
 | Frontend                       | ← consumed by | REST endpoints `/api/settings/*`                                          |
 | OTEL                           | → emits       | `@instrument("settings.get")` spans                                       |
 
+### Phase 18 Frontend Note (2026-05-09)
+
+- Colocated settings template surface now exists:
+  - `src/css/core/settings/templates/index.tsx`
+  - `src/css/core/settings/templates/hooks.ts`
+  - `src/css/core/settings/templates/types.ts`
+- This is scaffold-level wiring only. Full `frontend-settings-hooks` and `frontend-settings-panel` behavior remains blocked by `settings-rest-routes`.
+
 ---
 
 ## File Layout

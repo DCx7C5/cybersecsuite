@@ -16,6 +16,17 @@
 
 **Files**:
 - `enums.py` — Chat-related enums
+- `pipeline_endpoint.py` — async classify/route/execute/observe pipeline wired through core access surfaces
+
+### Architecture Note (2026-05-09)
+
+- `pipeline_endpoint.py` now imports routing, triage, and agent execution through `css.core.routing`, `css.core.intelligence`, and `css.core.agent_runtime`.
+- This keeps `@chat` off direct module-to-module imports while preserving the existing pipeline behavior.
+- Frontend colocation scaffold now exists at:
+  - `src/css/modules/chat/templates/index.tsx`
+  - `src/css/modules/chat/templates/hooks.ts`
+  - `src/css/modules/chat/templates/types.ts`
+  This is scaffold-only; full chat transport/state wiring is still tracked by `frontend-chat-hooks` and `frontend-chat-panel`.
 
 ---
 
