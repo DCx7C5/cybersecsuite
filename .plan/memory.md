@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T16:05:00+02:00 | **Session**: rename-sync and connectivity/cache audit in progress
+**Last Updated**: 2026-05-09T16:55:00+02:00 | **Session**: final pydantic→msgspec cleanup + lint fixes
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
