@@ -24,6 +24,29 @@
 
 ✅ **Canonical ownership** — `core/events/` owns both the legacy event-bus surface and the CQRS/domain-event implementation. Legacy module package removed.
 
+## Verification Result — 2026-05-09
+
+**Result**: Not yet verified as universal. The architecture target is correct, but implementation coverage is incomplete.
+
+Current verified coverage:
+- `DomainEvent`, `EventStore`, `CommandBus`, projections, and `DomainEventRecord` exist.
+- `core/tools/executor.py` is the only verified runtime user of `core.events.instrument`.
+- Phase 6 event-store todos are done in `.plan/session.db`.
+
+Current verified gaps:
+- `EventStore` is in-memory only; `DomainEventRecord` exists, but `EventStore.append()` does not persist to PostgreSQL or fan out through Redis Streams.
+- `event_bus` and `EventStore` are still parallel surfaces; hooks currently attach to the legacy bus, not the domain-event stream.
+- `instrument()` is an async context manager emitting `.start/.complete/.error` through `event_bus`, not the planned `@instrument(namespace)` decorator emitting `DomainEvent`s.
+- HTTP middleware, `CommandBus.execute()`, agent execution, and LLM adapter/client completion paths are not yet wired through the planned instrumentation surface.
+- OTEL is placeholder-level: no `OtelBridge.run()` background task, no real SDK/exporter setup, no W3C trace context extraction, and no child span lifecycle.
+- Hooks are exact-event observers only. There is no glob pattern matching, priority ordering, pre/post interceptor chain, mutable `HookContext`, or shared event/hook binding point yet.
+
+Universal acceptance gates:
+- Every ingress, domain command, agent run, tool call, LLM call, stream lifecycle step, marketplace mutation, permission decision, cache decision, and background task emits `DomainEvent` entry/exit/failure events through one instrumentation API.
+- Hooks and interceptors bind to the same event namespaces as emitted events, with glob matching and priority-sorted chains.
+- Observer hooks are fire-and-forget and non-mutating; interceptor hooks are explicit pre/post chains and can mutate or block only through documented strategy types.
+- Every emitted event is persisted, replayable, correlated, and convertible into OTEL spans without module-specific glue.
+
 ---
 
 ## Architecture (Updated — Phase 6 + Phase 14)
@@ -117,11 +140,11 @@ events = event_store.get_all()
 ## Implementation Checklist
 
 ### Phase 6 T6.3 (core storage)
-- [ ] `p6-events-store-model` — DomainEventRecord Tortoise ORM model
-- [ ] `p6-events-domain-event` — DomainEvent + EventStore + EventType
-- [ ] `p6-events-command-bus` — CommandBus + handlers
-- [ ] `p6-events-projections` — PermissionProjection + AuditProjection
-- [ ] `p6-events-otel-bridge` — OtelBridge (Redis → OTEL spans)
+- [x] `p6-events-store-model` — DomainEventRecord Tortoise ORM model
+- [x] `p6-events-domain-event` — DomainEvent + EventStore + EventType
+- [x] `p6-events-command-bus` — CommandBus + handlers
+- [x] `p6-events-projections` — PermissionProjection + AuditProjection
+- [x] `p6-events-otel-bridge` — OtelBridge (Redis → OTEL spans)
 
 ### Phase 14 T14.1–T14.5 (instrumentation + interceptors)
 - [ ] `events-instrument-decorator` — @instrument(namespace) + ContextVar
@@ -192,7 +215,7 @@ __all__ = [
 - `events-pre-hook-decorator`, `events-post-hook-decorator`
 - `events-instrument-interceptor-wire`
 
-**Status**: 🟡 Active | **Last Updated**: 2026-05-08
+**Status**: 🟡 Active | **Last Updated**: 2026-05-09
 
 ---
 
