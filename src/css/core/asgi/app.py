@@ -34,8 +34,11 @@ from tortoise import Tortoise
 
 from css.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
-from css.core.loader import build_tortoise_db_url, build_tortoise_modules, mount_app_routers
-from css.core.tools.base import get_tool_registry
+from css.core.loader import (
+    build_tortoise_connection,
+    build_tortoise_modules,
+    mount_app_routers,
+)
 
 log = getLogger(__name__)
 
@@ -80,7 +83,6 @@ def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         log.info("CyberSecSuite starting — host=%s port=%d", ASGI_HOST, ASGI_PORT)
-        db_url = build_tortoise_db_url(POSTGRES_DATABASE)
         tortoise_apps = build_tortoise_modules()
         marketplace_update_task: asyncio.Task | None = None
         marketplace_update_stop = asyncio.Event()
@@ -103,7 +105,7 @@ def create_app() -> FastAPI:
 
         await Tortoise.init(
             config={
-                "connections": {"default": db_url},
+                "connections": {"default": build_tortoise_connection(POSTGRES_DATABASE)},
                 "apps": tortoise_apps,
             }
         )
@@ -111,7 +113,9 @@ def create_app() -> FastAPI:
             await Tortoise.generate_schemas(safe=True)
 
         # Load async tool-registry runtime state after DB init.
-        tool_registry = get_tool_registry()
+        from css.modules.tools.registry import ToolRegistry
+
+        tool_registry = ToolRegistry()
         await tool_registry.initialize_runtime_state()
         log.info(
             "ToolRegistry ready: %d builtin tools, %d hybrid tools",

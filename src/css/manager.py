@@ -16,7 +16,7 @@ import click
 import uvicorn
 
 from css.config import POSTGRES_DATABASE, A2A_SERVER
-from css.core.loader import build_tortoise_modules, build_tortoise_db_url
+from css.core.loader import build_tortoise_connection, build_tortoise_modules, build_tortoise_db_url
 
 log = getLogger(__name__)
 
@@ -91,7 +91,7 @@ async def init_tortoise_db(db_config: dict[str, Any], apps: dict[str, list[str]]
     db_url = build_tortoise_db_url(db_config)
 
     tortoise_config: dict[str, Any] = {
-        "connections": {"default": db_url},
+        "connections": {"default": build_tortoise_connection(db_config)},
         "apps": apps or build_tortoise_modules(),
     }
 

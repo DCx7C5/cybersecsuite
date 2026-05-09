@@ -17,6 +17,7 @@ import importlib
 import importlib.metadata
 from collections.abc import Iterator
 from typing import NamedTuple
+from urllib.parse import parse_qs, urlparse
 
 from fastapi import APIRouter, FastAPI
 
@@ -60,6 +61,63 @@ def build_tortoise_db_url(db_config: dict) -> str:
     else:
         # Unix socket mode
         return f"asyncpg://{user}:{password}@/{database}?host=/var/run/postgresql"
+
+
+def build_tortoise_connection(db_config: dict) -> dict[str, object]:
+    """Build asyncpg connection config with explicit pool credentials.
+
+    This avoids URL-only mode so asyncpg pool settings (min/max size and
+    command timeout) are always applied by Tortoise.
+    """
+
+    credentials: dict[str, object] = {
+        "minsize": int(db_config.get("min_size", 5)),
+        "maxsize": int(db_config.get("max_size", 20)),
+        "command_timeout": int(db_config.get("command_timeout", 30)),
+    }
+
+    for key in ("max_cached_statement_lifetime", "max_cacheable_statement_size"):
+        value = db_config.get(key)
+        if value is None:
+            continue
+        credentials[key] = int(value)
+
+    url = db_config.get("url")
+    if isinstance(url, str) and url:
+        parsed = urlparse(url)
+        if parsed.username:
+            credentials["user"] = parsed.username
+        if parsed.password:
+            credentials["password"] = parsed.password
+        if parsed.hostname:
+            credentials["host"] = parsed.hostname
+        if parsed.port is not None:
+            credentials["port"] = int(parsed.port)
+        database = parsed.path.lstrip("/")
+        if database:
+            credentials["database"] = database
+
+        query = parse_qs(parsed.query)
+        if "host" in query and query["host"]:
+            credentials["host"] = query["host"][-1]
+        if "port" in query and query["port"]:
+            credentials["port"] = int(query["port"][-1])
+    else:
+        host = db_config.get("host")
+        port = db_config.get("port")
+        if host:
+            credentials["host"] = host
+            credentials["port"] = int(port) if port else 5432
+        else:
+            credentials["host"] = "/var/run/postgresql"
+        credentials["user"] = db_config.get("user", "cybersec")
+        credentials["password"] = db_config.get("password", "change_me")
+        credentials["database"] = db_config.get("database", "cybersec_forensics")
+
+    return {
+        "engine": "tortoise.backends.asyncpg",
+        "credentials": credentials,
+    }
 
 
 def iter_app_routers(entry_point_group: str = "css.modules") -> Iterator[AppRouters]:

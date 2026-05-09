@@ -2,9 +2,9 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09T06:30:38+02:00 (registry cleanup sync)  
+**Updated**: 2026-05-09T06:32:46+02:00 (T9.4 service-layer sync)  
 **Last Audit**: 🟡 2026-05-09 dependency analyzer scan + planning drift repair in progress  
-**Todos**: 813 total (415 done, 392 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Todos**: 813 total (419 done, 388 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -49,9 +49,9 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
 **Phases**: 38 total (Phase 0–37) — mixed execution state; use `session.db` for exact per-phase counts  
-**Todos**: **813 total (415 done, 392 pending, 6 blocked, 0 in_progress)**  
+**Todos**: **813 total (419 done, 388 pending, 6 blocked, 0 in_progress)**  
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: registry read/cache surface cleanup synced (Phase 9 T9.3)  
+**Last Update**: service-layer and registry cleanup synced (Phase 9 T9.4)  
 **Next**: pick the next ready todo from `session.db` by `sort_order`
 
 ### Normalization Status (2026-05-07)

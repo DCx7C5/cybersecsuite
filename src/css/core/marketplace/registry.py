@@ -1,5 +1,6 @@
-"""Registry for marketplace items (DB-backed)."""
+"""Read/cache registry for marketplace items."""
 
+from collections.abc import Callable
 from css.core.types.meta import singleton
 from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
@@ -52,75 +53,52 @@ class MarketplaceItemRegistry:
             self._items[item_id] = item
         return item
 
-    async def list_all(
+    async def list(
+        self,
+        predicate: Callable[[MarketplaceItem], bool] | None = None,
+    ) -> list[MarketplaceItem]:
+        """List cached items with optional predicate filtering."""
+        if not self._items:
+            await self._load_all()
+        items = list(self._items.values())
+        if predicate is None:
+            return items
+        return [item for item in items if predicate(item)]
+
+    async def list_items(
         self,
         kind: MarketplaceItemType | None = None,
         status: MarketplaceItemStatus | None = None,
         installed_only: bool = False,
     ) -> list[MarketplaceItem]:
-        """List marketplace items with optional filtering — read-through cache.
+        """List marketplace items with optional domain filters."""
+        def _matches(item: MarketplaceItem) -> bool:
+            if kind is not None and item.kind != kind:
+                return False
+            if status is not None and item.status != status:
+                return False
+            if installed_only and item.installed_at is None:
+                return False
+            return True
 
-        If the in-memory cache is empty, loads all items from DB first.
-
-        Args:
-            kind: Filter by item type (agent, skill, etc.)
-            status: Filter by status
-            installed_only: Only return installed items
-
-        Returns:
-            List of MarketplaceItem instances
-        """
-        if not self._items:
-            await self._load_all()
-        items = list(self._items.values())
-
-        if kind:
-            items = [i for i in items if i.kind == kind]
-        if status:
-            items = [i for i in items if i.status == status]
-        if installed_only:
-            items = [i for i in items if i.installed_at is not None]
-
-        return items
+        return await self.list(predicate=_matches)
 
     # ------------------------------------------------------------------
     # Cache-aware list helpers (T5.1 integration-cache-marketplace)
     # ------------------------------------------------------------------
 
-    async def list_all_cached(
-        self,
-        kind: MarketplaceItemType | None = None,
-        status: MarketplaceItemStatus | None = None,
-    ) -> list[MarketplaceItem]:
-        """Cache-aware version of list_all().  Uses marketplace_cache TTL.
-
-        Cache key: ``"items:{kind or 'all'}:{status or 'any'}"``.
-        """
+    async def invalidate(self, identifier: str | None = None) -> None:
+        """Invalidate one cached item or all cached items."""
         from .cache import marketplace_cache
 
-        cache_key = f"items:{kind.value if kind else 'all'}:{status.value if status else 'any'}"
-        cached = marketplace_cache.get(cache_key)
-        if cached is not None:
-            return cached
+        if identifier is None:
+            self._items.clear()
+            marketplace_cache.invalidate_all()
+            return
 
-        result = await self.list_all(kind=kind, status=status)
-        marketplace_cache.set(cache_key, result)
-        return result
-
-    async def invalidate_item_cache(self, item_slug: str) -> None:
-        """Invalidate all cache entries related to *item_slug*."""
-        self._items.pop(item_slug, None)
-        from .cache import marketplace_cache
-
-        marketplace_cache.invalidate(f"item:{item_slug}")
+        self._items.pop(identifier, None)
+        marketplace_cache.invalidate(f"item:{identifier}")
         marketplace_cache.invalidate_prefix("items:")
-
-    async def invalidate_all(self) -> None:
-        """Clear the entire in-memory cache."""
-        self._items.clear()
-        from .cache import marketplace_cache
-
-        marketplace_cache.invalidate_all()
 
 
 def wire_registry_events() -> None:
@@ -137,9 +115,9 @@ def wire_registry_events() -> None:
         if isinstance(payload, dict):
             slug = payload.get("item_slug") or payload.get("slug") or payload.get("item_id")
             if isinstance(slug, str) and slug:
-                await registry.invalidate_item_cache(slug)
+                await registry.invalidate(slug)
                 return
-        await registry.invalidate_all()
+        await registry.invalidate()
 
     event_bus.register(MARKETPLACE_ITEM_CHANGED_EVENT, _on_marketplace_change)
     event_bus.register("marketplace.install", _on_marketplace_change)

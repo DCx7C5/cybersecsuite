@@ -1,7 +1,9 @@
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 from css.core.db.fields import DescriptionField, LabelField, SlugField
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
+from .manager import TagManager
 
 from .enums import TagColor
 
@@ -14,12 +16,14 @@ class Tag(BaseModel, TimestampMixin):
     parent_tag = fields.ForeignKeyField("models.Tag", related_name="children", null=True)
     description = DescriptionField(default="")
 
-    class Meta:
+    manager = TagManager()
+
+    class Meta(BaseModel.Meta, TimestampMixin.Meta):
         table = "tag"
         table_description = "Reusable tags with optional hierarchy parent"
         ordering = ["name"]
         indexes = [
-            models.Index(fields=["name"]),
-            models.Index(fields=["slug"]),
-            models.Index(fields=["parent_tag"]),
+            Index(fields=["name"]),
+            Index(fields=["slug"]),
+            Index(fields=["parent_tag"]),
         ]

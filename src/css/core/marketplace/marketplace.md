@@ -53,6 +53,7 @@ siem/ consumes installed MCP connectors
   - a DB-writing service layer
 - Registry invalidation wiring now reacts to item-level change events (`marketplace.item.changed`) and supports targeted cache eviction + `reload()` from manager-backed DB reads.
 - Registry surface is now read/cache focused (`get`, `list`, `invalidate`, `reload`) with no DB write operations.
+- Registry list filtering now happens through read-side predicates/service filters instead of ad-hoc CRUD helpers.
 - The local cache is process memory today. Redis remains optional future infrastructure, not current behavior.
 
 ## Practical Rule

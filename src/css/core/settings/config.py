@@ -128,6 +128,7 @@ POSTGRES_DATABASE = {
     'driver': 'asyncpg',
     'min_size': 5,
     'max_size': 20,
+    'command_timeout': 30,
     'max_cached_statement_lifetime': 300,
     'max_cacheable_statement_size': 15000,
 }
@@ -202,7 +203,7 @@ MAX_ORCHESTRATORS_OTHER = int(getenv('MAX_ORCHESTRATORS_OTHER', '2'))
 # ── Session Modes ──────────────────────────────────────────────────────────────
 
 SESSION_MODE = getenv('SESSION_MODE', 'development')  # development, red_team, blue_team, purple_team
-ALLOWED_MODES = ['development', 'red_team', 'blue_team', 'purple_team']
+ALLOWED_MODES = ['default', 'development', 'red_team', 'blue_team', 'purple_team']
 
 # Mode-specific settings
 SESSION_TIMEOUT_MINUTES = int(getenv('SESSION_TIMEOUT_MINUTES', '480'))  # 8 hours

@@ -30,7 +30,7 @@ The module is **partially implemented** and more real than the old doc claimed.
 
 ## What the registry does today
 
-- hardcodes a small set of builtin provider tools
+- loads builtin provider tool definitions from `builtin_catalog.py`
 - discovers provider package names under `api_services/`
 - loads hybrid tool definitions from the database
 - exposes list/get helpers for builtin and hybrid tools
@@ -38,7 +38,8 @@ The module is **partially implemented** and more real than the old doc claimed.
 ## Phase 9 Registry Cleanup (2026-05-09)
 
 - Builtin tool definitions are now loaded from `builtin_catalog.py`, keeping `registry.py` focused on orchestration.
-- Hybrid-tool startup loads now read through `HybridToolDefinition.manager` instead of direct ORM scans in the registry.
+- Hybrid-tool startup loads now read through the dedicated tools manager surface.
+- Tool endpoints now call service-layer functions (`modules/tools/service.py`) rather than mutating registry internals directly.
 - Registry ownership is read/cache only; write operations stay in service/model layers.
 
 ## Architecture Note (2026-05-09)

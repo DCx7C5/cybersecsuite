@@ -39,6 +39,8 @@
 - [x] Tag conflict resolution
 - [x] Add logger initialization in `__init__.py`
 - [x] Marketplace tag relations resolve item identity via `MarketplaceItem.slug`
+- [x] Tag manager is ORM-backed (no in-memory tag dict cache)
+- [x] Tag manager/model imports use lazy-safe structure to avoid circular init failures
 
 ---
 
@@ -60,7 +62,7 @@ __all__ = ['TagManager']
 
 ---
 
-**Status**: 🔴 Priority (Low) | **Last Updated**: 2026-05-04
+**Status**: 🔴 Priority (Low) | **Last Updated**: 2026-05-09
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55

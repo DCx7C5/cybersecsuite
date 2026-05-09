@@ -7,9 +7,17 @@ All endpoints use async aiohttp patterns.
 from css.core.logger import getLogger
 from fastapi import APIRouter, HTTPException, Query
 
-from css.core.tools.base import get_tool_registry
-from css.modules.tools.service import save_hybrid_tool
-from css.modules.tools.types import HybridToolSchema
+from css.modules.tools.service import (
+    HybridToolPayload,
+    create_hybrid_tool as create_hybrid_tool_service,
+    delete_hybrid_tool as delete_hybrid_tool_service,
+    get_hybrid_tool as get_hybrid_tool_service,
+    get_tool as get_tool_service,
+    list_hybrid_tools as list_hybrid_tools_service,
+    list_tools as list_tools_service,
+    resolve_tool as resolve_tool_service,
+    update_hybrid_tool as update_hybrid_tool_service,
+)
 from css.modules.tools.exceptions import ToolNotFoundError
 
 logger = getLogger(__name__)
@@ -24,36 +32,31 @@ async def list_hybrid_tools(strategy: str | None = Query(None), enabled_only: bo
     - strategy: Optional filter by composition strategy (sequential, parallel, etc.)
     - enabled_only: If true, only return enabled tools (default: true)
     """
-    registry = get_tool_registry()
-    tools = registry.list_hybrid_tools(filter_by_strategy=strategy, enabled_only=enabled_only)
+    tools = list_hybrid_tools_service(strategy=strategy, enabled_only=enabled_only)
     return {
         "count": len(tools),
-        "tools": [t.to_dict() for t in tools],
+        "tools": tools,
     }
 
 
 @router.get("")
 async def list_tools(provider: str | None = Query(None), enabled_only: bool = Query(True)) -> dict:
     """List regular provider tools, optionally filtered by provider."""
-    registry = get_tool_registry()
-    tools = registry.list_tools(filter_by_provider=provider, enabled_only=enabled_only)
+    tools = list_tools_service(provider=provider, enabled_only=enabled_only)
     return {
         "count": len(tools),
-        "tools": [tool.to_dict() for tool in tools],
+        "tools": tools,
     }
 
 
 @router.get("/provider/{provider}")
 async def list_provider_tools(provider: str, enabled_only: bool = Query(True)) -> dict:
-    """List tools for one provider (e.g. openai, anthropic)."""
-    registry = get_tool_registry()
-    tools = registry.get_provider_tools(provider)
-    if enabled_only:
-        tools = [tool for tool in tools if tool.enabled]
+    """List tools for one provider (e.g. OpenAI, anthropic)."""
+    tools = list_tools_service(provider=provider, enabled_only=enabled_only)
     return {
         "provider": provider,
         "count": len(tools),
-        "tools": [tool.to_dict() for tool in tools],
+        "tools": tools,
     }
 
 
@@ -65,9 +68,7 @@ async def get_hybrid_tool(tool_id: str) -> dict:
         tool_id: Hybrid tool identifier (format: "hybrid:name")
     """
     try:
-        registry = get_tool_registry()
-        tool = registry.get_hybrid_tool(tool_id)
-        return tool.to_dict()
+        return get_hybrid_tool_service(tool_id)
     except ToolNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -76,15 +77,13 @@ async def get_hybrid_tool(tool_id: str) -> dict:
 async def get_tool(tool_id: str) -> dict:
     """Get one regular tool by ID (format: provider:name)."""
     try:
-        registry = get_tool_registry()
-        tool = registry.get_tool(tool_id)
-        return tool.to_dict()
+        return get_tool_service(tool_id)
     except ToolNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.post("/hybrid")
-async def create_hybrid_tool(schema: dict) -> dict:
+async def create_hybrid_tool(schema: HybridToolPayload) -> dict:
     """Register new hybrid tool.
     
     Body:
@@ -96,14 +95,10 @@ async def create_hybrid_tool(schema: dict) -> dict:
     - requires_coordination: Boolean
     """
     try:
-        hybrid_schema = HybridToolSchema(**schema)
-        registry = get_tool_registry()
-        registry.register_hybrid_tool(hybrid_schema)
-        
-        # Persist to database via service layer
-        await save_hybrid_tool(hybrid_schema)
-        
-        return {"status": "created", "tool_id": hybrid_schema.tool_id}
+        tool_id = await create_hybrid_tool_service(schema)
+        return {"status": "created", "tool_id": tool_id}
+    except ToolNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -112,7 +107,7 @@ async def create_hybrid_tool(schema: dict) -> dict:
 
 
 @router.put("/hybrid/{tool_id}")
-async def update_hybrid_tool(tool_id: str, schema: dict) -> dict:
+async def update_hybrid_tool(tool_id: str, schema: HybridToolPayload) -> dict:
     """Update existing hybrid tool.
     
     Args:
@@ -120,16 +115,10 @@ async def update_hybrid_tool(tool_id: str, schema: dict) -> dict:
         schema: Updated tool schema
     """
     try:
-        registry = get_tool_registry()
-        
-        # Delete old, register new
-        await registry._load_hybrid_tools_from_db()  # Refresh from DB
-        
-        hybrid_schema = HybridToolSchema(**schema)
-        registry.hybrid_tools[tool_id].schema = hybrid_schema
-        await save_hybrid_tool(hybrid_schema)
-        
-        return {"status": "updated", "tool_id": tool_id}
+        updated_tool_id = await update_hybrid_tool_service(tool_id=tool_id, schema_payload=schema)
+        return {"status": "updated", "tool_id": updated_tool_id}
+    except ToolNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         logger.error(f"Failed to update hybrid tool: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -143,13 +132,12 @@ async def delete_hybrid_tool(tool_id: str) -> dict:
         tool_id: Hybrid tool identifier
     """
     try:
-        registry = get_tool_registry()
-        if tool_id not in registry.hybrid_tools:
+        deleted = await delete_hybrid_tool_service(tool_id)
+        if not deleted:
             raise HTTPException(status_code=404, detail=f"Hybrid tool not found: {tool_id}")
-        
-        del registry.hybrid_tools[tool_id]
-        logger.info(f"Deleted hybrid tool: {tool_id}")
         return {"status": "deleted", "tool_id": tool_id}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -162,8 +150,6 @@ async def resolve_tool(tool_id: str) -> dict:
         tool_id: Tool identifier (format: "provider:name" or "hybrid:name")
     """
     try:
-        registry = get_tool_registry()
-        tool = registry.resolve_tool(tool_id)
-        return tool.to_dict()
+        return resolve_tool_service(tool_id)
     except ToolNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
