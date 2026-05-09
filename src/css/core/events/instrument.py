@@ -18,7 +18,11 @@ from contextlib import asynccontextmanager
 from typing import Any
 from collections.abc import AsyncIterator
 
-from .event_bus import event_bus
+from .emitter import get_event_bus
+from css.modules.hooks.interceptors import (
+    HookContext,
+    get_interceptor_registry,
+)
 
 logger = getLogger(__name__)
 
@@ -46,26 +50,46 @@ async def instrument(
     """
     start = time.monotonic()
     payload: dict[str, Any] = {**payload_fields, "started_at": start}
+    context = HookContext(
+        namespace=event_prefix,
+        input={"payload": payload},
+        metadata={"instrument": True},
+    )
+    context = await get_interceptor_registry().run_pre(context)
+    payload_obj = context.input.get("payload")
+    if isinstance(payload_obj, dict):
+        payload = payload_obj
 
-    await event_bus.emit(f"{event_prefix}.start", payload)
+    await get_event_bus().emit(f"{event_prefix}.start", payload)
 
     try:
         yield payload
     except Exception as exc:
         elapsed = time.monotonic() - start
+        context.error = str(exc)
+        context.duration_ms = round(elapsed * 1000, 2)
+        context = await get_interceptor_registry().run_post(context)
         error_payload = {
             **payload,
-            "error": str(exc),
+            "error": context.error,
             "error_type": type(exc).__name__,
-            "duration_ms": round(elapsed * 1000, 2),
+            "duration_ms": context.duration_ms,
+            "metadata": context.metadata,
         }
         logger.warning("instrument[%s] error: %s", event_prefix, exc)
-        await event_bus.emit(f"{event_prefix}.error", error_payload)
+        await get_event_bus().emit(f"{event_prefix}.error", error_payload)
         raise
     else:
         elapsed = time.monotonic() - start
-        payload["duration_ms"] = round(elapsed * 1000, 2)
-        await event_bus.emit(f"{event_prefix}.complete", payload)
+        context.output = payload
+        context.duration_ms = round(elapsed * 1000, 2)
+        context = await get_interceptor_registry().run_post(context)
+        output_payload = context.output
+        if isinstance(output_payload, dict):
+            payload = output_payload
+        payload["duration_ms"] = context.duration_ms
+        payload["metadata"] = context.metadata
+        await get_event_bus().emit(f"{event_prefix}.complete", payload)
 
 
 __all__ = ["instrument"]

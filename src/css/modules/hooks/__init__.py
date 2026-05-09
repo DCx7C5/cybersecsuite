@@ -1,20 +1,15 @@
-"""Compatibility bridge for hook runtime surfaces.
+"""Hooks module exports."""
 
-Canonical ownership lives in ``css.modules.hooks``.
-"""
-
-from css.modules.hooks import (
-    BaseHookClass,
+from .base import BaseHookClass
+from .interceptors import (
     HookBlockedError,
     HookContext,
-    HookRegistry,
     InterceptorRegistry,
-    hook_registry,
     interceptor_registry,
-    on_event,
     post_hook,
     pre_hook,
 )
+from .registry import HookRegistration, HookRegistry, hook_registry, on_event
 
 __all__ = [
     "BaseHookClass",
@@ -24,6 +19,7 @@ __all__ = [
     "interceptor_registry",
     "pre_hook",
     "post_hook",
+    "HookRegistration",
     "HookRegistry",
     "hook_registry",
     "on_event",

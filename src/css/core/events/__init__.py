@@ -22,7 +22,20 @@ from .domain_event import (
     event_team_spawned,
 )
 from .event_bus import EventBus, event_bus
-from .hooks import HookRegistry, hook_registry, on_event
+from .emitter import EventEmitterMixin, NamespacedEventEmitter, emit_event, emit_events, event, get_event_bus
+from .instrument import instrument
+from .hooks import (
+    BaseHookClass,
+    HookBlockedError,
+    HookContext,
+    HookRegistry,
+    InterceptorRegistry,
+    hook_registry,
+    interceptor_registry,
+    on_event,
+    post_hook,
+    pre_hook,
+)
 from .otel_bridge import EventStoreObserver, OtelBridge
 from .projections import (
     AuditTrailProjection,
@@ -67,6 +80,20 @@ __all__ = [
     "EventStoreObserver",
     "EventBus",
     "event_bus",
+    "get_event_bus",
+    "emit_event",
+    "emit_events",
+    "event",
+    "instrument",
+    "NamespacedEventEmitter",
+    "EventEmitterMixin",
+    "BaseHookClass",
+    "HookContext",
+    "HookBlockedError",
+    "InterceptorRegistry",
+    "interceptor_registry",
+    "pre_hook",
+    "post_hook",
     "HookRegistry",
     "hook_registry",
     "on_event",
