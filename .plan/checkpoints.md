@@ -645,6 +645,29 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 | Pending      | 362   |
 | Blocked      | 6     |
 
+---
+
+## Checkpoint 016 — Three-Agent Audit Todo Intake (2026-05-09T16:59+0200)
+
+**Status**: 🟡 TRACKER EXPANSION COMPLETE
+
+### Work Done
+- Processed three audit result streams and converted findings into explicit `session.db` todos.
+- Added **Phase 39 — Audit Remediation (A1/A2/A3)** with **18 pending todos** split across:
+  - `T39.1 Agent 1 — Architecture & Runtime Gaps` (EventStore durability, OTEL runtime wiring, permissions enforcement, workspace baseline, P4 entry_points gap, stale scope refs)
+  - `T39.2 Agent 2 — Plan & Tracker Integrity` (phase table sync, phase naming normalization, Phase 22 reconciliation, unassigned rehome, stale blocked cleanup, feature inventory sync)
+  - `T39.3 Agent 3 — Code Quality & Rules Compliance` (`__future__` removal, legacy typing import cleanup, `__all__` policy, bare exception replacement, `Any` reduction, CharEnumField migration)
+- Added dependency chains inside each task so execution order is explicit.
+- Corrected phase-number collision by assigning these new remediation todos to **Phase 39** (existing Phase 38 is IDE PyCharm).
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 850   |
+| Done         | 464   |
+| Pending      | 380   |
+| Blocked      | 6     |
+
 ### Next Step
 - Continue remaining Phase 18 todos (`frontend-ws-manager`, `frontend-zustand-store`, `frontend-port-hooks`, settings/chat panels, dev tooling, dashboard/graphs).
 

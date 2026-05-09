@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T16:41:38+0200 | **Session**: Phase 18 Frontend Foundation — chart stack + worker pipeline planning sync
+**Last Updated**: 2026-05-09T16:59:12+0200 | **Session**: Phase 39 audit remediation todo intake from 3-agent audit
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-09)
 
-**Total**: 832 todos | **Done**: 464 | **Pending**: 362 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 850 todos | **Done**: 464 | **Pending**: 380 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-09 (checked against live session.db totals)
 
@@ -34,6 +34,7 @@
 | Phase 34 — Dependency Map | 19 | 1 | 18 | 0 | 0 |
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 18 | 0 | 18 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -53,6 +54,21 @@
 - Marketplace frontend hooks + panel implemented via `src/frontend/src/panels/marketplace/*` and re-exported through `core/marketplace/templates/*`.
 - Vite dev proxy now includes `/marketplace` in addition to `/api` and `/ws`.
 - `frontend-live-graphs` planning has been revised from Recharts to **Apache ECharts + Web Worker processing** (Comlink-first API, batched WS ingestion, downsampled render datasets).
+
+### Phase 39 Audit Remediation — 18 todos added (2026-05-09)
+
+- Added a dedicated remediation phase from three audit streams (Architecture/Runtime, Plan/Tracker Integrity, Code Quality/Rules).
+- Task buckets:
+  - `T39.1 Agent 1 — Architecture & Runtime Gaps` (6 todos)
+  - `T39.2 Agent 2 — Plan & Tracker Integrity` (6 todos)
+  - `T39.3 Agent 3 — Code Quality & Rules Compliance` (6 todos)
+- Critical tracked gaps now explicitly queued:
+  - EventStore durability + Redis fan-out
+  - OTEL runtime bridge and trace propagation
+  - Permission enforcement wiring
+  - plan/session.db phase-name/status reconciliation
+  - removal of remaining `from __future__ import annotations` and legacy typing imports
+  - `__all__` policy enforcement and broad exception cleanup
 
 ### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
 
@@ -279,8 +295,8 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **832 todos**, PHASE > TASK > TODO hierarchy (37 phases + unassigned)
+- `.plan/session.db` — **850 todos**, PHASE > TASK > TODO hierarchy (39 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
-- `.plan/checkpoints.md` — session history (015 checkpoints)
+- `.plan/checkpoints.md` — session history (016 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
 - `src/css/api_services/api_services.md` — provider source-of-truth index
