@@ -72,7 +72,7 @@ class ExecutorResult(msgspec.Struct, frozen=True):
     status_code: int = 200
     headers: dict[str, str] = msgspec.field(default_factory=dict)
     body: dict[str, Any] | None = None
-    stream: AsyncIterator[bytes] | None = None
+    stream: AsyncIterator[bytes] | None = msgspec.field(default=None, exclude=True)
     error: str | None = None
     latency_ms: float = 0.0
     provider_id: str = ""
