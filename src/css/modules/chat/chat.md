@@ -27,6 +27,10 @@
   - `src/css/modules/chat/templates/hooks.ts`
   - `src/css/modules/chat/templates/types.ts`
   This is scaffold-only; full chat transport/state wiring is still tracked by `frontend-chat-hooks` and `frontend-chat-panel`.
+- Rich runtime chat activity UX is now explicitly tracked:
+  - `frontend-chat-activity-stream`
+  - `frontend-chat-thinking-task-visuals`
+  These cover thinking spinners, active agent/task activity, and tool lifecycle visuals.
 
 ---
 
@@ -68,6 +72,8 @@
 - [ ] Implement message handlers (async)
 - [ ] Add prompt injection layer
 - [ ] Integrate with chat endpoint handlers
+- [ ] Implement chat activity event stream shape for frontend (thinking/agent/task/tool)
+- [ ] Expose live activity metadata needed by rich chat visuals
 - [ ] Add test coverage
 - [ ] Add logger initialization in `__init__.py`
 

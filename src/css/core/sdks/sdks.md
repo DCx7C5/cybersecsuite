@@ -56,6 +56,7 @@ Unified provider SDK abstraction layer. All LLM provider access goes through thi
 - `core/types/base_protocols.py` defines `LLMAdapter` Protocol
 - Phase 10 T10.2–T10.5: NativeSDK, HTTP, Ollama, Browser Relay adapters
 - Phase 10 T10.6: `UnifiedLLMClient` routing across all adapter types
+- Phase 10 T10.7: provider-priority browser relay + DeepSeek adapter + web-LLM relay path
 
 ## File Inventory
 
@@ -71,6 +72,7 @@ Unified provider SDK abstraction layer. All LLM provider access goes through thi
 | `adapters/http_provider.py` | ✅ DONE — HttpProviderAdapter (YAML-driven, OpenAI + Anthropic format) |
 | `adapters/ollama.py` | ✅ DONE — OllamaAdapter |
 | BrowserRelayAdapter | 📋 deferred (Phase 10 backlog) |
+| `adapters/deepseek.py` | 📋 pending — dedicated DeepSeek adapter surface (T10.7) |
 
 ## Phase 10 Todo Status
 
@@ -85,3 +87,17 @@ Unified provider SDK abstraction layer. All LLM provider access goes through thi
 - `sdk-replace-queryexecutor` — ✅ DONE (2026-05-09) — already refactored to provider-agnostic AgentExecutor
 - `sdk-browser-relay-adapter` — 📋 deferred (Phase 10 backlog)
 - `sdk-browser-relay-polling` — 📋 deferred (Phase 10 backlog)
+- `sdk-deepseek-adapter` — 📋 pending (Phase 10 T10.7)
+- `sdk-browser-relay-provider-priority` — 📋 pending (Phase 10 T10.7)
+- `sdk-browser-relay-web-llm-relay` — 📋 pending (Phase 10 T10.7)
+
+## Browser Relay Priority Contract (T10.7)
+
+Current planning contract for browser-plugin backend provider priority:
+
+1. `github`
+2. `codex`
+3. `openai`
+4. `deepseek`
+5. `nvidia`
+6. web relay path (`grok.com` / `docs.claude.com` strategy)

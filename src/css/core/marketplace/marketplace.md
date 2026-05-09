@@ -32,6 +32,7 @@ It is **not** the runtime execution layer for MCP, tools, or SIEM integrations. 
   - `src/css/core/marketplace/templates/hooks.ts`
   - `src/css/core/marketplace/templates/types.ts`
 - Runtime UI implementation currently lives in `src/frontend/src/panels/marketplace/` and is re-exported through the colocated template files above so the module-colocated contract stays intact.
+- New ownership directive is tracked by `frontend-core-templates-home-cutover`: move implementation ownership toward `core/templates/marketplace/*` while leaving `src/frontend` as shell/bootstrap.
 - Active redesign directives:
   - Marketplace kind navigation should come from sidebar children (agents, skills, MCPs, workflows, templates, prompts, teams).
   - In-panel side tabs for kind switching are planned for removal.

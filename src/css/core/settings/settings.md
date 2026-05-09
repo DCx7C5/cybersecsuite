@@ -80,6 +80,13 @@ Current repository state has overlapping config surfaces:
 
 Phase 17 now tracks consolidation so runtime configuration ownership is centralized under `core/settings`. The merged surface remains env-bootstrap first, then DB-backed runtime overrides via `SettingsManager`.
 
+### Provider bootstrap behavior (active)
+
+Startup/provider seeding policy is now explicit:
+- seed provider metadata from YAML only when provider table is empty
+- if provider table is non-empty, skip destructive reseed and run non-destructive enrichment only
+- provider and model bootstrap flows require explicit `Provider ↔ LLMModel` relation ownership before model upserts
+
 ### Resolution Order (highest priority first)
 1. Env override: `CSS_SETTING__<KEY_UPPER>` (e.g. `CSS_SETTING__LLM_ANTHROPIC_API_KEY`)
 2. DB session-scope (scope_id = current session id)
@@ -165,3 +172,5 @@ All synced in session.db. IDs match:
 | `settings-config-dual-source-audit` | Audit overlap between `core/config.py` and `core/settings/config.py` | pending |
 | `settings-config-merge-into-core-settings` | Merge both config sources into `core/settings` ownership | pending |
 | `settings-config-import-cutover` | Cut runtime imports to consolidated settings config surface | pending |
+| `orm-provider-llmmodel-relation` | Add Provider ↔ LLMModel relation contract for startup seeding | pending |
+| `seed-providers-empty-table-yaml` | Auto-seed providers from YAML only when provider table is empty | pending |

@@ -15,6 +15,7 @@ Template-facing frontend bridge for marketplace browsing and management in the n
 ## Notes
 - Frontend marketplace panel consumes `/marketplace/*` directly through the Vite proxy (`/marketplace` → backend target).
 - When DB-backed marketplace models are unavailable, endpoints return index-backed fallback payloads so the UI remains usable.
+- Ownership target is moving toward template-localized frontend code under `core/templates/marketplace/*`; in-panel kind tabs are being removed in favor of sidebar-child navigation (`agents`, `skills`, `mcps`, `workflows`, `templates`, `prompts`, `teams`).
 
 ## Dependencies
 - `src/css/core/marketplace/`
