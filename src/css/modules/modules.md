@@ -17,6 +17,7 @@ When updating a module, treat that module's local same-name Markdown file as the
 - `accounts`, `events`, `marketplace`, and `memory` are core-owned domains under `src/css/core/`.
 - `accounts` is core-only now; there must not be a `src/css/modules/accounts/` package.
 - `events`, `memory`, and `marketplace` are core-only now; there must not be `src/css/modules/events/`, `src/css/modules/memory/`, or `src/css/modules/marketplace/` packages.
+- `hooks` is module-owned runtime glue for event consumers; it consumes `core/events` but does not replace `core/events` ownership.
 - `rag_vector` is the remaining module-side migration surface; active shared retrieval runtime code now lives under `src/css/core/rag_vector/` and `src/css/core/rag_graph/`.
 - `working_dir` is retired; use `src/css/core/workspace/` for session/project directory management.
 
@@ -29,8 +30,17 @@ Cache use is intentionally selective, not universal.
 - Canonical-store modules that should stay DB/OpenObserve/graph-first: `alerts`, `compliance`, `evidence`, `incidents`, `local_assist`, `obsidian_memory`, `projects`, `reports`, `scans`, `scheduler`, `strategies`, and `webhooks`.
 - Open gap: local docs still need a few richer integration tables, but the architecture stance is now explicit that "not directly cached" is often the correct design, not a missing feature.
 
+## Architecture Audit (2026-05-09)
+
+- `scripts/codebase_dependency_analyzer.py` was rerun against `src/css/modules/`.
+- The earlier `core` indirection for A2A contracts was removed; A2A ownership stays in `@a2a_google` and `@a2a_internal`.
+- Cross-module imports should now be interpreted against ownership boundaries, not driven toward `core` when the domain is still module-owned.
+
 ## Module Rules
 
 - Every module directory under `src/css/modules/` must contain `<module>.md`.
 - Tortoise ORM table entities in `models.py` inherit `css.core.db.models.base.BaseModel`.
 - If a module defines `Enum` classes, they belong in `enums.py`.
+- `hooks` module plan lives at `src/css/modules/hooks/hooks.md`.
+- Keep hook responsibilities split: `@on_event` in `hooks/registry.py`; mutating/blocking `@pre_hook` and `@post_hook` in `hooks/interceptors.py`.
+- When a module class emits runtime events, use `css.core.types.base_emitter.BaseEmitterClass` where practical.

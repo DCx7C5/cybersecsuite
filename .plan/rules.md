@@ -59,6 +59,8 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
 - **ABSOLUTE: never use bare `Exception`** — create custom exceptions with help from `src/core/exceptions.py`
 - **ABSOLUTE: use Singleton metaclass patterns from `src/core/types/meta.py`** — no end-of-file instantiation
+- **ABSOLUTE: event-emitting classes should use `src/css/core/types/base_emitter.py::BaseEmitterClass` whenever practical** — keep namespaces and manual event registration consistent
+- **ABSOLUTE: hook ownership is split and must stay split** — observer hooks live in `src/css/modules/hooks/registry.py` (`@on_event`), mutating/blocking hooks live in `src/css/modules/hooks/interceptors.py` (`@pre_hook` / `@post_hook`)
 - **ABSOLUTE: use explicit imports `from X import Y` where applicable, and do not create `"Expected type XY, got None instead"` warnings**
 
 ### Architecture & Structure
@@ -216,38 +218,17 @@ modules/<name>/
 - Every Tortoise ORM table model in `src/css/modules/*/models.py` must inherit `css.core.db.models.base.BaseModel`, never raw `tortoise.Model`.
 - If a module defines `Enum` classes, they belong in `enums.py`, not in `models.py`, `endpoints.py`, or ad-hoc utility files.
 
-### Current Modules (22 total)
+### Current Modules
 
-| Module       | Purpose                                                                              |
-|--------------|--------------------------------------------------------------------------------------|
-| accounts     | User account management & authentication                                             |
-| agents       | Agent orchestration & execution                                                      |
-| cache        | ⚠️ Moved to `core/cache/` (L1/L2/L3 KV cache)                                        |
-| capabilities | Capability definitions & registry                                                    |
-| chat         | Chat session management                                                              |
-| a2a_internal | Fast internal agent-to-agent / IPC integration                                       |
-| events       | Event bus & streaming                                                                |
-| a2a_google   | Google A2A protocol integration                                                      |
-| llm_models   | LLM model registry & metadata                                                        |
-| marketplace  | Marketplace (plugins, integrations)                                                  |
-| mcps         | MCP server management (register/connect/call)                                        |
-| memory       | Memory & context management                                                          |
-| permissions  | Role-based access control (PathGrant, ToolGrant)                                     |
-| planer       | Planning & task decomposition                                                        |
-| projects     | Project registration & session linking                                               |
-| prompts      | Prompt registry, template engine, variable substitution                              |
-| roles        | Role definitions & assignment                                                        |
-| ~~scopes~~   | ⚠️ DEPRECATED — 2-level model docs only (Phase 15 deletion)                          |
-| settings     | Settings management & config cascade                                                 |
-| skills       | Skill definitions & execution                                                        |
-| strategies   | Strategy selection & execution                                                       |
-| streaming    | Streaming & SSE support                                                              |
-| tags         | Tag management & categorization                                                      |
-| tasks        | Task management & coordination                                                       |
-| teams        | Team management & isolation                                                          |
-| tools        | Tool registry & execution (LLM + MCP)                                                |
-| triage       | ⚠️ PENDING RENAME → `modules/intelligence/` (todo: `triage-rename-module`, Phase 19) |
-| workflows    | Workflow management & orchestration                                                  | |
+The live module inventory changes faster than this rules file. Use `src/css/modules/` and
+`src/css/modules/modules.md` as the canonical directory index.
+
+Current module directories include:
+`a2a_google`, `a2a_internal`, `agents`, `alerts`, `chat`, `compliance`, `evidence`,
+`incidents`, `llm_proxy`, `local_assist`, `mcps`, `mitre`, `obsidian_memory`, `planer`,
+`projects`, `prompts`, `rag_vector`, `reports`, `scans`, `scheduler`, `siem`, `skills`,
+`strategies`, `tags`, `tasks`, `teams`, `threat_intel`, `tools`, `triage`, `webhooks`,
+and `workflows`.
 
 **Binding ownership overrides**:
 - `accounts`, `events`, `marketplace`, and `memory` belong in `src/css/core/`.
@@ -427,13 +408,13 @@ Tool       → modules/tools/types.py
 
 | Change          | File                              | Action                |
 |-----------------|-----------------------------------|-----------------------|
-| New feature     | features_overview.md + session.db | Add + create todo     |
+| New feature     | plan.md + local markdown + session.db | Add + create todo |
 | Phase milestone | plan.md                           | Update CURRENT STATUS |
 | System design   | architecture.md                   | Add decision          |
 | Process change  | development-workflow.md           | Update section        |
 | New rule        | rules.md                          | Add section           |
 | Progress        | session.db                        | Update todo status    |
-| Phase summary   | checkpoints.md                    | Add entry             |
+| Phase summary   | checkpoints.md + memory.md        | Add entry + refresh counts |
 
 ---
 

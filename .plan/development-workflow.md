@@ -6,43 +6,79 @@
 **Plan directory**: `/home/daen/Projects/cybersecsuite/.plan/`
 **Source directory**: `/home/daen/Projects/cybersecsuite/src/css/`
 **Python venv**: `/home/daen/Projects/cybersecsuite/.venv/bin/python`
+**Type checker**: `uvx basedpyright` (default scope = touched files or smallest touched directory)
 
 ---
 
 ## 🔍 DEPENDENCY ANALYZER INTEGRATION
 
-**Script**: `.plan/codebase_dependency_analyzer.py`
-**Output**: JSON `{"file.py": {"consumed_by": [...], "consumes": [...]}}`
+**Script**: `scripts/codebase_dependency_analyzer.py`
+**Invocation**: `.venv/bin/python scripts/codebase_dependency_analyzer.py <path> [options]`
+**Output**: JSON — `{"<rel/file.py>": {"consumed_by": [...], "consumes": [...], "markdown_references": {...}}}`
 
-### When to Run (copy-paste ready):
+### Key Features
+
+| Feature                 | CLI Flags                                                    | Default                                                             | Use When                                                                                                                                                       |
+|-------------------------|--------------------------------------------------------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Convenience mode**    | `scripts/analyzer.py src/css/modules/foo/`                   | auto                                                                | Pass a subdirectory or file; root auto-detected from `.git` / `pyproject.toml`. Parses full project for accurate `consumed_by`, outputs only the focused path. |
+| **Bidirectional graph** | (always on)                                                  | —                                                                   | `consumed_by` = who imports me; `consumes` = who I import                                                                                                      |
+| **Exclude directories** | `--exclude .git __pycache__ .venv`                           | `.git __pycache__ venv .venv node_modules build dist .idea .vscode` | Skip noise in projects with generated dirs                                                                                                                     |
+| **Exclude globs**       | `--exclude-glob '**/migrations/**' '*.generated.py'`         | none                                                                | Skip test files, migrations, generated code                                                                                                                    |
+| **Markdown references** | `--markdown-case-insensitive --markdown-max-hits-per-term 5` | off, unlimited, 180 chars                                           | Find docs that mention this file or its symbols — verify docs stay in sync                                                                                     |
+| **Skip markdown**       | `--no-markdown-refs`                                         | on                                                                  | Speed up raw dep scans                                                                                                                                         |
+| **Output to file**      | `--output /tmp/deps.json`                                    | stdout                                                              | Pipe-able JSON for LLM consumption                                                                                                                             |
+| **Import roots**        | `--module-root src/`                                         | auto-detects `src/`                                                 | Projects with unusual package layouts                                                                                                                          |
+| **Concurrency**         | `--concurrency 64`                                           | 64                                                                  | Tune for very large projects                                                                                                                                   |
+
+### Mode Examples
 
 ```bash
-# BEFORE editing — see what depends on files you're about to touch
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ \
+# Convenience mode (subdirectory — root auto-detected):
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
   --output /tmp/deps.json
 
-# AFTER editing — verify no illegal cross-module deps
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ \
-  --output /tmp/deps_after.json
+# Convenience mode (single file):
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/types.py \
+  --output /tmp/deps.json
+
+# Explicit project root + focus (same result):
+.venv/bin/python scripts/codebase_dependency_analyzer.py . \
+  --path src/css/modules/<module>/ --output /tmp/deps.json
+
+# Cross-module violation check (copy-paste for <module>):
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --no-markdown-refs --output /tmp/xmod.json
 .venv/bin/python -c "
 import json
-d = json.load(open('/tmp/deps_after.json'))
-for f, data in d.items():
-    for dep in data['consumes']:
-        if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/'):
-            print(f'ILLEGAL DEP: {f} consumes {dep}')
+d = json.load(open('/tmp/xmod.json'))
+bad = [(f, dep) for f, data in d.items() for dep in data['consumes']
+       if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/')]
+if bad:
+    [print(f'ILLEGAL DEP: {f} -> {dep}') for f, dep in bad]
+else:
+    print('OK — no cross-module violations')
 "
 
-# TASK completion — full module dep map
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ \
-  --output /tmp/task_deps.json
+# Markdown reference audit (find docs that reference this module):
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --markdown-case-insensitive --markdown-max-hits-per-term 5 \
+  --markdown-snippet-len 120 --output /tmp/md_refs.json
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/md_refs.json'))
+for f, data in d.items():
+    mref = data.get('markdown_references', {})
+    for h in mref.get('file_hits', []):
+        print(f\"  {h['markdown_file']}:{h['line']}  ({h['term']})  {h['snippet']}\")
+    for sym, symdata in mref.get('symbols', {}).items():
+        for h in symdata.get('hits', []):
+            print(f\"  {h['markdown_file']}:{h['line']}  [{sym}]  {h['snippet']}\")
+"
 
-# PHASE completion — full project impact analysis
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --output /tmp/full_deps.json
+# Full project impact (PHASE level):
+.venv/bin/python scripts/codebase_dependency_analyzer.py . \
+  --exclude-glob '**/migrations/**' --markdown-case-insensitive \
+  --markdown-max-hits-per-term 3 --output /tmp/phase_deps.json
 ```
 
 ### JSON Output (trivial for LLM to parse):
@@ -50,18 +86,24 @@ for f, data in d.items():
 {
   "src/css/modules/foo/types.py": {
     "consumed_by": ["src/css/modules/foo/endpoints.py"],
-    "consumes": ["src/css/core/types.py/base_entity.py"]
+    "consumes": ["src/css/core/types.py/base_entity.py"],
+    "markdown_references": {
+      "file_hits": [{"term": "types.py", "markdown_file": ".plan/types.md", "line": 42, "snippet": "..."}],
+      "symbols": {"FooType": {"kinds": ["class"], "definitions": [{"line": 12, "kind": "class"}], "hits": []}}
+    }
   }
 }
 ```
 
-### Where It Adds Value:
-| Workflow | Analyzer Use                         | Value                                              |
-|----------|--------------------------------------|----------------------------------------------------|
-| TODO     | `consumed_by` on file you're editing | Avoid breaking files that depend on you            |
-| TODO     | `consumes` after editing             | Catch illegal cross-module imports early           |
-| TASK     | Full module scan                     | Verify no circular deps before declaring task done |
-| PHASE    | Full project scan                    | Impact analysis for PHASE completion               |
+### Value per Workflow
+
+| Workflow      | Command                                            | What It Tells You                                 |
+|---------------|----------------------------------------------------|---------------------------------------------------|
+| **PRE-TODO**  | `convenience mode` → check `consumed_by`           | Who will break if you touch this file             |
+| **POST-TODO** | `convenience mode` → check `consumes` cross-module | Did you introduce illegal module imports          |
+| **POST-TODO** | `convenience mode` + markdown refs                 | Which docs need updating after symbol renames     |
+| **TASK**      | `convenience mode` full module scan                | Module-internal dependency health + circular deps |
+| **PHASE**     | `full project scan` + markdown refs                | Project-wide impact analysis + doc sync audit     |
 
 ---
 
@@ -76,15 +118,16 @@ AND NOT EXISTS (
   JOIN todos dep ON td.depends_on = dep.id
   WHERE td.todo_id = todos.id AND dep.status != 'done'
 )
-ORDER BY phase, task;
+ORDER BY sort_order, task, id;
 
 -- Phase summary — how far along is each phase?
 SELECT phase,
   COUNT(*) as total,
   SUM(status = 'done') as done,
   SUM(status = 'pending') as pending,
-  SUM(status = 'blocked') as blocked
-FROM todos GROUP BY phase ORDER BY phase;
+  SUM(status = 'blocked') as blocked,
+  SUM(status = 'in_progress') as in_progress
+FROM todos GROUP BY phase ORDER BY MIN(sort_order);
 
 -- What's blocking a specific todo?
 SELECT dep.id as blocking_todo, dep.title, dep.status
@@ -139,7 +182,7 @@ AND NOT EXISTS (
   JOIN todos dep ON td.depends_on = dep.id
   WHERE td.todo_id = todos.id AND dep.status != 'done'
 )
-ORDER BY phase, task LIMIT 1;
+ORDER BY sort_order, task, id LIMIT 1;
 
 -- 3. Mark it in_progress (replace TODO_ID with result from step 2)
 UPDATE todos SET status = 'in_progress', updated_at = datetime('now')
@@ -154,7 +197,7 @@ cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/api_services/api_services.md" 2>/dev/null
 
 # Read architecture doc if phase mentions it:
-# Phase 6 → read .plan/core.md (Phase 6 section)
+# Phase 6 → read .plan/types.md (Phase 6 section)
 # Phase 14 → cat .plan/architecture/observability.md
 # Phase 21 → cat .plan/architecture/sdks.md
 
@@ -164,8 +207,18 @@ cat "src/css/api_services/api_services.md" 2>/dev/null
 
 **Run dependency analyzer** (see what depends on your files):
 ```bash
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ --output /tmp/deps.json
+# Convenience mode — auto-detects project root, focuses on your module
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --no-markdown-refs --output /tmp/deps.json
+
+# Check consumed_by to know who depends on what you'll touch:
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/deps.json'))
+for f, data in d.items():
+    if data['consumed_by']:
+        print(f'{f} is consumed by: {data[\"consumed_by\"]}')
+"
 ```
 
 ---
@@ -199,6 +252,10 @@ for p in pathlib.Path('src/css/').rglob('*.py'):
 - Always `async def` for any I/O (never sync wrappers)
 - HTTP clients: always `aiohttp`, NEVER `httpx`
 - Structs/value types: `msgspec.Struct`, not `@dataclass`
+- Event ownership rule for any TODO/TASK/PHASE touching observability or runtime hooks:
+  - Event-emitting classes should inherit `css.core.types.base_emitter.BaseEmitterClass` where practical.
+  - Observer hooks belong in `src/css/modules/hooks/registry.py` (`@on_event`, fire-and-forget).
+  - Mutating/blocking hooks belong in `src/css/modules/hooks/interceptors.py` (`@pre_hook`, `@post_hook`).
 
 **Step 3 — Lint**
 ```bash
@@ -208,17 +265,54 @@ for p in pathlib.Path('src/css/').rglob('*.py'):
 .venv/bin/ruff check src/css/<path>/
 ```
 
-**Step 4 — Run dependency analyzer (verify no illegal deps added)**
+**Step 4 — Type-check touched Python files (reasonable scope)**
 ```bash
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ --output /tmp/deps_check.json
+# Preferred: run on the exact files you changed
+uvx basedpyright src/css/<path>/file1.py src/css/<path>/file2.py
+
+# If the change spans a small cohesive area, run the directory instead
+uvx basedpyright src/css/<path>/
+```
+
+**Type-check rule**:
+- `0 errors` is the gate for the touched scope
+- Warnings are advisory: fix the local cheap ones, but do not widen the change just to silence unrelated warnings
+- If a directory run drags in unrelated legacy noise, rerun on the exact touched files and continue
+
+**Step 5 — Run dependency analyzer (verify no illegal deps added, check markdown refs)**
+```bash
+# --- Cross-module violation check ---
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --no-markdown-refs --output /tmp/deps_check.json
 .venv/bin/python -c "
 import json
 d = json.load(open('/tmp/deps_check.json'))
+bad = [(f, dep) for f, data in d.items() for dep in data['consumes']
+       if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/')]
+if bad:
+    [print(f'ILLEGAL DEP: {f} -> {dep}') for f, dep in bad]
+else:
+    print('OK — no cross-module violations')
+"
+
+# --- Markdown reference audit ---
+# Finds docs that reference renamed symbols or moved files in this module
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --markdown-case-insensitive --markdown-max-hits-per-term 5 \
+  --markdown-snippet-len 120 --output /tmp/md_refs.json
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/md_refs.json'))
 for f, data in d.items():
-    for dep in data['consumes']:
-        if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/'):
-            print(f'ILLEGAL DEP: {f} consumes {dep}')
+    mref = data.get('markdown_references', {})
+    file_hits = mref.get('file_hits', [])
+    sym_hits = [(sym, h) for sym, sd in mref.get('symbols', {}).items() for h in sd.get('hits', [])]
+    if file_hits or sym_hits:
+        print(f'--- {f} ---')
+        for h in file_hits:
+            print(f\"  MD ref: {h['markdown_file']}:{h['line']}  ({h['term']})\")
+        for sym, h in sym_hits[:5]:
+            print(f\"  MD ref: {h['markdown_file']}:{h['line']}  [{sym}]\")
 "
 ```
 
@@ -259,7 +353,7 @@ git commit -m "[TODO_ID] Brief description of what was done
 
 **Commit rules**:
 - **Logical**: Each commit should represent one logical change (one todo, one fix, one feature)
-- **Atomic**: Each commit should be self-contained — it compiles, passes ruff, and doesn't break existing functionality
+- **Atomic**: Each commit should be self-contained — it compiles, passes ruff, passes touched-scope basedpyright, and doesn't break existing functionality
 - **Focused**: Don't mix unrelated changes in one commit (e.g., don't combine a todo implementation with an unrelated lint fix)
 - **Message format**: `[TODO_ID] Brief description` followed by bullet points of what was done
 
@@ -277,10 +371,34 @@ SELECT id, title, status FROM todos WHERE task = 'TASK_NAME' AND status != 'done
 -- Must return 0 rows
 ```
 
-**Run dependency analyzer** (full module dep map):
+**Run dependency analyzer** (full module dep map + cross-module + markdown refs):
 ```bash
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ --output /tmp/task_deps.json
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --markdown-case-insensitive --markdown-max-hits-per-term 5 \
+  --output /tmp/task_deps.json
+
+# Check cross-module violations
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/task_deps.json'))
+bad = [(f, dep) for f, data in d.items() for dep in data['consumes']
+       if dep.startswith('src/css/modules/') and not dep.startswith('src/css/modules/<module>/')]
+if bad:
+    [print(f'CROSS-MODULE: {f} -> {dep}') for f, dep in bad]
+else:
+    print('OK — no cross-module violations')
+"
+
+# Check markdown reference coverage for key files
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/task_deps.json'))
+for f, data in sorted(d.items()):
+    mref = data.get('markdown_references', {})
+    fh = len(mref.get('file_hits', []))
+    syms = len(mref.get('symbols', {}))
+    print(f'{f}: {fh} file hits, {syms} symbols referenced in docs')
+"
 ```
 
 ---
@@ -289,14 +407,14 @@ SELECT id, title, status FROM todos WHERE task = 'TASK_NAME' AND status != 'done
 
 **Step 1 — Search for duplicated code (USE DEPENDENCY ANALYZER + AST)**
 ```bash
-# Find all files in the task's module(s)
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
-  --path src/css/modules/<module>/ --output /tmp/task_deps.json
+# Find all files in the task's module(s) — reuse cached deps from PRE-TASK
+.venv/bin/python scripts/codebase_dependency_analyzer.py src/css/modules/<module>/ \
+  --no-markdown-refs --output /tmp/task_dedup.json
 
 # Check for duplicated class/function names
 .venv/bin/python -c "
 import json, ast, pathlib
-d = json.load(open('/tmp/task_deps.json'))
+d = json.load(open('/tmp/task_dedup.json'))
 files = [k for k in d.keys()]
 definitions = {}
 for f in files:
@@ -318,8 +436,19 @@ for name, locations in definitions.items():
 .venv/bin/ruff check src/css/<dir1>/ src/css/<dir2>/
 ```
 
-**Step 3 — Fix remaining errors (5 turns max)**
-Fix the remaining errors of prior ruff run.
+**Step 3 — Run basedpyright on touched files or directories**
+```bash
+# Prefer touched files if the directories are noisy
+uvx basedpyright src/css/<dir1>/file1.py src/css/<dir2>/file2.py
+
+# Otherwise run the smallest touched directories
+uvx basedpyright src/css/<dir1>/ src/css/<dir2>/
+```
+
+**Step 4 — Fix remaining verification failures (5 turns max)**
+- Ruff errors: always fix
+- Basedpyright errors: always fix in touched scope
+- Basedpyright warnings: fix when local and low-cost
 
 ---
 
@@ -339,9 +468,9 @@ sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/module
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE task = 'TASK_NAME';
 ```
 ```bash
-# Update the phase section in .plan/core.md:
+# Update the phase section in .plan/types.md:
 # Find the phase section, update todo counts to match session.db
-sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/core.md
+sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/types.md
 ```
 
 **Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` at task completion in normal flow. If this task finishes the phase, continue with WORKFLOW 3. Exception: refresh `.plan/memory.md` immediately if the task changed architecture baselines or planning/source-of-truth rules.
@@ -372,21 +501,70 @@ WHERE phase = 'PHASE_NAME' AND status != 'done';
 
 **Run dependency analyzer** (full project impact analysis):
 ```bash
-.venv/bin/python .plan/codebase_dependency_analyzer.py . \
+# Full project scan with markdown refs (skip test files and migrations for speed)
+.venv/bin/python scripts/codebase_dependency_analyzer.py . \
+  --exclude-glob '**/migrations/**' '**/tests/**' \
+  --markdown-case-insensitive --markdown-max-hits-per-term 3 \
   --output /tmp/full_deps.json
+
+# Summary statistics
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/full_deps.json'))
+total = len(d)
+with_deps = sum(1 for v in d.values() if v['consumes'])
+with_callers = sum(1 for v in d.values() if v['consumed_by'])
+md_refs = sum(len(v.get('markdown_references', {}).get('file_hits', [])) for v in d.values())
+print(f'Total files: {total}')
+print(f'Files with imports: {with_deps}')
+print(f'Files with dependents: {with_callers}')
+print(f'Markdown references: {md_refs}')
+"
+
+# Cross-module violation summary
+.venv/bin/python -c "
+import json
+d = json.load(open('/tmp/full_deps.json'))
+violations = []
+for f, data in d.items():
+    for dep in data['consumes']:
+        f_mod = f.split('/')[3] if f.startswith('src/css/modules/') else None
+        d_mod = dep.split('/')[3] if dep.startswith('src/css/modules/') else None
+        if f_mod and d_mod and f_mod != d_mod:
+            violations.append((f, dep))
+if violations:
+    print(f'Cross-module violations: {len(violations)}')
+    for f, dep in violations:
+        print(f'  {f} -> {dep}')
+else:
+    print('No cross-module violations')
+"
 ```
 
 ---
 
 ### 🟢 ACTIVE
 
-**Step 1 — Run ruff on all touched directories (2 passes max)**
+**Step 1 — Run ruff on all touched directories (3 passes max)**
 ```bash
 .venv/bin/ruff check --fix src/css/<dir1>/ src/css/<dir2>/
 .venv/bin/ruff check src/css/<dir1>/ src/css/<dir2>/
 ```
 
-**Step 2 — Delegate rubber-duck agent (copy-paste prompt)**
+**Step 2 — Run basedpyright on touched directories or explicit touched files**
+```bash
+# Do not default to repo-wide type checking here; keep scope aligned to the phase work
+uvx basedpyright src/css/<dir1>/ src/css/<dir2>/
+
+# If needed, narrow to explicit touched files to avoid unrelated legacy noise
+uvx basedpyright src/css/<dir1>/file1.py src/css/<dir2>/file2.py
+```
+
+**Rule**:
+- Phase completion still uses touched-scope basedpyright by default
+- Only run repo-wide basedpyright during an intentional type-cleanup task or phase
+
+**Step 3 — Delegate rubber-duck agent (copy-paste prompt)**
 ```
 Use Task tool with:
 - subagent_type: general
@@ -396,12 +574,19 @@ Use Task tool with:
     2. Read .plan/memory.md (phase table)
     3. Read .plan/checkpoints.md
     4. Read all src/css/modules/<module>/<module>.md files for modules in this phase
-    5. Run: python .plan/codebase_dependency_analyzer.py . --path src/css/<module>/
-    6. Check: Are all todos really done? Any missing integration points?
-    7. Report: Phase completeness score (0-100%), any gaps found, recommendations
+    5. Run: .venv/bin/python scripts/codebase_dependency_analyzer.py \
+             src/css/modules/<module>/ \
+             --markdown-case-insensitive --markdown-max-hits-per-term 5 \
+             --output /tmp/rubberduck_deps.json
+    6. Read /tmp/rubberduck_deps.json — check:
+       - Cross-module violations (consumes that cross module boundaries)
+       - Markdown reference coverage (which docs reference which symbols)
+       - consumed_by patterns (who depends on the module's exports)
+    7. Check: Are all todos really done? Any missing integration points?
+    8. Report: Phase completeness score (0-100%), any gaps found, recommendations
 ```
 
-**Step 3 — Run full test suite**
+**Step 4 — Run full test suite**
 ```bash
 .venv/bin/pytest -v
 ```
@@ -412,7 +597,7 @@ Use Task tool with:
 
 **Step 1 — Update all .plan/ files (CHECKLIST)**
 ```bash
-# [ ] .plan/core.md — mark phase ✅ DONE, update CURRENT STATUS
+# [ ] .plan/types.md — mark phase ✅ DONE, update CURRENT STATUS
 # [ ] .plan/memory.md — update phase table row (done count, blocked count)
 # [ ] .plan/checkpoints.md — add phase checkpoint entry
 # [ ] .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
@@ -503,4 +688,4 @@ modules/<name>/
 
 ---
 
-**Status**: 📋 Active | **Last Updated**: 2026-05-07
+**Status**: 📋 Active | **Last Updated**: 2026-05-09

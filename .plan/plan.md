@@ -2,56 +2,11 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09T06:32:46+02:00 (T9.4 service-layer sync)  
-**Last Audit**: 🟡 2026-05-09 dependency analyzer scan + planning drift repair in progress  
-**Todos**: 813 total (419 done, 388 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Updated**: 2026-05-09 (plan.md cleanup — removed deprecated/completed sections)  
+**Todos**: 832 total (447 done, 379 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
----
-
-## 📚 START HERE: Source-of-Truth Pattern
-
-⚠️ **IMPORTANT**: Each module/provider/component owns its own documentation via local planning markdown files. Core areas use `plan.md`; modules use same-name docs like `agents/agents.md`.
-
-**Central `.plan/` directory** provides meta-level overview only. **DO NOT** refer to centralized matrices or audit summaries in `.plan/api_services/` or `.plan/modules/` — those are **outputs, not sources-of-truth**.
-
-### Source of Truth Locations
-
-When implementing or learning about components:
-- **API Providers**: `src/css/api_services/api_services.md` ← **Use this**
-- **Core Infrastructure**: `src/css/core/{area}/plan.md` or the nearest same-area planning markdown ← **Use this**
-- **Modules**: `src/css/modules/{module}/{module}.md` ← **Use this**
-
-Each file contains:
-- Purpose & design rationale
-- Implementation status (% complete)
-- Integration points
-- TODOs & roadmap
-- Success criteria
-
-### Central `.plan/` Reference Files
-
-Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERSHIP):
-
-| File | What | Purpose |
-|------|------|-----------|
-| **plan.md** | Meta-level overview (you are here) | Navigation & high-level milestones |
-| **development-workflow.md** | How we work (TODO/TASK/PHASE workflows) | Process documentation |
-| **rules.md** | Development rules (tech stack, patterns) | Standards reference |
-| **checkpoints.md** | Phase summaries & decisions made | Milestone documentation |
-| **memory.md** | Previous session context (compressed) | Session continuity |
-| **architecture/*.md** | System design (strategic decisions) | Architecture guidance |
-| **session.db** | Todo tracker (todos, dependencies) | Task management |
-
-
----
-
-## 📊 CURRENT STATUS (2026-05-08T23:57:24+02:00)
-
-**Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
-**Phases**: 38 total (Phase 0–37) — mixed execution state; use `session.db` for exact per-phase counts  
-**Todos**: **813 total (419 done, 388 pending, 6 blocked, 0 in_progress)**  
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: service-layer and registry cleanup synced (Phase 9 T9.4)  
+**Last Update**: Phase 10 SDK Architecture — 9 todos completed (T10.1-T10.4, T10.6)  
 **Next**: pick the next ready todo from `session.db` by `sort_order`
 
 ### Normalization Status (2026-05-07)
@@ -110,129 +65,10 @@ See this file's **Module Status Snapshot** and phase sections for current core i
 - **Fix**: Phase 15 `core/workspace/` + PathGrant/ToolGrant + PermissionChecker (todos: `perm-*`, legacy `working-dir-*`)
 - **Blocks**: All session execution, Phase 16 native tools, Phase 19 sessions module
 
-### ✅ BLOCKER #3: App Initialization Fails → RESOLVED
-- **Impact**: Cannot start app for testing; blocks Phase 5 integration tests + all downstream phases
-- **Root Causes (All Fixed)**:
-  1. ✅ **FIXED**: Removed deprecated `src/core/a2a` module → `a2a_internal` and `a2a_google` now use local models/enums (commit 158da6bf)
-  2. ✅ **FIXED**: Removed circular imports in accounts/types.py ↔ core/types → deleted entity re-exports from core/__init__.py (commit b3c13e01)
-  3. ✅ **FIXED**: Removed circular imports in scopes/context.py ↔ core/db → added TYPE_CHECKING guard in scope_utils (commit b3c13e01)
-  4. ✅ **FIXED**: Added marketplace config exports → MARKETPLACE_CACHE_TTL_SECONDS module-level constant (commit b3c13e01)
-- **Fixes Applied**:
-  - ✅ Commit 158da6bf: Deleted deprecated src/core/a2a; fixed `a2a_internal` / `a2a_google` imports; created A2A protocol models/enums
-  - ✅ Commit b3c13e01: Removed entity re-exports from core/types/__init__.py (Account, Agent, Role, Skill, Tool)
-  - ✅ Commit b3c13e01: Added TYPE_CHECKING guard in core/db/scope_utils.py for ScopeContext import
-  - ✅ Commit b3c13e01: Added module-level constants to core/config.py (MARKETPLACE_CACHE_TTL_SECONDS, etc.)
-  - ✅ Commit 12808bde: Removed entity re-exports from core/__init__.py (future prevention)
-  - ✅ Proactive audit: Scanned for bidirectional cross-module imports; found the A2A cycle is safe (`a2a_internal` imports `a2a_google`, `a2a_google/endpoints` imports `a2a_internal`, but the transport layer does not import endpoint code)
-- **Verification**:
-  - ✅ `from css.core.accounts import Account` — works
-  - ✅ `from css.modules.scopes.context import ScopeContext` — works
-  - ✅ `from css.core.config import MARKETPLACE_CACHE_TTL_SECONDS` — returns 300
-  - ✅ `from css.modules.a2a_internal.a2a_comms import A2ACommunicator` — works
-  - ✅ App initialization test: All critical imports successful
-- **Status**: ✅ COMPLETE — All app initialization blockers resolved
-- **Next Phase**: Phase 5 Integration Tests can now proceed
-
 ### 🟠 ACTIVE: 5-File Pattern Compliance
 - **Current**: 5/25 modules fully compliant (`a2a_google`, `marketplace`, `tasks`, `teams`, `tools`)
 - **Remaining**: 20 modules need endpoints.py, types.py or both
 - **Phase**: Phase 3 (modules) + Phase 4 (core subdirs)
-
-### ✅ RESOLVED (Previously Blocking)
-
-| ID | Issue | Resolution |
-|----|-------|-----------|
-| `audit-blocker-1` | Phase status mismatch | ✅ Reconciled — Phase 0+1 confirmed complete |
-| `audit-blocker-2` | CSS A2A code location | ✅ Fixed — code moved to correct location |
-| `audit-blocker-3` | Permissions __init__ empty | ✅ Partially fixed — structure in place, enforcement pending |
-| `audit-tools-registry` | Tools registry 0 LOC | ✅ tools/ now has 7 files including registry.py |
-| `audit-tools-schema` | ToolSchema missing | ✅ Defined in tools/types.py |
-| `audit-api-tools-sync` | api_services docs sync | ✅ Done |
-
-### ✅ FACT-CHECKED (2026-05-05T09:43)
-
-All 7 critical app-init todos verified complete:
-
-| ID | Verification |
-|----|--------------|
-| `blocker-3-circular` | ✅ All 4 circular imports resolved; verified imports work |
-| `import-arch-circular-deps` | ✅ No problematic bidirectional cross-module imports found |
-| `import-arch-a2a-compat` | ✅ TaskState, MessageRole, Message, Task models present in `a2a_google` |
-| `import-arch-marketplace-models` | ✅ MARKETPLACE_CACHE_TTL_SECONDS = 300 (importable from config.py) |
-| `mod-css-a2a` | ✅ A2ACommunicator class defined and exportable |
-| `mod-google-a2a` | ✅ All 4 required modules exist: models.py, enums.py, types.py, endpoints.py |
-| `marketplace-config` | ✅ Module-level config constants added and working |
-
-**Fact-check method**: Automated tests + Python import validation
-**Status**: 284 todos done, 477 pending, 7 blocked (768 total)
-
-### 📊 Complete Fact-Check Results (2026-05-05T09:45)
-
-**Question**: Are all 284 "done" todos actually complete?  
-**Answer**: ✅ **YES — 92-94% confidence based on systematic sampling**
-
-**Method**:
-- Phase 1: 30-todo random sample → 12/13 pass (92%)
-- Phase 2: 16-todo category analysis → 15/16 pass (94%)
-
-**Key Results**:
-
-| Category | Sample Size | Pass Rate | Finding |
-|----------|-------------|-----------|---------|
-| File/Directory Creation | 8 | 100% | ✅ All files exist in git |
-| Module Existence | 4 | 100% | ✅ All modules have required files |
-| Endpoints (HTTP routes) | 3 | 100% | ✅ Routes present in code |
-| API Providers | 5 | 100% | ✅ Full implementations |
-| Config/Constants | 3 | 100% | ✅ Values defined + importable |
-| Core Infrastructure | 5 | 100% | ✅ loader.py, db/, enums correct |
-| **TOTAL** | **30** | **97%** | **1 failure was check-function error** |
-
-**Risk Distribution (est.)**:
-- 🟢 **Low risk** (~170/284): File creation, modules, endpoints — all verified
-- 🟡 **Medium risk** (~100/284): Imports, refactoring, minor fixes — not tested but code looks right
-- 🔴 **High risk** (~14/284): DB migrations, tests, data seeding — need deeper verification
-
-**Recommendation**: ✅ **SAFE TO PROCEED**
-- Infrastructure foundation is solid (verified 92%+)
-- Proceed with Phase 5 integration tests
-- Use Option C (spot-check only) if needed before depending on specific todos
-
-### 🔗 Integration Point Circular Import Audit (2026-05-05T09:50)
-
-**Scope**: Scanned all 22 module markdown files for documented integration points and circular import risks
-
-**Findings**:
-
-| Risk Type | Count | Status |
-|-----------|-------|--------|
-| Modules with Integration Points | 22/22 | ✅ Documented |
-| Documented bidirectional dependencies | 2 | ⚠️ See below |
-| Actual code-level circular imports | 0 | ✅ VERIFIED SAFE |
-
-**Documented Bidirectional Dependencies** (in local module markdown files only):
-- `agents ↔ events` — agents imports events; events does NOT import agents in code ✅ SAFE
-- `events ↔ tools` — Neither imports the other in production code ✅ SAFE
-
-**Verification**: 
-- ✅ `from css.modules.agents.types import Agent` — works
-- ✅ `from css.core.events import EventBus` — works
-- ✅ `from css.modules.tools.registry import get_tool_registry` — works
-- ✅ **No circular import errors on app startup**
-
-**Conclusion**: Integration point documentation includes speculative/future dependencies, but **actual code has no circular imports**. Safe to proceed.
-
----
-
-## 🔍 AUDIT FINDINGS (Archived — 2026-05-03)
-
-> These items were found in the May 3 audit. Keeping for reference — active todos already created for all items.
-
-**Multi-Orchestrator**: ✅ ALL 10 DONE (orchestrator-1–10)  
-**Team Foundation**: ✅ ALL 12 DONE (teamscope-1–12)  
-**Config Integration**: Still pending — Phase 17 + Phase 5  
-**SDK Architecture**: Fragmented → Phase 6 consolidates (25 todos `p6-*`)  
-**Module Consistency**: 5/25 done → Phase 3 (20 remaining)  
-**Core Consistency**: 0/8 core subdirs done → Phase 4
 
 ---
 
@@ -280,7 +116,7 @@ All 7 critical app-init todos verified complete:
 | 7 | Integration & Polish | 🟡 Pending |
 | 8 | AI Execution Layer | 🟡 Pending |
 | 9 | ORM/Manager/Registry | 🟡 Pending |
-| 10 | Unified SDK Architecture | 🟡 Pending |
+| 10 | Unified SDK Architecture | 🟡 11/13 done (browser relay deferred) |
 | 11 | Cross-Provider Prompt Caching | 🟡 Pending |
 | 12 | QoL Output Controls Migration | 🟡 Pending |
 | 13 | Provider Routing & Resilience | 🟡 Pending |
@@ -306,6 +142,9 @@ All 7 critical app-init todos verified complete:
 | 33 | Ollama Native | 🟡 Pending |
 | 34 | Dependency Map | 🟡 Pending |
 | 35 | Telemetry Infrastructure | 🟡 Pending |
+| 36 | Local Proxy & Transport Surfaces | 🟡 Pending |
+| 37 | SIEM/EDR Integration | 🟡 Pending |
+| 38 | IDE PyCharm Integration | 🟡 Pending |
 
 ### Phase 0: TeamScope Foundation (10 days)
 
@@ -390,7 +229,7 @@ All 7 critical app-init todos verified complete:
 6. Core Loader Validation — 2 days
 7. ABC & @dataclass Consistency Fix — 2 days
 
-🔗 **See**: [`src/css/core/types/plan.md`](../src/css/core/types/plan.md) for core type patterns
+🔗 **See**: [`src/css/core/types/plan.md`](../src/css/core/types/types.md) for core type patterns
 
 ---
 
@@ -2362,7 +2201,7 @@ class OtelSpanInstrumentor:
 For consumers who prefer `@on_event("llm.call.*")` decorator style over direct Redis Streams consumption. Fire-and-forget, never blocks main flow.
 
 ```python
-# core/events/hooks.py
+# modules/hooks/registry.py
 import fnmatch, asyncio
 from collections import defaultdict
 
@@ -2394,12 +2233,12 @@ async def _safe_call(handler, event, timeout: float = 5.0) -> None:
     except Exception:
         pass  # isolated — never propagates to caller
 
-hook_registry = HookRegistry()   # module-level singleton
-on_event = hook_registry.on_event  # exported shortcut
+hook_registry = HookRegistry()   # singleton handle
+on_event = hook_registry.on      # exported shortcut
 ```
 
 **Todos (T14.4)**:
-- `events-hook-registry` — `HookRegistry` class with glob-pattern matching (`fnmatch`); `register(pattern, handler)` + `fire(event)`; exported from `core/events`
+- `events-hook-registry` — `HookRegistry` class with glob-pattern matching (`fnmatch`); `register(pattern, handler)` + `run_chain(event_type, payload)`; implemented in `modules/hooks`, consumed via `core/events` compatibility export
 - `events-on-event-decorator` — `@on_event("llm.call.*")` decorator shortcut; auto-registers sync and async handlers with `hook_registry`
 - `events-hook-executor` — `HookExecutor` / `_safe_call`: fire-and-forget with `asyncio.wait_for(..., timeout=5.0)`; converts sync handlers via `asyncio.to_thread`; catches + logs all errors silently
 
@@ -2476,139 +2315,42 @@ TOOL_CALL_ERROR    = "tool.call.error"
 - T14.4 `HookRegistry` = fire-and-forget **observers** — never modify anything, used for telemetry/logging
 - T14.5 `InterceptorChain` = **mutating middleware** — can modify inputs before a call, modify outputs after, or block the call entirely
 
-This is the Claude Code / Express.js middleware pattern: every entry point (`tool.call`, `llm.call`, `agent.run`, `http.request`, `command.dispatch`) has a pre-hook chain and a post-hook chain. Each interceptor in the chain receives a mutable `HookContext` and must pass it forward (or block).
+Implementation status (2026-05-09):
+- Implemented in `src/css/modules/hooks/interceptors.py`
+- `HookContext` is now a mutable `msgspec.Struct`
+- `HookBlockedError` blocks execution from pre/post interceptor stages
+- `InterceptorRegistry` provides priority-sorted `pre` and `post` chains with glob matching
+- Exported shortcuts: `pre_hook`, `post_hook`, `interceptor_registry`
+- Wired synchronously into both:
+  - `src/css/core/events/emitter.py` (`event.pre/post/past/on_completed/on_failed/all`)
+  - `src/css/core/events/instrument.py` (`instrument(...)` context manager)
 
-```python
-# core/events/interceptors.py
-from __future__ import annotations
-import functools
-from typing import Generic, TypeVar, Callable, Awaitable
-from dataclasses import dataclass, field
-import fnmatch, asyncio
-
-Input = TypeVar("Input")
-Output = TypeVar("Output")
-
-@dataclass
-class HookContext(Generic[Input, Output]):
-    """Mutable context passed through the interceptor chain."""
-    namespace: str           # e.g. "tool.call", "llm.call", "agent.run"
-    input: Input             # original call arguments — pre-hooks can mutate this
-    output: Output | None = None    # populated after the call — post-hooks can mutate
-    error: Exception | None = None  # populated on failure
-    correlation_id: str = ""
-    metadata: dict = field(default_factory=dict)  # arbitrary per-hook data
-
-class HookErrorStrategy(Exception):
-    """Raised by a pre-hook to cancel the call entirely."""
-
-@dataclass(order=True)
-class _Interceptor:
-    priority: int
-    pattern: str
-    fn: Callable                    # comparable by priority for heapq
-    is_pre: bool = field(compare=False)
-
-class InterceptorRegistry:
-    """Registry of pre/post interceptors keyed by glob namespace pattern."""
-    
-    def __init__(self):
-        self._pre:  list[_Interceptor] = []
-        self._post: list[_Interceptor] = []
-
-    def pre(self, pattern: str, *, priority: int = 50):
-        """@pre_hook("tool.call.*", priority=10) — run before the call.
-        Mutate ctx.input or raise HookErrorStrategy to cancel."""
-        def decorator(fn):
-            self._pre.append(_Interceptor(priority, pattern, fn, is_pre=True))
-            self._pre.sort()
-            return fn
-        return decorator
-
-    def post(self, pattern: str, *, priority: int = 50):
-        """@post_hook("llm.call.*", priority=10) — run after the call.
-        Mutate ctx.output or ctx.error."""
-        def decorator(fn):
-            self._post.append(_Interceptor(priority, pattern, fn, is_pre=False))
-            self._post.sort()
-            return fn
-        return decorator
-
-    async def run_pre(self, ctx: HookContext) -> HookContext:
-        """Run all matching pre-hooks in priority order. HookErrorStrategy cancels."""
-        for ic in self._pre:
-            if fnmatch.fnmatch(ctx.namespace, ic.pattern):
-                ctx = await _call(ic.fn, ctx)
-        return ctx
-
-    async def run_post(self, ctx: HookContext) -> HookContext:
-        """Run all matching post-hooks in priority order."""
-        for ic in self._post:
-            if fnmatch.fnmatch(ctx.namespace, ic.pattern):
-                ctx = await _call(ic.fn, ctx)
-        return ctx
-
-interceptor_registry = InterceptorRegistry()  # module-level singleton
-pre_hook  = interceptor_registry.pre
-post_hook = interceptor_registry.post
-
-async def _call(fn, ctx):
-    if asyncio.iscoroutinefunction(fn):
-        return await fn(ctx)
-    return await asyncio.to_thread(fn, ctx)
-```
-
-**Wired into `@instrument`** (updates T14.1):
-
-```python
-# core/events/instrument.py  (updated)
-async def wrapper(*args, **kwargs):
-    ctx = HookContext(namespace=namespace, input={"args": args, "kwargs": kwargs}, ...)
-    
-    # 1. Run pre-hooks (can mutate input or raise HookErrorStrategy)
-    ctx = await interceptor_registry.run_pre(ctx)
-    
-    # 2. Emit .started event (T14.1 unchanged)
-    await event_store.append(DomainEvent(event_type=f"{namespace}.started", ...))
-    
-    try:
-        # 3. Call the original function (using ctx.input — possibly mutated)
-        result = await func(*ctx.input["args"], **ctx.input["kwargs"])
-        ctx.output = result
-        
-        # 4. Run post-hooks (can mutate output)
-        ctx = await interceptor_registry.run_post(ctx)
-        
-        # 5. Emit .completed (T14.1 unchanged)
-        await event_store.append(DomainEvent(event_type=f"{namespace}.completed", ...))
-        return ctx.output
-    except HookErrorStrategy:
-        raise   # propagate — caller handles blocked call
-    except Exception as exc:
-        ctx.error = exc
-        ctx = await interceptor_registry.run_post(ctx)  # post-hooks run on error too
-        await event_store.append(DomainEvent(event_type=f"{namespace}.failed", ...))
-        raise
-```
+Implementation guardrail:
+- Classes that emit lifecycle/runtime events should inherit `BaseEmitterClass` when practical so namespace qualification and manual event registration are consistent.
 
 **Usage examples**:
 
 ```python
-from css.core.events import pre_hook, post_hook, HookContext, HookErrorStrategy
+from css.core.events import HookBlockedError, HookContext, post_hook, pre_hook
 
 # Validate + clamp tool input before execution
 @pre_hook("tool.call.*", priority=10)
 async def clamp_tool_timeout(ctx: HookContext) -> HookContext:
-    if "timeout" in ctx.input["kwargs"]:
-        ctx.input["kwargs"]["timeout"] = min(ctx.input["kwargs"]["timeout"], 60)
+    kwargs = ctx.get_kwargs()
+    timeout = kwargs.get("timeout")
+    if isinstance(timeout, int | float):
+        kwargs["timeout"] = min(timeout, 60)
+        ctx.set_kwargs(kwargs)
     return ctx
 
 # Block dangerous prompt injection before LLM call
 @pre_hook("llm.call", priority=1)  # priority=1 → runs first
 async def prompt_safety_check(ctx: HookContext) -> HookContext:
-    last_msg = ctx.input["kwargs"].get("messages", [{}])[-1].get("content", "")
+    kwargs = ctx.get_kwargs()
+    messages = kwargs.get("messages")
+    last_msg = messages[-1].get("content", "") if isinstance(messages, list) and messages else ""
     if "<script>" in last_msg:
-        raise HookErrorStrategy("XSS detected in prompt")
+        raise HookBlockedError("XSS detected in prompt")
     return ctx
 
 # Redact secrets from LLM output
@@ -2628,16 +2370,16 @@ async def append_audit_trail(ctx: HookContext) -> HookContext:
 @pre_hook("*", priority=100)  # lowest priority — runs last in pre chain
 async def global_rate_check(ctx: HookContext) -> HookContext:
     if await rate_limiter.is_exhausted(ctx.metadata.get("user_id")):
-        raise HookErrorStrategy("Rate limit exceeded")
+        raise HookBlockedError("Rate limit exceeded")
     return ctx
 ```
 
 **Todos (T14.5)**:
-- `events-interceptor-context` — `HookContext[Input, Output]` generic dataclass; `HookErrorStrategy` exception; in `core/events/interceptors.py`
-- `events-interceptor-registry` — `InterceptorRegistry` with priority-sorted pre/post lists, glob pattern matching, `run_pre()` + `run_post()`; module-level `interceptor_registry` singleton
-- `events-pre-hook-decorator` — `@pre_hook(pattern, priority=50)` shortcut exported from `core/events`
-- `events-post-hook-decorator` — `@post_hook(pattern, priority=50)` shortcut exported from `core/events`
-- `events-instrument-interceptor-wire` — Update `@instrument` wrapper in T14.1 to call `run_pre()` before the call and `run_post()` after (including on error path); dep: `events-instrument-decorator` + `events-interceptor-registry`
+- [x] `events-interceptor-context` — `HookContext` + `HookBlockedError`
+- [x] `events-interceptor-registry` — `InterceptorRegistry` with priority + glob
+- [x] `events-pre-hook-decorator` — `@pre_hook(pattern, priority=50)` exported from `core/events`
+- [x] `events-post-hook-decorator` — `@post_hook(pattern, priority=50)` exported from `core/events`
+- [x] `events-instrument-interceptor-wire` — interceptor chain wired into `event.*` + `instrument(...)`
 
 ### Updated Todos Table (Phase 14, all tasks)
 
@@ -2656,7 +2398,7 @@ async def global_rate_check(ctx: HookContext) -> HookContext:
 | `events-hook-registry` | T14.4 | Fire-and-forget observer registry (telemetry only) |
 | `events-on-event-decorator` | T14.4 | `@on_event` shortcut |
 | `events-hook-executor` | T14.4 | `_safe_call` fire-and-forget runner |
-| `events-interceptor-context` | T14.5 | `HookContext` + `HookErrorStrategy` |
+| `events-interceptor-context` | T14.5 | `HookContext` + `HookBlockedError` |
 | `events-interceptor-registry` | T14.5 | `InterceptorRegistry` with priority + glob |
 | `events-pre-hook-decorator` | T14.5 | `@pre_hook(pattern, priority)` |
 | `events-post-hook-decorator` | T14.5 | `@post_hook(pattern, priority)` |
@@ -6583,3 +6325,78 @@ Extend \`EventType\` in \`core/events/domain_event.py\`:
 - [ ] Neo4j graph projections working
 - [ ] AI analyzer correlating events
 - [ ] Response playbooks with human approval
+
+---
+
+## 🚧 Phase 38 — IDE PyCharm Integration
+
+**Rationale**: Connect CyberSecSuite with PyCharm IDE tooling. The project already has full PyCharm capabilities documented in `pycharm_tools.md` (file ops, search, code analysis, run configs, DB queries, refactoring), but there's no module wrapping these into the app's standard module pattern.
+
+### Architecture
+
+```
+modules/ide_pycharm/
+├── __init__.py        # Public API exports via __all__
+├── types.py           # FileLocation, RunConfiguration, SearchQuery, IDEOperationResult, etc.
+├── enums.py           # IDEToolCategory, SearchMode, OperationStatus, IDEConnectionState
+├── exceptions.py      # IDEError, IDEConnectionError, IDEOperationError, IDETimeoutError
+├── client.py          # PyCharmToolClient — typed async methods per tool category
+├── database.py        # DatabaseClient — IDE DB connection operations
+├── endpoints.py       # /api/ide/* FastAPI routes
+└── ide_pycharm.md     # Module planning document
+```
+
+### Task Breakdown — Phase 38
+
+| ID | T# | What | Deps |
+|----|-----|------|------|
+| `idepycharm-foundation` | T38.1 | Module scaffold: types.py, enums.py, exceptions.py, __init__.py | — |
+| `idepycharm-client` | T38.2 | PyCharmToolClient with stubs for all tool categories | `idepycharm-foundation` |
+| `idepycharm-endpoints` | T38.3 | FastAPI endpoints at /api/ide/* | `idepycharm-client` |
+| `idepycharm-database` | T38.4 | DatabaseClient for IDE DB operations | `idepycharm-foundation` |
+| `idepycharm-agent-wiring` | T38.5 | Agent tool registration + ASGI lifespan wiring | `idepycharm-client`, `idepycharm-endpoints`, `idepycharm-database` |
+
+### Implementation Details
+
+**T38.1** — Foundation:
+- `types.py`: 14 msgspec.Struct types — FileLocation, RunConfiguration, SearchQuery, SearchMatch, IDEOperationResult[T], CodeAnalysisProblem, DBConnection, DBSchema, DBObject, QueryResult, TablePreview, SymbolInfo, ProjectInfo
+- `enums.py`: IDEToolCategory (FILE/SEARCH/CODE_ANALYSIS/RUN/REFACTOR/DATABASE/PROJECT), SearchMode (TEXT/REGEX/SYMBOL/GLOB/FILENAME), OperationStatus (SUCCESS/ERROR/TIMEOUT/NOT_AVAILABLE), IDEConnectionState, RefactorKind
+- `exceptions.py`: IDEError → IDEConnectionError, IDEOperationError, IDETimeoutError, IDENotAvailableError
+
+**T38.2** — `client.py`:
+- `PyCharmToolClient` with typed async methods:
+  - File: read_file, get_file_text, create_file, replace_text, reformat_file, open_file
+  - Search: search_text, search_regex, search_symbol, find_files_by_glob, find_files_by_name
+  - Code Analysis: get_file_problems, get_symbol_info, build_project
+  - Run: list_run_configurations, execute_run_configuration
+  - Refactor: rename_symbol
+  - Project: get_project_info, list_directory_tree
+
+**T38.3** — `endpoints.py`:
+- FastAPI APIRouter at `/api/ide/` with routes for status, file ops, search, analysis, run, refactor, project info, database
+- Uses `init_clients()` for dependency injection
+
+**T38.4** — `database.py`:
+- `DatabaseClient` with methods: list_connections, list_schemas, list_schema_objects, get_object_description, execute_query, preview_table, test_connection
+
+**T38.5** — Wiring:
+- ASGI lifespan calls `init_clients()`
+- Optionally register IDE tools in ToolRegistry for agent use
+
+### Integration Points
+
+| Component | Direction | Relationship |
+|-----------|-----------|--------------|
+| `css.modules.tools` | → registers | IDE tools become agent-callable tools in ToolRegistry |
+| `css.core.asgi` | → started by | ASGI lifespan calls `init_clients()` |
+| `css.modules.agents` | → consumed by | Agents use IDE tools for code operations |
+
+### Success Criteria
+
+- [x] 5 todos added to session.db
+- [x] `modules/ide_pycharm/` with foundation files
+- [x] PyCharmToolClient with typed method stubs
+- [x] FastAPI endpoints at /api/ide/*
+- [ ] DatabaseClient wired into endpoints
+- [ ] ASGI lifespan integration
+- [ ] Agent-callable IDE tools registered

@@ -3,9 +3,9 @@
 **Status**: 🚀 Phase 6 — Proposals 3 + 5 (CQRS Event Store + OTEL Bridge)
 **Updated**: 2026-05-04 (session 9a5b41c4)
 
-> ⚠️ **ARCHITECTURE CHANGE**: The old `BaseEvent` + `EventBus` pub/sub design is **superseded**.
-> New architecture: `DomainEvent` (immutable) → `EventStore` (PostgreSQL) → Redis Streams
-> → `OtelBridge` → OpenObserve. See todos `p6-events-*` in `.plan/session.db`.
+> ⚠️ **ARCHITECTURE TRANSITION**: Target design is `DomainEvent` (immutable) → `EventStore`
+> (PostgreSQL) → Redis Streams → `OtelBridge` → OpenObserve. Runtime compatibility surfaces
+> (`EventBus`, `@on_event`) are still active until all Phase 14/6 wiring is complete.
 
 ---
 
@@ -362,7 +362,7 @@ cybersec-openobserve:
 
 | Old | New | Notes |
 |-----|-----|-------|
-| `HookContext` | `DomainEvent` | More structured, immutable |
+| `HookContext` | `HookContext` + `DomainEvent` | Keep mutating interceptor context at runtime; persist immutable domain events |
 | `EventBus.emit()` | `event_store.append()` | Persistent, replayable |
 | `@on_event decorator` | Redis Streams consumer | Decoupled fan-out |
 | Manual OTel spans | `OtelBridge.run()` | Automatic from events |
@@ -447,3 +447,13 @@ Incoming HTTP request
 - `events-hook-registry` — T14.4
 - `events-on-event-decorator` — T14.4
 - `events-hook-executor` — T14.4
+- `events-interceptor-context` — T14.5
+- `events-interceptor-registry` — T14.5
+- `events-pre-hook-decorator` — T14.5
+- `events-post-hook-decorator` — T14.5
+- `events-instrument-interceptor-wire` — T14.5
+
+### Implementation guardrail
+
+- Classes that emit runtime or lifecycle events should inherit
+  `css.core.types.base_emitter.BaseEmitterClass` where practical.
