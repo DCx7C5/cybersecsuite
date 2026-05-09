@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T20:05:00+0200 | **Session**: Frontend/settings/MCP/xyflow directive expansion + parallel lanes
+**Last Updated**: 2026-05-09T21:02:00+0200 | **Session**: Frontend dashboard/chat QoL + provider seeding/browser-relay priority expansion
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-09)
 
-**Total**: 913 todos | **Done**: 465 | **Pending**: 442 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 923 todos | **Done**: 465 | **Pending**: 452 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-09 (checked against live session.db totals)
 
@@ -23,9 +23,9 @@
 | Phase | Todos | Done | Pending | Blocked | In Progress |
 |-------|-------|------|---------|---------|-------------|
 | Phase 9 — ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
-| Phase 10 — Unified SDK Architecture | 13 | 11 | 2 | 0 | 0 |
-| Phase 17 — Settings & Projects | 37 | 0 | 37 | 0 | 0 |
-| Phase 18 — Frontend Foundation | 38 | 8 | 30 | 0 | 0 |
+| Phase 10 — Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
+| Phase 17 — Settings & Projects | 39 | 0 | 39 | 0 | 0 |
+| Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
 | Phase 19 — Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
 | Phase 20 — Persistent Memory Layer | 52 | 7 | 45 | 0 | 0 |
 | Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
@@ -70,6 +70,10 @@
   - installed/catalog dual-surface marketplace design
   - MCP server start/stop/restart GUI controls
   - `@xyflow/react` integration and first topology view
+- Added frontend QoL/runtime directives as explicit todos:
+  - `frontend-core-templates-home-cutover` (frontend ownership move to `core/templates/*`)
+  - `frontend-dashboard-tiles-workspace` + `frontend-dashboard-tiles-persistence` (add/remove/drag/drop/snap/reorder)
+  - `frontend-chat-activity-stream` + `frontend-chat-thinking-task-visuals` (thinking spinners, agent activity, running tasks)
 
 ### Phase 17 Settings Consolidation — 3 todos added (2026-05-09)
 
@@ -77,6 +81,18 @@
   - `settings-config-dual-source-audit`
   - `settings-config-merge-into-core-settings`
   - `settings-config-import-cutover`
+- Added startup-seeding DB directives:
+  - `orm-provider-llmmodel-relation`
+  - `seed-providers-empty-table-yaml`
+
+### Phase 10 SDK Relay Expansion — 3 todos added (2026-05-09)
+
+- Added `T10.7 Provider Priority + Browser Plugin Backend`:
+  - `sdk-deepseek-adapter`
+  - `sdk-browser-relay-provider-priority`
+  - `sdk-browser-relay-web-llm-relay`
+- Browser relay priority chain is now explicitly tracked: `github -> codex -> openai -> deepseek -> nvidia -> web-LLM relay`.
+- Phase 32 reports backlog task labels were normalized from `task='unassigned'` into explicit `T32.*` buckets for parallel planning.
 
 ### Phase 39 Audit Remediation — 19 todos tracked (2026-05-09)
 

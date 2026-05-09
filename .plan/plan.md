@@ -2,17 +2,17 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09 (frontend/settings/MCP/xyflow directive sync + parallel lanes)  
-**Todos**: 913 total (465 done, 442 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Updated**: 2026-05-09 (frontend dashboard/chat QoL + provider seeding/browser-relay priority sync)  
+**Todos**: 923 total (465 done, 452 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: Added parallel-ready lanes + todos for theming-first, config migration, marketplace nav redesign, MCP GUI controls, and XYFlow integration  
-**Next**: Claim lanes in `T18.0` + `T40.0` and execute settings/config + menu/sidebar prerequisites first
+**Last Update**: Added todos for dashboard tile workspace, rich chat activity visuals, core/templates frontend-home cutover, provider-empty-table YAML seeding, provider↔model relation, and browser-relay provider priority chain  
+**Next**: Claim lanes in `T18.0` + `T40.0`, then execute settings/config + menu/sidebar prerequisites and T10.7/T17 startup-seeding prerequisites in parallel
 
 ### PLAN MODE Active Focus (2026-05-09)
 
 - Synchronize markdown + tracker state for analyzer-identified coverage gaps.
-- Unassigned backlog rehomed into explicit phases/tasks (no live pending todos remain in `unassigned`).
+- Unassigned backlog rehomed into explicit phases/tasks (no live pending todos remain in `unassigned`, and no live `task='unassigned'` rows remain).
 - Phase 40 canonicalization rule: when duplicate model files exist, keep the higher-quality surface and merge missing features into the canonical file before deleting the duplicate.
 - Phase 40 schema policy: direct table/model edits now, no migration scripts in this tranche (Aerich deferred).
 - Identity boundary directive: `user.py` = internal user/admin identity; `provider.py` + `accounts.py` = provider-account surfaces (`provider 1..N accounts`, `user 1..N accounts`).
@@ -34,9 +34,14 @@
   - Sidebar/settings/topnav should follow a shadcn-style admin pattern and be backed by runtime `MenuItem(menu_id=...)` data.
   - Marketplace sidebar item must own children navigation (`agents`, `skills`, `mcps`, `workflows`, `templates`, `prompts`, `teams`).
   - Marketplace in-panel side tabs for kind selection are being removed; sidebar children + URL state become the canonical navigation model.
+  - Frontend implementation ownership should move to `core/templates/*` surfaces (with `src/frontend` as shell/runtime bootstrap only).
+  - Landing dashboard must support tile add/remove/drag/drop/snap/reorder and persisted layout state.
+  - Chat panel must expose rich runtime visuals: thinking spinners, active agent badges, running tasks, and tool activity lifecycle states.
   - MCP GUI start/stop/restart controls are planned end-to-end (Phase 22 lifecycle API + Phase 18 GUI panel).
   - `@xyflow/react` is now the planned graph/canvas integration for frontend and graph-engine planning.
   - `MenuItem` startup behavior must seed empty table and upsert all known routes every boot.
+  - Provider startup behavior must seed from YAML when provider table is empty and enforce `Provider ↔ LLMModel` relation path before model upsert.
+  - Browser relay provider priority is now explicit: `github -> codex -> openai -> deepseek -> nvidia -> web-LLM relay`.
   - Reuse shadcn-admin components/patterns from https://github.com/satnaing/shadcn-admin as aggressively as practical for QoL/UX consistency.
   - Planning commitment includes:
     - **TanStack Query + WebSocket / Supabase Realtime (Recommended)**
