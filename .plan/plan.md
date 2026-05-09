@@ -2,12 +2,12 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09 (Phase 40 DB consolidation/modeling todo intake)  
-**Todos**: 879 total (464 done, 409 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Updated**: 2026-05-09 (Phase 40 parallel lanes prepared in session.db)  
+**Todos**: 885 total (464 done, 415 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: Phase 40 DB Model Consolidation — 29 todos added from model/location/tagging requests  
-**Next**: Start Phase 40 T40.1 canonicalization chain (memory/marketplace/tasks/provider ownership)
+**Last Update**: Phase 40 DB Model Consolidation — parallel lane bootstraps added for multi-worker execution  
+**Next**: Run Phase 40 lanes A-F in parallel from `T40.0 Parallel Lanes`
 
 ### PLAN MODE Active Focus (2026-05-09)
 
@@ -168,7 +168,7 @@ See this file's **Module Status Snapshot** and phase sections for current core i
 | 37 | SIEM/EDR Integration | 🟡 Pending |
 | 38 | IDE PyCharm Integration | 🟡 Pending |
 | 39 | Audit Remediation (A1/A2/A3) | 🟡 0/18 done |
-| 40 | DB Model Consolidation & Rich Schemas | 🟡 0/29 done |
+| 40 | DB Model Consolidation & Rich Schemas | 🟡 0/35 done |
 
 ### Phase 0: TeamScope Foundation (10 days)
 

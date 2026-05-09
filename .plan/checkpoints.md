@@ -703,6 +703,32 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 | Pending      | 409   |
 | Blocked      | 6     |
 
+---
+
+## Checkpoint 018 — Phase 40 Parallel Lane Preparation (2026-05-09T17:53+0200)
+
+**Status**: 🟢 PARALLEL TRACKER PREP COMPLETE
+
+### Work Done
+- Prepared `session.db` for parallel execution of Phase 40 by adding `T40.0 Parallel Lanes` with 6 lane bootstrap todos.
+- Lanes are disjoint by ownership/write scope:
+  - Lane A: memory model canonicalization
+  - Lane B: marketplace model consolidation
+  - Lane C: tasks/provider/user ownership cutover
+  - Lane D: menu/tree modeling
+  - Lane E: tagging standards
+  - Lane F: fields/mixins/docs/runtime-home planning
+- Added dependency bindings from existing Phase 40 todos to their lane bootstrap todo so each worker can claim one lane safely.
+- Re-prioritized Phase 40 sort order to be ready before older backlog phases for this session.
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 885   |
+| Done         | 464   |
+| Pending      | 415   |
+| Blocked      | 6     |
+
 ### Next Step
 - Continue remaining Phase 18 todos (`frontend-ws-manager`, `frontend-zustand-store`, `frontend-port-hooks`, settings/chat panels, dev tooling, dashboard/graphs).
 

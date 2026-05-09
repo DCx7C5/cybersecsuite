@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T17:53:24+0200 | **Session**: Phase 40 DB consolidation/modeling todo intake
+**Last Updated**: 2026-05-09T17:58:55+0200 | **Session**: Phase 40 parallel-lane preparation for multi-worker execution
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-09)
 
-**Total**: 879 todos | **Done**: 464 | **Pending**: 409 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 885 todos | **Done**: 464 | **Pending**: 415 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-09 (checked against live session.db totals)
 
@@ -35,7 +35,7 @@
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | Phase 39 — Audit Remediation (A1/A2/A3) | 18 | 0 | 18 | 0 | 0 |
-| Phase 40 — DB Model Consolidation & Rich Schemas | 29 | 0 | 29 | 0 | 0 |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 35 | 0 | 35 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -71,7 +71,7 @@
   - removal of remaining `from __future__ import annotations` and legacy typing imports
   - `__all__` policy enforcement and broad exception cleanup
 
-### Phase 40 DB Model Consolidation — 29 todos added (2026-05-09)
+### Phase 40 DB Model Consolidation — 35 todos prepared (2026-05-09)
 
 - Added a dedicated plan intake phase for model-location and schema requests:
   - memory model move reconciliation and canonical import cutover
@@ -82,6 +82,13 @@
   - BaseTreeModel adoption inventory and tag hierarchy migration plan
   - taggable-entity inventory + singular `*Tag` naming/meta standardization
   - field/base/mixin enrichment proposals and stale `modules/cache` markdown cleanup
+- Added `T40.0 Parallel Lanes` with 6 explicit lane bootstrap todos to support parallel execution with disjoint write scopes:
+  - Lane A memory
+  - Lane B marketplace
+  - Lane C task/provider/user
+  - Lane D menu/tree
+  - Lane E tagging
+  - Lane F platform polish
 
 ### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
 
@@ -310,6 +317,6 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - `.plan/plan.md` — phases overview + Phase 6 proposals
 - `.plan/session.db` — **879 todos**, PHASE > TASK > TODO hierarchy (41 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
-- `.plan/checkpoints.md` — session history (017 checkpoints)
+- `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
 - `src/css/api_services/api_services.md` — provider source-of-truth index
