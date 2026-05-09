@@ -2,16 +2,21 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09 (Phase 40 parallel lanes prepared in session.db)  
-**Todos**: 885 total (464 done, 415 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Updated**: 2026-05-09 (directive sync: unassigned rehome + Phase 40/18 refinement)  
+**Todos**: 892 total (465 done, 421 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: Phase 40 DB Model Consolidation — parallel lane bootstraps added for multi-worker execution  
-**Next**: Run Phase 40 lanes A-F in parallel from `T40.0 Parallel Lanes`
+**Last Update**: User directive sync applied across Phase 40 model consolidation and Phase 18 frontend navigation UX  
+**Next**: Execute `T40.0` lanes (canonical model selection + direct schema policy) and `T18.13` shadcn-admin navigation uplift
 
 ### PLAN MODE Active Focus (2026-05-09)
 
 - Synchronize markdown + tracker state for analyzer-identified coverage gaps.
+- Unassigned backlog rehomed into explicit phases/tasks (no live pending todos remain in `unassigned`).
+- Phase 40 canonicalization rule: when duplicate model files exist, keep the higher-quality surface and merge missing features into the canonical file before deleting the duplicate.
+- Phase 40 schema policy: direct table/model edits now, no migration scripts in this tranche (Aerich deferred).
+- Identity boundary directive: `user.py` = internal user/admin identity; `provider.py` + `accounts.py` = provider-account surfaces (`provider 1..N accounts`, `user 1..N accounts`).
+- Import-order directive: treat `src/css/core/settings/config.py` `MODULES` list (line 17) as canonical ordering reference.
 - Queue frontend theming follow-up: remove outer viewport margins (top/left/bottom/right) while preserving internal panel spacing.
 - Visualization mapping contracts active: Neo4j→NVL, Postgres→ECharts, OpenObserve→native dashboards.
 - Visualization planning artifacts updated in session plan: mapping contracts, component policy, React interfaces, and rollout acceptance criteria.
@@ -24,8 +29,9 @@
   - `src/css/modules/a2a_internal/int_comms.py`
   - `src/css/modules/skills/marketplace_bridge.py`
 - New frontend/backend integration focus:
-  - Sidebar should follow a shadcn-style admin pattern and be backed by runtime `MenuItem` data.
+  - Sidebar/settings/topnav should follow a shadcn-style admin pattern and be backed by runtime `MenuItem(menu_id=...)` data.
   - `MenuItem` startup behavior must seed empty table and upsert all known routes every boot.
+  - Reuse shadcn-admin components/patterns from https://github.com/satnaing/shadcn-admin as aggressively as practical for QoL/UX consistency.
   - Planning commitment includes:
     - **TanStack Query + WebSocket / Supabase Realtime (Recommended)**
     - **Best choice: Apache ECharts (with echarts-for-react or direct useEffect control)**

@@ -757,3 +757,41 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 | Done         | 464   |
 | Pending      | 362   |
 | Blocked      | 6     |
+
+---
+
+## Checkpoint 019 — Directive Sync: Unassigned Rehome + Phase 40/18 Expansion (2026-05-09T18:41+0200)
+
+**Status**: 🟢 TRACKER/DOC SYNC COMPLETE
+
+### Work Done
+- Rehomed all legacy `unassigned` todos into explicit phase/task ownership:
+  - A2A repairs → `Phase 3`
+  - framework hardening legacy rows → `Phase 25`
+  - MCP stabilization legacy rows → `Phase 22`
+  - memory backlog rows → `Phase 20`
+  - marketplace core-ownership migration row → `Phase 19`
+- Completed `audit38-unassigned-rehome` after pending unassigned rows were fully reassigned.
+- Added `audit39-module-import-order-canonical` to enforce canonical ordering reference:
+  - `src/css/core/settings/config.py` `MODULES` list (line 17) is now the import-order source of truth.
+- Expanded Phase 40 with `db40-direct-schema-policy`:
+  - current tranche uses direct schema/table edits only (no migration scripts; Aerich deferred).
+- Refined Phase 40 descriptions to encode latest directives:
+  - duplicate model strategy = keep higher-quality canonical file + merge missing features
+  - identity/account boundary = `user` internal identity, `provider/accounts` external provider-account graph
+  - `provider 1..N accounts`, `user 1..N accounts`
+  - BaseTreeModel prioritization for menu/url/path/breadcrumb navigation surfaces
+  - tags remain classification-first, not navigation structure
+- Added new Phase 18 task bucket:
+  - `T18.13 Navigation UX + shadcn-admin Reuse` with 5 todos for sidebar/settings/topnav + marketplace UX refinement.
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 892   |
+| Done         | 465   |
+| Pending      | 421   |
+| Blocked      | 6     |
+
+### Next Step
+- Execute Phase 40 lanes with canonicalization first (`db40-marketplace-*`, `db40-memory-*`, `db40-user-vs-account-boundary`) and parallelize with new Phase 18 `T18.13` UI work.

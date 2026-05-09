@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T17:58:55+0200 | **Session**: Phase 40 parallel-lane preparation for multi-worker execution
+**Last Updated**: 2026-05-09T18:41:00+0200 | **Session**: Directive sync (unassigned rehome + Phase 40/18 tracker expansion)
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-09)
 
-**Total**: 885 todos | **Done**: 464 | **Pending**: 415 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 892 todos | **Done**: 465 | **Pending**: 421 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-09 (checked against live session.db totals)
 
@@ -25,17 +25,17 @@
 | Phase 9 — ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
 | Phase 10 — Unified SDK Architecture | 13 | 11 | 2 | 0 | 0 |
 | Phase 17 — Settings & Projects | 34 | 0 | 34 | 0 | 0 |
-| Phase 18 — Frontend Foundation | 19 | 8 | 11 | 0 | 0 |
-| Phase 19 — Module Restructuring + Sessions | 14 | 2 | 11 | 1 | 0 |
-| Phase 20 — Persistent Memory Layer | 33 | 0 | 33 | 0 | 0 |
+| Phase 18 — Frontend Foundation | 24 | 8 | 16 | 0 | 0 |
+| Phase 19 — Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
+| Phase 20 — Persistent Memory Layer | 52 | 7 | 45 | 0 | 0 |
 | Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
-| Phase 22 — MCP Protocol Layer | 15 | 3 | 12 | 0 | 0 |
-| Phase 25 — Integration Hardening | 8 | 2 | 6 | 0 | 0 |
+| Phase 22 — MCP Protocol Layer | 6 | 5 | 1 | 0 | 0 |
+| Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 |
 | Phase 34 — Dependency Map | 19 | 1 | 18 | 0 | 0 |
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
-| Phase 39 — Audit Remediation (A1/A2/A3) | 18 | 0 | 18 | 0 | 0 |
-| Phase 40 — DB Model Consolidation & Rich Schemas | 35 | 0 | 35 | 0 | 0 |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 19 | 1 | 18 | 0 | 0 |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 36 | 0 | 36 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -56,7 +56,7 @@
 - Vite dev proxy now includes `/marketplace` in addition to `/api` and `/ws`.
 - `frontend-live-graphs` planning has been revised from Recharts to **Apache ECharts + Web Worker processing** (Comlink-first API, batched WS ingestion, downsampled render datasets).
 
-### Phase 39 Audit Remediation — 18 todos added (2026-05-09)
+### Phase 39 Audit Remediation — 19 todos tracked (2026-05-09)
 
 - Added a dedicated remediation phase from three audit streams (Architecture/Runtime, Plan/Tracker Integrity, Code Quality/Rules).
 - Task buckets:
@@ -70,8 +70,10 @@
   - plan/session.db phase-name/status reconciliation
   - removal of remaining `from __future__ import annotations` and legacy typing imports
   - `__all__` policy enforcement and broad exception cleanup
+- `audit38-unassigned-rehome` is now completed: all prior pending `unassigned` rows were rehomed to explicit phase/task ownership.
+- Added `audit39-module-import-order-canonical` to codify `core/settings/config.py` `MODULES` line-order as canonical import-order reference.
 
-### Phase 40 DB Model Consolidation — 35 todos prepared (2026-05-09)
+### Phase 40 DB Model Consolidation — 36 todos prepared (2026-05-09)
 
 - Added a dedicated plan intake phase for model-location and schema requests:
   - memory model move reconciliation and canonical import cutover
@@ -89,6 +91,12 @@
   - Lane D menu/tree
   - Lane E tagging
   - Lane F platform polish
+- Added `db40-direct-schema-policy`: current tranche is direct table/model mutation only (no migration scripts; Aerich deferred).
+- User directives now reflected in todo descriptions:
+  - choose higher-quality canonical model when duplicates exist
+  - enforce `provider 1..N accounts` and `user 1..N accounts` ownership model
+  - prioritize BaseTreeModel on menu/url/path/breadcrumb navigation use-cases
+  - keep tag architecture focused on classification, not navigation
 
 ### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
 
@@ -315,7 +323,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **879 todos**, PHASE > TASK > TODO hierarchy (41 phases + unassigned)
+- `.plan/session.db` — **892 todos**, PHASE > TASK > TODO hierarchy (41 named phases; `unassigned` currently empty)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
