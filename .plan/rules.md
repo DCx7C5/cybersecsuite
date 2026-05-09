@@ -40,6 +40,15 @@ cat src/css/api_services/api_services.md
 
 ## CRITICAL MOST IMPORTANT RULES NEVER FORGET
 
+### Environment
+- **ABSOLUTE: your new workingdir is `.plan/`. `~/.{claude,copilot}` are all obsolete.**
+- **ABSOLUTE: you track TODOs, TASKs & PHASEs in `.plan/session.db`** 
+- **ABSOLUTE: use `.venv/bin/` or source `.venv/bin/activate`**
+- **ABSOLUTE: start app with `python manage.py ...`**
+- **ABSOLUTE: use docker compose to manage databases**
+- **ABSOLUTE: use `scripts/codebase_dependency_analyzer.py` as often as possible. Pipe into `| jq ''`**
+- **ABSOLUTE: rule violations are fixed on the fly, or if implications are too heavy, a TODO in session.db is created.**
+
 ### Session & Project Planning
 - **ABSOLUTE: Git track everything. use worktrees for parallel working subagents if possible**
 - **ABSOLUTE: `.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
@@ -68,6 +77,7 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: planning hierarchy is always PHASE > TASK > TODO** — every new TODO must belong to exactly one TASK and exactly one PHASE
 - **ABSOLUTE: [.plan/](../.plan) is the working directory, and [.venv/bin/](../.venv/bin) is the Python entry point**
 - **ABSOLUTE: follow existing directory, documentation, and code patterns, and use [.plan/architecture/*.md](architecture) plus the nearest local planning markdown as the architecture source of truth**
+- **ABSOLUTE: use `src/css/core/settings/config.py` `MODULES` list (line 17) as the canonical module import-order reference** — for ordering disputes, doc updates, or loader-order decisions, this list wins.
 
 ### Workflow & Tooling
 - **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
@@ -76,7 +86,6 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: exception for `memory.md`** — refresh it immediately after major architecture, source-of-truth, or tracker-structure changes that would otherwise mislead the next session
 - **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
 - **ABSOLUTE: make multiple logical and atomic commits**
-- **ABSOLUTE: rule violations are fixed on the fly, or if implications too big a TODO in session.db is created.**
 
 # CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
@@ -120,21 +129,22 @@ cat src/css/api_services/api_services.md
 
 ## 📊 Tech Stack Rules
 
-| Area                   | Decision                                                                             |
-|------------------------|--------------------------------------------------------------------------------------|
-| **Python**             | 3.14+ (async-first, no sync wrappers except CLI)                                     |
-| **Package Manager**    | `uv` (Python), `bun` (Node/JS)                                                       |
-| **ORM**                | Tortoise ORM (PostgreSQL) + asyncpg (async driver)                                   |
-| **Database**           | PostgreSQL (primary OLTP)                                                            |
-| **Cache**              | Redis (rate limiter, token cache)                                                    |
-| **Observability**      | OpenObserve (time-series: telemetry, audit, API usage, LLM calls)                    |
-| **Frontend**           | React 19.2+, TypeScript                                                              |
-| **API**                | FastAPI (async), Pydantic v2                                                         |
-| **Testing**            | pytest (unit/integration), only after phase complete                                 |
+| Area                   | Decision                                                                                                      |
+|------------------------|---------------------------------------------------------------------------------------------------------------|
+| **Python**             | 3.14+ (async-first, no sync wrappers except CLI)                                                              |
+| **Package Manager**    | `uv` (Python), `bun` (Node/JS)                                                                                |
+| **ORM**                | Tortoise ORM (PostgreSQL) + asyncpg (async driver)                                                            |
+| **Database**           | PostgreSQL (primary OLTP)                                                                                     |
+| **Cache**              | Redis (rate limiter, token cache)                                                                             |
+| **Observability**      | OpenObserve (time-series: telemetry, audit, API usage, LLM calls)                                             |
+| **Frontend**           | React 19.2+, TypeScript,                                                                                      |
+| **API**                | FastAPI (async), Pydantic v2                                                                                  |
+| **Testing**            | pytest (unit/integration), only after phase complete                                                          |
 | **Containerization**   | Docker Compose infra services: PostgreSQL, Redis, OpenObserve, Neo4j. App/frontend/Ollama run outside Docker. |
-| **Async HTTP library** | `aiohttp`, never `httpx`                                                             |
- | **Vector RAG**         | Database: postgres via docker compose                                                |
- | **Graph RAG**          | Database: neo4j via docker compose service cybersec-neo4j                            |
+| **Async HTTP library** | `aiohttp`, never `httpx`                                                                                      |
+| **Vector RAG**         | Database: postgres via docker compose                                                                         |
+| **Graph RAG**          | Database: neo4j via docker compose service cybersec-neo4j                                                     |
+
 
 ### Running the App
 
@@ -168,8 +178,6 @@ cd src/frontend && bun run dev
 llama-cpp-python requires a manual build step for CUDA support. Run this **once** after `uv sync`:
 
 ```bash
-CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=61" \
-FORCE_CMAKE=1 \
 uv pip install llama-cpp-python --reinstall --no-cache-dir --force-reinstall
 ```
 
