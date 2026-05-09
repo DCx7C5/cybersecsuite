@@ -23,7 +23,7 @@ class RedisCommunicator(msgspec.Struct):
 
     _entity_id: str
     _dispatcher: MessageDispatcher
-    _handlers: dict[str, list[Callable]] = msgspec.field(default_factory=dict)
+    _handlers: dict[str, list[Callable]] = msgspec.field(default_factory=dict, exclude=True)
 
     @property
     def entity_id(self) -> str:

@@ -43,7 +43,7 @@ class SkillDefinition(msgspec.Struct):
     
     # Parameters and execution
     parameters: list[SkillParameter] = msgspec.field(default_factory=list)
-    handler: Callable[..., object] | None = None  # Execution function
+    handler: Callable[..., object] | None = msgspec.field(default=None, exclude=True)  # Execution function
     
     # Metadata
     author: str = ""
