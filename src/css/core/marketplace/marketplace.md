@@ -51,6 +51,8 @@ siem/ consumes installed MCP connectors
 - `MarketplaceItemRegistry` currently performs DB CRUD directly. Phase 9 will split this into:
   - a pure cache/registry contract
   - a DB-writing service layer
+- Registry invalidation wiring now reacts to item-level change events (`marketplace.item.changed`) and supports targeted cache eviction + `reload()` from manager-backed DB reads.
+- Registry surface is now read/cache focused (`get`, `list`, `invalidate`, `reload`) with no DB write operations.
 - The local cache is process memory today. Redis remains optional future infrastructure, not current behavior.
 
 ## Practical Rule

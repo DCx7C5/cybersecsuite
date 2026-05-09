@@ -1,13 +1,15 @@
 """Tool registry and persistence bridge for builtin and hybrid tools."""
 
+from typing import override
+
 from css.core.logger import getLogger
-import pkgutil
-from pathlib import Path
 
 from css.core.tools.base import BaseToolRegistry
-from css.modules.tools.enums import CompositionStrategy, ParameterType
+from css.modules.tools.enums import CompositionStrategy
 from css.modules.tools.exceptions import ToolExecutionError, ToolNotFoundError
-from css.modules.tools.types import HybridToolSchema, ManagedTool, ToolParameter, ToolReturnType, ToolSchema
+from css.modules.tools.types import HybridToolSchema, ManagedTool, ToolSchema
+from css.modules.tools.builtin_catalog import discover_provider_ids, load_builtin_tool_schemas
+from css.modules.tools.manager import hybrid_tool_definition_manager
 
 logger = getLogger(__name__)
 
@@ -27,92 +29,9 @@ class ToolRegistry(BaseToolRegistry):
             len(self.providers),
         )
 
-    def _discover_provider_ids(self) -> set[str]:
-        api_services = Path(__file__).resolve().parents[2] / "api_services"
-        return {
-            name for _, name, is_pkg in pkgutil.iter_modules([str(api_services)]) if is_pkg and not name.startswith("_")
-        }
-
     def _load_builtin_tools(self) -> None:
-        builtin_tools_map: dict[str, list[ToolSchema]] = {
-            "openai": [
-                ToolSchema(
-                    provider="openai",
-                    name="code_interpreter",
-                    description="Execute Python code and return execution output.",
-                    parameters=[
-                        ToolParameter(
-                            name="code",
-                            type=ParameterType.STRING,
-                            description="Python source code to execute.",
-                            required=True,
-                        )
-                    ],
-                    returns=ToolReturnType(
-                        type="object",
-                        description="Execution result object containing stdout/stderr/artifacts.",
-                    ),
-                    tags=["code", "python", "execution"],
-                    timeout_seconds=60,
-                ),
-                ToolSchema(
-                    provider="openai",
-                    name="file_search",
-                    description="Search indexed files and return matching snippets.",
-                    parameters=[
-                        ToolParameter(
-                            name="query",
-                            type=ParameterType.STRING,
-                            description="Query string for retrieval.",
-                            required=True,
-                        )
-                    ],
-                    returns=ToolReturnType(
-                        type="array",
-                        description="Matching file snippets.",
-                    ),
-                    tags=["search", "retrieval"],
-                ),
-            ],
-            "anthropic": [
-                ToolSchema(
-                    provider="anthropic",
-                    name="computer_use",
-                    description="Perform UI actions using vision-guided automation.",
-                    parameters=[
-                        ToolParameter(
-                            name="action",
-                            type=ParameterType.STRING,
-                            description="Action to perform.",
-                            required=True,
-                            enum=["screenshot", "click", "type", "scroll", "key_press"],
-                        ),
-                        ToolParameter(
-                            name="coordinates",
-                            type=ParameterType.ARRAY,
-                            description="[x,y] target for pointer actions.",
-                        ),
-                        ToolParameter(
-                            name="text",
-                            type=ParameterType.STRING,
-                            description="Input text for typing actions.",
-                        ),
-                    ],
-                    returns=ToolReturnType(
-                        type="object",
-                        description="Action result payload.",
-                    ),
-                    tags=["computer_vision", "interaction"],
-                )
-            ],
-            "groq": [],
-            "ollama": [],
-            "gemini": [],
-            "mistral": [],
-            "together": [],
-        }
-
-        discovered_providers = self._discover_provider_ids()
+        builtin_tools_map = load_builtin_tool_schemas()
+        discovered_providers = discover_provider_ids()
         for provider in discovered_providers:
             builtin_tools_map.setdefault(provider, [])
         self.providers = set(builtin_tools_map.keys())
@@ -124,6 +43,7 @@ class ToolRegistry(BaseToolRegistry):
     async def initialize_runtime_state(self) -> None:
         await self._load_hybrid_tools_from_db()
 
+    @override
     def register_tool(self, tool_id: str, tool_data: dict[str, object]) -> None:
         try:
             schema = ToolSchema.from_dict(tool_data)
@@ -149,6 +69,7 @@ class ToolRegistry(BaseToolRegistry):
 
         self.hybrid_tools[hybrid_schema.tool_id] = ManagedTool(schema=hybrid_schema)
 
+    @override
     def get_tool(self, tool_id: str) -> ToolSchema:
         if tool_id not in self.tools:
             raise ToolNotFoundError(tool_id=tool_id)
@@ -165,6 +86,7 @@ class ToolRegistry(BaseToolRegistry):
             return schema
         raise ToolExecutionError(message=f"Hybrid tool {tool_id} has invalid schema type")
 
+    @override
     def list_tools(self, filter_by_provider: str | None = None, enabled_only: bool = True) -> list[ToolSchema]:
         result: list[ToolSchema] = []
         for managed in self.tools.values():
@@ -206,9 +128,7 @@ class ToolRegistry(BaseToolRegistry):
         raise ToolNotFoundError(tool_id=tool_id)
 
     async def _load_hybrid_tools_from_db(self) -> None:
-        from css.modules.tools.models import HybridToolDefinition
-
-        persisted = await HybridToolDefinition.all()
+        persisted = await hybrid_tool_definition_manager.all_definitions()
         for orm_record in persisted:
             schema = orm_record.to_schema()
             if not isinstance(schema.composition_strategy, CompositionStrategy):
@@ -220,6 +140,3 @@ class ToolRegistry(BaseToolRegistry):
                 self.register_hybrid_tool(schema)
             except ValueError as exc:
                 logger.warning("Skipping hybrid tool %s from DB: %s", schema.tool_id, exc)
-
-
-

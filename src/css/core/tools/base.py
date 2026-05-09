@@ -1,6 +1,7 @@
 """Core tool registry contracts and singleton access."""
 
 from abc import abstractmethod
+from collections.abc import Sequence
 from css.core.types.meta import AsyncSafeSingletonMeta
 
 
@@ -20,7 +21,7 @@ class BaseToolRegistry(metaclass=AsyncSafeSingletonMeta):
         self,
         filter_by_provider: str | None = None,
         enabled_only: bool = True,
-    ) -> list[object]:
+    ) -> Sequence[object]:
         """List tools, optionally filtered by provider and availability."""
 
 

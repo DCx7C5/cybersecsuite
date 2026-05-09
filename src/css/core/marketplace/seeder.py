@@ -11,6 +11,7 @@ import aiohttp
 from css.core.config import MARKETPLACE_CONFIG, MARKETPLACE_SEEDER_HTTP_TIMEOUT
 from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
 from css.core.enums import MarketplaceItemType
+from css.core.marketplace.registry import emit_marketplace_item_changed
 from .exceptions import MarketplaceSeedingError
 
 log = getLogger(__name__)
@@ -151,8 +152,9 @@ class MarketplaceSeeder:
                     existing.install_path = install_path
                     existing.meta = {**(existing.meta or {}), **meta}
                     await existing.save()
+                    await emit_marketplace_item_changed(item_slug=existing.slug, operation="updated")
                 else:
-                    await MarketplaceItem.create(
+                    created_item = await MarketplaceItem.create(
                         slug=item_id,
                         name=(description or item_id)[:255],
                         description=description,
@@ -161,6 +163,7 @@ class MarketplaceSeeder:
                         install_path=install_path,
                         meta=meta,
                     )
+                    await emit_marketplace_item_changed(item_slug=created_item.slug, operation="updated")
                 created += 1
             except Exception as e:
                 log.error(f"Failed to seed {item_kind.value} item {seed_item.get('name', 'unknown')}: {e}")

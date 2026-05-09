@@ -1,10 +1,10 @@
 # CyberSecSuite: Implementation Plan
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
-**Status**: ✅ Phase 0–1 Complete | ✅ BLOCKER #3 RESOLVED (FACT-CHECKED) | 🟡 Phase 2–37 Pending | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09T16:20:00+02:00 (session current)  
-**Last Audit**: ✅ Fact-checked app initialization blockers — 7 critical todos verified complete  
-**Todos**: 813 total (401 done, 406 pending, 6 blocked) | PHASE > TASK > TODO enforced in session.db
+**Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
+**Updated**: 2026-05-09T06:30:38+02:00 (registry cleanup sync)  
+**Last Audit**: 🟡 2026-05-09 dependency analyzer scan + planning drift repair in progress  
+**Todos**: 813 total (415 done, 392 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 ---
 
@@ -48,11 +48,11 @@ Only 7 files allowed in `.plan/` root (see [rules.md](./rules.md) § FILE OWNERS
 ## 📊 CURRENT STATUS (2026-05-08T23:57:24+02:00)
 
 **Project**: Multi-Orchestrator + Teams + Config Integration + SDK Architecture + Consistency Patterns  
-**Phases**: 38 total (Phase 0–37) — Phase 0 + 1 complete, later phases mixed/planned  
-**Todos**: **813 total (401 done, 406 pending, 6 blocked)**  
-**Consistent File Patterns**: 5/25 modules follow established patterns (`a2a_google`, `marketplace`, `tasks`, `teams`, `tools`)  
-**Last Update**: `mod-tags` completed (consistent file structure + hierarchy/autocomplete/conflict support)  
-**Next**: Continue ready queue from `session.db` in `sort_order`
+**Phases**: 38 total (Phase 0–37) — mixed execution state; use `session.db` for exact per-phase counts  
+**Todos**: **813 total (415 done, 392 pending, 6 blocked, 0 in_progress)**  
+**Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
+**Last Update**: registry read/cache surface cleanup synced (Phase 9 T9.3)  
+**Next**: pick the next ready todo from `session.db` by `sort_order`
 
 ### Normalization Status (2026-05-07)
 
@@ -664,17 +664,17 @@ Modified:
 **Objective**: Synchronize all 48 local planning markdown files with session.db
 
 **Three Parallel Agents** (All Completed):
-1. **Agent 1: API Services Auditor** — Analyzed 22 `src/css/api_services/*/plan.md`
+1. **Agent 1: API Services Auditor** — Analyzed the provider planning set that is now consolidated in `src/css/api_services/api_services.md`
    - 12 providers ready for Phase 2 refactoring
    - 10 providers TBD (Q3 research)
    - Individual provider details in their local planning markdown files
 
-2. **Agent 2: Core Infrastructure Auditor** — Analyzed 4 `src/css/core/*/plan.md`
+2. **Agent 2: Core Infrastructure Auditor** — Analyzed the local core planning markdown files for the targeted core areas
    - 3/4 components production-ready
    - 1 stub (otel) for Phase 4
    - Individual component details in their local planning markdown files
 
-3. **Agent 3: Module Consistency Auditor** — Analyzed 22 `src/css/modules/*/<module>.md` files
+3. **Agent 3: Module Consistency Auditor** — Analyzed the then-current `src/css/modules/*/<module>.md` set
    - 5 production-ready (23%)
    - 11 pending Phase 2-3 (50%)
    - 6 blocked/stubs (27%)

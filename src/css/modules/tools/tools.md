@@ -35,6 +35,20 @@ The module is **partially implemented** and more real than the old doc claimed.
 - loads hybrid tool definitions from the database
 - exposes list/get helpers for builtin and hybrid tools
 
+## Phase 9 Registry Cleanup (2026-05-09)
+
+- Builtin tool definitions are now loaded from `builtin_catalog.py`, keeping `registry.py` focused on orchestration.
+- Hybrid-tool startup loads now read through `HybridToolDefinition.manager` instead of direct ORM scans in the registry.
+- Registry ownership is read/cache only; write operations stay in service/model layers.
+
+## Architecture Note (2026-05-09)
+
+- Shared execution runtime now lives under `src/css/core/tools/`:
+  - `executor.py`
+  - `tool_call_loop.py`
+  - `models.py` access surface
+- `src/css/modules/tools/` keeps ownership of ORM models, registry metadata, and compatibility exports for older imports.
+
 ## What is still missing
 
 - one clear async execution method on the registry

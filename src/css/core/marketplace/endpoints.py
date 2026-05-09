@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 from css.core.marketplace.seeder import MarketplaceSeeder
+from css.core.marketplace.registry import emit_marketplace_item_changed
 from css.core.marketplace.types import (
     InstallRequest,
     InstallResponse,
@@ -124,6 +125,7 @@ async def toggle_item(request: ToggleRequest) -> ToggleResponse:
             else MarketplaceItemStatus.disabled
         )
         await item.save()
+        await emit_marketplace_item_changed(item_slug=item.slug, operation="updated")
 
         return ToggleResponse(
             success=True,

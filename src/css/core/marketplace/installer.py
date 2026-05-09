@@ -17,6 +17,7 @@ from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemStatus
 
 from .cache import marketplace_cache
+from .registry import emit_marketplace_item_changed
 
 
 class InstallationResult:
@@ -158,6 +159,7 @@ class PackageInstaller:
             item.installed_at = datetime.now(UTC)
             item.status = MarketplaceItemStatus.installed
             await item.save()
+            await emit_marketplace_item_changed(item_slug=item.slug, operation="install")
 
             marketplace_cache.invalidate(f"item:{item.slug}")
             marketplace_cache.invalidate_prefix("items:")
@@ -212,6 +214,7 @@ class PackageInstaller:
             item.installed_at = None
             item.status = MarketplaceItemStatus.disabled
             await item.save()
+            await emit_marketplace_item_changed(item_slug=item.slug, operation="uninstall")
 
             marketplace_cache.invalidate(f"item:{item.slug}")
             marketplace_cache.invalidate_prefix("items:")
