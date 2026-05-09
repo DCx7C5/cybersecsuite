@@ -1,9 +1,8 @@
-"""Abstract base for all API service providers.
+"""Base API service client — implements LLMAdapter Protocol.
 
-Imports msgspec.Struct versions from messages.py (Phase 6 P1).
+Provider-agnostic base with shared session management and buffered call logic.
 """
 
-from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
 
 from aiohttp import ClientSession
@@ -25,8 +24,12 @@ class StreamingHandler:
         raise NotImplementedError(f"{self.__class__.__name__} must implement _parse_stream_chunk()")
 
 
-class BaseApiServiceClient(ABC):
-    """Abstract base for all API service providers."""
+class BaseApiServiceClient:
+    """Base for all API service providers — implements LLMAdapter Protocol."""
+
+    provider_id: ProviderType
+    api_key: str | None
+    base_url: str
     
     def __init__(
         self,
@@ -63,12 +66,10 @@ class BaseApiServiceClient(ABC):
         if self._session:
             await self._session.close()
     
-    @abstractmethod
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider (with per-model feature flags)."""
-        pass
-    
-    @abstractmethod
+        raise NotImplementedError
+
     async def call_llm(
         self,
         model_id: str,
@@ -86,8 +87,8 @@ class BaseApiServiceClient(ABC):
         Always returns an async iterator of chunks. For buffered responses,
         yields a single complete chunk instead of streaming multiple chunks.
         """
-        pass
-    
+        raise NotImplementedError
+
     async def call_llm_buffered(
         self,
         model_id: str,

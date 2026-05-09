@@ -1,5 +1,6 @@
 """Base protocol interfaces — foundational contracts for domain entities."""
 
+from collections.abc import AsyncIterator
 from typing import Any, Literal, Protocol, runtime_checkable
 
 
@@ -166,10 +167,60 @@ class BaseTeamMemberLike(Protocol):
     def is_active(self) -> bool: ...
 
 
+@runtime_checkable
+class LLMAdapter(Protocol):
+    """Protocol for LLM provider adapters (replaces ABC BaseApiServiceClient).
+
+    All provider adapters (native SDK, HTTP, custom, complex auth) must implement
+    this protocol. The streaming contract is: always return AsyncIterator[StreamChunk],
+    even for buffered calls (yield one final chunk).
+    """
+
+    provider_id: str
+    api_key: str | None
+    base_url: str | None
+
+    async def get_models(self) -> list[Any]:
+        """Get available models with per-model feature flags."""
+        ...
+
+    async def call_llm(
+        self,
+        model_id: str,
+        messages: list[Any],
+        tools: list[Any] | None = None,
+        temperature: float = 0.7,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        streaming: bool = True,
+        **kwargs: Any,
+    ) -> AsyncIterator[Any]:
+        """Call LLM with streaming support — yields StreamChunks."""
+        ...
+
+    async def call_llm_buffered(
+        self,
+        model_id: str,
+        messages: list[Any],
+        tools: list[Any] | None = None,
+        temperature: float = 0.7,
+        max_tokens: int | None = None,
+        system_prompt: str | None = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Buffered call — accumulate chunks and return LLMResponse."""
+        ...
+
+    def supports_feature(self, model: Any, feature: str) -> bool:
+        """Check if model supports a feature."""
+        ...
+
+
 __all__ = [
     "BaseCommunicator",
     "BaseAgentLike",
     "BaseSkillLike",
     "BaseToolLike",
     "BaseTeamMemberLike",
+    "LLMAdapter",
 ]

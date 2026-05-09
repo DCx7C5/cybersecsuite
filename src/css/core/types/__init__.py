@@ -15,6 +15,7 @@ from .base_protocols import (  # noqa: F401
     BaseSkillLike,
     BaseToolLike,
     BaseTeamMemberLike,
+    LLMAdapter,
 )
 
 # ── Module protocol ──────────────────────────────────────────────────────────
@@ -115,6 +116,7 @@ __all__ = [
     "BaseSkillLike",
     "BaseToolLike",
     "BaseTeamMemberLike",
+    "LLMAdapter",
     "CSSModule",
     # messages
     "BaseMessage",
