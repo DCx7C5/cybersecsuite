@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T16:37:03+0200 | **Session**: Phase 18 Frontend Foundation — shell + marketplace slice
+**Last Updated**: 2026-05-09T16:41:38+0200 | **Session**: Phase 18 Frontend Foundation — chart stack + worker pipeline planning sync
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -52,6 +52,7 @@
   - `src/css/modules/chat/templates/`
 - Marketplace frontend hooks + panel implemented via `src/frontend/src/panels/marketplace/*` and re-exported through `core/marketplace/templates/*`.
 - Vite dev proxy now includes `/marketplace` in addition to `/api` and `/ws`.
+- `frontend-live-graphs` planning has been revised from Recharts to **Apache ECharts + Web Worker processing** (Comlink-first API, batched WS ingestion, downsampled render datasets).
 
 ### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
 
@@ -280,6 +281,6 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - `.plan/plan.md` — phases overview + Phase 6 proposals
 - `.plan/session.db` — **832 todos**, PHASE > TASK > TODO hierarchy (37 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
-- `.plan/checkpoints.md` — session history (014 checkpoints)
+- `.plan/checkpoints.md` — session history (015 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
 - `src/css/api_services/api_services.md` — provider source-of-truth index

@@ -2,12 +2,12 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09 (Phase 18 frontend + marketplace slice synced)  
+**Updated**: 2026-05-09 (Phase 18 chart stack + worker pipeline planning synced)  
 **Todos**: 832 total (464 done, 362 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: Phase 18 Frontend Foundation — initial shell + marketplace slice (8 todos)  
-**Next**: Continue Phase 18 remaining transport/state/hooks/dashboard todos
+**Last Update**: Phase 18 Frontend Foundation — ECharts + worker strategy mapped into todos  
+**Next**: Continue Phase 18 remaining transport/state/hooks/dashboard implementation
 
 ### PLAN MODE Active Focus (2026-05-09)
 
@@ -29,6 +29,7 @@
   - Planning commitment includes:
     - **TanStack Query + WebSocket / Supabase Realtime (Recommended)**
     - **Best choice: Apache ECharts (with echarts-for-react or direct useEffect control)**
+    - **High-frequency metric processing in Web Workers (Comlink-first, raw postMessage fallback)**
 
 ### Normalization Status (2026-05-07)
 
@@ -4062,11 +4063,13 @@ src/frontend/                          ← Main Vite app (shell only)
     │   │   ├── useList.ts             ← PORT: generic list CRUD + reorder
     │   │   ├── useAsync.ts            ← PORT: one-off async state (use TanStack Query for data)
     │   │   └── useIntersectionObserver.ts ← PORT: virtual scroll trigger
-    │   ├── charts/                    ← Recharts components (see frontend-live-graphs)
+    │   ├── charts/                    ← Apache ECharts components (see frontend-live-graphs)
     │   │   ├── TokenUsageChart.tsx    ← AreaChart: input/output tokens over time
     │   │   ├── LatencyChart.tsx       ← LineChart: p50/p95/p99 LLM latency
     │   │   ├── AgentActivityBar.tsx   ← BarChart: calls per model last hour
     │   │   └── EventRateSparkline.tsx ← Tiny sparkline: event rate per 30s
+    │   ├── workers/
+    │   │   └── dataProcessor.ts       ← Web Worker: downsample/aggregate rolling time-series batches
     │   ├── providers/
     │   │   └── SocketProvider.tsx     ← PORT from ahs-admin-panel/SocketProvider.tsx (React Context for wsManager)
     │   └── components/
@@ -4502,7 +4505,7 @@ The root route. A live ops dashboard — dark, information-dense, feature-rich. 
 
 **Widgets**:
 - **SystemHealth** — backend ping status, DB conn, Redis conn, OTEL conn (`GET /api/health`), WS status indicator (from Zustand wsStatus)
-- **LiveMetrics** — see T18.12 (Recharts area/line/bar charts, WS-driven)
+- **LiveMetrics** — see T18.12 (ECharts area/line/bar charts, WS-driven, worker-processed)
 - **ActiveAgents** — live list of running agents with status badge (WS push via CSS event stream)
 - **RecentEvents** — last 20 domain events, auto-scrolling, infinite scroll with `useIntersectionObserver`
 - **SessionOverview** — active session count + last 5 sessions with project name (`GET /api/sessions`)
@@ -4518,26 +4521,37 @@ The root route. A live ops dashboard — dark, information-dense, feature-rich. 
 
 ---
 
-### T18.12 — Live Graphs (Recharts + WS data feeds)
+### T18.12 — Live Graphs (ECharts + WS feeds + Web Worker processing)
 
 **Files**: `src/frontend/src/core/charts/`
 
 ```bash
-bun add recharts @types.py/recharts
+bun add echarts echarts-for-react comlink
 ```
 
-All charts: dark zinc palette, `ResponsiveContainer width="100%"`, custom tooltip styling, no mock data — empty Skeleton until first real WS event.
+All charts: dark zinc palette, smooth transitions, custom tooltip styling, no mock data — empty Skeleton until first real WS event.
+
+**Realtime processing strategy (high-frequency safe)**:
+- Run heavy transforms in `src/frontend/src/workers/dataProcessor.ts` (downsampling, rolling stats, bucket aggregation, filter windows).
+- Use Comlink for worker API ergonomics; keep raw `postMessage` as fallback if build/tooling constraints arise.
+- Batch inbound WS points (or stream chunks) before worker handoff; avoid per-point chatter.
+- Keep transfer payloads minimal (timestamp/value + required labels), and move to typed buffers/transferables if event rate demands it.
+- Use LTTB-style downsampling (or equivalent bucket policy) so charts stay bounded while raw stream rate grows.
+- Worker returns `{processed, stats, rawCount}` and dashboard state applies the result atomically.
 
 **Charts**:
-- `TokenUsageChart.tsx` — AreaChart (x=time last 60min, 1-min buckets, y=tokens; two areas: input(blue) + output(green))
-- `LatencyChart.tsx` — LineChart (p50/p95/p99 LLM latency per minute)
-- `AgentActivityBar.tsx` — BarChart (agent calls per model last hour)
-- `EventRateSparkline.tsx` — Tiny sparkline (no axes), 30s buckets, for use inside dashboard cards
+- `TokenUsageChart.tsx` — stacked area series (x=time last 60min, 1-min buckets; input/output tokens)
+- `LatencyChart.tsx` — multi-line series (p50/p95/p99 LLM latency per minute)
+- `AgentActivityBar.tsx` — grouped bar series (agent calls per model, last hour)
+- `EventRateSparkline.tsx` — tiny line series (no axes), 30s buckets, for use inside dashboard cards
 
-**Data model**: Zustand `metricsSlice` — rolling 60-bucket buffer per metric. `useDashboardMetrics.ts` hook subscribes to WS events of types `llm.call.complete`, `agent.action`, `css.event` and populates the buffer.
+**Data model**:
+- Zustand `metricsSlice` stores processed chart series + live summary stats.
+- `useDashboardMetrics.ts` subscribes to WS events (`llm.call.complete`, `agent.action`, `css.event`) and forwards batches to the worker.
+- The worker owns raw rolling buffers and returns downsampled series for rendering.
 
 **Todos**:
-- `frontend-live-graphs` — Recharts install + 4 chart components + metricsSlice + useDashboardMetrics hook
+- `frontend-live-graphs` — ECharts + worker pipeline + 4 chart components + metricsSlice + useDashboardMetrics hook
 
 ---
 
@@ -4578,7 +4592,7 @@ T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (api/ws/store)
 | `frontend-module-registry` | T18.5 | ModulePanel registry (incl `/` dashboard) + TanStack Router routes | `frontend-appshell` |
 | `frontend-panel-colocated-structure` | T18.5 | Scaffold `templates/` stubs in settings/marketplace/chat modules | `frontend-module-registry` |
 | `frontend-landing-dashboard` | T18.11 | Landing dashboard at `/` with 6 widgets + live graphs | `frontend-appshell`, `frontend-port-hooks`, `frontend-zustand-store`, `sessions-endpoints` |
-| `frontend-live-graphs` | T18.12 | Recharts + 4 chart components + metricsSlice + useDashboardMetrics | `frontend-landing-dashboard`, `frontend-ws-manager` |
+| `frontend-live-graphs` | T18.12 | ECharts + worker pipeline + 4 chart components + metricsSlice + useDashboardMetrics | `frontend-landing-dashboard`, `frontend-ws-manager` |
 | `frontend-settings-panel` | T18.6 | Settings panel (accordion, search, inline edit, masking) | `frontend-panel-colocated-structure`, `frontend-settings-hooks`, `settings-rest-routes` |
 | `frontend-settings-hooks` | T18.6 | TanStack Query hooks for /api/settings/* | `frontend-api-client`, `settings-rest-routes` |
 | `frontend-marketplace-panel` | T18.7 | Marketplace panel (grid, search, install) | `frontend-panel-colocated-structure`, `frontend-marketplace-hooks` |
@@ -4604,6 +4618,8 @@ T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (api/ws/store)
 ---
 
 ### 19.1 — Frontend Shell Location Decision (PENDING)
+
+**Carry-over note from chat history**: a request to move marketplace frontend assets to `core/templates/marketplace` was raised. Current Phase 18 contract remains module-colocated templates under `src/css/core/marketplace/templates/` and `src/css/modules/<name>/templates/`. Treat this as a deliberate architecture decision unless explicitly overridden.
 
 Two options for where the Vite shell app lives:
 
@@ -5829,7 +5845,7 @@ Workflow track:      ┌──────────▼───────�
                                 │
                      ┌──────────▼──────────────────┐  Frontend
                      │  React Flow (DAG/workflow)   │
-                     │  Recharts (telemetry series) │
+                     │  ECharts (telemetry series)  │
                      └─────────────────────────────┘
 ```
 
@@ -5868,7 +5884,7 @@ Workflow track:      ┌──────────▼───────�
 ### T27.6 — Frontend Rendering
 
 - `graph-react-flow` — WorkflowGraph React component using React Flow: renders agent DAGs with live patch subscription. Nodes coloured by type (agent=blue, tool=green, approval=orange, error=red).
-- `graph-recharts` — TelemetryDashboard React component: cost/latency/error charts using recharts. Shared time axis, period selector (1h/24h/7d).
+- `graph-recharts` *(legacy ID name)* — TelemetryDashboard React component: cost/latency/error charts using Apache ECharts, with worker-offloaded downsampling/aggregation for high-frequency streams. Shared time axis, period selector (1h/24h/7d).
 - `graph-approval-overlay` — ApprovalOverlay component: renders pending approval gates on workflow graph with approve/reject buttons inline (connects to Phase 26 approval WebSocket).
 
 ### T27.7 — Integration

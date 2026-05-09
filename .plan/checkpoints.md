@@ -647,3 +647,29 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Next Step
 - Continue remaining Phase 18 todos (`frontend-ws-manager`, `frontend-zustand-store`, `frontend-port-hooks`, settings/chat panels, dev tooling, dashboard/graphs).
+
+---
+
+## Checkpoint 015 — Phase 18 Realtime Graph Planning Sync (2026-05-09T16:41+0200)
+
+**Status**: 🟡 PLAN UPDATE APPLIED
+
+### Work Done
+- Synced Phase 18 chart direction to the latest frontend guidance:
+  - Replaced `Recharts` plan language with **Apache ECharts** for dashboard charts.
+  - Added **Web Worker data-processing pipeline** to T18.12 for high-frequency feeds (batching, downsampling, stats).
+  - Added Comlink-first worker API note with raw `postMessage` fallback.
+- Updated `session.db` todo details for:
+  - `frontend-live-graphs` (title + full description now ECharts + worker-oriented)
+  - `frontend-landing-dashboard` (explicit dependency on worker-processed LiveMetrics surface)
+  - `graph-recharts` legacy ID (title/description updated to ECharts + worker policy)
+- Captured a carry-over chat-history note in Phase 19:
+  - Keep module-colocated `templates/` contract (`src/css/core/marketplace/templates/`) unless explicitly overridden.
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 832   |
+| Done         | 464   |
+| Pending      | 362   |
+| Blocked      | 6     |
