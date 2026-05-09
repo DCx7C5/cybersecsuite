@@ -38,6 +38,7 @@ class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
         """Connect to a registered MCP server using its transport type."""
         from fastmcp import Client
         from fastmcp.client.transports import (
+            FastMCPTransport,
             UvStdioTransport,
             SSETransport,
             StreamableHttpTransport,
@@ -52,10 +53,10 @@ class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
             from importlib import import_module
 
             server = getattr(import_module(module), attr)()
-            client = await Client(server)  # In-process, zero HTTP
+            client = await Client(FastMCPTransport(server))
         elif transport_value == "STDIO":
             client = await Client(
-                UvStdioTransport(config.command, env=config.env)
+                UvStdioTransport(config.command, env_vars=config.env)
             )
         elif transport_value == "STREAMABLE_HTTP":
             url = config.url or ""
@@ -93,7 +94,7 @@ class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
             server_id=server_id,
             tool_name=tool_id,
             content=str(result) if result else "",
-            is_error=bool(getattr(result, "is_error", False)),
+            is_error=bool(getattr(result, "isError", False)),
         )
 
     async def list_tools(self, server_id: str) -> list[dict]:
