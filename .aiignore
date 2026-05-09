@@ -63,6 +63,7 @@ coverage.xml
 dump.rdb
 **/*.json
 *.json
+!pyrightconfig.json
 !/home/daen/Projects/ai-marketplace/index.json
 resume
 legacy_docs/

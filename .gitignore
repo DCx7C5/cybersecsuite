@@ -119,6 +119,8 @@ temp/
 .cache/
 *.cache
 cache/
+!src/css/core/cache/
+!src/css/core/cache/**
 
 # Docker (if using)
 docker-compose.override.yml
