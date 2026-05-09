@@ -32,6 +32,10 @@ It is **not** the runtime execution layer for MCP, tools, or SIEM integrations. 
   - `src/css/core/marketplace/templates/hooks.ts`
   - `src/css/core/marketplace/templates/types.ts`
 - Runtime UI implementation currently lives in `src/frontend/src/panels/marketplace/` and is re-exported through the colocated template files above so the module-colocated contract stays intact.
+- Active redesign directives:
+  - Marketplace kind navigation should come from sidebar children (agents, skills, MCPs, workflows, templates, prompts, teams).
+  - In-panel side tabs for kind switching are planned for removal.
+  - Installed vs catalog surfaces should be presented in one coherent, dense UI flow (not split into disconnected screens).
 
 ## Architectural Role
 
@@ -60,6 +64,7 @@ siem/ consumes installed MCP connectors
   - a pure cache/registry contract
   - a DB-writing service layer
 - ORM source currently split between `core/db/models/marketplace_catalog.py` (active runtime imports) and `core/db/models/marketplace.py` (richer model surface). Phase 40 lane B tracks canonical merge + duplicate removal (`db40-marketplace-*`).
+- Sidebar children contract is tracked in `db40-menu-marketplace-children-contract` and consumed by Phase 18 marketplace navigation todos.
 - Registry invalidation wiring now reacts to item-level change events (`marketplace.item.changed`) and supports targeted cache eviction + `reload()` from manager-backed DB reads.
 - Registry surface is now read/cache focused (`get`, `list`, `invalidate`, `reload`) with no DB write operations.
 - Registry list filtering now happens through read-side predicates/service filters instead of ad-hoc CRUD helpers.

@@ -795,3 +795,46 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Next Step
 - Execute Phase 40 lanes with canonicalization first (`db40-marketplace-*`, `db40-memory-*`, `db40-user-vs-account-boundary`) and parallelize with new Phase 18 `T18.13` UI work.
+
+---
+
+## Checkpoint 020 — Frontend/Settings/MCP/XYFlow Directive Intake (2026-05-09T20:05+0200)
+
+**Status**: 🟢 TRACKER + PLAN SYNC COMPLETE
+
+### Work Done
+- Added new **Phase 18 parallel worker lanes** (`T18.0 Parallel Lanes`) for:
+  - theme/layout
+  - settings/config integration
+  - navigation shell
+  - marketplace UX
+  - MCP GUI
+  - XYFlow integration
+- Added frontend directives as explicit todos:
+  - early theming pass before feature-heavy implementation
+  - stronger shadcn-admin layout/component reuse
+  - marketplace sidebar children navigation
+  - removal of marketplace side tabs
+  - redesigned installed+catalog marketplace display
+  - MCP server lifecycle hooks/panel in GUI
+  - `@xyflow/react` integration + first topology view
+- Added `Phase 17` config convergence task set (`T17.14 Config Consolidation`) to migrate:
+  - `src/css/core/config.py`
+  - `src/css/core/settings/config.py`
+  into a single core/settings-owned config surface.
+- Added `Phase 22` lifecycle control-plane todos for MCP backend:
+  - `mcp-server-lifecycle-api`
+  - `mcp-server-lifecycle-runtime-wire`
+- Added `db40-menu-marketplace-children-contract` to ensure seeded/stable Marketplace child items (`agents`, `skills`, `mcps`, `workflows`, `templates`, `prompts`, `teams`).
+- Added `graph-xyflow-adoption-plan` in Phase 27 for long-term graph-engine alignment.
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 913   |
+| Done         | 465   |
+| Pending      | 442   |
+| Blocked      | 6     |
+
+### Next Step
+- Start parallel execution by claiming one lane from `T18.0` and one from `T40.0`, with settings/config and menu/sidebar prerequisites first.

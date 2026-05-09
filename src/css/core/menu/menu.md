@@ -21,6 +21,7 @@
 ## Phase 40 Work Queue (session.db)
 
 - `db40-menu-sidebar-contract`
+- `db40-menu-marketplace-children-contract`
 - `db40-menu-menuid-upsert`
 - `db40-menu-menuid-endpoints`
 - `db40-menu-tree-constraints`
@@ -31,3 +32,5 @@
 - Navigation hierarchy concerns (URL/path/breadcrumb trees) belong here.
 - Tagging remains classification-first and is not a default substitute for navigation trees.
 - Sidebar/settings/topnav should be feature-rich but not bloated, and backed by runtime menu data.
+- Marketplace sidebar must expose child routes (agents, skills, MCPs, workflows, templates, prompts, teams) with deterministic ordering.
+- Marketplace kind tabs inside the panel are planned for removal; sidebar child navigation + URL state is the canonical path.

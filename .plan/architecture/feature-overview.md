@@ -1,7 +1,7 @@
 # CyberSecSuite — Feature Inventory
 
 **Generated**: 2026-05-09  
-**Source**: `src/css/modules/` (31 modules), `src/css/api_services/` (24 SDKs), `src/css/core/`, `.plan/architecture/*.md`, `.plan/session.db` (892 todos, 41 named phases)
+**Source**: `src/css/modules/` (31 modules), `src/css/api_services/` (24 SDKs), `src/css/core/`, `.plan/architecture/*.md`, `.plan/session.db` (913 todos, 41 named phases)
 
 **Status Legend**: ✅ DONE · 🔧 IN PROGRESS · 📋 PLANNED · ⏳ PENDING · ⚠️ BLOCKED
 
@@ -538,6 +538,7 @@
 | Feature | Status | Phase | Description |
 |---------|--------|-------|-------------|
 | **Graph Visualization Engine** | 📋 PLANNED | 27 | Render Neo4j graphs in frontend |
+| **XYFlow Integration Baseline** | 📋 PLANNED | 18/27 | Standard graph/canvas UI engine for frontend topology and graph views |
 | **Attack-Path Traversal** | 📋 PLANNED | 27 | Visualize MITRE ATT&CK technique chains |
 | **Workflow Graph Export** | 📋 PLANNED | 27 | Workflow steps → Neo4j graph → visualization |
 
@@ -656,16 +657,16 @@
 | 15 | Permissions + WorkingDir | 📋 PLANNED | — |
 | 16 | Provider SDK Features | 📋 PLANNED | — |
 | 17 | Settings & Projects | 📋 PLANNED | — |
-| 18 | Frontend Foundation | 🔧 IN PROGRESS | 8/24 |
+| 18 | Frontend Foundation | 🔧 IN PROGRESS | 8/38 |
 | 19 | Module Restructuring + Sessions | 📋 PLANNED | — |
 | 20 | Persistent Memory Layer | 🔧 IN PROGRESS | 7/52 |
 | 21 | Qwen3-0.6B Triage Intelligence | 📋 PLANNED | 14 todos |
-| 22 | MCP Protocol Layer | 🔧 IN PROGRESS | 5/6 |
+| 22 | MCP Protocol Layer | 🔧 IN PROGRESS | 5/8 |
 | 23 | Prompt Registry | 📋 PLANNED | 10 todos |
 | 24 | Git Tracking & Worktree | 📋 PLANNED | — |
 | 25 | Integration Hardening | 🔧 IN PROGRESS | 8/14 |
 | 26 | Human Approval Workflows | 📋 PLANNED | — |
-| 27 | Graph Visualization | 📋 PLANNED | — |
+| 27 | Graph Visualization | 📋 PLANNED | 0/17 |
 | 28 | Auth & Accounts | 📋 PLANNED | — |
 | 29 | Cybersec Domain Layer | 📋 PLANNED | — |
 | 30 | Workflow Engine + IPC | 📋 PLANNED | — |
@@ -680,4 +681,4 @@
 | 39 | Audit Remediation (A1/A2/A3) | 🔧 IN PROGRESS | 1/19 |
 | 40 | DB Model Consolidation & Rich Schemas | 📋 PLANNED | 0/36 |
 
-**Overall**: 465 done / 421 pending / 6 blocked / 0 in_progress (892 total todos)
+**Overall**: 465 done / 442 pending / 6 blocked / 0 in_progress (913 total todos)

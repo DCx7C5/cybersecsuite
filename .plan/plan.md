@@ -2,12 +2,12 @@
 
 **Main Workdir**: `/home/daen/Projects/cybersecsuite/.plan/`  
 **Status**: 🟡 Mixed execution state | `session.db` is current | 5 Architecture Proposals Approved  
-**Updated**: 2026-05-09 (directive sync: unassigned rehome + Phase 40/18 refinement)  
-**Todos**: 892 total (465 done, 421 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
+**Updated**: 2026-05-09 (frontend/settings/MCP/xyflow directive sync + parallel lanes)  
+**Todos**: 913 total (465 done, 442 pending, 6 blocked, 0 in_progress) | PHASE > TASK > TODO enforced in session.db
 
 **Consistent File Patterns**: Track exact compliance in Phase 3/4 todos and local module docs; do not treat this section as a live count source  
-**Last Update**: User directive sync applied across Phase 40 model consolidation and Phase 18 frontend navigation UX  
-**Next**: Execute `T40.0` lanes (canonical model selection + direct schema policy) and `T18.13` shadcn-admin navigation uplift
+**Last Update**: Added parallel-ready lanes + todos for theming-first, config migration, marketplace nav redesign, MCP GUI controls, and XYFlow integration  
+**Next**: Claim lanes in `T18.0` + `T40.0` and execute settings/config + menu/sidebar prerequisites first
 
 ### PLAN MODE Active Focus (2026-05-09)
 
@@ -17,7 +17,9 @@
 - Phase 40 schema policy: direct table/model edits now, no migration scripts in this tranche (Aerich deferred).
 - Identity boundary directive: `user.py` = internal user/admin identity; `provider.py` + `accounts.py` = provider-account surfaces (`provider 1..N accounts`, `user 1..N accounts`).
 - Import-order directive: treat `src/css/core/settings/config.py` `MODULES` list (line 17) as canonical ordering reference.
-- Queue frontend theming follow-up: remove outer viewport margins (top/left/bottom/right) while preserving internal panel spacing.
+- Frontend is now lane-scheduled for parallel workers via `T18.0 Parallel Lanes`.
+- Theme/layout should be executed early: normalize shell spacing and tokens before feature-heavy panels.
+- Config consolidation directive queued: migrate both `src/css/core/config.py` and `src/css/core/settings/config.py` into the core/settings ownership surface.
 - Visualization mapping contracts active: Neo4j→NVL, Postgres→ECharts, OpenObserve→native dashboards.
 - Visualization planning artifacts updated in session plan: mapping contracts, component policy, React interfaces, and rollout acceptance criteria.
 - Current tracker state in `.plan/session.db`:
@@ -30,6 +32,10 @@
   - `src/css/modules/skills/marketplace_bridge.py`
 - New frontend/backend integration focus:
   - Sidebar/settings/topnav should follow a shadcn-style admin pattern and be backed by runtime `MenuItem(menu_id=...)` data.
+  - Marketplace sidebar item must own children navigation (`agents`, `skills`, `mcps`, `workflows`, `templates`, `prompts`, `teams`).
+  - Marketplace in-panel side tabs for kind selection are being removed; sidebar children + URL state become the canonical navigation model.
+  - MCP GUI start/stop/restart controls are planned end-to-end (Phase 22 lifecycle API + Phase 18 GUI panel).
+  - `@xyflow/react` is now the planned graph/canvas integration for frontend and graph-engine planning.
   - `MenuItem` startup behavior must seed empty table and upsert all known routes every boot.
   - Reuse shadcn-admin components/patterns from https://github.com/satnaing/shadcn-admin as aggressively as practical for QoL/UX consistency.
   - Planning commitment includes:
@@ -4013,7 +4019,7 @@ After Phase 14 events module is implemented:
 
 ### Execution Snapshot (2026-05-09)
 
-**Tracker status**: `Phase 18 — Frontend Foundation` = **8 done / 11 pending** (session.db)
+**Tracker status**: `Phase 18 — Frontend Foundation` = **8 done / 30 pending** (session.db)
 
 **Completed todos**:
 - `frontend-vite-scaffold`
@@ -4570,12 +4576,15 @@ T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (api/ws/store)
                 ↓
          T18.5 (registry + colocated panel stubs)
                 ↓
+         T18.13 (theme/layout + nav + marketplace UX)  ← run early
          T18.7 (marketplace)  ← first live panel, backend already exists
          T18.6 (settings)     ← after Phase 17 settings REST
+         T18.15 (MCP GUI)     ← after Phase 22 lifecycle endpoints
          T18.8 (chat)         ← WS-first MVP, proxy/SSE later
          T18.10 (DX)          ← alongside active frontend work
          T18.4 SSE client     ← later generic utility for /sse/* and /v1/* streams
                 ↓
+         T18.14 (XYFlow integration surfaces)
          T18.11 (landing/dashboard)  ← after sessions/events backend surfaces are ready
                 ↓
          T18.12 (live graphs)
@@ -4590,7 +4599,14 @@ T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (api/ws/store)
 | ID | Task | Title | Blocked by |
 |----|------|-------|-----------|
 | `frontend-vite-scaffold` | T18.1 | Vite + React 19 + TS scaffold, vite.config with aliases+proxy | — |
+| `fe18-lane-theme-layout` | T18.0 | Parallel lane bootstrap: theme/layout ownership | — |
+| `fe18-lane-settings-config` | T18.0 | Parallel lane bootstrap: settings/config integration ownership | — |
+| `fe18-lane-navigation-shell` | T18.0 | Parallel lane bootstrap: sidebar/topnav runtime ownership | — |
+| `fe18-lane-marketplace-ux` | T18.0 | Parallel lane bootstrap: marketplace UX redesign ownership | — |
+| `fe18-lane-mcp-gui` | T18.0 | Parallel lane bootstrap: MCP GUI ownership | — |
+| `fe18-lane-xyflow` | T18.0 | Parallel lane bootstrap: XYFlow integration ownership | — |
 | `frontend-tailwind-shadcn` | T18.2 | Tailwind v4 + shadcn/ui dark theme + initial components | `frontend-vite-scaffold` |
+| `frontend-theme-early-pass` | T18.13 | Early theming/spacing pass before feature-heavy panels | `frontend-tailwind-shadcn`, `fe18-lane-theme-layout` |
 | `frontend-appshell` | T18.3 | AppShell, Sidebar (ref ahs-admin-panel/Sidebar), TopBar, PanelContainer | `frontend-tailwind-shadcn` |
 | `frontend-api-client` | T18.4 | REST client + ApiError | `frontend-vite-scaffold` |
 | `frontend-ws-manager` | T18.4 | PORT useSocket.ts from ahs-admin-panel → ws-manager.ts | `frontend-vite-scaffold` |
@@ -4605,13 +4621,22 @@ T18.1 → T18.2 → T18.3 → T18.4a (port hooks) → T18.4 (api/ws/store)
 | `frontend-settings-hooks` | T18.6 | TanStack Query hooks for /api/settings/* | `frontend-api-client`, `settings-rest-routes` |
 | `frontend-marketplace-panel` | T18.7 | Marketplace panel (grid, search, install) | `frontend-panel-colocated-structure`, `frontend-marketplace-hooks` |
 | `frontend-marketplace-hooks` | T18.7 | TanStack Query hooks for marketplace API | `frontend-api-client` |
+| `frontend-marketplace-ux-refine` | T18.13 | Marketplace UX refinement with shadcn-admin patterns | `frontend-marketplace-panel`, `frontend-shadcn-admin-harvest`, `fe18-lane-marketplace-ux` |
+| `frontend-marketplace-sidebar-children-nav` | T18.13 | Marketplace sub-navigation from sidebar children | `frontend-sidebar-menu-runtime`, `db40-menu-marketplace-children-contract`, `fe18-lane-marketplace-ux` |
+| `frontend-marketplace-remove-kind-tabs` | T18.13 | Remove marketplace side tabs (agents/skills/etc) | `frontend-marketplace-sidebar-children-nav`, `fe18-lane-marketplace-ux` |
+| `frontend-marketplace-installed-catalog-layout` | T18.13 | Marketplace + installed dual-surface design | `frontend-marketplace-ux-refine`, `frontend-marketplace-remove-kind-tabs`, `fe18-lane-marketplace-ux` |
 | `frontend-chat-panel` | T18.8 | Chat panel (WS-first MVP, tool blocks, markdown, model/session controls) | `frontend-panel-colocated-structure`, `frontend-chat-hooks`, `frontend-port-hooks` |
 | `frontend-chat-hooks` | T18.8 | useChat hook (REST + WebSocket MVP, later SSE/proxy-ready) | `frontend-api-client`, `frontend-ws-manager` |
+| `frontend-mcp-servers-hooks` | T18.15 | MCP server lifecycle hooks for GUI | `mcp-server-lifecycle-api`, `fe18-lane-mcp-gui` |
+| `frontend-mcp-servers-panel` | T18.15 | MCP server GUI panel (start/stop/restart + status) | `frontend-mcp-servers-hooks`, `fe18-lane-mcp-gui` |
+| `frontend-xyflow-integration` | T18.14 | Integrate `@xyflow/react` in frontend | `fe18-lane-xyflow` |
+| `frontend-xyflow-marketplace-mcp-view` | T18.14 | XYFlow topology view for marketplace↔MCP | `frontend-xyflow-integration`, `frontend-mcp-servers-panel`, `fe18-lane-xyflow` |
 | `frontend-dev-tooling` | T18.10 | Devtools overlays, package.json scripts, tsc check | `frontend-tailwind-shadcn` |
 
 **BLOCKED by Phase 17** (settings REST): `frontend-settings-panel`
+**BLOCKED by Phase 22** (lifecycle API): `frontend-mcp-servers-hooks`, `frontend-mcp-servers-panel`
 **Chat note**: build the first chat panel against the current chat REST + WebSocket backend; Phase 36 proxy/SSE work is an enhancement path, not a blocker for the MVP.
-**All others: no blockers — implement in order above.**
+**Execution note**: claim one `T18.0` lane per worker to keep write scopes disjoint.
 **T18.9 (Docker/Nginx/proxy): deferred, not in scope yet.**
 
 
@@ -4968,6 +4993,10 @@ Phase 21: triage-graph-rag-entity-projection ← triage-intelligence-wire + grap
 ### T22.3 — Registry + Bridge
 - `mcp-server-registry` — finish the existing `mcps/registry.py` as `McpRuntimeRegistry` (server config, connect/disconnect, restore/load, tool routing)
 - `mcp-tool-bridge` — `McpToolBridge`: register server-scoped MCP tools into `ToolRegistry` as `ToolType.MCP`
+
+### T22.3b — Lifecycle Control Plane (GUI support)
+- `mcp-server-lifecycle-api` — REST lifecycle endpoints for start/stop/restart + normalized status payloads
+- `mcp-server-lifecycle-runtime-wire` — runtime registry wiring for safe lifecycle transitions and state sync
 
 ### T22.4 — Persistence
 - `mcp-models` — Tortoise ORM McpServerConfigRecord (persisted server configs)

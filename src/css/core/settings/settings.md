@@ -73,8 +73,12 @@ src/css/core/settings/
 
 ## Key Design Decisions
 
-### config.py is NOT replaced
-`config.py` remains the env-var bootstrap (read on startup). It provides defaults for all `SettingDefinition.default` values. On first startup, `SettingsManager.seed_from_config_py()` writes these to the DB. After that, DB is the live source of truth. Critical infrastructure values (DB URL, secret keys) still respect env overrides at highest priority.
+### Config ownership convergence (active)
+Current repository state has overlapping config surfaces:
+- `src/css/core/settings/config.py`
+- `src/css/core/config.py`
+
+Phase 17 now tracks consolidation so runtime configuration ownership is centralized under `core/settings`. The merged surface remains env-bootstrap first, then DB-backed runtime overrides via `SettingsManager`.
 
 ### Resolution Order (highest priority first)
 1. Env override: `CSS_SETTING__<KEY_UPPER>` (e.g. `CSS_SETTING__LLM_ANTHROPIC_API_KEY`)
@@ -158,3 +162,6 @@ All synced in session.db. IDs match:
 | `settings-templates`          | 5 YAML template files                                  | pending |
 | `settings-rest-routes`        | REST endpoints /api/settings/*                         | pending |
 | `settings-event-emission`     | settings.changed event (BLOCKED: Phase 14)             | pending |
+| `settings-config-dual-source-audit` | Audit overlap between `core/config.py` and `core/settings/config.py` | pending |
+| `settings-config-merge-into-core-settings` | Merge both config sources into `core/settings` ownership | pending |
+| `settings-config-import-cutover` | Cut runtime imports to consolidated settings config surface | pending |
