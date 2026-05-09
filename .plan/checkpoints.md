@@ -668,6 +668,41 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 | Pending      | 380   |
 | Blocked      | 6     |
 
+---
+
+## Checkpoint 017 — DB Consolidation Todo Intake (2026-05-09T17:53+0200)
+
+**Status**: 🟡 PLAN INTAKE COMPLETE
+
+### Work Done
+- Added **Phase 40 — DB Model Consolidation & Rich Schemas** with **29 new todos** from current DB/model planning directives.
+- Structured into five tasks:
+  - `T40.1 Model Canonicalization & Ownership` (12 todos)
+  - `T40.2 Menu + Tree Modeling` (6 todos)
+  - `T40.3 Tagging Architecture + Meta Standards` (5 todos)
+  - `T40.4 Fields + BaseModel + Mixins Enrichment` (4 todos)
+  - `T40.5 Runtime Module Home Reassignment` (2 todos)
+- Captured concrete requested fix tracks:
+  - memory model move cutover and stale import cleanup
+  - marketplace model duplication reconciliation
+  - tasks-vs-quotas model cutover
+  - `MenuItem.menu_id` sidebar/menu partitioning
+  - `BaseTreeModel` adoption inventory
+  - tag architecture standardization (`*Tag` singular naming/meta pattern)
+  - provider model rename cutover, user-vs-account boundary
+  - planning todo for `intelligence.py` and `pipeline.py` new homes
+- Adjusted phase ordering:
+  - Phase 39 sort order normalized to follow Phase 38
+  - Phase 40 assigned the next sort slot
+
+### session.db Current State
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 879   |
+| Done         | 464   |
+| Pending      | 409   |
+| Blocked      | 6     |
+
 ### Next Step
 - Continue remaining Phase 18 todos (`frontend-ws-manager`, `frontend-zustand-store`, `frontend-port-hooks`, settings/chat panels, dev tooling, dashboard/graphs).
 

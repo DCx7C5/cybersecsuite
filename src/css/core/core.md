@@ -506,10 +506,10 @@ core/prompt_cache/
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos added here must be synced with `.plan/session.db`.
 
-**Todo**: `cache-move-to-core` (Phase 3) — move `modules/cache/` to `core/cache/`.
+**Migration status**: ✅ complete (`cache-move-to-core`, `cache-remove-l4-sqlite`, `cache-fix-l2-redis-client` marked done in session.db)
 
 **Location**: `src/css/core/cache/`  
-**Status**: 🔴 Pending (`cache-move-to-core` not yet started)
+**Status**: 🟢 Active canonical cache module
 
 ### Overview
 
@@ -531,12 +531,12 @@ core/cache/
 └── plan.md          — (this section, will become standalone file)
 ```
 
-### Key todos (session.db)
-| Todo ID | Description |
-|---------|-------------|
-| `cache-move-to-core` | Move module, update all imports, fix L2 redis.asyncio |
-| `cache-remove-l4-sqlite` | Delete L4 SqliteCache class |
-| `cache-fix-l2-redis-client` | Migrate from `aioredis.create_redis_pool` → `redis.asyncio.from_url` |
+### Migration todos (session.db history)
+| Todo ID | Status |
+|---------|--------|
+| `cache-move-to-core` | done |
+| `cache-remove-l4-sqlite` | done |
+| `cache-fix-l2-redis-client` | done |
 
 ---
 

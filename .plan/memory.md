@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T16:59:12+0200 | **Session**: Phase 39 audit remediation todo intake from 3-agent audit
+**Last Updated**: 2026-05-09T17:53:24+0200 | **Session**: Phase 40 DB consolidation/modeling todo intake
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-09)
 
-**Total**: 850 todos | **Done**: 464 | **Pending**: 380 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 879 todos | **Done**: 464 | **Pending**: 409 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-09 (checked against live session.db totals)
 
@@ -35,6 +35,7 @@
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | Phase 39 — Audit Remediation (A1/A2/A3) | 18 | 0 | 18 | 0 | 0 |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 29 | 0 | 29 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -69,6 +70,18 @@
   - plan/session.db phase-name/status reconciliation
   - removal of remaining `from __future__ import annotations` and legacy typing imports
   - `__all__` policy enforcement and broad exception cleanup
+
+### Phase 40 DB Model Consolidation — 29 todos added (2026-05-09)
+
+- Added a dedicated plan intake phase for model-location and schema requests:
+  - memory model move reconciliation and canonical import cutover
+  - marketplace dual-model consolidation (`marketplace.py` vs `marketplace_catalog.py`)
+  - task model cutover from `quotas.py` to `tasks.py`
+  - user/admin vs account/provider ownership boundary + provider rename cutover
+  - MenuItem sidebar contract around `menu_id` and menu-partitioned retrieval
+  - BaseTreeModel adoption inventory and tag hierarchy migration plan
+  - taggable-entity inventory + singular `*Tag` naming/meta standardization
+  - field/base/mixin enrichment proposals and stale `modules/cache` markdown cleanup
 
 ### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
 
@@ -280,7 +293,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - **`core/caching/` renamed → `core/prompt_cache/`**: Clearer name. Two-tier only (Redis + provider-native prompt caching). Anthropic uses automatic top-level `cache_control` by default with explicit breakpoints only when needed; OpenAI/DeepSeek native tracking is also part of Phase 11. Gemini `NATIVE_RESOURCE` stays deferred. Tracked: `cache-gemini-context-cache` blocked.
 - **`core/retry/` renamed → `core/resilience/`**: Already has `detection.py`, `orchestrator.py`, `config.py` — broader than retry alone.
 - **`working_dir` module deleted → `core/workspace/` pending**: `WorkspaceRegistry` tracks N `WorkspaceDirHandle` entries per entity. Default `~/.css/sessions/<sid>/` + optional project dir, both WRITE. List expandable. Todos rewritten under Phase 15.
-- **`modules/cache/` → `core/cache/` pending**: L4 SQLite removed. 3-layer (L1 memory, L2 redis.asyncio, L3 PostgreSQL). `cache-move-to-core` todo gates L4-removal + redis.asyncio migration. All tracked in Phase 3.
+- **`modules/cache/` → `core/cache/` completed**: L4 SQLite removed. 3-layer cache stack is L1 memory, L2 redis.asyncio, L3 PostgreSQL; `core/cache/` is canonical.
 - **`core/triage/` → `modules/intelligence/` pending**: Rename tracked as `triage-rename-module` (Phase 19). Phase 21 broadened to full local AI assistance.
 - Tool Registry partially implemented (provider normalization + execution path still pending) — Phase 3
 - **`mcps` ↔ `tools` bridge is now planned precisely but still not implemented**: `modules/mcps/registry.py` exists, the runtime/tool/marketplace boundaries are documented, and the runtime ID contract is `mcp:{server_id}:{tool_name}`. What is still missing is the actual `McpToolBridge` implementation plus MCP delegation in the tool execution path.
@@ -295,8 +308,8 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **850 todos**, PHASE > TASK > TODO hierarchy (39 phases + unassigned)
+- `.plan/session.db` — **879 todos**, PHASE > TASK > TODO hierarchy (41 phases + unassigned)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
-- `.plan/checkpoints.md` — session history (016 checkpoints)
+- `.plan/checkpoints.md` — session history (017 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
 - `src/css/api_services/api_services.md` — provider source-of-truth index
