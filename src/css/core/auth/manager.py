@@ -10,12 +10,12 @@ Provides:
 
 from css.core.logger import getLogger
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel, Field
+import msgspec
 
 log = getLogger(__name__)
 
@@ -35,29 +35,29 @@ pwd_context = CryptContext(
 # Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TokenPayload(BaseModel):
+class TokenPayload(msgspec.Struct, frozen=True):
     """JWT token payload."""
-    sub: str = Field(..., description="Subject (user ID)")
-    exp: float = Field(..., description="Expiration timestamp")
-    iat: float = Field(..., description="Issued at timestamp")
-    type: str = Field(default="access", description="Token type (access/refresh)")
-    scopes: list[str] = Field(default_factory=list, description="Authorization scopes")
+    sub: str
+    exp: float
+    iat: float
+    type: str = "access"
+    scopes: list[str] = []
 
 
-class AccessTokenResponse(BaseModel):
+class AccessTokenResponse(msgspec.Struct, frozen=True):
     """Response after token issuance."""
     access_token: str
-    refresh_token: Optional[str] = None
+    refresh_token: str | None = None
     token_type: str = "bearer"
     expires_in: int
 
 
-class APIKeyResponse(BaseModel):
+class APIKeyResponse(msgspec.Struct, frozen=True):
     """Response after API key generation."""
     key_id: str
-    secret: str = Field(..., description="Plain secret (only shown once!)")
+    secret: str
     created_at: str
-    note: Optional[str] = None
+    note: str | None = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ class JWTManager:
         Returns:
             Tuple of (access_token, refresh_token)
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # Access token
         access_payload = {

@@ -37,14 +37,14 @@ T_in = TypeVar("T_in")
 T_out = TypeVar("T_out")
 
 
-# Stage type: async callable that takes an async generator and yields results
+# Stage callable: async callable that takes an async generator and yields results
 # Can also be a plain async generator function (source stage)
-Stage = Callable[[AsyncGenerator[T_in, None]], AsyncGenerator[T_out, None]]
+StageCallable = Callable[[AsyncGenerator[T_in, None]], AsyncGenerator[T_out, None]]
 
 
 async def pipe(
     source: AsyncGenerator[Any, None],
-    *stages: Stage,
+    *stages: StageCallable,
 ) -> AsyncGenerator[Any, None]:
     """Compose async generator stages into a pipeline.
 

@@ -22,9 +22,9 @@ class QueryHeader(BaseHeader, frozen=True):
     def __post_init__(self):
         """Set defaults for name and description."""
         if not self.name:
-            self.name = "query"
+            object.__setattr__(self, 'name', "query")
         if not self.description:
-            self.description = "Execution request"
+            object.__setattr__(self, 'description', "Execution request")
 
 
 class Query(msgspec.Struct, frozen=True):
@@ -34,14 +34,14 @@ class Query(msgspec.Struct, frozen=True):
     """
     id: str
     prompt: str
-    mode: str = "blue"
+    mode: str = "default"
     agent_name: str = "cybersec-agents"
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     created_at: datetime = msgspec.field(default_factory=datetime.now)
     
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict for inter-process communication."""
-        return msgspec.to_builtin(self)
+        return msgspec.to_builtins(self)
 
 
 __all__ = ["QueryHeader", "Query"]

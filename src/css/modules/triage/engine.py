@@ -1,7 +1,7 @@
 """Triage classification and routing engine."""
 
 from css.core.logger import getLogger
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import json
 
@@ -65,7 +65,7 @@ class TriageEngine:
     async def classify(self, request: TriageRequest) -> TriageResult:
         """Classify a query and determine routing."""
         request_id = str(uuid.uuid4())
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         
         try:
             ollama_result = await self._classify_with_ollama(request)
@@ -83,7 +83,7 @@ class TriageEngine:
                 confidence = 0.55
                 reasoning = f"Fallback heuristic classification as {category.value}"
             
-            duration_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+            duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
             
             result = TriageResult(
                 request_id=request_id,
@@ -101,7 +101,7 @@ class TriageEngine:
             
             return result
         except Exception as e:
-            duration_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+            duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
             
             result = TriageResult(
                 request_id=request_id,

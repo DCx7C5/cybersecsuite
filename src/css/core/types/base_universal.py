@@ -11,6 +11,8 @@ from css.core.logger import getLogger
 import asyncio
 from collections.abc import Callable
 
+from typing import Any
+
 from css.core.types import BaseApiServiceClient
 
 logger = getLogger(__name__)
@@ -21,14 +23,14 @@ class SDKRegistry:
 
     def __init__(self):
         """Initialize empty registry."""
-        self._registry: dict[str, type[BaseApiServiceClient] | Callable] = {}
-        self._cache: dict[str, type[BaseApiServiceClient]] = {}
+        self._registry: dict[str, type[BaseApiServiceClient] | Callable[..., Any]] = {}
+        self._cache: dict[str, BaseApiServiceClient] = {}
         self._initializing: set[str] = set()  # Track in-flight initializations
 
     def register(
         self,
         provider_id: str,
-        sdk_class: type[BaseApiServiceClient] | callable,
+        sdk_class: type[BaseApiServiceClient] | Callable[..., Any],
     ) -> None:
         """Register an SDK class or factory function for a provider.
 
@@ -122,7 +124,7 @@ _registry = SDKRegistry()
 
 def register_sdk(
     provider_id: str,
-    sdk_class: type[BaseApiServiceClient] | Callable,
+    sdk_class: type[BaseApiServiceClient] | Callable[..., Any],
 ) -> None:
     """Register an SDK class or factory function globally.
 

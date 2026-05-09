@@ -2,7 +2,7 @@
 
 from css.core.logger import getLogger
 
-from .enums import ScopeLevel, Permission, Role as RoleEnum
+from css.core.enums import ScopeLevel, Permission, Role as RoleEnum
 from .types import Role, PermissionPolicy, ScopeContext, TokenPayload
 from .checker import PermissionChecker, permission_checker
 from .exceptions import (

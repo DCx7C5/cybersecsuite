@@ -1,15 +1,14 @@
 """Type definitions for permissions module."""
 import msgspec
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
-from .enums import ScopeLevel, Permission
+from css.core.enums import ScopeLevel, Permission
 from css.core.types.base_entity import BaseRole
 from css.core.types.base_headers import BaseRoleHeader
 
-@msgspec.struct
-class PermissionPolicy:
+class PermissionPolicy(msgspec.Struct):
     """Permission policy for a role at a scope level."""
 
     path_permissions: set[Permission] = msgspec.field(default_factory=set)
@@ -26,14 +25,13 @@ class PermissionPolicy:
             return True
         return tool_id in self.tool_permissions
 
-@msgspec.struct
-class ScopeContext:
+class ScopeContext(msgspec.Struct):
     """Encapsulates permission context for current operation."""
 
     role: "Role"
     scope_level: ScopeLevel
     scope_id: str
-    timestamp: datetime = msgspec.field(default_factory=datetime.utcnow)
+    timestamp: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     token: str | None = None
     parent_scope: "ScopeContext | None" = None
 
@@ -67,22 +65,20 @@ class ScopeContext:
         """Check if role can access tool."""
         return True  # TODO: Implement tool permission checks
 
-@msgspec.struct
-class TokenPayload:
+class TokenPayload(msgspec.Struct):
     """JWT token payload for scope context."""
 
     scope_context: ScopeContext
-    issued_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    issued_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     expires_at: datetime | None = None
 
     def is_expired(self) -> bool:
         """Check if token is expired."""
         if self.expires_at is None:
             return False
-        return datetime.utcnow() > self.expires_at
+        return datetime.now(timezone.utc) > self.expires_at
 
-@msgspec.struct
-class Role(BaseRole):
+class Role(BaseRole, frozen=True):
     """Concrete role entity with display metadata and a permission set.
 
     Extends ``BaseRole`` (capability flags, allowed_tool_types) with a
@@ -96,15 +92,17 @@ class Role(BaseRole):
 
     def __post_init__(self) -> None:
         if self.header is None:
-            self.header = BaseRoleHeader(
+            object.__setattr__(self, 'header', BaseRoleHeader(
                 name=self.role_id,
                 description="",
-            )
+            ))
         if not self.id:
-            self.id = self.role_id
-        # Auto-title the header name if it matches the bare role_id
+            object.__setattr__(self, 'id', self.role_id)
         if self.header.name == self.role_id:
-            self.header.name = self.role_id.replace("-", " ").replace("_", " ").title()
+            object.__setattr__(
+                self.header, 'name',
+                self.role_id.replace("-", " ").replace("_", " ").title(),
+            )
 
     @property
     def display_name(self) -> str:

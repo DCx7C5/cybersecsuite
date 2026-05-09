@@ -4,7 +4,7 @@ Defines what features each model supports (streaming, vision, tools, etc.)
 and how to discover/register capabilities at runtime.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import msgspec
 
@@ -33,7 +33,7 @@ class ModelCapabilities(msgspec.Struct):
     context_window: int = 4000
     estimated_cost_per_1k_tokens: float = 0.0
     latency_ms: float = 0.0
-    discovered_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    discovered_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     cache_ttl: timedelta = timedelta(hours=24)
 
     def has_capability(self, capability_type: CapabilityType) -> bool:
@@ -59,7 +59,7 @@ class CapabilityRegistry(msgspec.Struct):
     """
 
     capabilities: dict[str, ModelCapabilities] = msgspec.field(default_factory=dict)
-    last_sync: datetime = msgspec.field(default_factory=datetime.utcnow)
+    last_sync: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     cache_ttl: timedelta = timedelta(hours=24)
 
     def register_capability(self, model_caps: ModelCapabilities) -> None:
@@ -82,7 +82,7 @@ class CapabilityRegistry(msgspec.Struct):
 
     def is_cache_stale(self) -> bool:
         """Check if capabilities cache needs refresh."""
-        elapsed = datetime.utcnow() - self.last_sync
+        elapsed = datetime.now(timezone.utc) - self.last_sync
         return elapsed > self.cache_ttl
 
     def needs_discovery(self, provider: str) -> bool:

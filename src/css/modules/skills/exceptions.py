@@ -11,7 +11,7 @@ class BaseSkillException(BaseModuleException):
 class SkillNotFoundError(BaseSkillException):
     """Raised when skill is not found."""
 
-    def __init__(self, skill_id: str = None, **kwargs):
+    def __init__(self, skill_id: str | None = None, **kwargs):
         ctx = kwargs.get("context", {})
         if skill_id:
             ctx["skill_id"] = skill_id
@@ -25,7 +25,7 @@ class SkillNotFoundError(BaseSkillException):
 class SkillExecutionError(BaseSkillException):
     """Raised when skill execution fails."""
 
-    def __init__(self, message: str = None, skill_id: str = None, **kwargs):
+    def __init__(self, message: str | None = None, skill_id: str | None = None, **kwargs):
         ctx = kwargs.get("context", {})
         if skill_id:
             ctx["skill_id"] = skill_id
@@ -39,7 +39,7 @@ class SkillExecutionError(BaseSkillException):
 class SkillConfigurationError(BaseSkillException):
     """Raised when skill configuration is invalid."""
 
-    def __init__(self, message: str = None, config_key: str = None, **kwargs):
+    def __init__(self, message: str | None = None, config_key: str | None = None, **kwargs):
         ctx = kwargs.get("context", {})
         if config_key:
             ctx["config_key"] = config_key

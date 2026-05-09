@@ -2,7 +2,7 @@
 
 from typing import Protocol, TypeVar
 
-T = TypeVar('T', covariant=True)
+T = TypeVar('T')
 
 
 class BaseRegistry(Protocol[T]):

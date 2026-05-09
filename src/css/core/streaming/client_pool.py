@@ -4,7 +4,7 @@ from css.core.logger import getLogger
 import asyncio
 from typing import Protocol, runtime_checkable
 
-from css.core.types.meta import SingletonMetaClass
+from css.core.types.meta import singleton
 
 logger = getLogger("agents.client_pool")
 
@@ -127,7 +127,8 @@ class ClientPool:
             logger.info("client pool closed")
 
 
-class _PoolSingleton(metaclass=SingletonMetaClass):
+@singleton
+class _PoolSingleton:
     """Singleton wrapper holding the global ClientPool instance."""
 
     def __init__(self) -> None:

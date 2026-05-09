@@ -4,7 +4,6 @@ from collections.abc import Awaitable, Callable
 from typing import Protocol, runtime_checkable
 
 import msgspec
-from pydantic import BaseModel
 
 from .enums import StreamState
 
@@ -14,7 +13,7 @@ type JsonObject = dict[str, JsonValue]
 type A2AToolFunction = Callable[[JsonObject], Awaitable[JsonObject] | JsonObject]
 
 
-class JSONRPCError(BaseModel):
+class JSONRPCError(msgspec.Struct, frozen=True):
     """JSON-RPC 2.0 error object."""
 
     code: int
@@ -22,7 +21,7 @@ class JSONRPCError(BaseModel):
     data: JsonObject | str | None = None
 
 
-class JSONRPCRequest(BaseModel):
+class JSONRPCRequest(msgspec.Struct, frozen=True):
     """JSON-RPC 2.0 request object."""
 
     jsonrpc: str = "2.0"
@@ -31,7 +30,7 @@ class JSONRPCRequest(BaseModel):
     id: str | int | None = None
 
 
-class JSONRPCResponse(BaseModel):
+class JSONRPCResponse(msgspec.Struct, frozen=True):
     """JSON-RPC 2.0 response object."""
 
     jsonrpc: str = "2.0"
@@ -40,7 +39,7 @@ class JSONRPCResponse(BaseModel):
     id: str | int | None = None
 
 
-class TaskSendParams(BaseModel):
+class TaskSendParams(msgspec.Struct, frozen=True):
     """Parameters for tasks/create method."""
 
     id: str
@@ -48,33 +47,33 @@ class TaskSendParams(BaseModel):
     session_id: str | None = None
 
 
-class TaskQueryParams(BaseModel):
+class TaskQueryParams(msgspec.Struct, frozen=True):
     """Parameters for tasks/get method."""
 
     id: str
 
 
-class A2AConfig(BaseModel):
+class A2AConfig(msgspec.Struct, frozen=True):
     """Runtime configuration for a2a_google routing behavior."""
 
     allow_cancel_completed: bool = False
 
 
-class PauseRequest(BaseModel):
+class PauseRequest(msgspec.Struct, frozen=True):
     """Pause request payload for stream control."""
 
     request_id: str
     reason: str | None = None
 
 
-class ResponseInjection(BaseModel):
+class ResponseInjection(msgspec.Struct, frozen=True):
     """External response payload to inject into stream output."""
 
     content: str
     source: str
 
 
-class StreamingState(BaseModel):
+class StreamingState(msgspec.Struct, frozen=True):
     """Mutable stream state snapshot."""
 
     state: StreamState = StreamState.RUNNING
@@ -85,8 +84,7 @@ class StreamingState(BaseModel):
 class AgentCardProtocol(Protocol):
     """Structural type for card payload objects."""
 
-    def model_dump(self, mode: str = "python") -> dict[str, object]:
-        """Serialize card to dict."""
+    agent_id: str
 
 
 @runtime_checkable

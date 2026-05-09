@@ -8,7 +8,7 @@ from css.core.types.base_workflow import BaseTask, BaseTaskScope
 from css.core.types.query import Query
 from .enums import TaskStatus, TaskPriority
 
-@msgspec.struct
+
 class TaskScope(BaseTaskScope):
     """Immutable task snapshot (read-only context)."""
 
@@ -32,7 +32,6 @@ class TaskScope(BaseTaskScope):
             "metadata": self.metadata,
         }
 
-@msgspec.struct
 class Task(BaseTask):
     """Mutable task state machine."""
 

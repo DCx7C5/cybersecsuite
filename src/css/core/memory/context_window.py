@@ -5,7 +5,7 @@ with automatic eviction of oldest messages when context overflows.
 """
 
 import msgspec
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from css.core.types.base_messages import BaseMessage
@@ -49,7 +49,7 @@ class ContextWindow(msgspec.Struct):
 
     def __post_init__(self) -> None:
         """Initialize timestamps on creation."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if self.created_at is None:
             object.__setattr__(self, 'created_at', now)
         if self.updated_at is None:
@@ -135,7 +135,7 @@ class ContextWindow(msgspec.Struct):
         object.__setattr__(self, 'messages', new_messages)
         object.__setattr__(self, 'total_tokens', new_total)
         object.__setattr__(self, 'evicted_count', self.evicted_count + evicted_delta)
-        object.__setattr__(self, 'updated_at', datetime.utcnow())
+        object.__setattr__(self, 'updated_at', datetime.now(timezone.utc))
         return True
 
     def get_messages(self) -> list[BaseMessage]:
@@ -191,7 +191,7 @@ class ContextWindow(msgspec.Struct):
         """
         object.__setattr__(self, 'messages', [])
         object.__setattr__(self, 'total_tokens', 0)
-        object.__setattr__(self, 'updated_at', datetime.utcnow())
+        object.__setattr__(self, 'updated_at', datetime.now(timezone.utc))
 
     def reset(self) -> None:
         """Reset context window to initial state.

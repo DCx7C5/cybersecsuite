@@ -1,6 +1,6 @@
 """Skill data models and types."""
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timezone
 
 import msgspec
 from tortoise import fields, models
@@ -11,8 +11,8 @@ from css.core.db.models.mixins import TimestampMixin
 
 from .enums import SkillStatus, SkillCategory
 
-@msgspec.struct
-class SkillParameter:
+
+class SkillParameter(msgspec.Struct):
     """Definition of a skill parameter."""
     name: str
     param_type: str  # "string", "integer", "boolean", "array", "object"
@@ -21,18 +21,18 @@ class SkillParameter:
     default_value: object | None = None
     validation_rules: dict[str, object] = msgspec.field(default_factory=dict)
 
-@msgspec.struct
-class SkillResult:
+
+class SkillResult(msgspec.Struct):
     """Result from skill execution."""
     skill_id: str
     success: bool
     output: object | None = None
     error: str | None = None
     duration_ms: float = 0.0
-    executed_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    executed_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
 
-@msgspec.struct
-class SkillDefinition:
+
+class SkillDefinition(msgspec.Struct):
     """Complete definition of a skill."""
     skill_id: str
     name: str
@@ -52,8 +52,8 @@ class SkillDefinition:
     custom_metadata: dict[str, object] = msgspec.field(default_factory=dict)
     
     # Lifecycle
-    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
-    updated_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     
     def validate_parameters(self, **kwargs) -> dict[str, str]:
         """Validate parameters against definition."""

@@ -3,6 +3,8 @@
 from css.core.logger import getLogger
 import re
 
+from tortoise.expressions import Q
+
 from .models import Tag
 from .enums import TagColor
 from .exceptions import TagNotFoundError, TagCreationError, TagValidationError
@@ -31,7 +33,7 @@ class TagManager:
         name: str,
         color: TagColor = TagColor.GRAY,
         description: str = "",
-        parent_tag_id: int | None = None,
+        parent_tag_id: int | None = None,  # type: ignore[valid-type]
     ) -> Tag:
         """Create a new tag and persist to database."""
         if not name or len(name) > 128:
@@ -56,7 +58,7 @@ class TagManager:
             slug=slug,
             color=color,
             description=description,
-            parent_tag_id=parent_tag_id,
+            parent_tag_id=parent_tag_id,  # type: ignore[arg-type]
         )
         logger.info("Created tag: %s (slug: %s)", name, slug)
         return tag
@@ -73,7 +75,7 @@ class TagManager:
         """Get tag by ID or raise error."""
         tag = await Tag.get_or_none(id=tag_id)
         if tag is None:
-            raise TagNotFoundError(tag_id)
+            raise TagNotFoundError(str(tag_id))
         return tag
 
     async def list_tags(self, color: TagColor | None = None) -> list[Tag]:
@@ -87,9 +89,7 @@ class TagManager:
         """Search tags by name or description."""
         q = query.lower()
         return await Tag.filter(
-            name__icontains=q,
-        ).order_by("name") | await Tag.filter(
-            description__icontains=q,
+            Q(name__icontains=q) | Q(description__icontains=q),
         ).order_by("name")
 
     async def suggest_tags(self, prefix: str, limit: int = 10) -> list[TagSuggestion]:
@@ -122,7 +122,7 @@ class TagManager:
 
         for tag_id in list(kept):
             tag = tags[tag_id]
-            parent_id = tag.parent_tag_id
+            parent_id = tag.parent_tag_id  # type: ignore[attr-defined]
             if parent_id in kept:
                 kept.discard(parent_id)
                 removed.add(parent_id)

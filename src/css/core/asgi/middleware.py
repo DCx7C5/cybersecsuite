@@ -13,8 +13,10 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, RedirectResponse
 
+from css.core.logger import getLogger
 
 PathPattern = tuple[re.Pattern, str]
+logger = getLogger(__name__)
 ASGI_TLS_PORT = int(os.environ.get("ASGI_TLS_PORT", "8433"))
 _TLS_CERT = os.environ.get("ASGI_TLS_CERT", str(Path.home() / ".css" / "certs" / "cert.pem"))
 _TLS_KEY = os.environ.get("ASGI_TLS_KEY", str(Path.home() / ".css" / "certs" / "key.pem"))
@@ -61,10 +63,9 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
             raise
         finally:
             latency_ms = (time.perf_counter() - t0) * 1000
-            await record_event(
-                f"http.latency.{key}",
-                latency_ms,
-                labels={"method": request.method, "status": str(status)},
+            logger.debug(
+                "http.latency.%s %sms [%s] %s",
+                key, latency_ms, request.method, status,
             )
         return response
 

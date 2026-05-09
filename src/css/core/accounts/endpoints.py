@@ -11,11 +11,10 @@ Endpoints:
 - GET    /api/organizations/{org_id}/members  — List org members
 """
 
+import msgspec
 from css.core.logger import getLogger
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
 
 from css.core.db.models.accounts import (
     Account,
@@ -30,49 +29,49 @@ log = getLogger(__name__)
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class AccountResponse(BaseModel):
+class AccountResponse(msgspec.Struct, frozen=True):
     """Account response model."""
     id: int
     username: str
     email: str
     is_active: bool
     is_verified: bool
-    last_login: Optional[str] = None
+    last_login: str | None = None
     created_at: str
 
 
-class UserProfileResponse(BaseModel):
+class UserProfileResponse(msgspec.Struct, frozen=True):
     """User profile response model."""
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    display_name: Optional[str] = None
-    avatar_url: Optional[str] = None
     bio: str
-    phone: Optional[str] = None
     timezone: str
     preferences: dict
+    first_name: str | None = None
+    last_name: str | None = None
+    display_name: str | None = None
+    avatar_url: str | None = None
+    phone: str | None = None
 
 
-class RegisterRequest(BaseModel):
+class RegisterRequest(msgspec.Struct, frozen=True):
     """Account registration request."""
-    username: str = Field(..., min_length=3, max_length=128)
-    email: str = Field(..., regex=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-    password: str = Field(..., min_length=8)
+    username: str
+    email: str
+    password: str
 
 
-class UpdateProfileRequest(BaseModel):
+class UpdateProfileRequest(msgspec.Struct, frozen=True):
     """Update user profile request."""
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    display_name: Optional[str] = None
-    avatar_url: Optional[str] = None
-    bio: Optional[str] = None
-    phone: Optional[str] = None
-    timezone: Optional[str] = None
-    preferences: Optional[dict] = None
+    first_name: str | None = None
+    last_name: str | None = None
+    display_name: str | None = None
+    avatar_url: str | None = None
+    bio: str | None = None
+    phone: str | None = None
+    timezone: str | None = None
+    preferences: dict | None = None
 
 
-class OrganizationResponse(BaseModel):
+class OrganizationResponse(msgspec.Struct, frozen=True):
     """Organization response model."""
     id: int
     name: str
@@ -83,25 +82,25 @@ class OrganizationResponse(BaseModel):
     created_at: str
 
 
-class CreateOrganizationRequest(BaseModel):
+class CreateOrganizationRequest(msgspec.Struct, frozen=True):
     """Create organization request."""
-    name: str = Field(..., min_length=1, max_length=255)
-    slug: str = Field(..., min_length=1, max_length=128, regex=r"^[a-z0-9-]+$")
-    description: Optional[str] = None
-    tier: Optional[str] = Field(default="free", regex=r"^(free|pro|enterprise)$")
+    name: str
+    slug: str
+    description: str | None = None
+    tier: str = "free"
 
 
-class MembershipResponse(BaseModel):
+class MembershipResponse(msgspec.Struct, frozen=True):
     """Organization membership response."""
     account_id: int
     role: str
     joined_at: str
 
 
-class AddMemberRequest(BaseModel):
+class AddMemberRequest(msgspec.Struct, frozen=True):
     """Add member to organization request."""
     account_id: int
-    role: str = Field(default="member", regex=r"^(owner|admin|member|viewer)$")
+    role: str = "member"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

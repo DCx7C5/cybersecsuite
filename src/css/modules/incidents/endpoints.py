@@ -1,9 +1,9 @@
 """Incident management endpoints — CRUD, timeline, tasks."""
 
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
-from datetime import datetime
+from datetime import datetime, timezone
+import msgspec
 from .models import (
     Incident,
     IncidentTimeline,
@@ -15,18 +15,18 @@ router = APIRouter(prefix="/api/incidents", tags=["incidents"])
 
 
 # Request/Response Models
-class IncidentCreate(BaseModel):
-    title: str = Field(..., min_length=1, max_length=255)
+class IncidentCreate(msgspec.Struct, frozen=True):
+    title: str
     description: str = ""
-    severity: str = Field("medium", regex="^(low|medium|high|critical)$")
-    source: str = Field(..., regex="^(alert|scan|manual_report|threat_intel|hunt|log_analysis|edr|other)$")
+    severity: str = "medium"
+    source: str
     detected_at: datetime
     detection_method: str = ""
-    affected_assets: List[str] = Field(default_factory=list)
-    affected_data_types: List[str] = Field(default_factory=list)
+    affected_assets: List[str] = []
+    affected_data_types: List[str] = []
 
 
-class IncidentUpdate(BaseModel):
+class IncidentUpdate(msgspec.Struct, frozen=True):
     title: Optional[str] = None
     description: Optional[str] = None
     severity: Optional[str] = None
@@ -39,7 +39,7 @@ class IncidentUpdate(BaseModel):
     lessons_learned: Optional[str] = None
 
 
-class IncidentResponse(BaseModel):
+class IncidentResponse(msgspec.Struct, frozen=True):
     id: int
     incident_id: str
     title: str
@@ -54,15 +54,15 @@ class IncidentResponse(BaseModel):
     updated_at: datetime
 
 
-class TimelineEventCreate(BaseModel):
-    event_type: str = Field(..., regex="^(created|updated|escalated|assigned|status_changed|investigation_started|containment_started|containment_completed|remediation_started|remediation_completed|resolved|closed|comment|reopened)$")
-    title: str = Field(..., min_length=1, max_length=255)
+class TimelineEventCreate(msgspec.Struct, frozen=True):
+    event_type: str
+    title: str
     description: str = ""
-    metadata: Dict = Field(default_factory=dict)
-    occurred_at: datetime = Field(..., description="When event occurred")
+    metadata: Dict = {}
+    occurred_at: datetime
 
 
-class TimelineEventResponse(BaseModel):
+class TimelineEventResponse(msgspec.Struct, frozen=True):
     id: int
     sequence_number: int
     event_type: str
@@ -73,17 +73,17 @@ class TimelineEventResponse(BaseModel):
     recorded_at: datetime
 
 
-class IncidentTaskCreate(BaseModel):
-    title: str = Field(..., min_length=1, max_length=255)
+class IncidentTaskCreate(msgspec.Struct, frozen=True):
+    title: str
     description: str = ""
-    task_type: str = Field(..., regex="^(triage|investigation|containment|remediation|recovery|forensics)$")
+    task_type: str
     assigned_to: Optional[str] = None
-    priority: str = Field("medium", regex="^(low|medium|high|critical)$")
+    priority: str = "medium"
     estimated_hours: Optional[float] = None
     due_date: Optional[datetime] = None
 
 
-class IncidentTaskResponse(BaseModel):
+class IncidentTaskResponse(msgspec.Struct, frozen=True):
     id: int
     incident_id: int
     title: str
@@ -96,6 +96,10 @@ class IncidentTaskResponse(BaseModel):
     updated_at: datetime
 
 
+def _orm_to_struct(struct_type, orm_instance):
+    return struct_type(**{f: getattr(orm_instance, f) for f in struct_type.__struct_fields__})
+
+
 # Incident CRUD Endpoints
 @router.post("/", response_model=IncidentResponse, status_code=status.HTTP_201_CREATED)
 async def create_incident(
@@ -106,8 +110,7 @@ async def create_incident(
     # TODO: Check org authorization
     
     try:
-        # Generate incident ID
-        incident_id = f"INC-{org_id}-{int(datetime.utcnow().timestamp() * 1000)}"
+        incident_id = f"INC-{org_id}-{int(datetime.now(timezone.utc).timestamp() * 1000)}"
         
         incident = await Incident.create(
             organization_id=org_id,
@@ -122,10 +125,9 @@ async def create_incident(
             affected_assets=req.affected_assets,
             affected_data_types=req.affected_data_types,
             status="open",
-            created_by="system",  # TODO: Get from auth context
+            created_by="system",
         )
         
-        # Create initial timeline event
         await IncidentTimeline.create(
             incident_id=incident.id,
             sequence_number=1,
@@ -133,10 +135,10 @@ async def create_incident(
             actor="system",
             title=f"Incident created from {req.source}",
             description=req.description,
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
         )
         
-        return IncidentResponse.model_validate(incident)
+        return _orm_to_struct(IncidentResponse, incident)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create incident: {str(e)}")
@@ -162,7 +164,7 @@ async def list_incidents(
         query = query.filter(assigned_to=assigned_to)
     
     incidents = await query.order_by("-detected_at").limit(limit).all()
-    return [IncidentResponse.model_validate(i) for i in incidents]
+    return [_orm_to_struct(IncidentResponse, i) for i in incidents]
 
 
 @router.get("/{incident_id}", response_model=IncidentResponse)
@@ -180,7 +182,7 @@ async def get_incident(
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
     
-    return IncidentResponse.model_validate(incident)
+    return _orm_to_struct(IncidentResponse, incident)
 
 
 @router.put("/{incident_id}", response_model=IncidentResponse)
@@ -199,9 +201,9 @@ async def update_incident(
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
     
-    update_data = req.model_dump(exclude_unset=True)
+    now = datetime.now(timezone.utc)
+    update_data = {f: getattr(req, f) for f in req.__struct_fields__ if getattr(req, f) is not None}
     
-    # Track status changes in timeline
     if "status" in update_data and update_data["status"] != incident.status:
         old_status = incident.status
         new_status = update_data["status"]
@@ -210,26 +212,25 @@ async def update_incident(
             incident_id=incident.id,
             sequence_number=len(await IncidentTimeline.filter(incident_id=incident.id)) + 1,
             event_type=TimelineEventType.STATUS_CHANGED,
-            actor="system",  # TODO: Get from auth context
+            actor="system",
             title=f"Status changed from {old_status} to {new_status}",
             metadata={"from": old_status, "to": new_status},
-            occurred_at=datetime.utcnow(),
+            occurred_at=now,
         )
         
-        # Update lifecycle timestamps based on status
         if new_status == "investigating":
-            incident.investigation_started_at = datetime.utcnow()
+            incident.investigation_started_at = now
         elif new_status == "contained":
-            incident.containment_completed_at = datetime.utcnow()
+            incident.containment_completed_at = now
         elif new_status == "remediated":
-            incident.remediation_completed_at = datetime.utcnow()
+            incident.remediation_completed_at = now
         elif new_status == "resolved":
-            incident.resolved_at = datetime.utcnow()
+            incident.resolved_at = now
         elif new_status == "closed":
-            incident.closed_at = datetime.utcnow()
+            incident.closed_at = now
     
     await incident.update_from_dict(update_data).save()
-    return IncidentResponse.model_validate(incident)
+    return _orm_to_struct(IncidentResponse, incident)
 
 
 @router.delete("/{incident_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -239,7 +240,6 @@ async def delete_incident(
 ):
     """Delete incident (typically only for drafts/duplicates)."""
     # TODO: Check org authorization
-    # TODO: Add audit log entry
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -268,7 +268,7 @@ async def get_incident_timeline(
         raise HTTPException(status_code=404, detail="Incident not found")
     
     events = await IncidentTimeline.filter(incident_id=incident.id).order_by("sequence_number").all()
-    return [TimelineEventResponse.model_validate(e) for e in events]
+    return [_orm_to_struct(TimelineEventResponse, e) for e in events]
 
 
 @router.post("/{incident_id}/timeline", response_model=TimelineEventResponse, status_code=status.HTTP_201_CREATED)
@@ -294,14 +294,14 @@ async def add_timeline_event(
             incident_id=incident.id,
             sequence_number=seq_num,
             event_type=req.event_type,
-            actor="system",  # TODO: Get from auth context
+            actor="system",
             title=req.title,
             description=req.description,
             metadata=req.metadata,
             occurred_at=req.occurred_at,
         )
         
-        return TimelineEventResponse.model_validate(event)
+        return _orm_to_struct(TimelineEventResponse, event)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create timeline event: {str(e)}")
@@ -335,7 +335,7 @@ async def create_incident_task(
             estimated_hours=req.estimated_hours,
             due_date=req.due_date,
         )
-        return IncidentTaskResponse.model_validate(task)
+        return _orm_to_struct(IncidentTaskResponse, task)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create task: {str(e)}")
 
@@ -361,7 +361,7 @@ async def list_incident_tasks(
         query = query.filter(status=status_filter)
     
     tasks = await query.all()
-    return [IncidentTaskResponse.model_validate(t) for t in tasks]
+    return [_orm_to_struct(IncidentTaskResponse, t) for t in tasks]
 
 
 @router.put("/{incident_id}/tasks/{task_id}", response_model=IncidentTaskResponse)
@@ -386,19 +386,20 @@ async def update_incident_task(
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     
+    now = datetime.now(timezone.utc)
     update_data = {}
     if status:
         update_data["status"] = status
         if status == "completed":
-            update_data["completed_at"] = datetime.utcnow()
+            update_data["completed_at"] = now
         elif status == "in_progress" and not task.started_at:
-            update_data["started_at"] = datetime.utcnow()
+            update_data["started_at"] = now
     
     if assigned_to:
         update_data["assigned_to"] = assigned_to
     
     await task.update_from_dict(update_data).save()
-    return IncidentTaskResponse.model_validate(task)
+    return _orm_to_struct(IncidentTaskResponse, task)
 
 
 __all__ = ["router"]

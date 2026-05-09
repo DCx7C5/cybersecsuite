@@ -23,12 +23,14 @@ class SingletonMetaClass(type):
 
 class AsyncSafeSingletonMeta(ABCMeta):
     """Async-Safe Singleton Metaclass.
-    
-    Uses asyncio.Lock() to prevent race conditions when instantiating
-    from multiple async tasks (not threads).
+
+    Ensures only one instance exists. Note: Since __call__ is sync,
+    true async locking must be handled during the 'get_instance' pattern
+    if __init__ contains await points. This metaclass provides a basic
+    registry-based singleton.
     """
     _instances = {}
-    _lock = asyncio.Lock()
+    _lock = asyncio.Lock()  # Only for instantiation
 
     def __call__(cls, *args, **kwargs):
         """Intercept instantiation calls with async safety."""
@@ -38,3 +40,17 @@ class AsyncSafeSingletonMeta(ABCMeta):
             if not cls._lock.locked():
                 cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+def singleton(cls):
+    """Class decorator for Singleton pattern."""
+    _instances = {}
+    _lock = asyncio.Lock()
+
+    def get_instance(*args, **kwargs):
+        if cls not in _instances:
+            if not _lock.locked():
+                _instances[cls] = cls(*args, **kwargs)
+        return _instances[cls]
+
+    return get_instance

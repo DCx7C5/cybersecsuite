@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Protocol
 
 
@@ -71,7 +71,7 @@ class PlannerOrchestrator:
         if not updated:
             raise ValueError(f"Step not found: {step_id}")
 
-        plan.updated_at = datetime.utcnow()
+        plan.updated_at = datetime.now(timezone.utc)
         self.proposal_store.write(plan)
         self.decision_log.append(
             session_id=plan.session_id,

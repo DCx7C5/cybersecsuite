@@ -25,8 +25,7 @@ class ResultMessage(msgspec.Struct, frozen=True):
     message: dict[str, Any]
 
 
-@msgspec.struct
-class A2ACommunicator:
+class A2ACommunicator(msgspec.Struct):
     """High-level async interface for A2A protocol messaging.
 
     Translates between:
@@ -158,8 +157,7 @@ class A2ACommunicator:
             await self.dispatcher.send(msg)
             log.debug("A2A task %r: dispatched to %r", task_id, member_id)
 
-@msgspec.struct
-class A2ACommunicationGroup:
+class A2ACommunicationGroup(msgspec.Struct):
     """A2A protocol group for multi-agents collaboration.
 
     Manages a named team of agents responding to A2A protocol requests,

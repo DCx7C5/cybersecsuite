@@ -1,14 +1,14 @@
 """MITRE ATT&CK endpoints."""
 
 from fastapi import APIRouter, Query, status
-from pydantic import BaseModel, Field
 from typing import List, Optional
+import msgspec
 from .models import MITRETechnique, ThreatActor, Tactic
 
 router = APIRouter(prefix="/api/mitre", tags=["mitre"])
 
 
-class TechniqueResponse(BaseModel):
+class TechniqueResponse(msgspec.Struct, frozen=True):
     id: int
     technique_id: str
     subtechnique_id: Optional[str]
@@ -17,7 +17,7 @@ class TechniqueResponse(BaseModel):
     description: str
 
 
-class ThreatActorResponse(BaseModel):
+class ThreatActorResponse(msgspec.Struct, frozen=True):
     id: int
     actor_name: str
     actor_aliases: List[str]
@@ -26,10 +26,10 @@ class ThreatActorResponse(BaseModel):
     techniques: List[str]
 
 
-class TechniqueMappingCreate(BaseModel):
+class TechniqueMappingCreate(msgspec.Struct, frozen=True):
     technique_id: str
     evidence: str
-    confidence: str = Field("medium", regex="^(low|medium|high)$")
+    confidence: str
 
 
 @router.get("/tactics", response_model=List[str])
@@ -49,7 +49,7 @@ async def list_techniques(
         query = query.filter(tactic=tactic)
     
     techniques = await query.all()
-    return [TechniqueResponse.model_validate(t) for t in techniques]
+    return [TechniqueResponse(**{f: getattr(t, f) for f in TechniqueResponse.__struct_fields__}) for t in techniques]
 
 
 @router.get("/threat-actors", response_model=List[ThreatActorResponse])
@@ -58,7 +58,7 @@ async def list_threat_actors(
 ):
     """List known threat actors."""
     actors = await ThreatActor.filter(organization_id=org_id).all()
-    return [ThreatActorResponse.model_validate(a) for a in actors]
+    return [ThreatActorResponse(**{f: getattr(a, f) for f in ThreatActorResponse.__struct_fields__}) for a in actors]
 
 
 @router.post("/incidents/{incident_id}/techniques", status_code=status.HTTP_201_CREATED)

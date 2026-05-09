@@ -9,7 +9,7 @@ Enables agents to maintain context across conversations and remember important f
 """
 
 from css.core.logger import getLogger
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 from uuid import uuid4
 
@@ -57,8 +57,8 @@ class AgentMemory:
         self.max_episodes: int = max_episodes
         self.episodes: list[MemoryEntry] = []
         self.metadata: dict[str, Any] = {}
-        self.created_at = datetime.utcnow()
-        self.accessed_at = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
+        self.accessed_at = datetime.now(timezone.utc)
     
     def add_episode(self, content: str, category: str = "fact", tags: list[str] | None = None) -> MemoryEntry:
         """Record a memorable episode or fact.
@@ -79,7 +79,7 @@ class AgentMemory:
             content=content,
             category=category,
             tags=tags or [],
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             metadata={"agent_id": self.agent_id}
         )
         
@@ -92,7 +92,7 @@ class AgentMemory:
             log.debug(f"Agent {self.agent_id}: evicted episode {evicted.id}")
         
         log.debug(f"Agent {self.agent_id}: added episode {episode.id} ({category})")
-        self.accessed_at = datetime.utcnow()
+        self.accessed_at = datetime.now(timezone.utc)
         
         return episode
     

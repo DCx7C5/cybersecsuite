@@ -1,7 +1,8 @@
 
+import msgspec
+
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 
 from .enums import A2AErrorCode, TaskState
 from .exceptions import A2AAgentError, A2ACommunicationError, PauseRequestError
@@ -129,8 +130,8 @@ async def _dispatch(req: JSONRPCRequest, comm: A2ACommunicatorProtocol) -> JSONR
 
 async def _handle_tasks_create(req: JSONRPCRequest, comm: A2ACommunicatorProtocol) -> JSONRPCResponse:
     try:
-        params = TaskSendParams.model_validate(req.params or {})
-    except ValidationError as exc:
+        params = TaskSendParams(**(req.params or {}))
+    except msgspec.ValidationError as exc:
         return JSONRPCResponse(
             id=req.id,
             error=JSONRPCError(
@@ -159,8 +160,8 @@ async def _handle_tasks_create(req: JSONRPCRequest, comm: A2ACommunicatorProtoco
 
 async def _handle_tasks_get(req: JSONRPCRequest, comm: A2ACommunicatorProtocol) -> JSONRPCResponse:
     try:
-        params = TaskQueryParams.model_validate(req.params or {})
-    except ValidationError as exc:
+        params = TaskQueryParams(**(req.params or {}))
+    except msgspec.ValidationError as exc:
         return JSONRPCResponse(
             id=req.id,
             error=JSONRPCError(
@@ -192,8 +193,8 @@ async def _handle_tasks_get(req: JSONRPCRequest, comm: A2ACommunicatorProtocol) 
 
 async def _handle_tasks_cancel(req: JSONRPCRequest, comm: A2ACommunicatorProtocol) -> JSONRPCResponse:
     try:
-        params = TaskQueryParams.model_validate(req.params or {})
-    except ValidationError as exc:
+        params = TaskQueryParams(**(req.params or {}))
+    except msgspec.ValidationError as exc:
         return JSONRPCResponse(
             id=req.id,
             error=JSONRPCError(
@@ -269,8 +270,8 @@ async def a2a_rpc_handler(request: Request) -> JSONResponse:
         )
 
     try:
-        req = JSONRPCRequest.model_validate(body)
-    except ValidationError:
+        req = JSONRPCRequest(**body)
+    except msgspec.ValidationError:
         log.error("Invalid A2A JSON-RPC structure")
         return JSONResponse(
             status_code=400,
@@ -283,7 +284,7 @@ async def a2a_rpc_handler(request: Request) -> JSONResponse:
 
     comm = _get_communicator(request)
     response = await _dispatch(req, comm)
-    return JSONResponse(content=response.model_dump(exclude_none=True))
+    return JSONResponse(content=msgspec.to_builtians(response, omit_none=True))
 
 
 @root_router.get("/.well-known/agent.json")
@@ -292,7 +293,7 @@ async def agent_card_handler(request: Request) -> JSONResponse:
     card = _get_agent_card(request)
     if card is None:
         return JSONResponse(status_code=404, content={"detail": "No agents card configured"})
-    return JSONResponse(content=card.model_dump(mode="json"))
+    return JSONResponse(content=msgspec.to_builtians(card))
 
 
 # ── Initialization ───────────────────────────────────────────────────────────

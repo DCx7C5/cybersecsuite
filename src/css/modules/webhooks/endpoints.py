@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import msgspec
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
 
 from .dispatcher import WebhookDispatcher
 from .models import WebhookDelivery, WebhookEndpoint
@@ -14,12 +14,12 @@ router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
 dispatcher = WebhookDispatcher()
 
 
-class WebhookCreateRequest(BaseModel):
-    name: str = Field(..., min_length=1, max_length=255)
-    url: str = Field(..., min_length=1, max_length=1024)
+class WebhookCreateRequest(msgspec.Struct, frozen=True):
+    name: str
+    url: str
     secret: str = ""
-    event_filter: list[str] = Field(default_factory=list)
-    retry_policy: dict[str, Any] = Field(default_factory=lambda: {"max_attempts": 3, "base_delay_seconds": 2})
+    event_filter: list[str] = []
+    retry_policy: dict[str, Any] = {"max_attempts": 3, "base_delay_seconds": 2}
 
 
 @router.post("/endpoints", status_code=status.HTTP_201_CREATED)

@@ -6,7 +6,7 @@ No inheritance chains. Each class = one API endpoint response or request.
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+import msgspec
 
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 
@@ -14,21 +14,19 @@ from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 # ── Base Models ───────────────────────────────────────────────────
 
 
-class MarketplaceBase(BaseModel):
+class MarketplaceBase(msgspec.Struct, frozen=True):
     """Base model for marketplace operations."""
-
-    class Config:
-        from_attributes = True
+    pass
 
 
-class MarketplaceMetaBase(BaseModel):
+class MarketplaceMetaBase(msgspec.Struct, frozen=True):
     """Base model for marketplace metadata."""
 
     name: str
     version: str
 
 
-class MarketplaceItemBase(BaseModel):
+class MarketplaceItemBase(msgspec.Struct, frozen=True):
     """Base model for marketplace items."""
 
     name: str
@@ -36,24 +34,24 @@ class MarketplaceItemBase(BaseModel):
     kind: MarketplaceItemType
 
 
-class MarketplaceItemCreate(BaseModel):
+class MarketplaceItemCreate(msgspec.Struct, frozen=True):
     """Request to create/seed a marketplace item."""
 
     name: str
     description: str
     kind: MarketplaceItemType
     source_url: str
-    slug: str = Field(..., description="Unique external identifier (kebab-case)")
+    slug: str
 
 
-class MarketplaceItemUpdate(BaseModel):
+class MarketplaceItemUpdate(msgspec.Struct, frozen=True):
     """Request to update a marketplace item."""
 
     name: str | None = None
     description: str | None = None
 
 
-class MarketplaceItemResponse(BaseModel):
+class MarketplaceItemResponse(msgspec.Struct, frozen=True):
     """Complete marketplace item response."""
 
     id: int
@@ -65,16 +63,13 @@ class MarketplaceItemResponse(BaseModel):
     source_url: str
     install_path: str | None = None
     installed_at: datetime | None = None
-    meta: dict = Field(default_factory=dict)
-
-    class Config:
-        from_attributes = True
+    meta: dict = {}
 
 
 # ── Marketplace Status ────────────────────────────────────────────
 
 
-class MarketplaceMetaResponse(BaseModel):
+class MarketplaceMetaResponse(msgspec.Struct, frozen=True):
     """Marketplace status response."""
 
     id: int
@@ -87,7 +82,7 @@ class MarketplaceMetaResponse(BaseModel):
 # ── Item List/Detail ──────────────────────────────────────────────
 
 
-class ItemListResponse(BaseModel):
+class ItemListResponse(msgspec.Struct, frozen=True):
     """Item summary for list endpoints."""
 
     id: str
@@ -97,7 +92,7 @@ class ItemListResponse(BaseModel):
     installed: bool
 
 
-class ItemDetailResponse(BaseModel):
+class ItemDetailResponse(msgspec.Struct, frozen=True):
     """Full item details."""
 
     id: str
@@ -108,22 +103,20 @@ class ItemDetailResponse(BaseModel):
     status: MarketplaceItemStatus
     installed: bool
     installed_at: datetime | None = None
-    meta: dict = Field(default_factory=dict)
+    meta: dict = {}
 
 
 # ── Install/Uninstall ────────────────────────────────────────────
 
 
-class InstallRequest(BaseModel):
+class InstallRequest(msgspec.Struct, frozen=True):
     """Request to install a marketplace item."""
 
-    item_id: str = Field(..., description="Kebab-case item ID")
-    source_url: str | None = Field(
-        default=None, description="Override source URL"
-    )
+    item_id: str
+    source_url: str | None = None
 
 
-class InstallResponse(BaseModel):
+class InstallResponse(msgspec.Struct, frozen=True):
     """Response for install operation."""
 
     success: bool
@@ -133,16 +126,14 @@ class InstallResponse(BaseModel):
     error: str | None = None
 
 
-class UninstallRequest(BaseModel):
+class UninstallRequest(msgspec.Struct, frozen=True):
     """Request to uninstall a marketplace item."""
 
-    item_id: str = Field(..., description="Kebab-case item ID")
-    purge_config: bool = Field(
-        default=False, description="Remove item configuration"
-    )
+    item_id: str
+    purge_config: bool = False
 
 
-class UninstallResponse(BaseModel):
+class UninstallResponse(msgspec.Struct, frozen=True):
     """Response for uninstall operation."""
 
     success: bool
@@ -154,14 +145,14 @@ class UninstallResponse(BaseModel):
 # ── Toggle Enable/Disable ────────────────────────────────────────
 
 
-class ToggleRequest(BaseModel):
+class ToggleRequest(msgspec.Struct, frozen=True):
     """Request to enable/disable a marketplace item."""
 
-    item_id: str = Field(..., description="Kebab-case item ID")
-    enabled: bool = Field(..., description="Enable (True) or disable (False)")
+    item_id: str
+    enabled: bool
 
 
-class ToggleResponse(BaseModel):
+class ToggleResponse(msgspec.Struct, frozen=True):
     """Response for toggle operation."""
 
     success: bool
@@ -174,17 +165,15 @@ class ToggleResponse(BaseModel):
 # ── Upgrade Version ──────────────────────────────────────────────
 
 
-class UpgradeRequest(BaseModel):
+class UpgradeRequest(msgspec.Struct, frozen=True):
     """Request to upgrade a marketplace item."""
 
-    item_id: str = Field(..., description="Kebab-case item ID")
-    target_version: str | None = Field(
-        default=None, description="Specific version to upgrade to"
-    )
-    backup: bool = Field(default=True, description="Create backup before upgrade")
+    item_id: str
+    target_version: str | None = None
+    backup: bool = True
 
 
-class UpgradeResponse(BaseModel):
+class UpgradeResponse(msgspec.Struct, frozen=True):
     """Response for upgrade operation."""
 
     success: bool

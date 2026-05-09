@@ -1,24 +1,24 @@
 """Threat Intelligence endpoints."""
 
 from fastapi import APIRouter, Query, status
-from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
+import msgspec
 from .models import IOC, ThreatFeed
 
 router = APIRouter(prefix="/api/threat-intel", tags=["threat-intel"])
 
 
-class IOCCreate(BaseModel):
+class IOCCreate(msgspec.Struct, frozen=True):
     ioc_type: str
     value: str
     threat_level: str = "medium"
     source: str
     description: str = ""
-    tags: List[str] = Field(default_factory=list)
+    tags: List[str] = []
 
 
-class IOCResponse(BaseModel):
+class IOCResponse(msgspec.Struct, frozen=True):
     id: int
     ioc_type: str
     value: str
@@ -41,10 +41,10 @@ async def create_ioc(
         source=req.source,
         description=req.description,
         tags=req.tags,
-        first_seen_at=datetime.utcnow(),
-        last_seen_at=datetime.utcnow(),
+        first_seen_at=datetime.now(timezone.utc),
+        last_seen_at=datetime.now(timezone.utc),
     )
-    return IOCResponse.model_validate(ioc)
+    return IOCResponse(**{f: getattr(ioc, f) for f in IOCResponse.__struct_fields__})
 
 
 @router.get("/iocs", response_model=List[IOCResponse])
@@ -61,7 +61,7 @@ async def list_iocs(
         query = query.filter(threat_level=threat_level)
     
     iocs = await query.all()
-    return [IOCResponse.model_validate(i) for i in iocs]
+    return [IOCResponse(**{f: getattr(i, f) for f in IOCResponse.__struct_fields__}) for i in iocs]
 
 
 @router.post("/feeds", status_code=status.HTTP_201_CREATED)

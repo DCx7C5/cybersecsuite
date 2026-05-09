@@ -1,7 +1,7 @@
 """Agent management and coordination."""
 
 from css.core.logger import getLogger
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .models import AgentConfig, AgentMetrics, AgentState, AgentMessage
 from .enums import AgentStatus, AgentType
@@ -62,7 +62,7 @@ class AgentRegistry:
         """Update agent status."""
         agent = self.get_or_fail(agent_id)
         agent.status = status
-        agent.last_updated = datetime.utcnow()
+        agent.last_updated = datetime.now(timezone.utc)
         logger.debug(f"Agent {agent_id} status updated: {status.value}")
     
     def record_execution(self, agent_id: str, duration_ms: float, success: bool, error: str = None) -> None:
@@ -79,7 +79,7 @@ class AgentRegistry:
                 metrics.errors.append(error)
         
         metrics.total_duration_ms += duration_ms
-        metrics.last_execution_at = datetime.utcnow()
+        metrics.last_execution_at = datetime.now(timezone.utc)
         
         logger.debug(f"Agent {agent_id} execution recorded: {duration_ms}ms, success={success}")
     

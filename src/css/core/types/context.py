@@ -7,7 +7,7 @@ Uses msgspec.Struct for efficient serialization/deserialization.
 """
 
 import msgspec
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from .base_messages import BaseMessage
@@ -38,7 +38,7 @@ class ConversationContext(msgspec.Struct):
 
     def __post_init__(self) -> None:
         """Initialize timestamps on creation."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if self.created_at is None:
             object.__setattr__(self, 'created_at', now)
         if self.updated_at is None:
@@ -49,7 +49,7 @@ class ConversationContext(msgspec.Struct):
         new_messages = [*self.messages, message]
         object.__setattr__(self, 'messages', new_messages)
         object.__setattr__(self, 'turn_number', self.turn_number + 1)
-        object.__setattr__(self, 'updated_at', datetime.utcnow())
+        object.__setattr__(self, 'updated_at', datetime.now(timezone.utc))
 
     def get_last_user_message(self) -> BaseMessage | None:
         """Get most recent user message."""
@@ -104,7 +104,7 @@ class ModelContext(msgspec.Struct):
     def __post_init__(self) -> None:
         """Initialize timestamp on creation."""
         if self.discovered_at is None:
-            object.__setattr__(self, 'discovered_at', datetime.utcnow())
+            object.__setattr__(self, 'discovered_at', datetime.now(timezone.utc))
 
     def effective_cost(self, tokens: int) -> float:
         """Calculate cost for token count."""
@@ -139,22 +139,22 @@ class ExecutionContext(msgspec.Struct):
     def __post_init__(self) -> None:
         """Initialize start timestamp on creation."""
         if self.started_at is None:
-            object.__setattr__(self, 'started_at', datetime.utcnow())
+            object.__setattr__(self, 'started_at', datetime.now(timezone.utc))
 
     def set_completed(self, tokens_used: int = 0) -> None:
         """Mark execution as completed."""
-        object.__setattr__(self, 'ended_at', datetime.utcnow())
+        object.__setattr__(self, 'ended_at', datetime.now(timezone.utc))
         object.__setattr__(self, 'tokens_used', tokens_used)
         object.__setattr__(self, 'cost', self.model.effective_cost(tokens_used))
 
     def set_failed(self, error: str) -> None:
         """Mark execution as failed."""
-        object.__setattr__(self, 'ended_at', datetime.utcnow())
+        object.__setattr__(self, 'ended_at', datetime.now(timezone.utc))
         object.__setattr__(self, 'error', error)
 
     def get_duration_seconds(self) -> float | None:
         """Get execution duration in seconds."""
-        if self.ended_at is None:
+        if self.ended_at is None or self.started_at is None:
             return None
         return (self.ended_at - self.started_at).total_seconds()
 

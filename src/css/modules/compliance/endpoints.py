@@ -1,8 +1,9 @@
 """Compliance management endpoints — frameworks, controls, mappings, reports."""
 
+import msgspec
+
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from .models import (
     ComplianceFramework,
     FrameworkControl,
@@ -17,14 +18,14 @@ report_generator = ComplianceReportGenerator()
 
 
 # Request/Response Models
-class ComplianceFrameworkCreate(BaseModel):
-    framework_type: str = Field(..., regex="^(nist_csf|nist_800_53|soc2|iso27001|cis|mitre_attck|hipaa|pci_dss)$")
-    name: str = Field(..., min_length=1, max_length=255)
+class ComplianceFrameworkCreate(msgspec.Struct, frozen=True):
+    framework_type: str
+    name: str
     description: str = ""
     version: str = "1.0"
 
 
-class ComplianceFrameworkResponse(BaseModel):
+class ComplianceFrameworkResponse(msgspec.Struct, frozen=True):
     id: int
     framework_type: str
     name: str
@@ -35,18 +36,18 @@ class ComplianceFrameworkResponse(BaseModel):
     updated_at: datetime
 
 
-class FrameworkControlCreate(BaseModel):
-    control_id: str = Field(..., min_length=1, max_length=64)
-    name: str = Field(..., min_length=1, max_length=255)
+class FrameworkControlCreate(msgspec.Struct, frozen=True):
+    control_id: str
+    name: str
     description: str = ""
-    category: str = Field(..., min_length=1, max_length=128)
-    cwe_ids: list[str] = Field(default_factory=list)
-    mitre_techniques: list[str] = Field(default_factory=list)
-    priority: str = Field("medium", regex="^(critical|high|medium|low)$")
+    category: str
+    cwe_ids: list[str] = []
+    mitre_techniques: list[str] = []
+    priority: str = "medium"
     risk_impact: str = ""
 
 
-class FrameworkControlResponse(BaseModel):
+class FrameworkControlResponse(msgspec.Struct, frozen=True):
     id: int
     control_id: str
     name: str
@@ -58,24 +59,24 @@ class FrameworkControlResponse(BaseModel):
     risk_impact: str
 
 
-class ControlMappingCreate(BaseModel):
-    control_id: int = Field(..., description="FrameworkControl ID")
-    finding_type: str = Field(..., regex="^(incident|scan|evidence|assessment|audit)$")
-    finding_id: str = Field(..., min_length=1, max_length=255)
-    status: str = Field(..., regex="^(compliant|non_compliant|partially_compliant|not_applicable|unknown)$")
+class ControlMappingCreate(msgspec.Struct, frozen=True):
+    control_id: int
+    finding_type: str
+    finding_id: str
+    status: str
     evidence: str = ""
     remediation_notes: str = ""
     found_at: datetime | None = None
 
 
-class ControlMappingUpdate(BaseModel):
+class ControlMappingUpdate(msgspec.Struct, frozen=True):
     status: str | None = None
     evidence: str | None = None
     remediation_notes: str | None = None
     verified_at: datetime | None = None
 
 
-class ControlMappingResponse(BaseModel):
+class ControlMappingResponse(msgspec.Struct, frozen=True):
     id: int
     control_id: int
     finding_type: str
@@ -84,11 +85,11 @@ class ControlMappingResponse(BaseModel):
     evidence: str
     remediation_notes: str
     found_at: datetime
-    remediated_at: datetime | None
-    verified_at: datetime | None
+    remediated_at: datetime | None = None
+    verified_at: datetime | None = None
 
 
-class ComplianceReportResponse(BaseModel):
+class ComplianceReportResponse(msgspec.Struct, frozen=True):
     id: int
     framework_id: int
     total_controls: int
@@ -119,7 +120,7 @@ async def create_framework(
             description=req.description,
             version=req.version,
         )
-        return ComplianceFrameworkResponse.model_validate(framework)
+        return ComplianceFrameworkResponse(**{f: getattr(framework, f) for f in ComplianceFrameworkResponse.__struct_fields__})
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create framework: {str(e)}")
 
@@ -137,7 +138,7 @@ async def list_frameworks(
         query = query.filter(is_active=is_active)
     
     frameworks = await query.all()
-    return [ComplianceFrameworkResponse.model_validate(f) for f in frameworks]
+    return [ComplianceFrameworkResponse(**{f: getattr(fw, f) for f in ComplianceFrameworkResponse.__struct_fields__}) for fw in frameworks]
 
 
 @router.get("/frameworks/{framework_id}", response_model=ComplianceFrameworkResponse)
@@ -152,7 +153,7 @@ async def get_framework(
     if not framework:
         raise HTTPException(status_code=404, detail="Framework not found")
     
-    return ComplianceFrameworkResponse.model_validate(framework)
+    return ComplianceFrameworkResponse(**{f: getattr(framework, f) for f in ComplianceFrameworkResponse.__struct_fields__})
 
 
 # Controls Endpoints
@@ -182,7 +183,7 @@ async def create_control(
             priority=req.priority,
             risk_impact=req.risk_impact,
         )
-        return FrameworkControlResponse.model_validate(control)
+        return FrameworkControlResponse(**{f: getattr(control, f) for f in FrameworkControlResponse.__struct_fields__})
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create control: {str(e)}")
 
@@ -206,7 +207,7 @@ async def list_controls(
         query = query.filter(category=category)
     
     controls = await query.all()
-    return [FrameworkControlResponse.model_validate(c) for c in controls]
+    return [FrameworkControlResponse(**{f: getattr(c, f) for f in FrameworkControlResponse.__struct_fields__}) for c in controls]
 
 
 # Mappings Endpoints
@@ -236,9 +237,9 @@ async def create_mapping(
             status=req.status,
             evidence=req.evidence,
             remediation_notes=req.remediation_notes,
-            found_at=req.found_at or datetime.utcnow(),
+            found_at=req.found_at or datetime.now(timezone.utc),
         )
-        return ControlMappingResponse.model_validate(mapping)
+        return ControlMappingResponse(**{f: getattr(mapping, f) for f in ControlMappingResponse.__struct_fields__})
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create mapping: {str(e)}")
 
@@ -259,7 +260,7 @@ async def list_mappings(
         query = query.filter(finding_type=finding_type)
     
     mappings = await query.order_by("-updated_at").all()
-    return [ControlMappingResponse.model_validate(m) for m in mappings]
+    return [ControlMappingResponse(**{f: getattr(m, f) for f in ControlMappingResponse.__struct_fields__}) for m in mappings]
 
 
 @router.put("/mappings/{mapping_id}", response_model=ControlMappingResponse)
@@ -275,14 +276,15 @@ async def update_mapping(
     if not mapping:
         raise HTTPException(status_code=404, detail="Mapping not found")
     
-    update_data = req.model_dump(exclude_unset=True)
+    update_data = {f: getattr(req, f) for f in req.__struct_fields__ if getattr(req, f) is not None}
+    # Remove None values (msgspec struct always has all fields)
     
     # Handle remediation date tracking
     if req.status == ComplianceStatus.COMPLIANT and not mapping.remediated_at:
-        update_data["remediated_at"] = datetime.utcnow()
+        update_data["remediated_at"] = datetime.now(timezone.utc)
     
     await mapping.update_from_dict(update_data).save()
-    return ControlMappingResponse.model_validate(mapping)
+    return ControlMappingResponse(**{f: getattr(mapping, f) for f in ControlMappingResponse.__struct_fields__})
 
 
 # Reports Endpoints
@@ -307,7 +309,7 @@ async def generate_report(
         report_data = await report_generator.generate_report(org_id, framework_id, scope)
         
         report = await ComplianceReport.create(**report_data)
-        return ComplianceReportResponse.model_validate(report)
+        return ComplianceReportResponse(**{f: getattr(report, f) for f in ComplianceReportResponse.__struct_fields__})
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to generate report: {str(e)}")
@@ -332,7 +334,7 @@ async def list_reports(
         framework_id=framework_id,
     ).order_by("-generated_at").limit(limit).all()
     
-    return [ComplianceReportResponse.model_validate(r) for r in reports]
+    return [ComplianceReportResponse(**{f: getattr(r, f) for f in ComplianceReportResponse.__struct_fields__}) for r in reports]
 
 
 @router.get("/reports/{framework_id}/latest", response_model=ComplianceReportResponse)
@@ -351,7 +353,7 @@ async def get_latest_report(
     if not report:
         raise HTTPException(status_code=404, detail="No reports found for framework")
     
-    return ComplianceReportResponse.model_validate(report)
+    return ComplianceReportResponse(**{f: getattr(report, f) for f in ComplianceReportResponse.__struct_fields__})
 
 
 __all__ = ["router"]

@@ -1,9 +1,9 @@
 """Evidence management endpoints — chain-of-custody, collection, verification."""
 
+import msgspec
+
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 from .models import (
     Evidence,
@@ -17,22 +17,22 @@ router = APIRouter(prefix="/api/evidence", tags=["evidence"])
 
 
 # Request/Response Models
-class EvidenceCollect(BaseModel):
-    evidence_type: str = Field(..., regex="^(log_file|network_capture|disk_image|memory_dump|file_system|system_state|config|metadata|other)$")
-    source: str = Field(..., min_length=1, max_length=512)
-    case_id: str = Field(..., min_length=1, max_length=255)
-    collected_by: str = Field(..., min_length=1, max_length=255)
-    collected_at: datetime = Field(..., description="Timestamp of collection")
+class EvidenceCollect(msgspec.Struct, frozen=True):
+    evidence_type: str
+    source: str
+    case_id: str
+    collected_by: str
+    collected_at: datetime
     description: str = ""
-    tags: List[str] = Field(default_factory=list)
-    hash_sha256: Optional[str] = None
-    hash_md5: Optional[str] = None
-    size_bytes: Optional[int] = None
-    mime_type: Optional[str] = None
-    access_level: str = Field("restricted", regex="^(public|internal|restricted|confidential)$")
+    tags: list[str] = []
+    hash_sha256: str | None = None
+    hash_md5: str | None = None
+    size_bytes: int | None = None
+    mime_type: str | None = None
+    access_level: str = "restricted"
 
 
-class EvidenceResponse(BaseModel):
+class EvidenceResponse(msgspec.Struct, frozen=True):
     id: int
     evidence_id: str
     case_id: str
@@ -45,20 +45,20 @@ class EvidenceResponse(BaseModel):
     collected_by: str
     collected_at: datetime
     is_sealed: bool
-    sealed_at: Optional[datetime]
-    size_bytes: Optional[int]
     access_level: str
+    sealed_at: datetime | None = None
+    size_bytes: int | None = None
 
 
-class ChainEventRecord(BaseModel):
-    event_type: str = Field(..., regex="^(collected|transferred|accessed|verified|sealed|unsealed|archived|restored|destroyed)$")
-    actor: str = Field(..., min_length=1, max_length=255)
-    action: str = Field(..., min_length=1, max_length=512)
-    metadata: Dict = Field(default_factory=dict)
-    occurred_at: datetime = Field(..., description="Timestamp of event")
+class ChainEventRecord(msgspec.Struct, frozen=True):
+    event_type: str
+    actor: str
+    action: str
+    occurred_at: datetime
+    metadata: dict = {}
 
 
-class ChainEventResponse(BaseModel):
+class ChainEventResponse(msgspec.Struct, frozen=True):
     id: int
     sequence_number: int
     event_type: str
@@ -70,17 +70,17 @@ class ChainEventResponse(BaseModel):
     hash_after: str
 
 
-class ChainResponse(BaseModel):
+class ChainResponse(msgspec.Struct, frozen=True):
     evidence_id: str
-    events: List[ChainEventResponse]
+    events: list[ChainEventResponse]
     is_valid: bool
-    integrity_status: str  # "valid", "broken", "compromised"
+    integrity_status: str
 
 
-class EvidenceTaggingReq(BaseModel):
-    incident_id: Optional[str] = None
-    case_id: Optional[str] = None
-    relevance_score: float = Field(0.0, ge=0.0, le=1.0)
+class EvidenceTaggingReq(msgspec.Struct, frozen=True):
+    incident_id: str | None = None
+    case_id: str | None = None
+    relevance_score: float = 0.0
     notes: str = ""
 
 
@@ -100,7 +100,7 @@ async def collect_evidence(
     
     try:
         # Generate evidence ID
-        evidence_id = f"EV-{org_id}-{int(datetime.utcnow().timestamp() * 1000)}"
+        evidence_id = f"EV-{org_id}-{int(datetime.now(timezone.utc).timestamp() * 1000)}"
         
         # Use provided hash or generate placeholder
         hash_sha256 = req.hash_sha256 or hashlib.sha256(f"{evidence_id}:{req.source}".encode()).hexdigest()
@@ -138,18 +138,18 @@ async def collect_evidence(
             occurred_at=req.collected_at,
         )
         
-        return EvidenceResponse.model_validate(evidence)
+        return EvidenceResponse(**{f: getattr(evidence, f) for f in EvidenceResponse.__struct_fields__})
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to collect evidence: {str(e)}")
 
 
-@router.get("/items", response_model=List[EvidenceResponse])
+@router.get("/items", response_model=list[EvidenceResponse])
 async def list_evidence(
     org_id: int = Query(..., description="Organization ID"),
-    case_id: Optional[str] = None,
-    status_filter: Optional[str] = Query(None, alias="status"),
-    evidence_type: Optional[str] = None,
+    case_id: str | None = None,
+    status_filter: str | None = Query(None, alias="status"),
+    evidence_type: str | None = None,
     limit: int = Query(100, ge=1, le=1000),
 ):
     """List evidence items for organization (optionally filtered by case)."""
@@ -164,7 +164,7 @@ async def list_evidence(
         query = query.filter(evidence_type=evidence_type)
     
     items = await query.order_by("-collected_at").limit(limit).all()
-    return [EvidenceResponse.model_validate(i) for i in items]
+    return [EvidenceResponse(**{f: getattr(i, f) for f in EvidenceResponse.__struct_fields__}) for i in items]
 
 
 @router.get("/items/{evidence_id}", response_model=EvidenceResponse)
@@ -182,7 +182,7 @@ async def get_evidence(
     if not evidence:
         raise HTTPException(status_code=404, detail="Evidence not found")
     
-    return EvidenceResponse.model_validate(evidence)
+    return EvidenceResponse(**{f: getattr(evidence, f) for f in EvidenceResponse.__struct_fields__})
 
 
 # Chain-of-Custody Endpoints
@@ -213,7 +213,7 @@ async def get_chain_of_custody(
     
     return ChainResponse(
         evidence_id=evidence_id,
-        events=[ChainEventResponse.model_validate(e) for e in events],
+        events=[ChainEventResponse(**{f: getattr(e, f) for f in ChainEventResponse.__struct_fields__}) for e in events],
         is_valid=is_valid,
         integrity_status=integrity_status,
     )
@@ -273,7 +273,7 @@ async def record_chain_event(
         # Update evidence status based on event
         if req.event_type == ChainEventType.SEALED:
             evidence.is_sealed = True
-            evidence.sealed_at = datetime.utcnow()
+            evidence.sealed_at = datetime.now(timezone.utc)
             evidence.seal_signature = event.event_signature
             evidence.status = EvidenceStatus.SEALED
         elif req.event_type == ChainEventType.ARCHIVED:
@@ -285,7 +285,7 @@ async def record_chain_event(
         
         await evidence.save()
         
-        return ChainEventResponse.model_validate(event)
+        return ChainEventResponse(**{f: getattr(event, f) for f in ChainEventResponse.__struct_fields__})
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to record event: {str(e)}")
@@ -337,11 +337,11 @@ async def get_evidence_tags(
         raise HTTPException(status_code=404, detail="Evidence not found")
     
     tags = await EvidenceTagging.filter(evidence_id=evidence.id).all()
-    return {"evidence_id": evidence_id, "tags": [t.model_dump() for t in tags]}
+    return {"evidence_id": evidence_id, "tags": [{f: getattr(t, f) for f in t._meta.fields} for t in tags]}
 
 
 # Helper functions
-def _generate_signature(hash_value: str, seq_num: int, prev_sig: Optional[str]) -> str:
+def _generate_signature(hash_value: str, seq_num: int, prev_sig: str | None) -> str:
     """Generate event signature (placeholder for cryptographic signing)."""
     import hmac
     
@@ -351,7 +351,7 @@ def _generate_signature(hash_value: str, seq_num: int, prev_sig: Optional[str]) 
     return sig
 
 
-def _validate_chain(events: List[EvidenceChain]) -> tuple[bool, str]:
+def _validate_chain(events: list[EvidenceChain]) -> tuple[bool, str]:
     """
     Validate chain-of-custody integrity.
     

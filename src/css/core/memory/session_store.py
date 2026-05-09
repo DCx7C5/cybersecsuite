@@ -11,7 +11,7 @@ This enables fast session resumption while ensuring durability.
 
 from css.core.logger import getLogger
 import msgspec
-from datetime import datetime
+from datetime import datetime, timezone
 
 from css.core.types.context import ConversationContext
 from css.core.memory.models import MemorySnapshotRecord
@@ -172,7 +172,7 @@ class SessionStore:
         try:
             # Create snapshot record
             await MemorySnapshotRecord.create(
-                snapshot_id=f"checkpoint-{session_id}-{datetime.utcnow().isoformat()}",
+                snapshot_id=f"checkpoint-{session_id}-{datetime.now(timezone.utc).isoformat()}",
                 session_id=session_id,
                 summary=f"Session {session_id} turn {context.turn_number}",
                 entries=[],  # Would populate from messages

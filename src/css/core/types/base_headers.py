@@ -13,7 +13,7 @@ class BaseHeader(msgspec.Struct, frozen=True):
     description: str
     version: str = "0.1.0"
 
-class BaseAgentHeader(BaseHeader):
+class BaseAgentHeader(BaseHeader, frozen=True):
     """Metadata header for agents entities.
     
     Fields mirror .claude/agents/*.md YAML frontmatter and A2A AgentCard metadata.
@@ -31,7 +31,7 @@ class BaseAgentHeader(BaseHeader):
     streaming: bool = False
     push_notifications: bool = False
 
-class BaseSkillHeader(BaseHeader):
+class BaseSkillHeader(BaseHeader, frozen=True):
     """Metadata header for skills entities.
     
     Fields mirror SKILL.md YAML frontmatter and marketplace ProviderMeta fields.
@@ -45,7 +45,7 @@ class BaseSkillHeader(BaseHeader):
     marketplace_id: str | None = None
     install_path: str | None = None
 
-class BaseAccountHeader(BaseHeader):
+class BaseAccountHeader(BaseHeader, frozen=True):
     """Metadata header for account entities.
     
     Represents credentials and authentication state for an external provider.
@@ -55,14 +55,14 @@ class BaseAccountHeader(BaseHeader):
     auth_method: str = "api_key"
     active: bool = False
 
-class BaseToolHeader(BaseHeader):
+class BaseToolHeader(BaseHeader, frozen=True):
     """Catalog and access-control metadata for tools entities.
     
     This is the base layer — all tools headers inherit from here.
     ``ToolHeader`` (in ``headers/tools.py``) extends this with the
     execution-facing parameter schema and examples.
     
-    Fields are modelled directly from ``ToolRegistry`` (DB model):
+    Fields are modeled directly from ``ToolRegistry`` (DB model):
     """
     
     version: str = "0.1.0"
@@ -73,7 +73,7 @@ class BaseToolHeader(BaseHeader):
     deprecated: bool = False
     deprecated_at: str | None = None
 
-class BaseRoleHeader(BaseHeader):
+class BaseRoleHeader(BaseHeader, frozen=True):
     """Metadata header for role entities with path-based permissions.
     
     ``role_id`` mirrors the canonical string used in agents frontmatter

@@ -1,15 +1,13 @@
 """Skill types — concrete implementation of BaseSkill with installation tracking."""
-import msgspec
-
 from datetime import datetime
 from typing import Literal
 
 from css.core.types.base_entity import BaseSkill
 from css.core.types.base_headers import BaseSkillHeader
 
-@msgspec.struct
-class Skill(BaseSkill):
-    """Concrete skills entity with marketplace installation tracking.
+
+class Skill(BaseSkill, frozen=True):
+    """Concrete skill entity with marketplace installation tracking.
 
     Extends BaseSkill with:
       - Installation status (available, installed, update_available, deprecated)
@@ -25,15 +23,15 @@ class Skill(BaseSkill):
 
     @property
     def is_installed(self) -> bool:
-        """Check if this skills is currently installed."""
+        """Check if this skill is currently installed."""
         return self.status in ("installed", "update_available")
 
     @property
     def has_update(self) -> bool:
-        """Check if an update is available for this skills."""
+        """Check if an update is available for this skill."""
         return self.status == "update_available"
 
     @property
     def is_deprecated(self) -> bool:
-        """Check if this skills is deprecated."""
+        """Check if this skill is deprecated."""
         return self.status == "deprecated"

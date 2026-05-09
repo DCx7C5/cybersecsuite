@@ -146,9 +146,8 @@ class AnthropicErrorMapper(BaseErrorMapper):
     """Map Anthropic SDK errors to unified types using provider-specific patterns."""
     
     @staticmethod
-    def map_error(error: Exception) -> Exception:
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Anthropic error to unified type."""
-        # Use generic mapping (BaseErrorMapper.map_error)
         return BaseErrorMapper.map_error(error, provider="anthropic")
 
 
@@ -156,7 +155,7 @@ class OpenAIErrorMapper(BaseErrorMapper):
     """Map OpenAI SDK errors to unified types using provider-specific patterns."""
     
     @staticmethod
-    def map_error(error: Exception) -> Exception:
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map OpenAI error to unified type."""
         return BaseErrorMapper.map_error(error, provider="openai")
 
@@ -165,7 +164,7 @@ class OllamaErrorMapper(BaseErrorMapper):
     """Map Ollama errors (usually aiohttp exceptions) to unified types."""
     
     @staticmethod
-    def map_error(error: Exception) -> Exception:
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Ollama error to unified type."""
         return BaseErrorMapper.map_error(error, provider="ollama")
 
@@ -174,7 +173,7 @@ class GeminiErrorMapper(BaseErrorMapper):
     """Map Google Gemini errors to unified types."""
     
     @staticmethod
-    def map_error(error: Exception) -> Exception:
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Gemini error to unified type."""
         return BaseErrorMapper.map_error(error, provider="gemini")
 
@@ -183,7 +182,7 @@ class GroqErrorMapper(BaseErrorMapper):
     """Map Groq errors to unified types."""
     
     @staticmethod
-    def map_error(error: Exception) -> Exception:
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Groq error to unified type."""
         return BaseErrorMapper.map_error(error, provider="groq")
 

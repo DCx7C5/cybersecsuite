@@ -104,8 +104,7 @@ updated: {date}
 - (none yet)
 """
 
-@msgspec.struct
-class IngestResult:
+class IngestResult(msgspec.Struct):
     source: str
     skipped: bool = False
     skip_reason: str = ""

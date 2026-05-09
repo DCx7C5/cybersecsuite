@@ -7,128 +7,88 @@ This module is part of the Ollama provider package and should be imported from:
   from css.api_services.ollama import OllamaConfig, OllamaModel, OllamaCapabilities
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
-from pydantic import BaseModel, Field
+import msgspec
 
 
-class OllamaModel(BaseModel):
+class OllamaModel(msgspec.Struct, frozen=True):
     """Metadata for a local Ollama model."""
 
-    name: str = Field(..., description="Model name (e.g., 'llama2', 'mistral')")
-    full_name: str = Field(..., description="Full identifier with tag (e.g., 'llama2:7b')")
-    size_gb: float = Field(default=0.0, description="Model size in GB")
-    parameters: int = Field(default=0, description="Number of parameters")
-    quantization: str | None = Field(default=None, description="Quantization level (e.g., 'Q4_0')")
-    description: str | None = Field(default=None)
-    modified_at: datetime = Field(default_factory=datetime.utcnow)
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    name: str
+    full_name: str
+    size_gb: float = 0.0
+    parameters: int = 0
+    quantization: str | None = None
+    description: str | None = None
+    modified_at: datetime = datetime.now(timezone.utc)
 
 
-class OllamaCapabilities(BaseModel):
+class OllamaCapabilities(msgspec.Struct, frozen=True):
     """Capabilities supported by a specific Ollama model."""
 
-    model_name: str = Field(..., description="Which model these apply to")
-    supports_streaming: bool = Field(default=True, description="Can stream responses")
-    supports_vision: bool = Field(default=False, description="Can process images")
-    supports_tool_use: bool = Field(default=False, description="Can use tools/functions")
-    supports_json_mode: bool = Field(default=False, description="Can output structured JSON")
-    supports_embeddings: bool = Field(default=False, description="Can generate embeddings")
-    context_window: int = Field(default=2048, description="Max context window")
-    max_tokens: int = Field(default=512, description="Max output tokens")
-    discovered_at: datetime = Field(default_factory=datetime.utcnow)
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    model_name: str
+    supports_streaming: bool = True
+    supports_vision: bool = False
+    supports_tool_use: bool = False
+    supports_json_mode: bool = False
+    supports_embeddings: bool = False
+    context_window: int = 2048
+    max_tokens: int = 512
+    discovered_at: datetime = datetime.now(timezone.utc)
 
 
-class OllamaConfig(BaseModel):
+class OllamaConfig(msgspec.Struct, frozen=True):
     """Configuration for connecting to local Ollama instance."""
 
-    base_url: str = Field(
-        default="http://localhost:11434",
-        description="Ollama server base URL",
-    )
-    timeout_seconds: int = Field(default=120, description="Request timeout")
-    max_retries: int = Field(default=3, description="Retry attempts on failure")
-    model_discovery_endpoint: str = Field(
-        default="/api/tags",
-        description="Endpoint to discover available models",
-    )
-    model_info_endpoint: str = Field(
-        default="/api/show",
-        description="Endpoint to get model details",
-    )
-    chat_endpoint: str = Field(
-        default="/api/chat",
-        description="Endpoint for chat completions",
-    )
-    embeddings_endpoint: str = Field(
-        default="/api/embeddings",
-        description="Endpoint for generating embeddings",
-    )
+    base_url: str = "http://localhost:11434"
+    timeout_seconds: int = 120
+    max_retries: int = 3
+    model_discovery_endpoint: str = "/api/tags"
+    model_info_endpoint: str = "/api/show"
+    chat_endpoint: str = "/api/chat"
+    embeddings_endpoint: str = "/api/embeddings"
 
-    # Auto-discovery settings
-    auto_discover_models: bool = Field(default=True, description="Discover available models on startup")
-    discovery_timeout_seconds: int = Field(default=10, description="Max time to wait for model discovery")
-    cache_models_for_hours: int = Field(default=24, description="How long to cache model list")
+    auto_discover_models: bool = True
+    discovery_timeout_seconds: int = 10
+    cache_models_for_hours: int = 24
 
-    # Feature detection
-    detect_capabilities: bool = Field(
-        default=True,
-        description="Auto-detect model capabilities (vision, tools, etc.)",
-    )
-
-    class Config:
-        """Pydantic config."""
-
-        extra = "allow"  # Allow forward-compatible fields
+    detect_capabilities: bool = True
 
 
-class OllamaExecutionContext(BaseModel):
+class OllamaExecutionContext(msgspec.Struct):
     """Execution context specific to Ollama models.
 
     Tracks streaming, interruptions, and local resource usage.
     """
 
-    model_name: str = Field(..., description="Which Ollama model was used")
-    provider: str = Field(default="ollama", description="Always 'ollama'")
-    started_at: datetime = Field(default_factory=datetime.utcnow)
-    ended_at: datetime | None = Field(default=None)
-    tokens_generated: int = Field(default=0, description="Output tokens")
-    tokens_prompted: int = Field(default=0, description="Input tokens")
-    total_duration_ms: float = Field(default=0.0, description="Total execution time")
-    load_duration_ms: float = Field(default=0.0, description="Time to load model into memory")
-    prompt_eval_count: int = Field(default=0, description="Tokens evaluated in prompt")
-    eval_count: int = Field(default=0, description="Tokens generated")
-    streamed: bool = Field(default=True, description="Was this response streamed?")
-    interrupted: bool = Field(default=False, description="Was streaming interrupted?")
-    error: str | None = Field(default=None, description="Error message if failed")
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    model_name: str
+    provider: str = "ollama"
+    started_at: datetime = datetime.now(timezone.utc)
+    ended_at: datetime | None = None
+    tokens_generated: int = 0
+    tokens_prompted: int = 0
+    total_duration_ms: float = 0.0
+    load_duration_ms: float = 0.0
+    prompt_eval_count: int = 0
+    eval_count: int = 0
+    streamed: bool = True
+    interrupted: bool = False
+    error: str | None = None
 
     def set_completed(self, **timing_data) -> None:
         """Mark execution as completed with timing data.
 
         Ollama returns timing data that we capture here.
         """
-        self.ended_at = datetime.utcnow()
+        self.ended_at = datetime.now(timezone.utc)
         for key, value in timing_data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
 
     def set_failed(self, error: str) -> None:
         """Mark execution as failed."""
-        self.ended_at = datetime.utcnow()
+        self.ended_at = datetime.now(timezone.utc)
         self.error = error
 
     def get_tokens_per_second(self) -> float:
@@ -138,20 +98,15 @@ class OllamaExecutionContext(BaseModel):
         return (self.eval_count / self.total_duration_ms) * 1000
 
 
-class OllamaHealthCheck(BaseModel):
+class OllamaHealthCheck(msgspec.Struct, frozen=True):
     """Health check result for Ollama instance."""
 
-    is_healthy: bool = Field(default=False, description="Is Ollama running and responsive?")
-    is_reachable: bool = Field(default=False, description="Can we reach the server?")
-    models_available: int = Field(default=0, description="Number of models on disk")
-    models_loaded: int = Field(default=0, description="Number of models in memory")
-    last_check_at: datetime = Field(default_factory=datetime.utcnow)
-    error: str | None = Field(default=None, description="Error message if health check failed")
-
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False
+    is_healthy: bool = False
+    is_reachable: bool = False
+    models_available: int = 0
+    models_loaded: int = 0
+    last_check_at: datetime = datetime.now(timezone.utc)
+    error: str | None = None
 
 
 __all__ = [

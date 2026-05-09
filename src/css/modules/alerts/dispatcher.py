@@ -7,7 +7,7 @@ import aiohttp
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime
+from datetime import datetime, timezone
 from .enums import DeliveryStatus
 
 logger = getLogger(__name__)
@@ -68,7 +68,7 @@ class AlertDispatcher:
                 results[channel] = {"status": "failed", "error": str(e)}
         
         # Update cooldown
-        self.cooldown_tracker[cooldown_key] = datetime.utcnow()
+        self.cooldown_tracker[cooldown_key] = datetime.now(timezone.utc)
         
         return results
     
@@ -177,7 +177,7 @@ class AlertDispatcher:
                 "rule_id": rule.id,
                 "rule_name": rule.name,
                 "event": event_data,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
             
             headers = config.get("headers", {})
@@ -201,7 +201,7 @@ class AlertDispatcher:
     <h2 style="color: #d32f2f;">{rule.name}</h2>
     <p><strong>Severity:</strong> {event_data.get('severity', 'unknown').upper()}</p>
     <p><strong>Event Type:</strong> {event_data.get('kind', 'unknown')}</p>
-    <p><strong>Time:</strong> {datetime.utcnow().isoformat()}</p>
+    <p><strong>Time:</strong> {datetime.now(timezone.utc).isoformat()}</p>
     <hr>
     <p><strong>Description:</strong></p>
     <pre>{event_data.get('description', '')}</pre>
@@ -221,7 +221,7 @@ class AlertDispatcher:
         if not last_fire:
             return True
         
-        elapsed = (datetime.utcnow() - last_fire).total_seconds() / 60
+        elapsed = (datetime.now(timezone.utc) - last_fire).total_seconds() / 60
         return elapsed >= cooldown_minutes
     
     def _check_severity(self, event_severity: str, threshold: str) -> bool:

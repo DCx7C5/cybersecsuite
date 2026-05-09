@@ -10,8 +10,7 @@ from .messaging import Message
 
 log = getLogger(__name__)
 
-@msgspec.struct
-class RedisCommunicator:
+class RedisCommunicator(msgspec.Struct):
     """High-level async messaging interface for a single agents/entity.
 
     Wraps ``MessageDispatcher`` with a sender identity so callers never

@@ -1,9 +1,10 @@
 """Knowledge base management endpoints."""
 
+import msgspec
+
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Any
 from .models import KnowledgeDocument, KnowledgeTag, SearchLog
 from .retriever import KnowledgeRetriever
 
@@ -12,42 +13,42 @@ retriever = KnowledgeRetriever()
 
 
 # Request/Response Models
-class DocumentCreate(BaseModel):
-    title: str = Field(..., min_length=1, max_length=512)
-    content: str = Field(..., min_length=1)
-    document_type: str = Field(..., regex="^(cve_feed|playbook|threat_report|runbook|incident_retrospective|policy|tool_documentation|vendor_advisory|custom)$")
-    source: str = Field(..., min_length=1, max_length=512)
-    tags: List[str] = Field(default_factory=list)
-    cve_ids: List[str] = Field(default_factory=list)
-    relevance_score: float = Field(0.5, ge=0.0, le=1.0)
+class DocumentCreate(msgspec.Struct, frozen=True):
+    title: str
+    content: str
+    document_type: str
+    source: str
+    tags: list[str] = []
+    cve_ids: list[str] = []
+    relevance_score: float = 0.5
 
 
-class DocumentResponse(BaseModel):
+class DocumentResponse(msgspec.Struct, frozen=True):
     id: int
     title: str
     document_type: str
     source: str
-    tags: List[str]
-    cve_ids: List[str]
+    tags: list[str]
+    cve_ids: list[str]
     status: str
     version: int
     created_at: datetime
     updated_at: datetime
 
 
-class SearchRequest(BaseModel):
-    query: str = Field(..., min_length=1)
-    search_type: str = Field("keyword", regex="^(keyword|semantic|hybrid)$")
-    limit: int = Field(5, ge=1, le=20)
+class SearchRequest(msgspec.Struct, frozen=True):
+    query: str
+    search_type: str = "keyword"
+    limit: int = 5
 
 
-class SearchResult(BaseModel):
+class SearchResult(msgspec.Struct, frozen=True):
     id: int
     title: str
     content: str
     document_type: str
     score: float
-    tags: List[str]
+    tags: list[str]
     source: str
 
 
@@ -77,18 +78,18 @@ async def create_document(
             raise HTTPException(status_code=409, detail="Document already exists (duplicate)")
         
         doc = await KnowledgeDocument.get_by_id(result["document_id"])
-        return DocumentResponse.model_validate(doc)
+        return DocumentResponse(**{f: getattr(doc, f) for f in DocumentResponse.__struct_fields__})
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create document: {str(e)}")
 
 
-@router.get("/documents", response_model=List[DocumentResponse])
+@router.get("/documents", response_model=list[DocumentResponse])
 async def list_documents(
     org_id: int = Query(..., description="Organization ID"),
-    document_type: Optional[str] = None,
-    status_filter: Optional[str] = Query(None, alias="status"),
-    tag: Optional[str] = None,
+    document_type: str | None = None,
+    status_filter: str | None = Query(None, alias="status"),
+    tag: str | None = None,
     limit: int = Query(50, ge=1, le=500),
 ):
     """List rag_vector documents."""
@@ -103,7 +104,7 @@ async def list_documents(
         query = query.filter(tags__contains=tag)
     
     docs = await query.order_by("-updated_at").limit(limit).all()
-    return [DocumentResponse.model_validate(d) for d in docs]
+    return [DocumentResponse(**{f: getattr(d, f) for f in DocumentResponse.__struct_fields__}) for d in docs]
 
 
 @router.get("/documents/{doc_id}", response_model=DocumentResponse)
@@ -119,10 +120,10 @@ async def get_document(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Update last_accessed_at
-    doc.last_accessed_at = datetime.utcnow()
+    doc.last_accessed_at = datetime.now(timezone.utc)
     await doc.save()
     
-    return DocumentResponse.model_validate(doc)
+    return DocumentResponse(**{f: getattr(doc, f) for f in DocumentResponse.__struct_fields__})
 
 
 @router.delete("/documents/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -143,7 +144,7 @@ async def delete_document(
 
 
 # Search Endpoints
-@router.post("/search", response_model=List[SearchResult])
+@router.post("/search", response_model=list[SearchResult])
 async def search_knowledge(
     req: SearchRequest,
     org_id: int = Query(..., description="Organization ID"),
@@ -173,10 +174,10 @@ async def search_knowledge(
 
 
 # Tag Management Endpoints
-@router.get("/tags", response_model=List[dict])
+@router.get("/tags", response_model=list[dict[str, Any]])
 async def list_tags(
     org_id: int = Query(..., description="Organization ID"),
-    category: Optional[str] = None,
+    category: str | None = None,
 ):
     """List rag_vector tags."""
     # TODO: Check org authorization
@@ -214,10 +215,10 @@ async def create_tag(
 
 
 # Analytics Endpoints
-@router.get("/search-log", response_model=List[dict])
+@router.get("/search-log", response_model=list[dict[str, Any]])
 async def get_search_log(
     org_id: int = Query(..., description="Organization ID"),
-    agent_id: Optional[str] = None,
+    agent_id: str | None = None,
     limit: int = Query(50, ge=1, le=500),
 ):
     """Get rag_vector search history for analytics."""

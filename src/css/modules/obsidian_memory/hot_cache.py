@@ -36,8 +36,7 @@ updated: {updated}
 _HOT_PATH = "wiki/hot.md"
 _MAX_WORDS = 500
 
-@msgspec.struct
-class HotCacheState:
+class HotCacheState(msgspec.Struct):
     summary: str = "Session started."
     facts: list[str] = msgspec.field(default_factory=list)
     changes: list[str] = msgspec.field(default_factory=list)

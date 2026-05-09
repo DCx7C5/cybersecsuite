@@ -9,12 +9,11 @@ Endpoints:
 - DELETE /api/auth/keys/{id}      — Revoke API key
 """
 
+import msgspec
 from css.core.logger import getLogger
 import os
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
 
 from .manager import (
     JWTManager,
@@ -38,31 +37,31 @@ _revocation_store = TokenRevocationStore()
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class LoginRequest(BaseModel):
+class LoginRequest(msgspec.Struct, frozen=True):
     """Login request with credentials."""
-    username: str = Field(..., description="Username or email")
-    password: str = Field(..., description="Password")
-    scope: Optional[list[str]] = Field(default=None, description="Requested scopes")
+    username: str
+    password: str
+    scope: list[str] | None = None
 
 
-class RefreshRequest(BaseModel):
+class RefreshRequest(msgspec.Struct, frozen=True):
     """Refresh token request."""
-    refresh_token: str = Field(..., description="Refresh token from previous login")
+    refresh_token: str
 
 
-class LogoutRequest(BaseModel):
+class LogoutRequest(msgspec.Struct, frozen=True):
     """Logout request."""
-    access_token: Optional[str] = Field(None, description="Token to revoke")
+    access_token: str | None = None
 
 
-class APIKeyCreateRequest(BaseModel):
+class APIKeyCreateRequest(msgspec.Struct, frozen=True):
     """Request to create API key."""
-    note: Optional[str] = Field(None, description="Description/label for key")
+    note: str | None = None
 
 
-class APIKeyListResponse(BaseModel):
+class APIKeyListResponse(msgspec.Struct, frozen=True):
     """Response with list of API keys."""
-    keys: list[dict] = Field(..., description="List of API keys (secrets redacted)")
+    keys: list[dict]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -201,7 +200,7 @@ async def logout(req: LogoutRequest) -> None:
 
 
 @router.get("/keys", response_model=APIKeyListResponse)
-async def list_api_keys(authorization: Optional[str] = None) -> APIKeyListResponse:
+async def list_api_keys(authorization: str | None = None) -> APIKeyListResponse:
     """List API keys for authenticated user.
     
     Args:
@@ -230,7 +229,7 @@ async def list_api_keys(authorization: Optional[str] = None) -> APIKeyListRespon
 @router.post("/keys", response_model=APIKeyResponse, status_code=status.HTTP_201_CREATED)
 async def create_api_key(
     req: APIKeyCreateRequest,
-    authorization: Optional[str] = None,
+    authorization: str | None = None,
 ) -> APIKeyResponse:
     """Generate new API key.
     
@@ -249,7 +248,7 @@ async def create_api_key(
         
         # Generate key pair
         import uuid
-        from datetime import datetime
+        from datetime import datetime, timezone
         
         key_id = f"sk_{uuid.uuid4().hex[:12]}"
         secret, hashed = APIKeyManager.generate_key_pair(key_id, req.note)
@@ -259,7 +258,7 @@ async def create_api_key(
         return APIKeyResponse(
             key_id=key_id,
             secret=secret,  # Only shown once!
-            created_at=datetime.utcnow().isoformat(),
+            created_at=datetime.now(timezone.utc).isoformat(),
             note=req.note,
         )
     
@@ -274,7 +273,7 @@ async def create_api_key(
 @router.delete("/keys/{key_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_api_key(
     key_id: str,
-    authorization: Optional[str] = None,
+    authorization: str | None = None,
 ) -> None:
     """Revoke an API key.
     

@@ -1,16 +1,15 @@
 """Lightweight value types for tag APIs and manager operations."""
 import msgspec
 
-@msgspec.struct(frozen=True)
-class TagSuggestion:
+
+class TagSuggestion(msgspec.Struct, frozen=True):
     """Autocomplete suggestion for a tag."""
 
     id: int
     name: str
     slug: str
 
-@msgspec.struct(frozen=True)
-class TagConflictResolution:
+class TagConflictResolution(msgspec.Struct, frozen=True):
     """Result payload after conflict normalization."""
 
     kept_tag_ids: list[int] = msgspec.field(default_factory=list)

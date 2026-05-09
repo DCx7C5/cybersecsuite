@@ -35,8 +35,7 @@ if msgspec is not None:
         created_at: str = ""
 else:
 
-    @msgspec.struct(frozen=True)
-    class MemoryEntry:
+    class MemoryEntry(msgspec.Struct, frozen=True):
         """Fallback memory entry value object when msgspec is unavailable."""
 
         entry_id: str
@@ -49,8 +48,7 @@ else:
         metadata: dict[str, Any] = msgspec.field(default_factory=dict)
         created_at: str = ""
 
-    @msgspec.struct(frozen=True)
-    class MemorySnapshot:
+    class MemorySnapshot(msgspec.Struct, frozen=True):
         """Fallback memory snapshot value object when msgspec is unavailable."""
 
         snapshot_id: str

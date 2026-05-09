@@ -2,20 +2,18 @@
 import msgspec
 
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
 
-@msgspec.struct
-class TriageRequest:
+class TriageRequest(msgspec.Struct):
     """Request for triage classification."""
     query: str
     context: str = ""
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
-    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
 
-@msgspec.struct
-class TriageResult:
+class TriageResult(msgspec.Struct):
     """Result from triage classification."""
     request_id: str
     status: TriageStatus

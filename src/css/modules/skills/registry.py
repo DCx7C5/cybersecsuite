@@ -1,11 +1,11 @@
 """Skill registry and execution engine."""
 
 from css.core.logger import getLogger
-import asyncio
+import inspect
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 
-from css.core.types.meta import AsyncSafeSingletonMeta
+from css.core.types.meta import singleton
 from css.core.types.context import ConversationContext
 from .base import BaseSkill
 from .models import SkillDefinition, SkillResult
@@ -15,7 +15,8 @@ from .exceptions import SkillNotFoundError, SkillExecutionError, SkillConfigurat
 logger = getLogger(__name__)
 
 
-class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
+@singleton
+class SkillRegistry:
     """Registry for managing skill definitions and execution."""
     
     def __init__(self):
@@ -56,7 +57,7 @@ class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
             raise SkillNotFoundError(skill_id)
         return skill
     
-    def list_all(self, category: SkillCategory = None, status: SkillStatus = None) -> list[SkillDefinition]:
+    def list_all(self, category: SkillCategory | None = None, status: SkillStatus | None = None) -> list[SkillDefinition]:
         """List skills with optional filtering."""
         result = list(self._skills.values())
         
@@ -89,19 +90,19 @@ class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
             error_msg = "; ".join([f"{k}: {v}" for k, v in errors.items()])
             raise SkillExecutionError(f"Parameter validation failed: {error_msg}", skill_id)
         
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         
         try:
             # Execute skill handler
             if skill.handler:
-                if asyncio.iscoroutinefunction(skill.handler):
+                if inspect.iscoroutinefunction(skill.handler):
                     output = await skill.handler(**parameters)
                 else:
                     output = skill.handler(**parameters)
             else:
                 output = None
             
-            duration_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+            duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
             
             result = SkillResult(
                 skill_id=skill_id,
@@ -115,7 +116,7 @@ class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
             
             return result
         except Exception as e:
-            duration_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+            duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
             
             result = SkillResult(
                 skill_id=skill_id,
@@ -160,7 +161,7 @@ class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
         if "custom_metadata" in updates:
             skill.custom_metadata.update(updates["custom_metadata"])
         
-        skill.updated_at = datetime.utcnow()
+        skill.updated_at = datetime.now(timezone.utc)
         logger.debug(f"Updated skill: {skill_id}")
     
     def deregister(self, skill_id: str) -> bool:
@@ -171,7 +172,7 @@ class SkillRegistry(metaclass=AsyncSafeSingletonMeta):
             return True
         return False
     
-    def get_execution_history(self, skill_id: str = None, limit: int = 100) -> list[SkillResult]:
+    def get_execution_history(self, skill_id: str | None = None, limit: int = 100) -> list[SkillResult]:
         """Get execution history."""
         history = self._execution_history
         

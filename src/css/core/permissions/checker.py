@@ -3,9 +3,9 @@
 
 
 from css.core.logger import getLogger
+from css.core.enums import Permission
 from .types import ScopeContext
-from ..enums import Permission
-from ..exceptions import PermissionDenied
+from .exceptions import PermissionDenied
 
 logger = getLogger(__name__)
 

@@ -59,7 +59,7 @@ class ClassifyStage(Stage):
                     message["classification"] = result
                     message["confidence"] = result.confidence if result else 0.0
                 else:
-                    # For pydantic models or objects, try to set attributes
+                    # For objects with __dict__, try to set attributes
                     if hasattr(message, "__dict__"):
                         message.classification = result
                         message.confidence = result.confidence if result else 0.0

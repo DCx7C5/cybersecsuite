@@ -12,8 +12,9 @@ under a dedicated `/ws/*` surface.
 from css.core.logger import getLogger
 import json
 
+import msgspec
+
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
-from pydantic import BaseModel, Field
 
 from .manager import ChatSessionManager
 from .enums import ChatRole, ChatMessageType
@@ -30,14 +31,14 @@ _session_manager = ChatSessionManager()
 # API Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class CreateSessionRequest(BaseModel):
+class CreateSessionRequest(msgspec.Struct, frozen=True):
     """Request to create a new chat session."""
-    title: str = Field(default="New Chat", description="Session title")
-    system_prompt: str = Field(default="", description="System prompt for the session")
-    model_id: str | None = Field(default=None, description="Model ID for this session")
+    title: str = "New Chat"
+    system_prompt: str = ""
+    model_id: str | None = None
 
 
-class CreateSessionResponse(BaseModel):
+class CreateSessionResponse(msgspec.Struct, frozen=True):
     """Response after creating a session."""
     session_id: str
     title: str
@@ -45,7 +46,7 @@ class CreateSessionResponse(BaseModel):
     created_at: str
 
 
-class ChatMessageResponse(BaseModel):
+class ChatMessageResponse(msgspec.Struct, frozen=True):
     """Single chat message response."""
     id: str
     role: str
@@ -54,7 +55,7 @@ class ChatMessageResponse(BaseModel):
     created_at: str
 
 
-class GetMessagesResponse(BaseModel):
+class GetMessagesResponse(msgspec.Struct, frozen=True):
     """Response containing session messages."""
     session_id: str
     title: str
@@ -62,13 +63,13 @@ class GetMessagesResponse(BaseModel):
     messages: list[ChatMessageResponse]
 
 
-class SendMessageRequest(BaseModel):
+class SendMessageRequest(msgspec.Struct, frozen=True):
     """Request to send a message to a session."""
-    content: str = Field(..., description="Message content")
-    role: str = Field(default="user", description="Message role (user/assistant/system)")
+    content: str
+    role: str = "user"
 
 
-class SendMessageResponse(BaseModel):
+class SendMessageResponse(msgspec.Struct, frozen=True):
     """Response after sending a message."""
     message_id: str
     status: str

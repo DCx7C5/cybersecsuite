@@ -1,12 +1,9 @@
 import re
 from ipaddress import IPv6Address, AddressValueError
 from pathlib import Path
+from urllib.parse import urlparse
 
-from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
 from tortoise.fields import CharField, TextField
-
-
-URL_ADAPTER = TypeAdapter(AnyHttpUrl)
 
 
 class NameField(CharField):
@@ -61,10 +58,9 @@ class UrlField(CharField):
             return
         if not value.isascii():
             raise ValueError(f"URL must contain only ASCII characters: {value}")
-        try:
-            URL_ADAPTER.validate_python(value)
-        except ValidationError as e:
-            raise ValueError(f"Invalid URL: {value}") from e
+        parsed = urlparse(value)
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            raise ValueError(f"Invalid URL: {value}")
 
 
 class PathField(CharField):

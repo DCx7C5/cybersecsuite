@@ -1,6 +1,6 @@
 """Chat data models and types."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import msgspec
 from tortoise import fields, models
@@ -11,19 +11,17 @@ from css.core.db.models.mixins import SoftDeleteMixin
 
 from .enums import ChatRole, ChatMessageType, ChatStatus
 
-@msgspec.struct
-class ChatMessage:
+class ChatMessage(msgspec.Struct):
     """Single chat message."""
     id: str
     role: ChatRole
     message_type: ChatMessageType
     content: str
     metadata: dict[str, object] = msgspec.field(default_factory=dict)
-    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     tokens: int = 0
 
-@msgspec.struct
-class ChatSession:
+class ChatSession(msgspec.Struct):
     """Chat session containing messages."""
     session_id: str
     title: str
@@ -32,13 +30,13 @@ class ChatSession:
     system_prompt: str = ""
     messages: list[ChatMessage] = msgspec.field(default_factory=list)
     metadata: dict[str, object] = msgspec.field(default_factory=dict)
-    created_at: datetime = msgspec.field(default_factory=datetime.utcnow)
-    updated_at: datetime = msgspec.field(default_factory=datetime.utcnow)
+    created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     
     def add_message(self, message: ChatMessage) -> None:
         """Add message to session."""
         self.messages.append(message)
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
     
     def get_messages_for_api(self) -> list[dict[str, str]]:
         """Get messages in API-ready format."""

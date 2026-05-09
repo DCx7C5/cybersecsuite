@@ -1,7 +1,7 @@
 """Chat handler and session management."""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 from .models import ChatMessage, ChatMessageModel, ChatSession, ChatSessionModel
@@ -93,7 +93,7 @@ class ChatSessionManager:
         """Update session status."""
         session = await self.get_session_or_fail(session_id)
         session.status = status
-        session.updated_at = datetime.utcnow()
+        session.updated_at = datetime.now(timezone.utc)
         await self._persist_session(session)
         logger.debug(f"Updated session {session_id} status: {status.value}")
     
@@ -165,7 +165,7 @@ class ChatSessionManager:
             {
                 "message_count": session_record.message_count + 1,
                 "total_tokens": session_record.total_tokens + message.tokens,
-                "updated_at": datetime.utcnow(),
+                "updated_at": datetime.now(timezone.utc),
             }
         ).save()
 

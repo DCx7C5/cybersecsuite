@@ -182,12 +182,12 @@ class UnifiedLLMError(BaseCoreException):
         self.original_error = original_error
 
 
-class AuthError(BaseCoreException):
+class AuthError(UnifiedLLMError):
     """Authentication or authorization failed (401, 403, invalid credentials)."""
     pass
 
 
-class RateLimitError(BaseCoreException):
+class RateLimitError(UnifiedLLMError):
     """Rate limit exceeded (429, quota exhausted)."""
 
     def __init__(
@@ -406,36 +406,6 @@ class GatewayError(UnifiedLLMError):
 
 class UnknownError(UnifiedLLMError):
     """Unclassified error (fallback for unmapped errors)."""
-    pass
-
-
-class PermissionError(BaseCoreException):
-    """Base exception for permission-related errors."""
-
-    pass
-
-
-class PermissionDenied(PermissionError):
-    """Raised when an operation is not permitted."""
-
-    pass
-
-
-class TokenInvalid(PermissionError):
-    """Raised when a token is invalid or expired."""
-
-    pass
-
-
-class ScopeContextError(PermissionError):
-    """Raised when scope context is invalid."""
-
-    pass
-
-
-class RoleNotFound(PermissionError):
-    """Raised when a role is not found."""
-
     pass
 
 

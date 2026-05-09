@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -17,7 +17,7 @@ class DecisionLog:
     def append(self, session_id: str, decision: str, metadata: dict | None = None) -> Path:
         path = self.base_dir / f"{session_id}.decisions.jsonl"
         payload = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "decision": decision,
             "metadata": metadata or {},
         }

@@ -6,8 +6,7 @@ from typing import Any
 from css.core.types.base_entity import BaseAgent
 from css.core.types.base_headers import BaseAgentHeader
 
-@msgspec.struct
-class Agent(BaseAgent):
+class Agent(BaseAgent, msgspec.Struct):
     """Concrete agents entity with HTTP endpoint and metadata.
 
     Extends BaseAgent with:

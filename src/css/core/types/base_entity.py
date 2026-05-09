@@ -11,32 +11,24 @@ from .base_headers import (
 )
 
 
-class BaseEntity(BaseHeader):
+class BaseEntity(BaseHeader, frozen=True):
     """Root domain entity — identity + descriptive header + arbitrary metadata bag."""
     
     id: str = ""
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
-    
-    def __post_init__(self):
-        """Initialize non-Struct communicator after instantiation."""
-        self._communicator: BaseCommunicator | None = None
+    _communicator: BaseCommunicator | None = None
     
     @property
     def communicator(self) -> BaseCommunicator | None:
         """Get the communicator for this entity (if set)."""
         return self._communicator
     
-    @communicator.setter
-    def communicator(self, value: Any) -> BaseCommunicator | None:
-        """Set the communicator for this entity."""
-        self._communicator = value
-    
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dict."""
-        return msgspec.to_builtin(self)  # type: ignore[no-any-return]
+        return msgspec.to_builtins(self)
 
 
-class BaseTool(BaseEntity):
+class BaseTool(BaseEntity, frozen=True):
     """A callable tool exposed by an MCP server, SDK, or agent definition."""
     
     header: BaseToolHeader | None = None
@@ -50,10 +42,6 @@ class BaseTool(BaseEntity):
     enabled_by_default: bool = True
     tags: list[str] = msgspec.field(default_factory=list)
     input_schema: dict[str, Any] = msgspec.field(default_factory=dict)
-    
-    def __post_init__(self):
-        """Initialize tool-specific fields."""
-        super().__post_init__()
     
     @property
     def mcp_tool_name(self) -> str:
@@ -71,16 +59,12 @@ class BaseTool(BaseEntity):
         return self.tool_type == "sdk_beta"
 
 
-class BaseAgent(BaseEntity):
+class BaseAgent(BaseEntity, frozen=True):
     """A registered agent entity with its A2A endpoint and exposed skills references."""
     
     header: BaseAgentHeader | None = None
     skill_ids: list[str] = msgspec.field(default_factory=list)
     tools: list[BaseTool] = msgspec.field(default_factory=list)
-    
-    def __post_init__(self):
-        """Initialize agent-specific fields."""
-        super().__post_init__()
     
     @property
     def is_orchestrator(self) -> bool:
@@ -91,7 +75,7 @@ class BaseAgent(BaseEntity):
         return bool(self.metadata.get("default", False))
 
 
-class BaseSkill(BaseEntity):
+class BaseSkill(BaseEntity, frozen=True):
     """An installed skill entity with its source location and provider origin."""
     
     header: BaseSkillHeader | None = None
@@ -100,12 +84,7 @@ class BaseSkill(BaseEntity):
     source_path: str | None = None
     tools: list[BaseTool] = msgspec.field(default_factory=list)
     
-    def __post_init__(self):
-        """Initialize skill-specific fields."""
-        super().__post_init__()
-
-
-class BaseRole(BaseEntity):
+class BaseRole(BaseEntity, frozen=True):
     """A role that can be assigned to an agent — governs capabilities and routing."""
     
     header: BaseRoleHeader | None = None
@@ -114,10 +93,6 @@ class BaseRole(BaseEntity):
     can_broadcast: bool = False
     can_spawn_subagents: bool = False
     allowed_tool_types: list[str] = msgspec.field(default_factory=list)
-    
-    def __post_init__(self):
-        """Initialize role-specific fields."""
-        super().__post_init__()
     
     def can_use_tool_type(self, tool_type: str) -> bool:
         if not self.allowed_tool_types:

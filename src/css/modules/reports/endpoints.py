@@ -5,8 +5,8 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
+import msgspec
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
 
 from .generator import ReportGenerator
 from .models import ReportRecord
@@ -15,23 +15,23 @@ router = APIRouter(prefix="/api/reports", tags=["reports"])
 generator = ReportGenerator()
 
 
-class ReportSection(BaseModel):
-    title: str = Field(..., min_length=1, max_length=255)
+class ReportSection(msgspec.Struct, frozen=True):
+    title: str
     content: Any = ""
 
 
-class GenerateReportRequest(BaseModel):
-    title: str = Field(..., min_length=1, max_length=255)
-    report_type: str = Field(..., pattern="^(markdown|html|pdf)$")
-    source_type: str = Field("incident", min_length=1, max_length=32)
-    source_id: str = Field(..., min_length=1, max_length=128)
-    sections: list[ReportSection] = Field(default_factory=list)
+class GenerateReportRequest(msgspec.Struct, frozen=True):
+    title: str
+    report_type: str
+    source_type: str = "incident"
+    source_id: str
+    sections: list[ReportSection] = []
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def generate_report(req: GenerateReportRequest, org_id: int = Query(..., description="Organization ID")) -> dict:
     report_id = f"REP-{uuid.uuid4().hex[:16]}"
-    sections = [s.model_dump() for s in req.sections]
+    sections = [msgspec.to_builtins(s) for s in req.sections]
 
     if req.report_type == "markdown":
         content = generator.render_markdown(req.title, sections)

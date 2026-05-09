@@ -169,7 +169,7 @@ Consumer (response_strategy_router, task router, etc)
 
 #### 1. `models.py` (120 lines)
 ```python
-from pydantic import BaseModel, Field
+import msgspec
 from typing import Optional, List
 
 class TriageRequest(BaseModel):
