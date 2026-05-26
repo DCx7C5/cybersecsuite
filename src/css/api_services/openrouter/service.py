@@ -3,7 +3,7 @@
 from css.core.logger import getLogger
 import json
 import os
-from typing import override,  Any
+from typing import override, Any
 from collections.abc import AsyncIterator
 
 from css.core.types import (
@@ -18,6 +18,10 @@ from css.core.types import (
 )
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
+from .cost_tracking import (
+    capture_generation_id,
+    emit_cost_tracking_event,
+)
 
 logger = getLogger(__name__)
 
@@ -82,7 +86,7 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
         max_tokens: int | None = None,
         system_prompt: str | None = None,
         streaming: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> AsyncIterator[StreamChunk]:
         """Call OpenRouter with OpenAI-compatible streaming."""
         formatted_messages = self._format_messages(messages, system_prompt)
@@ -98,9 +102,10 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
             call_body["tools"] = self._format_tools(tools)
         
         if streaming:
-            return self._stream_response(call_body)
+            return self._stream_response(call_body, model_id)
         else:
-            return self._buffered_call_to_stream(self._buffered_response(call_body))
+            # Don't await — _buffered_call_to_stream expects a coroutine
+            return self._buffered_call_to_stream(self._buffered_response(call_body, model_id))
     
     @override
     async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
@@ -136,8 +141,9 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
     async def _stream_response(
         self,
         call_body: dict[str, Any],
+        model_id: str = "",
     ) -> AsyncIterator[StreamChunk]:
-        """Stream response."""
+        """Stream response with cost tracking."""
         call_body["stream"] = True
         headers = self._ensure_auth_header(
             {"Content-Type": "application/json"},
@@ -146,12 +152,16 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
             "Bearer",
         )
         
+        generation_id: str | None = None
         try:
             async with self.session.post(
                 f"{self.base_url}/chat/completions",
                 json=call_body,
                 headers=headers,
             ) as resp:
+                # Capture generation ID from stream response headers
+                generation_id = capture_generation_id(dict(resp.headers))
+
                 if resp.status != 200:
                     yield StreamChunk(
                         type="error",
@@ -169,12 +179,22 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
                         yield chunk
         except Exception as e:
             yield StreamChunk(type="error", metadata={"error": str(e)})
+        finally:
+            # Emit cost tracking event after stream completes
+            # Use finally block to ensure it runs whether stream succeeds or fails
+            if generation_id and self.api_key:
+                await emit_cost_tracking_event(
+                    generation_id=generation_id,
+                    model_id=model_id,
+                    api_key=self.api_key,
+                )
     
     async def _buffered_response(
         self,
         call_body: dict[str, Any],
+        model_id: str = "",
     ) -> LLMResponse:
-        """Buffer response."""
+        """Buffer response and emit cost tracking event asynchronously."""
         call_body["stream"] = False
         headers = self._ensure_auth_header(
             {"Content-Type": "application/json"},
@@ -188,17 +208,33 @@ class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
             json=call_body,
             headers=headers,
         ) as resp:
+            # Capture generation ID from response headers
+            generation_id = capture_generation_id(dict(resp.headers))
+
             data = await resp.json()
             text = ""
             for choice in data.get("choices", []):
                 if choice.get("message", {}).get("content"):
                     text += choice["message"]["content"]
             
-            return LLMResponse(
+            response = LLMResponse(
                 text=text,
                 stop_reason=data["choices"][0].get("finish_reason", "stop") if data.get("choices") else "stop",
                 usage=data.get("usage", {}),
             )
+
+            # Emit cost tracking event asynchronously
+            # This does not block the response
+            if generation_id and self.api_key:
+                await emit_cost_tracking_event(
+                    generation_id=generation_id,
+                    model_id=model_id,
+                    api_key=self.api_key,
+                    cost_usd=data.get("usage", {}).get("total_cost"),
+                    actual_provider=data.get("model"),
+                )
+
+            return response
     
     @staticmethod
     def _format_messages(
