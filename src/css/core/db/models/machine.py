@@ -101,3 +101,25 @@ class Machine(BaseModel, TimestampMixin):
             Index(fields=["is_active", "last_seen"]),
         ]
         ordering = ["hostname"]
+
+
+async def sync_default_machines() -> list["Machine"]:
+    """Seed localhost machine on first start."""
+    localhost = await Machine.get_or_none(hostname="localhost")
+    if localhost is not None:
+        return [localhost]
+
+    import platform
+    import uuid
+
+    localhost = await Machine.create(
+        name="localhost",
+        hostname="localhost",
+        os_type=platform.system(),
+        os_version=platform.release(),
+        machine_uuid=str(uuid.getnode()),
+        is_active=True,
+        cpu_cores=1,
+        memory_gb=0,
+    )
+    return [localhost]

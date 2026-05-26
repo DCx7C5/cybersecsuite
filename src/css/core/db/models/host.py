@@ -102,3 +102,27 @@ class Host(BaseModel, TimestampMixin):
             Index(fields=["is_active", "last_seen"]),
         ]
         ordering = ["name"]
+
+
+async def sync_default_hosts() -> list["Host"]:
+    """Seed localhost host on first start."""
+    localhost_host = await Host.get_or_none(name="localhost")
+    if localhost_host is not None:
+        return [localhost_host]
+
+    from .machine import sync_default_machines
+
+    machines = await sync_default_machines()
+    if not machines:
+        return []
+
+    localhost_host = await Host.create(
+        name="localhost",
+        machine_id=machines[0].id,
+        ipv4_address="127.0.0.1",
+        ipv6_address="::1",
+        fqdn="localhost.localdomain",
+        host_role="development",
+        is_active=True,
+    )
+    return [localhost_host]

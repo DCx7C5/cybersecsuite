@@ -60,6 +60,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - `db40-provider-model-cutover` + `db40-user-vs-account-boundary` — finalize provider/account/user ownership boundaries.
 - `orm-provider-llmmodel-relation` — explicit Provider ↔ LLMModel relation contract for startup seeding and query flows.
 - `seed-providers-empty-table-yaml` — provider table cardinality gate (seed only when empty, otherwise non-destructive enrich).
+- `db40-machine-host-pathfs-seeding` — localhost machine/host/pathfs auto-seed on first start via `sync_default_machines()`, `sync_default_hosts()`, `sync_default_paths()`.
 - `db40-menu-sidebar-contract` + `db40-menu-menuid-upsert` + `db40-menu-menuid-endpoints` — runtime menu partitioning (`sidebar`, `settings`, `topnav`) and deterministic sidebar children.
 - `db40-tag-junction-naming-standard` + `db40-model-meta-standardization` — singular class/table/meta conventions for rich junction models.
 

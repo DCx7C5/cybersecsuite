@@ -110,3 +110,38 @@ class PathFS(BaseModel, TimestampMixin):
             Index(fields=["is_monitored", "last_scanned"]),
         ]
         ordering = ["host_id", "path"]
+
+
+async def sync_default_paths() -> list["PathFS"]:
+    """Seed common localhost paths on first start."""
+    from .host import sync_default_hosts
+
+    hosts = await sync_default_hosts()
+    if not hosts:
+        return []
+
+    host = hosts[0]
+    common_paths = [
+        ("/", "directory"),
+        ("/home", "directory"),
+        ("/tmp", "directory"),
+        ("/var", "directory"),
+        ("/etc", "directory"),
+    ]
+
+    existing = await PathFS.filter(host_id=host.id)
+    existing_paths = {p.path for p in existing}
+
+    created = []
+    for path, path_type in common_paths:
+        if path in existing_paths:
+            continue
+        item = await PathFS.create(
+            host_id=host.id,
+            path=path,
+            path_type=path_type,
+            is_monitored=True,
+        )
+        created.append(item)
+
+    return created if created else existing

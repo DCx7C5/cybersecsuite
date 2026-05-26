@@ -34,11 +34,11 @@ from .mixins import (
 )
 
 from .scope import ProjectScope, SessionScope
-from .menu import MenuItem, MenuItemInfo
+from .menu import MenuItem, MenuItemInfo, sync_default_menu_items
 from .provider import ApiServiceProvider
-from .machine import Machine, MachineInfo, MachineManager
-from .host import Host, HostInfo, HostManager
-from .pathfs import PathFS, PathFSInfo, PathFSManager
+from .machine import Machine, MachineInfo, MachineManager, sync_default_machines
+from .host import Host, HostInfo, HostManager, sync_default_hosts
+from .pathfs import PathFS, PathFSInfo, PathFSManager, sync_default_paths
 
 __all__ = [
     "BaseModel",
@@ -63,14 +63,18 @@ __all__ = [
     "SessionScope",
     "MenuItem",
     "MenuItemInfo",
+    "sync_default_menu_items",
     "ApiServiceProvider",
     "Machine",
     "MachineInfo",
     "MachineManager",
+    "sync_default_machines",
     "Host",
     "HostInfo",
     "HostManager",
+    "sync_default_hosts",
     "PathFS",
     "PathFSInfo",
     "PathFSManager",
+    "sync_default_paths",
 ]
