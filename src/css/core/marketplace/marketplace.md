@@ -1,7 +1,7 @@
 # core/marketplace — Catalog, Install State, and Package Control Plane
 
 **Location**: `src/css/core/marketplace/`  
-**Status**: ✅ Implemented control plane, with Phase 9 registry/service cleanup still pending
+**Status**: Implemented control plane; sidebar-child, prompt-link, and documentation mapping work remains pending
 
 ## Purpose
 
@@ -24,6 +24,47 @@ It is **not** the runtime execution layer for MCP, tools, or SIEM integrations. 
 | `cache.py` | Local in-memory TTL cache, not Redis-backed |
 | `installer.py` / `package_manager.py` | Package install/uninstall and local package orchestration |
 | `types.py` | Request/response schemas |
+
+## Executable Owner Contract
+
+### Exact File And Symbol Map
+
+| Path | Live symbols or planned edit boundary |
+|------|---------------------------------------|
+| `src/css/core/db/models/marketplace.py` | Canonical `MarketplaceItem`, `MarketplaceMeta`, `MarketplaceItemTag`, `MarketplaceItemManager`, `MarketplaceMetaManager` ORM/model surface. |
+| `src/css/core/marketplace/registry.py` | `MarketplaceItemRegistry`, `wire_registry_events()`, `emit_marketplace_item_changed()`. |
+| `src/css/core/marketplace/endpoints.py` | `list_marketplace_items()`, `get_marketplace_item()`, `install_item()`, `uninstall_item()`, `toggle_item()`, `marketplace_status()`. |
+| `src/css/core/marketplace/seeder.py` | `MarketplaceSeeder`, `seed_marketplace_on_startup()`. |
+| `src/css/core/marketplace/types.py` | `MarketplaceItemCreate`, `MarketplaceItemResponse`, install/toggle/upgrade response structs. |
+| `src/css/core/db/models/menu.py` | `DEFAULT_MENU_ITEMS`, `sync_default_menu_items()` for marketplace sidebar children. |
+
+Phase 40 consolidation retained the rich ORM symbols above in
+`src/css/core/db/models/marketplace.py`; future marketplace work must not
+restore a competing catalog model file.
+
+### Live Todo Map
+
+| Todo ID | Status in `session.db` | Contract owned here |
+|---------|------------------------|---------------------|
+| `db40-lane-marketplace` | done | Canonical model reconciliation retained `MarketplaceItem`, `MarketplaceMeta`, `MarketplaceItemTag`, and their managers. |
+| `db40-menu-marketplace-children-contract` | pending | Document and consume the seven stable sidebar children seeded by `core/db/models/menu.py`. |
+| `prompt-marketplace-wire` | pending | Link catalog prompt entries to prompt definitions without moving prompt content ownership into marketplace. |
+| `dep-map-modules-marketplace` | pending | Verify API, registry, seeder, ORM, templates, menu, MCP, and prompt relationships. |
+
+### Numbered Execution And Validation
+
+1. For `db40-menu-marketplace-children-contract`, edit the menu seed/upsert
+   surface and this contract together; the ordered child labels are `Agents`,
+   `Skills`, `MCPs`, `Workflows`, `Templates`, `Prompts`, and `Teams`.
+2. For `prompt-marketplace-wire`, consume the existing
+   `MarketplaceItemType.prompt` catalog kind and keep prompt versions and
+   rendered content in the prompts owner.
+3. For `dep-map-modules-marketplace`, inspect imports, mounted routes,
+   registry event wiring, template bridge, and tracker state before changing
+   integration prose.
+4. Validate menu synchronization with `python manage.py init-db` and an
+   ordered-child query; validate prompt linking through marketplace/prompt API
+   tests; validate dependency mapping with `rg` over the exact files above.
 
 ## Frontend Template Surface (Phase 18)
 
@@ -64,7 +105,7 @@ siem/ consumes installed MCP connectors
 - `MarketplaceItemRegistry` currently performs DB CRUD directly. Phase 9 will split this into:
   - a pure cache/registry contract
   - a DB-writing service layer
-- ORM source currently split between `core/db/models/marketplace_catalog.py` (active runtime imports) and `core/db/models/marketplace.py` (richer model surface). Phase 40 lane B tracks canonical merge + duplicate removal (`db40-marketplace-*`).
+- ORM source was split between `marketplace_catalog.py` and `marketplace.py`. Phase 40 consolidated into `marketplace.py` as the canonical surface; `marketplace_catalog.py` was removed.
 - Sidebar children contract is tracked in `db40-menu-marketplace-children-contract` and consumed by Phase 18 marketplace navigation todos.
 - Registry invalidation wiring now reacts to item-level change events (`marketplace.item.changed`) and supports targeted cache eviction + `reload()` from manager-backed DB reads.
 - Registry surface is now read/cache focused (`get`, `list`, `invalidate`, `reload`) with no DB write operations.

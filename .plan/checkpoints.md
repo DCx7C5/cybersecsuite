@@ -1,6 +1,41 @@
 # Checkpoints — Phase Summaries
 
-## Phase 0: TeamScope Foundation ✅
+## How To Read This File
+
+This file is an append-only historical record of completed phase work and
+planning intake. It is not the current implementation queue.
+
+- Query `.plan/session.db` for live todo state and descriptions.
+- Read the nearest `src/css/**/*.md` file for the executable local contract.
+- Read `.plan/architecture/feature-overview.md` for the verified source
+  inventory.
+- Counts, paths, status words, and type names inside older checkpoints record
+  what was stated at that point in time. They do not override current rules or
+  current source ownership.
+
+### Current Reconciliation Note (2026-05-26)
+
+- Active memory ownership is `src/css/core/memory/`,
+  `src/css/core/rag_vector/`, and `src/css/core/rag_graph/`; the retired
+  parallel memory branch must not be recreated.
+- Triage ownership is `src/css/modules/triage/`; response strategy ownership
+  is `src/css/modules/strategies/`. Redundant root `core/intelligence.py` and
+  `core/routing.py` facades were removed.
+- Value objects implemented or revised now must follow the current
+  `msgspec.Struct` rule, even where older checkpoint prose records historical
+  `dataclass` work.
+- Session/output-directory ownership is still unresolved. Historical
+  `working_dir` or proposed `core/workspace` references require an explicit
+  ownership decision before implementation.
+- Current tracker snapshot: `927` todos, `485` done, `436` pending,
+  `6` blocked, `0` in progress.
+- Phase 41 preparation is complete (`12/12` remediation todos done). The
+  completed `db40-lane-marketplace` row is not an active continuation point;
+  any implementation resumption must use live dependency and owner-doc checks.
+
+---
+
+## Checkpoint 000: Phase 0 — TeamScope Foundation ✅
 
 **Date**: 2026-05-03  
 **Duration**: 1 day (planned 10 days; accelerated with TODO loop)  
@@ -72,7 +107,7 @@ Phase 1: Multi-Orchestrator Core (14 days)
 
 ---
 
-## Phase 1: Multi-Orchestrator Core ✅
+## Checkpoint 001: Phase 1 — Multi-Orchestrator Core ✅
 
 **Date**: 2026-05-03  
 **Duration**: Accelerated (1 phase-cycle)  
@@ -153,7 +188,7 @@ Phase 3: Module Consistency
 
 ---
 
-## Checkpoint 003: Full-System Audit Complete (2026-05-03)
+## Checkpoint 003A: Full-System Audit Complete (2026-05-03)
 
 **Status**: 🎯 COMPLETE | **Duration**: ~1 hour
 
@@ -173,12 +208,14 @@ Phase 3: Module Consistency
 
 **Next**: Phase 2 Foundation Tier Implementation
 
-See: `session-checkpoint.md` for full details | `plan.md` for implementation schedule | `memory.md` for latest state
+Historical note: the former `session-checkpoint.md` reference is retired.
+Current navigation is `.plan/plan.md`; current status is in
+`.plan/session.db`; current context is in `.plan/memory.md`.
 
 
 ---
 
-## Checkpoint 003: Architecture Proposals + Plan Restructure (2026-05-04, session 9a5b41c4)
+## Checkpoint 003B: Architecture Proposals + Plan Restructure (2026-05-04, session 9a5b41c4)
 
 **Status**: 🎯 PLANNING COMPLETE
 
@@ -233,8 +270,11 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 **Phase 19 Expanded**:
 - Added 4 new todos: `sessions-lifecycle`, `sessions-mode-layout`, `sessions-persistence`, `sessions-endpoints`
-- SessionManager now has full lifecycle (create/resume/end) + state machine + mode-driven layout
-- Depends on Phase 15 WorkingDirManager for directory setup
+- SessionManager planning gained full lifecycle (create/resume/end) + state
+  machine + mode-driven layout.
+- Historical dependency: Phase 15 directory setup was described as
+  `WorkingDirManager`. Current ownership is unresolved and must be confirmed
+  before implementation.
 
 **Phase 20 — Persistent Memory Layer** (12 todos):
 - MemoryEntry msgspec.Struct (provider-agnostic, frozen)
@@ -250,7 +290,8 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
   Paraphrase Suggester, Pre-Filter
 - All gate on `ai-triage-ollama-wire` (Phase 8)
 - PreFilter + FallbackWhisperer are highest value (cost savings + resilience)
-- All in core/triage/ sub-files, orchestrated by TriageEngine
+- Originally proposed below `core/triage/`; current canonical owner is
+  `src/css/modules/triage/`, orchestrated by `TriageEngine`.
 
 **session.db**: 572 total (194 done, 377 pending, 1 blocked) | +30 todos this session
 
@@ -298,8 +339,10 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 - Total: ~586 todos
 
 ### Files Modified
-- `src/css/modules/mcps/plan.md`: Completely rewritten from empty stub → full design (transports, client, registry, bridge, types, API, examples)
-- `src/css/modules/tools/plan.md`: Removed MCP server ownership; added split note and ToolType.MCP bridge explanation
+- `src/css/modules/mcps/mcps.md` (formerly referenced as `plan.md`):
+  complete design for transports, client, registry, bridge, types, API, and examples.
+- `src/css/modules/tools/tools.md` (formerly referenced as `plan.md`):
+  removed MCP server ownership and documented the `ToolType.MCP` bridge.
 - `.plan/rules.md`: 19 → 20 modules; mcps added to table; tools note updated
 - `.plan/plan.md`: Phase 22 added to phases table + full Phase 22 section appended
 - `.plan/memory.md`: Phase 22 key points section; session.db state updated; prev session block renamed
@@ -325,8 +368,8 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Status
 - Phase 22 todos: 14 pending (all 14 new)
-- mcps/plan.md: ✅ Written
-- tools/plan.md: ✅ Updated
+- `mcps/mcps.md`: ✅ Written
+- `tools/tools.md`: ✅ Updated
 - rules.md: ✅ 20 modules
 - plan.md: ✅ Phase 22 added
 - memory.md: ✅ Synced
@@ -349,7 +392,8 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Files Created/Modified
 - `src/css/modules/prompts/__init__.py`: Scaffolded (1 line)
-- `src/css/modules/prompts/plan.md`: Full design — categories, types, renderer rules, registry API
+- `src/css/modules/prompts/prompts.md` (formerly referenced as `plan.md`):
+  full design for categories, types, renderer rules, and registry API.
 - `.plan/rules.md`: 20 → 21 modules; prompts added alphabetically
 - `.plan/plan.md`: Phase 23 row + Phase 23 section appended
 - `.plan/memory.md`: Phase 23 key points; state updated
@@ -380,11 +424,11 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 |-----|-------|------|
 | A (CRITICAL) | `css.core.session` | File doesn't exist; `session-context-create` already tracked in Phase 15 |
 | B (HIGH) | `core/db/models/` | ORM models missing: ProjectRecord, McpServerConfigRecord, PromptDefinitionRecord |
-| C (HIGH) | `core/types/projects.py` | Missing — projects/plan.md references it |
+| C (HIGH) | `core/types/projects.py` | Missing — `projects/projects.md` requires it |
 | D (HIGH, BLOCKED) | `core/types/context.py` | `@dataclass + BaseModel` anti-pattern on 4 classes |
 | E (HIGH, BLOCKED) | `permissions.ScopeLevel` | 3 independent definitions of same enum |
-| F (MEDIUM) | `agents/plan.md` | Stale `project_dir`, missing `prompts` row |
-| G (MEDIUM) | `events/plan.md` | Missing project.*, settings.changed, mcp.call.* event namespaces |
+| F (MEDIUM) | `agents/agents.md` | Stale `project_dir`, missing `prompts` row |
+| G (MEDIUM) | `events/events.md` | Missing project.*, settings.changed, mcp.call.* event namespaces |
 | H (MEDIUM) | 8 modules | Placeholder integration tables not filled |
 | I (MEDIUM) | triage, llm_proxy, chat, workflows | NO integration section at all |
 | J (MEDIUM) | `cache` | Not referenced anywhere despite 4+ consumers |
@@ -690,7 +734,10 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
   - `BaseTreeModel` adoption inventory
   - tag architecture standardization (`*Tag` singular naming/meta pattern)
   - provider model rename cutover, user-vs-account boundary
-  - planning todo for `intelligence.py` and `pipeline.py` new homes
+  - historical planning todo for `intelligence.py` and `pipeline.py` homes;
+    current reconciliation removed the root intelligence/routing facades,
+    retains shared `core/pipeline.py`, and assigns triage/strategy behavior to
+    their module owners.
 - Adjusted phase ordering:
   - Phase 39 sort order normalized to follow Phase 38
   - Phase 40 assigned the next sort slot
@@ -734,7 +781,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ---
 
-## Checkpoint 015 — Phase 18 Realtime Graph Planning Sync (2026-05-09T16:41+0200)
+## Checkpoint 015 — Phase 18 Realtime Graph Planning Sync (recorded out of order; 2026-05-09T16:41+0200)
 
 **Status**: 🟡 PLAN UPDATE APPLIED
 
@@ -838,3 +885,66 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Next Step
 - Start parallel execution by claiming one lane from `T18.0` and one from `T40.0`, with settings/config and menu/sidebar prerequisites first.
+
+---
+
+## Checkpoint 021 — Documentation Contract Sanitization + Tracker Description Audit (2026-05-25)
+
+**Status**: DOCUMENTATION/TRACKER CONTRACT SYNC COMPLETE
+**Scope**: Information quality and ownership reconciliation only; no todo
+status changes were made in this checkpoint.
+
+### Work Done
+
+- Clarified that this file is historical evidence; live execution begins with
+  `.plan/session.db` and the nearest `src/css/**/*.md` owner document.
+- Corrected obsolete live-looking document references and recorded the
+  canonical memory, triage, strategies, and removed-facade outcomes.
+- Audited all tracker descriptions and filled every missing description,
+  including the underdefined Phase 20 memory backlog.
+- Corrected active descriptions that would have directed implementation into
+  removed or obsolete locations:
+  - memory work -> `src/css/core/memory/`
+  - triage behavior -> `src/css/modules/triage/`
+  - response strategies -> `src/css/modules/strategies/`
+  - provider routing/resilience -> `src/css/core/resilience/routing/`
+  - event ownership -> `src/css/core/events/`
+  - permissions ownership -> `src/css/core/permissions/`
+- Rewrote legacy `dataclass` implementation instructions to require frozen
+  `msgspec.Struct` value types where active work remains.
+- Gated all pending session-output/workspace instructions: no model may create
+  `core/workspace` or revive `working_dir` until ownership is explicitly
+  selected.
+
+### Local Document Audit
+
+- Added implementation/validation contracts to short active owner documents
+  for accounts, alerts, evidence, incidents, scans, webhooks, compliance,
+  scheduler, threat intelligence, MITRE, strategies, menu, redis, workflows,
+  browser relay, and marketplace frontend integration.
+- Filled placeholder integration matrices in the skills, teams, cache, roles,
+  capabilities, and tags owner documents.
+- Declared the local document sufficiency standard in `src/css/plan.md`.
+  Provider-specific directories remain intentionally covered by the central
+  `src/css/api_services/api_services.md` specification; helper subdirectories
+  inherit parent core ownership unless assigned independent work.
+
+### Verification Snapshot
+
+| Metric | Result |
+|--------|--------|
+| Tracker todos | `914` |
+| Blank descriptions | `0` |
+| Active descriptions shorter than 80 characters | `0` |
+| Active minimum description length | `85` characters |
+| Status snapshot | `467 done / 440 pending / 6 blocked / 1 in progress` |
+| Current in-progress todo | `db40-lane-marketplace` |
+| SQLite integrity check | `ok` |
+
+### Open Ownership Decision
+
+Session/output-directory ownership remains deliberately unresolved. The user
+previously indicated that `core/workspace` may be obsolete. Before Phase 15
+or Phase 24 filesystem/git lifecycle work begins, choose the canonical owner
+or explicitly retire those tasks; the tracker now prevents accidental
+implementation of the obsolete proposal.

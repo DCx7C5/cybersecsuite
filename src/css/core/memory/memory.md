@@ -81,3 +81,96 @@ Legacy module package has been fully removed.
 - Prompt cache, retrieval cache, and Redis hot paths may accelerate memory access patterns, but `core/memory` remains the source-of-truth state layer.
 
 Memory remains source-of-truth state; retrieval, triage, and graph views consume it but do not replace it.
+
+## Phase 20 Execution Contract
+
+Phase 20 formalizes memory that survives model and provider changes. Stored
+entries remain provider-neutral; only context assembly converts them into an
+adapter-specific request representation.
+
+```text
+agent turn
+  -> retrieve scoped memory under a token budget
+  -> assemble provider-neutral context plus retrieval evidence
+  -> invoke selected model/provider
+  -> store resulting entries
+  -> asynchronously checkpoint/promote/compress as policy requires
+```
+
+### Storage and Retrieval Tiers
+
+| Tier | Required behavior | Canonical owner |
+|------|-------------------|-----------------|
+| Hot | Redis-backed active-session window, TTL, token-budget eviction, resume warm-up. | `core/memory` |
+| Cold | Durable PostgreSQL turns/snapshots with text search and bulk flush on lifecycle boundaries. | `core/memory` / DB models |
+| Hybrid retrieval | Cross-session evidence retrieval, vector and graph search, caching, normalized fusion/rerank, and provenance preservation before model calls. | `core/rag_vector` and `core/rag_graph`, consumed by memory assembly. |
+
+### Planned Surfaces
+
+| Work area | Required outcome |
+|-----------|------------------|
+| Protocol and manager | Provider-neutral `MemoryEntry`/store contracts; manager handles warm-up, promotion, flush, eviction, and retrieval. |
+| Context assembler | Convert selected memory/retrieval results for adapters while retaining source identifiers and token budgets. |
+| Retrieval services | Use VectorRAG and GraphRAG for durable cross-session knowledge lookup; do not introduce an additional vault/projection planning layer. |
+| Semantic/compression policy | pgvector-backed retrieval through an embedding-provider contract; compress aged conversation turns while preserving useful summaries and provenance. |
+| Triage hook | Allow Phase 21 semantic tagging after memory writes without coupling memory state to triage routing state. |
+
+### Critical Dependencies
+
+| Dependency chain | Why it matters |
+|------------------|----------------|
+| Protocol -> persistence adapters -> manager/context assembler | Prevents provider-specific state from leaking into persisted memory. |
+| Manager/context assembler -> agent and session lifecycle wiring | Ensures memory is retrieved/stored at stable execution boundaries. |
+| Vector/graph backends -> fused retrieval -> context assembly | Makes evidence available before invocation with provenance intact. |
+
+### Validation Requirements
+
+- Prove a session can resume after switching providers without losing useful
+  context or corrupting request formatting.
+- Verify Redis loss/fallback to durable storage and lifecycle checkpointing.
+- Validate retrieval evidence and compressed summaries retain provenance needed
+  by reports, approvals, and audit views.
+
+## Retrieval Package Placement Decision
+
+The retrieval subsystems are currently present at `src/css/core/rag_vector/`
+and `src/css/core/rag_graph/`. A later refactor may place them below
+`src/css/core/memory/` to make the context-assembly ownership explicit.
+
+Do not rename imports, routes, ORM registration, or docs to nonexistent nested
+paths during documentation sanitization. First audit the executable dependency
+surface, then perform the package move as a bounded source-code change with
+tests and tracker updates.
+
+## Executable Phase 20 Addendum (2026-05-26)
+
+### Exact Files And Symbols
+
+| Path | Current or planned symbols |
+|------|----------------------------|
+| `src/css/core/memory/types.py`, `src/css/core/memory/contracts.py` | Existing `MemoryEntry`, `MemoryQuery`, `MemoryStore`, `MemoryRetriever`, `MemoryPolicy`. |
+| `src/css/core/memory/session_store.py` | Existing `SessionStore`; canonical ORM imports must resolve from `src/css/core/db/models/memory.py`. |
+| `src/css/core/memory/service.py` | Existing `MemoryService`, `DefaultMemoryPolicy`; normalize model imports to the canonical DB owner when touched. |
+| `src/css/core/memory/context_window.py`, `src/css/core/memory/agent_memory.py` | Existing `ContextWindow`, `AgentMemory` active-context/checkpoint behavior. |
+| `src/css/core/memory/context_assembler.py` | Planned `ContextAssembler.assemble(entries, retrieval_results, token_budget)` owner for `mem-context-assembler` and `rag-context-wire`. |
+| `src/css/core/rag_vector/retriever.py`, `src/css/core/rag_graph/backend.py` | Retrieval providers consumed by context assembly; GraphRAG backend remains planned. |
+
+### Live Todo Map And Work Order
+
+| Pending todo group | Status | Ordered contract |
+|--------------------|--------|------------------|
+| `mem-protocol-struct`, `mem-protocol-interface`, `mem-module-files` | pending | Reconcile existing values/protocols/exports; do not duplicate implemented contracts. |
+| `mem-redis-adapter`, `mem-pg-model`, `mem-pg-adapter`, `mem-manager`, `bug-fix-sessionstore-dataloss`, `bug-fix-sessionstore-race` | pending | Fix persistence correctness before lifecycle integration. |
+| `mem-context-assembler`, `memory-context-assembler-integration`, `rag-context-wire` | pending | Implement and consume `ContextAssembler.assemble()` before model calls, under token/provenance constraints. |
+| `mem-agent-wire`, `mem-session-wire`, `mem-memory-tagger-hook` | pending | Integrate at stable turn/lifecycle/write boundaries after state correctness. |
+| `memory-*` rollout/telemetry/tests rows | pending | Add failure policy, parity, startup, metrics, and rollout evidence after core behavior is verified. |
+
+1. Normalize canonical memory model imports and repair storage loss/race
+   behavior before adding new adapters or lifecycle wiring.
+2. Implement the provider-neutral manager/context assembler and connect
+   vector/graph retrieval only through the named `assemble()` boundary.
+3. Add session/agent/tagging integrations and failure/telemetry/rollout tests
+   after persistence and assembly are stable.
+4. Validate Redis-loss fallback, concurrent writes, provider switch survival,
+   retrieval provenance/token trimming, canonical imports, and dependency
+   direction between memory, retrieval, triage, and agents.

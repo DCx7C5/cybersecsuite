@@ -1,6 +1,6 @@
 # @loader — Auto-Discovery for Modules & Models
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns retained core-wide implementation specifications.
 
 ---
 
@@ -297,7 +297,7 @@ class ModelModule(NamedTuple):
 
 # @logger — Unified Logging System
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: Query `.plan/session.db` for live todo status before logger implementation.
 
 ---
 
@@ -464,7 +464,7 @@ Subsequent calls to `getLogger(name)` return cached instance (no re-initializati
 
 # core/prompt_cache/ — LLM Prompt Caching (Phase 11, renamed from caching/)
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos added here must be synced with `.plan/session.db`.
+**Tracking rule**: Query `.plan/session.db` for live prompt-cache todo status.
 
 **Location**: `src/css/core/prompt_cache/`  
 **Status**: 🔴 Pending
@@ -504,7 +504,7 @@ core/prompt_cache/
 
 # core/cache/ — KV Caching Layer (moved from modules/cache/)
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos added here must be synced with `.plan/session.db`.
+**Tracking rule**: Query `.plan/session.db` for live cache todo status.
 
 **Migration status**: ✅ complete (`cache-move-to-core`, `cache-remove-l4-sqlite`, `cache-fix-l2-redis-client` marked done in session.db)
 
@@ -540,15 +540,17 @@ core/cache/
 
 ---
 
-# core/workspace/ — Multi-Workspace Registry
+# Legacy workspace proposal - reconciliation required
 
-**Todo**: `working-dir-manager` updated (Phase 15)  
-**Location**: `src/css/core/workspace/`  
-**Status**: 🔴 Pending
+**Tracker references**: Phase 15 legacy working-directory todos
+**Proposed location**: `src/css/core/workspace/`
+**Status**: not confirmed in the current source tree; do not implement from
+this historical proposal without reconciliation.
 
-### Concept
+### Historical Concept
 
-An entity (session or agent) owns a `WorkspaceRegistry` containing N `WorkspaceDirHandle` entries.
+Earlier planning proposed that an entity (session or agent) own a
+`WorkspaceRegistry` containing N `WorkspaceDirHandle` entries.
 
 ```
 workspaces[0]  = DEFAULT  ~/.css/sessions/<sid>/        READ+WRITE  (always present)
@@ -556,14 +558,15 @@ workspaces[1]  = PROJECT  /home/user/my-project/        READ+WRITE  (optional, d
 workspaces[N]  = EXTRA    /any/path/in/the/system       configurable (expandable at runtime)
 ```
 
-- `workspaces.default` → always `workspaces[0]`
-- `WorkspaceRegistry.add(path, permissions=READ|WRITE)` → new `WorkspaceDirHandle`
-- `WorkspaceDirHandle` enforces its `PermissionSet` on all path operations
-- Both default + project dir have WRITE by default
+- `workspaces.default` would refer to `workspaces[0]`
+- `WorkspaceRegistry.add(path, permissions=READ|WRITE)` would create a handle
+- `WorkspaceDirHandle` would enforce its `PermissionSet` on path operations
+- write defaults and project-directory handling require validation against the
+  eventual permissions and session-output boundary
 
 ### Files (target layout)
 ```
-core/workspace/
+proposed core/workspace/
 ├── __init__.py
 ├── registry.py      — WorkspaceRegistry (add, remove, get_default, list_all)
 ├── handle.py        — WorkspaceDirHandle + PermissionSet enum
@@ -571,9 +574,13 @@ core/workspace/
 └── plan.md
 ```
 
+Current documentation treats session output ownership as unresolved; see
+`src/css/modules/sessions/sessions.md`, `src/css/modules/projects/projects.md`,
+and `src/css/core/permissions/permissions.md`.
+
 ---
 
-# core/ollama/ — Native Ollama Process Manager
+# Planned core/ollama/ — Native Ollama Process Manager
 
 **Todos**: Phase 33 (`ollama-install-checker`, `ollama-process-manager`, `ollama-model-preloader`, `ollama-lifespan-wire`, `ollama-docker-remove`, `ollama-llama-cpp-dep`)  
 **Location**: `src/css/core/ollama/`  
@@ -609,10 +616,10 @@ uv pip install llama-cpp-python --reinstall --no-cache-dir --force-reinstall
 
 
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines retained core implementation contracts, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

@@ -3,11 +3,16 @@
 > **MOVED TO CORE**: Originally `modules/settings/`, now at `src/css/core/settings/`
 > Reflects infrastructure nature of settings/cache configuration.
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This
+document holds the executable specification for settings work. The current
+documentation-movement pass intentionally does not mutate the tracker.
 
 ---
 
-## Phase: 17 | Full plan in `.plan/plan.md` § Phase 17
+## Phase: 17 | Local Implementation Specification
+
+Global navigation is in `.plan/plan.md`; query `.plan/session.db` for current
+status when implementation begins.
 
 ---
 
@@ -52,7 +57,7 @@ DB-backed runtime configuration registry — sits on top of `config.py` (static 
 ```
 src/css/core/settings/
 ├── __init__.py
-├── plan.md                     ← this file
+├── settings.md                 ← this file
 ├── registry.py                 ← SettingsRegistry class + SETTINGS_REGISTRY singleton
 ├── manager.py                  ← SettingsManager (get/set/reset/get_all/seed/export/import)
 ├── defaults.py                 ← DEFAULT_SETTINGS list (all config.py keys as SettingDefinitions)
@@ -80,6 +85,11 @@ Current repository state has overlapping config surfaces:
 
 Phase 17 now tracks consolidation so runtime configuration ownership is centralized under `core/settings`. The merged surface remains env-bootstrap first, then DB-backed runtime overrides via `SettingsManager`.
 
+Source cleanup on 2026-05-25 repaired consumers that imported the nonexistent
+`css.config` path so they use `css.core.settings.config`, and removed deleted
+module registrations from `MODULES`. The separate `src/css/core/config.py`
+surface still requires the tracked dual-source audit before removal.
+
 ### Provider bootstrap behavior (active)
 
 Startup/provider seeding policy is now explicit:
@@ -94,7 +104,7 @@ Startup/provider seeding policy is now explicit:
 4. DB global scope
 5. `SettingDefinition.default` (from config.py bootstrap value)
 
-### Registry Pattern (same as `@llm_models` ModelRegistry)
+### Registry Pattern (same as `core/models` `ModelRegistry`)
 Settings are registered via `SettingsRegistry.register(definition)`. The registry validates types, enforces allowed scopes, and manages sensitivity flags.
 
 ### Sensitive settings
@@ -152,7 +162,8 @@ Pre-built profiles stored as YAML in `profiles/` (not `templates/` — that dir 
 
 ## Implementation Todos (Phase 17)
 
-All synced in session.db. IDs match:
+The todo identifiers below map to the tracker; verify their live status in
+`.plan/session.db` before implementation:
 
 | Todo ID                       | Description                                            | Status  |
 |-------------------------------|--------------------------------------------------------|---------|
@@ -174,3 +185,35 @@ All synced in session.db. IDs match:
 | `settings-config-import-cutover` | Cut runtime imports to consolidated settings config surface | pending |
 | `orm-provider-llmmodel-relation` | Add Provider ↔ LLMModel relation contract for startup seeding | pending |
 | `seed-providers-empty-table-yaml` | Auto-seed providers from YAML only when provider table is empty | pending |
+
+## Executable Phase 17 Contract (2026-05-26)
+
+### Exact File And Symbol Map
+
+| Path | Current or planned symbols |
+|------|----------------------------|
+| `src/css/core/settings/config.py` | Current consolidated bootstrap configuration target. |
+| `src/css/core/config.py` | Legacy overlapping surface to audit and reduce to compatibility only if still needed. |
+| `src/css/core/settings/registry.py` | Planned `SettingsRegistry`, `SETTINGS_REGISTRY`. |
+| `src/css/core/settings/manager.py` | Planned `SettingsManager.get()`, `set()`, `reset()`, `get_all()`, `seed_from_config_py()`. |
+| `src/css/core/settings/defaults.py`, `src/css/core/settings/profiles/development.yaml`, `src/css/core/settings/profiles/red_team.yaml`, `src/css/core/settings/profiles/blue_team.yaml`, `src/css/core/settings/profiles/purple_team.yaml`, `src/css/core/settings/profiles/minimal.yaml` | Planned definitions and named profiles. |
+| `src/css/core/settings/routes.py` | Planned `/api/settings/*` router. |
+| `src/css/api_services/ai21/service.py`, `src/css/api_services/anthropic/service.py`, `src/css/api_services/cerebras/service.py`, `src/css/api_services/cloudflare/service.py`, `src/css/api_services/cohere/service.py`, `src/css/api_services/deepinfra/service.py`, `src/css/api_services/deepseek/service.py`, `src/css/api_services/fireworks/service.py`, `src/css/api_services/gemini/service.py`, `src/css/api_services/github/service.py`, `src/css/api_services/groq/service.py`, `src/css/api_services/huggingface/service.py`, `src/css/api_services/lambda_api/service.py`, `src/css/api_services/mistral/service.py`, `src/css/api_services/nscale/service.py`, `src/css/api_services/nvidia/service.py`, `src/css/api_services/ollama/service.py`, `src/css/api_services/openai/service.py`, `src/css/api_services/openrouter/service.py`, `src/css/api_services/perplexity/service.py`, `src/css/api_services/sambanova/service.py`, `src/css/api_services/together/service.py`, `src/css/api_services/xai/service.py` | Provider runtime import-cutover consumers. |
+| `src/css/api_services/__init__.py`, `src/css/api_services/ollama/compat.py`, `src/css/api_services/opencode/service.py`, `src/css/core/marketplace/__init__.py`, `src/css/core/marketplace/cache.py`, `src/css/core/types/base_client.py` | Remaining runtime import-cutover consumers. |
+
+### Sequencing And Import-Cutover Boundary
+
+1. `settings-config-dual-source-audit` and
+   `settings-config-merge-into-core-settings` establish the retained config
+   surface before registry/manager/default/API work relies on it.
+2. The 2026-05-25 cleanup repaired nonexistent `css.config` imports only. It
+   did not complete `settings-config-import-cutover`: that pending todo must
+   remove runtime imports from `css.core.config` in the explicit provider,
+   marketplace, and base-client consumer list, leaving only a justified
+   compatibility shim.
+3. Implement definitions, persistence, manager/cache/profiles, routes, and
+   event emission in dependency order; gate frontend settings work on the
+   mounted REST routes.
+4. Validate zero runtime `from css.core.config import` hits outside a retained
+   shim, config/provider import smoke tests, secret masking, scope precedence,
+   CRUD/profile routes, Redis invalidation, and settings-event behavior.

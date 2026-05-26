@@ -1,6 +1,6 @@
 # @hooks — Event Hook Runtime Module
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable hook-runtime specification.
 
 ---
 
@@ -38,7 +38,8 @@ This module implements the runtime surface for:
 - `events-post-hook-decorator`
 - `events-instrument-interceptor-wire`
 
-These remain phase-tracked in `.plan/session.db` and `.plan/plan.md`.
+These remain status-tracked in `.plan/session.db`; this local document owns the
+hook implementation detail.
 
 ---
 
@@ -62,6 +63,33 @@ These remain phase-tracked in `.plan/session.db` and `.plan/plan.md`.
 - [x] `modules-hooks-event-consumer` — consumes `core/events/event_bus`
 - [x] `modules-hooks-on-event-decorator` — decorator registration in module scope
 - [x] `modules-hooks-interceptor-chain` — pre/post mutating interceptors (Phase 14 T14.5)
+
+## Executable Hook Contract (2026-05-26)
+
+### Exact Files And Symbols
+
+| Path | Live symbols |
+|------|--------------|
+| `src/css/modules/hooks/base.py` | `BaseHookClass`. |
+| `src/css/modules/hooks/registry.py` | `HookRegistry`, `on_event()`. |
+| `src/css/modules/hooks/interceptors.py` | `HookContext`, `HookBlockedError`, `InterceptorRegistry`, `pre_hook()`, `post_hook()`. |
+| `src/css/core/events/emitter.py` | Existing event emission owner consumed by hook registration. |
+| `src/css/core/events/instrument.py` | Planned/retained instrumentation wrapper owner consumed by interception work. |
+
+### Live Todo Map And Validation
+
+| Todo IDs | Status | Boundary |
+|----------|--------|----------|
+| `events-hook-registry`, `events-on-event-decorator`, `events-hook-executor`, `events-interceptor-context`, `events-interceptor-registry`, `events-pre-hook-decorator`, `events-post-hook-decorator`, `events-instrument-interceptor-wire` | done | Preserve current hook/interceptor runtime behavior and exports. |
+| `events-instrument-decorator`, `events-event-bus-module`, `events-instrument-*`, `events-otel-*` | pending | Complete in `core/events` and consumer entry points; do not move event ownership into hooks. |
+
+1. Verify existing registry/interceptor behavior and public imports before
+   connecting new instrumented entry points.
+2. Add consumer instrumentation in its owning files while invoking hook
+   pre/post semantics through the current interceptor contract.
+3. Validate wildcard/priority/timeout/error isolation, blocking behavior,
+   instrumentation success/failure events, and event-to-hook dependency
+   direction.
 
 ---
 

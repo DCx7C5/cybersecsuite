@@ -101,3 +101,79 @@ Current planning contract for browser-plugin backend provider priority:
 4. `deepseek`
 5. `nvidia`
 6. web relay path (`grok.com` / `docs.claude.com` strategy)
+
+## Phase 16 Capability Expansion
+
+Phase 16 extends the unified client rather than bypassing it with
+provider-specific call paths. Capabilities must be expressed through shared
+types/protocols, then translated inside supporting adapters.
+
+### Capability Groups
+
+| Group | Required capability | Primary owners/dependencies |
+|-------|---------------------|-----------------------------|
+| Reasoning and context | `ThinkingConfig`, preflight token estimation, and `ContextManagementConfig`/compaction event handling. | `core/types`, `core/events`, router. |
+| Batch and background | `BatchAdapter`/`BatchJob` for Anthropic/OpenAI batch work; `BackgroundJob` and OpenAI background responses. | Tasks/session persistence and event completion. |
+| Provider-native tools | Anthropic computer use, code execution, web search/fetch, shell/editor tools registered as builtin tools. | `modules/tools`; explicit Phase 15 permissions and Phase 14 interceptor hooks required. |
+| Retrieval and caching | Cohere/Together rerank; Gemini persistent context caching. | Retrieval/cache contracts and telemetry. |
+| Memory bridge | Anthropic memory tool implemented over canonical `core/memory` services. | Memory API and explicit tool grants. |
+| Model lifecycle and cost | Ollama pull/list/delete/availability; OpenRouter exact generation cost/provider attribution. | Model registry, router, OTEL/cache. |
+| Specialty adapter functions | Mistral OCR/FIM, Groq audio, xAI discovery/config completion. | Shared optional protocols plus provider adapters. |
+| Claude SDK bridge | Map Claude agent hooks/session operations to CSS event, permission, task, and session contracts. | `core/events`, permissions, sessions/tasks. |
+
+### Foundation Work Order
+
+| Sequence | Work | Reason |
+|----------|------|--------|
+| A | `thinking-config-struct` -> `thinking-config-adapter` -> `thinking-model-metadata`; `token-count-method` -> router use; `context-mgmt-struct` -> adapter use. | Provides routing and request-level contracts used by other features. |
+| B | `batch-api-protocol` -> provider implementations; `background-job-struct` -> OpenAI background implementation. | High-value asynchronous capabilities with limited coupling. |
+| C | Native-tool registry -> grants -> hooks -> isolated computer-use session. | Must wait for enforceable permissions. |
+| D | Rerank, Gemini cache, memory-tool bridge. | Consumes stable retrieval/cache/memory owners. |
+| E | Ollama lifecycle, OpenRouter accounting, specialty adapters, Claude hook/session bridge, xAI completion. | Provider-specific work after shared protocols are stable. |
+
+### Non-Negotiable Contracts
+
+- `UnifiedLLMClient` remains the caller-facing gateway for completion,
+  streaming, token estimation, batch/background entry points, and capability
+  routing.
+- Unsupported provider features must fail explicitly or be omitted through
+  capability discovery; adapters must not silently pretend support.
+- Provider-native tools never imply permission: every execution passes through
+  tool grants and before/after interception.
+- Context compaction, tool use, background completion, model download, rerank,
+  memory mutation, and generation-cost attribution emit observability events.
+- SDK feature availability must be re-verified against installed/current SDK
+  versions when implementation starts; the original capability audit is a
+  planning input, not a permanent API guarantee.
+
+## Executable Pending Contract (2026-05-26)
+
+### Exact Phase 10 Files And Symbols
+
+| Path | Current or planned symbol |
+|------|---------------------------|
+| `src/css/core/sdks/css_client.py` | Existing `CSSLLMClient`; integration point for relay selection. |
+| `src/css/core/sdks/registry.py` | Existing `SDKRegistry`, `register_sdk()`, `get_sdk()`. |
+| `src/css/core/sdks/adapters/http_provider.py` | Existing `HttpProviderAdapter`. |
+| `src/css/core/sdks/adapters/deepseek.py` | Planned dedicated DeepSeek adapter. |
+| `src/css/core/sdks/adapters/browser_relay.py` | Planned `BrowserRelayAdapter` transport implementation. |
+| `src/css/core/sdks/relay_router.py` | Planned `RelayProviderPolicy`, `RelayAttempt`, provider-priority selection/fallback. |
+| `src/css/core/sdks/__init__.py` | Stable exports after adapter/router implementation. |
+
+### Live Todo Map
+
+| Todo ID | Status | Execution order |
+|---------|--------|-----------------|
+| `sdk-browser-relay-adapter`, `sdk-browser-relay-polling` | pending | Implement relay request/result transport first. |
+| `sdk-deepseek-adapter` | pending | Add dedicated registered provider adapter. |
+| `sdk-browser-relay-provider-priority` | pending | Implement the ordered policy in `relay_router.py`, then call it from `CSSLLMClient`. |
+| `sdk-browser-relay-web-llm-relay` | pending | Add the web relay endpoint only after the policy and relay transport exist. |
+
+1. Preserve the current adapters/registry/client as the gateway and add only
+   the missing adapter/router modules.
+2. Express fallback order `github`, `codex`, `openai`, `deepseek`, `nvidia`,
+   `web_relay` as data in `RelayProviderPolicy`, recording typed failed/skipped
+   attempts.
+3. Validate deterministic priority, unavailable-provider skipping,
+   fallthrough/winner metadata, polling, web relay routing, import exports,
+   `ruff`, `basedpyright`, and the `core/sdks` dependency scan.

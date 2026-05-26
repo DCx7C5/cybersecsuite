@@ -1,6 +1,6 @@
 # @api_services — Provider SDK Registry
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable provider-service specification.
 
 ---
 
@@ -17,7 +17,7 @@
 | `css.core.models`       | `UnifiedLLMClient` routes to provider SDKs via registry                     | ← consumed by |
 | `css.core.events`       | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        | ← wrapped by  |
 | `css.core.prompt_cache` | shapes native prompt-cache requests and parses native cache usage stats; Anthropic explicit breakpoints are only one advanced path | ← consumed by |
-| `css.core.ollama`       | `OllamaProcessManager` must be running before any Ollama API calls          | ← proxied by  |
+| future `css.core.ollama` | Phase 33 may add host-process lifecycle; today provider calls stay in `api_services/ollama/` | ← future dependency |
 
 ---
 
@@ -38,7 +38,9 @@
 | **C — Custom In-House**   | `aiohttp` REST client written in-house   | ollama (in-house aiohttp, see note), opencode                                                                                                   |
 | **D — Complex Auth**      | Non-standard token flow + JSON-RPC       | github (Copilot CLI required)                                                                                                                   |
 
-> **Note on ollama**: `api_services/ollama/` uses a custom in-house `aiohttp` client (NOT the `ollama` pip package). The `ollama` pip package is used exclusively in `core/ollama/client.py` for process management communication.
+> **Note on ollama**: `api_services/ollama/` uses a custom in-house `aiohttp`
+> client. There is no current `src/css/core/ollama/` package; Phase 33 may
+> introduce host-process lifecycle there after its contract is implemented.
 
 ---
 
@@ -138,7 +140,9 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 **SDK Features**: Streaming ✅, Vision ✅, Embeddings ✅, Tool Use ⚠️, Local only ✅, Free ✅
 
-**Keynote**: Uses custom `aiohttp` REST client against `http://localhost:11434`. NOT the `ollama` pip package. `core/ollama/` handles process lifecycle; this adapter handles LLM calls.
+**Keynote**: Uses a custom `aiohttp` REST client against
+`http://localhost:11434`. Phase 33 may add a distinct host-process owner;
+this adapter owns LLM calls today.
 
 **Dev models** (pull manually): `qwen3:0.6b`, `phi4-mini:3.8b-q4_K_M`, `qwen3:4b-q4_K_M`
 
@@ -293,8 +297,50 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ---
 
+## Executable Owner Contract
+
+### Exact File And Symbol Map
+
+| Path | Live or planned symbols |
+|------|-------------------------|
+| `src/css/api_services/adapters.py` | `HttpProviderAdapter`, `get_adapter()`, `close_all_adapters()`. |
+| `src/css/api_services/registry.py` | `ProviderRegistry`, `get_registry()`. |
+| `src/css/api_services/xai/service.py` | `xAIApiService._default_base_url()`, planned `get_models()`. |
+| `src/css/api_services/mistral/service.py` | `MistralApiService`; planned optional FIM/OCR provider behavior. |
+| `src/css/api_services/groq/service.py` | `GroqApiService`; planned audio capability behavior. |
+| `src/css/api_services/openrouter/service.py` | `OpenRouterApiService`; planned cost and catalog enrichment. |
+| `src/css/api_services/ollama/client.py` | Current `OllamaClient` API-call client. |
+| `src/css/api_services/ollama/service.py` | Current `OllamaApiService` chat/service adapter. |
+| `src/css/api_services/ollama/types.py` and `src/css/api_services/ollama/compat.py` | Current Ollama values and compatibility adapter. |
+| `src/css/api_services/ollama/manager.py` | Planned `OllamaModelManager` beside the existing provider surfaces. |
+| `src/css/core/types/base_protocols.py` | Planned optional provider-feature protocol additions; unsupported providers need not implement them. |
+
+### Live Todo Map
+
+| Todo ID | Status | Required result |
+|---------|--------|-----------------|
+| `xai-config-base-url-yaml`, `xai-get-models-list` | pending | Replace xAI stubs with provider-spec-backed URL and deterministic model metadata. |
+| `mistral-fim-adapter`, `mistral-ocr-adapter`, `groq-audio-adapter` | pending | Add optional capabilities and permission-gated tool exposure through existing provider services. |
+| `openrouter-cost-tracking`, `openrouter-provider-list` | pending | Add non-fatal cost attribution and cached model catalog normalization. |
+| `ollama-model-manager`, `ollama-router-check` | pending | Add provider-side model availability and integrate only after resilience routing exists. |
+| `ollama-install-checker`, `ollama-process-manager`, `ollama-lifespan-wire` | pending | Phase 33 future host-process ownership; it must not be represented as existing runtime. |
+
+### Numbered Work Order And Validation
+
+1. Extend current provider service files and shared optional protocols rather
+   than creating replacement provider packages.
+2. Implement xAI/OpenRouter metadata paths and optional Mistral/Groq features
+   with `aiohttp`, normalized values, and permission-aware tool boundaries.
+3. Keep Ollama model API calls in `api_services/ollama`; introduce any
+   host-process package only under the explicit Phase 33 contract.
+4. Validate request/response fixtures, capability registry behavior, cached
+   failure fallback, model availability routing, provider dependency scans,
+   and `ruff`/`basedpyright` on touched code.
+
+---
+
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 > **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE.
 > See `.plan/rules.md` CRITICAL section for full rules.

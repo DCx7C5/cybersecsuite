@@ -1,22 +1,22 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-09T21:02:00+0200 | **Session**: Frontend dashboard/chat QoL + provider seeding/browser-relay priority expansion
+**Last Updated**: 2026-05-26 | **Session**: Phase 41 todo-specification remediation
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
 ⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use the nearest planning markdown, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work.  
-⚠️ **Architecture**: `accounts`, `events`, `marketplace`, `memory`, `rag_vector`, and `rag_graph` are core-owned or planned core-owned. `working_dir` is legacy terminology; use `core/workspace/`.  
-⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve/neo4j). Ollama: native `ollama serve` via `core/ollama/OllamaProcessManager`. Frontend: `cd src/frontend && bun run dev`.
+⚠️ **Architecture**: `accounts`, `events`, `marketplace`, `memory`, `rag_vector`, and `rag_graph` are core-owned or planned core-owned. `working_dir` is legacy terminology; its replacement owner is unresolved because no implemented `core/workspace/` package was found.
+⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve/neo4j). Ollama provider calls currently use `api_services/ollama/`; native process ownership is Phase 33 work. Frontend: `cd src/frontend && bun run dev`.
 ⚠️ **Memory sync rule**: `memory.md` is still phase-end by default, but it must also be refreshed immediately after major architecture, source-of-truth, or tracker-structure changes.
 ⚠️ **Cleanup rule**: when changing code or plans, remove redundant scaffolding, stale exports, temp artifacts, dead docs, and superseded abstractions in the same pass whenever it is safe.
 
 ---
 
-## 📊 session.db State (2026-05-09)
+## 📊 session.db State (2026-05-26)
 
-**Total**: 923 todos | **Done**: 465 | **Pending**: 452 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 927 todos | **Done**: 485 | **Pending**: 436 | **Blocked**: 6 | **In Progress**: 0
 
-**Last Verified**: 2026-05-09 (checked against live session.db totals)
+**Last Verified**: 2026-05-26 (checked against live session.db totals)
 
 **Selected active phases**:
 
@@ -27,22 +27,64 @@
 | Phase 17 — Settings & Projects | 39 | 0 | 39 | 0 | 0 |
 | Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
 | Phase 19 — Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
-| Phase 20 — Persistent Memory Layer | 52 | 7 | 45 | 0 | 0 |
+| Phase 20 — Persistent Memory Layer | 43 | 7 | 36 | 0 | 0 |
 | Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
 | Phase 22 — MCP Protocol Layer | 8 | 5 | 3 | 0 | 0 |
 | Phase 27 — Graph Visualization Engine | 17 | 0 | 17 | 0 | 0 |
 | Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 |
-| Phase 34 — Dependency Map | 19 | 1 | 18 | 0 | 0 |
+| Phase 34 — Dependency Map | 20 | 2 | 18 | 0 | 0 |
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | Phase 39 — Audit Remediation (A1/A2/A3) | 19 | 1 | 18 | 0 | 0 |
-| Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 0 | 37 | 0 | 0 |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
+| Phase 41 — Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Documentation Ownership Sanitization + Phase 41 Remediation (2026-05-26)
+
+- `.plan/plan.md` is now a compact global snapshot and owner index; executable
+  implementation contracts live in the nearest `src/css/**/*.md` document.
+- Tracker status is authoritative in `.plan/session.db`; local documents are
+  implementation specifications rather than duplicated progress ledgers.
+- Retired alternative persistence pending work was removed from the tracker
+  by explicit direction; active memory retrieval ownership is in
+  `core/memory`, `core/rag_vector`, and `core/rag_graph`.
+- Module-owned triage and response-routing facades were removed from the
+  `core/` root: consumers now use `modules/triage`, `modules/strategies`, and
+  the public `modules/agents.AgentExecutor` API directly.
+- `.plan/architecture/feature-overview.md` now records live tracker totals,
+  partial source surfaces, and the active-source TODO-marker audit.
+- `.plan/checkpoints.md` is explicitly historical; it no longer acts as an
+  accidental live implementation source when older paths conflict with
+  `session.db` or local owner documents.
+- Every `.plan/session.db` todo now has a description; active descriptions were
+  normalized away from removed owners and short active local documents were
+  supplemented with implementation and validation contracts.
+- Provider routing/resilience planning now targets
+  `core/resilience/routing/`, distinct from module-owned response strategies.
+- Session-output ownership remains gated: do not implement a proposed
+  `core/workspace` or revive `working_dir` until the owner is explicitly
+  decided.
+- Phase 41 has now enriched executable specifications for the Phase 40,
+  Phase 13-14, Phase 15-19, Phase 10-12, Phase 16, Phase 18, Phase 20-21,
+  Phase 22-30, and Phase 31-39 description batches; todo-description
+  enrichment is complete.
+- The nine owner documents rated thin by the audit now contain literal target
+  file maps, live todo tables, numbered execution order, and validation gates.
+- The fifteen owner documents rated partial by the audit now contain the
+  missing concrete symbols, step order, live statuses, and validation gates.
+- All ten audited cross-consistency pairs are resolved in owner docs and
+  recorded in tracker descriptions; legacy session-output rows were also
+  rewritten as ownership-decision gates rather than assumed `core/workspace`
+  implementation work.
+- No tracker row is currently in progress. The Phase 41 preparation gate is
+  complete; choose later implementation work only from live dependencies and
+  its owning specification.
 
 ### Phase 18 Frontend Foundation — 8 todos completed (2026-05-09)
 
@@ -173,7 +215,7 @@
 ### Rename + Connectivity Audit (2026-05-09)
 
 - Local planning docs are being normalized to the active package names: `a2a_google`, `a2a_internal`, `rag_vector`, and `rag_graph`.
-- `modules/rag_vector/` is now only the module-side migration surface and planning stub; active retrieval runtime code lives in `core/rag_vector/`.
+- The former `modules/rag_vector/` migration surface has been removed; active retrieval runtime code lives in `core/rag_vector/`.
 - Cache posture is now explicit: not every business module should depend on `core/cache/` directly. Direct cache consumers are mainly `core/settings`, `core/permissions`, `core/marketplace`, `core/memory`, `core/rag_vector`, `core/rag_graph`, `modules/llm_proxy`, and `modules/triage`.
 - Canonical source-of-truth modules such as `mitre`, `threat_intel`, `incidents`, `evidence`, `reports`, and `siem` should persist to their own primary stores first and only consume cached retrieval/prompt layers indirectly.
 - The repository dependency analyzer now lives in `scripts/codebase_dependency_analyzer.py`; module-scope scans currently report **9 live cross-module imports** across `agents`, `chat`, `strategies`, `tags`, `teams`, and `tools`, so the Phase 25/34 cleanup remains real, not theoretical.
@@ -272,14 +314,14 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 - **Two todos BLOCKED** (`gap-scopelevel-deduplicate`, `gap-context-antipattern`) pending user decision
 
 ### Phase 24 — Git Tracking & Worktree Isolation
-- **Every session dir is a git repo** — `git-session-init` runs when the workspace layer creates the session root
+- **Git isolation is gated** — `git-session-init` may initialize a repository only after the canonical session-output owner and artifact directory are approved
 - **Auto-commit per turn** — `GitTracker.commit_turn()` fires as @post_hook priority=100 (non-blocking, fire-and-forget)
 - **One agent = one worktree = one branch** — `WorktreeManager.create()` on SessionManager.add_agent()
 - **Branch convention**: `agent/{session_id[:8]}/{agent_id}`
 - **Merge at session end**: MergeStrategy SQUASH (default) / REBASE / OURS / MANUAL
 - **3-layer audit**: L1 git (files) + L2 Phase 6 P3 events (domain) + L3 Phase 19 turns (reasoning)
-- **Migration**: legacy `scope.py` had `worktree_path` → moves to the workspace-layer worktree manager
-- **Gates**: depends on Phase 15 (working-dir-manager) + Phase 19 (session-manager-create)
+- **Migration**: legacy `scope.py` has `worktree_path`; its replacement waits for the session-output ownership decision
+- **Gates**: depends on Phase 15 ownership resolution (`working-dir-manager`) and Phase 19 session lifecycle work
 
 ### Phase 23 — Prompt Registry
 - Prompts = first-class versioned entities. **Not MCP.** Platform's own template library.
@@ -294,20 +336,19 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 - fastmcp v3.1.0 already in pyproject.toml. `fastmcp.Client` unified across all transports.
 - `McpToolBridge` pushes MCP tools into ToolRegistry as `ToolType.MCP`, `provider="mcp:{server_id}"`.
 
-### Phase 33 — Ollama Native (2026-05-04, NEWLY ADDED)
-- **Docker removed**: `cybersec-ollama` container deleted from docker-compose.yml
-- `core/ollama/` manages native process: `installer.py` (Linux-only, Arch/Debian, prints dev model hints), `process.py` (asyncio subprocess), `client.py` (ollama.AsyncClient wrapper)
-- **One client only** — `ollama.AsyncClient`. Ollama handles CUDA natively. No `llama_client.py`.
+### Phase 33 — Ollama Native (planned)
+- Current provider-call source remains `src/css/api_services/ollama/`.
+- Phase 33 may implement `src/css/core/ollama/` for native process lifecycle (`installer.py`, `process.py`) after its pending todos are executed.
+- Provider-call and host-process ownership must remain distinct; no current `core/ollama` runtime is claimed.
 - **No preloader** — models are dev recommendations, pulled manually. `installer.py` prints the hint:
     `ollama pull qwen3:0.6b` / `phi4-mini:3.8b-q4_K_M` / `qwen3:4b-q4_K_M`
-- `llama-cpp-python` = optional dep, NOT wired into `core/ollama/`. Separate CUDA sm_61 install.
+- `llama-cpp-python` is an optional future dependency, not wired into current Ollama provider calls.
 - Dependency chain: `ollama-install-checker` → `ollama-process-manager` → `ollama-lifespan-wire` → `ollama-docker-remove`
 
-### Phase 21 — Intelligence Layer (renamed from Triage, 2026-05-04)
-- **Renamed**: `core/triage/` → `modules/intelligence/`, Phase 21 renamed "Local Intelligence Layer"
-- Todo: `triage-rename-module` (Phase 19)
+### Phase 21 — Triage Intelligence Scope
+- Canonical runtime ownership is `src/css/modules/triage/`; no automatic rename to `modules/intelligence` is approved.
 - Scope broadened: quality gates, conversation health, cost budget, memory tagging, tone adaptation — all local AI assistance (not just routing/classification)
-- Uses `core/ollama/client.py` (native process), preloaded models via `core/ollama/preloader.py`
+- Local inference currently consumes `src/css/api_services/ollama/`; native process ownership is separately planned in Phase 33.
 
 ### Phase 20 — Persistent Memory Layer
 - `MemoryEntry` (msgspec.Struct, frozen): provider-agnostic — survives model/provider swap.
@@ -338,7 +379,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 3. **`@dataclass + ABC` on same class** = forbidden. **`@dataclass + BaseModel(Pydantic)` on same class** = forbidden. Pure `@dataclass` alone (no ABC) = acceptable for value types / frontmatter structs, but migrate to `msgspec.Struct` on touch (Phase 6 P1). `context.py` fix tracked as `gap-context-antipattern`.
 4. `aiohttp` not `httpx`, `uv` not `pip`, `bun` not `npm`
 5. Do not import from `~~scopes~~` — DEPRECATED, pending deletion (Phase 15)
-6. **`project_dir` ≠ `session_dir`** — `SessionContext.session_dir` is the scratch space (`~/.css/sessions/{id}/`). `project.source_dir` is the target/codebase (read-only). `project_id` is an optional FK. They are siblings, not parent/child. Never nest sessions inside projects on disk.
+6. **`project_dir` is not `session_dir`** — `SessionContext.session_dir` is the isolated output concept whose allocator/root remains to be approved. `project.source_dir` is the target/codebase reference. They are not nested by assumption.
 
 ---
 
@@ -346,9 +387,9 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 
 - **`core/caching/` renamed → `core/prompt_cache/`**: Clearer name. Two-tier only (Redis + provider-native prompt caching). Anthropic uses automatic top-level `cache_control` by default with explicit breakpoints only when needed; OpenAI/DeepSeek native tracking is also part of Phase 11. Gemini `NATIVE_RESOURCE` stays deferred. Tracked: `cache-gemini-context-cache` blocked.
 - **`core/retry/` renamed → `core/resilience/`**: Already has `detection.py`, `orchestrator.py`, `config.py` — broader than retry alone.
-- **`working_dir` module deleted → `core/workspace/` pending**: `WorkspaceRegistry` tracks N `WorkspaceDirHandle` entries per entity. Default `~/.css/sessions/<sid>/` + optional project dir, both WRITE. List expandable. Todos rewritten under Phase 15.
+- **`working_dir` module deleted; replacement unresolved**: no implemented `core/workspace/` package was found during documentation sanitization. Retain the session-output/permission requirement, but validate source and architecture before creating a replacement owner.
 - **`modules/cache/` → `core/cache/` completed**: L4 SQLite removed. 3-layer cache stack is L1 memory, L2 redis.asyncio, L3 PostgreSQL; `core/cache/` is canonical.
-- **`core/triage/` → `modules/intelligence/` pending**: Rename tracked as `triage-rename-module` (Phase 19). Phase 21 broadened to full local AI assistance.
+- **`modules/triage` remains canonical**: Phase 21 broadens local intelligence behavior without renaming the current runtime package by assumption.
 - Tool Registry partially implemented (provider normalization + execution path still pending) — Phase 3
 - **`mcps` ↔ `tools` bridge is now planned precisely but still not implemented**: `modules/mcps/registry.py` exists, the runtime/tool/marketplace boundaries are documented, and the runtime ID contract is `mcp:{server_id}:{tool_name}`. What is still missing is the actual `McpToolBridge` implementation plus MCP delegation in the tool execution path.
 - ~~**Registry singleton standardization had an unresolved metaclass issue**: `BaseRegistry` / `BaseToolRegistry` combined `AsyncSafeSingletonMeta` with `ABC`, causing import-time conflicts. Fixed by removing `ABC` from both bases (redundant — `AsyncSafeSingletonMeta(ABCMeta)` already provides abstract method support).~~ ✅
@@ -362,7 +403,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **913 todos**, PHASE > TASK > TODO hierarchy (41 named phases; `unassigned` currently empty)
+- `.plan/session.db` — **927 todos**, PHASE > TASK > TODO hierarchy (42 named phases; `unassigned` currently empty)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth

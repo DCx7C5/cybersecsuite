@@ -1,6 +1,6 @@
 # @asgi — Local ASGI Runtime & Transport Surfaces
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable ASGI/transport specification.
 
 ---
 
@@ -194,11 +194,37 @@ This area must be refactored toward transport-aware policy application instead o
 
 ## Planned Work
 
-- `asgi-transport-topology`
-- `asgi-mounted-surfaces`
-- `asgi-transport-policy`
+| Todo ID | Status | Required result |
+|---------|--------|-----------------|
+| `asgi-transport-topology` | done | Retained one-process topology and transport-family boundary. |
+| `asgi-mounted-surfaces` | pending | Refactor mounting/registration for API, WS, SSE, proxy and core-owned surfaces. |
+| `asgi-transport-policy` | pending | Enforce transport-aware auth/rate/audit/cancellation policy. |
+| `dep-map-core-asgi` | pending | Keep integration map consistent with mounted runtime source. |
 
 These todos live in Phase 36 and are the prep layer for `modules/llm_proxy`.
+
+## Executable ASGI Contract
+
+### Exact Files And Symbols
+
+| Path | Current or planned symbols |
+|------|----------------------------|
+| `src/css/core/asgi/app.py` | Current `create_app()`, lifespan initialization and router mounting. |
+| `src/css/core/asgi/router.py` | Current `api_router`, `a2a_router`; target for retained router-tree composition. |
+| `src/css/core/asgi/middleware.py` | Current `TelemetryMiddleware`, `RateLimitMiddleware`, `HTTPSRedirectMiddleware`; HTTP-only limitation to resolve. |
+| `src/css/core/asgi/process.py` | Current `UvicornProcessManager`. |
+| `src/css/modules/chat/endpoints.py` | Existing REST and `/api/chat/ws/{session_id}` WebSocket surface. |
+| `src/css/modules/llm_proxy/endpoints.py` | Existing/proposed `/v1` proxy endpoint owner to mount explicitly. |
+
+1. Keep one ASGI process, inventory every mounted/current router, and define
+   explicit mounting for core-owned packages before introducing new surfaces.
+2. Implement transport-aware policy for HTTP, WebSocket, SSE, and `/v1`
+   without assuming `BaseHTTPMiddleware` covers non-HTTP lifecycles.
+3. Extend proxy routing/stream normalization only through `modules/llm_proxy`
+   and the unified client; chat remains WebSocket-first at its current route.
+4. Validate route discovery/OpenAPI, WebSocket connect/disconnect/auth,
+   SSE cancellation/backpressure, proxy streaming/audit behavior, lifespan
+   startup/shutdown, and the core-ASGI dependency map.
 
 ---
 

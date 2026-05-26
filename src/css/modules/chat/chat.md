@@ -1,6 +1,6 @@
 # @chat — Backend Layer for Frontend Chat
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable chat-backend specification.
 
 ---
 
@@ -12,16 +12,21 @@
 
 ## Current State
 
-🟡 **Minimal** (only `enums.py` exists)
+🟡 **Partial runtime**: message endpoints/models and the async execution
+pipeline exist, while realtime frontend/activity integration remains planned.
 
 **Files**:
 - `enums.py` — Chat-related enums
-- `pipeline_endpoint.py` — async classify/route/execute/observe pipeline wired through core access surfaces
+- `pipeline_endpoint.py` — async classify/route/execute/observe pipeline
+- `endpoints.py`, `models.py` — current CRUD/storage surfaces
 
-### Architecture Note (2026-05-09)
+### Architecture Note (2026-05-25)
 
-- `pipeline_endpoint.py` now imports routing, triage, and agent execution through `css.core.routing`, `css.core.intelligence`, and `css.core.agent_runtime`.
-- This keeps `@chat` off direct module-to-module imports while preserving the existing pipeline behavior.
+- `pipeline_endpoint.py` consumes the canonical public APIs:
+  `css.modules.triage.classify`, `css.modules.strategies.route`, and
+  `css.modules.agents.AgentExecutor`.
+- Thin root-level `core` facades for module-owned triage/routing behavior have
+  been removed; those modules own their runtime contracts.
 - Frontend colocation scaffold now exists at:
   - `src/css/modules/chat/templates/index.tsx`
   - `src/css/modules/chat/templates/hooks.ts`
@@ -69,13 +74,43 @@
 
 ## Implementation Checklist
 
-- [ ] Implement message handlers (async)
+- [ ] Harden existing async message/session/WebSocket handlers and persistence boundaries
 - [ ] Add prompt injection layer
 - [ ] Integrate with chat endpoint handlers
 - [ ] Implement chat activity event stream shape for frontend (thinking/agent/task/tool)
 - [ ] Expose live activity metadata needed by rich chat visuals
 - [ ] Add test coverage
 - [ ] Add logger initialization in `__init__.py`
+
+## Executable Chat Contract (2026-05-26)
+
+### Exact Files And Symbols
+
+| Path | Current or planned symbols |
+|------|----------------------------|
+| `src/css/modules/chat/endpoints.py` | Existing `create_session()`, `get_session_messages()`, `websocket_chat_endpoint()` at `/api/chat/ws/{session_id}`. |
+| `src/css/modules/chat/models.py`, `src/css/modules/chat/persistence_models.py` | Existing message/session values and persistence records requiring reconciliation. |
+| `src/css/modules/chat/pipeline_endpoint.py` | Existing `chat_pipeline()` and `process_chat_message()` execution bridge. |
+| `src/css/modules/chat/templates/index.tsx` | Existing `ChatPanel` scaffold to replace/complete, not a file to create anew. |
+| `src/css/modules/chat/templates/hooks.ts`, `src/css/modules/chat/templates/types.ts` | Existing frontend hook/type scaffolds. |
+
+### Live Todo Map And Work Order
+
+| Todo ID | Status | Required result |
+|---------|--------|-----------------|
+| `frontend-chat-hooks` | pending | Build chat state/history/stream hooks against current REST/WebSocket-first backend contract. |
+| `frontend-chat-panel` | pending | Replace existing `templates/index.tsx` scaffold with panel UI; do not describe it as newly created and do not assume SSE. |
+| `frontend-chat-activity-stream`, `frontend-chat-thinking-task-visuals` | pending | Add structured thinking/agent/task/tool activity after core chat transport works. |
+
+1. Reconcile duplicate/current message persistence surfaces and test the
+   existing REST plus `/api/chat/ws/{session_id}` behavior.
+2. Implement frontend hooks and replace the existing panel scaffold using
+   WebSocket-first streaming/error/disconnect semantics.
+3. Layer rich activity event visualization after message/session transport is
+   stable; do not invent an SSE MVP contract for chat.
+4. Validate REST history, WebSocket lifecycle, pipeline routing,
+   markdown/tool-result rendering, panel build/check, disconnect/error paths,
+   and later activity-event rendering.
 
 ---
 
@@ -101,7 +136,7 @@ __all__ = ['ChatMessageHandler']
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain chat implementation detail in this local document.
 
 ---
 
@@ -123,10 +158,10 @@ Chat traffic passes through **two** of the 5 `@instrument` entry points:
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

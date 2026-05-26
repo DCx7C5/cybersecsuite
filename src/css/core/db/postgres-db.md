@@ -1,6 +1,8 @@
 # @db — Database Layer (Tortoise ORM)
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This
+document owns executable database-runtime guidance; documentation sanitization
+may update prose without changing implementation status.
 
 ---
 
@@ -17,7 +19,8 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 **Services**:
 - **cybersec-postgres**: custom PostgreSQL 18-alpine build (port 5432 internal)
 - **Connection pooling**: Managed by asyncpg (Tortoise default)
-- **Migrations**: Via Tortoise migrations or Alembic (TBD)
+- **Schema policy**: Phase 40 currently uses direct model/schema edits for the
+  development tranche; production migration/versioning is a later explicit decision.
 
 **Current infra note**:
 - Phase 20 plans PostgreSQL + `pgvector` for VectorRAG, but the current custom image does not yet install the extension package. `mem-pgvector-setup` now explicitly includes the Docker image prerequisite.
@@ -49,6 +52,25 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 - `db-frontmatter-field-semantics` — split identifier-style `NameField` from human-facing display-label semantics before broad base adoption
 - `db-frontmatter-base-rollout` — standardize on `BaseFrontmatterMixin` and roll it out only where the field semantics truly fit
 - `db-version-mixin-rollout` — adopt `VersionMixin` for versioned/synced artifacts that also want hash provenance
+
+### Initialization and Seeding Contract
+
+| Stage | Required behavior |
+|-------|-------------------|
+| Development schema initialization | Follow the live Phase 40 direct-schema policy; do not invent migration files during this tranche. |
+| Provider bootstrap | Seed from canonical YAML only if the provider table is empty; otherwise enrich without destructive reset. |
+| Provider/model bootstrap | Establish Provider-to-LLMModel ownership before model upserts. |
+| Runtime menu bootstrap | Idempotently upsert known navigation routes grouped by `menu_id`. |
+| Owner defaults | Seed settings, templates, and built-ins only through owner-defined idempotent keys. |
+
+### Operational Database Follow-Ups
+
+| Concern | Requirement |
+|---------|-------------|
+| Connection pool | Use asyncpg credentials with a finite command timeout; do not allow hung queries to consume connections indefinitely. |
+| Vector retrieval | Install and enable `pgvector` before claiming semantic VectorRAG implementation. |
+| Expiry/time-series access | Add indexed paths for expiry and timestamp queries only where confirmed by live models and query use. |
+| Telemetry | Keep append-heavy telemetry in OpenObserve; keep mutable application state in PostgreSQL. |
 
 ### Tracked ORM Cleanup Gaps
 
@@ -265,7 +287,9 @@ def discover_tortoise_models() -> list[ModelModule]:
 
 ## Tortoise Configuration
 
-**File**: `src/css/config.py` (built dynamically)
+**File**: `src/css/core/settings/config.py` after the tracked config
+consolidation; until then audit existing `core/config.py` consumers before
+cutting imports.
 
 ```python
 TORTOISE_ORM = {
@@ -378,9 +402,12 @@ async def lifespan(app: FastAPI):
 
 ---
 
-## Phase 15 Cleanup (Post-working-dir-manager)
+## Phase 15 Cleanup Reconciliation
 
-**Prerequisite**: These changes happen AFTER `working-dir-manager` todo is complete.
+Earlier plans made this cleanup depend on a `working-dir-manager` /
+`core/workspace` package. No implemented `core/workspace` directory was found
+during documentation cleanup. Reconcile tracker rows and current source before
+deleting scope models or utilities.
 
 | Item | Action | Todo ID |
 |------|--------|---------|
@@ -388,7 +415,8 @@ async def lifespan(app: FastAPI):
 | `enums.py` | Remove `ScopeLevel` enum | `scopes-module-remove` |
 | `models/scope.py` | Drop/migrate `SessionScope` and `ProjectScope` DB models | `scopes-module-remove` |
 
-> **Order matters**: `working-dir-manager` → `perm-rename-scope-to-session` → `streaming-decouple-from-scopes` → `scopes-module-remove` (deletes this DB code last)
+> Do not execute the legacy deletion sequence until the session/output-directory
+> owner and permissions/session replacement contracts have been validated.
 
 ---
 
@@ -408,7 +436,7 @@ async def lifespan(app: FastAPI):
 - **Blockers**: None (migrations strategy TBD, not blocking)
 - **Phase Ready**: Phase 2 ✅ (Production Ready)
 - **Last Audited**: 2026-05-03 by Agent 2
-- **Audit Reference**: .plan/plan.md (phase and status sections)
+- **Audit Reference**: this local document and `models/postgres-models.md`; query `.plan/session.db` for live status
 
 ---
 
@@ -423,9 +451,11 @@ async def lifespan(app: FastAPI):
 
 ---
 
-## 🔄 Sync Reminder
+## Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> `.plan/session.db` is authoritative for implementation status. Update it
+> when implementation work changes todo state; keep this local specification
+> accurate for implementers.
 >
 > - When adding/completing a TODO: update `status` in `.plan/session.db`
 > - When updating session.db: reflect changes back to this checklist
@@ -438,3 +468,24 @@ async def lifespan(app: FastAPI):
 > - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
 > - HTTP clients: always `aiohttp`, never `httpx`
 > - Package manager: always `uv`/`bun`, never `pip`/`npm`
+
+## Executable Database Contract (2026-05-26)
+
+The historical inventory above records earlier source shape. Current
+implementation work must use these concrete boundaries:
+
+| Path | Runtime symbols / pending responsibility |
+|------|------------------------------------------|
+| `src/css/core/db/models/base.py`, `src/css/core/db/models/mixins.py` | `BaseModel`, `BaseTreeModel`, timestamp/version/soft-delete/frontmatter policies. |
+| `src/css/core/db/models/memory.py`, `src/css/core/db/models/marketplace.py`, `src/css/core/db/models/tasks.py`, `src/css/core/db/models/quotas.py` | Canonical model consolidation lanes. |
+| `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider/user/account/model ownership and startup seeding. |
+| `src/css/core/db/models/menu.py` | `MenuItem`, `MenuItemManager.roots()`, `sync_default_menu_items()`. |
+| `src/css/core/menu/endpoints.py` | `list_menu_items(menu_id: str | None = None)` partitioned runtime API target. |
+| `src/css/core/settings/config.py` | DB connection bootstrap configuration after settings ownership reconciliation. |
+
+| Pending todo group | Status | Steps and validation |
+|--------------------|--------|----------------------|
+| Phase 40 model lanes | pending | Audit imports, preserve canonical models, cut consumers over, and validate ORM discovery/imports before removal. |
+| `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints` | pending | Seed partitions idempotently, implement `list_menu_items()` filter, initialize DB, and exercise each partition route. |
+| Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
+| Direct schema policy | pending | Keep direct development edits explicit; do not infer a production migration/versioning policy. |

@@ -1,21 +1,28 @@
 # @projects — Development / Runtime Project Management
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo state. This
+document is the executable local specification for project management.
 
 ---
 
-## Phase: 17 | Full plan in `.plan/plan.md` § Phase 17 + `.plan/architecture/filesystem-layout.md`
+## Phase: 17 | Local Implementation Specification
+
+The filesystem-layout architecture document requires later validation against
+source before it is treated as an implementation contract.
 
 ---
 
 ## Purpose
 
-`ProjectManager` — registered references to source directories. Projects are **not** folders with `.css/` subfolders. They are DB entries + `~/.css/projects/<id>/metadata.json` pointing at an external source directory.
+`ProjectManager` - registered references to source directories. Projects are
+not source folders with nested session output. Earlier `~/.css/projects/`
+metadata proposals remain gated until a current runtime metadata/session-output
+owner is explicitly confirmed.
 
 - CRUD for registered projects
-- Session linking: associate sessions (from `~/.css/sessions/`) with a project
+- Session linking: associate canonical session records with a project after the sessions owner exists
 - Project-level settings overrides (via `@settings` scope=PROJECT)
-- Auto-integration with `WorkingDirManager` (Phase 15)
+- Session/output-directory integration after ownership is reconciled against current source
 - REST API for frontend
 
 ---
@@ -24,10 +31,10 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` (projects.py) | → consumes | `ProjectRecord` dataclass |
+| `css.core.types` (projects.py) | → consumes | `ProjectRecord` frozen `msgspec.Struct` value type |
 | `css.core.db` | → consumes | `ProjectRecord` + `ProjectSessionRecord` ORM models |
 | `@settings` | → integrates | Project-level setting overrides via `SettingsManager.get(..., scope=PROJECT)` |
-| `@working_dir` | ← consumed by | `WorkingDirManager.create(project_id=X)` auto-links session |
+| Session/output-directory owner | ← consumed by | Ownership unresolved: no implemented `core/workspace/` package was found during documentation cleanup; retain the integration requirement pending source reconciliation. |
 | `@events` (Phase 14) | → emits | `project.created`, `project.removed`, `project.session_linked` |
 | Frontend | ← consumed by | REST endpoints `/api/projects/*` |
 
@@ -48,15 +55,18 @@ src/css/modules/projects/
 ## Key Design Decisions
 
 ### Projects are references, not containers
-A project = a DB record + `~/.css/projects/<id>/metadata.json`. The source code lives at `project.source_dir` and is never copied. Sessions reference `project.source_dir` as a read-only path.
+A project is a DB record pointing at `project.source_dir`; the source code is
+never copied. Sessions may reference `project.source_dir` as a permitted
+source path, but session output ownership is separate and unresolved.
 
 ### No implicit project detection
 CSS does NOT scan `$(pwd)` for a `.css/` folder. A project must be explicitly registered with `ProjectManager.create()`. Then sessions can be linked to it. A session without a `project_id` is a standalone session (e.g., a quick threat hunt).
 
-### Filesystem sync
-On `create()`: writes `~/.css/projects/<id>/metadata.json`
-On `remove()`: deletes `~/.css/projects/<id>/` — does NOT touch sessions or source code
-On startup: `sync_filesystem()` repairs FS ↔ DB drift
+### Filesystem sync gate
+The previously proposed metadata-directory synchronization is not an
+executable contract until its owner and storage root are approved. CRUD and
+session linkage must not create `~/.css` or a new `core/workspace` package by
+assumption.
 
 ---
 
@@ -76,7 +86,7 @@ projects(
 
 project_sessions(
   project_id UUID FK → projects.id ON DELETE CASCADE,
-  session_id TEXT,               -- matches ~/.css/sessions/session-<sid>/
+  session_id TEXT,               -- matches the canonical sessions owner once implemented
   linked_at TIMESTAMPTZ,
   PRIMARY KEY (project_id, session_id)
 )
@@ -104,10 +114,7 @@ class ProjectManager:
     async def get_sessions(project_id) → list[str]
     async def get_project_for_session(session_id) → ProjectRecord | None
 
-    # Filesystem sync
-    def _write_metadata(project) → None          # → ~/.css/projects/<id>/metadata.json
-    def _delete_metadata(project_id) → None
-    async def sync_filesystem() → None
+    # Filesystem metadata sync is added only after its owner/storage root is confirmed.
 ```
 
 ---
@@ -128,14 +135,11 @@ class ProjectManager:
 
 ---
 
-## Filesystem Layout (see `.plan/architecture/filesystem-layout.md`)
+## Filesystem Layout Gate
 
-```
-~/.css/projects/
-└── <project-id>/
-    ├── metadata.json    {id, name, source_dir, description, tags, created_at}
-    └── config.yaml      project-level settings overrides (managed by SettingsManager)
-```
+The historical `~/.css/projects/` metadata layout is not approved as a live
+runtime target. Reconcile it with `.plan/` governance, the future sessions
+owner, and settings persistence before implementing filesystem synchronization.
 
 ---
 
@@ -145,10 +149,30 @@ class ProjectManager:
 |---------|-------------|--------|
 | `projects-db-model` | ProjectRecord + ProjectSessionRecord Tortoise ORM | pending |
 | `projects-db-migration` | DB migration | pending |
-| `projects-record-struct` | ProjectRecord dataclass in core/types | pending |
+| `projects-record-struct` | ProjectRecord frozen `msgspec.Struct` in `core/types` | pending |
 | `projects-manager-crud` | CRUD + find_by_path | pending |
 | `projects-manager-sessions` | Session linking methods | pending |
 | `projects-manager-fs-sync` | Filesystem metadata sync | pending |
 | `projects-rest-routes` | REST endpoints /api/projects/* | pending |
-| `projects-workingdir-integration` | WorkingDirManager auto-link (BLOCKED: Phase 15) | pending |
+| `projects-workingdir-integration` | Legacy-named todo: integrate the confirmed session/output-directory owner after source reconciliation. | pending |
 | `projects-event-emission` | Project lifecycle events (BLOCKED: Phase 14) | pending |
+
+## Executable Phase 17 Contract (2026-05-26)
+
+| Path | Current or planned symbols |
+|------|----------------------------|
+| `src/css/modules/projects/models.py` | Existing `Project`, `ProjectFile`; inspect before adding tracker-planned records. |
+| `src/css/modules/projects/manager.py` | Planned `ProjectManager` CRUD/session-link operations. |
+| `src/css/modules/projects/routes.py` | Planned `/api/projects/*` handlers. |
+| `src/css/core/types/projects.py` | Planned immutable project response/value structs if retained after existing model inspection. |
+| `src/css/modules/sessions/` | Planned canonical session association owner; currently a stub contract only. |
+
+1. Reconcile existing `Project`/`ProjectFile` with the tracker-planned
+   project/session records before introducing duplicate persistence.
+2. Implement DB CRUD and session linking first; expose REST operations over
+   those records and emit events after Phase 14 event ownership is available.
+3. Keep `projects-workingdir-integration` gated until the session-output owner
+   is explicitly selected; do not implement the legacy path named in the id.
+4. Validate ORM/API CRUD, source-path uniqueness/access control, session
+   association, event behavior, and absence of unapproved filesystem or
+   `core/workspace` creation.

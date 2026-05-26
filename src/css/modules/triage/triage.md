@@ -1,18 +1,22 @@
 # @triage — Local Intelligence Layer
 
 > **Current path**: `src/css/modules/triage/`
-> **Planned rename**: `src/css/modules/intelligence/`
-> **Tracking todo**: `triage-rename-module` in `.plan/session.db`
+> **Ownership decision**: Keep `triage` as the canonical module owner unless
+> an explicit later decision replaces the public API and all current imports.
+> The legacy `triage-rename-module` tracker row must not trigger an automatic
+> rename.
 > **Scope**: routing, memory tagging, confidence/quality gates, tone adaptation, and future retrieval hints.
 
-> **Ollama runtime**: managed natively via `core/ollama/`; no Docker dependency is assumed in current planning.
+> **Ollama runtime**: local model calls currently use `src/css/api_services/ollama/`;
+> Phase 33 may add native process management later. No Docker dependency is
+> assumed in current planning.
 > Expected local models include `qwen3:0.6b`, `phi4-mini:3.8b-q4_K_M`, and `qwen3:4b-q4_K_M`.
 
 ⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: Track TODO/TASK/PHASE state in `.plan/session.db`. Keep this file aligned with current planning, but use `session.db` as the actual progress tracker.
 
 ---
 
-**Status**: Planned local intelligence expansion (major work in Phase 21)  
+**Status**: Partial runtime plus planned local intelligence expansion (major work in Phase 21)
 **Model direction**: Qwen3 0.6B + small local helpers via Ollama  
 **Location**: `src/css/modules/triage/`  
 **5-file pattern**: Present in current module path
@@ -21,6 +25,8 @@
 
 This module is part of the wider memory/retrieval/graph architecture.
 
+- `modules/strategies` and `modules/chat`: consume public triage exports
+  `classify_query` and `classify`; no root `core/intelligence.py` facade is retained.
 - `core/memory`: Phase 21 `triage-memory-tagger` attaches semantic tags after memory writes.
 - `core/rag_vector`: Phase 21 may later provide `AUTO` retrieval route hints, but retrieval stays owned by `core/rag_vector`.
 - `core/rag_graph`: Phase 21 can emit stable extracted entities, ATT&CK candidate mappings, and confidence-scored links into graph ingest. Ephemeral routing or quality-gate state does not belong in Neo4j.
@@ -41,6 +47,48 @@ The **triage module** is a lightweight background LLM service running locally vi
 4. **Event Categorization** — Categorize security incidents, threat levels, recommendations
 
 **Key Design Principle**: Local LLM (no API costs, low latency, privacy-preserving)
+
+## Current Runtime Surface
+
+| File | Current ownership |
+|------|-------------------|
+| `src/css/modules/triage/engine.py` | `TriageEngine` and public `classify_query()` helper for single-query classification. |
+| `src/css/modules/triage/pipeline.py` | `ClassifyStage` and `classify()` async pipeline stage. |
+| `src/css/modules/triage/models.py`, `src/css/modules/triage/types.py` | Existing request/result/metadata value types. |
+| `src/css/modules/triage/__init__.py` | Public exports consumed by chat and strategy routing. |
+
+## Executable Phase 21 Contract (2026-05-26)
+
+Historical examples later in this file are design input only. Implement new
+Phase 21 behavior around the current module/symbol surface above.
+
+| Path | Planned symbols / responsibility |
+|------|----------------------------------|
+| `src/css/modules/triage/router.py` | `MicroRouter`, `PreFilter`, routed decision extension. |
+| `src/css/modules/triage/scoring.py` | `ConfidenceScorer`, `EchoDetector`, `ParadoxSpotter`, `IntentDriftWatchdog`. |
+| `src/css/modules/triage/response.py` | `ToneAdapter`, `ParaphraseSuggester`, `FallbackWhisperer`. |
+| `src/css/modules/triage/voting.py` | `ParallelMicroVoter`, `TokenBudgetAnalyst`. |
+| `src/css/modules/triage/memory_tagger.py` | `MemoryTagger.tag(entry)`, normalized semantic tag result for the memory hook. |
+| `src/css/modules/triage/pipeline.py` | Integration owner for current and new stages; retains `classify()`. |
+| `src/css/core/memory/service.py` | Authoritative post-store hook caller; triage does not persist memory. |
+
+| Todo IDs | Status | Ordered requirement |
+|----------|--------|---------------------|
+| `triage-micro-router`, `triage-pre-filter`, `triage-token-budget-analyst` | pending | Route/preflight behavior around current `TriageEngine`. |
+| `triage-confidence-scorer`, `triage-echo-detector`, `triage-paradox-spotter`, `triage-intent-drift` | pending | Analysis/quality values and failure-safe outputs. |
+| `triage-tone-adapter`, `triage-paraphrase-suggester`, `triage-fallback-whisperer`, `triage-micro-voter` | pending | Optional output support after analysis foundation. |
+| `triage-memory-tagger` | pending | Implement `memory_tagger.py::MemoryTagger.tag()` after successful memory writes and hand results back through the memory hook. |
+| `triage-intelligence-wire`, `triage-graph-rag-entity-projection`, `triage-module-plan-update` | pending | Wire pipeline/projections/docs without relocating canonical ownership. |
+
+1. Preserve current `TriageEngine`, `classify_query()`, `ClassifyStage`, and
+   `classify()` public entry points while adding focused extension modules.
+2. Add the memory tagger only as a post-store consumer of `core/memory`;
+   low-confidence or failed local inference must be a no-op for stored state.
+3. Integrate optional scoring/output/projection stages through the pipeline
+   without moving retrieval or canonical graph/domain ownership into triage.
+4. Validate public imports, classifier/pipeline behavior, tag
+   normalization/handoff/failure, projection provenance, and local-model
+   unavailable fallback.
 
 ---
 
@@ -73,8 +121,9 @@ The **triage module** is a lightweight background LLM service running locally vi
 
 ## Infrastructure
 
-### Native Ollama Runtime
-- **Runtime owner**: `core/ollama/OllamaProcessManager`
+### Local Ollama Runtime Boundary
+- **Current provider-call owner**: `src/css/api_services/ollama/`
+- **Future process owner**: Phase 33 may introduce `src/css/core/ollama/OllamaProcessManager`; it is not current runtime
 - **API endpoint**: local Ollama HTTP API on port `11434`
 - **Model storage**: local Ollama model directory managed outside this module
 - **Healthcheck**: `curl -fs http://localhost:11434/api/tags`
@@ -333,33 +382,26 @@ class QwenTriageEngine(TriageEngine):
 ## Use Cases & Integration Points
 
 ### 1. Response Strategy Selection
-**File**: `src/css/core/orchestration/response_strategy_router.py` (Line 55)  
-**Current**: Heuristic-based (keyword counting)  
-**TODO**: Replace with actual Qwen triage call
+**File**: `src/css/modules/strategies/response_strategy_router.py`
+**Current**: `classify_complexity()` calls the public
+`css.modules.triage.classify_query()` helper; `qwen_classify_complexity()`
+remains as the deterministic fallback.
+**Remaining Work**: Cover Ollama failure/fallback behavior with integration
+tests and confirm the caller selects the fallback when required.
 
 ```python
-# BEFORE (heuristic)
+# Deterministic fallback retained for failure handling
 def qwen_classify_complexity(query_text: str) -> QueryComplexity:
     q_count = query_text.count("?")
     # ... more heuristics ...
     return QueryComplexity.MODERATE
 
-# AFTER (real triage)
-from triage import QwenTriageEngine, TriageRequest
+# Current module-owned triage path
+from css.modules.triage import classify_query
 
-async def qwen_classify_complexity(query_text: str) -> QueryComplexity:
-    engine = QwenTriageEngine()
-    request = TriageRequest(
-        query=query_text,
-        decision_type="classification",
-        examples=[
-            "Is user admin? → simple",
-            "Summarize findings. → moderate",
-            "Synthesize & compare data. → complex"
-        ]
-    )
-    decision = await engine.classify(request)
-    return QueryComplexity(decision.decision)
+async def classify_complexity(self, query_text: str) -> QueryComplexity:
+    result = await classify_query(query_text)
+    return self.from_triage_category(result.category)
 ```
 
 ### 2. Task Routing & Escalation
@@ -537,32 +579,32 @@ logger.error(f"Triage inference failed: {error}")
 ## Success Criteria
 
 ### Functional Requirements
-- ✅ Triage module follows 5-file pattern (models, types, enums, exceptions, __init__)
-- ✅ QwenTriageEngine successfully calls Qwen3 0.6B via Ollama
-- ✅ Binary classification works (85%+ accuracy on test set)
-- ✅ Complexity classification works (80%+ accuracy)
-- ✅ response_strategy_router TODO replaced with real triage
-- ✅ All integrations (router, tasks, agents) passing
+- [x] Triage module exposes its current models, enums, engine, and pipeline surface.
+- [x] Response strategy router consumes the module-owned `classify_query()` API.
+- [ ] Prove Ollama-backed classification with integration tests.
+- [ ] Prove binary classification accuracy (85%+ on test set).
+- [ ] Prove complexity classification accuracy (80%+).
+- [ ] Prove all integrations (router, tasks, agents) pass.
 
 ### Performance Requirements
-- ✅ <200ms average latency (excluding cold-start)
-- ✅ <3s cold start (first inference after restart)
-- ✅ Handles 10 concurrent requests without timeout
-- ✅ 85%+ binary classification accuracy
-- ✅ 80%+ complexity classification accuracy
+- [ ] <200ms average latency (excluding cold-start).
+- [ ] <3s cold start (first inference after restart).
+- [ ] Handle 10 concurrent requests without timeout.
+- [ ] 85%+ binary classification accuracy.
+- [ ] 80%+ complexity classification accuracy.
 
 ### Reliability Requirements
-- ✅ Ollama health check passing
-- ✅ Graceful fallback if Ollama unavailable
-- ✅ No crashes on malformed input
-- ✅ Retry logic for transient failures
-- ✅ Circuit breaker if >5 consecutive errors
+- [ ] Ollama health check passes.
+- [ ] Graceful fallback if Ollama is unavailable.
+- [ ] No crashes on malformed input.
+- [ ] Retry logic for transient failures.
+- [ ] Circuit breaker if >5 consecutive errors.
 
 ### Code Quality Requirements
-- ✅ All 5 files follow PEP 8 + type hints
-- ✅ Unit tests: TriageRequest/TriageDecision parsing
-- ✅ Integration test: end-to-end classification
-- ✅ Docstrings on all public methods
+- [ ] All public files pass style and type checks.
+- [ ] Unit tests cover `TriageRequest` and `TriageResult` parsing.
+- [ ] Integration tests cover end-to-end classification.
+- [ ] Public methods have useful docstrings.
 - ✅ No hardcoded values (use config.py)
 
 ---
@@ -579,9 +621,11 @@ logger.error(f"Triage inference failed: {error}")
 - Monitoring dashboard (fallback: log files)
 
 ### Infrastructure Dependencies
-- ✅ Native Ollama runtime via `core/ollama/`
-- ✅ OllamaClient (already implemented)
-- ✅ UniversalLLMClient (already ready)
+- Current local model calls use `src/css/api_services/ollama/`; native
+  process lifecycle remains Phase 33 work.
+- `OllamaClient` is implemented in the current provider-call owner.
+- Unified/provider routing dependencies must be verified against current
+  exported symbols before Phase 21 wiring.
 
 ---
 
@@ -602,7 +646,7 @@ logger.error(f"Triage inference failed: {error}")
 ## See Also
 
 - **Ollama SDK**: `src/css/api_services/ollama/`
-- **Response Router**: `src/css/core/orchestration/response_strategy_router.py` (has TODO)
+- **Response Router**: `src/css/modules/strategies/response_strategy_router.py`
 - **Task Routing**: `src/css/modules/tasks/enums.py` (RoutingStrategy enum)
 - **Agent Selection**: `src/css/modules/agents/` (skill matching)
 - **Events Module**: `src/css/core/events/` (event categorization)
@@ -615,16 +659,16 @@ logger.error(f"Triage inference failed: {error}")
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain triage implementation detail in this local document.
 
 ---
 
-## 🔄 Sync Reminder
+## Tracker Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >
@@ -641,7 +685,8 @@ logger.error(f"Triage inference failed: {error}")
 ## ⚠️ Tier Design Updated (Phase 13 — 2026-05-04)
 
 The original 5-tier system (`tier0_simple` → `tier4_critical`) has been **replaced**
-by a 11-tier `PROVIDER_TIER_LIST` (rank 0–10). See `.plan/plan.md` Phase 13.
+by an 11-tier `PROVIDER_TIER_LIST` (rank 0–10). The routing/resilience
+contract is maintained in `src/css/core/resilience/resilience.md`.
 
 **New tiers (lowest → highest):**
 

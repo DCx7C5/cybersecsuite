@@ -1,6 +1,7 @@
 # @mcps — MCP Runtime Layer
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This
+document owns the executable MCP runtime specification.
 
 ---
 
@@ -37,25 +38,28 @@ This avoids collisions when two servers expose the same tool name.
 
 ## Current Code Reality
 
-The module is **planned but not import-clean yet**.
+The runtime foundation now exists; HTTP lifecycle control and complete runtime
+wiring remain pending.
 
 | File | Status | Reality |
 |------|--------|---------|
-| `__init__.py` | ⚠️ present | Exports names that do not all exist yet |
-| `registry.py` | ⚠️ partial | `McpRuntimeRegistry` exists, but depends on missing types/models and needs Phase 9 registry foundation cleanup |
-| `enums.py` | ❌ empty | still to implement |
-| `types.py` | ❌ empty | still to implement |
-| `models.py` | ❌ empty | still to implement |
-| `exceptions.py` | ❌ missing | still to implement |
-| `client.py` | ❌ missing | still to implement |
-| `bridge.py` | ❌ missing | still to implement |
-| `endpoints.py` | ❌ missing | still to implement |
+| `src/css/modules/mcps/__init__.py` | present | Package exports require validation when endpoints are added. |
+| `src/css/modules/mcps/enums.py` | present | `McpTransport`, `McpServerStatus`. |
+| `src/css/modules/mcps/types.py` | present | `McpServerConfig`, `McpCallResult`. |
+| `src/css/modules/mcps/models.py` | present | `McpServerConfigRecord` persisted configuration. |
+| `src/css/modules/mcps/client.py` | present | `McpClient` transport/call runtime. |
+| `src/css/modules/mcps/registry.py` | present | `McpRuntimeRegistry`, `get_mcp_registry()`. |
+| `src/css/modules/mcps/endpoints.py` | planned | Lifecycle API surface for start/stop/restart and inspection. |
+| `src/css/modules/mcps/bridge.py` | planned/verify | Tool registry bridge only if not already handled by retained integration. |
 
-### Current blockers
+### Current gates
 
-- `BaseRegistry` / `BaseToolRegistry` still mix `ABC` with `AsyncSafeSingletonMeta`, which currently causes import-time metaclass conflicts in dependent registries.
-- `registry.py` already exists, so Phase 22 should **finish and normalize it**, not recreate it from scratch.
-- `McpRuntimeRegistry` must not become the package catalog. Installed package state remains in `core/marketplace`.
+- `registry.py`, `client.py`, types, enums, and the ORM model already exist, so
+  Phase 22 work must **finish and normalize them**, not recreate them.
+- `McpRuntimeRegistry` must not become the package catalog. Installed package
+  state remains in `core/marketplace`.
+- Lifecycle routes and startup behavior must be validated against the current
+  registry/client behavior before UI controls rely on them.
 
 ## Integration Points
 
@@ -99,19 +103,24 @@ Agents / SIEM / future proxy call `mcp:{server_id}:{tool_name}`
 
 ## Phase 22 Todo Map
 
-| Todo ID | What it must do |
-|---------|-----------------|
-| `mcp-enums` | Define transport/status enums used by every MCP runtime type |
-| `mcp-exceptions` | Define module-specific connection/call/protocol errors |
-| `mcp-types-struct` | Create frozen runtime structs: config, tool definition, call result |
-| `mcp-client` | Wrap `fastmcp.Client` behind one async client API |
-| `mcp-python-direct` | Implement the trusted in-process FastMCP path |
-| `mcp-server-registry` | Finish the existing `registry.py` so it manages configs, status, connections, and tool lookup cleanly |
-| `mcp-tool-bridge` | Register discovered MCP tools into `ToolRegistry` as `ToolType.MCP` |
-| `mcp-models` | Persist server configs and enable ASGI restore-on-start |
-| `mcp-endpoints` | Expose server CRUD, connect/disconnect, tool discovery, and call proxy endpoints |
-| `mcp-startup-wire` | Load configs on startup, auto-connect enabled servers, sync tools |
-| `mcp-builtin-servers` | Register local built-in cybersec MCP servers via `PYTHON_DIRECT` |
+| Todo ID | Status | What it must do |
+|---------|--------|-----------------|
+| `mcp-async-client`, `mcp-runtime-types`, `mcp-registry-refactor`, `mcp-startup-validation` | done | Preserve and test the current client/types/registry foundation. |
+| `gap-orm-mcps-models` | pending | Reconcile the existing `McpServerConfigRecord` with the canonical ORM/model registration contract rather than creating a duplicate. |
+| `mcp-server-lifecycle-api` | pending | Add `src/css/modules/mcps/endpoints.py` handlers for lifecycle control/inspection. |
+| `mcp-server-lifecycle-runtime-wire` | pending | Delegate route behavior into `McpRuntimeRegistry`/`McpClient`, startup restoration, and tool sync. |
+
+### Numbered Execution And Validation
+
+1. Import/test current enums, structs, ORM record, client, and registry;
+   normalize only verified gaps.
+2. Implement lifecycle endpoints over the existing registry and keep
+   marketplace catalog state outside MCP runtime.
+3. Wire ASGI startup/UI consumers only after lifecycle responses and
+   server-scoped tool identity are stable.
+4. Validate import cleanliness, persistence restore, transport connect/call/
+   disconnect/restart, tool ID collision resistance, route authorization, and
+   dependency direction to marketplace/tools/ASGI.
 
 ## Rules
 

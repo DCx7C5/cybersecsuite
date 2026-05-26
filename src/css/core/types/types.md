@@ -1,6 +1,8 @@
 # @types — Core Type Definitions
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo state. This
+local document is the executable implementation specification for `core/types`;
+this documentation-movement pass intentionally does not edit the tracker.
 
 ---
 
@@ -447,7 +449,100 @@ class ChatResponse(BaseModel):
 
 ---
 
-## Audit Results (2026-05-03)
+## Phase 12 - QoL Output Controls
+
+QoL controls change output behavior per resolved scope and must be represented
+in cache keys and model requests. `qol.py` already provides the immutable
+`QoLToggle` enum and `QoLSettings` value type; the persistence, validation,
+injection, API, and telemetry layers remain separate implementation work.
+
+### Implemented Type Surface
+
+| Type | Current contract |
+|------|------------------|
+| `QoLToggle` | Eight values: `no_thinking`, `no_chat`, `minimal`, `file_only`, `no_markdown`, `structured_only`, `redact_secrets`, `append_audit_trail`. |
+| `QoLSettings` | Immutable `msgspec.Struct` with `enabled_toggles`, `scope`, and optional `preset_name`; supports activate/deactivate and dictionary serialization. |
+
+### Required Execution Contract
+
+```text
+resolve settings: session -> project -> global
+  -> validate incompatible toggle combinations
+  -> QoLInjector injects system/message directives
+  -> PromptCacheManager computes key including toggle_hash
+  -> UnifiedLLMClient sends request through selected adapter
+  -> emit sanitized injection telemetry
+```
+
+| Surface | Requirement |
+|---------|-------------|
+| Presets | Load five built-ins: `silent`, `code-only`, `structured`, `audit`, `plain-text`; support user presets and per-agent binding. |
+| Validation | Reject dangerous combinations, including `file_only` with `append_audit_trail`, before prompt injection. |
+| Scope storage | Persist per-scope settings through a manager/ORM layer; do not use JSON files as runtime truth. |
+| Injection | Stateless injector builds cached fragments and injects before provider dispatch for both completion and streaming calls. |
+| Cache safety | `toggle_hash = blake2b(sorted(active_toggle_values))`; include it in prompt-cache keys; use an empty value only when no toggles are active. |
+| Propagation | Publish/receive changes through the A2A runtime where multi-agent requests share scope configuration. |
+| Visibility | Provide CRUD/preset/binding REST operations and emit OpenObserve-safe injection metrics without leaking output secrets. |
+
+### Phase 12 Work Order
+
+| Todo ID | Live status | Deliverable | Dependency |
+|---------|-------------|-------------|------------|
+| `qol-models-msgspec` | done | `QoLToggle` and `QoLSettings` value types. | Implemented surface to validate against tracker. |
+| `qol-dangerous-combos-validator` | pending | Toggle-combination validator and security error. | Types. |
+| `qol-builtin-presets` | pending | Built-in preset definitions. | Types and validator. |
+| `qol-tortoise-model` | pending | Persisted scoped settings and manager. | ORM conventions. |
+| `qol-preset-registry` | pending | Startup-loaded built-in/user preset registry. | Persistence and presets. |
+| `qol-injector-service` | pending | Prompt directive construction and fragment cache. | Validator/settings resolution. |
+| `qol-unified-client-middleware` | pending | Pre-request integration in unified client. | Injector and Phase 10 client. |
+| `qol-cache-key-toggle-hash` | pending | Output-control-sensitive prompt-cache key. | Phase 11 prompt cache and injector. |
+| `qol-a2a-integration` | pending | Scope change propagation. | A2A runtime. |
+| `qol-openobserve-metrics` | pending | Injection events/metrics. | Observability surface. |
+| `qol-rest-endpoints` | pending | Toggle, preset, and agent-binding API. | Persistence/registry. |
+
+## Executable Owner Contract
+
+### File And Symbol Map
+
+The table below supersedes older filename examples in the historical audit
+record later in this file. Current source uses split `base_*` files and
+`qol.py`; implementers must not recreate historical `base.py`, `headers.py`,
+`entities.py`, or `sdk_local.py` modules from prose examples.
+
+| Path | Current or planned symbols |
+|------|----------------------------|
+| `src/css/core/types/qol.py` | Existing `QoLToggle`, `QoLSettings`; add `BUILTIN_PRESETS`, `QoLSecurityError`, `validate_toggle_combo()`. |
+| `src/css/core/types/qol_injector.py` | Planned `QoLInjector.build_fragment_block()`, `inject_into_messages()`, `inject_into_system()`. |
+| `src/css/core/types/qol_registry.py` | Planned `QoLPresetRegistry.get()`, `list_all()`, `reload()`, `invalidate()`. |
+| `src/css/core/types/qol_settings.py` | Planned `QoLSettingsManager.get_for_scope()`, `save_settings()`, `cascade_resolve()`. |
+| `src/css/core/types/qol_endpoints.py` | Planned core-owned QoL settings/preset router if ASGI mounting policy confirms this location. |
+| `src/css/core/db/models/qol.py` | Planned `QoLSettingsModel` persistence record. |
+| `src/css/core/sdks/css_client.py` | Planned injection point in `CSSLLMClient.call()` and `call_buffered()`. |
+| `src/css/core/prompt_cache/exact_cache.py` | Planned prompt-cache key consumer of `toggle_hash(settings)` once the cache runtime is created. |
+| `src/css/modules/a2a_internal/dispatcher.py` | Planned change propagation; transport never becomes settings truth. |
+
+### Numbered Per-Todo Contract
+
+1. `qol-dangerous-combos-validator` and `qol-builtin-presets` first extend
+   `qol.py`, while correcting touched-file policy issues such as module-level
+   `__all__`; validate forbidden combinations and exact built-in presets.
+2. `qol-tortoise-model` and `qol-preset-registry` provide persisted scoped
+   settings and an async-safe resolved registry; validate session/project/global
+   precedence and invalidation.
+3. `qol-injector-service`, `qol-unified-client-middleware`, and
+   `qol-cache-key-toggle-hash` inject immutable deterministic directives before
+   cache-key generation; validate no-op, ordering, mutation safety, and
+   toggle-sensitive cache separation.
+4. `qol-a2a-integration`, `qol-openobserve-metrics`, and `qol-rest-endpoints`
+   expose synchronization, sanitized telemetry, and authorized writes only
+   after the settings/registry contract is available.
+5. Run focused unit/integration tests and `ruff`/`basedpyright` for touched
+   files; inspect mounted routes and dependency direction before marking any
+   todo complete in `.plan/session.db`.
+
+---
+
+## Historical Audit Record (2026-05-03; Not The Execution Contract)
 
 **Agent 2 Core Infrastructure Audit**
 
@@ -513,14 +608,16 @@ class ChatResponse(BaseModel):
 - **Blockers**: None (refactoring is tech debt, not blocking)
 - **Phase Ready**: Phase 2 ⚠️ (Production Ready, REFACTOR in Phase 3)
 - **Last Audited**: 2026-05-03 by Agent 2
-- **Audit Reference**: .plan/plan.md (phase and status sections)
+- **Audit Reference**: local implementation document; query `.plan/session.db` for current task status
 - **Refactor Plan**: Split into base/, api/, events/, providers/ subdirs (effort: 3-4h)
 
 ---
 
-## 🔄 Sync Reminder
+## Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> `.plan/session.db` is the status authority. Update it when implementation
+> work changes todo state, then keep this area document technically accurate.
+> This information-movement pass is an explicit no-tracker-change exception.
 >
 > - When adding/completing a TODO: update `status` in `.plan/session.db`
 > - When updating session.db: reflect changes back to this checklist

@@ -1,6 +1,7 @@
 # @otel — OpenTelemetry Observability
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This
+document owns the executable telemetry and observability specification.
 
 ---
 
@@ -14,46 +15,47 @@
 
 OpenTelemetry (OTel) standardizes observability across distributed systems.
 
-**Integration Points**:
-- Jaeger/Zipkin for distributed tracing
-- Prometheus for metrics collection
-- ELK stack for log aggregation
+**Primary platform integration**:
+- OpenObserve for append-heavy traces, telemetry, audit/log streams, and dashboard queries
+- OTel instrumentation and context propagation feeding that data plane
+- PostgreSQL only for mutable relational application state or explicitly retained aggregate metadata
 
 ---
 
 ## Implementation Status
 
-🟡 **STUB PHASE** — Plan defined but implementation pending
+🟡 **PARTIAL CONFIG SURFACE** — `config.py` and package exports exist; collector/export/stream/dashboard implementation remains pending.
 
 ---
 
 ## Architecture (Planned)
 
-### Core Files (5-file pattern)
+### Core Files
 
-- `__init__.py` — Module exports
-- `config.py` — OTel SDK configuration
-- `tracing.py` — Trace instrumentation
-- `metrics.py` — Metric collectors
-- `logging.py` — Structured logging setup
+- `src/css/core/otel/__init__.py` — current exports for configuration
+- `src/css/core/otel/config.py` — current `OTelConfig`, `get_otel_config()`
+- `src/css/core/otel/collector.py` — planned `TelemetryCollector`
+- `src/css/core/otel/openobserve.py` — planned OpenObserve client/flush queue
+- `src/css/core/otel/streams.py` — planned stream definitions and retention
+- `src/css/core/otel/dashboard.py` — planned dashboard query/aggregate service
 
 ### Feature Set (Planned)
 
 1. **Distributed Tracing**
    - Request tracing across modules
    - Span creation for key operations
-   - Jaeger/Zipkin export
+   - OpenObserve-compatible trace export and correlation
 
 2. **Metrics**
    - HTTP request metrics
    - Database query metrics
    - Custom business metrics
-   - Prometheus export
+   - OpenObserve/dashboard consumption
 
 3. **Structured Logging**
    - JSON log formatting
    - Context propagation
-   - Log correlation with traces
+   - OpenObserve stream correlation with traces
 
 ---
 
@@ -61,9 +63,9 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 
 - `opentelemetry-api` — OTel API
 - `opentelemetry-sdk` — OTel SDK
-- `opentelemetry-exporter-jaeger` — Jaeger exporter
+- OpenObserve-compatible OTel/export API dependency selected during implementation; do not introduce a Jaeger storage path by default
 - `opentelemetry-instrumentation-fastapi` — FastAPI auto-instrumentation
-- `opentelemetry-instrumentation-sqlalchemy` — SQLAlchemy auto-instrumentation
+- Tortoise-compatible DB instrumentation selected after verifying current ORM hooks; do not assume SQLAlchemy
 
 ---
 
@@ -71,7 +73,7 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 
 ### Phase 1: Setup
 - Initialize OTel SDK in app.py lifespan
-- Configure exporter (Jaeger/Zipkin)
+- Configure exporter/collector path for OpenObserve
 - Setup logging handler
 
 ### Phase 2: FastAPI Integration
@@ -88,12 +90,65 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 
 ---
 
-## Audit Results (2026-05-03)
+## Phase 35 - Telemetry Infrastructure
+
+Phase 35 turns SDK setup into the platform telemetry data plane. Its
+OpenObserve client and queue are shared dependencies for SIEM, operational
+graphs, event audit, provider usage accounting, and frontend dashboards.
+
+| Todo ID | Status | Required result |
+|---------|--------|-----------------|
+| `telemetry-schema` | pending | Required PostgreSQL relational telemetry metadata, if retained after OpenObserve ownership is confirmed. |
+| `telemetry-timescaledb` | pending | Validate whether TimescaleDB is still required for aggregates; do not duplicate OpenObserve storage without justification. |
+| `db-oo-client-implementation` | pending | Async OpenObserve ingest/query client with a bounded queue and graceful lifespan flushing. |
+| `db-oo-stream-definitions` | pending | Idempotent stream schema and retention configuration. |
+| `telemetry-collector` | pending | Implement `TelemetryCollector` in `src/css/core/otel/collector.py`, not a new `core/telemetry` package. |
+| `telemetry-dashboard` | pending | Dashboard query/aggregate contract consumed by frontend and graph services. |
+| `telemetry-filesystem-md` | pending | Update architecture references to the retained `core/otel` ownership after implementation is verified. |
+
+### Stream Contract
+
+| Stream | Suggested retention | Producers/consumers |
+|--------|---------------------|---------------------|
+| `audit_logs` | 365 days | ORM/action audit and approval decisions. |
+| `api_usage_log`, `llm_calls` | 90 days | Proxy/SDK usage, cost, latency; dashboards and graph services. |
+| `agent_runs` | 60 days | Orchestrator/task diagnostics. |
+| `chat_turns`, `events_stream`, `tool_executions` | 30 days | Chat/events/tools observability. |
+| `intel_update_log` | 180 days | Threat-intel ingestion jobs. |
+
+### Lifespan and Storage Boundaries
+
+1. Start the OpenObserve client/flush queue in ASGI lifespan and drain it on shutdown.
+2. Emit telemetry asynchronously; analytics write failure must not become an
+   application-state transaction failure.
+3. Keep sessions, permissions, settings, marketplace, report state, and
+   canonical memory entries in PostgreSQL; OpenObserve is append/query
+   telemetry, not the mutable application database.
+4. Feed Phase 27 graph telemetry and Phase 37 SIEM processing through these
+   stream definitions rather than creating parallel storage flows.
+
+---
+
+### Numbered Execution And Validation
+
+1. Retain `OTelConfig` in `src/css/core/otel/config.py`, then implement
+   `openobserve.py` and `streams.py` for bounded async OpenObserve delivery.
+2. Implement `collector.py::TelemetryCollector` as the single producer-facing
+   enqueue/flush context, consumed by events, SDK usage, graphs, and SIEM.
+3. Decide whether PostgreSQL/Timescale metadata is justified only after the
+   OpenObserve query/dashboard contract is measured; do not duplicate append
+   data by assumption.
+4. Validate correlation/redaction, queue backpressure, failed-export
+   isolation, shutdown drain, stream idempotency/retention, dashboard query
+   behavior, and absence of new `src/css/core/telemetry/` ownership.
+
+## Historical Audit Results (2026-05-03)
 
 **Agent 2 Core Infrastructure Audit**
 
 ### 5-File Pattern Compliance
-❌ **MISSING** — Empty stub, plan.md is 0 bytes
+This snapshot predates the current `config.py` surface and is retained only as
+historical context; use the current file/contract sections above.
 
 | File | Status |
 |------|--------|
@@ -103,7 +158,7 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 | `metrics.py` | ❌ Missing |
 | `logging.py` | ❌ Missing |
 
-**Total**: 0 files, 0 LOC → Not started
+**Runtime total**: 0 implementation files -> Not started
 
 ### Integration Status
 - ⚠️ No reverse dependencies yet (will integrate with asgi, db)
@@ -145,7 +200,7 @@ OpenTelemetry (OTel) standardizes observability across distributed systems.
 - **Blockers**: None (optional infrastructure)
 - **Phase Ready**: Phase 4+ 🔴 (NOT READY - deferred)
 - **Last Audited**: 2026-05-03 by Agent 2
-- **Audit Reference**: .plan/plan.md (phase and status sections)
+- **Audit Reference**: this local document; query `.plan/session.db` for live status
 - **Effort Estimate**: 8-12 hours for full implementation
 - **Action**: Schedule for Phase 4 backlog
 
@@ -167,9 +222,10 @@ css/core/otel/                  ← SDK config: exporters, tracer, meter
 
 ---
 
-## 🔄 Sync Reminder
+## Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> `.plan/session.db` is authoritative for implementation status. Update it for
+> implementation-state changes and keep this local plan accurate for execution.
 >
 > - When adding/completing a TODO: update `status` in `.plan/session.db`
 > - When updating session.db: reflect changes back to this checklist
