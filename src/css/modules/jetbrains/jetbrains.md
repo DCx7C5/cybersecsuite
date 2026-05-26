@@ -14,6 +14,10 @@ operations, search, code analysis, run configurations, refactoring, and
 database operations through the app's module pattern so endpoints and agents
 can interact with an IDE connector programmatically.
 
+Phase 42 direction: `@jetbrains` is treated as a **legacy compatibility
+bridge** for IDE-facing integration, while ACP/LSP protocol runtime ownership
+is moving to `src/css/modules/acp/`.
+
 ## Design Decisions
 
 - The module is a thin typed facade over PyCharm tool capabilities.
@@ -80,6 +84,17 @@ implementation work even where the tracker records scaffold todos as done.
 | `idepycharm-endpoints` | `/api/ide/*` router scaffold. | done |
 | `idepycharm-database` | `DatabaseClient` method scaffold. | done |
 | `idepycharm-agent-wiring` | Initialize real clients at lifespan and register agent-callable tools. | pending |
+
+## Phase 42 LSP Bridge Todo Map
+
+| Todo ID | Status in `session.db` | Contract owned here |
+|---------|------------------------|---------------------|
+| `acp42-module-bootstrap` | done | Cutover planning ownership to `modules/acp` while retaining JetBrains adapter compatibility. |
+| `lsp42-transport-runtime` | pending | Implemented by `modules/acp`; JetBrains consumes stable bridge APIs only. |
+| `lsp42-lifecycle-handshake` | pending | Implemented by `modules/acp`; JetBrains remains compatibility consumer. |
+| `lsp42-document-sync` | pending | Implemented by `modules/acp`; JetBrains consumes document-state bridge APIs. |
+| `lsp42-language-features` | pending | Implemented by `modules/acp`; JetBrains maps results into IDE-oriented contracts. |
+| `lsp42-diagnostics-pipeline` | pending | Implemented by `modules/acp`; JetBrains reads diagnostic feeds for UI/automation. |
 
 ## Completion Boundary
 

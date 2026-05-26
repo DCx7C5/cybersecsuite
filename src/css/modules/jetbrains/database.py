@@ -1,12 +1,7 @@
 
 from .enums import OperationStatus
 from .types import (
-    DBConnection,
-    DBSchema,
-    DBObject,
     IDEOperationResult,
-    QueryResult,
-    TablePreview,
 )
 
 
@@ -18,10 +13,10 @@ class DatabaseClient:
     def is_available(self) -> bool:
         return self._available
 
-    async def list_connections(self) -> IDEOperationResult[list[DBConnection]]:
+    async def list_connections(self) -> IDEOperationResult:
         return IDEOperationResult(success=True, data=[], status=OperationStatus.SUCCESS)
 
-    async def list_schemas(self, connection_id: str, selected_only: bool = True) -> IDEOperationResult[list[DBSchema]]:
+    async def list_schemas(self, connection_id: str, selected_only: bool = True) -> IDEOperationResult:
         return IDEOperationResult(success=True, data=[], status=OperationStatus.SUCCESS)
 
     async def list_schema_objects(
@@ -30,7 +25,7 @@ class DatabaseClient:
         database_name: str,
         schema_name: str,
         kind: str | None = None,
-    ) -> IDEOperationResult[list[DBObject]]:
+    ) -> IDEOperationResult:
         return IDEOperationResult(success=True, data=[], status=OperationStatus.SUCCESS)
 
     async def get_object_description(
@@ -40,7 +35,7 @@ class DatabaseClient:
         schema_name: str,
         kind: str,
         object_name: str,
-    ) -> IDEOperationResult[str]:
+    ) -> IDEOperationResult:
         return IDEOperationResult(success=True, data="", status=OperationStatus.SUCCESS)
 
     async def execute_query(
@@ -49,7 +44,7 @@ class DatabaseClient:
         database_name: str,
         schema_name: str,
         query: str,
-    ) -> IDEOperationResult[QueryResult]:
+    ) -> IDEOperationResult:
         return IDEOperationResult(success=True, status=OperationStatus.SUCCESS)
 
     async def preview_table(
@@ -59,8 +54,8 @@ class DatabaseClient:
         schema_name: str,
         table_name: str,
         max_rows: int = 100,
-    ) -> IDEOperationResult[TablePreview]:
+    ) -> IDEOperationResult:
         return IDEOperationResult(success=True, status=OperationStatus.SUCCESS)
 
-    async def test_connection(self, connection_id: str) -> IDEOperationResult[bool]:
+    async def test_connection(self, connection_id: str) -> IDEOperationResult:
         return IDEOperationResult(success=True, data=False, status=OperationStatus.SUCCESS)

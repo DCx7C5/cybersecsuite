@@ -28,6 +28,7 @@ Example:
 
 from collections.abc import Callable as ABCCallable
 
+from opentelemetry import trace
 from css.core.logger import getLogger
 from typing import AsyncGenerator, Callable, TypeVar, Any, override
 
@@ -188,7 +189,6 @@ class ObserveStage(Stage):
 
     async def _default_emit_span(self, message: Any) -> None:
         try:
-            from opentelemetry import trace
             tracer = trace.get_tracer(__name__)
             message_type = (
                 message.get("type")

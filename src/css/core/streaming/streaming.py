@@ -8,6 +8,17 @@ from css.core.logger import getLogger
 from collections.abc import AsyncGenerator
 from typing import Any
 
+from claude_agent_sdk import (
+    AssistantMessage,
+    ClaudeAgentOptions,
+    ResultMessage,
+    SystemMessage,
+    TextBlock,
+    ToolResultBlock,
+    ToolUseBlock,
+    query,
+)
+
 logger = getLogger("agents.streaming")
 
 
@@ -27,22 +38,9 @@ async def stream_query(
         {"type": "result", "text": str, "cost": float, "session_id": str}
         {"type": "error", "message": str}
     """
-    from claude_agent_sdk import (
-        query,
-        ResultMessage,
-        SystemMessage,
-        AssistantMessage,
-         TextBlock,
-        ToolUseBlock,
-        ToolResultBlock,
-    )
-
-    try:
-        from a2a.agent_sdk import build_agent_options
-        options = build_agent_options(extra_tools=extra_tools)
-    except ImportError:
-        from claude_agent_sdk import ClaudeAgentOptions
-        options = ClaudeAgentOptions()
+    options = ClaudeAgentOptions()
+    if extra_tools:
+        options.tools = list(extra_tools)
 
     if session_id:
         options.resume = session_id

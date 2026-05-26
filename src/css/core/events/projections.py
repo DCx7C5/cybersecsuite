@@ -14,7 +14,7 @@ Pattern:
 from css.core.logger import getLogger
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, override
 
 from .domain_event import DomainEvent
 from .store import EventStore
@@ -88,14 +88,17 @@ class PermissionsProjection(Projection[dict[str, dict[str, bool]]]):
         }
     """
     
+    @override
     def _initial_state(self) -> dict[str, dict[str, bool]]:
         """Start with empty permissions."""
         return {}
     
+    @override
     def _handles(self, event_kind: str) -> bool:
         """Handle permission events."""
         return event_kind.startswith("permission.")
     
+    @override
     def _apply(self, event: DomainEvent) -> None:
         """Update permissions based on event."""
         if self._state is None:
@@ -153,14 +156,17 @@ class AuditTrailProjection(Projection[list[dict[str, Any]]]):
         ]
     """
     
+    @override
     def _initial_state(self) -> list[dict[str, Any]]:
         """Start with empty audit trail."""
         return []
     
+    @override
     def _handles(self, event_kind: str) -> bool:
         """Handle all events."""
         return True
     
+    @override
     def _apply(self, event: DomainEvent) -> None:
         """Append event to audit trail."""
         if self._state is None:

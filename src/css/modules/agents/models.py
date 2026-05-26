@@ -1,6 +1,7 @@
 """Agent data models — configuration and result structures using msgspec."""
 
 
+from typing import override
 import msgspec
 from datetime import datetime
 
@@ -101,6 +102,7 @@ class AgentResult(msgspec.Struct, frozen=True, kw_only=True):
             "executed_at": self.executed_at.isoformat() if self.executed_at else None,
         }
 
+    @override
     def __repr__(self) -> str:
         return (
             f"AgentResult(provider={self.provider}, model={self.model}, "

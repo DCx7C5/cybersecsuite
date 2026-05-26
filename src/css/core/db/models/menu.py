@@ -1,8 +1,10 @@
 """Navigation menu ORM model and query helpers."""
 
+from typing import override
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
 from tortoise.fields import IntField
+from tortoise.indexes import Index
 
 from css.core.db.fields import LabelField, PathField, UrlField
 
@@ -129,11 +131,13 @@ class MenuItem(BaseTreeModel):
 
         return self.url.startswith(("http://", "https://"))
 
+    @override
     async def ordered_children(self) -> list[MenuItem]:
         """Load direct children in stable display order."""
 
         return await type(self).filter(parent_id=self.id).order_by("order", "id")
 
+    @override
     async def siblings(self, *, include_self: bool = False) -> list[MenuItem]:
         """Load sibling menu items in display order."""
 
@@ -188,8 +192,8 @@ class MenuItem(BaseTreeModel):
         table_verbose_plural = "Menu Items"
         ordering = ["order", "id"]
         indexes = [
-            models.Index(fields=["url"]),
-            models.Index(fields=["parent_id", "order"]),
+            Index(fields=["url"]),
+            Index(fields=["parent_id", "order"]),
         ]
 
 

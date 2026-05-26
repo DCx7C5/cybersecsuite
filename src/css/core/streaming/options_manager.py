@@ -92,7 +92,7 @@ def get_manager() -> RuntimeOptionsManager:
 
 async def load_from_db() -> None:
     """Load project-scoped options from ScopedEntry table."""
-    from db.models import ScopedEntry
+    from css.core.db.models.scope import ScopedEntry
     entries = await ScopedEntry.filter(entry_type="sdk_options", is_active=True)
     for entry in entries:
         if entry.project_id:
@@ -101,7 +101,7 @@ async def load_from_db() -> None:
 
 async def save_to_db(scope: str, scope_id: int | None, data: dict) -> None:
     """Save options to ScopedEntry table."""
-    from db.models import ScopedEntry
+    from css.core.db.models.scope import ScopedEntry
     from tortoise import Tortoise
     await Tortoise.init_connections()
     entry = await ScopedEntry.filter(

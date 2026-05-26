@@ -262,11 +262,16 @@ this adapter owns LLM calls today.
 
 ### xAI (`xai`)
 
-**Tier**: B — OpenAI-compat | **Status**: 🟡 Completion gaps tracked
+**Tier**: B -> A migration (`OpenAI-compat` fallback -> official `xai-sdk`) | **Status**: 🟡 Phase 16 integration chain queued
 
 **Open gaps**:
-- `xai-config-base-url-yaml` — load the default base URL from the provider config source of truth instead of a local stub
-- `xai-get-models-list` — implement `get_models()` with concrete `ModelMetadata` so startup model seeding can treat xAI like the other providers
+- `xai-config-base-url-yaml` — keep endpoint precedence deterministic for fallback and compatibility mode
+- `xai-sdk-client-dependency-pin` — pin and gate official `xai-sdk` usage (`v1.13.0` observed in upstream releases, 2026-05-16)
+- `xai-sdk-async-client-bridge` — add provider-side AsyncClient lifecycle and gRPC error mapping
+- `xai-sdk-chat-stream-bridge` — map chat stream/sample outputs into CSS `StreamChunk` contract
+- `xai-get-models-list` — drive model metadata from `client.models.list_language_models()` with deterministic fallback
+- `xai-sdk-server-side-tools-usage` — add permission-aware support for xAI server-side tools (`web_search`, `x_search`, `code_execution`)
+- `xai-sdk-telemetry-policy` — bridge xAI telemetry/retry/timeout controls into CSS observability/config policy
 
 ---
 
@@ -305,7 +310,7 @@ this adapter owns LLM calls today.
 |------|-------------------------|
 | `src/css/api_services/adapters.py` | `HttpProviderAdapter`, `get_adapter()`, `close_all_adapters()`. |
 | `src/css/api_services/registry.py` | `ProviderRegistry`, `get_registry()`. |
-| `src/css/api_services/xai/service.py` | `xAIApiService._default_base_url()`, planned `get_models()`. |
+| `src/css/api_services/xai/service.py` | `xAIApiService._default_base_url()`, `get_models()`, planned AsyncClient/chat stream bridge and tool/telemetry mapping. |
 | `src/css/api_services/mistral/service.py` | `MistralApiService`; planned optional FIM/OCR provider behavior. |
 | `src/css/api_services/groq/service.py` | `GroqApiService`; planned audio capability behavior. |
 | `src/css/api_services/openrouter/service.py` | `OpenRouterApiService`; planned cost and catalog enrichment. |
@@ -319,7 +324,7 @@ this adapter owns LLM calls today.
 
 | Todo ID | Status | Required result |
 |---------|--------|-----------------|
-| `xai-config-base-url-yaml`, `xai-get-models-list` | pending | Replace xAI stubs with provider-spec-backed URL and deterministic model metadata. |
+| `xai-config-base-url-yaml`, `xai-sdk-client-dependency-pin`, `xai-sdk-async-client-bridge`, `xai-sdk-chat-stream-bridge`, `xai-get-models-list`, `xai-sdk-server-side-tools-usage`, `xai-sdk-telemetry-policy` | pending | Cut xAI to official `xai-sdk` usage for call flow and model discovery while preserving explicit fallback behavior and permission/telemetry guarantees. |
 | `mistral-fim-adapter`, `mistral-ocr-adapter`, `groq-audio-adapter` | pending | Add optional capabilities and permission-gated tool exposure through existing provider services. |
 | `openrouter-cost-tracking`, `openrouter-provider-list` | pending | Add non-fatal cost attribution and cached model catalog normalization. |
 | `ollama-model-manager`, `ollama-router-check` | pending | Add provider-side model availability and integrate only after resilience routing exists. |
@@ -329,8 +334,9 @@ this adapter owns LLM calls today.
 
 1. Extend current provider service files and shared optional protocols rather
    than creating replacement provider packages.
-2. Implement xAI/OpenRouter metadata paths and optional Mistral/Groq features
-   with `aiohttp`, normalized values, and permission-aware tool boundaries.
+2. Implement xAI/OpenRouter metadata and capability paths; xAI now requires
+   official `xai-sdk` integration (AsyncClient, model list API, tool and
+   telemetry wiring) with explicit compatibility fallback.
 3. Keep Ollama model API calls in `api_services/ollama`; introduce any
    host-process package only under the explicit Phase 33 contract.
 4. Validate request/response fixtures, capability registry behavior, cached

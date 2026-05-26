@@ -1,9 +1,11 @@
 """Internal user account ORM model and query helpers."""
 
+from typing import override
 from datetime import UTC, datetime
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 
 from .base import BaseUserModel
 from .enums import UserRoles
@@ -149,6 +151,7 @@ class User(BaseUserModel):
     def is_superuser(self) -> bool:
         return self.is_admin
 
+    @override
     def __str__(self) -> str:
         return f"User({self.username})"
 
@@ -156,7 +159,7 @@ class User(BaseUserModel):
         table = "users"
         ordering = ["username", "id"]
         indexes = [
-            models.Index(fields=["username"]),
-            models.Index(fields=["is_active", "username"]),
-            models.Index(fields=["api_key_hash"]),
+            Index(fields=["username"]),
+            Index(fields=["is_active", "username"]),
+            Index(fields=["api_key_hash"]),
         ]

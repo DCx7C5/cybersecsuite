@@ -1,6 +1,6 @@
 """Shared abstract base model for Tortoise ORM entities."""
 
-from typing import Any
+from typing import Any, override
 
 from tortoise.fields import BigIntField
 from tortoise.models import Model
@@ -14,6 +14,7 @@ class BaseModel(Model):
     id = BigIntField(primary_key=True)
 
     @property
+    @override
     def pk(self) -> int:
         """Typed primary-key accessor."""
 

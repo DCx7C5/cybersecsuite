@@ -4,6 +4,9 @@ from importlib import import_module
 import inspect
 from typing import Any, cast
 
+from fastmcp import Client
+from fastmcp.client.transports import FastMCPTransport, SSETransport, StreamableHttpTransport, UvStdioTransport
+
 from .enums import McpTransport
 from .types import McpServerConfig
 
@@ -72,19 +75,6 @@ class McpClient:
         return self._client
 
     def _build_client(self) -> Any:
-        try:
-            from fastmcp import Client
-            from fastmcp.client.transports import (
-                FastMCPTransport,
-                SSETransport,
-                StreamableHttpTransport,
-                UvStdioTransport,
-            )
-        except ImportError as exc:
-            raise RuntimeError(
-                "fastmcp is required for MCP runtime connections. Install project dependencies first."
-            ) from exc
-
         transport = self._config.transport
         if transport == McpTransport.PYTHON_DIRECT:
             if not self._config.module_path:

@@ -9,8 +9,11 @@ Issue #3: Error Code Mapping — Map all SDK errors to standard types:
   - UnknownError: Everything else (fallback)
 """
 
+from typing import override
 import re
 from collections.abc import Callable
+import grpc
+
 from css.core.exceptions import (
     AuthError,
     RateLimitError,
@@ -146,6 +149,7 @@ class AnthropicErrorMapper(BaseErrorMapper):
     """Map Anthropic SDK errors to unified types using provider-specific patterns."""
     
     @staticmethod
+    @override
     def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Anthropic error to unified type."""
         return BaseErrorMapper.map_error(error, provider="anthropic")
@@ -155,6 +159,7 @@ class OpenAIErrorMapper(BaseErrorMapper):
     """Map OpenAI SDK errors to unified types using provider-specific patterns."""
     
     @staticmethod
+    @override
     def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map OpenAI error to unified type."""
         return BaseErrorMapper.map_error(error, provider="openai")
@@ -164,6 +169,7 @@ class OllamaErrorMapper(BaseErrorMapper):
     """Map Ollama errors (usually aiohttp exceptions) to unified types."""
     
     @staticmethod
+    @override
     def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Ollama error to unified type."""
         return BaseErrorMapper.map_error(error, provider="ollama")
@@ -173,6 +179,7 @@ class GeminiErrorMapper(BaseErrorMapper):
     """Map Google Gemini errors to unified types."""
     
     @staticmethod
+    @override
     def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Gemini error to unified type."""
         return BaseErrorMapper.map_error(error, provider="gemini")
@@ -182,9 +189,51 @@ class GroqErrorMapper(BaseErrorMapper):
     """Map Groq errors to unified types."""
     
     @staticmethod
+    @override
     def map_error(error: Exception, provider: str = "unknown") -> Exception:
         """Map Groq error to unified type."""
         return BaseErrorMapper.map_error(error, provider="groq")
+
+
+class XAIErrorMapper(BaseErrorMapper):
+    """Map xAI gRPC errors to unified types with status-aware handling."""
+
+    @staticmethod
+    @override
+    def map_error(error: Exception, provider: str = "unknown") -> Exception:
+        """Map xAI error to unified type."""
+        if isinstance(error, grpc.RpcError):
+            status_code = error.code()
+            if status_code in (grpc.StatusCode.UNAUTHENTICATED, grpc.StatusCode.PERMISSION_DENIED):
+                return AuthError(
+                    str(error),
+                    provider="xai",
+                    original_error=error,
+                )
+            if status_code == grpc.StatusCode.RESOURCE_EXHAUSTED:
+                return RateLimitError(
+                    str(error),
+                    provider="xai",
+                    original_error=error,
+                )
+            if status_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+                return TimeoutError(
+                    str(error),
+                    provider="xai",
+                    original_error=error,
+                )
+            if status_code in (grpc.StatusCode.UNAVAILABLE, grpc.StatusCode.INTERNAL):
+                return GatewayError(
+                    str(error),
+                    provider="xai",
+                    original_error=error,
+                )
+            return UnknownError(
+                str(error),
+                provider="xai",
+                original_error=error,
+            )
+        return BaseErrorMapper.map_error(error, provider="xai")
 
 
 # Dispatcher: maps provider → mapper function
@@ -194,6 +243,7 @@ ERROR_MAPPERS: dict[ProviderType, Callable[[Exception], Exception]] = {
     ProviderType.OLLAMA: OllamaErrorMapper.map_error,
     ProviderType.GEMINI: GeminiErrorMapper.map_error,
     ProviderType.GROQ: GroqErrorMapper.map_error,
+    ProviderType.XAI: XAIErrorMapper.map_error,
     # Add more mappers as needed for other providers
 }
 

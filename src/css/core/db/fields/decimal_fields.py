@@ -1,3 +1,4 @@
+from typing import override
 from decimal import Decimal, InvalidOperation
 
 from tortoise.fields import DecimalField
@@ -71,6 +72,7 @@ class CostField(DecimalField):
                 f"{value!r}; expected up to {self.decimal_places} decimal places."
             ) from exc
 
+    @override
     def to_db_value(self, value: Decimal | str | int | float | None, instance) -> Decimal | None:
         """
 
@@ -85,6 +87,7 @@ class CostField(DecimalField):
         normalized = self._quantize(decimal_value)
         return super().to_db_value(normalized, instance)
 
+    @override
     def to_python_value(self, value: Decimal | str | int | float | None) -> Decimal | None:
         """
 

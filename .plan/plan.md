@@ -4,7 +4,7 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (session: Phase 39 runtime validation and completion)
+**Updated**: 2026-05-26 (session: Phase 42 planning intake + Phase 39 runtime validation + Phase 16 xAI SDK intake)
 
 ## Current Session Goals (2026-05-26)
 
@@ -24,11 +24,21 @@ fifteen partial owner documents now have executable contracts, and the ten
 audited consistency conflicts are resolved. Phase 41 preparation is complete.
 
 **Phase 39 — Runtime Validation & Completion** (active):
-`audit39-dependency-refresh` is complete after resolving unused/conflicting
-package requirements and validating updated Python/frontend locks.
-`audit39-msgspec-boundary-cleanup` is active; startup/model registration,
-source TODO cleanup, full quality validation, and final architecture sync
-follow through dependency-gated audit rows.
+`audit39-dependency-refresh`, `audit39-msgspec-boundary-cleanup`, and
+`audit39-source-todo-cleanup` are complete. Remaining runtime validation
+work is currently driven by `audit39-src-quality-gate` and downstream
+dependency-gated remediation rows.
+
+**Phase 42 — ACP + LSP + Marketplace Implementation** (new):
+Added implementation todos for Agent Client Protocol (ACP), Language Server
+Protocol (LSP), and marketplace delivery/runtime integration for ACP/LSP
+artifacts. Execution is tracked under `T42.1` through `T42.4`.
+
+**Phase 16 — xAI SDK Integration Intake** (new):
+Added a dependency-ordered `T16.15` xAI chain to implement and use the
+official `xai-sdk` client path (`AsyncClient`, stream/sample mapping, model
+catalog mapping, server-side tools usage, and telemetry/retry policy bridge),
+while preserving explicit fallback behavior.
 
 **Implementation tranche** — Phase 40 still contains pending implementation
 work after Phase 41 preparation; `db40-lane-marketplace` is already recorded
@@ -58,11 +68,11 @@ Snapshot queried from `.plan/session.db` on 2026-05-26:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 933 | 486 | 440 | 6 | 1 |
+| 983 | 492 | 485 | 6 | 0 |
 
-Current active todo: `audit39-msgspec-boundary-cleanup`. Phase 41 preparation
-is complete; Phase 39 runtime validation now drives source cleanup before
-broader implementation work resumes.
+Current active todo: none (`in_progress = 0`). Phase 41 preparation remains
+complete; Phase 39 runtime validation and Phase 42 planning intake are now
+the active planning boundary.
 
 ## Current Execution Boundary
 
@@ -93,18 +103,18 @@ and owner documents have been made executable before implementation resumes.
 | 7 | Feature Completeness | 19 | 19 | 0 | 0 | 0 |
 | 8 | AI Execution Layer | 17 | 17 | 0 | 0 | 0 |
 | 40 | DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
-| 9 | ORM / Manager / Registry | 32 | 32 | 0 | 0 | 0 |
+| 9 | ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
 | 10 | Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
 | 11 | Cross-Provider Prompt Caching | 10 | 0 | 9 | 1 | 0 |
 | 12 | QoL Output Controls Migration | 11 | 1 | 10 | 0 | 0 |
 | 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
-| 14 | Event Hooks & Instrumentation | 18 | 8 | 10 | 0 | 0 |
+| 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 8 | 10 | 0 | 0 |
 | 15 | Permissions + WorkingDir | 31 | 0 | 31 | 0 | 0 |
-| 16 | Provider SDK Features | 31 | 0 | 31 | 0 | 0 |
+| 16 | Provider SDK Features | 36 | 0 | 36 | 0 | 0 |
 | 17 | Settings & Projects | 39 | 0 | 39 | 0 | 0 |
 | 18 | Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
 | 19 | Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
-| 20 | Persistent Memory Layer | 43 | 7 | 36 | 0 | 0 |
+| 20 | Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 |
 | 21 | Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
 | 22 | MCP Protocol Layer | 8 | 5 | 3 | 0 | 0 |
 | 23 | Prompt Registry | 11 | 1 | 10 | 0 | 0 |
@@ -121,10 +131,12 @@ and owner documents have been made executable before implementation resumes.
 | 34 | Dependency Map | 20 | 2 | 18 | 0 | 0 |
 | 35 | Telemetry Infrastructure | 7 | 0 | 7 | 0 | 0 |
 | 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
+| — | unassigned | 26 | 0 | 26 | 0 | 0 |
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
-| 39 | Audit Remediation (A1/A2/A3) | 25 | 2 | 22 | 0 | 1 |
+| 39 | Audit Remediation (A1/A2/A3) | 25 | 6 | 19 | 0 | 0 |
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
+| 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
 
 ## Local Ownership Map
 
@@ -160,6 +172,7 @@ Implementation detail is intentionally routed to these local documents:
 | 36 | `src/css/core/asgi/asgi.md`, `src/css/modules/llm_proxy/llm_proxy.md` |
 | 37 | `src/css/modules/siem/siem.md` |
 | 38 | `src/css/modules/jetbrains/jetbrains.md` |
+| 42 | `src/css/modules/acp/acp.md`, `src/css/modules/mcps/mcps.md`, `src/css/core/marketplace/marketplace.md`, `src/css/modules/approvals/approvals.md`, `src/css/modules/jetbrains/jetbrains.md` (legacy bridge) |
 
 ## Sanitization Movement Record
 

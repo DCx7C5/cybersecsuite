@@ -7,6 +7,7 @@ Connects to local Ollama server via ollama.AsyncClient.
 from collections.abc import AsyncIterator
 from typing import Any
 
+from ollama import AsyncClient
 from css.core.logger import getLogger
 from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
 from css.core.types.enums import ProviderType
@@ -37,10 +38,6 @@ class OllamaAdapter:
     @property
     def client(self) -> Any:
         if self._client is None:
-            try:
-                from ollama import AsyncClient
-            except ImportError:
-                raise ImportError("ollama package required: pip install ollama")
             self._client = AsyncClient(host=self.base_url)
         return self._client
 
@@ -198,7 +195,8 @@ class OllamaAdapter:
             if isinstance(role, str):
                 role_str: str = role
             elif hasattr(role, "value"):
-                role_str = role.value  # type: ignore[union-attr]
+                role_value = getattr(role, "value", "user")
+                role_str = role_value if isinstance(role_value, str) else str(role_value)
             else:
                 role_str = "user"
             content = getattr(msg, "content", "") or ""

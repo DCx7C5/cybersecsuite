@@ -11,6 +11,7 @@ Example flow:
   5. Projections (read models) are updated from event
 """
 
+from typing import override
 from css.core.logger import getLogger
 from datetime import datetime, UTC
 import uuid
@@ -99,6 +100,7 @@ class CommandHandler:
 class TeamCommandHandler(CommandHandler):
     """Handler for team domain commands."""
 
+    @override
     async def handle(self, command: Command) -> list:
         """Process team commands."""
         from .domain_event import DomainEvent
@@ -125,6 +127,7 @@ class TeamCommandHandler(CommandHandler):
 class TaskCommandHandler(CommandHandler):
     """Handler for task domain commands."""
 
+    @override
     async def handle(self, command: Command) -> list:
         """Process task commands."""
         from .domain_event import DomainEvent
@@ -164,6 +167,7 @@ class TaskCommandHandler(CommandHandler):
 class AgentCommandHandler(CommandHandler):
     """Handler for agent domain commands."""
 
+    @override
     async def handle(self, command: Command) -> list:
         """Process agent commands."""
         from .domain_event import DomainEvent

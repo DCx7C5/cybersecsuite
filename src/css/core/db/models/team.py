@@ -3,8 +3,9 @@
 from datetime import UTC, datetime
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
 from tortoise.expressions import F
+from tortoise.indexes import Index
 
 from css.core.db.fields import LabelField
 from css.modules.teams.enums import OrchestratorMode, TeamStatus
@@ -198,8 +199,8 @@ class Team(BaseModel):
         table_description_plural = "Teams"
         ordering = ["team_name", "id"]
         indexes = [
-            models.Index(fields=["session_id", "team_name"]),
-            models.Index(fields=["status", "current_orchestrators"]),
-            models.Index(fields=["status", "paused_at"]),
+            Index(fields=["session_id", "team_name"]),
+            Index(fields=["status", "current_orchestrators"]),
+            Index(fields=["status", "paused_at"]),
         ]
         unique_together = [("session_id", "team_name")]

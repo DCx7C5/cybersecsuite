@@ -21,11 +21,11 @@ The local-first connector path is:
 
 ## Data Store Allocation
 
-| Store | Primary use in SIEM |
-|------|----------------------|
-| **OpenObserve** | first write target for raw detections, telemetry fan-out, dashboards, alert streams, approval/audit visibility |
-| **PostgreSQL** | curated `siem_alerts`, `edr_detections`, `incidents`, response bookkeeping |
-| **Neo4j / GraphRAG** | entities, relationships, MITRE technique links, path traversal |
+| Store                | Primary use in SIEM                                                                                            |
+|----------------------|----------------------------------------------------------------------------------------------------------------|
+| **OpenObserve**      | first write target for raw detections, telemetry fan-out, dashboards, alert streams, approval/audit visibility |
+| **PostgreSQL**       | curated `siem_alerts`, `edr_detections`, `incidents`, response bookkeeping                                     |
+| **Neo4j / GraphRAG** | entities, relationships, MITRE technique links, path traversal                                                 |
 
 ## Architecture Flow
 
@@ -77,16 +77,16 @@ flowchart TD
 
 ## Integration Points
 
-| Component | Relationship |
-|-----------|--------------|
-| `css.modules.mcps` | connector discovery, ingest, and action execution |
-| `css.core.observability` | OpenObserve client + stream definitions |
-| `css.core.events` | event stream + instrumentation |
-| `css.core.rag_graph` | graph ingest and retrieval |
-| `css.core.rag_vector` | similar incident retrieval |
-| `css.modules.workflows` | response orchestration |
-| `css.modules.approvals` | human approval gate |
-| `css.modules.permissions` | policy guardrails for actions |
+| Component                 | Relationship                                      |
+|---------------------------|---------------------------------------------------|
+| `css.modules.mcps`        | connector discovery, ingest, and action execution |
+| `css.core.observability`  | OpenObserve client + stream definitions           |
+| `css.core.events`         | event stream + instrumentation                    |
+| `css.core.rag_graph`      | graph ingest and retrieval                        |
+| `css.core.rag_vector`     | similar incident retrieval                        |
+| `css.modules.workflows`   | response orchestration                            |
+| `css.modules.approvals`   | human approval gate                               |
+| `css.modules.permissions` | policy guardrails for actions                     |
 
 ## Planning Rule
 

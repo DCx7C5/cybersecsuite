@@ -1,7 +1,8 @@
 """Agent types — concrete implementation of BaseAgent with HTTP/remote capabilities."""
+import aiohttp
 import msgspec
 
-from typing import Any
+from typing import Any, override
 
 from css.core.types.base_entity import BaseAgent
 from css.core.types.base_headers import BaseAgentHeader
@@ -21,6 +22,7 @@ class Agent(BaseAgent, msgspec.Struct):
     claude_metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
     @property
+    @override
     def is_default(self) -> bool:
         """Check if this agents is marked as default."""
         return bool(self.claude_metadata.get("default", False))
@@ -36,14 +38,8 @@ class Agent(BaseAgent, msgspec.Struct):
         """Lazily create an HTTP client for remote agents communication.
 
         Returns aiohttp.ClientSession for making requests to base_url.
-        Import is deferred to avoid hard dependency on aiohttp at startup.
         """
         if not self.base_url:
             raise RuntimeError(f"Agent {self.id} has no base_url; cannot create client")
-
-        try:
-            import aiohttp
-        except ImportError:
-            raise ImportError("aiohttp required for Agent.client(); install via 'uv add aiohttp'")
 
         return aiohttp.ClientSession(base_url=self.base_url)

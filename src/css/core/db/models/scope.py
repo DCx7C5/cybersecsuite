@@ -3,7 +3,8 @@
 from datetime import UTC, datetime
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 
 from css.core.db.fields import DescriptionField, PathField, SlugField
 from css.core.enums import ScopeLevel
@@ -179,9 +180,9 @@ class AppScope(BaseModel, SoftDeleteMixin):
         table_description_plural = "App Scopes"
         ordering = ["name", "id"]
         indexes = [
-            models.Index(fields=["name"]),
-            models.Index(fields=["is_active", "deleted_at"]),
-            models.Index(fields=["working_dir"]),
+            Index(fields=["name"]),
+            Index(fields=["is_active", "deleted_at"]),
+            Index(fields=["working_dir"]),
         ]
 
 
@@ -243,9 +244,9 @@ class ProjectScope(BaseModel, SoftDeleteMixin):
         table_description_singular = "Project Scope"
         ordering = ["name", "id"]
         indexes = [
-            models.Index(fields=["name"]),
-            models.Index(fields=["is_active", "deleted_at"]),
-            models.Index(fields=["working_dir"]),
+            Index(fields=["name"]),
+            Index(fields=["is_active", "deleted_at"]),
+            Index(fields=["working_dir"]),
         ]
 
 
@@ -385,10 +386,10 @@ class SessionScope(BaseModel, SoftDeleteMixin):
         table_verbose_plural = "Session Scopes"
         ordering = ["-updated_at", "session_id", "id"]
         indexes = [
-            models.Index(fields=["project_id", "is_active"]),
-            models.Index(fields=["session_id", "project_id"]),
-            models.Index(fields=["mode", "phase"]),
-            models.Index(fields=["sdk_session_id"]),
+            Index(fields=["project_id", "is_active"]),
+            Index(fields=["session_id", "project_id"]),
+            Index(fields=["mode", "phase"]),
+            Index(fields=["sdk_session_id"]),
         ]
 
 

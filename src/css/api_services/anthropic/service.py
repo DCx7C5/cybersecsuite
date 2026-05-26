@@ -5,6 +5,7 @@ import os
 from typing import override,  Any
 from collections.abc import AsyncIterator
 
+from anthropic import AsyncAnthropic
 from css.core.types import (
     BaseMessage,
     MessageRole,
@@ -39,9 +40,11 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
             max_retries=max_retries,
         )
 
+    @override
     def _default_base_url(self) -> str:
         return "https://api.anthropic.com/v1"
 
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
         return [
@@ -115,13 +118,8 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
         system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
-    ) -> AsyncIterator[StreamChunk] | LLMResponse:
+    ) -> AsyncIterator[StreamChunk]:
         """Call Anthropic with streaming support."""
-        try:
-            from anthropic import AsyncAnthropic
-        except ImportError:
-            raise ImportError("anthropic package required: pip install anthropic")
-
         client = AsyncAnthropic(
             api_key=self.api_key,
             base_url=self.base_url,
@@ -150,17 +148,7 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
         if streaming:
             return self._stream_response(client, call_body)
         else:
-            response = await client.messages.create(**call_body)
-            text = ""
-            for block in response.content:
-                if hasattr(block, "text"):
-                    text += block.text
-
-            return LLMResponse(
-                text=text,
-                stop_reason=response.stop_reason or "stop",
-                usage={"usage": response.usage.model_dump() if hasattr(response, "usage") else {}},
-            )
+            return self._buffered_call_to_stream(self._buffered_response(client, call_body))
 
     async def _stream_response(
         self,
@@ -182,6 +170,25 @@ class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
                         stop_reason="stop",
                     )
 
+    async def _buffered_response(
+        self,
+        client: Any,
+        call_body: dict[str, Any],
+    ) -> LLMResponse:
+        """Buffer Anthropic response and normalize to LLMResponse."""
+        response = await client.messages.create(**call_body)
+        text = ""
+        for block in response.content:
+            if hasattr(block, "text"):
+                text += block.text
+
+        return LLMResponse(
+            text=text,
+            stop_reason=response.stop_reason or "stop",
+            usage={"usage": response.usage.model_dump() if hasattr(response, "usage") else {}},
+        )
+
+    @override
     async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Not used for Anthropic SDK (uses event stream)."""
         return None

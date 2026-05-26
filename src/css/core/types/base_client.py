@@ -3,7 +3,7 @@
 Provider-agnostic base with shared session management and buffered call logic.
 """
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable
 
 from aiohttp import ClientSession
 
@@ -126,6 +126,28 @@ class BaseApiServiceClient:
                     usage=chunk.metadata.get("usage", {}),
                 )
         return LLMResponse(text="".join(chunks), stop_reason="eof")
+
+    def _buffered_call_to_stream(
+        self,
+        buffered_call: Awaitable[LLMResponse],
+    ) -> AsyncIterator[StreamChunk]:
+        """Adapt a buffered provider call into stream-compatible chunks."""
+
+        async def _iterator() -> AsyncIterator[StreamChunk]:
+            response = await buffered_call
+            if response.text:
+                yield StreamChunk(
+                    type="content_block_delta",
+                    content=response.text,
+                    metadata={"usage": response.usage},
+                )
+            yield StreamChunk(
+                type="message_stop",
+                stop_reason=response.stop_reason,
+                metadata={"usage": response.usage},
+            )
+
+        return _iterator()
     
     @staticmethod
     def _ensure_auth_header(

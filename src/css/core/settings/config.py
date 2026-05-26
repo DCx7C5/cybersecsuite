@@ -177,6 +177,15 @@ OLLAMA_TIMEOUT = int(getenv('OLLAMA_TIMEOUT', '120'))
 LLM_CACHE_ENABLED = bool(getenv('LLM_CACHE_ENABLED', 'true'))
 LLM_CACHE_TTL = CACHE_LLM_TTL  # 30 days
 
+# xAI SDK rollout flags (native SDK path with explicit OpenAI-compatible fallback)
+XAI_SDK_ENABLED = getenv('XAI_SDK_ENABLED', 'false').lower() == 'true'
+XAI_SDK_FALLBACK_OPENAI_COMPAT = getenv('XAI_SDK_FALLBACK_OPENAI_COMPAT', 'true').lower() == 'true'
+XAI_SDK_TIMEOUT_SECONDS = int(getenv('XAI_SDK_TIMEOUT_SECONDS', getenv('CSS_PROVIDER_TIMEOUT', '120')))
+XAI_SDK_USE_INSECURE_CHANNEL = getenv('XAI_SDK_USE_INSECURE_CHANNEL', 'false').lower() == 'true'
+XAI_SDK_KEEPALIVE_TIME_MS = int(getenv('XAI_SDK_KEEPALIVE_TIME_MS', '30000'))
+XAI_SDK_KEEPALIVE_TIMEOUT_MS = int(getenv('XAI_SDK_KEEPALIVE_TIMEOUT_MS', '10000'))
+XAI_SDK_MAX_RECEIVE_MESSAGE_LENGTH = int(getenv('XAI_SDK_MAX_RECEIVE_MESSAGE_LENGTH', str(20 * 1024 * 1024)))
+
 
 # ── A2A Communication (Agent-to-Agent) ──────────────────────────────────────────
 

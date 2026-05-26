@@ -5,6 +5,8 @@ import json
 import os
 from typing import override,  Any
 from collections.abc import AsyncIterator
+from pathlib import Path
+import msgspec
 
 from css.core.types import (
     BaseMessage,
@@ -16,10 +18,17 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
+from css.core.exceptions import LLMApiServiceError
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.config import ProviderDefaults
+from css.core.settings import config as settings_config
+from css.core.types.providers import decode_provider_spec_file
 
 logger = getLogger(__name__)
+
+
+class XAINativeSDKFallbackRequiredError(LLMApiServiceError):
+    """Raised when native xAI SDK is enabled but compatibility fallback is disabled."""
 
 
 class xAIApiService(BaseApiServiceClient, StreamingHandler):
@@ -31,7 +40,17 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         base_url: str | None = None,
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
+        use_native_sdk: bool | None = None,
+        allow_openai_compat_fallback: bool | None = None,
     ):
+        self._use_native_sdk = (
+            use_native_sdk if use_native_sdk is not None else settings_config.XAI_SDK_ENABLED
+        )
+        self._allow_openai_compat_fallback = (
+            allow_openai_compat_fallback
+            if allow_openai_compat_fallback is not None
+            else settings_config.XAI_SDK_FALLBACK_OPENAI_COMPAT
+        )
         super().__init__(
             provider_id=ProviderType.XAI,
             api_key=api_key or os.getenv("XAI_API_KEY"),
@@ -39,11 +58,43 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
         )
+        if self._use_native_sdk and self._allow_openai_compat_fallback:
+            logger.info(
+                "xAI native SDK flag enabled; OpenAI-compatible fallback remains active until native bridge is complete"
+            )
     
+    @override
     def _default_base_url(self) -> str:
-        # stub: load from api_services.yml (see tracker 'provider-types-dynamic')
-        ...
+        spec_file = Path(__file__).with_name("spec.yaml")
+        try:
+            spec = decode_provider_spec_file(spec_file)
+            return spec.base_url
+        except FileNotFoundError as error:
+            raise LLMApiServiceError(
+                message="Missing xAI provider spec.yaml",
+                provider_name="xai",
+                context={"spec_path": str(spec_file)},
+            ) from error
+        except OSError as error:
+            raise LLMApiServiceError(
+                message="Failed reading xAI provider spec.yaml",
+                provider_name="xai",
+                context={"spec_path": str(spec_file)},
+            ) from error
+        except RuntimeError as error:
+            raise LLMApiServiceError(
+                message="xAI provider spec decode requires msgspec YAML support",
+                provider_name="xai",
+                context={"spec_path": str(spec_file)},
+            ) from error
+        except msgspec.ValidationError as error:
+            raise LLMApiServiceError(
+                message="Invalid xAI provider spec.yaml schema",
+                provider_name="xai",
+                context={"spec_path": str(spec_file)},
+            ) from error
     
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
         # stub: fetch from xAI /models endpoint (see tracker 'provider-types-dynamic')
@@ -60,8 +111,16 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
-    ) -> AsyncIterator[StreamChunk] | LLMResponse:
+    ) -> AsyncIterator[StreamChunk]:
         """Call xAI with OpenAI-compatible streaming."""
+        if self._use_native_sdk and not self._allow_openai_compat_fallback:
+            raise XAINativeSDKFallbackRequiredError(
+                message=(
+                    "XAI_SDK_ENABLED is true, but native xAI SDK call flow is not yet wired "
+                    "and compatibility fallback is disabled. Set XAI_SDK_FALLBACK_OPENAI_COMPAT=true."
+                ),
+                provider_name="xai",
+            )
         formatted_messages = self._format_messages(messages, system_prompt)
         
         call_body = {
@@ -77,8 +136,9 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         if streaming:
             return self._stream_response(call_body)
         else:
-            return await self._buffered_response(call_body)
+            return self._buffered_call_to_stream(self._buffered_response(call_body))
     
+    @override
     async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Parse SSE line."""
         if not line.startswith("data: "):

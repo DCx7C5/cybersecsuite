@@ -5,8 +5,9 @@ from fnmatch import fnmatch
 from typing import Any
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
 from tortoise.expressions import Q
+from tortoise.indexes import Index
 
 from .base import BaseModel
 from .mixins import TimestampMixin
@@ -135,8 +136,8 @@ class PermissionGrant(BaseModel, TimestampMixin):
         ordering = ["scope_level", "scope_id", "role", "id"]
         unique_together = (("role", "scope_level", "scope_id"),)
         indexes = [
-            models.Index(fields=["role", "scope_level"]),
-            models.Index(fields=["scope_level", "scope_id"]),
+            Index(fields=["role", "scope_level"]),
+            Index(fields=["scope_level", "scope_id"]),
         ]
 
     def to_domain(self) -> PermissionGrantInfo:
@@ -239,9 +240,9 @@ class ScopeSession(BaseModel, TimestampMixin):
         ordering = ["session_id", "id"]
         unique_together = (("session_id", "scope_level"),)
         indexes = [
-            models.Index(fields=["role", "scope_level"]),
-            models.Index(fields=["expires_at"]),
-            models.Index(fields=["auto_cleanup_at"]),
+            Index(fields=["role", "scope_level"]),
+            Index(fields=["expires_at"]),
+            Index(fields=["auto_cleanup_at"]),
         ]
 
     def to_domain(self) -> ScopeSessionInfo:
@@ -306,8 +307,8 @@ class RolePermissionCache(BaseModel):
         ordering = ["expires_at", "id"]
         unique_together = (("role", "scope_level", "cache_key"),)
         indexes = [
-            models.Index(fields=["role", "scope_level"]),
-            models.Index(fields=["expires_at"]),
+            Index(fields=["role", "scope_level"]),
+            Index(fields=["expires_at"]),
         ]
 
     def to_domain(self) -> RolePermissionCacheInfo:

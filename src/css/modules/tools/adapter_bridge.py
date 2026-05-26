@@ -4,8 +4,8 @@ Converts adapter-provided `Tool` objects (core/types/base_messages)
 to `ToolSchema` objects and registers them with ToolRegistry.
 """
 
-from collections.abc import Sequence
-from typing import Any
+from collections.abc import Callable, Sequence
+from typing import Any, cast
 
 from css.core.logger import getLogger
 from css.core.types.base_messages import Tool as AdapterTool
@@ -63,7 +63,7 @@ def register_adapter_tools(registry: ToolRegistry | None = None) -> None:
     from css.core.sdks.registry import SDKRegistry
 
     if registry is None:
-        registry = ToolRegistry()  # type: ignore[assignment]
+        registry = cast(ToolRegistry, ToolRegistry())
 
     sdk_registry = SDKRegistry()
     for provider_id in sdk_registry.list_registered():
@@ -71,7 +71,11 @@ def register_adapter_tools(registry: ToolRegistry | None = None) -> None:
             adapter_class = sdk_registry._registry.get(provider_id)
             if adapter_class is None:
                 continue
-            instance: Any = adapter_class() if callable(adapter_class) else adapter_class  # type: ignore
+            if callable(adapter_class):
+                factory = cast(Callable[[], Any], adapter_class)
+                instance: Any = factory()
+            else:
+                instance = adapter_class
             builtin_tools_method = getattr(instance, "builtin_tools", None)
             if builtin_tools_method is None:
                 continue

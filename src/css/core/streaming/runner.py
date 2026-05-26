@@ -9,7 +9,7 @@ TeamLeader delegation when team_id + orchestrator_id are set.
 
 from css.core.logger import getLogger
 from collections.abc import AsyncGenerator
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 import uuid
 from datetime import datetime
 
@@ -150,7 +150,7 @@ class QueryExecutor:
 
     async def stream(self, prompt: str) -> AsyncGenerator[dict[str, str]]:
         """Stream a query, yielding SSE-ready dicts."""
-        from css.modules.streaming.streaming import stream_query
+        from css.core.streaming.streaming import stream_query
         async for chunk in stream_query(
             prompt=prompt,
             agent_name=self.agent_name,
@@ -175,6 +175,7 @@ class QueryExecutor:
             # (HttpProviderAdapter uses aiohttp session internally)
             self._executor = None
     
+    @override
     def __repr__(self) -> str:
         if self.team_id:
             return (

@@ -40,9 +40,11 @@ class GroqApiService(BaseApiServiceClient, StreamingHandler):
             max_retries=max_retries,
         )
     
+    @override
     def _default_base_url(self) -> str:
         return "https://api.groq.com/openai/v1"
     
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
 
@@ -59,7 +61,7 @@ class GroqApiService(BaseApiServiceClient, StreamingHandler):
         system_prompt: str | None = None,
         streaming: bool = True,
         **kwargs,
-    ) -> AsyncIterator[StreamChunk] | LLMResponse:
+    ) -> AsyncIterator[StreamChunk]:
         """Call Groq with OpenAI-compatible streaming."""
         formatted_messages = self._format_messages(messages, system_prompt)
         
@@ -76,8 +78,9 @@ class GroqApiService(BaseApiServiceClient, StreamingHandler):
         if streaming:
             return self._stream_response(call_body)
         else:
-            return await self._buffered_response(call_body)
+            return self._buffered_call_to_stream(self._buffered_response(call_body))
     
+    @override
     async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Parse SSE line."""
         if not line.startswith("data: "):

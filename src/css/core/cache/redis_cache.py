@@ -1,5 +1,6 @@
-from typing import Any
+from typing import Any, override
 
+import redis.asyncio as redis_asyncio
 from css.core.cache.base import CacheBackend
 from css.core.logger import getLogger
 
@@ -18,15 +19,10 @@ class L2RedisCache(CacheBackend):
     async def _get_redis(self):
         """Lazy-load Redis connection."""
         if self._redis is None:
-            try:
-                import redis.asyncio as redis_asyncio
-
-                self._redis = redis_asyncio.from_url(self.redis_url)
-            except ImportError:
-                logger.warning("redis.asyncio not installed; L2 cache unavailable")
-                return None
+            self._redis = redis_asyncio.from_url(self.redis_url)
         return self._redis
 
+    @override
     async def get(self, key: str) -> Any | None:
         """Get value from Redis."""
         try:
@@ -48,6 +44,7 @@ class L2RedisCache(CacheBackend):
             self.stats.errors += 1
             return None
 
+    @override
     async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in Redis."""
         try:
@@ -70,6 +67,7 @@ class L2RedisCache(CacheBackend):
             self.stats.errors += 1
             return False
 
+    @override
     async def delete(self, key: str) -> bool:
         """Delete value from Redis."""
         try:
@@ -88,6 +86,7 @@ class L2RedisCache(CacheBackend):
             self.stats.errors += 1
             return False
 
+    @override
     async def clear(self) -> bool:
         """Clear all Redis entries in namespace."""
         try:
@@ -105,6 +104,7 @@ class L2RedisCache(CacheBackend):
             self.stats.errors += 1
             return False
 
+    @override
     async def exists(self, key: str) -> bool:
         """Check if key exists in Redis."""
         try:

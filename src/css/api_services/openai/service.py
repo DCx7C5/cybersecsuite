@@ -2,10 +2,8 @@
 
 import json
 import os
-from typing import override,  Any
+from typing import Any, override
 from collections.abc import AsyncIterator
-
-
 
 import aiohttp
 
@@ -35,7 +33,7 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         base_url: str | None = None,
         timeout_seconds: int = ProviderDefaults.TIMEOUT_SECONDS,
         max_retries: int = ProviderDefaults.MAX_RETRIES,
-        http_client = aiohttp.ClientSession,
+        http_client: type[aiohttp.ClientSession] = aiohttp.ClientSession,
     ):
         super().__init__(
             provider_id=ProviderType.OPENAI,
@@ -44,11 +42,14 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
         )
-        self._session: aiohttp.AsyncClient | None = None
+        self._http_client = http_client
+        self._session: aiohttp.ClientSession | None = None
 
+    @override
     def _default_base_url(self) -> str:
         return "https://api.openai.com/v1"  # stub: load from api_services.yml (see tracker 'provider-types-dynamic')
 
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
         # stub: fetch from /v1/models (see tracker 'provider-types-dynamic')
@@ -64,8 +65,8 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         max_tokens: int | None = None,
         system_prompt: str | None = None,
         streaming: bool = True,
-        **kwargs,
-    ) -> AsyncIterator[StreamChunk] | LLMResponse:
+        **kwargs: object,
+    ) -> AsyncIterator[StreamChunk]:
         """Call OpenAI with streaming support."""
         formatted_messages = self._format_messages(messages, system_prompt)
 
@@ -81,9 +82,9 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
 
         if streaming:
             return self._stream_response(call_body)
-        else:
-            return await self._buffered_response(call_body)
+        return self._buffered_response_stream(call_body)
 
+    @override
     async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
         """Parse SSE line."""
         if not line.startswith("data: "):
@@ -174,6 +175,24 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
                 usage=data.get("usage", {}),
             )
 
+    async def _buffered_response_stream(
+        self,
+        call_body: dict[str, Any],
+    ) -> AsyncIterator[StreamChunk]:
+        """Emit buffered responses as a stream-compatible chunk sequence."""
+        response = await self._buffered_response(call_body)
+        if response.text:
+            yield StreamChunk(
+                type="content_block_delta",
+                content=response.text,
+                metadata={"usage": response.usage},
+            )
+        yield StreamChunk(
+            type="message_stop",
+            stop_reason=response.stop_reason,
+            metadata={"usage": response.usage},
+        )
+
     @staticmethod
     def _format_messages(
         messages: list[BaseMessage],
@@ -204,13 +223,15 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         ]
 
     @property
-    def session(self) -> aiohttp.AsyncClient:
-        """Get or create httpx session."""
-        if self._session is None or self._session.is_closed:
-            self._session = aiohttp.AsyncClient(timeout=aiohttp.TimeoutConfig(timeout=self.timeout_seconds))
+    @override
+    def session(self) -> aiohttp.ClientSession:
+        """Get or create aiohttp session."""
+        if self._session is None or self._session.closed:
+            timeout = aiohttp.ClientTimeout(total=self.timeout_seconds)
+            self._session = self._http_client(timeout=timeout)
         return self._session
 
     async def close(self) -> None:
         """Close the HTTP session."""
-        if self._session and not self._session.is_closed:
-            await self._session.aclose()
+        if self._session and not self._session.closed:
+            await self._session.close()

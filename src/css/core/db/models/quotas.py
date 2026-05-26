@@ -3,7 +3,8 @@
 from datetime import datetime
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 from css.core.db.models.base import BaseModel
 
 
@@ -66,5 +67,5 @@ class TeamQuota(BaseModel):
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "team_quotas"
         indexes = [
-            models.Index(fields=["team_id"]),
+            Index(fields=["team_id"]),
         ]

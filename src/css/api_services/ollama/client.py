@@ -1,5 +1,6 @@
 """Ollama client — wrapper for local Ollama HTTP API with streaming support."""
 
+from typing import override
 from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 
@@ -50,10 +51,12 @@ class OllamaClient(BaseApiServiceClient):
         super().__init__(base_url=base_url)
         pass
     
+    @override
     def _default_base_url(self) -> str:
         """Return default Ollama base URL."""
         pass
     
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """
         Get list of available models from local Ollama.
@@ -69,6 +72,7 @@ class OllamaClient(BaseApiServiceClient):
         """
         pass
     
+    @override
     async def call_llm(
         self,
         model_id: str,
@@ -106,6 +110,7 @@ class OllamaClient(BaseApiServiceClient):
         """
         pass
     
+    @override
     async def supports_feature(self, model_metadata: ModelMetadata, feature: str) -> bool:
         """
         Check if model supports a specific feature.

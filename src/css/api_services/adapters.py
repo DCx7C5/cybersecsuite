@@ -15,11 +15,12 @@ Usage::
 """
 
 from css.core.logger import getLogger
-from typing import Any
+from typing import Any, override
 from collections.abc import AsyncIterator
+import json
 import os
 import time
-from aiohttp import ClientSession, ClientTimeout
+from aiohttp import ClientSession
 
 from css.core.exceptions import ProviderRegistryError
 from css.core.types.providers import ProviderSpec
@@ -64,6 +65,7 @@ class HttpProviderAdapter(BaseApiServiceClient):
         self.provider_name = provider_name
         self.spec = spec
     
+    @override
     def _default_base_url(self) -> str:
         """Use spec's base_url as default."""
         return self.spec.base_url
@@ -99,6 +101,7 @@ class HttpProviderAdapter(BaseApiServiceClient):
         }
         return mapping.get(provider_name.lower(), ProviderType.OPENAI)
     
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider with capability flags.
         
@@ -118,6 +121,7 @@ class HttpProviderAdapter(BaseApiServiceClient):
             models.append(model)
         return models
     
+    @override
     async def call_llm(
         self,
         model_id: str,
@@ -149,11 +153,7 @@ class HttpProviderAdapter(BaseApiServiceClient):
         """
         if max_tokens is None:
             max_tokens = 4096
-        
-        session = self._get_session()
-        if session is None or session.closed:
-            timeout = ClientTimeout(total=self.timeout_seconds)
-            session = ClientSession(timeout=timeout)
+        session = self.session
         
         # Build request payload based on provider type
         if self.spec.api_type == "openai_compatible":
@@ -169,75 +169,111 @@ class HttpProviderAdapter(BaseApiServiceClient):
             headers = self._build_openai_headers()
         
         url = f"{self.base_url.rstrip('/')}{self.spec.completion_endpoint}"
-        
+        if streaming:
+            return self._stream_call(session, url, payload, headers)
+        return self._buffered_call_stream(session, url, payload, headers)
+
+    async def _stream_call(
+        self,
+        session: ClientSession,
+        url: str,
+        payload: dict[str, Any],
+        headers: dict[str, str],
+    ) -> AsyncIterator[StreamChunk]:
+        """Execute provider request in streaming mode and yield chunks."""
         start = time.time()
         chunks_received = 0
-        
         try:
-            if streaming:
-                async with session.post(url, json=payload, headers=headers) as resp:
-                    if resp.status != 200:
-                        error_text = await resp.text()
-                        raise ProviderRegistryError(
-                            f"Provider {self.provider_name} returned {resp.status}: {error_text}"
-                        )
-                    
-                    async for line in resp.content:
-                        if not line:
-                            continue
-                        
-                        line_text = line.decode().strip()
-                        if line_text.startswith("data: "):
-                            line_text = line_text[6:]
-                        
-                        if line_text == "[DONE]":
-                            break
-                        
-                        try:
-                            import json
-                            data = json.loads(line_text)
-                            chunk = self._parse_openai_stream_chunk(data)
-                            if chunk:
-                                chunks_received += 1
-                                yield chunk
-                        except (json.JSONDecodeError, KeyError):
-                            continue
-            else:
-                # Buffered response
-                async with session.post(url, json=payload, headers=headers) as resp:
-                    if resp.status != 200:
-                        error_text = await resp.text()
-                        raise ProviderRegistryError(
-                            f"Provider {self.provider_name} returned {resp.status}: {error_text}"
-                        )
-                    
-                    data = await resp.json()
-                    result = self._parse_openai_response(data)
-                    yield StreamChunk(
-                        type="content_block_delta",
-                        content=result["response"],
-                        stop_reason=result.get("stop_reason", "stop"),
-                        metadata={
-                            "input_tokens": result.get("input_tokens", 0),
-                            "output_tokens": result.get("output_tokens", 0),
-                            "usage": {
-                                "prompt_tokens": result.get("input_tokens", 0),
-                                "completion_tokens": result.get("output_tokens", 0),
-                            }
-                        },
+            async with session.post(url, json=payload, headers=headers) as resp:
+                if resp.status != 200:
+                    error_text = await resp.text()
+                    raise ProviderRegistryError(
+                        f"Provider {self.provider_name} returned {resp.status}: {error_text}"
                     )
-        
+
+                async for line in resp.content:
+                    if not line:
+                        continue
+
+                    line_text = line.decode().strip()
+                    if line_text.startswith("data: "):
+                        line_text = line_text[6:]
+
+                    if line_text == "[DONE]":
+                        break
+
+                    try:
+                        data = json.loads(line_text)
+                        chunk = self._parse_openai_stream_chunk(data)
+                        if chunk:
+                            chunks_received += 1
+                            yield chunk
+                    except (json.JSONDecodeError, KeyError):
+                        continue
         except Exception as e:
             logger.error(f"Provider {self.provider_name} API call failed: {e}")
             raise ProviderRegistryError(
                 f"Provider {self.provider_name} call failed: {e}"
             ) from e
-        
-        duration_ms = (time.time() - start) * 1000
-        logger.debug(
-            f"Provider {self.provider_name} completed in {duration_ms:.1f}ms, "
-            f"chunks: {chunks_received}"
-        )
+        finally:
+            duration_ms = (time.time() - start) * 1000
+            logger.debug(
+                f"Provider {self.provider_name} completed in {duration_ms:.1f}ms, "
+                f"chunks: {chunks_received}"
+            )
+
+    async def _buffered_call_stream(
+        self,
+        session: ClientSession,
+        url: str,
+        payload: dict[str, Any],
+        headers: dict[str, str],
+    ) -> AsyncIterator[StreamChunk]:
+        """Execute provider request in buffered mode and emit a final chunk."""
+        start = time.time()
+        try:
+            async with session.post(url, json=payload, headers=headers) as resp:
+                if resp.status != 200:
+                    error_text = await resp.text()
+                    raise ProviderRegistryError(
+                        f"Provider {self.provider_name} returned {resp.status}: {error_text}"
+                    )
+
+                data = await resp.json()
+                result = self._parse_openai_response(data)
+                yield StreamChunk(
+                    type="content_block_delta",
+                    content=result["response"],
+                    stop_reason=result.get("stop_reason", "stop"),
+                    metadata={
+                        "input_tokens": result.get("input_tokens", 0),
+                        "output_tokens": result.get("output_tokens", 0),
+                        "usage": {
+                            "prompt_tokens": result.get("input_tokens", 0),
+                            "completion_tokens": result.get("output_tokens", 0),
+                        },
+                    },
+                )
+                yield StreamChunk(
+                    type="message_stop",
+                    stop_reason=result.get("stop_reason", "stop"),
+                    metadata={
+                        "usage": {
+                            "prompt_tokens": result.get("input_tokens", 0),
+                            "completion_tokens": result.get("output_tokens", 0),
+                        },
+                    },
+                )
+        except Exception as e:
+            logger.error(f"Provider {self.provider_name} API call failed: {e}")
+            raise ProviderRegistryError(
+                f"Provider {self.provider_name} call failed: {e}"
+            ) from e
+        finally:
+            duration_ms = (time.time() - start) * 1000
+            logger.debug(
+                f"Provider {self.provider_name} buffered call completed in {duration_ms:.1f}ms"
+            )
     
     
     def _build_openai_payload(

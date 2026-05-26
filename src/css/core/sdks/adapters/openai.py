@@ -9,6 +9,7 @@ Preserves OpenAI-only features lost in the generic HTTP path:
 from collections.abc import AsyncIterator
 from typing import Any
 
+from openai import AsyncOpenAI
 from css.core.logger import getLogger
 from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
 from css.core.types.enums import ProviderType
@@ -76,10 +77,6 @@ class OpenAINativeAdapter:
     @property
     def client(self) -> Any:
         if self._client is None:
-            try:
-                from openai import AsyncOpenAI
-            except ImportError:
-                raise ImportError("openai package required: pip install openai")
             self._client = AsyncOpenAI(
                 api_key=self.api_key,
                 base_url=self.base_url,

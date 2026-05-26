@@ -4,21 +4,10 @@ from css.core.logger import getLogger
 import asyncio
 from typing import Protocol, runtime_checkable
 
+from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
 from css.core.types.meta import singleton
 
 logger = getLogger("agents.client_pool")
-
-try:
-    from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions as _ClaudeAgentOptions
-    _CLAUDE_SDK_AVAILABLE = True
-except ImportError:
-    _CLAUDE_SDK_AVAILABLE = False
-
-try:
-    from a2a.agent_sdk import build_agent_options as _build_agent_options
-    _A2A_SDK_AVAILABLE = True
-except ImportError:
-    _A2A_SDK_AVAILABLE = False
 
 
 @runtime_checkable
@@ -47,13 +36,7 @@ class ClientPool:
 
     async def _create_client(self, session_id: str | None = None) -> SDKClientProtocol:
         """Create a new ClaudeSDKClient instance."""
-        if not _CLAUDE_SDK_AVAILABLE:
-            raise RuntimeError("claude_agent_sdk is not installed")
-
-        if _A2A_SDK_AVAILABLE:
-            options = _build_agent_options()
-        else:
-            options = _ClaudeAgentOptions()
+        options = ClaudeAgentOptions()
 
         if session_id:
             options.resume = session_id

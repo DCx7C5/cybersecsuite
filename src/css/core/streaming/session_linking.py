@@ -2,10 +2,9 @@
 
 
 from css.core.logger import getLogger
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    pass
+from css.core.db.models.enums import RedBlueMode
+from css.modules.chat.persistence_models import ChatSessionRecord as Session
+from css.modules.projects.models import Project
 
 logger = getLogger("agents.session_linking")
 
@@ -13,8 +12,6 @@ logger = getLogger("agents.session_linking")
 async def link_to_sdk(db_session_id: int, sdk_session_id: str) -> bool:
     """Link a DB Session to a Claude SDK session ID."""
     try:
-        from db.models import Session
-
         session = await Session.get(id=db_session_id)
         if not session:
             logger.warning("session %s not found", db_session_id)
@@ -38,8 +35,6 @@ async def link_to_sdk(db_session_id: int, sdk_session_id: str) -> bool:
 async def resolve_sdk_id(db_session_id: int) -> str | None:
     """Resolve DB session ID to Claude SDK session ID."""
     try:
-        from db.models import Session
-
         session = await Session.get(id=db_session_id)
         if not session:
             return None
@@ -54,8 +49,6 @@ async def resolve_sdk_id(db_session_id: int) -> str | None:
 async def resolve_db_id(sdk_session_id: str) -> int | None:
     """Resolve Claude SDK session ID to DB session ID."""
     try:
-        from db.models import Session
-
         session = await Session.filter(sdk_session_id=sdk_session_id).first()
         return session.id if session else None
     except Exception:
@@ -71,9 +64,6 @@ async def create_linked_session(
 ) -> int | None:
     """Create a new DB Session linked to an SDK session."""
     try:
-        from db.models import Session, Project
-        from db.models.enums import RedBlueMode
-
         project = await Project.get(id=project_id)
         if not project:
             logger.warning("project %s not found", project_id)

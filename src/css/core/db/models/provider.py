@@ -1,5 +1,6 @@
 """API service provider registry — maps provider names to credential accounts."""
 
+from typing import override
 from tortoise import fields
 
 from css.core.db.models.base import BaseModel
@@ -17,5 +18,6 @@ class ApiServiceProvider(BaseModel, TimestampMixin):
         table = "api_service_provider"
         ordering = ["name"]
 
+    @override
     def __str__(self) -> str:
         return self.name

@@ -32,14 +32,8 @@ from .package_manager import (
     install_package,
     verify_hash,
 )
-
-# Import seeder and models
-try:
-    from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
-    from .seeder import MarketplaceSeeder, seed_marketplace_on_startup
-except ImportError:
-    # Models may not be available during initial import phase
-    pass
+from .seeder import MarketplaceSeeder, seed_marketplace_on_startup
+from css.core.db.models.marketplace import MarketplaceItem, MarketplaceMeta
 
 # Module-level configuration switches — override via environment variables.
 # These are the single reference point for marketplace tuning.

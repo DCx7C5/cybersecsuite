@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Generic, TypeVar
 
 from css.core.types.enums import ProviderType
+from css.core.types.error_mappers import map_provider_error
 
 from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
@@ -88,11 +89,6 @@ class RetryOrchestrator:
         return RetryableErrorType.INVALID_REQUEST
 
     def map_error_to_unified(self, error: Exception, provider_id: ProviderType) -> Exception:
-        try:
-            from css.core.types.error_mappers import map_provider_error
-        except ImportError:
-            logger.warning("error_mappers not available, returning original error")
-            return error
         return map_provider_error(provider_id, error)
 
     def is_retryable(self, error: Exception) -> bool:

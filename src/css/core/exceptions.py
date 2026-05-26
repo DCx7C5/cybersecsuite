@@ -1,5 +1,6 @@
 """Custom exceptions for CyberSecSuite with optional full traceback."""
 
+from typing import override
 import traceback
 
 
@@ -30,6 +31,7 @@ class CSSException(Exception):
         self.full_traceback = traceback.format_exc() if capture_traceback else None
         super().__init__(self.message)
     
+    @override
     def __str__(self) -> str:
         """Return message. Use get_full_error() for traceback."""
         return self.message

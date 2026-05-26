@@ -10,6 +10,7 @@ Architecture:
 - Both return AsyncIterator[StreamChunk] consistently
 """
 
+from typing import override
 from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 import json
@@ -82,10 +83,12 @@ class OllamaClientCompat(BaseApiServiceClient):
         )
         self._cached_models: list[ModelMetadata] | None = None
     
+    @override
     def _default_base_url(self) -> str:
         """Return default Ollama base URL."""
         return "http://localhost:11434/v1"
     
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """
         Get available models from local Ollama.
@@ -148,6 +151,7 @@ class OllamaClientCompat(BaseApiServiceClient):
             self._cached_models = []
         return self._cached_models
     
+    @override
     async def call_llm(
         self,
         model_id: str,
@@ -228,8 +232,18 @@ class OllamaClientCompat(BaseApiServiceClient):
             raise mapped_error
 
         if result.result is not None:
-            for chunk in result.result:
-                yield chunk
+            return self._chunks_from_list(result.result)
+        return self._empty_stream()
+
+    async def _chunks_from_list(self, chunks: list[StreamChunk]) -> AsyncIterator[StreamChunk]:
+        """Adapt buffered chunk collections to async iterator contract."""
+        for chunk in chunks:
+            yield chunk
+
+    async def _empty_stream(self) -> AsyncIterator[StreamChunk]:
+        """Return an empty async iterator."""
+        if False:
+            yield StreamChunk(type="message_stop")
     
     async def _stream_or_buffer(
         self,

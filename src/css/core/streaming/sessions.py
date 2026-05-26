@@ -6,6 +6,14 @@ workflow: maps session IDs to cases, agents, and modes.
 from css.core.logger import getLogger
 import msgspec
 
+from claude_agent_sdk import (
+    delete_session,
+    fork_session,
+    get_session_info,
+    list_sessions,
+    rename_session,
+    tag_session,
+)
 from datetime import datetime, timezone
 from typing import Any
 
@@ -64,7 +72,6 @@ class SessionManager:
     async def list_sdk(self) -> list[dict[str, Any]]:
         """List all sessions from claude_agent_sdk."""
         try:
-            from claude_agent_sdk import list_sessions
             sessions = await list_sessions()
             return [s.__dict__ if hasattr(s, "__dict__") else dict(s) for s in (sessions or [])]
         except Exception as exc:
@@ -74,7 +81,6 @@ class SessionManager:
     async def get_sdk_info(self, session_id: str) -> dict[str, Any] | None:
         """Get session info from claude_agent_sdk."""
         try:
-            from claude_agent_sdk import get_session_info
             info = await get_session_info(session_id)
             return info.__dict__ if hasattr(info, "__dict__") else dict(info)
         except Exception as exc:
@@ -85,7 +91,6 @@ class SessionManager:
         """Delete session from SDK and local index."""
         self._sessions.pop(session_id, None)
         try:
-            from claude_agent_sdk import delete_session
             await delete_session(session_id)
             return True
         except Exception as exc:
@@ -95,7 +100,6 @@ class SessionManager:
     async def rename(self, session_id: str, new_name: str) -> bool:
         """Rename a session in the SDK."""
         try:
-            from claude_agent_sdk import rename_session
             await rename_session(session_id, new_name)
             return True
         except Exception as exc:
@@ -108,7 +112,6 @@ class SessionManager:
         if record:
             record.tags = list(set(record.tags + tags))
         try:
-            from claude_agent_sdk import tag_session
             await tag_session(session_id, tags)
             return True
         except Exception as exc:
@@ -118,7 +121,6 @@ class SessionManager:
     async def fork(self, session_id: str, new_agent: str | None = None) -> str | None:
         """Fork a session; register the forked session in local index."""
         try:
-            from claude_agent_sdk import fork_session
             result = await fork_session(session_id)
             forked_id = result.session_id if hasattr(result, "session_id") else str(result)
             parent = self._sessions.get(session_id)

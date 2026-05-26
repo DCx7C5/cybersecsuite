@@ -4,7 +4,8 @@ from datetime import datetime
 from typing import Any
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 
 from css.core.events.domain_event import DomainEvent
 
@@ -71,9 +72,9 @@ class DomainEventRecord(BaseModel):
         table_description_plural = "Domain Event Records"
         ordering = ["timestamp", "id"]
         indexes = [
-            models.Index(fields=["kind", "aggregate_type", "aggregate_id"]),
-            models.Index(fields=["aggregate_type", "aggregate_id", "timestamp"]),
-            models.Index(fields=["timestamp"]),
+            Index(fields=["kind", "aggregate_type", "aggregate_id"]),
+            Index(fields=["aggregate_type", "aggregate_id", "timestamp"]),
+            Index(fields=["timestamp"]),
         ]
 
     @property

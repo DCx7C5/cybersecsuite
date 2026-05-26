@@ -110,6 +110,15 @@ Agents / SIEM / future proxy call `mcp:{server_id}:{tool_name}`
 | `mcp-server-lifecycle-api` | pending | Add `src/css/modules/mcps/endpoints.py` handlers for lifecycle control/inspection. |
 | `mcp-server-lifecycle-runtime-wire` | pending | Delegate route behavior into `McpRuntimeRegistry`/`McpClient`, startup restoration, and tool sync. |
 
+## Phase 42 ACP Integration Todo Map
+
+| Todo ID | Status in `session.db` | Contract owned here |
+|---------|------------------------|---------------------|
+| `acp42-spec-v1-contract` | pending | Use ACP v1 session/update/session capability contract as the runtime compatibility baseline for MCP passthrough behavior. |
+| `acp42-session-method-surface` | pending | Ensure ACP session method handling maps cleanly to current MCP runtime boundaries and server-scoped tool identities. |
+| `acp42-mcp-server-passthrough` | pending | Bind ACP-provided MCP server descriptors to `modules/mcps` connect/disconnect/call lifecycle without breaking `mcp:{server_id}:{tool_name}` IDs. |
+| `market42-installer-runtime-hooks` | pending | Consume marketplace install/uninstall lifecycle hooks for ACP/LSP artifacts so MCP runtime config stays in sync with catalog state. |
+
 ### Numbered Execution And Validation
 
 1. Import/test current enums, structs, ORM record, client, and registry;

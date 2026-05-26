@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, override
 
 from datetime import UTC, datetime, timedelta
 
@@ -20,11 +20,12 @@ class L3PostgresCache(CacheBackend):
         expiry = expires_at.astimezone(UTC) if expires_at.tzinfo else expires_at.replace(tzinfo=UTC)
         return now > expiry
 
+    @override
     async def get(self, key: str) -> Any | None:
         """Get value from PostgreSQL cache."""
-        try:
-            from .models import CacheEntryModel
+        from .models import CacheEntryModel
 
+        try:
             entry = await CacheEntryModel.filter(namespace=self.namespace, cache_key=self._make_key(key)).first()
             if entry is None:
                 self.stats.misses += 1
@@ -40,11 +41,12 @@ class L3PostgresCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L3 get failed: {e}", operation="get")
 
+    @override
     async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in PostgreSQL cache."""
-        try:
-            from .models import CacheEntryModel
+        from .models import CacheEntryModel
 
+        try:
             expires_at = None
             if ttl_seconds is not None and ttl_seconds > 0:
                 expires_at = datetime.now(UTC) + timedelta(seconds=ttl_seconds)
@@ -65,11 +67,12 @@ class L3PostgresCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L3 set failed: {e}", operation="set")
 
+    @override
     async def delete(self, key: str) -> bool:
         """Delete value from PostgreSQL cache."""
-        try:
-            from .models import CacheEntryModel
+        from .models import CacheEntryModel
 
+        try:
             deleted = await CacheEntryModel.filter(namespace=self.namespace, cache_key=self._make_key(key)).delete()
             if deleted:
                 self.stats.deletes += 1
@@ -79,11 +82,12 @@ class L3PostgresCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L3 delete failed: {e}", operation="delete")
 
+    @override
     async def clear(self) -> bool:
         """Clear all entries in namespace from PostgreSQL cache."""
-        try:
-            from .models import CacheEntryModel
+        from .models import CacheEntryModel
 
+        try:
             await CacheEntryModel.filter(namespace=self.namespace).delete()
             return True
         except Exception as e:
@@ -91,11 +95,12 @@ class L3PostgresCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L3 clear failed: {e}", operation="clear")
 
+    @override
     async def exists(self, key: str) -> bool:
         """Check if key exists in PostgreSQL cache."""
-        try:
-            from .models import CacheEntryModel
+        from .models import CacheEntryModel
 
+        try:
             entry = await CacheEntryModel.filter(namespace=self.namespace, cache_key=self._make_key(key)).first()
             if entry is None:
                 return False

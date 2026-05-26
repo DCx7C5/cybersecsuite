@@ -3,7 +3,8 @@
 from datetime import UTC, datetime, timedelta
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 
 from .base import BaseModel
 from .enums import OrchestratorStatus
@@ -131,7 +132,7 @@ class OrchestratorInstance(BaseModel):
         table = "orchestrator_instances"
         ordering = ["team_id", "orchestrator_id"]
         indexes = [
-            models.Index(fields=["team_id", "status"]),
-            models.Index(fields=["status", "heartbeat_at"]),
-            models.Index(fields=["orchestrator_id"]),
+            Index(fields=["team_id", "status"]),
+            Index(fields=["status", "heartbeat_at"]),
+            Index(fields=["orchestrator_id"]),
         ]

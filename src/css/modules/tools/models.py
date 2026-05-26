@@ -1,5 +1,6 @@
 """Tortoise ORM models for tool persistence."""
 
+from typing import override
 from tortoise import fields, models
 
 from css.core.db.fields import DescriptionField, NameField
@@ -31,9 +32,11 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
         table = "hybrid_tool"
         ordering = ["name"]
 
+    @override
     def __repr__(self):
         return f"<HybridToolDefinition {self.name}>"
 
+    @override
     def __str__(self):
         return self.name
 

@@ -1,3 +1,4 @@
+from typing import override
 from ipaddress import AddressValueError, IPv4Address
 from tortoise.fields import BigIntField
 
@@ -22,11 +23,13 @@ class IPv4Field(BigIntField):
             except AddressValueError:
                 raise ValueError(f"Invalid IPv4 address: {value}")
 
+    @override
     def to_db_value(self, value: str | None, instance) -> int | None:
         if value is None:
             return None
         return int(IPv4Address(value))
 
+    @override
     def to_python_value(self, value: int | None) -> str | None:
         if value is None:
             return None

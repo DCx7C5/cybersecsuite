@@ -127,12 +127,41 @@ class ToolRegistry(BaseToolRegistry):
             return self.get_hybrid_tool(tool_id)
         raise ToolNotFoundError(tool_id=tool_id)
 
+    async def save_hybrid_tool(self, hybrid_schema: HybridToolSchema) -> None:
+        """Persist a hybrid tool definition for registry-backed workflows."""
+        from css.modules.tools.models import HybridToolDefinition
+
+        existing = await hybrid_tool_definition_manager.by_name(hybrid_schema.name)
+        if existing is None:
+            record = HybridToolDefinition.from_schema(hybrid_schema)
+            await record.save()
+            return
+
+        existing.description = hybrid_schema.description
+        existing.component_tools = hybrid_schema.component_tools
+        existing.composition_strategy = hybrid_schema.composition_strategy
+        existing.fallback_provider = hybrid_schema.fallback_provider
+        existing.requires_coordination = hybrid_schema.requires_coordination
+        existing.metadata = hybrid_schema.metadata
+        existing.enabled = hybrid_schema.enabled
+        await existing.save()
+
     async def _load_hybrid_tools_from_db(self) -> None:
         persisted = await hybrid_tool_definition_manager.all_definitions()
         for orm_record in persisted:
             schema = orm_record.to_schema()
             if not isinstance(schema.composition_strategy, CompositionStrategy):
-                schema.composition_strategy = CompositionStrategy(schema.composition_strategy)
+                schema = HybridToolSchema(
+                    name=schema.name,
+                    description=schema.description,
+                    component_tools=schema.component_tools,
+                    composition_strategy=CompositionStrategy(schema.composition_strategy),
+                    fallback_provider=schema.fallback_provider,
+                    requires_coordination=schema.requires_coordination,
+                    metadata=schema.metadata,
+                    enabled=schema.enabled,
+                    tags=schema.tags,
+                )
             if schema.tool_id in self.hybrid_tools:
                 self.hybrid_tools[schema.tool_id].schema = schema
                 continue

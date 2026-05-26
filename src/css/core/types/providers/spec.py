@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import msgspec
+import msgspec.yaml as msgspec_yaml
 
 
 class ProviderAuth(msgspec.Struct, frozen=True, kw_only=True):
@@ -62,10 +63,6 @@ class ProviderSpec(msgspec.Struct, frozen=True, kw_only=True):
 
 def decode_provider_spec_yaml(payload: bytes | str) -> ProviderSpec:
     """Decode one ProviderSpec from YAML content."""
-    try:
-        import msgspec.yaml as msgspec_yaml
-    except ImportError as exc:  # pragma: no cover - environment dependent
-        raise RuntimeError("YAML decoding requires msgspec[yaml] support") from exc
     return msgspec_yaml.decode(payload, type=ProviderSpec)
 
 
@@ -73,4 +70,3 @@ def decode_provider_spec_file(path: str | Path) -> ProviderSpec:
     """Decode one ProviderSpec from a YAML file."""
     payload = Path(path).read_bytes()
     return decode_provider_spec_yaml(payload)
-

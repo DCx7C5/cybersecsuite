@@ -47,6 +47,9 @@ dependencies = [
     "github-copilot-sdk>=0.3.0",
     "aiohttp>=3.13.5",
     "python-frontmatter>=1.1.0",
+    "xai-sdk==1.12.2",
+    "grpcio>=1.80.0",
+    "opentelemetry-api>=1.39.1",
 ]
 
 [project.entry-points."css.modules"]

@@ -118,7 +118,7 @@ types/protocols, then translated inside supporting adapters.
 | Retrieval and caching | Cohere/Together rerank; Gemini persistent context caching. | Retrieval/cache contracts and telemetry. |
 | Memory bridge | Anthropic memory tool implemented over canonical `core/memory` services. | Memory API and explicit tool grants. |
 | Model lifecycle and cost | Ollama pull/list/delete/availability; OpenRouter exact generation cost/provider attribution. | Model registry, router, OTEL/cache. |
-| Specialty adapter functions | Mistral OCR/FIM, Groq audio, xAI discovery/config completion. | Shared optional protocols plus provider adapters. |
+| Specialty adapter functions | Mistral OCR/FIM, Groq audio, xAI official SDK integration (AsyncClient/chat/models/tools/telemetry). | Shared optional protocols plus provider adapters. |
 | Claude SDK bridge | Map Claude agent hooks/session operations to CSS event, permission, task, and session contracts. | `core/events`, permissions, sessions/tasks. |
 
 ### Foundation Work Order
@@ -129,7 +129,7 @@ types/protocols, then translated inside supporting adapters.
 | B | `batch-api-protocol` -> provider implementations; `background-job-struct` -> OpenAI background implementation. | High-value asynchronous capabilities with limited coupling. |
 | C | Native-tool registry -> grants -> hooks -> isolated computer-use session. | Must wait for enforceable permissions. |
 | D | Rerank, Gemini cache, memory-tool bridge. | Consumes stable retrieval/cache/memory owners. |
-| E | Ollama lifecycle, OpenRouter accounting, specialty adapters, Claude hook/session bridge, xAI completion. | Provider-specific work after shared protocols are stable. |
+| E | Ollama lifecycle, OpenRouter accounting, specialty adapters, Claude hook/session bridge, xAI official SDK completion chain. | Provider-specific work after shared protocols are stable. |
 
 ### Non-Negotiable Contracts
 
@@ -145,6 +145,20 @@ types/protocols, then translated inside supporting adapters.
 - SDK feature availability must be re-verified against installed/current SDK
   versions when implementation starts; the original capability audit is a
   planning input, not a permanent API guarantee.
+
+### T16.15 xAI Official SDK Chain
+
+Execution under `Phase 16 — Provider SDK Features / T16.15` is now explicitly:
+
+1. `xai-config-base-url-yaml` + `xai-sdk-client-dependency-pin`
+2. `xai-sdk-async-client-bridge`
+3. `xai-sdk-chat-stream-bridge`
+4. `xai-get-models-list`
+5. `xai-sdk-server-side-tools-usage` + `xai-sdk-telemetry-policy`
+
+This chain must preserve the existing `BaseApiServiceClient` stream contract
+and explicit fallback behavior while moving the primary implementation to
+official `xai-sdk` primitives.
 
 ## Executable Pending Contract (2026-05-26)
 

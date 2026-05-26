@@ -33,13 +33,18 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
+from css.core.db.models.menu import sync_default_menu_items
 from css.core.loader import (
     build_tortoise_connection,
     build_tortoise_modules,
     mount_app_routers,
 )
+from css.core.marketplace.endpoints import router as marketplace_router
+from css.core.marketplace.registry import wire_registry_events
+from css.core.marketplace.seeder import seed_marketplace_on_startup
+from css.core.menu.endpoints import router as menu_router
+from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 
 log = getLogger(__name__)
 
@@ -203,8 +208,6 @@ def create_app() -> FastAPI:
 
         # Wire registry cache invalidation to marketplace events.
         try:
-            from css.core.marketplace.registry import wire_registry_events
-
             wire_registry_events()
             log.info("Registry event invalidation wired")
         except Exception as exc:
@@ -212,9 +215,6 @@ def create_app() -> FastAPI:
 
         if marketplace_db_ready:
             try:
-                from css.core.db.models.menu import sync_default_menu_items
-                from css.core.marketplace.seeder import seed_marketplace_on_startup
-
                 await sync_default_menu_items()
                 await seed_marketplace_on_startup(force=False)
                 marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
@@ -252,7 +252,6 @@ def create_app() -> FastAPI:
 
     # Mount core endpoints (marketplace API)
     try:
-        from css.core.marketplace.endpoints import router as marketplace_router
         _app.include_router(marketplace_router)
         _app.include_router(marketplace_router, prefix="/api")
         log.info("Mounted core endpoints: marketplace")
@@ -260,8 +259,6 @@ def create_app() -> FastAPI:
         log.warning(f"Failed to mount marketplace endpoints: {e}")
 
     try:
-        from css.core.menu.endpoints import router as menu_router
-
         _app.include_router(menu_router)
         log.info("Mounted core endpoints: menu")
     except Exception as e:

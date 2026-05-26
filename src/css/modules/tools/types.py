@@ -1,6 +1,7 @@
 """Tool type definitions for registry and API surfaces."""
 
 import time
+from typing import Any
 
 import msgspec
 
@@ -12,12 +13,12 @@ class ToolParameter(msgspec.Struct, frozen=True, kw_only=True):
     type: ParameterType
     description: str
     required: bool = False
-    default: object | None = None
-    enum: list[object] = msgspec.field(default_factory=list)
-    items: dict[str, object] = msgspec.field(default_factory=dict)
-    properties: dict[str, object] = msgspec.field(default_factory=dict)
+    default: Any | None = None
+    enum: list[Any] = msgspec.field(default_factory=list)
+    items: dict[str, Any] = msgspec.field(default_factory=dict)
+    properties: dict[str, Any] = msgspec.field(default_factory=dict)
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "type": self.type.value,
@@ -33,14 +34,15 @@ class ToolParameter(msgspec.Struct, frozen=True, kw_only=True):
 class ToolReturnType(msgspec.Struct, frozen=True, kw_only=True):
     type: str
     description: str
-    schema: dict[str, object] = msgspec.field(default_factory=dict)
+    schema: dict[str, Any] = msgspec.field(default_factory=dict)
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "type": self.type,
             "description": self.description,
             "schema": self.schema,
         }
+
 
 
 class ToolSchema(msgspec.Struct, frozen=True, kw_only=True):
@@ -63,7 +65,7 @@ class ToolSchema(msgspec.Struct, frozen=True, kw_only=True):
     def tool_id(self) -> str:
         return f"{self.provider}:{self.name}"
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "tool_id": self.tool_id,
             "provider": self.provider,
@@ -83,7 +85,7 @@ class ToolSchema(msgspec.Struct, frozen=True, kw_only=True):
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, object]) -> "ToolSchema":
+    def from_dict(cls, data: dict[str, Any]) -> "ToolSchema":
         provider = str(data.get("provider", ""))
         name = str(data.get("name", ""))
         description = str(data.get("description", ""))
@@ -143,7 +145,7 @@ class HybridToolSchema(msgspec.Struct, frozen=True, kw_only=True):
     composition_strategy: CompositionStrategy
     fallback_provider: str | None = None
     requires_coordination: bool = False
-    metadata: dict[str, object] = msgspec.field(default_factory=dict)
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     enabled: bool = True
     tags: list[str] = msgspec.field(default_factory=list)
 
@@ -159,7 +161,7 @@ class HybridToolSchema(msgspec.Struct, frozen=True, kw_only=True):
     def type(self) -> str:
         return "hybrid"
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "tool_id": self.tool_id,
             "provider": self.provider,

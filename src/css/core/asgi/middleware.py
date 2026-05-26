@@ -1,6 +1,7 @@
 """Starlette ASGI middleware for telemetry, HTTPS redirect, and rate limiting."""
 
 
+from typing import override
 import re
 import time
 import os
@@ -47,6 +48,7 @@ def normalize_path_patterns(path: str, patterns: list[PathPattern]) -> str:
 class TelemetryMiddleware(BaseHTTPMiddleware):
     """Record latency_ms for every HTTP request as a TelemetryEvent."""
 
+    @override
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         path = request.url.path
         if should_skip_path(path, _SKIP_PREFIXES):
@@ -103,6 +105,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         q.append(now)
         return True, 0
 
+    @override
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         path = request.url.path
         if not path.startswith("/api") or should_skip_path(path, _SKIP_PREFIXES):

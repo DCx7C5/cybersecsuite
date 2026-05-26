@@ -7,6 +7,7 @@ Enables consistent error handling, retry logic, and streaming support across all
 Subclasses: OllamaApiService, NScaleApiService, and future local providers.
 """
 
+from typing import override
 from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 from abc import ABC, abstractmethod
@@ -80,6 +81,7 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
         )
         self._cached_models: list[ModelMetadata] | None = None
     
+    @override
     async def get_models(self) -> list[ModelMetadata]:
         """
         Discover available models.
@@ -136,6 +138,7 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
         """
         pass
     
+    @override
     async def call_llm(
         self,
         model_id: str,
@@ -218,8 +221,13 @@ class LocalSDKBase(BaseApiServiceClient, ABC):
         # result.result is now AsyncIterator[StreamChunk]
         response = result.result
         if response is not None:
-            async for response_chunk in response:
-                yield response_chunk
+            return response
+        return self._empty_stream()
+
+    async def _empty_stream(self) -> AsyncIterator[StreamChunk]:
+        """Return an empty async iterator when no response stream is available."""
+        if False:
+            yield StreamChunk(type="message_stop")
     
     @abstractmethod
     async def _prepare_call_body(

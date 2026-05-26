@@ -18,6 +18,7 @@ import asyncio
 import hashlib
 import tarfile
 import msgspec
+import aiohttp
 from pathlib import Path
 from typing import AsyncIterator
 from datetime import datetime
@@ -35,7 +36,7 @@ class PackageMetadata(msgspec.Struct, kw_only=True):
     release_date: str = ""
 
 
-class PackageInstallResult(msgspec.Struct, kw_only=True):
+class PackageInstallResult(msgspec.Struct):
     """Result of package installation."""
     package_name: str
     version: str
@@ -78,7 +79,6 @@ async def fetch_index(index_url: str) -> dict:
         PackageNotFoundError: If index URL returns 404 or is unreachable
     """
     try:
-        import aiohttp
         timeout = aiohttp.ClientTimeout(total=30)
         async with aiohttp.ClientSession() as session:
             response_cm = await session.get(index_url, timeout=timeout)
@@ -210,7 +210,6 @@ async def install_package(
         
         # Download package
         try:
-            import aiohttp
             timeout = aiohttp.ClientTimeout(total=60)
             async with aiohttp.ClientSession() as session:
                 response_cm = await session.get(package_url, timeout=timeout)

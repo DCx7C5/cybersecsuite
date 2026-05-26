@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-26 | **Session**: Phase 39 runtime validation and completion
+**Last Updated**: 2026-05-26 | **Session**: Phase 42 planning intake + Phase 39 runtime validation + Phase 16 xAI SDK intake
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-26)
 
-**Total**: 933 todos | **Done**: 486 | **Pending**: 440 | **Blocked**: 6 | **In Progress**: 1
+**Total**: 983 todos | **Done**: 492 | **Pending**: 485 | **Blocked**: 6 | **In Progress**: 0
 
 **Last Verified**: 2026-05-26 (checked against live session.db totals)
 
@@ -24,10 +24,11 @@
 |-------|-------|------|---------|---------|-------------|
 | Phase 9 — ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
 | Phase 10 — Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
+| Phase 16 — Provider SDK Features | 36 | 0 | 36 | 0 | 0 |
 | Phase 17 — Settings & Projects | 39 | 0 | 39 | 0 | 0 |
 | Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
 | Phase 19 — Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
-| Phase 20 — Persistent Memory Layer | 43 | 7 | 36 | 0 | 0 |
+| Phase 20 — Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 |
 | Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
 | Phase 22 — MCP Protocol Layer | 8 | 5 | 3 | 0 | 0 |
 | Phase 27 — Graph Visualization Engine | 17 | 0 | 17 | 0 | 0 |
@@ -35,15 +36,53 @@
 | Phase 34 — Dependency Map | 20 | 2 | 18 | 0 | 0 |
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
-| Phase 39 — Audit Remediation (A1/A2/A3) | 25 | 2 | 22 | 0 | 1 |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 25 | 6 | 19 | 0 | 0 |
 | Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
 | Phase 41 — Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
+| Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Phase 16 xAI SDK Implementation + Usage Intake (2026-05-26)
+
+- Added five dependency-ordered `T16.15` todos in `.plan/session.db`:
+  - `xai-sdk-client-dependency-pin`
+  - `xai-sdk-async-client-bridge`
+  - `xai-sdk-chat-stream-bridge`
+  - `xai-sdk-server-side-tools-usage`
+  - `xai-sdk-telemetry-policy`
+- Updated existing `xai-config-base-url-yaml` and `xai-get-models-list` rows
+  so model discovery is tied to official `xai-sdk` usage
+  (`client.models.list_language_models()`) with deterministic fallback.
+- Implementation/usage scope now explicitly includes `AsyncClient`, chat
+  `stream()`/`sample()`, server-side tools (`web_search`, `x_search`,
+  `code_execution`), and telemetry/retry policy wiring.
+
+### Phase 42 ACP + LSP + Marketplace Implementation Intake (2026-05-26)
+
+- Added a new execution phase with 19 dependency-ordered todos across:
+  - `T42.1 ACP Protocol Baseline`
+  - `T42.2 ACP Session Runtime`
+  - `T42.3 LSP Runtime Bridge`
+  - `T42.4 Marketplace Implementation`
+- Added `acp42-module-bootstrap` (done) to establish `src/css/modules/acp/`
+  as the primary ACP/LSP runtime owner while retaining `modules/jetbrains`
+  as a legacy compatibility bridge.
+- ACP planning aligns to protocol-v1 lifecycle: initialize/authentication,
+  session/new+prompt+cancel+load+list+resume+close, session/update streams,
+  and `session/request_permission` integration with approvals policy.
+- LSP planning adds stdio JSON-RPC transport/runtime lifecycle, document sync,
+  feature wrappers, and diagnostics ingestion as an IDE/runtime bridge.
+- Marketplace planning adds ACP/LSP catalog typing, manifest seeding,
+  installer runtime hooks, frontend workflows, and end-to-end lifecycle
+  validation.
+- Local owner docs updated for this phase:
+  `modules/mcps/mcps.md`, `modules/jetbrains/jetbrains.md`,
+  and `core/marketplace/marketplace.md`.
 
 ### Phase 39 Runtime Validation & Completion Addendum (2026-05-26)
 
@@ -53,7 +92,9 @@
 - `audit39-dependency-refresh` is done: unused conflicting `attrs` and
   `fireworks-ai` direct dependencies were removed, while the aiohttp-based
   Fireworks provider remains; `uv` and `bun` locks validate successfully.
-- Active row: `audit39-msgspec-boundary-cleanup`.
+- Completed rows now include `audit39-msgspec-boundary-cleanup` and
+  `audit39-source-todo-cleanup`; quality-gate and downstream runtime rows
+  remain pending.
 
 ### Documentation Ownership Sanitization + Phase 41 Remediation (2026-05-26)
 
@@ -93,8 +134,9 @@
   rewritten as ownership-decision gates rather than assumed `core/workspace`
   implementation work.
 - The Phase 41 preparation gate is complete. Phase 39 runtime validation is
-  active through `audit39-msgspec-boundary-cleanup`; use its live dependencies
-  and owner documents before taking broader implementation work.
+  currently driven by `audit39-src-quality-gate` and its dependency-gated
+  follow-on rows; use live dependencies and owner documents before broader
+  implementation work.
 
 ### Phase 18 Frontend Foundation — 8 todos completed (2026-05-09)
 
@@ -415,7 +457,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **933 todos**, PHASE > TASK > TODO hierarchy (42 named phases; `unassigned` currently empty)
+- `.plan/session.db` — **977 todos**, PHASE > TASK > TODO hierarchy (43 named phases; `unassigned` currently non-empty)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth

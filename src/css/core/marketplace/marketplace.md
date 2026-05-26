@@ -50,6 +50,11 @@ restore a competing catalog model file.
 | `db40-menu-marketplace-children-contract` | pending | Document and consume the seven stable sidebar children seeded by `core/db/models/menu.py`. |
 | `prompt-marketplace-wire` | pending | Link catalog prompt entries to prompt definitions without moving prompt content ownership into marketplace. |
 | `dep-map-modules-marketplace` | pending | Verify API, registry, seeder, ORM, templates, menu, MCP, and prompt relationships. |
+| `market42-catalog-extensions` | pending | Extend marketplace metadata/types so ACP/LSP artifacts can be cataloged, versioned, and filtered. |
+| `market42-manifest-seeding` | pending | Seed curated ACP/LSP manifests with version and prerequisite metadata in idempotent startup flow. |
+| `market42-installer-runtime-hooks` | pending | Wire install/upgrade/remove hooks to ACP/LSP runtime configuration and cleanup boundaries. |
+| `market42-frontend-workflows` | pending | Implement ACP/LSP marketplace discovery/install/configure/update UX flows aligned with sidebar-child contracts. |
+| `market42-e2e-validation` | pending | Add end-to-end lifecycle validation for ACP/LSP marketplace operations and runtime binding integrity. |
 
 ### Numbered Execution And Validation
 

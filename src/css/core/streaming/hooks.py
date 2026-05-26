@@ -7,12 +7,22 @@ Provides four hooks for use in ClaudeAgentOptions.hooks:
 
 
 from css.core.logger import getLogger
+import importlib
+import importlib.util
+import os
 import re
+import sys
 from typing import Any
 
 
 
 logger = getLogger("agents.hooks")
+
+
+def _load_optional_module(module_name: str) -> object | None:
+    if importlib.util.find_spec(module_name) is None:
+        return None
+    return importlib.import_module(module_name)
 
 # ── Dangerous pattern blocklist ──────────────────────────────────────────────
 
@@ -69,13 +79,18 @@ async def audit_hook(
     agent_id = input_data.get("agent_id", "")
     logger.info("TOOL_CALL tools=%s agents=%s id=%s", tool_name, agent_id, tool_use_id)
 
+    hooks_dir = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "/home/daen/Projects/AI")
+    if hooks_dir not in sys.path:
+        sys.path.insert(0, hooks_dir)
+
+    hooks_module = _load_optional_module("hooks.database")
+    if hooks_module is None:
+        return {}
+    write_scoped_entry_async = getattr(hooks_module, "write_scoped_entry_async", None)
+    if not callable(write_scoped_entry_async):
+        return {}
+
     try:
-        import sys
-        import os
-        hooks_dir = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "/home/daen/Projects/AI")
-        if hooks_dir not in sys.path:
-            sys.path.insert(0, hooks_dir)
-        from hooks.database import write_scoped_entry_async  # type: ignore[import]
         await write_scoped_entry_async(
             entry_type="tool_call",
             data={
@@ -118,19 +133,26 @@ async def ioc_hook(
 
     if iocs:
         logger.info("ioc_hook found: %s", {k: len(v) for k, v in iocs.items()})
-        # Best-effort store to cssmcp add_ioc
-        try:
-            from cssmcp.cybersec.findings import add_ioc
-            for ioc_type, values in iocs.items():
-                for value in values[:5]:  # cap at 5 per type
-                    await add_ioc.handler({
+        findings_module = _load_optional_module("cssmcp.cybersec.findings")
+        if findings_module is None:
+            return {}
+
+        add_ioc = getattr(findings_module, "add_ioc", None)
+        handler = getattr(add_ioc, "handler", None)
+        if not callable(handler):
+            return {}
+
+        for ioc_type, values in iocs.items():
+            for value in values[:5]:  # cap at 5 per type
+                try:
+                    await handler({
                         "value": value,
                         "ioc_type": ioc_type,
                         "source": "ioc_hook",
                         "confidence": "low",
                     })
-        except Exception:
-            pass
+                except Exception:
+                    pass
 
     return {}
 

@@ -1,6 +1,7 @@
 """Tortoise ORM models for memory persistence."""
 
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
@@ -34,11 +35,11 @@ class MemoryEntryRecord(BaseModel, TimestampMixin):
         table_description = "Persistent memory entries across sessions and agents"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["session_id", "created_at"]),
-            models.Index(fields=["agent_id", "created_at"]),
-            models.Index(fields=["scope", "tier", "kind"]),
-            models.Index(fields=["session_id", "persistent", "created_at"]),
-            models.Index(fields=["session_id", "expires_at"]),
+            Index(fields=["session_id", "created_at"]),
+            Index(fields=["agent_id", "created_at"]),
+            Index(fields=["scope", "tier", "kind"]),
+            Index(fields=["session_id", "persistent", "created_at"]),
+            Index(fields=["session_id", "expires_at"]),
         ]
 
     def to_struct(self) -> MemoryEntry:
@@ -75,7 +76,7 @@ class MemorySnapshotRecord(BaseModel, TimestampMixin):
         table = "memory_snapshot"
         table_description = "Session memory snapshots for rollback and replay"
         ordering = ["-created_at"]
-        indexes = [models.Index(fields=["session_id", "created_at"])]
+        indexes = [Index(fields=["session_id", "created_at"])]
 
     def to_struct(self) -> MemorySnapshot:
         """Convert ORM record to immutable snapshot value type."""

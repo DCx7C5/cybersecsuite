@@ -13,7 +13,8 @@ Integrated with core/roles for RBAC enforcement via path permissions.
 from datetime import datetime
 
 import msgspec
-from tortoise import fields, models
+from tortoise import fields
+from tortoise.indexes import Index
 
 from css.core.db.models.base import BaseModel
 from css.core.db.fields import (
@@ -95,8 +96,8 @@ class Account(BaseModel, TimestampMixin):
         table_verbose_plural = "Accounts"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["username", "is_active"]),
-            models.Index(fields=["email", "is_active"]),
+            Index(fields=["username", "is_active"]),
+            Index(fields=["email", "is_active"]),
         ]
 
 
@@ -249,7 +250,7 @@ class Organization(BaseModel, TimestampMixin):
         table = "organizations"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["slug", "is_active"]),
+            Index(fields=["slug", "is_active"]),
         ]
 
 
@@ -316,8 +317,8 @@ class OrganizationMembership(BaseModel):
         table = "organization_memberships"
         unique_together = (("organization_id", "account_id"),)
         indexes = [
-            models.Index(fields=["organization_id", "role"]),
-            models.Index(fields=["account_id", "role"]),
+            Index(fields=["organization_id", "role"]),
+            Index(fields=["account_id", "role"]),
         ]
 
 
@@ -383,8 +384,8 @@ class RoleAssignment(BaseModel, TimestampMixin):
         table = "role_assignments"
         unique_together = (("account_id", "organization_id", "role_id", "scope_level", "scope_id"),)
         indexes = [
-            models.Index(fields=["account_id", "is_active"]),
-            models.Index(fields=["organization_id", "role_id"]),
+            Index(fields=["account_id", "is_active"]),
+            Index(fields=["organization_id", "role_id"]),
         ]
 
 

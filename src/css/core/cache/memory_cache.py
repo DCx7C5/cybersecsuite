@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, override
 
 from css.core.cache.base import CacheBackend
 from .exceptions import CacheExecutionError
@@ -17,6 +17,7 @@ class L1MemoryCache(CacheBackend):
         self.max_size = max_size
         self._cache: dict[str, CacheEntry] = {}
 
+    @override
     async def get(self, key: str) -> Any | None:
         """Get value from memory cache."""
         try:
@@ -38,6 +39,7 @@ class L1MemoryCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L1 get failed: {e}", operation="get")
 
+    @override
     async def set(self, key: str, value: Any, ttl_seconds: int | None = None) -> bool:
         """Set value in memory cache."""
         try:
@@ -55,6 +57,7 @@ class L1MemoryCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L1 set failed: {e}", operation="set")
 
+    @override
     async def delete(self, key: str) -> bool:
         """Delete value from memory cache."""
         try:
@@ -69,6 +72,7 @@ class L1MemoryCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L1 delete failed: {e}", operation="delete")
 
+    @override
     async def clear(self) -> bool:
         """Clear all memory cache entries."""
         try:
@@ -79,6 +83,7 @@ class L1MemoryCache(CacheBackend):
             self.stats.errors += 1
             raise CacheExecutionError(f"L1 clear failed: {e}", operation="clear")
 
+    @override
     async def exists(self, key: str) -> bool:
         """Check if key exists in memory cache."""
         try:

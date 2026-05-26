@@ -37,6 +37,7 @@ Cache use is intentionally selective, not universal.
 
 | Module | Local document | Contract held locally |
 |--------|----------------|-----------------------|
+| `acp` | `src/css/modules/acp/acp.md` | ACP transport/session runtime ownership + LSP bridge ownership with JetBrains retained as legacy compatibility surface. |
 | `sessions` | `src/css/modules/sessions/sessions.md` | Session lifecycle, isolation requirement, and git/worktree validation boundary. |
 | `approvals` | `src/css/modules/approvals/approvals.md` | Human approval gate, endpoints, event and audit integration. |
 | `graphs` | `src/css/modules/graphs/graphs.md` | Operational graph/query/rendering contract. |
