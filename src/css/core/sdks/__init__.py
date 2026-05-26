@@ -6,6 +6,7 @@ from .registry import (
     register_sdk,
 )
 from .css_client import CSSLLMClient
+from .relay_router import DEFAULT_RELAY_PROVIDER_ORDER, RelayAttempt, RelayProviderPolicy
 from .adapters.anthropic import AnthropicNativeAdapter, COMPUTER_USE_TOOLS
 from .adapters.openai import OpenAINativeAdapter, BUILTIN_TOOLS
 from .adapters.browser_relay import BrowserRelayAdapter
@@ -20,6 +21,9 @@ __all__ = [
     "clear_sdk_cache",
     "list_registered_sdks",
     "CSSLLMClient",
+    "DEFAULT_RELAY_PROVIDER_ORDER",
+    "RelayAttempt",
+    "RelayProviderPolicy",
     "AnthropicNativeAdapter",
     "COMPUTER_USE_TOOLS",
     "OpenAINativeAdapter",

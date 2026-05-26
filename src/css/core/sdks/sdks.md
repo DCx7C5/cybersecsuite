@@ -94,7 +94,7 @@ supports 4 adapter types:
 - `sdk-browser-relay-adapter` — ✅ DONE (2026-05-26)
 - `sdk-browser-relay-polling` — ✅ DONE (2026-05-26)
 - `sdk-deepseek-adapter` — ✅ DONE (2026-05-26)
-- `sdk-browser-relay-provider-priority` — 📋 pending (Phase 10 T10.7)
+- `sdk-browser-relay-provider-priority` — ✅ DONE (2026-05-26)
 - `sdk-browser-relay-web-llm-relay` — 📋 pending (Phase 10 T10.7)
 
 ## Browser Relay Priority Contract (T10.7)
@@ -178,7 +178,7 @@ official `xai-sdk` primitives.
 | `src/css/core/sdks/adapters/deepseek.py` | `DeepSeekAdapter` wrapping the existing DeepSeek API service and preserving reasoning metadata. |
 | `src/css/core/sdks/adapters/browser_relay.py` | `BrowserRelayAdapter` transport with queued-request polling and normalized relay outcomes. |
 | `src/css/modules/llm_proxy/browser_plugin.py` | Browser-plugin relay endpoints (`/api/plugin/register`, `/heartbeat`, `/inject`, `/inject/next`, `/result`, `/result/{request_id}`). |
-| `src/css/core/sdks/relay_router.py` | Planned `RelayProviderPolicy`, `RelayAttempt`, provider-priority selection/fallback. |
+| `src/css/core/sdks/relay_router.py` | `RelayProviderPolicy` + `RelayAttempt` ordered fallback policy with deterministic attempt tracking. |
 | `src/css/core/sdks/__init__.py` | Stable exports after adapter/router implementation. |
 
 ### Live Todo Map
@@ -191,7 +191,7 @@ official `xai-sdk` primitives.
 | `sdk-browser-relay-adapter` | done | Relay adapter and backend plugin endpoints implemented with bounded TTL state. |
 | `sdk-browser-relay-polling` | done | Active result polling/bridge contract over queued relay requests with completed/failed/expired/unknown lifecycle handling. |
 | `sdk-deepseek-adapter` | done | Dedicated registered DeepSeek adapter with streaming and buffered reasoning normalization. |
-| `sdk-browser-relay-provider-priority` | pending | Implement the ordered policy in `relay_router.py`, then call it from `CSSLLMClient`. |
+| `sdk-browser-relay-provider-priority` | done | Ordered provider policy in `relay_router.py` wired into `CSSLLMClient` with typed attempt metadata. |
 | `sdk-browser-relay-web-llm-relay` | pending | Add the web relay endpoint only after the policy and relay transport exist. |
 
 1. Reconcile the active `api_services.ProviderRegistry` route with the
