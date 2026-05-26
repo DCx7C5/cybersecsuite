@@ -55,9 +55,9 @@ class SkillDefinition(msgspec.Struct, frozen=True, kw_only=True):
     created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     
-    def validate_parameters(self, **kwargs) -> dict[str, str]:
+    def validate_parameters(self, **kwargs: object) -> dict[str, str]:
         """Validate parameters against definition."""
-        errors = {}
+        errors: dict[str, str] = {}
         
         for param in self.parameters:
             if param.required and param.name not in kwargs:
