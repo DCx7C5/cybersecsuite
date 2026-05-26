@@ -30,9 +30,14 @@ def _known_provider_ids() -> set[str]:
 # values and as HybridToolSchema.fallback_provider identifiers.
 _KNOWN_PROVIDERS: set[str] = _known_provider_ids()
 
-# Minimal stub records so the registry is non-empty in Phase 5 without seeding.
+# Phase 16 T16.A-3: Seed thinking-capable models (Anthropic, OpenAI, DeepSeek)
 # Full records are inserted by ``seed-providers`` (T5.2).
-DEFAULT_MODELS: dict[str, ModelMetadata] = {}
+try:
+    from .seeds import DEFAULT_MODELS_THINKING
+    DEFAULT_MODELS: dict[str, ModelMetadata] = dict(DEFAULT_MODELS_THINKING)
+except (ImportError, Exception):
+    # Fallback if seeds cannot be imported
+    DEFAULT_MODELS = {}
 
 
 class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
@@ -73,12 +78,23 @@ class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
             result = [m for m in result if m.supports_capability(capability)]
         return result
 
-    def is_known_provider(self, provider_slug: str) -> bool:
-        """Return True if *provider_slug* exists in api_services/.
+    def supports_capability(self, model_id: str, capability: ModelCapability) -> bool:
+        """Check if a specific model supports a capability."""
+        model = self.get_model(model_id)
+        if not model:
+            return False
+        return model.supports_capability(capability)
 
-        Filesystem-based check — works even before models are seeded.
-        """
-        return provider_slug in _KNOWN_PROVIDERS
+    def thinking_capable_models(self, provider: str | None = None) -> list[ModelMetadata]:
+        """Return all models that support extended thinking, optionally filtered by provider."""
+        return self.list_models(
+            provider=provider,
+            capability=ModelCapability.EXTENDED_THINKING,
+        )
+
+    def can_think(self, model_id: str) -> bool:
+        """Convenience method: does this model support extended thinking?"""
+        return self.supports_capability(model_id, ModelCapability.EXTENDED_THINKING)
 
     def known_providers(self) -> set[str]:
         """Return the full set of known provider slugs."""
@@ -88,9 +104,9 @@ class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
         return len(self._models)
 
 
-def get_model_registry() -> ModelRegistry:
+def get_model_registry() -> "ModelRegistry":
     """Return the global ModelRegistry singleton."""
-    return ModelRegistry()
+    return ModelRegistry()  # type: ignore[return-value]
 
 
 __all__ = ["ModelRegistry", "DEFAULT_MODELS", "get_model_registry"]

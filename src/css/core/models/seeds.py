@@ -55,3 +55,107 @@ def _mk(
         pricing=pricing,
     )
 
+
+# ===== SEED DATA: Thinking-Capable Models (Phase 16 T16.A-3) =====
+
+# Anthropic: Extended thinking models (budget_tokens)
+ANTHROPIC_MODELS = [
+    _mk(
+        "claude-3-7-sonnet-20250219",
+        "anthropic",
+        "Claude 3.7 Sonnet",
+        ModelFamily.SONNET,
+        context_window=200000,
+        max_output_tokens=16000,
+        latency_ms=3000,
+        capabilities=_cap("streaming", "tool_use", "function_calling", "extended_thinking", "vision"),
+        pricing=ModelPricing(
+            input_tokens_per_1k=0.003,
+            output_tokens_per_1k=0.015,
+        ),
+    ),
+    _mk(
+        "claude-3-7-opus-20250219",
+        "anthropic",
+        "Claude 3.7 Opus",
+        ModelFamily.OPUS,
+        context_window=200000,
+        max_output_tokens=16000,
+        latency_ms=5000,
+        capabilities=_cap("streaming", "tool_use", "function_calling", "extended_thinking", "vision"),
+        pricing=ModelPricing(
+            input_tokens_per_1k=0.015,
+            output_tokens_per_1k=0.075,
+        ),
+    ),
+]
+
+# OpenAI: Reasoning models (reasoning_effort)
+OPENAI_MODELS = [
+    _mk(
+        "gpt-4o",
+        "openai",
+        "GPT-4o",
+        ModelFamily.GPT,
+        context_window=128000,
+        max_output_tokens=4096,
+        latency_ms=2000,
+        capabilities=_cap("streaming", "tool_use", "function_calling", "vision", "json_mode"),
+        pricing=ModelPricing(
+            input_tokens_per_1k=0.005,
+            output_tokens_per_1k=0.015,
+        ),
+    ),
+    _mk(
+        "o1",
+        "openai",
+        "GPT-o1",
+        ModelFamily.GPT,
+        context_window=128000,
+        max_output_tokens=32768,
+        latency_ms=30000,
+        capabilities=_cap("extended_thinking", "tool_use"),
+        pricing=ModelPricing(
+            input_tokens_per_1k=0.015,
+            output_tokens_per_1k=0.060,
+        ),
+    ),
+    _mk(
+        "o3",
+        "openai",
+        "GPT-o3",
+        ModelFamily.GPT,
+        context_window=128000,
+        max_output_tokens=32768,
+        latency_ms=60000,
+        capabilities=_cap("extended_thinking", "tool_use"),
+        pricing=ModelPricing(
+            input_tokens_per_1k=0.020,
+            output_tokens_per_1k=0.080,
+        ),
+    ),
+]
+
+# DeepSeek: Reasoning models (thinking capability)
+DEEPSEEK_MODELS = [
+    _mk(
+        "deepseek-reasoner",
+        "deepseek",
+        "DeepSeek Reasoner",
+        ModelFamily.DEEPSEEK_MODEL,
+        context_window=64000,
+        max_output_tokens=8000,
+        latency_ms=15000,
+        capabilities=_cap("streaming", "extended_thinking", "tool_use"),
+        pricing=ModelPricing(
+            input_tokens_per_1k=0.00055,
+            output_tokens_per_1k=0.00219,
+        ),
+    ),
+]
+
+# Combine all thinking-capable seeds
+DEFAULT_MODELS_THINKING = {
+    m.id: m for m in ANTHROPIC_MODELS + OPENAI_MODELS + DEEPSEEK_MODELS
+}
+
