@@ -8,6 +8,7 @@ from tortoise import fields
 from tortoise.indexes import Index
 
 from css.core.events.domain_event import DomainEvent
+from css.core.events.store import EventStore
 
 from .base import BaseModel
 
@@ -68,8 +69,8 @@ class DomainEventRecord(BaseModel):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "domain_event_record"
-        table_description_singular = "Domain Event Record"
-        table_description_plural = "Domain Event Records"
+        table_verbose = "Domain Event Record"
+        table_verbose_plural = "Domain Event Records"
         ordering = ["timestamp", "id"]
         indexes = [
             Index(fields=["kind", "aggregate_type", "aggregate_id"]),
@@ -141,7 +142,7 @@ class DomainEventRecord(BaseModel):
             metadata=metadata,
         )
 
-    async def append_to_store(self, store) -> None:
+    async def append_to_store(self, store: EventStore) -> None:
         """Save to DB and append the corresponding DomainEvent to the store."""
 
         await self.save()

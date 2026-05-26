@@ -1,6 +1,7 @@
 """TeamScope ORM model and team-level query helpers."""
 
 from datetime import UTC, datetime
+from typing import cast
 
 import msgspec
 from tortoise import fields
@@ -78,9 +79,10 @@ class Team(BaseModel):
     def to_domain(self) -> TeamInfo:
         """Convert ORM record to domain value type."""
 
+        session_id = cast(int, getattr(self, "session_id"))
         return TeamInfo(
             id=self.id,
-            session_id=self.session_id,
+            session_id=session_id,
             team_name=self.team_name,
             status=self.status.value if hasattr(self.status, "value") else str(self.status),
             orchestrator_mode=(
@@ -195,12 +197,12 @@ class Team(BaseModel):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "teams"
-        table_description_singular = "Team"
-        table_description_plural = "Teams"
+        table_verbose = "Team"
+        table_verbose_plural = "Teams"
         ordering = ["team_name", "id"]
         indexes = [
             Index(fields=["session_id", "team_name"]),
             Index(fields=["status", "current_orchestrators"]),
             Index(fields=["status", "paused_at"]),
         ]
-        unique_together = [("session_id", "team_name")]
+        unique_together = (("session_id", "team_name"),)

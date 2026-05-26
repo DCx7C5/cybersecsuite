@@ -1,7 +1,6 @@
 """Marketplace ORM models."""
 
 from datetime import UTC, datetime
-from typing import Any, Callable
 
 import msgspec
 from tortoise import fields
@@ -32,7 +31,7 @@ class MarketplaceItemInfo(msgspec.Struct, frozen=True, kw_only=True):
     kind: str
     version: str
     status: str
-    meta_data: dict
+    meta_data: dict[str, object]
     install_path: str | None
     source_url: str | None
     installed_at: datetime | None
@@ -52,7 +51,7 @@ class MarketplaceMetaInfo(msgspec.Struct, frozen=True, kw_only=True):
     local_index_hash: str | None
     update_available: bool
     last_index_check: datetime | None
-    status: str | Any
+    status: str
 
 
 class MarketplaceItemTagInfo(msgspec.Struct, frozen=True, kw_only=True):
@@ -76,7 +75,7 @@ class BaseMarketPlace(BaseModel):
     status = fields.CharEnumField(MarketplaceStatus, default=MarketplaceStatus.active)
 
     @property
-    def status_value(self) -> Callable[[], Any] | Callable[[], Any] | str:
+    def status_value(self) -> str:
         return self.status.value if hasattr(self.status, "value") else str(self.status)
 
     @property
@@ -153,13 +152,13 @@ class MarketplaceMeta(BaseMarketPlace):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "marketplace_meta"
-        table_verbose = "Marketplace Meta"
-        table_verbose_plural = "Marketplace Meta"
+        table_verbose = "Marketplace Meta Record"
+        table_verbose_plural = "Marketplace Meta Records"
         ordering = ["id", "name"]
-        indexes = (
+        indexes = [
             Index(fields=["name"]),
             Index(fields=["status"]),
-        )
+        ]
         unique_together = (
             ("name", "version"),
         )
@@ -281,11 +280,11 @@ class MarketplaceItem(BaseMarketPlace):
         table = "marketplace_item"
         table_verbose = "Marketplace Item"
         table_verbose_plural = "Marketplace Items"
-        ordering = ("slug", "name")
-        indexes = (
+        ordering = ["slug", "name"]
+        indexes = [
             Index(fields=["kind", "status"]),
             Index(fields=["kind", "version"]),
-        )
+        ]
         unique_together = (
             ("kind", "name"),
             ("kind", "slug"),
@@ -327,11 +326,13 @@ class MarketplaceItemTag(BaseModel, TimestampMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "marketplace_item_tag"
-        table_description = "M2M junction between MarketplaceItem and Tag"
+        table_verbose = "Marketplace Item Tag"
+        table_verbose_plural = "Marketplace Item Tags"
+        ordering = ["marketplace_item_id", "tag_id", "id"]
         unique_together = (
             ("marketplace_item_id", "tag_id"),
         )
-        indexes = (
+        indexes = [
             Index(fields=["marketplace_item_id", "tag_id"]),
             Index(fields=["tag_id", "marketplace_item_id"]),
-        )
+        ]

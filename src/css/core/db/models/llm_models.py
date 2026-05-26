@@ -197,8 +197,8 @@ class LLMModel(BaseModel, TimestampMixin):
     class Meta(BaseModel.Meta, TimestampMixin.Meta):
         abstract = False
         table = "llm_model"
-        table_description_singular = "LLM Model"
-        table_description_plural = "LLM Models"
+        table_verbose = "LLM Model"
+        table_verbose_plural = "LLM Models"
         ordering = ["provider", "family", "name", "id"]
         indexes = [
             Index(fields=["provider", "family"]),
@@ -453,11 +453,13 @@ class LLMModelTag(BaseModel, TimestampMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "llm_model_tag"
-        table_description = "M2M junction between LLMModel and Tag"
+        table_verbose = "LLM Model Tag"
+        table_verbose_plural = "LLM Model Tags"
+        ordering = ["llm_model_id", "tag_id", "id"]
         unique_together = (
             ("llm_model_id", "tag_id"),
         )
-        indexes = (
+        indexes = [
             Index(fields=["llm_model_id", "tag_id"]),
             Index(fields=["tag_id", "llm_model_id"]),
-        )
+        ]

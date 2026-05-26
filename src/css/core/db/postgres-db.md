@@ -560,6 +560,25 @@ Lane F child todo execution order is fixed to avoid ownership overlap:
 2. `db40-tag-junction-meta-backfill` before `db40-model-meta-standardization`.
 3. `db40-intelligence-home-plan` before `db40-pipeline-home-plan`.
 
+Canonical Meta schema pattern for concrete ORM models (`llm_models`, `scope`,
+`team`, `events`, `marketplace`):
+
+```python
+class Meta:
+    table = "concrete_table_name"
+    table_verbose = "Concrete Model"
+    table_verbose_plural = "Concrete Models"
+    ordering = ["field_a", "field_b", "id"]
+    indexes = [
+        Index(fields=["field_a"]),
+        Index(fields=["field_a", "field_b"]),
+    ]
+    unique_together = (("field_a", "field_b"),)
+```
+
+Use list containers for `ordering` and `indexes`; keep table names stable unless
+an explicit junction-rename todo requires otherwise.
+
 Direct schema policy requirement in both DB planning docs:
 - Phase 40 uses direct model and schema edits in development.
 - Do not infer or backfill a production migration/versioning policy in this lane.

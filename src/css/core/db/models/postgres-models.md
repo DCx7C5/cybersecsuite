@@ -88,11 +88,31 @@ being completed.
 |------|----------------------------|
 | Primary keys | Use canonical `BaseModel`/`BigIntField` ownership for ORM table entities. |
 | Enums | Replace closed-domain raw choices with canonical enums and `CharEnumField`. |
+| Meta schema | Use one `Meta` contract: `table`, `table_verbose`, `table_verbose_plural`, list-style `ordering`, list-style `indexes` with `Index(fields=[...])`, and `unique_together` only for real uniqueness constraints. |
 | Indexes | Use explicit Tortoise `Index(fields=[...])` declarations; validate expiry/status/time access paths and avoid tuple-style definitions. |
 | Identity | `user.py` is internal user/admin identity; provider and provider-account surfaces remain external account relationships. |
 | Seeds | Seed providers from canonical YAML only when the table is empty; enrich/upsert non-destructively after provider/model ownership is explicit. |
 | Navigation | Startup upserts known routes deterministically and keeps partition/tree behavior in `menu.py`. |
 | Schema policy | Phase 40 currently uses direct model/schema edits with no migration files; production migration/versioning is a later explicit decision. |
+
+### Canonical Meta Pattern (Phase 40)
+
+Applied across `llm_models.py`, `scope.py`, `team.py`, `events.py`, and `marketplace.py`:
+
+```python
+class Meta:
+    table = "concrete_table_name"
+    table_verbose = "Concrete Model"
+    table_verbose_plural = "Concrete Models"
+    ordering = ["field_a", "field_b", "id"]
+    indexes = [
+        Index(fields=["field_a"]),
+        Index(fields=["field_a", "field_b"]),
+    ]
+    unique_together = (("field_a", "field_b"),)
+```
+
+`unique_together` is included only when the row contract truly requires uniqueness.
 
 ## Cross-Area Destinations
 

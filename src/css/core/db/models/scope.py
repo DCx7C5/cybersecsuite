@@ -176,8 +176,8 @@ class AppScope(BaseModel, SoftDeleteMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "app_scopes"
-        table_description_singular = "App Scope"
-        table_description_plural = "App Scopes"
+        table_verbose = "App Scope"
+        table_verbose_plural = "App Scopes"
         ordering = ["name", "id"]
         indexes = [
             Index(fields=["name"]),
@@ -240,8 +240,8 @@ class ProjectScope(BaseModel, SoftDeleteMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "projects"
-        table_description_plural = "Project Scopes"
-        table_description_singular = "Project Scope"
+        table_verbose = "Project Scope"
+        table_verbose_plural = "Project Scopes"
         ordering = ["name", "id"]
         indexes = [
             Index(fields=["name"]),
