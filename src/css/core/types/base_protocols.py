@@ -215,6 +215,15 @@ class LLMAdapter(Protocol):
         """Check if model supports a feature."""
         ...
 
+    @property
+    def cache_capability(self) -> Any:
+        """Return CachingCapability enum value for this adapter.
+
+        Used by PromptCacheManager to determine multi-tier caching strategy.
+        Implementations should return CachingCapability.<appropriate_value>.
+        """
+        ...
+
 
 __all__ = [
     "BaseCommunicator",
