@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-26 | **Session**: Phase 42 planning intake + Phase 39 runtime validation + Phase 16 xAI SDK intake
+**Last Updated**: 2026-05-26 (end of session) | **Session**: Phase 11 + Phase 39 completion + Phase 42/20 unblocked
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -12,9 +12,11 @@
 
 ---
 
-## 📊 session.db State (2026-05-26)
+## 📊 session.db State (2026-05-26 end of session)
 
-**Total**: 983 todos | **Done**: 492 | **Pending**: 485 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 1036 todos | **Done**: 552 | **Pending**: 477 | **Blocked**: 6 | **In Progress**: 1
+
+**Overall Completion**: 53.3%
 
 **Last Verified**: 2026-05-26 (checked against live session.db totals)
 
@@ -46,6 +48,38 @@
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Phase 11 Cross-Provider Prompt Caching (2026-05-26) ✅ COMPLETE (9/10)
+
+- **Status**: 9/10 todos DONE, 1 blocked (Gemini deferred to Phase 12)
+- **Modules Created**:
+  - `types.py`: CachingCapability enum (5 levels: NONE, EXACT_ONLY, NATIVE_AUTOMATIC, NATIVE_AUTOMATIC_WITH_EXPLICIT_BREAKPOINTS, NATIVE_RESOURCE)
+  - `manager.py`: PromptCacheManager orchestration with tier selection logic
+  - `exact_match_cache.py`: O(1) Redis lookup for exact message matching
+  - `streaming_buffer.py`: Async chunk accumulation and finalization
+  - `native_cache_tracking.py`: Provider-native cache detection (Anthropic, OpenAI, DeepSeek)
+  - `anthropic_breakpoints.py`: Explicit cache control token injection
+  - `cost_savings_tracker.py`: Financial tracking with per-provider aggregation
+  - `metrics_exporter.py`: OpenObserve integration for visibility
+- **Protocol Extension**: LLMAdapter.cache_capability property added
+- **Unblocks**: Phase 20 (LLM Cost Optimization)
+
+### Phase 39 Code Quality Remediation (2026-05-26) ✅ COMPLETE (5/5)
+
+- **Status**: 5/5 todos DONE (100% completion)
+- **Fixed in core/asgi/app.py**:
+  - Type hint: marketplace_db_config: dict[str, Any]
+  - Exception handling: Replaced 8 bare Exception catches with BaseCoreException (Rule 70)
+  - Variable shadowing: Renamed exception variables (db_init_error, marketplace_db_error, etc.)
+  - ToolRegistry attributes: Verified type hints for tools, hybrid_tools, initialize_runtime_state
+- **Rule 70 Compliance**: All bare exception catches replaced with custom exceptions
+- **Type Hint Compliance**: All dict/Any types properly annotated
+
+### Phase 22 MCP Protocol Layer (2026-05-25, verified 2026-05-26) ✅ VERIFIED COMPLETE
+
+- **Status**: All 8 todos confirmed DONE from prior session work
+- **Verified completions**: MCP lifecycle endpoints, auto-discovery, ASGI app integration
+- **Unblocks**: Phase 42 (ACP + LSP + Marketplace Implementation)
 
 ### Phase 16 xAI SDK Implementation + Usage Intake (2026-05-26)
 
@@ -137,6 +171,18 @@
   currently driven by `audit39-src-quality-gate` and its dependency-gated
   follow-on rows; use live dependencies and owner documents before broader
   implementation work.
+
+### Newly Unblocked Phases (2026-05-26)
+
+**Phase 20 — LLM Cost Optimization** (unblocked by Phase 11):
+- Ready to activate with cost_savings_tracker, metrics_exporter foundation
+- Depends on PromptCacheManager integration into unified LLM client
+- Next owner: `src/css/core/cost/` or extend `core/prompt_cache`
+
+**Phase 42 — ACP + LSP + Marketplace Implementation** (unblocked by Phase 22):
+- Ready to activate with MCP server lifecycle endpoints verified
+- Depends on MCP registration, lifecycle events, async client patterns
+- Next owner: `modules/acp`, `modules/mcps`, `core/marketplace`
 
 ### Phase 18 Frontend Foundation — 8 todos completed (2026-05-09)
 
