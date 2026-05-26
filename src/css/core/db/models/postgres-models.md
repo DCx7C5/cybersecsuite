@@ -112,7 +112,7 @@ being completed.
 | `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider, internal user, account, and model boundaries. |
 | `src/css/core/db/models/menu.py` | `MenuItem`, `MenuItemManager`, `sync_default_menu_items()`. |
 | `src/css/core/menu/endpoints.py` | `list_menu_items(menu_id: str | None = None)` target for `db40-menu-menuid-endpoints`. |
-| `src/css/core/db/models/base.py`, `src/css/core/db/models/mixins.py`, `src/css/core/db/fields/char_fields.py` | Model Meta/mixin/semantic-field standards. |
+| `src/css/core/db/models/base.py`, `src/css/core/db/models/mixins.py`, `src/css/core/db/fields/{char,int,float,decimal,json}_fields.py` | Model Meta/mixin/semantic-field standards. |
 
 ### Live Todo Map
 
@@ -123,6 +123,7 @@ being completed.
 | `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | in_progress | Lane C ownership map is locked so task/provider/user cutovers can proceed without re-deciding boundaries. |
 | `db40-basetree-candidate-inventory` | done | Inventory confirmed navigation URL/path/breadcrumb tree ownership stays with `MenuItem` (`BaseTreeModel`) and no extra tree adoption is needed in this tranche. |
 | `db40-basetree-tag-adoption-plan` | done | Evaluated `Tag.parent_tag` and kept it on `BaseModel`; no default `BaseTreeModel` adoption unless tagging later requires navigation semantics. |
+| `db40-field-library-expansion` | done | Expanded semantic DB field helpers (`CurrencyCodeField`, non-negative/ratio numeric fields, JSON object/list wrappers) and wired them into `LLMModel`. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition and serialize navigation deterministically through `menu_id`. |
 | `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | in_progress | Freeze tagging as classification/filter/search/policy metadata and keep it out of menu/tree/navigation ownership. |
 | `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
@@ -196,7 +197,7 @@ Out-of-scope for Lane E: menu/tree routes and unrelated model cleanup.
 |---------|--------------------------|
 | `db40-direct-schema-policy` | Keep `src/css/core/db/postgres-db.md` and this file aligned on the direct schema policy for Phase 40. |
 | `db40-cache-md-reference-fix` | Normalize cache planning references to `src/css/core/cache/` and `src/css/core/prompt_cache/`. |
-| `db40-field-library-expansion` | Expand semantic DB field helpers and expose canonical imports via `src/css/core/db/fields/`. |
+| `db40-field-library-expansion` | Expand semantic DB field helpers and expose canonical imports via `src/css/core/db/fields/` (char/int/float/decimal/json modules). |
 | `db40-mixins-expansion` | Apply/standardize mixin contracts on DB models after the field-library expansion baseline. |
 | `db40-model-meta-standardization` | Standardize model `Meta` conventions after tagging meta backfill is complete. |
 | `db40-intelligence-home-plan` | Keep intelligence-owner planning in `src/css/modules/triage/` and retrieval owners. |

@@ -1,6 +1,7 @@
 from typing import override
 from ipaddress import AddressValueError, IPv4Address
-from tortoise.fields import BigIntField
+from tortoise.fields import BigIntField, IntField
+from tortoise.validators import MaxValueValidator, MinValueValidator
 
 
 
@@ -36,3 +37,25 @@ class IPv4Field(BigIntField):
         return str(IPv4Address(value))
 
 
+class NonNegativeIntField(IntField):
+    """Integer field constrained to values >= 0."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators.append(MinValueValidator(0))
+
+
+class PositiveIntField(IntField):
+    """Integer field constrained to values >= 1."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators.append(MinValueValidator(1))
+
+
+class PortField(IntField):
+    """TCP/UDP port field constrained to 1..65535."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators.extend([MinValueValidator(1), MaxValueValidator(65535)])

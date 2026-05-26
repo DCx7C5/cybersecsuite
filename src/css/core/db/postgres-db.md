@@ -480,7 +480,7 @@ implementation work must use these concrete boundaries:
 
 | Path | Runtime symbols / pending responsibility |
 |------|------------------------------------------|
-| `src/css/core/db/models/base.py`, `src/css/core/db/models/mixins.py` | `BaseModel`, `BaseTreeModel`, timestamp/version/soft-delete/frontmatter policies. |
+| `src/css/core/db/models/base.py`, `src/css/core/db/models/mixins.py`, `src/css/core/db/fields/{char,int,float,decimal,json}_fields.py` | `BaseModel`, `BaseTreeModel`, timestamp/version/soft-delete/frontmatter policies, and semantic field helpers. |
 | `src/css/core/db/models/memory.py`, `src/css/core/db/models/marketplace.py`, `src/css/core/db/models/tasks.py`, `src/css/core/db/models/quotas.py` | Canonical model consolidation lanes. |
 | `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider/user/account/model ownership and startup seeding. `provider.py` owns the provider table; Provider↔LLMModel relation remains deferred. |
 | `src/css/core/db/models/menu.py` | `MenuItem`, `MenuItemManager.roots()`, `sync_default_menu_items()`. |
@@ -496,7 +496,8 @@ implementation work must use these concrete boundaries:
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints` | pending | Seed partitions idempotently, implement `list_menu_items()` filter, initialize DB, and exercise each partition route. |
 | `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | in_progress | Keep tagging as classification/filter/search/policy metadata only; finalize naming/meta/runtime wire in the documented order without menu/tree/navigation scope creep. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
-| `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
+| `db40-field-library-expansion` | done | Expanded semantic field helpers across char/int/float/decimal/json modules and exposed canonical imports for model use. |
+| `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
 
 ### Lane C Task/Provider/User Contract
 

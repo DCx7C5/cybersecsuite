@@ -203,3 +203,28 @@ class SlugField(CharField):
                 "Only lowercase letters, numbers, and hyphens allowed "
                 "(use allow_underscores=True to permit underscores)."
             )
+
+
+class CurrencyCodeField(CharField):
+    """Currency code field (ISO-style uppercase ASCII code)."""
+
+    _CURRENCY_REGEX = re.compile(r"^[A-Z]{3,8}$")
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 8)
+        kwargs.setdefault("default", "USD")
+        super().__init__(*args, **kwargs)
+        self.validators.append(self._validate_currency_code)
+
+    @override
+    def to_db_value(self, value: str | None, instance) -> str | None:
+        if isinstance(value, str):
+            value = value.strip().upper()
+        return super().to_db_value(value, instance)
+
+    @staticmethod
+    def _validate_currency_code(value: str | None):
+        if value is None:
+            return
+        if not value.isascii() or not CurrencyCodeField._CURRENCY_REGEX.match(value.upper()):
+            raise ValueError(f"Invalid currency code: {value}")

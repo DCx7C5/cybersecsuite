@@ -50,6 +50,8 @@ class CostField(DecimalField):
             raise ValueError(f"Invalid cost value {value!r}; NaN/Infinity are not allowed.")
 
         exponent = value.as_tuple().exponent
+        if not isinstance(exponent, int):
+            raise ValueError(f"Invalid decimal exponent for value {value!r}")
         scale = -exponent if exponent < 0 else 0
         if scale > self.decimal_places:
             raise ValueError(
@@ -99,3 +101,26 @@ class CostField(DecimalField):
             return None
         self._validate_postgres_numeric_bounds(decimal_value)
         return self._quantize(decimal_value)
+
+
+class NonNegativeDecimalField(DecimalField):
+    """Generic non-negative decimal field with fixed precision defaults."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_digits", 18)
+        kwargs.setdefault("decimal_places", 8)
+        super().__init__(*args, **kwargs)
+        self.validators.append(MinValueValidator(Decimal("0")))
+
+
+class RatioDecimalField(DecimalField):
+    """Exact decimal ratio constrained to [0, 1]."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_digits", 6)
+        kwargs.setdefault("decimal_places", 5)
+        super().__init__(*args, **kwargs)
+        self.validators.extend([
+            MinValueValidator(Decimal("0")),
+            MaxValueValidator(Decimal("1")),
+        ])

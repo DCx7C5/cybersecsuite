@@ -9,7 +9,18 @@ import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
-from css.core.db.fields import DescriptionField, LabelField
+from css.core.db.fields import (
+    CurrencyCodeField,
+    DescriptionField,
+    JsonObjectField,
+    LabelField,
+    NonNegativeFloatField,
+    NonNegativeIntField,
+    PositiveIntField,
+    StringListField,
+    TemperatureFloatField,
+    UnitIntervalFloatField,
+)
 from css.core.models.enums import ModelCapability, ModelFamily, ModelProvider
 from css.core.models.models import ModelMetadata, ModelPricing
 
@@ -108,23 +119,23 @@ class LLMModel(BaseModel, TimestampMixin):
     family = fields.CharField(max_length=64, db_index=True)
     display_name = LabelField(max_length=255, db_index=True)
     description = DescriptionField(default="")
-    context_window = fields.IntField(default=8192)
-    max_output_tokens = fields.IntField(default=4096)
-    latency_ms = fields.IntField(default=0)
-    throughput_tokens_per_sec = fields.FloatField(default=0.0)
-    input_tokens_per_1k = fields.FloatField(default=0.0)
-    output_tokens_per_1k = fields.FloatField(default=0.0)
-    pricing_currency = fields.CharField(max_length=8, default="USD")
-    capabilities = fields.JSONField(default=list)
-    temperature_min = fields.FloatField(default=0.0)
-    temperature_max = fields.FloatField(default=2.0)
-    top_p_min = fields.FloatField(default=0.0)
-    top_p_max = fields.FloatField(default=1.0)
-    top_k_min = fields.IntField(default=0)
-    top_k_max = fields.IntField(default=500)
+    context_window = PositiveIntField(default=8192)
+    max_output_tokens = PositiveIntField(default=4096)
+    latency_ms = NonNegativeIntField(default=0)
+    throughput_tokens_per_sec = NonNegativeFloatField(default=0.0)
+    input_tokens_per_1k = NonNegativeFloatField(default=0.0)
+    output_tokens_per_1k = NonNegativeFloatField(default=0.0)
+    pricing_currency = CurrencyCodeField()
+    capabilities = StringListField()
+    temperature_min = TemperatureFloatField(default=0.0)
+    temperature_max = TemperatureFloatField(default=2.0)
+    top_p_min = UnitIntervalFloatField(default=0.0)
+    top_p_max = UnitIntervalFloatField(default=1.0)
+    top_k_min = NonNegativeIntField(default=0)
+    top_k_max = NonNegativeIntField(default=500)
     released_at = fields.CharField(max_length=32, default="")
     deprecated = fields.BooleanField(default=False, db_index=True)
-    custom_params = fields.JSONField(default=dict)
+    custom_params = JsonObjectField()
 
     manager = LLMModelManager()
 
