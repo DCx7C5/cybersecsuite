@@ -5,6 +5,7 @@ import msgspec
 from tortoise import fields
 from tortoise.fields import IntField
 from tortoise.indexes import Index
+from fastapi import HTTPException
 
 from css.core.db.fields import LabelField, PathField, UrlField
 
@@ -26,6 +27,27 @@ class MenuItemInfo(msgspec.Struct, frozen=True, kw_only=True):
 
 class MenuItemManager:
     """Query helpers for ``MenuItem`` tree operations."""
+
+    async def validate_parent(self, parent_id: int | None, child_menu_id: str | None) -> None:
+        """Validate parent before linking, reject self-parenting and cross-menu links.
+
+        Raises:
+            HTTPException: If parent_id is invalid or belongs to different menu_id partition
+        """
+        if parent_id is None:
+            return
+        if parent_id == 0:  # Invalid ID
+            raise HTTPException(status_code=400, detail="Parent ID cannot be zero")
+
+        parent = await MenuItem.get_or_none(id=parent_id)
+        if parent is None:
+            raise HTTPException(status_code=404, detail=f"Parent menu item {parent_id} not found")
+
+        if child_menu_id is not None and parent.menu_id != child_menu_id:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Parent menu_id ({parent.menu_id}) must match child menu_id ({child_menu_id})",
+            )
 
     async def roots(self, menu_id: str | None = None) -> list[MenuItem]:
         query = MenuItem.filter(parent_id=None)
@@ -72,6 +94,9 @@ class MenuItemManager:
         parent_id: int | None = None,
         order: int | None = None,
     ) -> MenuItem:
+        # Validate parent exists and shares menu_id partition
+        await self.validate_parent(parent_id, menu_id)
+
         resolved_order = (
             await self.next_order(parent_id, menu_id=menu_id)
             if order is None
@@ -187,7 +212,17 @@ class MenuItem(BaseTreeModel):
         parent_id: int | None = None,
         order: int | None = None,
     ) -> None:
-        """Move this node to a new parent and/or display position."""
+        """Move this node to a new parent and/or display position.
+
+        Raises:
+            HTTPException: If self-parenting or cross-menu_id reparenting is attempted
+        """
+        # Prevent self-parenting
+        if parent_id is not None and parent_id == self.id:
+            raise HTTPException(status_code=400, detail="Cannot set a menu item as its own parent")
+
+        # Validate parent exists and shares menu_id partition
+        await type(self).manager.validate_parent(parent_id, self.menu_id)
 
         self.parent_id = parent_id
         self.order = (
@@ -208,11 +243,22 @@ class MenuItem(BaseTreeModel):
             await child.save(update_fields=["order"])
 
     async def breadcrumb(self) -> list[MenuItem]:
-        """Return root-to-self breadcrumb items."""
+        """Return root-to-self breadcrumb items.
 
+        Raises:
+            RuntimeError: If a cycle is detected in the tree
+        """
         trail = [self]
         current = self
+        visited: set[int] = {self.id}
+
         while current.parent_id is not None:
+            if current.parent_id in visited:
+                raise RuntimeError(
+                    f"Cycle detected in menu tree at item {current.parent_id}: visited={visited}"
+                )
+            visited.add(current.parent_id)
+
             parent = await type(self).get_or_none(id=current.parent_id)
             if parent is None:
                 break
@@ -335,6 +381,16 @@ async def sync_default_menu_items() -> list[MenuItem]:
             None,
         )
         if current is None:
+            # Validate parent before creating
+            if parent_id is not None:
+                parent = await MenuItem.get_or_none(id=parent_id)
+                if parent is None:
+                    raise HTTPException(status_code=404, detail=f"Parent menu item {parent_id} not found")
+                if parent.menu_id != menu_id:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Parent menu_id ({parent.menu_id}) must match child menu_id ({menu_id})",
+                    )
             current = await MenuItem.create(
                 name=name,
                 url=url,
@@ -405,5 +461,20 @@ async def sync_default_menu_items() -> list[MenuItem]:
         ]
         for item in orphaned:
             await item.delete()
+
+    # Resequence all parent groups to have dense ordering
+    parent_groups: dict[int | None, list[MenuItem]] = {}
+    for item in await MenuItem.all():
+        key = item.parent_id
+        if key not in parent_groups:
+            parent_groups[key] = []
+        parent_groups[key].append(item)
+
+    for items in parent_groups.values():
+        items_sorted = sorted(items, key=lambda x: (x.order, x.id))
+        for idx, item in enumerate(items_sorted):
+            if item.order != idx:
+                item.order = idx
+                await item.save(update_fields=["order"])
 
     return await MenuItem.manager.roots(menu_id="sidebar")

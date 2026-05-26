@@ -105,6 +105,28 @@ Tag-adoption guardrail (`db40-basetree-tag-adoption-plan`):
 - Root ordering and child upserts are stable under
   (`menu_id`, `parent_id`, `order`, `id`) ordering.
 
+## Tree Integrity Constraints (`db40-menu-tree-constraints`)
+
+MenuItem enforces strict tree invariants to prevent corruption and enable safe traversal:
+
+**Validation on create/move:**
+- **No self-parenting**: Cannot set a menu item as its own parent
+- **Parent must exist**: Raising 404 if parent_id references a non-existent item
+- **Same partition**: Parent and child must have matching `menu_id` values (no cross-partition links)
+
+**Cycle detection:**
+- `breadcrumb()` tracks visited IDs during traversal; raises `RuntimeError` if a cycle is detected
+- Prevents infinite loops on corrupted trees; fails fast with detailed visited set info
+
+**Deterministic ordering:**
+- Within each `(parent_id, menu_id)` group, sibling ordering is sorted by `(order, id)` tuple
+- `resequence_children()` normalizes orders to dense `0..N-1` after moves or upserts
+- `sync_default_menu_items()` resequences all parent groups after seed updates to fix duplicates or gaps
+
+**Partition safety:**
+- `ordered_children()`, `siblings()`, and serialization filters preserve `menu_id` at every node
+- Root queries respect `menu_id` partitioning; endpoint never mixes children from different partitions
+
 ## Marketplace sidebar children contract (`db40-menu-marketplace-children-contract`)
 
 The `Marketplace` root under the sidebar exposes exactly **7 deterministic children**
