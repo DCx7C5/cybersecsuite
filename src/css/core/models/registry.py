@@ -13,13 +13,22 @@ static fallback for startup bootstrap.
 
 import pkgutil
 from pathlib import Path
-from typing import Callable, Any
+from typing import Callable, Any, TYPE_CHECKING
 import time
 
 from css.core.types.meta import AsyncSafeSingletonMeta
 
 from .models import ModelMetadata
 from .enums import ModelCapability
+
+if TYPE_CHECKING:
+    from css.core.db.models.llm_models import LLMModel as _CatalogLLMModel
+
+
+def _catalog_model_cls() -> "type[_CatalogLLMModel]":
+    from css.core.db.models.llm_models import LLMModel
+
+    return LLMModel
 
 
 def _known_provider_ids() -> set[str]:
@@ -74,6 +83,21 @@ class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
         """Bulk-register a list of models."""
         for model in models:
             self.register(model)
+
+    async def sync_from_catalog(self, *, clear_existing: bool = False) -> int:
+        """Load model metadata from the canonical ORM catalog.
+
+        Args:
+            clear_existing: Clear in-memory registry before importing ORM rows.
+
+        Returns:
+            Number of ORM catalog rows loaded into the registry.
+        """
+        records = await _catalog_model_cls().all()
+        if clear_existing:
+            self._models.clear()
+        self.register_many([record.to_metadata() for record in records])
+        return len(records)
 
     def get_model(self, model_id: str) -> ModelMetadata | None:
         """Return the ModelMetadata for *model_id*, or None."""

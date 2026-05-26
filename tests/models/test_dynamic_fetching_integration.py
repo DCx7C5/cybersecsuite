@@ -182,8 +182,62 @@ class TestModelRegistryConvenience:
         assert any(m.id == "claude-opus-thinking" for m in thinking_models)
 
 
+class TestModelRegistryCatalogSync:
+    """Test syncing registry metadata from canonical ORM catalog rows."""
+
+    @pytest.mark.asyncio
+    async def test_sync_from_catalog_registers_metadata(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Catalog rows are mapped through to_metadata() into ModelRegistry."""
+        registry: ModelRegistry = ModelRegistry()  # type: ignore[assignment]
+
+        m1 = ModelMetadata(
+            id="openai/gpt-4o",
+            provider=ModelProvider("openai"),
+            family=ModelFamily.GPT,
+            display_name="GPT-4o",
+            context_window=128000,
+            max_output_tokens=4096,
+            latency_ms=300,
+        )
+        m2 = ModelMetadata(
+            id="anthropic/claude-sonnet-4",
+            provider=ModelProvider("anthropic"),
+            family=ModelFamily.CLAUDE,
+            display_name="Claude Sonnet 4",
+            context_window=200000,
+            max_output_tokens=8192,
+            latency_ms=450,
+        )
+
+        class _Row:
+            def __init__(self, metadata: ModelMetadata) -> None:
+                self._metadata = metadata
+
+            def to_metadata(self) -> ModelMetadata:
+                return self._metadata
+
+        class _CatalogModel:
+            @classmethod
+            async def all(cls) -> list[_Row]:
+                return [_Row(m1), _Row(m2)]
+
+        monkeypatch.setattr(
+            "css.core.models.registry._catalog_model_cls",
+            lambda: _CatalogModel,
+        )
+
+        loaded = await registry.sync_from_catalog(clear_existing=True)
+        assert loaded == 2
+        assert registry.get_model("openai/gpt-4o") is not None
+        assert registry.get_model("anthropic/claude-sonnet-4") is not None
+
+
 __all__ = [
     "TestDynamicModelFetching",
     "TestDynamicModelFetchingWithFallback",
     "TestModelRegistryConvenience",
+    "TestModelRegistryCatalogSync",
 ]

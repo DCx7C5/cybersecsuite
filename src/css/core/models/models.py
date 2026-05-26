@@ -3,7 +3,6 @@ import msgspec
 
 from typing import Any
 
-from css.core.db.models.base import BaseModel
 from .enums import ModelProvider, ModelFamily, ModelCapability
 
 class ModelPricing(msgspec.Struct, frozen=True, kw_only=True):
@@ -11,10 +10,6 @@ class ModelPricing(msgspec.Struct, frozen=True, kw_only=True):
     input_tokens_per_1k: float  # Cost per 1000 input tokens
     output_tokens_per_1k: float  # Cost per 1000 output tokens
     currency: str = "USD"
-
-class LLMModel(BaseModel):
-    # stub: real ORM table tracked in 'db-model-metadata-orm'
-    ...
 
 class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):
     """Metadata for an LLM model."""
@@ -39,9 +34,9 @@ class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):
     capabilities: set[ModelCapability] = msgspec.field(default_factory=set)
     
     # Configuration
-    temperature_range: tuple = (0.0, 2.0)
-    top_p_range: tuple = (0.0, 1.0)
-    top_k_range: tuple = (0, 500)
+    temperature_range: tuple[float, float] = (0.0, 2.0)
+    top_p_range: tuple[float, float] = (0.0, 1.0)
+    top_k_range: tuple[int, int] = (0, 500)
     
     # Metadata
     released_at: str = ""  # ISO 8601 date
@@ -61,7 +56,7 @@ class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):
         """Check if model supports capability."""
         return capability in self.capabilities
     
-    def validate_parameters(self, **kwargs) -> dict[str, str]:
+    def validate_parameters(self, **kwargs: float | int) -> dict[str, str]:
         """Validate model parameters. Return errors dict if invalid."""
         errors = {}
         

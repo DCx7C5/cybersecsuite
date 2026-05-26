@@ -20,6 +20,7 @@ class TestDiscoveryRegistration:
     def test_register_discovery_function(self) -> None:
         """Register a discovery function for a provider."""
         registry: ModelRegistry = ModelRegistry()  # type: ignore[assignment]
+        registry._discovery_funcs.clear()
         mock_discovery = AsyncMock()
 
         registry.register_discovery("openrouter", mock_discovery, ttl_seconds=7200)
@@ -33,6 +34,7 @@ class TestDiscoveryRegistration:
     def test_register_multiple_providers(self) -> None:
         """Register discovery functions for multiple providers."""
         registry: ModelRegistry = ModelRegistry()  # type: ignore[assignment]
+        registry._discovery_funcs.clear()
         mock_openrouter = AsyncMock()
         mock_ollama = AsyncMock()
 

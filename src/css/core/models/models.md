@@ -22,10 +22,14 @@
 
 ## Current State
 
-🟡 **Minimal** (`registry.py` only)
+🟡 **Transport + registry active** (`models.py` + `registry.py`)
 
 **Files**:
-- `registry.py` — Model registry
+- `models.py` — transport value surfaces (`ModelMetadata`, `ModelPricing`)
+- `registry.py` — in-memory registry + `sync_from_catalog()` bridge
+
+Canonical ORM catalog ownership is in `src/css/core/db/models/llm_models.py`
+(`LLMModel`), not in this package.
 
 ---
 
