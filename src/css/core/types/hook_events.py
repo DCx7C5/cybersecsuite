@@ -8,7 +8,7 @@ import msgspec
 from .enums import HookErrorStrategy
 
 
-class HookContext(msgspec.Struct, frozen=True):
+class HookContext(msgspec.Struct, frozen=True, kw_only=True):
     """Metadata passed to every hook execution."""
 
     correlation_id: str

@@ -17,13 +17,13 @@ from css.core.db.fields import (
     UrlField,
     VersionField,
 )
-from css.core.enums import MarketplaceItemType, MarketplaceStatus
+from css.core.enums import MarketplaceItemStatus, MarketplaceItemType, MarketplaceStatus
 from . import TimestampMixin
 
 from .base import BaseModel
 
 
-class MarketplaceItemInfo(msgspec.Struct):
+class MarketplaceItemInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for marketplace item data."""
     id: int
     name: str
@@ -41,7 +41,7 @@ class MarketplaceItemInfo(msgspec.Struct):
     updated_at: datetime
 
 
-class MarketplaceMetaInfo(msgspec.Struct):
+class MarketplaceMetaInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for marketplace index metadata."""
 
     id: int
@@ -55,7 +55,7 @@ class MarketplaceMetaInfo(msgspec.Struct):
     status: str | Any
 
 
-class MarketplaceItemTagInfo(msgspec.Struct):
+class MarketplaceItemTagInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for marketplace item/tag relation."""
 
     id: int
@@ -106,7 +106,7 @@ class BaseMarketPlace(BaseModel):
             else MarketplaceStatus.active
         )
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         abstract = True
 
 
@@ -151,7 +151,7 @@ class MarketplaceMeta(BaseMarketPlace):
             status=info.status,
         )
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "marketplace_meta"
         table_verbose = "Marketplace Meta"
         table_verbose_plural = "Marketplace Meta"
@@ -187,6 +187,7 @@ class MarketplaceItem(BaseMarketPlace):
     """Tortoise ORM model for marketplace items."""
     slug = SlugField(max_length=255, unique=True, db_index=True)
     kind = CharEnumField(MarketplaceItemType, default=MarketplaceItemType.agent)
+    status = fields.CharEnumField(MarketplaceItemStatus, default=MarketplaceItemStatus.enabled)
     meta = fields.JSONField(default=dict)
     install_path = PathField(max_length=512, null=True)
     source_url = UrlField(max_length=512, null=True)
@@ -195,6 +196,14 @@ class MarketplaceItem(BaseMarketPlace):
     updated_at = fields.DatetimeField(auto_now=True)
 
     manager = MarketplaceItemManager()
+
+    @property
+    def sha512(self) -> str:
+        if isinstance(self.meta, dict):
+            value = self.meta.get("sha512")
+            if isinstance(value, str):
+                return value
+        return ""
 
     def to_domain(self) -> MarketplaceItemInfo:
         """Convert ORM record to domain value type."""
@@ -250,24 +259,25 @@ class MarketplaceItem(BaseMarketPlace):
             install_path=install_path,
             installed_at=installed_at or datetime.now(UTC),
             update_available=False,
-            status=MarketplaceStatus.active,
+            status=MarketplaceItemStatus.installed,
         )
 
     async def mark_uninstalled(self) -> None:
         await self.save_changes(
             install_path=None,
             installed_at=None,
+            status=MarketplaceItemStatus.disabled,
         )
 
     async def mark_update_available(self, update_available: bool = True) -> None:
         await self.save_changes(
             update_available=update_available,
             status=(
-                MarketplaceStatus.updates_available if update_available else MarketplaceStatus.active
+                MarketplaceItemStatus.update_available if update_available else MarketplaceItemStatus.enabled
             ),
         )
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "marketplace_item"
         table_verbose = "Marketplace Item"
         table_verbose_plural = "Marketplace Items"
@@ -311,7 +321,7 @@ class MarketplaceItemTag(BaseModel, TimestampMixin):
             updated_at=info.updated_at,
         )
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "marketplace_item_tag"
         table_verbose = "Marketplace Item Tag"
         table_verbose_plural = "Marketplace Item Tags"

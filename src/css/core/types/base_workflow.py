@@ -8,7 +8,7 @@ Note: Team types live entirely within modules/teams — no core base needed.
 """
 import msgspec
 
-class BaseTask(msgspec.Struct):
+class BaseTask(msgspec.Struct, frozen=True, kw_only=True):
     """Abstract base for task entities.
 
     Modules (modules/tasks) extend this with:
@@ -21,13 +21,8 @@ class BaseTask(msgspec.Struct):
     id: str
     metadata: dict[str, object] = msgspec.field(default_factory=dict)
 
-class BaseTaskScope(msgspec.Struct):
+class BaseTaskScope(msgspec.Struct, frozen=True, kw_only=True):
     """Abstract base for immutable task context snapshots."""
 
     id: str
     metadata: dict[str, object] = msgspec.field(default_factory=dict)
-
-__all__ = [
-    "BaseTask",
-    "BaseTaskScope",
-]

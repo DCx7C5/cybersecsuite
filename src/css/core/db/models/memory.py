@@ -4,9 +4,13 @@ from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
-
-from .enums import MemoryEntryKind, MemoryScope, MemoryTier
-from .types import MemoryEntry, MemorySnapshot
+from css.core.memory import (
+    MemoryScope,
+    MemoryTier,
+    MemoryEntryKind,
+    MemoryEntry,
+    MemorySnapshot,
+)
 
 
 class MemoryEntryRecord(BaseModel, TimestampMixin):
@@ -25,7 +29,7 @@ class MemoryEntryRecord(BaseModel, TimestampMixin):
     ttl_seconds = fields.IntField(null=True)
     expires_at = fields.DatetimeField(null=True, db_index=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "memory_entry"
         table_description = "Persistent memory entries across sessions and agents"
         ordering = ["-created_at"]
@@ -67,7 +71,7 @@ class MemorySnapshotRecord(BaseModel, TimestampMixin):
     schema_version = fields.CharField(max_length=16, default="v2", db_index=True)
     entry_count = fields.IntField(default=0)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "memory_snapshot"
         table_description = "Session memory snapshots for rollback and replay"
         ordering = ["-created_at"]

@@ -8,7 +8,7 @@ this documentation-movement pass intentionally does not edit the tracker.
 
 **Location**: `src/css/core/types/`
 
-**Responsibility**: Base classes, enums, data models, Pydantic schemas used across all modules.
+**Responsibility**: Base classes, enums, and `msgspec.Struct` value/API contracts used across all modules.
 
 ---
 
@@ -17,7 +17,8 @@ this documentation-movement pass intentionally does not edit the tracker.
 Core types module exports:
 - **Base classes** — Entities, communicators, contexts
 - **Enums** — Capability types, message roles, provider types
-- **Data models** — Pydantic models for API requests/responses
+- **Data models** — `msgspec.Struct` values for API requests/responses, using
+  `EndpointModel` only where FastAPI schema generation needs its adapter hook
 - **Specialized types** — Headers, hooks, query models
 
 ---
@@ -155,7 +156,7 @@ class ModelContext:
 
 ### 4. **entities.py**
 
-Domain entities (Pydantic models):
+Domain entities (`msgspec.Struct` value contracts):
 
 ```python
 class BaseEntity:
@@ -425,14 +426,15 @@ caps = ModelCapabilities(
 ```python
 # src/css/modules/chat/endpoints.py
 from css.core.types import BaseMessage, MessageRole
+from css.core.types.base_endpoint import EndpointModel
 
 # Receive message
-class ChatRequest(BaseModel):
+class ChatRequest(EndpointModel):
     message: BaseMessage
     role: MessageRole
 
 # Return response
-class ChatResponse(BaseModel):
+class ChatResponse(EndpointModel):
     message: BaseMessage
     role: MessageRole = MessageRole.ASSISTANT
 ```
@@ -582,7 +584,8 @@ record later in this file. Current source uses split `base_*` files and
 ### Implementation Status
 - ✅ All base classes defined
 - ✅ All enums complete
-- ✅ Pydantic models defined
+- ✅ `msgspec.Struct` value models defined; FastAPI-facing values use the
+  narrow `EndpointModel` interoperability adapter when needed
 - ✅ Provider hierarchy added (Phase 2)
 - ✅ All exports in __all__
 - ⚠️ Module organization needs refactoring (13 root files unwieldy)

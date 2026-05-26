@@ -9,7 +9,13 @@ from aiohttp import ClientSession
 
 from css.core.config import ProviderDefaults
 from .enums import ProviderType
-from .base_messages import BaseMessage, Tool, ModelMetadata, StreamChunk, LLMResponse
+from .base_messages import (
+    BaseMessage,
+    Tool,
+    ModelMetadata,
+    StreamChunk,
+    LLMResponse,
+)
 
 
 from css.core.logger import getLogger
@@ -51,7 +57,7 @@ class BaseApiServiceClient:
         raise NotImplementedError(f"{self.__class__.__name__} must implement _default_base_url()")
     
     @property
-    def session(self) -> ClientSession | None:
+    def session(self) -> ClientSession:
         """Lazy-initialize aiohttp session."""
         if self._session is None:
             self._session = ClientSession()

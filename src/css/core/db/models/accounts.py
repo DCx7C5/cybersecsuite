@@ -16,12 +16,19 @@ import msgspec
 from tortoise import fields, models
 
 from css.core.db.models.base import BaseModel
+from css.core.db.fields import (
+    DescriptionField,
+    LabelField,
+    NameField,
+    SlugField,
+    UrlField,
+)
 from css.core.enums import Role
+
 from .mixins import TimestampMixin
-from fields import LabelField, NameField, UrlField, DescriptionField, SlugField
 
 
-class AccountInfo(msgspec.Struct):
+class AccountInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for account data."""
     id: int
     username: str
@@ -29,6 +36,23 @@ class AccountInfo(msgspec.Struct):
     is_active: bool
     is_verified: bool
     last_login: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class UserProfileInfo(msgspec.Struct, frozen=True, kw_only=True):
+    """Domain value type for user profile data."""
+
+    id: int
+    account_id: int
+    first_name: str | None
+    last_name: str | None
+    display_name: str | None
+    avatar_url: str | None
+    bio: str
+    phone: str | None
+    timezone: str
+    preferences: dict
     created_at: datetime
     updated_at: datetime
 
@@ -65,7 +89,7 @@ class Account(BaseModel, TimestampMixin):
             last_login=info.last_login,
         )
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "account"
         table_verbose = "Account"
         table_verbose_plural = "Accounts"
@@ -93,13 +117,43 @@ class UserProfile(BaseModel, TimestampMixin):
     timezone = fields.CharField(max_length=50, default="UTC")
     preferences = fields.JSONField(default=dict)  # UI theme, notifications, etc.
 
-    class Meta:
+    def to_domain(self) -> UserProfileInfo:
+        return UserProfileInfo(
+            id=self.id,
+            account_id=self.account_id,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            display_name=self.display_name,
+            avatar_url=self.avatar_url,
+            bio=self.bio,
+            phone=self.phone,
+            timezone=self.timezone,
+            preferences=dict(self.preferences or {}),
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: UserProfileInfo) -> "UserProfile":
+        return cls(
+            account_id=info.account_id,
+            first_name=info.first_name,
+            last_name=info.last_name,
+            display_name=info.display_name,
+            avatar_url=info.avatar_url,
+            bio=info.bio,
+            phone=info.phone,
+            timezone=info.timezone,
+            preferences=dict(info.preferences),
+        )
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "user_profile"
         table_verbose = "User Profile"
         table_verbose_plural = "User Profiles"
 
 
-class OrganizationInfo(msgspec.Struct):
+class OrganizationInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for organization data."""
     id: int
     name: str
@@ -110,6 +164,35 @@ class OrganizationInfo(msgspec.Struct):
     is_active: bool
     tier: str
     metadata: dict
+    created_at: datetime
+    updated_at: datetime
+
+
+class OrganizationMembershipInfo(msgspec.Struct, frozen=True, kw_only=True):
+    """Domain value type for organization membership data."""
+
+    id: int
+    organization_id: int
+    account_id: int
+    role: str
+    permissions: list
+    invited_by_id: int | None
+    joined_at: datetime
+    updated_at: datetime
+
+
+class RoleAssignmentInfo(msgspec.Struct, frozen=True, kw_only=True):
+    """Domain value type for role assignment data."""
+
+    id: int
+    account_id: int
+    organization_id: int
+    role_id: str
+    scope_level: str
+    scope_id: str | None
+    is_active: bool
+    activated_at: datetime
+    expires_at: datetime | None
     created_at: datetime
     updated_at: datetime
 
@@ -162,7 +245,7 @@ class Organization(BaseModel, TimestampMixin):
             metadata=info.metadata,
         )
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "organizations"
         ordering = ["-created_at"]
         indexes = [
@@ -205,7 +288,31 @@ class OrganizationMembership(BaseModel):
     joined_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-    class Meta:
+    def to_domain(self) -> OrganizationMembershipInfo:
+        return OrganizationMembershipInfo(
+            id=self.id,
+            organization_id=self.organization_id,
+            account_id=self.account_id,
+            role=self.role.value if hasattr(self.role, "value") else str(self.role),
+            permissions=list(self.permissions or []),
+            invited_by_id=self.invited_by_id,
+            joined_at=self.joined_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: OrganizationMembershipInfo) -> "OrganizationMembership":
+        return cls(
+            organization_id=info.organization_id,
+            account_id=info.account_id,
+            role=info.role,
+            permissions=list(info.permissions),
+            invited_by_id=info.invited_by_id,
+            joined_at=info.joined_at,
+            updated_at=info.updated_at,
+        )
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "organization_memberships"
         unique_together = (("organization", "account"),)
         indexes = [
@@ -244,7 +351,35 @@ class RoleAssignment(BaseModel, TimestampMixin):
     activated_at = fields.DatetimeField(auto_now_add=True)
     expires_at = fields.DatetimeField(null=True)  # Optional time-bound role
 
-    class Meta:
+    def to_domain(self) -> RoleAssignmentInfo:
+        return RoleAssignmentInfo(
+            id=self.id,
+            account_id=self.account_id,
+            organization_id=self.organization_id,
+            role_id=self.role_id,
+            scope_level=self.scope_level,
+            scope_id=self.scope_id,
+            is_active=self.is_active,
+            activated_at=self.activated_at,
+            expires_at=self.expires_at,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: RoleAssignmentInfo) -> "RoleAssignment":
+        return cls(
+            account_id=info.account_id,
+            organization_id=info.organization_id,
+            role_id=info.role_id,
+            scope_level=info.scope_level,
+            scope_id=info.scope_id,
+            is_active=info.is_active,
+            activated_at=info.activated_at,
+            expires_at=info.expires_at,
+        )
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "role_assignments"
         unique_together = (("account", "organization", "role_id", "scope_level", "scope_id"),)
         indexes = [

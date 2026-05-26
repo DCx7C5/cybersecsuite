@@ -6,12 +6,11 @@ All headers are frozen (immutable) value types.
 
 import msgspec
 
-class BaseHeader(msgspec.Struct, frozen=True):
+class BaseHeader(msgspec.Struct, frozen=True, kw_only=True):
     """Base metadata header for all entities."""
 
     name: str
     description: str
-    version: str = "0.1.0"
 
 class BaseAgentHeader(BaseHeader, frozen=True):
     """Metadata header for agents entities.

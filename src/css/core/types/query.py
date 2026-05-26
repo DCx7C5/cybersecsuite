@@ -27,7 +27,7 @@ class QueryHeader(BaseHeader, frozen=True):
             object.__setattr__(self, 'description', "Execution request")
 
 
-class Query(msgspec.Struct, frozen=True):
+class Query(msgspec.Struct, frozen=True, kw_only=True):
     """Normalized user-facing query.
     
     Input to QueryExecutor.query() — encapsulates prompt + execution metadata.

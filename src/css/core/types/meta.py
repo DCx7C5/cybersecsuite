@@ -1,56 +1,93 @@
 from abc import ABCMeta
 import asyncio
+from threading import RLock
+from collections.abc import Callable
+from typing import Generic, TypeVar, cast, overload, override
+
+T = TypeVar("T")
 
 
 class SingletonMetaClass(type):
-    """Singleton Metaclass — ensures only one instance of the target class exists.
-    
-    Usage::
-        class MyClass(metaclass=SingletonMetaClass):
-            def __init__(self, value):
-                self.value = value
-    
-    Note: __init__ is called only on first instantiation.
-    """
-    _instances = {}
+    """Singleton metaclass for sync class instantiation."""
 
-    def __call__(cls, *args, **kwargs):
-        """Intercept instantiation calls."""
+    _instances: dict[type, object] = {}
+
+    @override
+    def __call__(cls, *args: object, **kwargs: object) -> object:
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
 class AsyncSafeSingletonMeta(ABCMeta):
-    """Async-Safe Singleton Metaclass.
+    """ABC-compatible singleton metaclass."""
 
-    Ensures only one instance exists. Note: Since __call__ is sync,
-    true async locking must be handled during the 'get_instance' pattern
-    if __init__ contains await points. This metaclass provides a basic
-    registry-based singleton.
-    """
-    _instances = {}
-    _lock = asyncio.Lock()  # Only for instantiation
+    _instances: dict[type, object] = {}
+    _lock = RLock()
 
-    def __call__(cls, *args, **kwargs):
-        """Intercept instantiation calls with async safety."""
-        if cls not in cls._instances:
-            # Use lock to prevent multiple concurrent instantiations
-            # (though asyncio is single-threaded, we protect against task switching)
-            if not cls._lock.locked():
+    @override
+    def __call__(cls, *args: object, **kwargs: object) -> object:
+        if cls in cls._instances:
+            return cls._instances[cls]
+        with cls._lock:
+            if cls not in cls._instances:
                 cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
-def singleton(cls):
-    """Class decorator for Singleton pattern."""
-    _instances = {}
-    _lock = asyncio.Lock()
+class SingletonDecorator(Generic[T]):
+    """Decorator object used by ``@singleton``."""
 
-    def get_instance(*args, **kwargs):
-        if cls not in _instances:
-            if not _lock.locked():
-                _instances[cls] = cls(*args, **kwargs)
-        return _instances[cls]
+    def __init__(self, target: type[T]):
+        self._target = target
+        self._instance: T | None = None
+        self._lock = RLock()
+        self._async_lock = asyncio.Lock()
 
-    return get_instance
+    def __call__(self, *args: object, **kwargs: object) -> T:
+        if self._instance is not None:
+            return self._instance
+        with self._lock:
+            if self._instance is None:
+                self._instance = self._target(*args, **kwargs)
+        return self._instance
+
+    async def get_instance(self, *args: object, **kwargs: object) -> T:
+        if self._instance is not None:
+            return self._instance
+        async with self._async_lock:
+            if self._instance is None:
+                self._instance = self._target(*args, **kwargs)
+        return self._instance
+
+
+@overload
+def singleton(target: type[T], /) -> type[T]: ...
+
+
+@overload
+def singleton(*, auto_instantiate: bool = False) -> Callable[[type[T]], type[T]]: ...
+
+
+def singleton(
+    target: type[T] | None = None,
+    /,
+    *,
+    auto_instantiate: bool = False,
+) -> type[T] | Callable[[type[T]], type[T]]:
+    """Use as ``@singleton`` or ``@singleton(auto_instantiate=True)``."""
+
+    def _decorate(cls: type[T]) -> type[T]:
+        # Protocols are typing-only contracts and must remain class-like so they
+        # can be inherited (e.g., BaseRegistry[T]).
+        if bool(getattr(cls, "_is_protocol", False)):
+            return cls
+
+        wrapped = SingletonDecorator(cls)
+        if auto_instantiate:
+            wrapped()
+        return cast(type[T], wrapped)
+
+    if target is None:
+        return _decorate
+    return _decorate(target)

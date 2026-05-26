@@ -1,15 +1,16 @@
 """Core types for CyberSecSuite — flat re-export surface (Phase 6 P1)."""
 
 # ── Enums (single source of truth) ──────────────────────────────────────────
-from .enums import (  # noqa: F401
+from .enums import (
     MessageRole,
     ProviderType,
     CapabilityType,
+    MemorySupportMode,
     HookErrorStrategy,
 )
 
 # ── Base protocol interfaces ─────────────────────────────────────────────────
-from .base_protocols import (  # noqa: F401
+from .base_protocols import (
     BaseCommunicator,
     BaseAgentLike,
     BaseSkillLike,
@@ -19,10 +20,10 @@ from .base_protocols import (  # noqa: F401
 )
 
 # ── Module protocol ──────────────────────────────────────────────────────────
-from .module_protocol import CSSModule  # noqa: F401
+from .module_protocol import CSSModule
 
 # ── Base message/API value objects ───────────────────────────────────────────
-from .base_messages import (  # noqa: F401
+from .base_messages import (
     BaseMessage,
     Tool,
     ModelMetadata,
@@ -32,7 +33,7 @@ from .base_messages import (  # noqa: F401
 )
 
 # ── Base entity + header types ───────────────────────────────────────────────
-from .base_entity import (  # noqa: F401
+from .base_entity import (
     BaseEntity,
     BaseAgent,
     BaseTool,
@@ -40,7 +41,7 @@ from .base_entity import (  # noqa: F401
     BaseRole,
 )
 
-from .base_headers import (  # noqa: F401
+from .base_headers import (
     BaseHeader,
     BaseAgentHeader,
     BaseSkillHeader,
@@ -50,27 +51,50 @@ from .base_headers import (  # noqa: F401
 )
 
 # ── Base client + SDK ────────────────────────────────────────────────────────
-from .base_client import (  # noqa: F401
+from .base_client import (
     StreamingHandler,
     BaseApiServiceClient,
 )
 
-from .base_sdk import LocalSDKBase  # noqa: F401
+from .base_sdk import LocalSDKBase
+
+# ── Base emitter ──────────────────────────────────────────────────────────────
+from .base_emitter import BaseEmitterClass
 
 # ── Base registry + universal client ────────────────────────────────────────
-from .base_registry import BaseRegistry  # noqa: F401
+from .base_registry import BaseRegistry
 
-from .base_universal import (  # noqa: F401
+from css.core.sdks import (
     SDKRegistry,
-    UniversalLLMClient,
+    CSSLLMClient,
     register_sdk,
     get_sdk,
     clear_sdk_cache,
     list_registered_sdks,
 )
+from css.core.sdks.adapters import (
+    AnthropicNativeAdapter,
+    COMPUTER_USE_TOOLS,
+    OpenAINativeAdapter,
+    BUILTIN_TOOLS,
+    HttpProviderAdapter,
+    OllamaAdapter,
+)
+from css.core.sdks.model_mapper import ModelNameMapper
+# Lazy import to break circular dependency chain:
+#   types.__init__ → adapter_bridge → registry → core.tools.base → executor → events → emitter → base_emitter → types.__init__
+def __getattr__(name: str):
+    if name == "register_adapter_tools":
+        from css.modules.tools.adapter_bridge import register_adapter_tools
+        return register_adapter_tools
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return __all__
 
 # ── Capabilities ─────────────────────────────────────────────────────────────
-from .capabilities import (  # noqa: F401
+from .capabilities import (
     Capability,
     CapabilityRegistry,
     DEFAULT_CAPABILITIES,
@@ -78,7 +102,7 @@ from .capabilities import (  # noqa: F401
 )
 
 # ── Context types ─────────────────────────────────────────────────────────────
-from .context import (  # noqa: F401
+from .context import (
     ConversationContext,
     ModelContext,
     ExecutionContext,
@@ -86,13 +110,13 @@ from .context import (  # noqa: F401
 )
 
 # ── Hook event types ─────────────────────────────────────────────────────────
-from .hook_events import HookContext  # noqa: F401
+from .hook_events import HookContext
 
 # ── Query types ───────────────────────────────────────────────────────────────
-from .query import Query, QueryHeader  # noqa: F401
+from .query import Query, QueryHeader
 
 # ── Provider spec types ───────────────────────────────────────────────────────
-from .providers import (  # noqa: F401
+from .providers import (
     ProviderAuth,
     ProviderEndpoint,
     ProviderCapabilities,
@@ -102,13 +126,21 @@ from .providers import (  # noqa: F401
 )
 
 # ── Base workflow types ───────────────────────────────────────────────────────
-from .base_workflow import BaseTask, BaseTaskScope  # noqa: F401
+from .base_workflow import BaseTask, BaseTaskScope
+
+# ── QoL output controls ───────────────────────────────────────────────────────
+from .qol import (
+    QoLToggle,
+    QoLSettings,
+    toggle_description,
+)
 
 __all__ = [
     # enums
     "MessageRole",
     "ProviderType",
     "CapabilityType",
+    "MemorySupportMode",
     "HookErrorStrategy",
     # protocols
     "BaseCommunicator",
@@ -142,9 +174,10 @@ __all__ = [
     "StreamingHandler",
     "BaseApiServiceClient",
     "LocalSDKBase",
+    "BaseEmitterClass",
     "BaseRegistry",
     "SDKRegistry",
-    "UniversalLLMClient",
+    "CSSLLMClient",
     "register_sdk",
     "get_sdk",
     "clear_sdk_cache",
@@ -176,4 +209,19 @@ __all__ = [
     # workflow bases (task only — team lives in modules/teams)
     "BaseTask",
     "BaseTaskScope",
+    # adapters
+    "AnthropicNativeAdapter",
+    "COMPUTER_USE_TOOLS",
+    "OpenAINativeAdapter",
+    "BUILTIN_TOOLS",
+    "HttpProviderAdapter",
+    "OllamaAdapter",
+    # model mapper
+    "ModelNameMapper",
+    # tool bridge
+    "register_adapter_tools",
+    # qol
+    "QoLToggle",
+    "QoLSettings",
+    "toggle_description",
 ]

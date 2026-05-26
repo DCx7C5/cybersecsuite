@@ -7,6 +7,7 @@ database layer. Copied from legacy/db/models with localized imports.
 from .base import (
     BaseModel,
     BaseUserModel,
+    BaseTreeModel,
 )
 
 from .accounts import (
@@ -33,10 +34,12 @@ from .mixins import (
 )
 
 from .scope import ProjectScope, SessionScope
+from .menu import MenuItem, MenuItemInfo
 
 __all__ = [
     "BaseModel",
     "BaseUserModel",
+    "BaseTreeModel",
     "TimestampMixin",
     "VersionMixin",
     "SoftDeleteMixin",
@@ -54,4 +57,6 @@ __all__ = [
     "IOCStatus",
     "ProjectScope",
     "SessionScope",
+    "MenuItem",
+    "MenuItemInfo",
 ]

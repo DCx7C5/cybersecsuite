@@ -14,12 +14,10 @@ class Role(str, Enum):
 class ScopeLevel(str, Enum):
     """Scope hierarchy levels."""
 
-    GLOBAL = "global"
     APP = "app"
     PROJECT = "project"
     RUNTIME = "runtime"
     SESSION = "session"
-
 
 
 class MessageRole(str, Enum):
@@ -31,10 +29,8 @@ class MessageRole(str, Enum):
 
 class MarketplaceStatus(str, Enum):
     """Lifecycle status of a marketplace item."""
-
     active = "active"
     updates_available = "updates_available"
-
 
 
 class MarketplaceItemStatus(str, Enum):
@@ -55,13 +51,6 @@ class MarketplaceItemType(str, Enum):
     template = "template"
     workflow = "workflow"
     prompt = "prompt"
-
-
-class RoleType(str, Enum):
-    """Available orchestration roles."""
-    ORCHESTRATOR = "orchestrator"
-    TEAM_LEADER = "team-leader"
-    TEAM_MEMBER = "team-member"
 
 
 class Permission(str, Enum):
@@ -90,6 +79,20 @@ class Permission(str, Enum):
     # Member permissions
     MEMBER_ASSIGN = "member:assign"
     MEMBER_REASSIGN = "member:reassign"
+
+    # Dir permissions
+    DIR_EXECUTE = "dir:execute"
+    DIR_READ = "dir:read"
+    DIR_WRITE = "dir:write"
+    DIR_DELETE = "dir:delete"
+
+    # File permissions
+    FILE_EXECUTE = "file:execute"
+    FILE_READ = "file:read"
+    FILE_WRITE = "file:write"
+    FILE_DELETE = "file:delete"
+    FILE_UPLOAD = "file:upload"
+    FILE_DOWNLOAD = "file:download"
 
     # Tool permissions
     TOOL_USE = "tool:use"

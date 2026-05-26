@@ -8,7 +8,7 @@ from css.core.enums import ScopeLevel, Permission
 from css.core.types.base_entity import BaseRole
 from css.core.types.base_headers import BaseRoleHeader
 
-class PermissionPolicy(msgspec.Struct):
+class PermissionPolicy(msgspec.Struct, frozen=True, kw_only=True):
     """Permission policy for a role at a scope level."""
 
     path_permissions: set[Permission] = msgspec.field(default_factory=set)
@@ -25,7 +25,7 @@ class PermissionPolicy(msgspec.Struct):
             return True
         return tool_id in self.tool_permissions
 
-class ScopeContext(msgspec.Struct):
+class ScopeContext(msgspec.Struct, frozen=True, kw_only=True):
     """Encapsulates permission context for current operation."""
 
     role: "Role"
@@ -65,7 +65,7 @@ class ScopeContext(msgspec.Struct):
         """Check if role can access tool."""
         return True  # TODO: Implement tool permission checks
 
-class TokenPayload(msgspec.Struct):
+class TokenPayload(msgspec.Struct, frozen=True, kw_only=True):
     """JWT token payload for scope context."""
 
     scope_context: ScopeContext

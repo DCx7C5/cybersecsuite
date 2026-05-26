@@ -6,7 +6,7 @@ from typing import Any
 from css.core.db.models.base import BaseModel
 from .enums import ModelProvider, ModelFamily, ModelCapability
 
-class ModelPricing(msgspec.Struct):
+class ModelPricing(msgspec.Struct, frozen=True, kw_only=True):
     """Pricing information for a model."""
     input_tokens_per_1k: float  # Cost per 1000 input tokens
     output_tokens_per_1k: float  # Cost per 1000 output tokens
@@ -16,7 +16,7 @@ class LLMModel(BaseModel):
     # TODO: implement real database table; get rid off @dataclass ModelMetadata and ModelPricing. Find other ways to implement
     ...
 
-class ModelMetadata(msgspec.Struct):
+class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):
     """Metadata for an LLM model."""
     
     id: str  # e.g., "claude-3-opus-20240229"

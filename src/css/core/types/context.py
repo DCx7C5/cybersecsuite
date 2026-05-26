@@ -13,7 +13,7 @@ from typing import Any
 from .base_messages import BaseMessage
 
 
-class ConversationContext(msgspec.Struct):
+class ConversationContext(msgspec.Struct, frozen=True, kw_only=True):
     """What we're talking about with the user.
 
     Persists across turns, tracks conversation state.
@@ -66,7 +66,7 @@ class ConversationContext(msgspec.Struct):
         return None
 
 
-class ModelContext(msgspec.Struct):
+class ModelContext(msgspec.Struct, frozen=True, kw_only=True):
     """What a model can do and how much it costs.
 
     Model-specific capabilities, limits, and pricing.
@@ -111,7 +111,7 @@ class ModelContext(msgspec.Struct):
         return (tokens / 1000.0) * self.cost_per_1k_tokens
 
 
-class ExecutionContext(msgspec.Struct):
+class ExecutionContext(msgspec.Struct, frozen=True, kw_only=True):
     """Combined context for a single LLM execution.
 
     Merges conversation and model context for complete picture.
@@ -159,7 +159,7 @@ class ExecutionContext(msgspec.Struct):
         return (self.ended_at - self.started_at).total_seconds()
 
 
-class ContextConfig(msgspec.Struct):
+class ContextConfig(msgspec.Struct, frozen=True, kw_only=True):
     """Configuration for context handling.
     
     Attributes:

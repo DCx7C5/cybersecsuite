@@ -10,20 +10,22 @@ from collections.abc import AsyncIterator
 
 import msgspec
 
-from .enums import MessageRole, ProviderType
+from .enums import MemorySupportMode, MessageRole, ProviderType
 
 logger = getLogger(__name__)
 
-class BaseMessage(msgspec.Struct, frozen=True):
+
+class BaseMessage(msgspec.Struct, frozen=True, kw_only=True):
     """A message in the conversation."""
 
     role: MessageRole
     content: str = ""
     name: str | None = None
-    tool_calls: list[dict] = msgspec.field(default_factory=list)
+    tool_calls: list[dict[str, Any]] = msgspec.field(default_factory=list)
     tool_call_id: str | None = None
 
-class Tool(msgspec.Struct, frozen=True):
+
+class Tool(msgspec.Struct, frozen=True, kw_only=True):
     """A tool available to the model."""
 
     name: str
@@ -31,7 +33,8 @@ class Tool(msgspec.Struct, frozen=True):
     input_schema: dict[str, Any] = msgspec.field(default_factory=dict)
     return_schema: dict[str, Any] | None = None
 
-class ModelMetadata(msgspec.Struct, frozen=True):
+
+class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):
     """Metadata about a model with per-model feature flags."""
 
     id: str
@@ -48,10 +51,12 @@ class ModelMetadata(msgspec.Struct, frozen=True):
     extended_thinking: bool = False
     files_api: bool = False
     tool_use_caching: bool = False
+    memory_support_mode: MemorySupportMode = MemorySupportMode.PLATFORM_EMULATED
     input_cost_per_mtok: float = 0.0
     output_cost_per_mtok: float = 0.0
 
-class StreamChunk(msgspec.Struct, frozen=True):
+
+class StreamChunk(msgspec.Struct, frozen=True, kw_only=True):
     """A chunk from a streaming response."""
 
     type: str = "content_block_delta"
@@ -59,20 +64,22 @@ class StreamChunk(msgspec.Struct, frozen=True):
     stop_reason: str | None = None
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
-class LLMResponse(msgspec.Struct, frozen=True):
+
+class LLMResponse(msgspec.Struct, frozen=True, kw_only=True):
     """A complete LLM response (buffered)."""
 
     text: str = ""
     stop_reason: str = "stop"
     usage: dict[str, Any] = msgspec.field(default_factory=dict)
 
-class ExecutorResult(msgspec.Struct, frozen=True):
+
+class ExecutorResult(msgspec.Struct, frozen=True, kw_only=True):
     """Result from an execution/API call to a provider."""
 
     status_code: int = 200
     headers: dict[str, str] = msgspec.field(default_factory=dict)
     body: dict[str, Any] | None = None
-    stream: AsyncIterator[bytes] | None = msgspec.field(default=None, exclude=True)
+    stream: AsyncIterator[bytes] | None = None
     error: str | None = None
     latency_ms: float = 0.0
     provider_id: str = ""
@@ -83,6 +90,7 @@ class ExecutorResult(msgspec.Struct, frozen=True):
     def ok(self) -> bool:
         """Check if status code is successful (2xx range)."""
         return 200 <= self.status_code < 300
+
 
 __all__ = [
     "BaseMessage",

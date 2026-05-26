@@ -43,6 +43,7 @@ class LabelField(CharField):
         kwargs.setdefault("max_length", 255)
         super().__init__(*args, **kwargs)
 
+
 class UrlField(CharField):
     """
     A CharField that validates that the value is a valid URL.

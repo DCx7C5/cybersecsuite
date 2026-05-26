@@ -1,13 +1,11 @@
 """Typed provider YAML schema (Phase 6)."""
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import msgspec
 
 
-class ProviderAuth(msgspec.Struct, frozen=True):
+class ProviderAuth(msgspec.Struct, frozen=True, kw_only=True):
     """Authentication settings for a provider."""
 
     api_key_env: str | None = None
@@ -15,13 +13,13 @@ class ProviderAuth(msgspec.Struct, frozen=True):
     scheme: str = "Bearer"
 
 
-class ProviderEndpoint(msgspec.Struct, frozen=True):
+class ProviderEndpoint(msgspec.Struct, frozen=True, kw_only=True):
     """Provider endpoint paths."""
 
     completion: str = "/chat/completions"
 
 
-class ProviderCapabilities(msgspec.Struct, frozen=True):
+class ProviderCapabilities(msgspec.Struct, frozen=True, kw_only=True):
     """Provider feature capabilities."""
 
     streaming: bool = True
@@ -29,7 +27,7 @@ class ProviderCapabilities(msgspec.Struct, frozen=True):
     tool_use: bool = False
 
 
-class ProviderSpec(msgspec.Struct, frozen=True):
+class ProviderSpec(msgspec.Struct, frozen=True, kw_only=True):
     """Provider declaration used by HttpProviderAdapter and registry."""
 
     name: str
@@ -76,12 +74,3 @@ def decode_provider_spec_file(path: str | Path) -> ProviderSpec:
     payload = Path(path).read_bytes()
     return decode_provider_spec_yaml(payload)
 
-
-__all__ = [
-    "ProviderAuth",
-    "ProviderEndpoint",
-    "ProviderCapabilities",
-    "ProviderSpec",
-    "decode_provider_spec_yaml",
-    "decode_provider_spec_file",
-]

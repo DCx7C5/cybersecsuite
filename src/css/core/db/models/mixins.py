@@ -13,7 +13,7 @@ class TimestampMixin:
     created_at = DatetimeField(auto_now_add=True)
     updated_at = DatetimeField(auto_now=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         abstract = True
 
 
@@ -23,7 +23,7 @@ class VersionMixin:
     remote_hash = SHA512SumField(null=True)
     local_hash = SHA512SumField(null=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         abstract = True
 
 
@@ -44,7 +44,7 @@ class SoftDeleteMixin:
         self.deleted_at = DatetimeField.get_now()
         await self.save()
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         abstract = True
 
 
