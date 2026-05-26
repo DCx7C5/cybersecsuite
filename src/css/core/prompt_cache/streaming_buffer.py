@@ -9,7 +9,6 @@ Used when:
   - Need to track intermediate chunk statistics (latency, token count)
 """
 
-import asyncio
 from datetime import UTC, datetime
 from typing import Any
 

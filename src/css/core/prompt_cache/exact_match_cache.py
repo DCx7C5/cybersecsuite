@@ -5,7 +5,6 @@ Uses SHA256(messages + model + system_prompt) as cache key, stores complete resp
 """
 
 import json
-from typing import Any
 
 from css.core.cache.redis_cache import L2RedisCache
 from css.core.logger import getLogger

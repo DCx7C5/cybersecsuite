@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from css.core.logger import getLogger
-from .types import CachingCapability, ResponseCacheStats
+from .types import ResponseCacheStats
 
 logger = getLogger(__name__)
 

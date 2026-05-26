@@ -110,6 +110,7 @@ from .query import Query, QueryHeader
 # ── Provider spec types ───────────────────────────────────────────────────────
 from .providers import (
     ProviderAuth,
+    ProviderOAuthFlow,
     ProviderEndpoint,
     ProviderCapabilities,
     ProviderSpec,
@@ -208,6 +209,7 @@ __all__ = [
     "QueryHeader",
     # provider specs
     "ProviderAuth",
+    "ProviderOAuthFlow",
     "ProviderEndpoint",
     "ProviderCapabilities",
     "ProviderSpec",
@@ -226,7 +228,7 @@ __all__ = [
     # model mapper
     "ModelNameMapper",
     # tool bridge
-    "register_adapter_tools",
+    "register_adapter_tools",  # pyright: ignore[reportUnsupportedDunderAll]
     # qol
     "QoLToggle",
     "QoLSettings",

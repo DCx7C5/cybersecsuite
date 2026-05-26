@@ -80,8 +80,8 @@ class OpenObserveMetricsExporter:
                 "tags": tags or {},
             }
 
-            logger.debug(f"OpenObserve export: {event_type} from {provider}")
-            return True
+            logger.debug("OpenObserve export is not wired; retaining cache event: %s", record)
+            return False
         except Exception as e:
             logger.warning(f"Failed to export cache event to OpenObserve: {e}")
             return False
@@ -131,8 +131,8 @@ class OpenObserveMetricsExporter:
                 "by_cache_source": str(summary.get("by_cache_source", {})),
             }
 
-            logger.debug("OpenObserve export: cache_summary")
-            return True
+            logger.debug("OpenObserve export is not wired; retaining cache summary: %s", record)
+            return False
         except Exception as e:
             logger.warning(f"Failed to export summary metrics to OpenObserve: {e}")
             return False

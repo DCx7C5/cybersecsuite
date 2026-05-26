@@ -36,7 +36,7 @@ from tortoise import Tortoise
 
 from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
 from css.core.db.models.menu import sync_default_menu_items
-from css.core.exceptions import BaseCoreException, ConfigurationError
+from css.core.exceptions import BaseCoreException
 from css.core.loader import (
     build_tortoise_connection,
     build_tortoise_modules,
