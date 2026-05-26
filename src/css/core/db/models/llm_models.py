@@ -36,6 +36,18 @@ def _enum_value(value: Enum | str) -> str:
     return str(value)
 
 
+def _normalize_tag_slugs(tag_slugs: list[str]) -> list[str]:
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for slug in tag_slugs:
+        normalized_slug = slug.strip().lower()
+        if not normalized_slug or normalized_slug in seen:
+            continue
+        normalized.append(normalized_slug)
+        seen.add(normalized_slug)
+    return normalized
+
+
 class LLMModelInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for one persisted LLM model record."""
 
@@ -78,7 +90,11 @@ class LLMModelManager:
     """Query helpers for ``LLMModel``."""
 
     async def active(self) -> list[LLMModel]:
-        return await LLMModel.filter(deprecated=False).order_by("provider", "family", "name", "id")
+        return await (
+            LLMModel.filter(deprecated=False)
+            .prefetch_related("tags_m2m__tag")
+            .order_by("provider", "family", "name", "id")
+        )
 
     async def by_name(self, name: str) -> LLMModel | None:
         return await LLMModel.get_or_none(name=name)
@@ -86,17 +102,56 @@ class LLMModelManager:
     async def by_provider(self, provider: ModelProvider | str) -> list[LLMModel]:
         """Filter by provider slug until FK ownership relation is introduced."""
         provider_value = _enum_value(provider)
-        return await LLMModel.filter(provider=provider_value).order_by("family", "name", "id")
+        return await (
+            LLMModel.filter(provider=provider_value)
+            .prefetch_related("tags_m2m__tag")
+            .order_by("family", "name", "id")
+        )
 
     async def by_family(self, family: ModelFamily | str) -> list[LLMModel]:
         family_value = _enum_value(family)
-        return await LLMModel.filter(family=family_value).order_by("provider", "name", "id")
+        return await (
+            LLMModel.filter(family=family_value)
+            .prefetch_related("tags_m2m__tag")
+            .order_by("provider", "name", "id")
+        )
 
     async def with_context_window(self, minimum_tokens: int) -> list[LLMModel]:
-        return await LLMModel.filter(
-            deprecated=False,
-            context_window__gte=max(0, minimum_tokens),
-        ).order_by("-context_window", "provider", "name", "id")
+        return await (
+            LLMModel.filter(
+                deprecated=False,
+                context_window__gte=max(0, minimum_tokens),
+            )
+            .prefetch_related("tags_m2m__tag")
+            .order_by("-context_window", "provider", "name", "id")
+        )
+
+    async def by_tag(self, tag_slug: str) -> list[LLMModel]:
+        normalized = _normalize_tag_slugs([tag_slug])
+        if not normalized:
+            return await self.active()
+        return await (
+            LLMModel.filter(
+                deprecated=False,
+                tags_m2m__tag__slug=normalized[0],
+            )
+            .prefetch_related("tags_m2m__tag")
+            .distinct()
+            .order_by("provider", "family", "name", "id")
+        )
+
+    async def by_tags(self, tag_slugs: list[str], *, match_all: bool = False) -> list[LLMModel]:
+        normalized = _normalize_tag_slugs(tag_slugs)
+        if not normalized:
+            return await self.active()
+
+        query = LLMModel.filter(deprecated=False).prefetch_related("tags_m2m__tag")
+        if match_all:
+            for slug in normalized:
+                query = query.filter(tags_m2m__tag__slug=slug)
+        else:
+            query = query.filter(tags_m2m__tag__slug__in=normalized)
+        return await query.distinct().order_by("provider", "family", "name", "id")
 
     async def supporting_capability(
         self,
@@ -206,6 +261,17 @@ class LLMModel(BaseModel, TimestampMixin):
         )
 
     def to_metadata(self) -> ModelMetadata:
+        tags_m2m = getattr(self, "tags_m2m", None)
+        tag_slugs: list[str] = []
+        if isinstance(tags_m2m, list):
+            raw_slugs: list[str] = []
+            for entry in tags_m2m:
+                tag = getattr(entry, "tag", None)
+                slug = getattr(tag, "slug", None)
+                if isinstance(slug, str):
+                    raw_slugs.append(slug)
+            tag_slugs = _normalize_tag_slugs(raw_slugs)
+
         return ModelMetadata(
             id=self.name,
             provider=self.provider_member,
@@ -220,6 +286,7 @@ class LLMModel(BaseModel, TimestampMixin):
             temperature_range=(self.temperature_min, self.temperature_max),
             top_p_range=(self.top_p_min, self.top_p_max),
             top_k_range=(self.top_k_min, self.top_k_max),
+            tags=tag_slugs,
             released_at=self.released_at,
             deprecated=self.deprecated,
             custom_params=dict(self.custom_params or {}),

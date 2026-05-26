@@ -39,6 +39,7 @@ class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):
     top_k_range: tuple[int, int] = (0, 500)
     
     # Metadata
+    tags: list[str] = msgspec.field(default_factory=list)
     released_at: str = ""  # ISO 8601 date
     deprecated: bool = False
     custom_params: dict[str, Any] = msgspec.field(default_factory=dict)

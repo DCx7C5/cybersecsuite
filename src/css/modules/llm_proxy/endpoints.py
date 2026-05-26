@@ -4,7 +4,7 @@ import time
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 router = APIRouter(prefix="/v1", tags=["llm-proxy"])
 
@@ -40,17 +40,51 @@ async def llm_proxy_health() -> dict[str, str]:
 
 
 @router.get("/models")
-async def list_models() -> dict[str, Any]:
-    from css.api_services.registry import get_registry
+async def list_models(
+    provider: str | None = Query(None),
+    capability: str | None = Query(None),
+    tag: str | None = Query(None),
+    tags: str | None = Query(None),
+    match_all_tags: bool = Query(False),
+) -> dict[str, Any]:
+    from css.core.models import ModelCapability, get_model_registry
 
-    registry = get_registry()
-    data: list[dict[str, str]] = []
-    for provider in registry.list_providers():
-        spec = registry.get_spec(provider)
-        if spec is None:
-            continue
-        for model_id in spec.models:
-            data.append({"id": f"{provider}/{model_id}", "object": "model", "owned_by": provider})
+    capability_filter: ModelCapability | None = None
+    if capability is not None:
+        try:
+            capability_filter = ModelCapability(capability.strip().lower())
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"invalid capability: {capability}",
+            ) from exc
+
+    tag_filters = [item.strip() for item in tags.split(",") if item.strip()] if tags else None
+    provider_filter = provider.strip() if isinstance(provider, str) else None
+    tag_filter = tag.strip() if isinstance(tag, str) else None
+
+    registry = get_model_registry()
+    await registry.sync_from_catalog(clear_existing=False)
+    models = registry.list_models(
+        provider=provider_filter,
+        capability=capability_filter,
+        tag=tag_filter,
+        tags=tag_filters,
+        match_all_tags=match_all_tags,
+    )
+
+    data: list[dict[str, str | list[str]]] = []
+    for metadata in models:
+        owned_by = str(metadata.provider.value)
+        model_id = metadata.id if "/" in metadata.id else f"{owned_by}/{metadata.id}"
+        data.append(
+            {
+                "id": model_id,
+                "object": "model",
+                "owned_by": owned_by,
+                "tags": metadata.tags,
+            }
+        )
     return {"object": "list", "data": data}
 
 

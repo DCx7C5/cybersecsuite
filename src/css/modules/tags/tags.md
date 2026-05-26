@@ -44,6 +44,7 @@
 - [x] Marketplace tag relations resolve item identity via `MarketplaceItem.slug`
 - [x] Tag manager is ORM-backed (no in-memory tag dict cache)
 - [x] Tag manager/model imports use lazy-safe structure to avoid circular init failures
+- [x] LLM model tags are exposed as canonical slug values in runtime model discovery/filtering
 
 ---
 
@@ -78,6 +79,15 @@
 - `MenuItem` (navigation tree, menu partitioning)
 - Module-specific routers and endpoints
 - Frontend URL structure
+
+### Runtime Contract: LLM Models
+
+- Runtime model listing (`/v1/models`) now uses `ModelRegistry` metadata synced
+  from canonical ORM rows and supports `tag`/`tags` filtering.
+- `LLMModelTag` relationships are projected as canonical tag slugs in
+  `ModelMetadata.tags`, never as raw junction IDs/rows.
+- Tag filtering is classification-only and does not imply any
+  navigation/path/tree ownership semantics.
 
 ---
 

@@ -41,6 +41,42 @@ def _known_provider_ids() -> set[str]:
     }
 
 
+def _normalize_tag_filters(tag: str | None, tags: list[str] | None) -> list[str]:
+    candidates: list[str] = []
+    if isinstance(tag, str):
+        candidates.append(tag)
+    if isinstance(tags, list):
+        candidates.extend(tags)
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        normalized_tag = candidate.strip().lower()
+        if not normalized_tag or normalized_tag in seen:
+            continue
+        normalized.append(normalized_tag)
+        seen.add(normalized_tag)
+    return normalized
+
+
+def _metadata_matches_tags(
+    metadata: ModelMetadata,
+    filters: list[str],
+    *,
+    match_all_tags: bool,
+) -> bool:
+    if not filters:
+        return True
+    model_tags = {
+        tag.strip().lower()
+        for tag in metadata.tags
+        if isinstance(tag, str) and tag.strip()
+    }
+    if match_all_tags:
+        return all(tag in model_tags for tag in filters)
+    return any(tag in model_tags for tag in filters)
+
+
 # Built from api_services/ directory discovery — same slugs used as ProviderType
 # values and as HybridToolSchema.fallback_provider identifiers.
 _KNOWN_PROVIDERS: set[str] = _known_provider_ids()
@@ -93,7 +129,11 @@ class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
         Returns:
             Number of ORM catalog rows loaded into the registry.
         """
-        records = await _catalog_model_cls().all()
+        catalog_rows = _catalog_model_cls().all()
+        if hasattr(catalog_rows, "prefetch_related"):
+            records = await catalog_rows.prefetch_related("tags_m2m__tag")
+        else:
+            records = await catalog_rows
         if clear_existing:
             self._models.clear()
         self.register_many([record.to_metadata() for record in records])
@@ -107,6 +147,9 @@ class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
         self,
         provider: str | None = None,
         capability: ModelCapability | None = None,
+        tag: str | None = None,
+        tags: list[str] | None = None,
+        match_all_tags: bool = False,
     ) -> list[ModelMetadata]:
         """Return all registered models, optionally filtered."""
         result = list(self._models.values())
@@ -114,6 +157,17 @@ class ModelRegistry(metaclass=AsyncSafeSingletonMeta):
             result = [m for m in result if str(m.provider.value) == provider]
         if capability:
             result = [m for m in result if m.supports_capability(capability)]
+        tag_filters = _normalize_tag_filters(tag, tags)
+        if tag_filters:
+            result = [
+                model
+                for model in result
+                if _metadata_matches_tags(
+                    model,
+                    tag_filters,
+                    match_all_tags=match_all_tags,
+                )
+            ]
         return result
 
     def supports_capability(self, model_id: str, capability: ModelCapability) -> bool:

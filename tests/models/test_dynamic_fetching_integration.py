@@ -181,6 +181,46 @@ class TestModelRegistryConvenience:
         thinking_models = registry.thinking_capable_models()
         assert any(m.id == "claude-opus-thinking" for m in thinking_models)
 
+    def test_tag_filters(self) -> None:
+        """Registry supports tag and multi-tag filtering on metadata."""
+        registry: ModelRegistry = ModelRegistry()  # type: ignore[assignment]
+
+        model_a = ModelMetadata(
+            id="model-a",
+            provider=ModelProvider("openai"),
+            family=ModelFamily.GPT,
+            display_name="Model A",
+            context_window=128000,
+            max_output_tokens=4096,
+            latency_ms=300,
+            tags=["vision", "analysis"],
+        )
+        model_b = ModelMetadata(
+            id="model-b",
+            provider=ModelProvider("openai"),
+            family=ModelFamily.GPT,
+            display_name="Model B",
+            context_window=128000,
+            max_output_tokens=4096,
+            latency_ms=300,
+            tags=["code"],
+        )
+
+        registry.register(model_a)
+        registry.register(model_b)
+
+        any_vision = registry.list_models(tag="vision")
+        assert any(model.id == "model-a" for model in any_vision)
+        assert all(model.id != "model-b" for model in any_vision)
+
+        match_any = registry.list_models(tags=["vision", "code"])
+        assert any(model.id == "model-a" for model in match_any)
+        assert any(model.id == "model-b" for model in match_any)
+
+        match_all = registry.list_models(tags=["vision", "analysis"], match_all_tags=True)
+        assert any(model.id == "model-a" for model in match_all)
+        assert all(model.id != "model-b" for model in match_all)
+
 
 class TestModelRegistryCatalogSync:
     """Test syncing registry metadata from canonical ORM catalog rows."""
