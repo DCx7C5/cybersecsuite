@@ -6,6 +6,8 @@ models:
   - deepseek-chat
   - deepseek-coder
 auth:
+  methods:
+    - api_key
   api_key_env: DEEPSEEK_API_KEY
   header: Authorization
   scheme: Bearer

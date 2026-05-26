@@ -11,7 +11,7 @@ import pytest
 
 from css.core.models.registry import ModelRegistry
 from css.core.models.models import ModelMetadata, ModelPricing
-from css.core.models.enums import ModelCapability, ModelProvider, ModelFamily
+from css.core.models.enums import ModelProvider, ModelFamily
 
 
 class TestDiscoveryRegistration:

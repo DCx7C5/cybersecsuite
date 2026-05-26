@@ -7,6 +7,8 @@ models:
   - gpt-4
   - gpt-3.5-turbo
 auth:
+  methods:
+    - api_key
   api_key_env: OPENAI_API_KEY
   header: Authorization
   scheme: Bearer

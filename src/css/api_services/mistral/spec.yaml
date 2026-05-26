@@ -7,6 +7,8 @@ models:
   - mistral-medium-2312
   - mistral-small-2312
 auth:
+  methods:
+    - api_key
   api_key_env: MISTRAL_API_KEY
   header: Authorization
   scheme: Bearer

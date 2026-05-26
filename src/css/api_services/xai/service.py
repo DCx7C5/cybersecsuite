@@ -3,10 +3,12 @@
 from css.core.logger import getLogger
 import json
 import os
-from typing import override, Any
+from types import TracebackType
+from typing import override, Any, Self
 from collections.abc import AsyncIterator
 from pathlib import Path
 import msgspec
+from xai_sdk import AsyncClient
 
 from css.core.types import (
     BaseMessage,
@@ -52,7 +54,7 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
             if allow_openai_compat_fallback is not None
             else settings_config.XAI_SDK_FALLBACK_OPENAI_COMPAT
         )
-        self._async_client = None
+        self._async_client: AsyncClient | None = None
         self._timeout_seconds = timeout_seconds
         super().__init__(
             provider_id=ProviderType.XAI,
@@ -66,7 +68,7 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
                 "xAI native SDK flag enabled; OpenAI-compatible fallback remains active until native bridge is complete"
             )
     
-    async def _ensure_async_client(self):
+    async def _ensure_async_client(self) -> AsyncClient:
         """Lazily initialize native xAI AsyncClient on first use."""
         if self._async_client is not None:
             return self._async_client
@@ -78,28 +80,9 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
             )
         
         try:
-            # Lazy import of xai-sdk to avoid hard dependency if not using native SDK
-            from xai import AsyncClient
-        except ImportError as error:
-            raise LLMApiServiceError(
-                message="xai-sdk is not installed. Install with: pip install xai-sdk==1.12.2",
-                provider_name="xai",
-                context={"dependency": "xai-sdk", "version": "1.12.2"},
-            ) from error
-        
-        try:
-            # Initialize AsyncClient with API key and timeout configuration
-            # Channel options configure deadline/timeout behavior for gRPC
-            channel_opts = [
-                ("grpc.max_receive_message_length", 4 * 1024 * 1024),  # 4MB
-                ("grpc.max_send_message_length", 4 * 1024 * 1024),  # 4MB
-            ]
-            
             self._async_client = AsyncClient(
                 api_key=self.api_key,
                 timeout=self._timeout_seconds,
-                # Additional channel configuration if AsyncClient supports it
-                # This is a placeholder for future gRPC channel option integration
             )
             logger.debug(f"xAI native AsyncClient initialized with {self._timeout_seconds}s timeout")
             return self._async_client
@@ -109,7 +92,7 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
             logger.error(f"Failed to initialize xAI AsyncClient: {mapped_error}")
             raise mapped_error
     
-    async def _close_async_client(self):
+    async def _close_async_client(self) -> None:
         """Close and cleanup native xAI AsyncClient."""
         if self._async_client is not None:
             try:
@@ -171,7 +154,7 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         max_tokens: int | None = None,
         system_prompt: str | None = None,
         streaming: bool = True,
-        **kwargs,
+        **kwargs: object,
     ) -> AsyncIterator[StreamChunk]:
         """Call xAI with native SDK or OpenAI-compatible fallback.
         
@@ -181,7 +164,7 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         if self._use_native_sdk:
             if not self._allow_openai_compat_fallback:
                 try:
-                    async_client = await self._ensure_async_client()
+                    await self._ensure_async_client()
                     # Use native SDK stream (implementation pending: xai-sdk-chat-stream-bridge)
                     # For now, fall through to fallback to avoid breaking existing behavior
                     logger.warning(
@@ -338,11 +321,18 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
             for tool in tools
         ]
     
-    async def __aenter__(self):
+    @override
+    async def __aenter__(self) -> Self:
         """Async context manager entry."""
         return self
     
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    @override
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         """Async context manager exit with cleanup."""
         await self._close_async_client()
-        return False
+        await super().__aexit__(exc_type, exc_val, exc_tb)

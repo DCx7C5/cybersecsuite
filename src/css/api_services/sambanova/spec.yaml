@@ -6,6 +6,8 @@ models:
   - Meta-Llama-3-70B-Instruct
   - Meta-Llama-3-8B-Instruct
 auth:
+  methods:
+    - api_key
   api_key_env: SAMBANOVA_API_KEY
   header: Authorization
   scheme: Bearer

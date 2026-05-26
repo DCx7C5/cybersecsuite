@@ -7,9 +7,16 @@ models:
   - gemini-1.5-pro
   - gemini-1.5-flash
 auth:
+  methods:
+    - api_key
+    - oauth2
   api_key_env: GEMINI_API_KEY
   header: x-goog-api-key
   scheme: ""
+  oauth_flows:
+    - flow: authorization_code
+      authorization_url: https://accounts.google.com/o/oauth2/v2/auth
+      token_url: https://oauth2.googleapis.com/token
 endpoints:
   completion: /models/{model}:generateContent
 capabilities:

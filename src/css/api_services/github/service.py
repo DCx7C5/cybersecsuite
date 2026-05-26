@@ -34,7 +34,7 @@ class GITHUBApiService(BaseApiServiceClient, StreamingHandler):
     ):
         super().__init__(
             provider_id=ProviderType.GITHUB,
-            api_key=api_key or os.getenv("GITHUB_API_KEY"),
+            api_key=api_key or os.getenv("GITHUB_TOKEN"),
             base_url=base_url,
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
@@ -42,7 +42,7 @@ class GITHUBApiService(BaseApiServiceClient, StreamingHandler):
     
     @override
     def _default_base_url(self) -> str:
-        return "https://api.github.com/v1"
+        return "https://models.inference.ai.azure.com/v1"
     
     @override
     async def get_models(self) -> list[ModelMetadata]:
@@ -72,7 +72,7 @@ class GITHUBApiService(BaseApiServiceClient, StreamingHandler):
         max_tokens: int | None = None,
         system_prompt: str | None = None,
         streaming: bool = True,
-        **kwargs,
+        **kwargs: object,
     ) -> AsyncIterator[StreamChunk]:
         """Call GitHub with OpenAI-compatible streaming."""
         formatted_messages = self._format_messages(messages, system_prompt)

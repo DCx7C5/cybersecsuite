@@ -7,6 +7,8 @@ models:
   - accounts/fireworks/models/llama-v2-13b-chat
   - accounts/fireworks/models/mistral-7b-instruct-4k
 auth:
+  methods:
+    - api_key
   api_key_env: FIREWORKS_API_KEY
   header: Authorization
   scheme: Bearer

@@ -7,6 +7,8 @@ models:
   - gpt-4-turbo
   - llama-2-7b
 auth:
+  methods:
+    - api_key
   api_key_env: GITHUB_TOKEN
   header: Authorization
   scheme: Bearer

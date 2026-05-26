@@ -25,7 +25,7 @@ logger = getLogger(__name__)
 class CloudflareApiService(BaseApiServiceClient, StreamingHandler):
     """Cloudflare Workers AI service using the OpenAI-compatible endpoint.
 
-    Requires CLOUDFLARE_API_KEY and CLOUDFLARE_ACCOUNT_ID env vars.
+    Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID env vars.
     Base URL: https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1
     """
 
@@ -40,7 +40,7 @@ class CloudflareApiService(BaseApiServiceClient, StreamingHandler):
         self._account_id = account_id or os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
         super().__init__(
             provider_id=ProviderType.CLOUDFLARE,
-            api_key=api_key or os.getenv("CLOUDFLARE_API_KEY"),
+            api_key=api_key or os.getenv("CLOUDFLARE_API_TOKEN"),
             base_url=base_url,
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
@@ -98,7 +98,7 @@ class CloudflareApiService(BaseApiServiceClient, StreamingHandler):
         max_tokens: int | None = None,
         system_prompt: str | None = None,
         streaming: bool = True,
-        **kwargs,
+        **kwargs: object,
     ) -> AsyncIterator[StreamChunk]:
         """Call Cloudflare with OpenAI-compatible streaming."""
         formatted_messages = self._format_messages(messages, system_prompt)

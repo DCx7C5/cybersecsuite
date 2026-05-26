@@ -8,7 +8,6 @@ Tests cover:
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Any
 
 import pytest
 

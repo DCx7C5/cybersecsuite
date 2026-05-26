@@ -5,6 +5,8 @@ api_type: openai_compatible
 models:
   - grok-beta
 auth:
+  methods:
+    - api_key
   api_key_env: XAI_API_KEY
   header: Authorization
   scheme: Bearer

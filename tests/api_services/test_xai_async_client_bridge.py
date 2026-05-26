@@ -11,8 +11,7 @@ Tests:
 
 import pytest
 import grpc
-from unittest.mock import AsyncMock, MagicMock, patch, call
-from typing import Any
+from unittest.mock import AsyncMock, MagicMock
 
 from css.api_services.xai.service import xAIApiService
 from css.core.exceptions import LLMApiServiceError, AuthError, RateLimitError, TimeoutError, GatewayError
