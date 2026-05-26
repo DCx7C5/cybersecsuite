@@ -121,6 +121,7 @@ being completed.
 | `db40-lane-marketplace`, marketplace cutover/remove rows | done | Preserve the retained symbols in canonical `marketplace.py`. |
 | `db40-memory-*`, `db40-lane-memory` | done | Canonical memory model ownership is reconciled; import cutover and snapshot payload contract are aligned. |
 | `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | in_progress | Lane C ownership map is locked so task/provider/user cutovers can proceed without re-deciding boundaries. |
+| `db40-basetree-candidate-inventory` | done | Inventory confirmed navigation URL/path/breadcrumb tree ownership stays with `MenuItem` (`BaseTreeModel`) and no extra tree adoption is needed in this tranche. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition and serialize navigation deterministically through `menu_id`. |
 | `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | in_progress | Freeze tagging as classification/filter/search/policy metadata and keep it out of menu/tree/navigation ownership. |
 | `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
@@ -153,6 +154,16 @@ Lane C owned write surface:
 - `src/css/core/accounts/accounts.md`
 
 Out-of-scope for Lane C: menu/tree/tagging/model-meta cleanup outside the listed files.
+
+### Lane D BaseTreeModel Candidate Inventory
+
+Inventory result (`db40-basetree-candidate-inventory`):
+- canonical owner remains `src/css/core/db/models/menu.py::MenuItem`
+  (`BaseTreeModel`) for navigation URL/path/breadcrumb behavior.
+- `src/css/modules/tags/models.py::Tag.parent_tag` stays tagging
+  classification metadata and is not promoted to navigation-tree ownership.
+- `src/css/core/marketplace/` remains catalog/install metadata and consumes
+  menu tree output rather than introducing a second tree ORM owner.
 
 ### Lane E Tagging Scope, Order, and Write Surface
 

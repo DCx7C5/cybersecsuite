@@ -104,6 +104,8 @@ siem/ consumes installed MCP connectors
 - `modules/mcps` owns MCP runtime config, connections, discovery, and tool calls.
 - `modules/tools` owns provider builtin tool metadata plus the shared execution registry surface.
 - `modules/siem` will consume installed MCP-backed connector packages, but does not own the marketplace.
+- Navigation hierarchy (URL/path/breadcrumb) remains owned by `core/menu` via
+  `MenuItem` (`BaseTreeModel`), not marketplace ORM rows.
 
 ## Known Drift / Planned Cleanup
 

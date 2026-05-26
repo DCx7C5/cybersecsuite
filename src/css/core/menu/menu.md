@@ -51,6 +51,17 @@
   relationships.
 - Validate the seeded Marketplace child routes are idempotent.
 
+## BaseTreeModel candidate inventory (`db40-basetree-candidate-inventory`)
+
+| Candidate surface | Current shape | Decision |
+|-------------------|---------------|----------|
+| `core/db/models/menu.py::MenuItem` | Already extends `BaseTreeModel`; owns `parent_id`, ordered children, and `breadcrumb()` helpers. | Keep as canonical navigation tree owner. |
+| `core/marketplace/*` catalog records | Catalog/install metadata only; no navigation tree lifecycle. | Keep non-tree ORM; consume sidebar hierarchy from `MenuItem`. |
+| `modules/tags/models.py::Tag` | Optional `parent_tag` hierarchy for classification metadata. | Keep in tagging lane scope; not promoted as navigation/breadcrumb tree owner. |
+
+Inventory outcome: navigation URL/path/breadcrumb behavior remains menu-first,
+with no additional `BaseTreeModel` adoption in this tranche.
+
 ## Menu contract baseline (db40-menu-sidebar-contract)
 
 - `MenuItem.menu_id` is the partition key for runtime navigation composition.
