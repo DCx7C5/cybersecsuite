@@ -27,6 +27,9 @@ def normalize_slug(text: str) -> str:
 class TagManager:
     """Tag CRUD backed by Tortoise ORM (Tag model).
 
+    The optional ``parent_tag`` taxonomy remains classification metadata rather
+    than a navigation/breadcrumb tree contract.
+
     Tag-to-resource assignments are handled by each module's own M2M
     junction tables (e.g. MarketplaceItemTag, HybridToolDefinitionTag).
     """

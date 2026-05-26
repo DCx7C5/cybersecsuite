@@ -62,6 +62,10 @@
 Inventory outcome: navigation URL/path/breadcrumb behavior remains menu-first,
 with no additional `BaseTreeModel` adoption in this tranche.
 
+Tag-adoption guardrail (`db40-basetree-tag-adoption-plan`):
+1. Keep `Tag` on `BaseModel` by default while tag hierarchy is classification metadata.
+2. Re-evaluate only if tagging explicitly needs navigation semantics (URL/path/breadcrumb routing, ordered tree traversal, and menu-style integrity constraints).
+
 ## Menu contract baseline (db40-menu-sidebar-contract)
 
 - `MenuItem.menu_id` is the partition key for runtime navigation composition.

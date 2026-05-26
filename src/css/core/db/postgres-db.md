@@ -492,6 +492,7 @@ implementation work must use these concrete boundaries:
 | Phase 40 model lanes | pending | Audit imports, preserve canonical models, cut consumers over, and validate ORM discovery/imports before removal. |
 | `db40-lane-task-provider-user`, `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-user-vs-account-boundary`, `db40-provider-model-cutover` | in_progress | Lock and apply ownership boundaries: task lifecycle in `tasks.py`, quota in `quotas.py`, internal user identity in `user.py`, tenant accounts in `accounts.py`, and provider/model catalog in `provider.py` + `llm_models.py`. |
 | `db40-basetree-candidate-inventory` | done | Navigation URL/path/breadcrumb tree ownership remains in `MenuItem` (`BaseTreeModel`); no additional tree ORM adoption required in this tranche. |
+| `db40-basetree-tag-adoption-plan` | done | Tag taxonomy stays classification metadata on `Tag.parent_tag`; no default `BaseTreeModel` adoption without explicit navigation semantics. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints` | pending | Seed partitions idempotently, implement `list_menu_items()` filter, initialize DB, and exercise each partition route. |
 | `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | in_progress | Keep tagging as classification/filter/search/policy metadata only; finalize naming/meta/runtime wire in the documented order without menu/tree/navigation scope creep. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
@@ -524,6 +525,8 @@ Lane C child todo execution constraints:
   hierarchy metadata, not navigation-tree ownership.
 - `src/css/core/marketplace/` continues to consume menu hierarchy and does not
   define an additional tree ORM model.
+- Tag-tree adoption is explicitly deferred unless tagging introduces
+  URL/path/breadcrumb navigation requirements.
 
 ### Lane E Tagging Contract
 
