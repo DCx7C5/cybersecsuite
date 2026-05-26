@@ -1,20 +1,10 @@
 """Canonical task lifecycle ORM models: TaskAssignment and TaskResult."""
 
 from datetime import datetime
+from typing import cast
 
 import msgspec
-from tortoise.fields import (
-    BigIntField,
-    ForeignKeyField,
-    CASCADE,
-    CharField,
-    CharEnumField,
-    IntField,
-    JSONField,
-    DatetimeField,
-    OneToOneField,
-    TextField,
-)
+from tortoise import fields
 from tortoise.indexes import Index
 
 from .base import BaseModel
@@ -32,7 +22,7 @@ class TaskAssignmentInfo(msgspec.Struct, frozen=True, kw_only=True):
     timeout_seconds: int
     retry_count: int
     max_retries: int
-    task_payload: dict | None
+    task_payload: dict[str, object] | None
     assigned_at: datetime
     updated_at: datetime
     started_at: datetime | None
@@ -46,7 +36,7 @@ class TaskResultInfo(msgspec.Struct, frozen=True, kw_only=True):
     id: int
     task_assignment_id: int
     result_text: str | None
-    result_metadata: dict | None
+    result_metadata: dict[str, object] | None
     error_message: str | None
     execution_time_ms: int | None
     created_at: datetime
@@ -54,41 +44,42 @@ class TaskResultInfo(msgspec.Struct, frozen=True, kw_only=True):
 
 class TaskAssignment(BaseModel):
     """Task assignment tracking with team isolation."""
-    id = BigIntField(primary_key=True)
-    team = ForeignKeyField(
+    id = fields.BigIntField(primary_key=True)
+    team = fields.ForeignKeyField(
         "models.Team",
         related_name="task_assignments",
-        on_delete=CASCADE,
+        on_delete=fields.CASCADE,
         db_index=True,
     )
-    orchestrator_id = BigIntField(db_index=True)
-    task_id = CharField(max_length=256, db_index=True, unique=True)
-    status = CharEnumField(
+    orchestrator_id = fields.BigIntField(db_index=True)
+    task_id = fields.CharField(max_length=256, db_index=True, unique=True)
+    status = fields.CharEnumField(
         TaskAssignmentStatus,
         default=TaskAssignmentStatus.PENDING,
         db_index=True,
     )
-    priority = CharEnumField(
+    priority = fields.CharEnumField(
         TaskPriority,
         default=TaskPriority.NORMAL,
     )
-    timeout_seconds = IntField(default=300)
-    retry_count = IntField(default=0)
-    max_retries = IntField(default=3)
-    task_payload = JSONField(
+    timeout_seconds = fields.IntField(default=300)
+    retry_count = fields.IntField(default=0)
+    max_retries = fields.IntField(default=3)
+    task_payload = fields.JSONField(
         null=True,
         description="Full task data (Query, metadata, etc.) for deserialization",
     )
-    assigned_at = DatetimeField(auto_now_add=True)
-    updated_at = DatetimeField(auto_now=True)
-    started_at = DatetimeField(null=True)
-    completed_at = DatetimeField(null=True)
-    assigned_member_id = CharField(max_length=256, null=True)
+    assigned_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    started_at = fields.DatetimeField(null=True)
+    completed_at = fields.DatetimeField(null=True)
+    assigned_member_id = fields.CharField(max_length=256, null=True)
 
     def to_domain(self) -> TaskAssignmentInfo:
+        team_id = cast(int, getattr(self, "team_id"))
         return TaskAssignmentInfo(
             id=self.id,
-            team_id=self.team_id,
+            team_id=team_id,
             orchestrator_id=self.orchestrator_id,
             task_id=self.task_id,
             status=self.status.value if hasattr(self.status, 'value') else self.status,
@@ -96,7 +87,7 @@ class TaskAssignment(BaseModel):
             timeout_seconds=self.timeout_seconds,
             retry_count=self.retry_count,
             max_retries=self.max_retries,
-            task_payload=self.task_payload,
+            task_payload=dict(self.task_payload or {}) if self.task_payload else None,
             assigned_at=self.assigned_at,
             updated_at=self.updated_at,
             started_at=self.started_at,
@@ -134,21 +125,22 @@ class TaskAssignment(BaseModel):
 
 class TaskResult(BaseModel):
     """Task execution result storage."""
-    task_assignment = OneToOneField(
+    task_assignment = fields.OneToOneField(
         "models.TaskAssignment",
         related_name="result",
-        on_delete=CASCADE,
+        on_delete=fields.CASCADE,
     )
-    result_text = TextField(null=True)
-    result_metadata = JSONField(null=True)
-    error_message = TextField(null=True)
-    execution_time_ms = IntField(null=True)
-    created_at = DatetimeField(auto_now_add=True)
+    result_text = fields.TextField(null=True)
+    result_metadata = fields.JSONField(null=True)
+    error_message = fields.TextField(null=True)
+    execution_time_ms = fields.IntField(null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
 
     def to_domain(self) -> TaskResultInfo:
+        task_assignment_id = cast(int, getattr(self, "task_assignment_id"))
         return TaskResultInfo(
             id=self.id,
-            task_assignment_id=self.task_assignment_id,
+            task_assignment_id=task_assignment_id,
             result_text=self.result_text,
             result_metadata=dict(self.result_metadata or {}) if self.result_metadata else None,
             error_message=self.error_message,
