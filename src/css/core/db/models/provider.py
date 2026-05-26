@@ -1,4 +1,4 @@
-"""API service provider registry — maps provider names to credential accounts."""
+"""External provider catalog; internal user/account identities are separate models."""
 
 from typing import override
 from tortoise import fields

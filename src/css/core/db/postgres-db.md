@@ -180,12 +180,12 @@ class OrchestratorInstance(BaseModel):
         table = "orchestrator_instance"
 ```
 
-#### `quotas.py` (2900 lines)
+#### `tasks.py` + `quotas.py` (task lifecycle + quota ownership split)
 
-Task tracking and quotas:
+Task lifecycle and quotas:
 
 ```python
-class TaskAssignment(Model):
+class TaskAssignment(Model):  # tasks.py
     """Task assigned to team member."""
     
     task_id: str
@@ -197,7 +197,7 @@ class TaskAssignment(Model):
     class Meta:
         table = "task_assignment"
 
-class TaskResult(Model):
+class TaskResult(Model):  # tasks.py
     """Result of completed task."""
     
     task_id: str
@@ -209,7 +209,7 @@ class TaskResult(Model):
     class Meta:
         table = "task_result"
 
-class TeamQuota(Model):
+class TeamQuota(Model):  # quotas.py
     """Resource quotas for team."""
     
     team: ForeignKeyField = ForeignKey(Team)
@@ -382,7 +382,7 @@ async def lifespan(app: FastAPI):
 - `scope.py` — ProjectScope, SessionScope (395 lines)
 - `team.py` — Team, Agent models (2103 lines)
 - `orchestrator.py` — OrchestratorInstance (755 lines)
-- `quotas.py` — TaskAssignment, TaskResult, TeamQuota (2900 lines)
+- `tasks.py` + `quotas.py` — `TaskAssignment`, `TaskResult`, and `TeamQuota` split by ownership
 
 ### Integration Status
 - ✅ Depends on: asgi (init in lifespan), logger, config (8 connections)
@@ -487,10 +487,28 @@ implementation work must use these concrete boundaries:
 | Pending todo group | Status | Steps and validation |
 |--------------------|--------|----------------------|
 | Phase 40 model lanes | pending | Audit imports, preserve canonical models, cut consumers over, and validate ORM discovery/imports before removal. |
+| `db40-lane-task-provider-user`, `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-user-vs-account-boundary`, `db40-provider-model-cutover` | in_progress | Lock and apply ownership boundaries: task lifecycle in `tasks.py`, quota in `quotas.py`, internal user identity in `user.py`, tenant accounts in `accounts.py`, and provider/model catalog in `provider.py` + `llm_models.py`. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints` | pending | Seed partitions idempotently, implement `list_menu_items()` filter, initialize DB, and exercise each partition route. |
 | `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | in_progress | Keep tagging as classification/filter/search/policy metadata only; finalize naming/meta/runtime wire in the documented order without menu/tree/navigation scope creep. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
 | `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
+
+### Lane C Task/Provider/User Contract
+
+Ownership map for Phase 40 lane C:
+- `TaskAssignment` and `TaskResult` live in `src/css/core/db/models/tasks.py`.
+- `TeamQuota` lives in `src/css/core/db/models/quotas.py`.
+- `User` is internal/admin identity in `src/css/core/db/models/user.py`.
+- `Account`, `UserProfile`, `Organization`, and related tenancy records live in
+  `src/css/core/db/models/accounts.py`.
+- Provider/model catalog ownership lives in
+  `src/css/core/db/models/provider.py` + `src/css/core/db/models/llm_models.py`.
+- `src/css/modules/tasks/models.py` remains an auto-discovery stub and does not
+  re-own task ORM models.
+
+Lane C child todo execution constraints:
+1. `db40-taskmodel-import-cutover` before `db40-quotas-task-residual-cleanup`.
+2. `db40-user-vs-account-boundary` before `db40-provider-model-cutover`.
 
 ### Lane E Tagging Contract
 

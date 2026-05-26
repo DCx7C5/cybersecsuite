@@ -1,3 +1,5 @@
+"""Canonical task lifecycle ORM models: TaskAssignment and TaskResult."""
+
 from datetime import datetime
 
 import msgspec

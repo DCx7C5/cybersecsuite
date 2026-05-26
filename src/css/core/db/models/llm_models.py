@@ -1,4 +1,4 @@
-"""LLM model ORM records and query helpers."""
+"""Provider-linked LLM model catalog ORM records and query helpers."""
 
 from datetime import datetime
 from enum import Enum

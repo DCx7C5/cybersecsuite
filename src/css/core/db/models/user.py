@@ -1,4 +1,4 @@
-"""Internal user account ORM model and query helpers."""
+"""Internal user/admin identity ORM model and query helpers."""
 
 from typing import override
 from datetime import UTC, datetime

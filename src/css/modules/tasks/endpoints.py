@@ -1,4 +1,4 @@
-"""Task CRUD endpoints."""
+"""Task CRUD endpoints using canonical ORM models from css.core.db.models.tasks."""
 
 from datetime import UTC, datetime
 from typing import Any

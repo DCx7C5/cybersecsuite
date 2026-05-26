@@ -21,6 +21,11 @@
 
 `accounts` belongs in `src/css/core/accounts/` only.
 
+Boundary clarification for Phase 40 lane C:
+- `core/db/models/user.py` owns internal/admin user identity.
+- `core/db/models/accounts.py` owns account/profile/organization tenancy records.
+- `core/db/models/provider.py` + `core/db/models/llm_models.py` own provider/model catalogs.
+
 ## Executable Owner Contract
 
 ### Current Symbols

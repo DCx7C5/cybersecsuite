@@ -1,4 +1,4 @@
-"""Core accounts models — user, profile, organization management with RBAC.
+"""Core account/org tenancy models for profile and RBAC boundaries.
 
 Models:
 - Account: User account with identity (email, username, created_at)
@@ -8,6 +8,8 @@ Models:
 - RoleAssignment: Bind Account to Role at Organization scope
 
 Integrated with core/roles for RBAC enforcement via path permissions.
+Internal user/admin identity is owned by `user.py`; provider catalog ownership
+is in `provider.py` + `llm_models.py`.
 """
 
 from datetime import datetime

@@ -1,4 +1,4 @@
-"""Task assignment, team quota, and task result models."""
+"""Canonical team quota ORM model; task assignment/result live in models.tasks."""
 
 from datetime import datetime
 
