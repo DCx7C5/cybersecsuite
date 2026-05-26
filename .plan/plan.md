@@ -31,6 +31,11 @@ and record remaining core connectivity and provider auth/SDK work with executabl
   its declared provider-client interface and reopened unsupported Phase 10
   claims because `core.sdks.SDKRegistry` has no registered providers while
   live callers use `api_services.ProviderRegistry`.
+- Workflow policy update: development workflow now requires passing
+  `--project pyrightconfig.json` for `basedpyright` commands.
+- DB model intake added: new Phase 40 todo chain records full implementation
+  of `core/db/models/machine.py`, `core/db/models/host.py`, and
+  `core/db/models/pathfs.py`.
 
 **Core Dependency/Reference Evidence**:
 

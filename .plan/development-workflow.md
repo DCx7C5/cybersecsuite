@@ -6,7 +6,8 @@
 **Plan directory**: `/home/daen/Projects/cybersecsuite/.plan/`
 **Source directory**: `/home/daen/Projects/cybersecsuite/src/css/`
 **Python venv**: `/home/daen/Projects/cybersecsuite/.venv/bin/python`
-**Type checker**: `uvx basedpyright` (default scope = touched files or smallest touched directory)
+**Type checker**: `uvx basedpyright --project pyrightconfig.json` (default scope = touched files or smallest touched directory)
+**Type-checker config**: `/home/daen/Projects/cybersecsuite/pyrightconfig.json`
 
 ---
 
@@ -273,10 +274,10 @@ for p in pathlib.Path('src/css/').rglob('*.py'):
 **Step 4 — Type-check touched Python files (reasonable scope)**
 ```bash
 # Preferred: run on the exact files you changed
-uvx basedpyright src/css/<path>/file1.py src/css/<path>/file2.py
+uvx basedpyright --project pyrightconfig.json src/css/<path>/file1.py src/css/<path>/file2.py
 
 # If the change spans a small cohesive area, run the directory instead
-uvx basedpyright src/css/<path>/
+uvx basedpyright --project pyrightconfig.json src/css/<path>/
 ```
 
 **Type-check rule**:
@@ -444,10 +445,10 @@ for name, locations in definitions.items():
 **Step 3 — Run basedpyright on touched files or directories**
 ```bash
 # Prefer touched files if the directories are noisy
-uvx basedpyright src/css/<dir1>/file1.py src/css/<dir2>/file2.py
+uvx basedpyright --project pyrightconfig.json src/css/<dir1>/file1.py src/css/<dir2>/file2.py
 
 # Otherwise run the smallest touched directories
-uvx basedpyright src/css/<dir1>/ src/css/<dir2>/
+uvx basedpyright --project pyrightconfig.json src/css/<dir1>/ src/css/<dir2>/
 ```
 
 **Step 4 — Fix remaining verification failures (5 turns max)**
@@ -559,10 +560,10 @@ else:
 **Step 2 — Run basedpyright on touched directories or explicit touched files**
 ```bash
 # Do not default to repo-wide type checking here; keep scope aligned to the phase work
-uvx basedpyright src/css/<dir1>/ src/css/<dir2>/
+uvx basedpyright --project pyrightconfig.json src/css/<dir1>/ src/css/<dir2>/
 
 # If needed, narrow to explicit touched files to avoid unrelated legacy noise
-uvx basedpyright src/css/<dir1>/file1.py src/css/<dir2>/file2.py
+uvx basedpyright --project pyrightconfig.json src/css/<dir1>/file1.py src/css/<dir2>/file2.py
 ```
 
 **Rule**:
