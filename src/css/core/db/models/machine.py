@@ -8,7 +8,7 @@ from tortoise.indexes import Index
 
 from .base import BaseModel
 from .mixins import TimestampMixin
-from ..fields import NameField, NonNegativeIntField
+from ..fields import NameField, NonNegativeIntField, VersionField, SHA512SumField
 
 
 class MachineInfo(msgspec.Struct, frozen=True, kw_only=True):
@@ -53,8 +53,8 @@ class Machine(BaseModel, TimestampMixin):
     name = NameField(max_length=255, db_index=True)
     hostname = fields.CharField(max_length=255, unique=True, db_index=True)
     os_type = fields.CharField(max_length=64, db_index=True)
-    os_version = fields.CharField(max_length=128, null=True)
-    machine_uuid = fields.CharField(max_length=36, unique=True, db_index=True)
+    os_version = VersionField(null=True)
+    machine_uuid = SHA512SumField(unique=True, db_index=True)
     is_active = fields.BooleanField(default=True, db_index=True)
     last_seen = fields.DatetimeField(null=True)
     cpu_cores = NonNegativeIntField(default=1)

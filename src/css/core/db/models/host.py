@@ -8,7 +8,7 @@ from tortoise.indexes import Index
 
 from .base import BaseModel
 from .mixins import TimestampMixin
-from ..fields import NameField
+from ..fields import NameField, IPv4Field, IPv6Field, LabelField
 
 
 class HostInfo(msgspec.Struct, frozen=True, kw_only=True):
@@ -55,10 +55,10 @@ class Host(BaseModel, TimestampMixin):
         related_name="hosts",
         description="Infrastructure machine containing this host",
     )
-    ipv4_address = fields.CharField(max_length=45, null=True, db_index=True)
-    ipv6_address = fields.CharField(max_length=45, null=True)
+    ipv4_address = IPv4Field(null=True)
+    ipv6_address = IPv6Field(null=True)
     fqdn = fields.CharField(max_length=255, null=True, unique=True, db_index=True)
-    host_role = fields.CharField(max_length=128, db_index=True)
+    host_role = LabelField(max_length=128, db_index=True)
     is_active = fields.BooleanField(default=True, db_index=True)
     last_seen = fields.DatetimeField(null=True)
 

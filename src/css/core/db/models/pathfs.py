@@ -9,7 +9,7 @@ from tortoise.indexes import Index
 
 from .base import BaseTreeModel
 from .mixins import TimestampMixin
-from ..fields import NonNegativeIntField
+from ..fields import NonNegativeIntField, PathField, LabelField
 
 
 class PathFSInfo(msgspec.Struct, frozen=True, kw_only=True):
@@ -59,8 +59,8 @@ class PathFS(BaseTreeModel, TimestampMixin):
         related_name="paths",
         description="Host containing this filesystem path",
     )
-    path = fields.CharField(max_length=1024, db_index=True)
-    path_type = fields.CharField(max_length=64, db_index=True)
+    path = PathField(max_length=1024, db_index=True)
+    path_type = LabelField(max_length=64, db_index=True)
     file_size = NonNegativeIntField(default=0)
     is_monitored = fields.BooleanField(default=True, db_index=True)
     last_scanned = fields.DatetimeField(null=True)
