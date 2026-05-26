@@ -39,10 +39,17 @@ MODULES = [
     # Planning and external A2A
     "css.modules.planner-dev",
     "css.modules.a2a_google",
+    # Infrastructure & extensibility
+    "css.modules.acp",
+    "css.modules.hooks",
+    "css.modules.jetbrains",
+    "css.modules.llm_proxy",
     # Domain modules (mostly independent)
     "css.modules.alerts",
+    "css.modules.approvals",
     "css.modules.compliance",
     "css.modules.evidence",
+    "css.modules.graphs",
     "css.modules.incidents",
     "css.modules.local_assist",
     "css.modules.mcps",
@@ -52,6 +59,8 @@ MODULES = [
     "css.modules.reports",
     "css.modules.scans",
     "css.modules.scheduler",
+    "css.modules.sessions",
+    "css.modules.siem",
     "css.modules.threat_intel",
     "css.modules.webhooks",
     "css.modules.workflows",
