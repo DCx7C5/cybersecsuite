@@ -305,7 +305,7 @@ class OrganizationMembership(BaseModel):
         )
 
     @classmethod
-    def from_domain(cls, info: OrganizationMembershipInfo) -> "OrganizationMembership":
+    def from_domain(cls, info: OrganizationMembershipInfo) -> OrganizationMembership:
         return cls(
             organization_id=info.organization_id,
             account_id=info.account_id,
