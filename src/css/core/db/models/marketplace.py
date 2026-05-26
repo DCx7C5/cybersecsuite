@@ -304,10 +304,14 @@ class MarketplaceItemTag(BaseModel, TimestampMixin):
     )
 
     def to_domain(self) -> MarketplaceItemTagInfo:
+        from typing import cast
+
+        marketplace_item_id = cast(int, getattr(self, "marketplace_item_id"))
+        tag_id = cast(int, getattr(self, "tag_id"))
         return MarketplaceItemTagInfo(
             id=self.id,
-            marketplace_item_id=self.marketplace_item_id,
-            tag_id=self.tag_id,
+            marketplace_item_id=marketplace_item_id,
+            tag_id=tag_id,
             created_at=self.created_at,
             updated_at=self.updated_at,
         )
@@ -323,9 +327,7 @@ class MarketplaceItemTag(BaseModel, TimestampMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "marketplace_item_tag"
-        table_verbose = "Marketplace Item Tag"
-        table_verbose_plural = "Marketplace Item Tags"
-
+        table_description = "M2M junction between MarketplaceItem and Tag"
         unique_together = (
             ("marketplace_item_id", "tag_id"),
         )

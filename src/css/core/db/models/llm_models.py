@@ -386,10 +386,9 @@ class LLMModelTag(BaseModel, TimestampMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "llm_model_tag"
-        table_verbose = "LLM Model Tag"
-        table_verbose_plural = "LLM Model Tags"
+        table_description = "M2M junction between LLMModel and Tag"
         unique_together = (
-            ("llm_model", "tag"),
+            ("llm_model_id", "tag_id"),
         )
         indexes = (
             Index(fields=["llm_model_id", "tag_id"]),

@@ -215,6 +215,11 @@ class SkillDefinitionModelTag(BaseModel, TimestampMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "skill_definition_model_tag"
-        table_description = "M2M relationship between skill definitions and tags"
-        unique_together = [("skill_model_id", "tag_id")]
-        indexes = [models.Index(fields=["skill_model_id", "tag_id"])]  # type: ignore[reportPrivateImportUsage]
+        table_description = "M2M junction between SkillDefinitionModel and Tag"
+        unique_together = (
+            ("skill_model_id", "tag_id"),
+        )
+        indexes = (
+            models.Index(fields=["skill_model_id", "tag_id"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["tag_id", "skill_model_id"]),  # type: ignore[reportPrivateImportUsage]
+        )

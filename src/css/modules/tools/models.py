@@ -1,6 +1,9 @@
 """Tortoise ORM models for tool persistence."""
 
-from typing import override
+from datetime import datetime
+from typing import cast, override
+
+import msgspec
 from tortoise import fields, models
 
 from css.core.db.fields import DescriptionField, NameField
@@ -75,20 +78,54 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
     from_schema = from_domain
 
 
-class HybridToolDefinitionTag(BaseModel):
+class HybridToolDefinitionTagInfo(msgspec.Struct, frozen=True, kw_only=True):
+    """Domain value type for hybrid tool definition/tag relation."""
+
+    id: int
+    hybrid_tool_id: int
+    tag_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class HybridToolDefinitionTag(BaseModel, TimestampMixin):
     """M2M junction table linking HybridToolDefinition to Tag."""
+
     hybrid_tool = fields.ForeignKeyField(
         "models.HybridToolDefinition",
-        related_name="tags_m2m"
+        related_name="tags_m2m",
     )
     tag = fields.ForeignKeyField(
         "models.Tag",
-        related_name="hybrid_tools"
+        related_name="hybrid_tools",
     )
-    created_at = fields.DatetimeField(auto_now_add=True)
+
+    def to_domain(self) -> HybridToolDefinitionTagInfo:
+        hybrid_tool_id = cast(int, getattr(self, "hybrid_tool_id"))
+        tag_id = cast(int, getattr(self, "tag_id"))
+        return HybridToolDefinitionTagInfo(
+            id=self.id,
+            hybrid_tool_id=hybrid_tool_id,
+            tag_id=tag_id,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: HybridToolDefinitionTagInfo) -> "HybridToolDefinitionTag":
+        return cls(
+            id=info.id,
+            hybrid_tool_id=info.hybrid_tool_id,
+            tag_id=info.tag_id,
+        )
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "hybrid_tool_tag"
-        table_description = "M2M relationship between hybrid tools and tags"
-        unique_together = [("hybrid_tool_id", "tag_id")]
-        indexes = [models.Index(fields=["hybrid_tool_id", "tag_id"])]  # type: ignore[reportPrivateImportUsage]
+        table_description = "M2M junction between HybridToolDefinition and Tag"
+        unique_together = (
+            ("hybrid_tool_id", "tag_id"),
+        )
+        indexes = (
+            models.Index(fields=["hybrid_tool_id", "tag_id"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["tag_id", "hybrid_tool_id"]),  # type: ignore[reportPrivateImportUsage]
+        )
