@@ -63,8 +63,9 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: explicitly announce every TODO, TASK, or PHASE completion, give every tool execution a clear headline, and always end with a normal summary**
 - **ABSOLUTE: always prefer async Python whenever possible**
 - **ABSOLUTE: we never use try: except: for imports, make sure missing package is installed via uv, updated and synced**
-- **ABSOLUTE: avoid `Any` and never use typing comments** — prefer exact `TypedDict`s over `Any`, and never write `# type: ...`
+- **ABSOLUTE: avoid `Any` and never use typing comments** — prefer exact `TypedDict`s over `Any`, and never use typing in comments like `# type: ...`
 - **ABSOLUTE: use the required stack choices** — `bun`, not `npm`; `aiohttp`, not `httpx`
+- **ABSOLUTE: follow OOP best practices, avoid OOP antipatterns** - depending on context
 - **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**
 - **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
 - **ABSOLUTE: never use bare `Exception`** — create custom exceptions with help from `src/core/exceptions.py`
