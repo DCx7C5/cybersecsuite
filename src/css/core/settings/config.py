@@ -12,6 +12,15 @@ PYTHONUNBUFFERED = True
 AUTO_CREATE_POSTGRES_DB = bool(getenv('AUTO_CREATE_DATABASE', 'true'))
 LOG_LEVEL = 'DEBUG' if DEBUG else getenv('LOG_LEVEL', 'INFO').upper()
 
+
+# ── Debug Settings ──────────────────────────────────────────────────────────
+
+if DEBUG:
+    LOG_LEVEL = 'DEBUG'
+    AUTO_CREATE_POSTGRES_DB = True
+    CACHE_ENABLED = True
+
+
 # ── Module Import Order ──────────────────────────────────────────────────────────
 
 MODULES = [
@@ -28,18 +37,16 @@ MODULES = [
     "css.modules.strategies",
     "css.modules.chat",
     # Planning and external A2A
-    "css.modules.planer",
+    "css.modules.planner-dev",
     "css.modules.a2a_google",
     # Domain modules (mostly independent)
     "css.modules.alerts",
     "css.modules.compliance",
     "css.modules.evidence",
     "css.modules.incidents",
-    "css.modules.rag_vector",
     "css.modules.local_assist",
     "css.modules.mcps",
     "css.modules.mitre",
-    "css.modules.obsidian_memory",
     "css.modules.projects",
     "css.modules.prompts",
     "css.modules.reports",
@@ -305,7 +312,7 @@ MARKETPLACE_CONFIG = {
         'MARKETPLACE_BASE_URL',
         'https://raw.githubusercontent.com/DCx7C5/ai-marketplace/refs/heads/main'
     ),
-    'install_root': getenv('MARKETPLACE_INSTALL_ROOT', '~/.css/packages'),
+    'install_root': getenv('MARKETPLACE_INSTALL_ROOT', '~/.css/marketplace'),
     'update_check_interval': int(getenv('MARKETPLACE_UPDATE_CHECK_INTERVAL', '3600')),  # 1 hour
     'download_timeout': int(getenv('MARKETPLACE_DOWNLOAD_TIMEOUT', '60')),  # seconds
     'max_package_size': int(getenv('MARKETPLACE_MAX_PACKAGE_SIZE', str(100 * 1024 * 1024))),  # 100MB

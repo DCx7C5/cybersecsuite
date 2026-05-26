@@ -3,20 +3,23 @@ CyberSecSuite CLI entry point.
 
 Provides commands for:
 - Database initialization
-- FastAPI server startup
+- FastAPI server startup (managed subprocess)
 - Health checks
 """
 
 from css.core.logger import getLogger
 import asyncio
 import os
+import signal
+from pathlib import Path
 from typing import Any, Protocol, cast
 
 import click
-import uvicorn
 
-from css.config import POSTGRES_DATABASE, A2A_SERVER
+from css.core.settings.config import POSTGRES_DATABASE, A2A_SERVER
+from css.core.asgi.process import UvicornProcessManager
 from css.core.loader import build_tortoise_connection, build_tortoise_modules, build_tortoise_db_url
+from css.core.settings.config import LOG_LEVEL
 
 log = getLogger(__name__)
 
@@ -46,14 +49,13 @@ def _require_str(value: object, key_name: str) -> str:
     return value
 
 
-def _serve_impl(
+async def _serve_impl(
     host: str | None,
     port: int | None,
     reload: bool,
     workers: int,
     log_level: str | None,
 ) -> None:
-    from css.config import LOG_LEVEL
 
     configured_host = A2A_SERVER.get("host", "127.0.0.1")
     server_host = str(host or os.environ.get("ASGI_HOST") or configured_host)
@@ -62,21 +64,56 @@ def _serve_impl(
     server_port = int(port if port is not None else (os.environ.get("ASGI_PORT") or configured_port))
     effective_log_level = str(log_level or LOG_LEVEL).lower()
 
+    frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+    has_frontend_build = frontend_dist.is_dir()
     click.echo(f"Starting CyberSecSuite on http://{server_host}:{server_port}")
+    if has_frontend_build:
+        click.echo("  Frontend: serving static build")
+    else:
+        click.echo("  Frontend: NOT available (no dist/ build found)")
+        click.echo(f"    Build with: cd src/frontend && bun run build")
+        click.echo(f"    Dev server: cd src/frontend && bun run dev  (→ http://localhost:5173)")
     if reload:
         click.echo("  Hot-reload enabled (dev mode)")
     elif workers > 1:
         click.echo(f"  Workers: {workers}")
+    click.echo("Press Ctrl+C to stop the server.")
 
-    uvicorn.run(
-        # String import required for --reload; fine for normal start too
-        "css.core.asgi.app:app",
+    shutdown = asyncio.Event()
+
+    def _on_shutdown() -> None:
+        if shutdown.is_set():
+            return
+        click.echo("\nGracefully shutting down...")
+        shutdown.set()
+
+    loop = asyncio.get_event_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        try:
+            loop.add_signal_handler(sig, _on_shutdown)
+        except NotImplementedError:
+            pass
+
+    manager = UvicornProcessManager(
         host=server_host,
         port=server_port,
         reload=reload,
-        workers=workers if not reload else 1,
+        workers=workers,
         log_level=effective_log_level,
     )
+
+    try:
+        await manager.start()
+        await shutdown.wait()
+    finally:
+        click.echo("Waiting for active requests to drain...")
+        await manager.stop()
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            try:
+                loop.remove_signal_handler(sig)
+            except (ValueError, NotImplementedError):
+                pass
+        click.echo("Server stopped.")
 
 
 async def init_tortoise_db(db_config: dict[str, Any], apps: dict[str, list[str]] | None = None) -> None:
@@ -165,7 +202,10 @@ def serve(
     log_level: str | None,
 ) -> None:
     """Start the CyberSecSuite ASGI server."""
-    _serve_impl(host, port, reload, workers, log_level)
+    try:
+        asyncio.run(_serve_impl(host, port, reload, workers, log_level))
+    except KeyboardInterrupt:
+        click.echo("\nServer stopped.")
 
 
 @cli.command(name="run")
@@ -182,7 +222,10 @@ def run_alias(
     log_level: str | None,
 ) -> None:
     """Alias for 'serve'."""
-    _serve_impl(host, port, reload, workers, log_level)
+    try:
+        asyncio.run(_serve_impl(host, port, reload, workers, log_level))
+    except KeyboardInterrupt:
+        click.echo("\nServer stopped.")
 
 
 

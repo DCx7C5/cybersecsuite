@@ -50,10 +50,24 @@ dependencies = [
 ]
 
 [project.entry-points."css.modules"]
+alerts = "css.modules.alerts.endpoints"
+a2a_google = "css.modules.a2a_google.endpoints"
+chat = "css.modules.chat.endpoints"
+compliance = "css.modules.compliance.endpoints"
+evidence = "css.modules.evidence.endpoints"
+incidents = "css.modules.incidents.endpoints"
+llm_proxy = "css.modules.llm_proxy.endpoints"
+mitre = "css.modules.mitre.endpoints"
+reports = "css.modules.reports.endpoints"
+scheduler = "css.modules.scheduler.endpoints"
+scans = "css.modules.scans.endpoints"
 tags = "css.modules.tags.endpoints"
 tasks = "css.modules.tasks.endpoints"
 teams = "css.modules.teams.endpoints"
+threat_intel = "css.modules.threat_intel.endpoints"
 tools = "css.modules.tools.endpoints"
+webhooks = "css.modules.webhooks.endpoints"
+jetbrains = "css.modules.jetbrains.endpoints"
 
 [project.entry-points."css.api_services"]
 anthropic = "css.api_services.anthropic"
@@ -79,7 +93,6 @@ nscale = "css.api_services.nscale"
 nvidia = "css.api_services.nvidia"
 opencode = "css.api_services.opencode"
 perplexity = "css.api_services.perplexity"
-google_a2a = "css.api_services.google_a2a"
 
 [project.scripts]
 cybersecsuite      = "css.manager:main_sync"
@@ -178,4 +191,3 @@ python_version = "3.14"
 strict = true
 warn_unused_configs = true
 exclude = [".claude", ".venv", "__pycache__"]
-
