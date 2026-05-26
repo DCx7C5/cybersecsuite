@@ -11,6 +11,14 @@ For every analyzed Python file, output includes:
   "<relative/path/to/file.py>": {
     "consumed_by": ["<files that import this file>"],
     "consumes": ["<files this file imports>"],
+    "missing_imported_symbols": [
+      {
+        "line": 123,
+        "module": "pkg.module",
+        "imported_name": "MissingName",
+        "resolved_file": "<relative/pkg/module.py>"
+      }
+    ],
     "markdown_references": {
       "file_terms": ["<relative/path.py>", "<file.py>", "<file>"],
       "file_hits": [
@@ -60,11 +68,13 @@ import fnmatch
 import json
 import re
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Iterable, Literal, NamedTuple, TypedDict
+from typing import Iterable, Literal, NamedTuple, TypeVar, TypedDict
 
 SymbolKind = Literal["class", "function", "async_function"]
 ImportKind = Literal["import", "from"]
+MapResult = TypeVar("MapResult")
 
 
 class MarkdownHit(TypedDict):
@@ -96,7 +106,15 @@ class DependencyGraphEntry(TypedDict):
     consumes: list[str]
 
 
+class MissingImportedSymbol(TypedDict):
+    line: int
+    module: str
+    imported_name: str
+    resolved_file: str
+
+
 class AnalyzerOutputEntry(DependencyGraphEntry, total=False):
+    missing_imported_symbols: list[MissingImportedSymbol]
     markdown_references: MarkdownReferences
 
 
@@ -120,6 +138,7 @@ class ParsedPythonFile(NamedTuple):
     rel: str
     imports: tuple[ImportRecord, ...] = ()
     symbols: tuple[SymbolDef, ...] = ()
+    exported_names: tuple[str, ...] = ()
     error: str | None = None
 
 
@@ -381,6 +400,62 @@ def _resolve_import_record(
     return None
 
 
+def _assigned_names(target: ast.expr) -> set[str]:
+    if isinstance(target, ast.Name):
+        return {target.id}
+    if isinstance(target, (ast.Tuple, ast.List)):
+        names: set[str] = set()
+        for element in target.elts:
+            names.update(_assigned_names(element))
+        return names
+    return set()
+
+
+def _statement_bound_names(statements: list[ast.stmt]) -> set[str]:
+    names: set[str] = set()
+    for node in statements:
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            names.add(node.name)
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                names.update(_assigned_names(target))
+        elif isinstance(node, ast.AnnAssign):
+            names.update(_assigned_names(node.target))
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                names.add(alias.asname or alias.name.split(".", maxsplit=1)[0])
+        elif isinstance(node, ast.ImportFrom):
+            for alias in node.names:
+                if alias.name != "*":
+                    names.add(alias.asname or alias.name)
+        elif isinstance(node, (ast.If, ast.While)):
+            names.update(_statement_bound_names(node.body))
+            names.update(_statement_bound_names(node.orelse))
+        elif isinstance(node, (ast.For, ast.AsyncFor)):
+            names.update(_assigned_names(node.target))
+            names.update(_statement_bound_names(node.body))
+            names.update(_statement_bound_names(node.orelse))
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            for item in node.items:
+                if item.optional_vars is not None:
+                    names.update(_assigned_names(item.optional_vars))
+            names.update(_statement_bound_names(node.body))
+        elif isinstance(node, (ast.Try, ast.TryStar)):
+            names.update(_statement_bound_names(node.body))
+            names.update(_statement_bound_names(node.orelse))
+            names.update(_statement_bound_names(node.finalbody))
+            for handler in node.handlers:
+                names.update(_statement_bound_names(handler.body))
+        elif isinstance(node, ast.Match):
+            for case in node.cases:
+                names.update(_statement_bound_names(case.body))
+    return names
+
+
+def _top_level_bound_names(tree: ast.Module) -> tuple[str, ...]:
+    return tuple(sorted(_statement_bound_names(tree.body)))
+
+
 def _read_and_parse_python(path: Path, root: Path) -> ParsedPythonFile:
     rel = _rel_posix(path, root)
     try:
@@ -426,7 +501,13 @@ def _read_and_parse_python(path: Path, root: Path) -> ParsedPythonFile:
             symbols.append(SymbolDef(name=node.name, kind="function", line=node.lineno))
 
     symbols.sort(key=lambda s: (s.name, s.line, s.kind))
-    return ParsedPythonFile(path=path, rel=rel, imports=tuple(imports), symbols=tuple(symbols))
+    return ParsedPythonFile(
+        path=path,
+        rel=rel,
+        imports=tuple(imports),
+        symbols=tuple(symbols),
+        exported_names=_top_level_bound_names(tree),
+    )
 
 
 def _read_markdown(path: Path, root: Path) -> MarkdownDoc:
@@ -438,10 +519,14 @@ def _read_markdown(path: Path, root: Path) -> MarkdownDoc:
         return MarkdownDoc(path=path, rel=rel, lines=(), error=f"{type(exc).__name__}: {exc}")
 
 
-async def _map_with_concurrency(items: list[Path], limit: int, func):
+async def _map_with_concurrency(
+    items: list[Path],
+    limit: int,
+    func: Callable[[Path], MapResult],
+) -> list[MapResult]:
     semaphore = asyncio.Semaphore(limit)
 
-    async def run_one(item: Path):
+    async def run_one(item: Path) -> MapResult:
         async with semaphore:
             return await asyncio.to_thread(func, item)
 
@@ -513,7 +598,7 @@ def _file_reference_terms(rel: str) -> list[str]:
     return deduped
 
 
-def _symbol_reference_index(symbols: list[SymbolDef]) -> dict[str, SymbolReference]:
+def _symbol_reference_index(symbols: Iterable[SymbolDef]) -> dict[str, SymbolReference]:
     indexed: dict[str, SymbolReference] = {}
     for symbol in symbols:
         if symbol.name not in indexed:
@@ -556,10 +641,10 @@ def _build_markdown_references(
         )
 
     # Deduplicate file hits because rel/path/name/stem may match the same line.
-    seen_file_hits: set[tuple[str, str, int, str]] = set()
+    seen_file_hits: set[tuple[str, int, str]] = set()
     deduped_file_hits: list[MarkdownHit] = []
     for hit in file_hits:
-        key = (hit["term"], hit["markdown_file"], hit["line"], hit["snippet"])
+        key = (hit["markdown_file"], hit["line"], hit["snippet"])
         if key not in seen_file_hits:
             seen_file_hits.add(key)
             deduped_file_hits.append(hit)
@@ -597,7 +682,7 @@ def _build_dependency_graph(
     parsed_by_path: dict[Path, ParsedPythonFile],
     module_roots: list[Path],
     module_index: dict[str, Path],
-) -> dict[str, dict[str, list[str]]]:
+) -> dict[str, DependencyGraphEntry]:
     graph: dict[str, DependencyGraphEntry] = {
         parsed.rel: {"consumed_by": [], "consumes": []}
         for parsed in sorted(parsed_by_path.values(), key=lambda p: p.rel)
@@ -627,6 +712,51 @@ def _build_dependency_graph(
         data["consumes"] = sorted(set(data["consumes"]))
 
     return graph
+
+
+def _find_missing_imported_symbols(
+    parsed: ParsedPythonFile,
+    root: Path,
+    module_roots: list[Path],
+    module_index: dict[str, Path],
+    parsed_by_path: dict[Path, ParsedPythonFile],
+) -> list[MissingImportedSymbol]:
+    missing: list[MissingImportedSymbol] = []
+    for record in parsed.imports:
+        if record.kind != "from" or not record.imported_name or record.imported_name == "*":
+            continue
+
+        for module_name in _absolute_module_for_import_from(
+            record.module,
+            record.level,
+            parsed.path,
+            root,
+            module_roots,
+        ):
+            imported_module = _resolve_module_name(f"{module_name}.{record.imported_name}", module_index)
+            if imported_module is not None:
+                break
+
+            resolved_module = _resolve_module_name(module_name, module_index)
+            if resolved_module is None:
+                continue
+
+            target = parsed_by_path.get(resolved_module)
+            if target is not None and record.imported_name not in target.exported_names:
+                missing.append(
+                    {
+                        "line": record.lineno,
+                        "module": module_name,
+                        "imported_name": record.imported_name,
+                        "resolved_file": _rel_posix(resolved_module, root),
+                    }
+                )
+            break
+
+    return sorted(
+        missing,
+        key=lambda item: (item["line"], item["module"], item["imported_name"], item["resolved_file"]),
+    )
 
 
 async def analyze_codebase(
@@ -692,6 +822,13 @@ async def analyze_codebase(
         entry: AnalyzerOutputEntry = {
             "consumed_by": full_graph[parsed.rel]["consumed_by"],
             "consumes": full_graph[parsed.rel]["consumes"],
+            "missing_imported_symbols": _find_missing_imported_symbols(
+                parsed,
+                root,
+                module_roots,
+                module_index,
+                parsed_by_path,
+            ),
         }
         if include_markdown_refs:
             entry["markdown_references"] = _build_markdown_references(
