@@ -93,11 +93,6 @@ logs/
 # EXCEPTION: .plan/session.db is tracked for todo management
 !.plan/session.db
 
-# Plan files — local only, not for version control
-.plan/plan.md
-.plan/memory.md
-.plan/checkpoints/
-
 # Dependencies (using uv, not pip freeze)
 node_modules/
 
@@ -143,3 +138,5 @@ src/dashboard/static/js/
 
 resume
 .ollama/
+
+src/legacy/

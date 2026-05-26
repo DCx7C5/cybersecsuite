@@ -38,9 +38,9 @@ cat src/css/api_services/api_services.md
 
 ---
 
-## CRITICAL MOST IMPORTANT RULES NEVER FORGET
+# CRITICAL MOST IMPORTANT RULES NEVER FORGET:
 
-### Environment
+## Environment
 - **ABSOLUTE: your new workingdir is `.plan/`. `~/.{claude,copilot}` are all obsolete.**
 - **ABSOLUTE: you track TODOs, TASKs & PHASEs in `.plan/session.db`** 
 - **ABSOLUTE: use `.venv/bin/` or source `.venv/bin/activate`**
@@ -49,14 +49,14 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: use `scripts/codebase_dependency_analyzer.py` as often as possible. Pipe into `| jq ''`**
 - **ABSOLUTE: rule violations are fixed on the fly, or if implications are too heavy, a TODO in session.db is created.**
 
-### Session & Project Planning
+## Session & Project Planning
 - **ABSOLUTE: Git track everything. use worktrees for parallel working subagents if possible**
 - **ABSOLUTE: `.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
 - **ABSOLUTE: local planning Markdown exists across `src/css/` and must stay synchronized with `session.db` during work** — read the nearest file first (`<module>.md` in modules, nearest `plan.md` elsewhere) so each area document reflects current todos and milestones
 - **ABSOLUTE: there is no backwards compatibility requirement** — if your changes make code deprecated, delete the deprecated code directly
 - **ABSOLUTE: use lazy imports only when clearly justified, and preserve existing directory, file, and content patterns when adding or changing code**
 
-### Code & Execution
+## Code & Execution
 - **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
 - **ABSOLUTE: `@dataclass` is legacy, and `@dataclass + ABC` is forbidden** — when you touch one, migrate it toward `msgspec.Struct`, and fix mixed patterns immediately
 - **ABSOLUTE: keep chat responses bare and under 500 words unless impossible**
@@ -72,14 +72,14 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: hook ownership is split and must stay split** — observer hooks live in `src/css/modules/hooks/registry.py` (`@on_event`), mutating/blocking hooks live in `src/css/modules/hooks/interceptors.py` (`@pre_hook` / `@post_hook`)
 - **ABSOLUTE: use explicit imports `from X import Y` where applicable, and do not create `"Expected type XY, got None instead"` warnings**
 
-### Architecture & Structure
+## Architecture & Structure
 - **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**
 - **ABSOLUTE: planning hierarchy is always PHASE > TASK > TODO** — every new TODO must belong to exactly one TASK and exactly one PHASE
 - **ABSOLUTE: [.plan/](../.plan) is the working directory, and [.venv/bin/](../.venv/bin) is the Python entry point**
 - **ABSOLUTE: follow existing directory, documentation, and code patterns, and use [.plan/architecture/*.md](architecture) plus the nearest local planning markdown as the architecture source of truth**
 - **ABSOLUTE: use `src/css/core/settings/config.py` `MODULES` list (line 17) as the canonical module import-order reference** — for ordering disputes, doc updates, or loader-order decisions, this list wins.
 
-### Workflow & Tooling
+## Workflow & Tooling
 - **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
 - **ABSOLUTE: in PLAN MODE, keep `.plan/plan.md`, relevant `.plan/architecture/*.md`, and local planning Markdown synchronized with [.plan/session.db](session.db) while working**
 - **ABSOLUTE: update `memory.md` and `checkpoints.md` at the end of every PHASE** — not after every task and not only at end-of-session
@@ -232,16 +232,16 @@ The live module inventory changes faster than this rules file. Use `src/css/modu
 `src/css/modules/modules.md` as the canonical directory index.
 
 Current module directories include:
-`a2a_google`, `a2a_internal`, `agents`, `alerts`, `chat`, `compliance`, `evidence`,
-`incidents`, `llm_proxy`, `local_assist`, `mcps`, `mitre`, `obsidian_memory`, `planer`,
-`projects`, `prompts`, `rag_vector`, `reports`, `scans`, `scheduler`, `siem`, `skills`,
-`strategies`, `tags`, `tasks`, `teams`, `threat_intel`, `tools`, `triage`, `webhooks`,
-and `workflows`.
+`a2a_google`, `a2a_internal`, `agents`, `alerts`, `approvals`, `chat`, `compliance`,
+`evidence`, `graphs`, `hooks`, `incidents`, `jetbrains`, `llm_proxy`, `local_assist`,
+`mcps`, `mitre`, `planner-dev`, `projects`, `prompts`, `reports`, `scans`,
+`scheduler`, `sessions`, `siem`, `skills`, `strategies`, `tags`, `tasks`, `teams`,
+`threat_intel`, `tools`, `triage`, `webhooks`, and `workflows`.
 
 **Binding ownership overrides**:
-- `accounts`, `events`, `marketplace`, and `memory` belong in `src/css/core/`.
-- `accounts`, `events`, `marketplace`, and `memory` are core-only now; corresponding legacy module directories must not exist under `src/css/modules/`.
-- `working_dir` is retired terminology; use `src/css/core/workspace/` and the general session/project directory structure instead.
+- `accounts`, `events`, `marketplace`, `memory`, `rag_vector`, and `rag_graph` belong in `src/css/core/`.
+- Those core-owned areas must not have competing legacy module directories under `src/css/modules/`.
+- `working_dir` is retired terminology. No implemented replacement package is confirmed; read the sessions, projects, and permissions owner docs before introducing a session-output manager.
 
 **Moved to `core/` (infrastructure, not business logic)**:
 - `accounts` → `core/accounts/`
@@ -249,7 +249,8 @@ and `workflows`.
 - `events` → `core/events/`
 - `marketplace` → `core/marketplace/`
 - `memory` → `core/memory/` (legacy module package removed)
-- `working_dir` → `core/workspace/` (multi-workspace registry with per-entity expandable dir list)
+- `rag_vector` and `rag_graph` → currently `core/rag_vector/` and `core/rag_graph/`; a future move under `core/memory/` requires source/import/API migration
+- `working_dir` → unresolved session-output boundary; the historical `core/workspace/` proposal is not implemented
 
 **Loader.py auto-discovers**:
 - `endpoints.py` — FastAPI routers (if present, module is skipped silently if missing)

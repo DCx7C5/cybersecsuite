@@ -88,7 +88,7 @@ for f, data in d.items():
     "consumed_by": ["src/css/modules/foo/endpoints.py"],
     "consumes": ["src/css/core/types.py/base_entity.py"],
     "markdown_references": {
-      "file_hits": [{"term": "types.py", "markdown_file": ".plan/types.md", "line": 42, "snippet": "..."}],
+      "file_hits": [{"term": "types.py", "markdown_file": "src/css/modules/foo/foo.md", "line": 42, "snippet": "..."}],
       "symbols": {"FooType": {"kinds": ["class"], "definitions": [{"line": 12, "kind": "class"}], "hits": []}}
     }
   }
@@ -196,8 +196,8 @@ cat "src/css/modules/$(echo TODO_ID | cut -d'-' -f1)/$(echo TODO_ID | cut -d'-' 
 cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/api_services/api_services.md" 2>/dev/null
 
-# Read architecture doc if phase mentions it:
-# Phase 6 → read .plan/types.md (Phase 6 section)
+# Read an architecture doc only if the todo or local owner doc requires it:
+# Phase 6 → read the owning src/css markdown first, then relevant .plan/architecture/*.md
 # Phase 14 → cat .plan/architecture/observability.md
 # Phase 21 → cat .plan/architecture/sdks.md
 
@@ -327,7 +327,7 @@ sed -i 's/- \[ \] \(.*TODO_ID.*\)/- [x] \1/' "src/css/modules/<module>/<module>.
 sed -i "s/Last Updated: .*/Last Updated: $(date +%Y-%m-%d)/" "src/css/modules/<module>/<module>.md"
 ```
 
-**Step 2 — Update .plan/plan.md**
+**Step 2 — Refresh the global snapshot**
 ```sql
 -- Find the phase section and update todo count
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE phase = 'PHASE_NAME' GROUP BY phase;
@@ -468,9 +468,9 @@ sed -i "/TASK_NAME/a **Status**: ✅ DONE — $(date +%Y-%m-%d)" "src/css/module
 SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE task = 'TASK_NAME';
 ```
 ```bash
-# Update the phase section in .plan/types.md:
-# Find the phase section, update todo counts to match session.db
-sed -i "s/| Phase X — NAME | N | D | P | B |/| Phase X — NAME | N | D | P | B |/" .plan/types.md
+# Update the matching phase row and active-todo summary in the compact index:
+# `.plan/plan.md` contains navigation and live-count snapshot only.
+sed -i "s/| X | NAME | N | D | P | B | A |/| X | NAME | N | D | P | B | A |/" .plan/plan.md
 ```
 
 **Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` at task completion in normal flow. If this task finishes the phase, continue with WORKFLOW 3. Exception: refresh `.plan/memory.md` immediately if the task changed architecture baselines or planning/source-of-truth rules.
@@ -597,7 +597,7 @@ Use Task tool with:
 
 **Step 1 — Update all .plan/ files (CHECKLIST)**
 ```bash
-# [ ] .plan/types.md — mark phase ✅ DONE, update CURRENT STATUS
+# [ ] .plan/plan.md — refresh global phase snapshot and active-todo summary
 # [ ] .plan/memory.md — update phase table row (done count, blocked count)
 # [ ] .plan/checkpoints.md — add phase checkpoint entry
 # [ ] .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)

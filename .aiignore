@@ -19,7 +19,6 @@ __pycache__/
 
 # Virtual environments & dependencies
 .venv/
-!.venv/bin/
 node_modules/
 *.egg-info/
 
@@ -52,19 +51,32 @@ logs/
 *.log
 tmp/
 temp/
-!**data/
 # Test artefacts
 htmlcov/
 coverage.xml
 .coverage
+
+
+# AI Ignore Exclude
+
+!.venv/bin/
+!**data/
+!/home/daen/Projects/ai-marketplace/index.json
+!pyrightconfig.json
+!pyproject.toml
+!uv.lock
+!docker-compose.yml
+!Makefile
+!manage.py
+
+
+
 
 # Large / binary assets
 *.js.map
 dump.rdb
 **/*.json
 *.json
-!pyrightconfig.json
-!/home/daen/Projects/ai-marketplace/index.json
 resume
 legacy_docs/
 src/legacy/
