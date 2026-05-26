@@ -23,6 +23,23 @@ from css.core.settings.config import LOG_LEVEL
 
 log = getLogger(__name__)
 
+_CORE_DB_MODEL_PATHS: tuple[str, ...] = (
+    "css.core.db.models.accounts",
+    "css.core.db.models.events",
+    "css.core.db.models.llm_models",
+    "css.core.db.models.marketplace",
+    "css.core.db.models.memory",
+    "css.core.db.models.menu",
+    "css.core.db.models.orchestrator",
+    "css.core.db.models.permissions",
+    "css.core.db.models.provider",
+    "css.core.db.models.quotas",
+    "css.core.db.models.scope",
+    "css.core.db.models.tasks",
+    "css.core.db.models.team",
+    "css.core.db.models.user",
+)
+
 
 class _TortoiseApi(Protocol):
     @staticmethod
@@ -47,6 +64,28 @@ def _require_str(value: object, key_name: str) -> str:
     if not isinstance(value, str):
         raise click.ClickException(f"Invalid config value type for {key_name}: expected str")
     return value
+
+
+def _build_tortoise_apps(discovered_modules: dict[str, list[str]] | None = None) -> dict[str, dict[str, list[str] | str]]:
+    """Build Tortoise app mapping in the format expected by Tortoise >= 0.22."""
+    modules = discovered_modules or build_tortoise_modules()
+    model_paths = sorted(
+        {
+            model_path
+            for module_paths in modules.values()
+            for model_path in module_paths
+        }
+    )
+    for path in _CORE_DB_MODEL_PATHS:
+        if path not in model_paths:
+            model_paths.append(path)
+    model_paths.sort()
+    return {
+        "models": {
+            "models": model_paths,
+            "default_connection": "default",
+        }
+    }
 
 
 async def _serve_impl(
@@ -129,7 +168,7 @@ async def init_tortoise_db(db_config: dict[str, Any], apps: dict[str, list[str]]
 
     tortoise_config: dict[str, Any] = {
         "connections": {"default": build_tortoise_connection(db_config)},
-        "apps": apps or build_tortoise_modules(),
+        "apps": _build_tortoise_apps(apps),
     }
 
     password = str(db_config.get("password") or "")
@@ -170,13 +209,12 @@ def init_db(
     }
 
     apps = build_tortoise_modules()
-    if not apps:
-        click.echo("No model modules discovered — database will be empty.")
-        return
-
-    click.echo(f"Discovered {len(apps)} app modules with models:")
-    for app_name, modules in apps.items():
-        click.echo(f"  - {app_name}: {', '.join(modules)}")
+    if apps:
+        click.echo(f"Discovered {len(apps)} app modules with models:")
+        for app_name, modules in apps.items():
+            click.echo(f"  - {app_name}: {', '.join(modules)}")
+    else:
+        click.echo("No module model packages discovered; proceeding with core DB models only.")
 
     async def _init():
         await init_tortoise_db(db_config, apps)
