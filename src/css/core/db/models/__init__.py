@@ -37,6 +37,7 @@ from .scope import ProjectScope, SessionScope
 from .menu import MenuItem, MenuItemInfo
 from .provider import ApiServiceProvider
 from .machine import Machine, MachineInfo, MachineManager
+from .host import Host, HostInfo, HostManager
 
 __all__ = [
     "BaseModel",
@@ -65,4 +66,7 @@ __all__ = [
     "Machine",
     "MachineInfo",
     "MachineManager",
+    "Host",
+    "HostInfo",
+    "HostManager",
 ]
