@@ -1,10 +1,11 @@
 """External provider catalog; internal user/account identities are separate models."""
 
 from typing import override
+
 from tortoise import fields
 
-from css.core.db.models.base import BaseModel
-from css.core.db.models.mixins import TimestampMixin
+from .base import BaseModel
+from .mixins import TimestampMixin
 
 
 class ApiServiceProvider(BaseModel, TimestampMixin):
@@ -14,7 +15,7 @@ class ApiServiceProvider(BaseModel, TimestampMixin):
     display_name = fields.CharField(max_length=255, default="")
     enabled = fields.BooleanField(default=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "api_service_provider"
         ordering = ["name"]
 

@@ -482,7 +482,7 @@ implementation work must use these concrete boundaries:
 |------|------------------------------------------|
 | `src/css/core/db/models/base.py`, `src/css/core/db/models/mixins.py` | `BaseModel`, `BaseTreeModel`, timestamp/version/soft-delete/frontmatter policies. |
 | `src/css/core/db/models/memory.py`, `src/css/core/db/models/marketplace.py`, `src/css/core/db/models/tasks.py`, `src/css/core/db/models/quotas.py` | Canonical model consolidation lanes. |
-| `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider/user/account/model ownership and startup seeding. |
+| `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider/user/account/model ownership and startup seeding. `provider.py` owns the provider table; Provider↔LLMModel relation remains deferred. |
 | `src/css/core/db/models/menu.py` | `MenuItem`, `MenuItemManager.roots()`, `sync_default_menu_items()`. |
 | `src/css/core/menu/endpoints.py` | `list_menu_items(menu_id: str | None = None)` partitioned runtime API target. |
 | `src/css/core/settings/config.py` | DB connection bootstrap configuration after settings ownership reconciliation. |
@@ -506,6 +506,8 @@ Ownership map for Phase 40 lane C:
   `src/css/core/db/models/accounts.py`.
 - Provider/model catalog ownership lives in
   `src/css/core/db/models/provider.py` + `src/css/core/db/models/llm_models.py`.
+- `LLMModel.provider` remains a temporary slug bridge until
+  `orm-provider-llmmodel-relation` introduces the explicit relation.
 - `src/css/modules/tasks/models.py` remains an auto-discovery stub and does not
   re-own task ORM models.
 

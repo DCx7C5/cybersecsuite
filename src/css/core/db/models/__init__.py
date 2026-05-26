@@ -35,6 +35,7 @@ from .mixins import (
 
 from .scope import ProjectScope, SessionScope
 from .menu import MenuItem, MenuItemInfo
+from .provider import ApiServiceProvider
 
 __all__ = [
     "BaseModel",
@@ -59,4 +60,5 @@ __all__ = [
     "SessionScope",
     "MenuItem",
     "MenuItemInfo",
+    "ApiServiceProvider",
 ]

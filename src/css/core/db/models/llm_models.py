@@ -73,6 +73,7 @@ class LLMModelManager:
         return await LLMModel.get_or_none(name=name)
 
     async def by_provider(self, provider: ModelProvider | str) -> list[LLMModel]:
+        """Filter by provider slug until FK ownership relation is introduced."""
         provider_value = _enum_value(provider)
         return await LLMModel.filter(provider=provider_value).order_by("family", "name", "id")
 
@@ -101,6 +102,8 @@ class LLMModel(BaseModel, TimestampMixin):
     """Persistent metadata for one available LLM model."""
 
     name = fields.CharField(max_length=128, unique=True, db_index=True)
+    # Temporary bridge: provider slug stays denormalized here until the
+    # explicit Provider↔LLMModel relation todo lands.
     provider = fields.CharField(max_length=64, db_index=True)
     family = fields.CharField(max_length=64, db_index=True)
     display_name = LabelField(max_length=255, db_index=True)
@@ -213,7 +216,10 @@ class LLMModel(BaseModel, TimestampMixin):
 
     @classmethod
     def from_metadata(cls, metadata: ModelMetadata) -> LLMModel:
-        pricing = metadata.pricing or ModelPricing(0.0, 0.0)
+        pricing = metadata.pricing or ModelPricing(
+            input_tokens_per_1k=0.0,
+            output_tokens_per_1k=0.0,
+        )
         return cls(
             name=metadata.id,
             provider=metadata.provider.value,
@@ -348,10 +354,12 @@ class LLMModelTag(BaseModel, TimestampMixin):
     )
 
     def to_domain(self) -> LLMModelTagInfo:
+        llm_model_id = cast(int, getattr(self, "llm_model_id"))
+        tag_id = cast(int, getattr(self, "tag_id"))
         return LLMModelTagInfo(
             id=self.id,
-            llm_model_id=self.llm_model_id,
-            tag_id=self.tag_id,
+            llm_model_id=llm_model_id,
+            tag_id=tag_id,
             created_at=self.created_at,
             updated_at=self.updated_at,
         )

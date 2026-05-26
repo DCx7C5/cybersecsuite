@@ -12,8 +12,8 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 | File | Primary model responsibility | Reconciliation focus |
 |------|------------------------------|----------------------|
 | `base.py`, `mixins.py`, `enums.py` | Shared model base, lifecycle/version/frontmatter mixins, database enums. | Apply semantic fields and enum rules consistently. |
-| `accounts.py`, `user.py`, `provider.py` | Account/organization, internal user/admin, external provider identity. | Preserve the explicit user vs provider-account boundary. |
-| `llm_models.py` | Model metadata, pricing/capability persistence and query helpers. | Establish provider relationship before seeding/upsert work. |
+| `accounts.py`, `user.py`, `provider.py` | Account/organization, internal user/admin, external provider identity. | `provider.py` is the canonical provider table owner; preserve the explicit user vs provider-account boundary. |
+| `llm_models.py` | Model metadata, pricing/capability persistence and query helpers. | Keep the provider slug field as a bridge; Provider↔LLMModel relation remains explicit deferred work. |
 | `marketplace.py` | Canonical marketplace model surface. `marketplace_catalog.py` removed in Phase 40. | No further reconciliation needed. |
 | `memory.py` | Memory entry/snapshot persistence. | Phase 40 aligns consumers with the canonical surface. |
 | `menu.py` | Navigation tree and `menu_id` partitioning. | Complete deterministic seed/filter/tree constraints. |
@@ -133,6 +133,7 @@ Lane C canonical ownership:
 - `user.py`: internal user/admin runtime identity
 - `accounts.py`: account/profile/organization tenancy records; Account owns identity
 - `provider.py` + `llm_models.py`: provider and model catalog ownership
+- deferred boundary: Provider↔LLMModel relation stays in `orm-provider-llmmodel-relation`
 - `modules/tasks/models.py`: auto-discovery stub only; no module-local task ORM ownership
 - boundary phrase retained: user/admin vs provider-account
 
