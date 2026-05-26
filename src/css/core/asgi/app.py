@@ -27,6 +27,7 @@ import os
 import ssl
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
@@ -35,6 +36,7 @@ from tortoise import Tortoise
 
 from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
 from css.core.db.models.menu import sync_default_menu_items
+from css.core.exceptions import BaseCoreException, ConfigurationError
 from css.core.loader import (
     build_tortoise_connection,
     build_tortoise_modules,
@@ -45,6 +47,7 @@ from css.core.marketplace.registry import wire_registry_events
 from css.core.marketplace.seeder import seed_marketplace_on_startup
 from css.core.menu.endpoints import router as menu_router
 from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
+
 
 log = getLogger(__name__)
 
@@ -133,7 +136,7 @@ def create_app() -> FastAPI:
                 try:
                     async with MarketplaceSeeder() as seeder:
                         await seeder.check_for_updates()
-                except Exception as exc:
+                except BaseCoreException as exc:
                     log.warning("Marketplace periodic update check failed: %s", exc)
 
                 try:
@@ -155,15 +158,15 @@ def create_app() -> FastAPI:
                 await Tortoise.generate_schemas(safe=True)
             db_ready = True
             marketplace_db_ready = True
-        except Exception as exc:
-            log.warning("DB init failed; continuing without DB-backed startup services: %s", exc)
+        except BaseCoreException as db_init_error:
+            log.warning("DB init failed; continuing without DB-backed startup services: %s", db_init_error)
             try:
                 await Tortoise.close_connections()
-            except Exception:
+            except BaseCoreException:
                 pass
             try:
                 # Keep marketplace available even when broader model graph is broken.
-                marketplace_db_config = dict(POSTGRES_DATABASE)
+                marketplace_db_config: dict[str, Any] = dict(POSTGRES_DATABASE)
                 if not marketplace_db_config.get("host"):
                     marketplace_db_config["host"] = "127.0.0.1"
                 if not marketplace_db_config.get("port"):
@@ -191,8 +194,8 @@ def create_app() -> FastAPI:
                     await Tortoise.generate_schemas(safe=True)
                 marketplace_db_ready = True
                 log.info("Marketplace-only DB init succeeded")
-            except Exception as marketplace_exc:
-                log.warning("Marketplace-only DB init failed: %s", marketplace_exc)
+            except BaseCoreException as marketplace_db_error:
+                log.warning("Marketplace-only DB init failed: %s", marketplace_db_error)
 
         # Load async tool-registry runtime state after DB init.
         if db_ready:
@@ -210,16 +213,16 @@ def create_app() -> FastAPI:
         try:
             wire_registry_events()
             log.info("Registry event invalidation wired")
-        except Exception as exc:
-            log.warning("Failed to wire registry events: %s", exc)
+        except BaseCoreException as wire_error:
+            log.warning("Failed to wire registry events: %s", wire_error)
 
         if marketplace_db_ready:
             try:
                 await sync_default_menu_items()
                 await seed_marketplace_on_startup(force=False)
                 marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
-            except Exception as exc:
-                log.warning("Marketplace startup integration failed: %s", exc)
+            except BaseCoreException as startup_error:
+                log.warning("Marketplace startup integration failed: %s", startup_error)
 
         try:
             yield
@@ -255,14 +258,14 @@ def create_app() -> FastAPI:
         _app.include_router(marketplace_router)
         _app.include_router(marketplace_router, prefix="/api")
         log.info("Mounted core endpoints: marketplace")
-    except Exception as e:
-        log.warning(f"Failed to mount marketplace endpoints: {e}")
+    except BaseCoreException as marketplace_mount_error:
+        log.warning(f"Failed to mount marketplace endpoints: {marketplace_mount_error}")
 
     try:
         _app.include_router(menu_router)
         log.info("Mounted core endpoints: menu")
-    except Exception as e:
-        log.warning(f"Failed to mount menu endpoints: {e}")
+    except BaseCoreException as menu_mount_error:
+        log.warning(f"Failed to mount menu endpoints: {menu_mount_error}")
 
     # Auto-discover and mount all modules/*/endpoints.py routers
     mounted = mount_app_routers(_app)
@@ -285,6 +288,7 @@ def create_app() -> FastAPI:
         log.info("No frontend dist at %s — frontend not served", frontend_dist)
 
     return _app
+
 
 
 app = create_app()
