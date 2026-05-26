@@ -45,8 +45,10 @@ class ThinkingConfig(msgspec.Struct, frozen=True, kw_only=True):
     effort: Literal["low", "medium", "high"] | None = None
     
     def __post_init__(self):
-        """Validate budget_tokens is positive if specified."""
+        """Validate thinking configuration values."""
         if self.budget_tokens is not None and self.budget_tokens <= 0:
             raise ValueError(
                 f"budget_tokens must be positive, got {self.budget_tokens}"
             )
+        if self.effort is not None and self.effort not in {"low", "medium", "high"}:
+            raise ValueError(f"effort must be one of low|medium|high, got {self.effort}")

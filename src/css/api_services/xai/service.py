@@ -332,7 +332,8 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
-    ) -> None:
+    ) -> bool:
         """Async context manager exit with cleanup."""
         await self._close_async_client()
         await super().__aexit__(exc_type, exc_val, exc_tb)
+        return False
