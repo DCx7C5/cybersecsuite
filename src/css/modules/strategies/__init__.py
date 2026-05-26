@@ -11,6 +11,7 @@ from .implementations import (
     DirectStrategy,
     LatencyOptimizedStrategy,
     PrependContextStrategy,
+    TokenAwareStrategy,
     get_strategy,
 )
 
@@ -27,5 +28,6 @@ __all__ = [
     "BalancedStrategy",
     "CostOptimizedStrategy",
     "LatencyOptimizedStrategy",
+    "TokenAwareStrategy",
     "get_strategy",
 ]

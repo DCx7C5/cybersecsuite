@@ -4,6 +4,7 @@
 from typing import Any
 
 from css.modules.a2a_google.enums import ResponseInjectionStrategy
+from css.core.types import BaseMessage
 
 
 class DirectStrategy:
@@ -74,6 +75,74 @@ class LatencyOptimizedStrategy:
             return "ollama"
         latencies = latency_map or {}
         return min(providers, key=lambda provider: latencies.get(provider, 9999.0))
+
+
+class TokenAwareStrategy:
+    """Select provider based on message token count and provider context window limits.
+
+    Routes to providers capable of handling the estimated token count. Falls back
+    to providers with larger context windows when message size exceeds limits.
+
+    Uses CSSLLMClient.estimate_tokens() for heuristic token counting.
+    """
+
+    async def choose_provider(
+        self,
+        providers: list[str],
+        messages: list[BaseMessage] | None = None,
+        provider_limits: dict[str, int] | None = None,
+        default_model: str = "gpt-4",
+    ) -> str:
+        """Choose provider based on token count and context window limits.
+
+        Args:
+            providers: List of available provider IDs
+            messages: Message list to estimate tokens for
+            provider_limits: Context window size per provider (tokens)
+                            e.g., {"openai/gpt-4": 128000, "mistral": 32000}
+            default_model: Model ID to use for token estimation
+
+        Returns:
+            Selected provider ID
+        """
+        if not providers:
+            return "ollama"
+
+        if not messages:
+            # No message context — use first provider
+            return providers[0]
+
+        # Estimate total token count
+        try:
+            from css.core.sdks.css_client import CSSLLMClient
+            
+            client = CSSLLMClient()
+            # Convert BaseMessage to dict format for estimation
+            msg_dicts = [
+                {"role": m.role, "content": m.content}
+                for m in messages
+            ]
+            token_count = await client.estimate_tokens(default_model, msg_dicts)
+        except Exception:
+            # If estimation fails, use first provider (graceful degradation)
+            return providers[0]
+
+        # If no limits provided, use first provider
+        if not provider_limits:
+            return providers[0]
+
+        # Find providers that can handle the token count
+        suitable_providers = [
+            p for p in providers
+            if provider_limits.get(p, 128000) >= token_count
+        ]
+
+        # Return first suitable provider, or largest-context provider as fallback
+        if suitable_providers:
+            return suitable_providers[0]
+
+        # Fallback: return provider with largest context window
+        return max(providers, key=lambda p: provider_limits.get(p, 128000))
 
 
 def get_strategy(strategy: ResponseInjectionStrategy):
