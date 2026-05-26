@@ -30,22 +30,22 @@ class PathFSInfo(msgspec.Struct, frozen=True, kw_only=True):
 class PathFSManager:
     """Query helpers for ``PathFS``."""
 
-    async def active(self) -> list["PathFS"]:
+    async def active(self) -> list[PathFS]:
         return await PathFS.filter(is_monitored=True).order_by("host_id", "path", "id")
 
-    async def by_host(self, host_id: int) -> list["PathFS"]:
+    async def by_host(self, host_id: int) -> list[PathFS]:
         return await PathFS.filter(host_id=host_id).order_by("path", "id")
 
-    async def by_path(self, host_id: int, path: str) -> "PathFS | None":
+    async def by_path(self, host_id: int, path: str) -> PathFS | None:
         return await PathFS.get_or_none(host_id=host_id, path=path)
 
-    async def by_type(self, path_type: str) -> list["PathFS"]:
+    async def by_type(self, path_type: str) -> list[PathFS]:
         return await PathFS.filter(path_type=path_type).order_by("host_id", "path", "id")
 
-    async def roots(self, host_id: int) -> list["PathFS"]:
+    async def roots(self, host_id: int) -> list[PathFS]:
         return await PathFS.filter(host_id=host_id, parent_id=None).order_by("path", "id")
 
-    async def monitored_paths(self) -> list["PathFS"]:
+    async def monitored_paths(self) -> list[PathFS]:
         return await PathFS.filter(
             is_monitored=True,
         ).order_by("host_id", "path", "id")
@@ -83,7 +83,7 @@ class PathFS(BaseTreeModel, TimestampMixin):
         )
 
     @classmethod
-    def from_domain(cls, info: PathFSInfo) -> "PathFS":
+    def from_domain(cls, info: PathFSInfo) -> PathFS:
         return cls(
             host_id=info.host_id,
             path=info.path,
@@ -95,23 +95,23 @@ class PathFS(BaseTreeModel, TimestampMixin):
         )
 
     @override
-    async def ordered_children(self) -> list["PathFS"]:  # type: ignore[reportIncompatibleMethodOverride]
+    async def ordered_children(self) -> list[PathFS]:  # type: ignore[reportIncompatibleMethodOverride]
         """Load direct children in stable order by path."""
 
         parent_id: int | None = getattr(self, "parent_id", None)
-        return cast(list["PathFS"], await type(self).filter(parent_id=parent_id).order_by("path", "id"))
+        return cast(list[PathFS], await type(self).filter(parent_id=parent_id).order_by("path", "id"))
 
     @override
     async def siblings(  # type: ignore[reportIncompatibleMethodOverride]
         self,
         *,
         include_self: bool = False,
-    ) -> list["PathFS"]:
+    ) -> list[PathFS]:
         """Load sibling paths in display order."""
 
         parent_id: int | None = getattr(self, "parent_id", None)
         items = cast(
-            list["PathFS"],
+            list[PathFS],
             await type(self).filter(parent_id=parent_id).order_by("path", "id"),
         )
         if include_self:
@@ -130,7 +130,7 @@ class PathFS(BaseTreeModel, TimestampMixin):
         ordering = ["host_id", "path"]
 
 
-async def sync_default_paths() -> list["PathFS"]:
+async def sync_default_paths() -> list[PathFS]:
     """Seed common localhost paths on first start."""
     from .host import sync_default_hosts
 

@@ -38,7 +38,7 @@ class MenuItemManager:
         parent_id: int,
         *,
         menu_id: str | None = None,
-    ) -> list["MenuItem"]:
+    ) -> list[MenuItem]:
         query = MenuItem.filter(parent_id=parent_id)
         if menu_id is not None:
             query = query.filter(menu_id=menu_id)
@@ -71,7 +71,7 @@ class MenuItemManager:
         menu_id: str | None = None,
         parent_id: int | None = None,
         order: int | None = None,
-    ) -> "MenuItem":
+    ) -> MenuItem:
         resolved_order = (
             await self.next_order(parent_id, menu_id=menu_id)
             if order is None

@@ -31,19 +31,19 @@ class MachineInfo(msgspec.Struct, frozen=True, kw_only=True):
 class MachineManager:
     """Query helpers for ``Machine``."""
 
-    async def active(self) -> list["Machine"]:
+    async def active(self) -> list[Machine]:
         return await Machine.filter(is_active=True).order_by("hostname", "id")
 
-    async def by_hostname(self, hostname: str) -> "Machine | None":
+    async def by_hostname(self, hostname: str) -> Machine | None:
         return await Machine.get_or_none(hostname=hostname)
 
-    async def by_uuid(self, machine_uuid: str) -> "Machine | None":
+    async def by_uuid(self, machine_uuid: str) -> Machine | None:
         return await Machine.get_or_none(machine_uuid=machine_uuid)
 
-    async def by_os_type(self, os_type: str) -> list["Machine"]:
+    async def by_os_type(self, os_type: str) -> list[Machine]:
         return await Machine.filter(os_type=os_type).order_by("hostname", "id")
 
-    async def inactive_machines(self) -> list["Machine"]:
+    async def inactive_machines(self) -> list[Machine]:
         return await Machine.filter(is_active=False).order_by("hostname", "id")
 
 
@@ -79,7 +79,7 @@ class Machine(BaseModel, TimestampMixin):
         )
 
     @classmethod
-    def from_domain(cls, info: MachineInfo) -> "Machine":
+    def from_domain(cls, info: MachineInfo) -> Machine:
         return cls(
             name=info.name,
             hostname=info.hostname,
@@ -103,7 +103,7 @@ class Machine(BaseModel, TimestampMixin):
         ordering = ["hostname"]
 
 
-async def sync_default_machines() -> list["Machine"]:
+async def sync_default_machines() -> list[Machine]:
     """Seed localhost machine on first start."""
     localhost = await Machine.get_or_none(hostname="localhost")
     if localhost is not None:

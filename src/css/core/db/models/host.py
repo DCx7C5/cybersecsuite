@@ -30,19 +30,19 @@ class HostInfo(msgspec.Struct, frozen=True, kw_only=True):
 class HostManager:
     """Query helpers for ``Host``."""
 
-    async def active(self) -> list["Host"]:
+    async def active(self) -> list[Host]:
         return await Host.filter(is_active=True).order_by("name", "id")
 
-    async def by_machine(self, machine_id: int) -> list["Host"]:
+    async def by_machine(self, machine_id: int) -> list[Host]:
         return await Host.filter(machine_id=machine_id).order_by("name", "id")
 
-    async def by_ipv4(self, ipv4_address: str) -> "Host | None":
+    async def by_ipv4(self, ipv4_address: str) -> Host | None:
         return await Host.get_or_none(ipv4_address=ipv4_address)
 
-    async def by_fqdn(self, fqdn: str) -> "Host | None":
+    async def by_fqdn(self, fqdn: str) -> Host | None:
         return await Host.get_or_none(fqdn=fqdn)
 
-    async def by_role(self, host_role: str) -> list["Host"]:
+    async def by_role(self, host_role: str) -> list[Host]:
         return await Host.filter(host_role=host_role).order_by("name", "id")
 
 
@@ -80,7 +80,7 @@ class Host(BaseModel, TimestampMixin):
         )
 
     @classmethod
-    def from_domain(cls, info: HostInfo) -> "Host":
+    def from_domain(cls, info: HostInfo) -> Host:
         return cls(
             name=info.name,
             machine_id=info.machine_id,
@@ -104,7 +104,7 @@ class Host(BaseModel, TimestampMixin):
         ordering = ["name"]
 
 
-async def sync_default_hosts() -> list["Host"]:
+async def sync_default_hosts() -> list[Host]:
     """Seed localhost host on first start."""
     localhost_host = await Host.get_or_none(name="localhost")
     if localhost_host is not None:
