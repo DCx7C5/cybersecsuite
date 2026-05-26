@@ -209,6 +209,13 @@ def create_app() -> FastAPI:
                 len(tool_registry.hybrid_tools),
             )
 
+        # Register model discovery providers for dynamic model fetching.
+        try:
+            from css.core.models.discovery_integration import register_model_discovery_providers
+            await register_model_discovery_providers()
+        except BaseCoreException as discovery_error:
+            log.warning("Failed to register model discovery providers: %s", discovery_error)
+
         # Wire registry cache invalidation to marketplace events.
         try:
             wire_registry_events()
