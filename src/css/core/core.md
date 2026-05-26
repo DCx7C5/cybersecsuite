@@ -462,12 +462,12 @@ Subsequent calls to `getLogger(name)` return cached instance (no re-initializati
 
 ---
 
-# core/prompt_cache/ — LLM Prompt Caching (Phase 11, renamed from caching/)
+# core/prompt_cache/ — LLM Prompt Caching
 
 **Tracking rule**: Query `.plan/session.db` for live prompt-cache todo status.
 
 **Location**: `src/css/core/prompt_cache/`  
-**Status**: 🔴 Pending
+**Status**: 🟡 Partial (active owner docs live in `core/prompt_cache/prompt_cache.md`)
 
 ### Overview
 
@@ -486,7 +486,13 @@ Tier 2: Native provider caching — Anthropic / OpenAI / DeepSeek (Phase 11)
 core/prompt_cache/
 ├── __init__.py
 ├── manager.py              — PromptCacheManager (Tier 1 + Tier 2 orchestration)
-└── anthropic_injector.py   — CacheBreakpointInjector (cache_control breakpoints)
+├── exact_match_cache.py    — Redis exact-match cache backend
+├── streaming_buffer.py     — stream assembly before durable cache write
+├── native_cache_tracking.py — provider-native cache usage parsing
+├── anthropic_breakpoints.py — explicit Anthropic breakpoint helper (optional)
+├── cost_savings_tracker.py  — estimated token/cost savings accounting
+├── metrics_exporter.py      — OpenObserve metrics transport (partial)
+└── types.py                 — cache capability and stats structs
 ```
 
 > Gemini `cachedContent` → deferred to future phase. Add `gemini_cache.py` only when needed.
@@ -533,7 +539,7 @@ core/cache/
 ├── base.py          — CacheBackend protocol, UnifiedCache orchestrator
 ├── models.py        — CacheEntry, CacheStats (Tortoise ORM)
 ├── exceptions.py    — CacheError, CacheMiss, CacheWriteError
-└── plan.md          — (this section, will become standalone file)
+└── plan.md          — canonical cache owner doc
 ```
 
 ### Migration todos (session.db history)
@@ -630,7 +636,7 @@ uv pip install llama-cpp-python --reinstall --no-cache-dir --force-reinstall
 >
 > **Pattern rules enforced here**:
 > - `__all__` lives ONLY in `__init__.py` (never in types.py, enums.py, endpoints.py)
-> - Never mix `@dataclass` with `ABC` on the same class
+> - Never use `@dataclass`
 > - Use `msgspec.Struct` for value types, `Protocol` for structural contracts (Phase 6)
 > - ORM entities inherit `css.core.db.models.base.BaseModel`; use `css.core.db.fields` helpers when semantics match
 > - HTTP clients: always `aiohttp`, never `httpx`

@@ -2,7 +2,7 @@
 Prompt caching remains a separate owner from general `core/cache`; any later
 package relocation requires explicit source/import migration.
 
-**Location target**: `src/css/core/prompt_cache/`
+**Location**: `src/css/core/prompt_cache/`
 **Status**: PARTIAL Phase 11 implementation; 8/11 todos done, streaming contract and metrics transport pending, Gemini blocked/deferred
 
 ## Purpose
