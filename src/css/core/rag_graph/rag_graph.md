@@ -44,7 +44,9 @@ depending on it.
 - `core/rag_vector`: owns the hybrid retrieval entry point and calls into `core/rag_graph` for graph/hybrid retrieval.
 - `core/memory`: graph retrieval results flow back into memory-backed context assembly through `rag-context-wire`.
 - `modules/mitre` + `modules/threat_intel`: canonical relational owners that project graph-native entities and relationships into GraphRAG.
-- `modules/triage`: may emit stable extracted entities, ATT&CK candidate mappings, and confidence-scored links into graph ingest.
+- `modules/triage`: may emit stable extracted entities, ATT&CK candidate
+  mappings, and confidence-scored links into graph ingest via module-owned
+  triage entrypoints (`ClassifyStage`, `classify_query`, `classify`).
 - `modules/workflows` + `modules/graphs`: operational graphs remain separate, but later graph exports may feed GraphRAG.
 - `core/cache`: graph retrieval caching must use the shared retrieval cache layer; no ad-hoc storage is allowed.
 

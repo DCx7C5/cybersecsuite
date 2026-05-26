@@ -126,7 +126,8 @@ being completed.
 | `db40-field-library-expansion` | done | Expanded semantic DB field helpers (`CurrencyCodeField`, non-negative/ratio numeric fields, JSON object/list wrappers) and wired them into `LLMModel`. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition and serialize navigation deterministically through `menu_id`. |
 | `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | in_progress | Freeze tagging as classification/filter/search/policy metadata and keep it out of menu/tree/navigation ownership. |
-| `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
+| `db40-intelligence-home-plan` | done | Verified triage ownership is module-local after facade removal and kept retrieval ownership in `core/rag_vector` + `core/rag_graph`. |
+| `db40-lane-platform-polish`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
 
 ### Lane C Task/Provider/User Ownership Map
 

@@ -1,4 +1,4 @@
-"""Triage pipeline stages for message classification (Phase 6 T6.5)."""
+"""Canonical triage pipeline entrypoints after root intelligence-facade removal."""
 
 from css.core.logger import getLogger
 from typing import AsyncGenerator, Any, Optional, override

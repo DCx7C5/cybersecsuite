@@ -87,7 +87,9 @@ until those boundaries and `pgvector` behavior are validated in source.
 ## Integration Points
 
 - `core/memory`: `ContextAssembler` and memory-backed context assembly are the primary callers.
-- `modules/triage`: later intelligence features may contribute `AUTO` route hints and memory tags, but do not own retrieval execution.
+- `modules/triage`: later intelligence features may contribute `AUTO` route
+  hints and memory tags through `modules/triage` (`ClassifyStage`,
+  `classify_query`, `classify`), but triage does not own retrieval execution.
 - `core/rag_graph`: owns the graph retrieval backend used in `graph` and `hybrid` modes.
 - `modules/mitre` + `modules/threat_intel`: project graph-native entities and relationships into `core/rag_graph` while keeping canonical domain ownership in their modules.
 - `modules/workflows` + `modules/graphs`: workflow/session/approval graphs stay separate from GraphRAG at first; later graph exports may become additional graph retrieval input.

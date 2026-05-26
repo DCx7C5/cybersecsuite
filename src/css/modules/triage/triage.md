@@ -35,6 +35,17 @@ This module is part of the wider memory/retrieval/graph architecture.
 
 See `.plan/architecture/intelligence-retrieval-graph.md` for the combined system design.
 
+### Facade-removal verification (`db40-intelligence-home-plan`)
+
+- Canonical triage runtime entrypoints remain module-local:
+  - `ClassifyStage` in `src/css/modules/triage/pipeline.py`
+  - `classify()` in `src/css/modules/triage/pipeline.py`
+- Public single-query classification remains `classify_query()` from
+  `src/css/modules/triage/engine.py`.
+- No root `core/intelligence.py` facade is reintroduced.
+- Retrieval ownership remains in `core/rag_vector` and `core/rag_graph`;
+  triage only contributes optional hints/projections through documented hooks.
+
 ---
 
 ## Purpose

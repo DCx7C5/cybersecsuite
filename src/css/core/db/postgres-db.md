@@ -497,7 +497,8 @@ implementation work must use these concrete boundaries:
 | `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | in_progress | Keep tagging as classification/filter/search/policy metadata only; finalize naming/meta/runtime wire in the documented order without menu/tree/navigation scope creep. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
 | `db40-field-library-expansion` | done | Expanded semantic field helpers across char/int/float/decimal/json modules and exposed canonical imports for model use. |
-| `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
+| `db40-intelligence-home-plan` | done | Verified triage ownership is module-local after facade removal; retrieval ownership stays in `core/rag_vector` + `core/rag_graph`. |
+| `db40-lane-platform-polish`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
 
 ### Lane C Task/Provider/User Contract
 
