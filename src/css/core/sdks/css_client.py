@@ -147,13 +147,15 @@ class CSSLLMClient:
         for provider_id in policy.ordered_providers():
             normalized_provider_id = self._normalize_provider_id(provider_id)
 
-            if normalized_provider_id == policy.web_relay_provider_id:
+            if policy.is_web_relay_provider(normalized_provider_id):
                 browser_model_id = model_overrides.get(normalized_provider_id, model_id)
                 try:
+                    web_relay_kwargs = dict(kwargs)
+                    web_relay_kwargs["relay_provider_id"] = normalized_provider_id
                     response = await BrowserRelayAdapter().call_llm_buffered(
                         model_id=browser_model_id,
                         messages=messages,
-                        **kwargs,
+                        **web_relay_kwargs,
                     )
                     attempts.append(
                         RelayAttempt(

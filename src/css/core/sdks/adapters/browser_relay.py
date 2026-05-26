@@ -96,13 +96,24 @@ class BrowserRelayAdapter:
 
         request_id = kwargs.get("request_id")
         ttl_seconds = kwargs.get("request_ttl_seconds")
+        relay_provider_id_obj = kwargs.get("relay_provider_id")
+        relay_provider_id = (
+            relay_provider_id_obj.strip()
+            if isinstance(relay_provider_id_obj, str) and relay_provider_id_obj.strip()
+            else self.provider_id
+        )
         metadata_obj = kwargs.get("metadata")
-        metadata = metadata_obj if isinstance(metadata_obj, dict) else None
+        metadata: dict[str, str] = {}
+        if isinstance(metadata_obj, dict):
+            for key_obj, value_obj in metadata_obj.items():
+                if isinstance(key_obj, str) and isinstance(value_obj, str):
+                    metadata[key_obj] = value_obj
+        metadata["relay_provider_id"] = relay_provider_id
 
         record = await self._session_store.submit_injection(
             session_id=session_id,
             prompt=prompt,
-            provider=self.provider_id,
+            provider=relay_provider_id,
             model=model_id or _DEFAULT_BROWSER_RELAY_MODEL,
             request_id=request_id if isinstance(request_id, str) else None,
             ttl_seconds=ttl_seconds if isinstance(ttl_seconds, int) else None,
@@ -131,7 +142,7 @@ class BrowserRelayAdapter:
                 return LLMResponse(
                     text="",
                     stop_reason="relay_cancelled",
-                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                    usage=self._relay_usage(record["request_id"], session_id, model_id, record["provider"]),
                 )
 
             result_record = await self._session_store.get_result(
@@ -142,7 +153,7 @@ class BrowserRelayAdapter:
                 return LLMResponse(
                     text="",
                     stop_reason="relay_unknown_request",
-                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                    usage=self._relay_usage(record["request_id"], session_id, model_id, record["provider"]),
                 )
 
             if (
@@ -153,7 +164,7 @@ class BrowserRelayAdapter:
                 usage: dict[str, Any] = dict(result["usage"])
                 usage["request_id"] = record["request_id"]
                 usage["session_id"] = session_id
-                usage["provider"] = self.provider_id
+                usage["provider"] = record["provider"]
                 usage["model"] = model_id or _DEFAULT_BROWSER_RELAY_MODEL
                 return LLMResponse(
                     text=result["content"],
@@ -166,7 +177,7 @@ class BrowserRelayAdapter:
                 and result_record["result"] is not None
             ):
                 result = result_record["result"]
-                usage = self._relay_usage(record["request_id"], session_id, model_id)
+                usage = self._relay_usage(record["request_id"], session_id, model_id, record["provider"])
                 if result["error_code"] is not None:
                     usage["error_code"] = result["error_code"]
                 if result["error_message"] is not None:
@@ -181,14 +192,14 @@ class BrowserRelayAdapter:
                 return LLMResponse(
                     text="",
                     stop_reason="relay_timeout",
-                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                    usage=self._relay_usage(record["request_id"], session_id, model_id, record["provider"]),
                 )
 
             if asyncio.get_running_loop().time() >= deadline:
                 return LLMResponse(
                     text="",
                     stop_reason="relay_timeout",
-                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                    usage=self._relay_usage(record["request_id"], session_id, model_id, record["provider"]),
                 )
             await asyncio.sleep(poll_interval)
 
@@ -219,11 +230,17 @@ class BrowserRelayAdapter:
                 return content.strip()
         return ""
 
-    def _relay_usage(self, request_id: str, session_id: str, model_id: str) -> dict[str, Any]:
+    def _relay_usage(
+        self,
+        request_id: str,
+        session_id: str,
+        model_id: str,
+        provider_id: str,
+    ) -> dict[str, Any]:
         return {
             "request_id": request_id,
             "session_id": session_id,
-            "provider": self.provider_id,
+            "provider": provider_id,
             "model": model_id or _DEFAULT_BROWSER_RELAY_MODEL,
         }
 

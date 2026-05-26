@@ -2,7 +2,7 @@
 
 import asyncio
 from datetime import UTC, datetime, timedelta
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
 import uuid
 
 from fastapi import APIRouter, Body, HTTPException, Query, status
@@ -68,7 +68,7 @@ class BrowserResultSubmission(EndpointModel, kw_only=True, frozen=True):
     stop_reason: str = "stop"
     error_code: str | None = None
     error_message: str | None = None
-    usage: dict[str, int] | None = None
+    usage: dict[str, Any] | None = None
 
 
 class BrowserResultResponse(EndpointModel, kw_only=True, frozen=True):
@@ -82,7 +82,7 @@ class BrowserResultResponse(EndpointModel, kw_only=True, frozen=True):
     stop_reason: str | None = None
     error_code: str | None = None
     error_message: str | None = None
-    usage: dict[str, int] | None = None
+    usage: dict[str, Any] | None = None
 
 
 class BrowserNextInjectionResponse(EndpointModel, kw_only=True, frozen=True):
@@ -100,7 +100,7 @@ class StoredResult(TypedDict):
     stop_reason: str
     error_code: str | None
     error_message: str | None
-    usage: dict[str, int]
+    usage: dict[str, Any]
 
 
 class StoredRequest(TypedDict):
@@ -229,7 +229,7 @@ class BrowserPluginSessionStore:
         stop_reason: str = "stop",
         error_code: str | None = None,
         error_message: str | None = None,
-        usage: dict[str, int] | None = None,
+        usage: dict[str, Any] | None = None,
     ) -> StoredRequest:
         now = self._now()
         async with self._lock:
@@ -299,7 +299,7 @@ class BrowserPluginSessionStore:
         stop_reason: str = "stop",
         error_code: str | None = None,
         error_message: str | None = None,
-        usage: dict[str, int] | None = None,
+        usage: dict[str, Any] | None = None,
     ) -> StoredRequest:
         return await self.submit_result(
             session_id=session_id,

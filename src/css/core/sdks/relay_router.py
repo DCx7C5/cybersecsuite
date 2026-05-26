@@ -45,6 +45,9 @@ class RelayProviderPolicy(msgspec.Struct, frozen=True, kw_only=True):
             ordered.append(self.web_relay_provider_id)
         return ordered
 
+    def is_web_relay_provider(self, provider_id: str) -> bool:
+        return provider_id.strip().lower() == self.web_relay_provider_id
+
     @classmethod
     def from_order(
         cls,

@@ -495,7 +495,44 @@
     };
   }
 
-  async function relayInjectPrompt(requestId, prompt, options = {}) {
+  const WEB_RELAY_TARGETS = [
+    {
+      id: 'openai_chat',
+      hostnames: ['chat.openai.com', 'chatgpt.com'],
+      inputSelector: '#prompt-textarea',
+    },
+  ];
+
+  function _matchesTargetHost(hostname, targetHost) {
+    return hostname === targetHost || hostname.endsWith(`.${targetHost}`);
+  }
+
+  function resolveWebRelayTargetInput() {
+    const hostname = location.hostname.toLowerCase();
+    for (const target of WEB_RELAY_TARGETS) {
+      const targetMatch = target.hostnames.some(entry => _matchesTargetHost(hostname, entry));
+      if (!targetMatch) continue;
+
+      const inputEl = document.querySelector(target.inputSelector);
+      if (inputEl && isVisible(inputEl) && isEditable(inputEl)) {
+        return { ok: true, targetId: target.id, inputEl };
+      }
+
+      return {
+        ok: false,
+        error_code: 'unsupported_page',
+        error: `${target.id} target found but input selector is unavailable`,
+      };
+    }
+
+    return {
+      ok: false,
+      error_code: 'unsupported_page',
+      error: 'web relay currently supports only chat.openai.com/chatgpt.com',
+    };
+  }
+
+  async function relayInjectPrompt(requestId, prompt, provider = 'browser-relay', options = {}) {
     if (!requestId) {
       return { ok: false, error_code: 'unknown_request_id', error: 'missing request id' };
     }
@@ -503,9 +540,21 @@
     if (!relayPrompt) {
       return { ok: false, error_code: 'injection_failed', error: 'empty prompt' };
     }
-    const inputEl = detectChatInput();
-    if (!inputEl) {
-      return { ok: false, error_code: 'injection_failed', error: 'no input found' };
+
+    let inputEl = null;
+    let relayTargetId = null;
+    if (provider === 'web_relay') {
+      const target = resolveWebRelayTargetInput();
+      if (!target.ok) {
+        return target;
+      }
+      inputEl = target.inputEl;
+      relayTargetId = target.targetId;
+    } else {
+      inputEl = detectChatInput();
+      if (!inputEl) {
+        return { ok: false, error_code: 'injection_failed', error: 'no input found' };
+      }
     }
 
     chrome.runtime.sendMessage({ action: 'formDetected', form: describeForm(inputEl) });
@@ -540,6 +589,11 @@
       request_id: requestId,
       content: observed.content || '',
       stop_reason: observed.stop_reason || 'stop',
+      usage: {
+        relay_provider: provider,
+        relay_target: relayTargetId,
+        relay_hostname: location.hostname,
+      },
     };
   }
 
@@ -556,7 +610,7 @@
         return true;
 
       case 'relayInject':
-        relayInjectPrompt(req.requestId, req.prompt, req.options || {}).then(sendResponse);
+        relayInjectPrompt(req.requestId, req.prompt, req.provider, req.options || {}).then(sendResponse);
         return true;
 
       case 'detectForm': {

@@ -300,6 +300,8 @@ async function dispatchRelayInjection(request) {
       action: 'relayInject',
       requestId: request.request_id,
       prompt: request.prompt,
+      provider: request.provider,
+      model: request.model,
       options: {
         typingSpeedMs: cfg?.typingSpeedMs || 28,
         autoSubmit: cfg?.autoSubmit !== false,
@@ -326,6 +328,7 @@ async function dispatchRelayInjection(request) {
         ok: true,
         content: response.content || '',
         stop_reason: response.stop_reason || 'stop',
+        usage: response.usage || {},
       });
     });
   });
@@ -356,6 +359,7 @@ async function pollRelayQueue() {
         status: 'completed',
         content: relayOutcome.content,
         stop_reason: relayOutcome.stop_reason,
+        usage: relayOutcome.usage || {},
       });
       return;
     }

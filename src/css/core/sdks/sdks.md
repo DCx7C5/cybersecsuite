@@ -95,7 +95,7 @@ supports 4 adapter types:
 - `sdk-browser-relay-polling` — ✅ DONE (2026-05-26)
 - `sdk-deepseek-adapter` — ✅ DONE (2026-05-26)
 - `sdk-browser-relay-provider-priority` — ✅ DONE (2026-05-26)
-- `sdk-browser-relay-web-llm-relay` — 📋 pending (Phase 10 T10.7)
+- `sdk-browser-relay-web-llm-relay` — ✅ DONE (2026-05-26)
 
 ## Browser Relay Priority Contract (T10.7)
 
@@ -106,7 +106,7 @@ Current planning contract for browser-plugin backend provider priority:
 3. `openai`
 4. `deepseek`
 5. `nvidia`
-6. web relay path (`grok.com` / `docs.claude.com` strategy)
+6. web relay path (currently `chat.openai.com` / `chatgpt.com` supported surface)
 
 ## Phase 16 Capability Expansion
 
@@ -192,7 +192,7 @@ official `xai-sdk` primitives.
 | `sdk-browser-relay-polling` | done | Active result polling/bridge contract over queued relay requests with completed/failed/expired/unknown lifecycle handling. |
 | `sdk-deepseek-adapter` | done | Dedicated registered DeepSeek adapter with streaming and buffered reasoning normalization. |
 | `sdk-browser-relay-provider-priority` | done | Ordered provider policy in `relay_router.py` wired into `CSSLLMClient` with typed attempt metadata. |
-| `sdk-browser-relay-web-llm-relay` | pending | Add the web relay endpoint only after the policy and relay transport exist. |
+| `sdk-browser-relay-web-llm-relay` | done | Web relay slot wired through browser-plugin backend with explicit supported-target detection and typed unsupported-page failures. |
 
 1. Reconcile the active `api_services.ProviderRegistry` route with the
    currently unregistered `SDKRegistry` route and select one executable
