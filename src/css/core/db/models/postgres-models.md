@@ -119,7 +119,7 @@ being completed.
 | Todo group | Status | Ordered contract |
 |------------|--------|------------------|
 | `db40-lane-marketplace`, marketplace cutover/remove rows | done | Preserve the retained symbols in canonical `marketplace.py`. |
-| `db40-memory-*`, `db40-lane-memory` | pending | Audit memory imports, merge required canonical behavior, cut over consumers, remove legacy source only after tests. |
+| `db40-memory-*`, `db40-lane-memory` | done | Canonical memory model ownership is reconciled; import cutover and snapshot payload contract are aligned. |
 | `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | pending | Settle task/provider/user ownership without duplicate model classes. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition and serialize navigation deterministically through `menu_id`. |
 | `db40-lane-tagging`, `db40-lane-platform-polish`, `db40-direct-schema-policy` | pending | Apply fields/mixins/meta/document standards after lane-level evidence. |

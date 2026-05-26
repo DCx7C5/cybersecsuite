@@ -65,6 +65,9 @@ Hybrid session persistence:
 ### Models (`core/db/models/memory.py`)
 - `MemoryEntryRecord` — ORM for individual memory entries with `to_struct()` bridge
 - `MemorySnapshotRecord` — ORM for full-context snapshots
+- `MemorySnapshot.entries` contract is a list of serialized message payload
+  objects (`list[dict[str, object]]`) shared by `MemoryService.snapshot()` and
+  `SessionStore.checkpoint_to_db()`.
 
 ## Compatibility
 
