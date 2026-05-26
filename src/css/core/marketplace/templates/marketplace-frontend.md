@@ -20,3 +20,10 @@ Template-facing frontend bridge for marketplace browsing and management in the n
 ## Dependencies
 - `src/css/core/marketplace/`
 - `src/frontend/src/panels/marketplace/`
+
+## Validation Contract
+
+- Verify loading, empty, failure, install, and uninstall states against the
+  typed marketplace API surface.
+- Verify sidebar-child URL filtering replaces kind tabs without losing
+  installed/catalog navigation.

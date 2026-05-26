@@ -17,16 +17,15 @@ from css.core.logger import getLogger
 import asyncio
 import hashlib
 import tarfile
+import msgspec
 from pathlib import Path
 from typing import AsyncIterator
-from dataclasses import dataclass
 from datetime import datetime
 
 logger = getLogger(__name__)
 
 
-@dataclass
-class PackageMetadata:
+class PackageMetadata(msgspec.Struct, kw_only=True):
     """Package metadata from index."""
     name: str
     version: str
@@ -36,8 +35,7 @@ class PackageMetadata:
     release_date: str = ""
 
 
-@dataclass
-class PackageInstallResult:
+class PackageInstallResult(msgspec.Struct, kw_only=True):
     """Result of package installation."""
     package_name: str
     version: str
@@ -81,8 +79,9 @@ async def fetch_index(index_url: str) -> dict:
     """
     try:
         import aiohttp
+        timeout = aiohttp.ClientTimeout(total=30)
         async with aiohttp.ClientSession() as session:
-            response_cm = await session.get(index_url, timeout=30)
+            response_cm = await session.get(index_url, timeout=timeout)
             async with response_cm as resp:
                 if resp.status == 404:
                     raise PackageNotFoundError(f"Marketplace index not found: {index_url}")
@@ -212,8 +211,9 @@ async def install_package(
         # Download package
         try:
             import aiohttp
+            timeout = aiohttp.ClientTimeout(total=60)
             async with aiohttp.ClientSession() as session:
-                response_cm = await session.get(package_url, timeout=60)
+                response_cm = await session.get(package_url, timeout=timeout)
                 async with response_cm as resp:
                     if resp.status == 404:
                         raise PackageNotFoundError(f"Package not found: {package_url}")

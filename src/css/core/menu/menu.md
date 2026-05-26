@@ -27,6 +27,15 @@
 - `db40-menu-tree-constraints`
 - `db40-basetree-candidate-inventory` (navigation-first tree candidates)
 
+### Active execution snapshot (2026-05-09)
+
+- `db40-menu-sidebar-contract` is now **done**.
+- `db40-lane-menu-tree` lane claim is complete and unblocked follow-up work is focused on:
+  - `db40-menu-menuid-upsert`
+  - `db40-menu-menuid-endpoints`
+  - `db40-menu-marketplace-children-contract`
+  - `db40-menu-tree-constraints`
+
 ## Rules
 
 - Navigation hierarchy concerns (URL/path/breadcrumb trees) belong here.
@@ -34,3 +43,19 @@
 - Sidebar/settings/topnav should be feature-rich but not bloated, and backed by runtime menu data.
 - Marketplace sidebar must expose child routes (agents, skills, MCPs, workflows, templates, prompts, teams) with deterministic ordering.
 - Marketplace kind tabs inside the panel are planned for removal; sidebar child navigation + URL state is the canonical path.
+
+## Validation Requirements
+
+- Validate `menu_id` partition filtering for sidebar, settings, and topnav.
+- Validate deterministic child ordering and no self-parent/cross-menu parent
+  relationships.
+- Validate the seeded Marketplace child routes are idempotent.
+
+## Menu contract baseline (db40-menu-sidebar-contract)
+
+- `MenuItem.menu_id` is the partition key for runtime navigation composition.
+- Canonical values:
+  - `sidebar`
+  - `settings`
+  - `topnav`
+- `menu_id` participates in deterministic ordering (`menu_id`, `parent_id`, `order`, `id`) and read partitioning.

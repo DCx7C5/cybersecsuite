@@ -31,6 +31,7 @@ import asyncio
 from typing import Any
 
 from css.core.config import MarketplaceConfig
+from css.core.events.emitter import emit_event
 
 logger = getLogger(__name__)
 
@@ -101,22 +102,14 @@ class MarketplaceCache:
 
     def _emit_invalidated(self, key: str) -> None:
         """Fire-and-forget event on the global event bus (non-blocking)."""
+        async def _fire() -> None:
+            await emit_event("marketplace.cache.invalidated", {"key": key})
+
         try:
-            from css.core.events.event_bus import event_bus
-
-            async def _fire() -> None:
-                await event_bus.emit(
-                    "marketplace.cache.invalidated",
-                    {"key": key},
-                )
-
-            try:
-                loop = asyncio.get_running_loop()
-                loop.create_task(_fire())
-            except RuntimeError:
-                pass  # No running loop — skip event (e.g. in sync tests)
-        except ImportError:
-            pass  # events module not available
+            loop = asyncio.get_running_loop()
+            loop.create_task(_fire())
+        except RuntimeError:
+            pass  # No running loop — skip event (e.g. in sync tests)
 
     # ------------------------------------------------------------------
     # Stats / introspection

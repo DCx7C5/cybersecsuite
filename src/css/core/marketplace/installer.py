@@ -11,13 +11,13 @@ import zipfile
 
 import aiohttp
 
-from css.config import MARKETPLACE_CONFIG
 
 from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemStatus
 
 from .cache import marketplace_cache
 from .registry import emit_marketplace_item_changed
+from ..settings.config import MARKETPLACE_CONFIG
 
 
 class InstallationResult:
@@ -125,9 +125,9 @@ class PackageInstaller:
 
         if item.installed_at and not force:
             return InstallationResult(
-                success=False,
+                success=True,
                 item_id=item_id,
-                error=f"Package already installed: {item_id}",
+                install_path=item.install_path,
             )
 
         if not item.source_url:

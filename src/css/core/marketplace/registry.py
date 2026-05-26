@@ -1,16 +1,25 @@
 """Read/cache registry for marketplace items."""
 
 from collections.abc import Callable
-from css.core.types.meta import singleton
+from typing import override
+
 from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
+from css.core.events.emitter import emit_events, get_event_bus
+from css.core.types import BaseRegistry
+from css.core.types.meta import singleton
 
 
-MARKETPLACE_ITEM_CHANGED_EVENT = "marketplace.item.changed"
+MARKETPLACE_UPDATES_AVAILABLE_EVENT = "marketplace.updates.available"
+MARKETPLACE_UPDATES_INSTALLED_EVENT = "marketplace.updates.installed"
+MARKETPLACE_ITEM_INSTALL_EVENT = "marketplace.item.install"
+MARKETPLACE_ITEM_UNINSTALL_EVENT = "marketplace.item.uninstall"
+MARKETPLACE_ITEM_UPDATE_EVENT = "marketplace.item.update"
+MARKETPLACE_ITEM_NEW_VERSION_EVENT = ""
 
 
 @singleton
-class MarketplaceItemRegistry:
+class MarketplaceItemRegistry(BaseRegistry[MarketplaceItem]):
     """Read-through cache registry for marketplace items.
 
     Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
@@ -31,28 +40,31 @@ class MarketplaceItemRegistry:
         items = await MarketplaceItem.manager.all_items()
         self._items = {item.slug: item for item in items}
 
+    @override
     async def reload(self) -> None:
         """Rebuild the in-memory cache from authoritative DB state."""
         await self._load_all()
 
-    async def get(self, item_id: str) -> MarketplaceItem | None:
+    @override
+    async def get(self, identifier: str) -> MarketplaceItem | None:
         """Get a marketplace item by slug — read-through cache.
 
         Checks in-memory cache first, falls back to DB on miss.
 
         Args:
-            item_id: The slug of the item to retrieve
+            identifier: The slug of the item to retrieve
 
         Returns:
             MarketplaceItem instance or None if not found
         """
-        if item_id in self._items:
-            return self._items[item_id]
-        item = await MarketplaceItem.manager.by_slug(item_id)
+        if identifier in self._items:
+            return self._items[identifier]
+        item = await MarketplaceItem.manager.by_slug(identifier)
         if item is not None:
-            self._items[item_id] = item
+            self._items[identifier] = item
         return item
 
+    @override
     async def list(
         self,
         predicate: Callable[[MarketplaceItem], bool] | None = None,
@@ -87,6 +99,7 @@ class MarketplaceItemRegistry:
     # Cache-aware list helpers (T5.1 integration-cache-marketplace)
     # ------------------------------------------------------------------
 
+    @override
     async def invalidate(self, identifier: str | None = None) -> None:
         """Invalidate one cached item or all cached items."""
         from .cache import marketplace_cache
@@ -107,8 +120,7 @@ def wire_registry_events() -> None:
     Call once at startup so that in-memory registry caches are invalidated
     whenever marketplace items are installed/uninstalled/updated.
     """
-    from css.core.events.event_bus import event_bus
-
+    event_bus = get_event_bus()
     registry = MarketplaceItemRegistry()
 
     async def _on_marketplace_change(event_type: str, payload: object) -> None:
@@ -119,21 +131,25 @@ def wire_registry_events() -> None:
                 return
         await registry.invalidate()
 
-    event_bus.register(MARKETPLACE_ITEM_CHANGED_EVENT, _on_marketplace_change)
+    event_bus.register(MARKETPLACE_UPDATES_AVAILABLE_EVENT, _on_marketplace_change)
     event_bus.register("marketplace.install", _on_marketplace_change)
     event_bus.register("marketplace.uninstall", _on_marketplace_change)
     event_bus.register("marketplace.updated", _on_marketplace_change)
 
 
-async def emit_marketplace_item_changed(item_slug: str, operation: str) -> None:
+async def emit_marketplace_updates_available(item_slug: str, operation: str) -> None:
     """Emit cache-invalidation events after marketplace DB writes."""
-
-    from css.core.events.event_bus import event_bus
-
     payload = {
         "item_slug": item_slug,
         "item_id": item_slug,
         "operation": operation,
     }
-    await event_bus.emit(MARKETPLACE_ITEM_CHANGED_EVENT, payload)
-    await event_bus.emit(f"marketplace.{operation}", payload)
+    await emit_events(
+        [MARKETPLACE_UPDATES_AVAILABLE_EVENT, f"marketplace.{operation}"],
+        payload,
+    )
+
+
+async def emit_marketplace_item_changed(item_slug: str, operation: str) -> None:
+    """Canonical marketplace mutation emitter used by installer/seeder."""
+    await emit_marketplace_updates_available(item_slug=item_slug, operation=operation)

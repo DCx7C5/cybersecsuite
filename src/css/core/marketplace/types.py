@@ -14,19 +14,19 @@ from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 # ── Base Models ───────────────────────────────────────────────────
 
 
-class MarketplaceBase(msgspec.Struct, frozen=True):
+class MarketplaceBase(msgspec.Struct, frozen=True, kw_only=True):
     """Base model for marketplace operations."""
     pass
 
 
-class MarketplaceMetaBase(msgspec.Struct, frozen=True):
+class MarketplaceMetaBase(msgspec.Struct, frozen=True, kw_only=True):
     """Base model for marketplace metadata."""
 
     name: str
     version: str
 
 
-class MarketplaceItemBase(msgspec.Struct, frozen=True):
+class MarketplaceItemBase(msgspec.Struct, frozen=True, kw_only=True):
     """Base model for marketplace items."""
 
     name: str
@@ -34,7 +34,7 @@ class MarketplaceItemBase(msgspec.Struct, frozen=True):
     kind: MarketplaceItemType
 
 
-class MarketplaceItemCreate(msgspec.Struct, frozen=True):
+class MarketplaceItemCreate(msgspec.Struct, frozen=True, kw_only=True):
     """Request to create/seed a marketplace item."""
 
     name: str
@@ -44,14 +44,14 @@ class MarketplaceItemCreate(msgspec.Struct, frozen=True):
     slug: str
 
 
-class MarketplaceItemUpdate(msgspec.Struct, frozen=True):
+class MarketplaceItemUpdate(msgspec.Struct, frozen=True, kw_only=True):
     """Request to update a marketplace item."""
 
     name: str | None = None
     description: str | None = None
 
 
-class MarketplaceItemResponse(msgspec.Struct, frozen=True):
+class MarketplaceItemResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Complete marketplace item response."""
 
     id: int
@@ -69,7 +69,7 @@ class MarketplaceItemResponse(msgspec.Struct, frozen=True):
 # ── Marketplace Status ────────────────────────────────────────────
 
 
-class MarketplaceMetaResponse(msgspec.Struct, frozen=True):
+class MarketplaceMetaResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Marketplace status response."""
 
     id: int
@@ -82,7 +82,7 @@ class MarketplaceMetaResponse(msgspec.Struct, frozen=True):
 # ── Item List/Detail ──────────────────────────────────────────────
 
 
-class ItemListResponse(msgspec.Struct, frozen=True):
+class ItemListResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Item summary for list endpoints."""
 
     id: str
@@ -92,7 +92,7 @@ class ItemListResponse(msgspec.Struct, frozen=True):
     installed: bool
 
 
-class ItemDetailResponse(msgspec.Struct, frozen=True):
+class ItemDetailResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Full item details."""
 
     id: str
@@ -109,14 +109,14 @@ class ItemDetailResponse(msgspec.Struct, frozen=True):
 # ── Install/Uninstall ────────────────────────────────────────────
 
 
-class InstallRequest(msgspec.Struct, frozen=True):
+class InstallRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Request to install a marketplace item."""
 
     item_id: str
     source_url: str | None = None
 
 
-class InstallResponse(msgspec.Struct, frozen=True):
+class InstallResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Response for install operation."""
 
     success: bool
@@ -126,14 +126,14 @@ class InstallResponse(msgspec.Struct, frozen=True):
     error: str | None = None
 
 
-class UninstallRequest(msgspec.Struct, frozen=True):
+class UninstallRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Request to uninstall a marketplace item."""
 
     item_id: str
     purge_config: bool = False
 
 
-class UninstallResponse(msgspec.Struct, frozen=True):
+class UninstallResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Response for uninstall operation."""
 
     success: bool
@@ -145,14 +145,14 @@ class UninstallResponse(msgspec.Struct, frozen=True):
 # ── Toggle Enable/Disable ────────────────────────────────────────
 
 
-class ToggleRequest(msgspec.Struct, frozen=True):
+class ToggleRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Request to enable/disable a marketplace item."""
 
     item_id: str
     enabled: bool
 
 
-class ToggleResponse(msgspec.Struct, frozen=True):
+class ToggleResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Response for toggle operation."""
 
     success: bool
@@ -165,7 +165,7 @@ class ToggleResponse(msgspec.Struct, frozen=True):
 # ── Upgrade Version ──────────────────────────────────────────────
 
 
-class UpgradeRequest(msgspec.Struct, frozen=True):
+class UpgradeRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Request to upgrade a marketplace item."""
 
     item_id: str
@@ -173,7 +173,7 @@ class UpgradeRequest(msgspec.Struct, frozen=True):
     backup: bool = True
 
 
-class UpgradeResponse(msgspec.Struct, frozen=True):
+class UpgradeResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Response for upgrade operation."""
 
     success: bool
