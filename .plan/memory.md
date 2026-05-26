@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-26 | **Session**: Phase 41 todo-specification remediation
+**Last Updated**: 2026-05-26 | **Session**: Phase 39 runtime validation and completion
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -14,7 +14,7 @@
 
 ## 📊 session.db State (2026-05-26)
 
-**Total**: 927 todos | **Done**: 485 | **Pending**: 436 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 933 todos | **Done**: 486 | **Pending**: 440 | **Blocked**: 6 | **In Progress**: 1
 
 **Last Verified**: 2026-05-26 (checked against live session.db totals)
 
@@ -35,7 +35,7 @@
 | Phase 34 — Dependency Map | 20 | 2 | 18 | 0 | 0 |
 | Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
-| Phase 39 — Audit Remediation (A1/A2/A3) | 19 | 1 | 18 | 0 | 0 |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 25 | 2 | 22 | 0 | 1 |
 | Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
 | Phase 41 — Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 
@@ -44,6 +44,16 @@
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Phase 39 Runtime Validation & Completion Addendum (2026-05-26)
+
+- Added six dependency-gated audit rows for package refresh, msgspec/API
+  boundary cleanup, ASGI/Tortoise startup repair, source TODO cleanup,
+  full `src/css` quality validation, and final architecture/plan sync.
+- `audit39-dependency-refresh` is done: unused conflicting `attrs` and
+  `fireworks-ai` direct dependencies were removed, while the aiohttp-based
+  Fireworks provider remains; `uv` and `bun` locks validate successfully.
+- Active row: `audit39-msgspec-boundary-cleanup`.
 
 ### Documentation Ownership Sanitization + Phase 41 Remediation (2026-05-26)
 
@@ -82,9 +92,9 @@
   recorded in tracker descriptions; legacy session-output rows were also
   rewritten as ownership-decision gates rather than assumed `core/workspace`
   implementation work.
-- No tracker row is currently in progress. The Phase 41 preparation gate is
-  complete; choose later implementation work only from live dependencies and
-  its owning specification.
+- The Phase 41 preparation gate is complete. Phase 39 runtime validation is
+  active through `audit39-msgspec-boundary-cleanup`; use its live dependencies
+  and owner documents before taking broader implementation work.
 
 ### Phase 18 Frontend Foundation — 8 todos completed (2026-05-09)
 
@@ -136,7 +146,7 @@
 - Browser relay priority chain is now explicitly tracked: `github -> codex -> openai -> deepseek -> nvidia -> web-LLM relay`.
 - Phase 32 reports backlog task labels were normalized from `task='unassigned'` into explicit `T32.*` buckets for parallel planning.
 
-### Phase 39 Audit Remediation — 19 todos tracked (2026-05-09)
+### Phase 39 Audit Remediation — 25 todos tracked (updated 2026-05-26)
 
 - Added a dedicated remediation phase from three audit streams (Architecture/Runtime, Plan/Tracker Integrity, Code Quality/Rules).
 - Task buckets:
@@ -152,6 +162,8 @@
   - `__all__` policy enforcement and broad exception cleanup
 - `audit38-unassigned-rehome` is now completed: all prior pending `unassigned` rows were rehomed to explicit phase/task ownership.
 - Added `audit39-module-import-order-canonical` to codify `core/settings/config.py` `MODULES` line-order as canonical import-order reference.
+- Added `T39.4 Runtime Validation & Completion` with six bounded audit rows;
+  dependency refresh is done and msgspec-boundary cleanup is active.
 
 ### Phase 40 DB Model Consolidation — 37 todos prepared (2026-05-09)
 
@@ -403,7 +415,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **927 todos**, PHASE > TASK > TODO hierarchy (42 named phases; `unassigned` currently empty)
+- `.plan/session.db` — **933 todos**, PHASE > TASK > TODO hierarchy (42 named phases; `unassigned` currently empty)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth

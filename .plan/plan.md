@@ -4,7 +4,7 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (session: Phase 41 todo-specification remediation)
+**Updated**: 2026-05-26 (session: Phase 39 runtime validation and completion)
 
 ## Current Session Goals (2026-05-26)
 
@@ -22,6 +22,13 @@ Execution order:
 10-12, 16, 18, 20-21, 22-30, and 31-39 are complete, all nine thin plus
 fifteen partial owner documents now have executable contracts, and the ten
 audited consistency conflicts are resolved. Phase 41 preparation is complete.
+
+**Phase 39 — Runtime Validation & Completion** (active):
+`audit39-dependency-refresh` is complete after resolving unused/conflicting
+package requirements and validating updated Python/frontend locks.
+`audit39-msgspec-boundary-cleanup` is active; startup/model registration,
+source TODO cleanup, full quality validation, and final architecture sync
+follow through dependency-gated audit rows.
 
 **Implementation tranche** — Phase 40 still contains pending implementation
 work after Phase 41 preparation; `db40-lane-marketplace` is already recorded
@@ -51,11 +58,11 @@ Snapshot queried from `.plan/session.db` on 2026-05-26:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 927 | 485 | 436 | 6 | 0 |
+| 933 | 486 | 440 | 6 | 1 |
 
-No todo is currently `in_progress`. Phase 41 preparation is complete; select
-implementation work only after querying live dependencies and the owning
-specification.
+Current active todo: `audit39-msgspec-boundary-cleanup`. Phase 41 preparation
+is complete; Phase 39 runtime validation now drives source cleanup before
+broader implementation work resumes.
 
 ## Current Execution Boundary
 
@@ -116,7 +123,7 @@ and owner documents have been made executable before implementation resumes.
 | 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
-| 39 | Audit Remediation (A1/A2/A3) | 19 | 1 | 18 | 0 | 0 |
+| 39 | Audit Remediation (A1/A2/A3) | 25 | 2 | 22 | 0 | 1 |
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 
 ## Local Ownership Map
