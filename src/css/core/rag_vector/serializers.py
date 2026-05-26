@@ -7,7 +7,7 @@ helpers in ``endpoints.py`` with proper serializer classes that follow the
 
 from typing import Any, override
 
-from css.core.types.base_serializer import BaseModelSerializer, BaseSerializer
+from css.core.db.serializers import BaseModelSerializer, BaseSerializer
 
 from .models import KnowledgeDocument
 

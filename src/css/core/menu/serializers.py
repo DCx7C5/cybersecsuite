@@ -6,7 +6,7 @@ with a proper ``MenuItemSerializer`` built on ``BaseModelSerializer``.
 
 from typing import Any, override
 
-from css.core.types.base_serializer import BaseModelSerializer
+from css.core.db.serializers import BaseModelSerializer
 
 from css.core.db.models.menu import MenuItem
 

@@ -54,7 +54,7 @@ from .base_headers import (
 )
 
 # ── Base serializers ─────────────────────────────────────────────────────────
-from .base_serializer import (
+from css.core.db.serializers import (
     SerializerValidationError,
     BaseSerializer,
     BaseModelSerializer,
