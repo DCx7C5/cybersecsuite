@@ -61,6 +61,10 @@ restore a competing catalog model file.
 1. For `db40-menu-marketplace-children-contract`, edit the menu seed/upsert
    surface and this contract together; the ordered child labels are `Agents`,
    `Skills`, `MCPs`, `Workflows`, `Templates`, `Prompts`, and `Teams`.
+   - Routes follow pattern: `/marketplace?kind={kind}` where kind is one of:
+     `agent`, `skill`, `mcp`, `workflow`, `template`, `prompt`, `team`.
+   - Old entries (`Installed`, nested `Marketplace` tab) are removed on sync runs.
+   - Seed is idempotent: reruns upsert by identity key instead of duplicating.
 2. For `prompt-marketplace-wire`, consume the existing
    `MarketplaceItemType.prompt` catalog kind and keep prompt versions and
    rendered content in the prompts owner.

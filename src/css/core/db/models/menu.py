@@ -261,58 +261,46 @@ DEFAULT_MENU_ITEMS: list[MenuSeedEntry] = [
         "order": 2,
         "children": [
             {
-                "name": "Installed",
-                "url": "/marketplace?tab=installed",
-                "icon_path": "Store",
+                "name": "Agents",
+                "url": "/marketplace?kind=agent",
+                "icon_path": "LayoutDashboard",
                 "order": 0,
             },
             {
-                "name": "Marketplace",
-                "url": "/marketplace?tab=marketplace",
-                "icon_path": "Store",
+                "name": "Skills",
+                "url": "/marketplace?kind=skill",
+                "icon_path": "Settings",
                 "order": 1,
             },
             {
-                "name": "Agents",
-                "url": "/marketplace?tab=marketplace&kind=agent",
-                "icon_path": "LayoutDashboard",
+                "name": "MCPs",
+                "url": "/marketplace?kind=mcp",
+                "icon_path": "Store",
                 "order": 2,
             },
             {
-                "name": "Skills",
-                "url": "/marketplace?tab=marketplace&kind=skill",
-                "icon_path": "Settings",
+                "name": "Workflows",
+                "url": "/marketplace?kind=workflow",
+                "icon_path": "Store",
                 "order": 3,
             },
             {
-                "name": "MCPs",
-                "url": "/marketplace?tab=marketplace&kind=mcp",
+                "name": "Templates",
+                "url": "/marketplace?kind=template",
                 "icon_path": "Store",
                 "order": 4,
             },
             {
-                "name": "Workflows",
-                "url": "/marketplace?tab=marketplace&kind=workflow",
+                "name": "Prompts",
+                "url": "/marketplace?kind=prompt",
                 "icon_path": "Store",
                 "order": 5,
             },
             {
-                "name": "Templates",
-                "url": "/marketplace?tab=marketplace&kind=template",
+                "name": "Teams",
+                "url": "/marketplace?kind=team",
                 "icon_path": "Store",
                 "order": 6,
-            },
-            {
-                "name": "Prompts",
-                "url": "/marketplace?tab=marketplace&kind=prompt",
-                "icon_path": "Store",
-                "order": 7,
-            },
-            {
-                "name": "Teams",
-                "url": "/marketplace?tab=marketplace&kind=team",
-                "icon_path": "Store",
-                "order": 8,
             },
         ],
     },
@@ -367,6 +355,9 @@ async def sync_default_menu_items() -> list[MenuItem]:
         )
         return current
 
+    # Track which (parent_id, name) pairs should exist as children for cleanup
+    canonical_children: dict[tuple[int | None, str], str] = {}
+
     for entry in DEFAULT_MENU_ITEMS:
         menu_id = str(entry.get("menu_id") or "sidebar")
         name = str(entry["name"])
@@ -386,6 +377,7 @@ async def sync_default_menu_items() -> list[MenuItem]:
             continue
         for child in children:
             child_menu_id = str(child.get("menu_id") or menu_id)
+            canonical_children[(int(root.id), str(child["name"]))] = child_menu_id
             await upsert_item(
                 menu_id=child_menu_id,
                 parent_id=int(root.id),
@@ -394,5 +386,24 @@ async def sync_default_menu_items() -> list[MenuItem]:
                 icon_path=str(child["icon_path"]),
                 order=int(child["order"]),
             )
+
+    # Clean up orphaned marketplace sidebar children (Installed, nested Marketplace, etc.)
+    marketplace_root = next(
+        (
+            item
+            for item in existing
+            if item.menu_id == "sidebar" and item.parent_id is None and item.name == "Marketplace"
+        ),
+        None,
+    )
+    if marketplace_root is not None:
+        orphaned = [
+            item
+            for item in existing
+            if item.parent_id == marketplace_root.id
+            and (int(marketplace_root.id), item.name) not in canonical_children
+        ]
+        for item in orphaned:
+            await item.delete()
 
     return await MenuItem.manager.roots(menu_id="sidebar")

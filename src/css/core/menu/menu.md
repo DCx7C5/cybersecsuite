@@ -83,3 +83,24 @@ Tag-adoption guardrail (`db40-basetree-tag-adoption-plan`):
   current default endpoint behavior keeps returning sidebar roots.
 - Root ordering and child upserts are stable under
   (`menu_id`, `parent_id`, `order`, `id`) ordering.
+
+## Marketplace sidebar children contract (`db40-menu-marketplace-children-contract`)
+
+The `Marketplace` root under the sidebar exposes exactly **7 deterministic children**
+as the canonical kind navigation surface, replacing former tab-based internal navigation:
+
+1. **Agents** → `/marketplace?kind=agent`
+2. **Skills** → `/marketplace?kind=skill`
+3. **MCPs** → `/marketplace?kind=mcp`
+4. **Workflows** → `/marketplace?kind=workflow`
+5. **Templates** → `/marketplace?kind=template`
+6. **Prompts** → `/marketplace?kind=prompt`
+7. **Teams** → `/marketplace?kind=team`
+
+Implementation details:
+- Old contract entries (`Installed`, nested `Marketplace` tab) are cleaned up on
+  `sync_default_menu_items()` runs and removed from the DB to prevent duplication.
+- Reruns upsert existing children by identity (`menu_id`, `parent_id`, `name`),
+  so ordering and URLs are kept in sync deterministically.
+- Frontend navigation tabs for kind switching are planned for removal; sidebar
+  child routes are the source of truth for marketplace kind filtering.
