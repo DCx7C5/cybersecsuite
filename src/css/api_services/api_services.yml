@@ -226,7 +226,7 @@ api-services:
     api_type: special_sdk
     models: auto
     auth:
-      api_key_env: GITHUB_API_KEY
+      api_key_env: GITHUB_TOKEN
       header: Authorization
       scheme: Bearer
     auth_methods:

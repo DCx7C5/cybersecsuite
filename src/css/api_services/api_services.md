@@ -29,7 +29,23 @@
 
 ---
 
-## SDK Tiers
+The active YAML registry currently instantiates `HttpProviderAdapter`, while
+many individual `service.py` files duplicate REST streaming and buffering
+logic. The tiers below specify the required SDK direction, not completed
+runtime adoption. `provider-sdk-runtime-consolidation` and
+`audit42-api-services-duplicate-fragments` own that correction.
+
+## Authentication Contract
+
+| Surface | Live contract |
+|---------|---------------|
+| Typed provider specs | `ProviderAuth.methods` declares supported authentication methods; current registered providers are API-key based unless explicitly extended. |
+| API-key execution | `HttpProviderAdapter` consumes `api_key_env` today. GitHub Models uses `GITHUB_TOKEN`; Cloudflare service code uses `CLOUDFLARE_API_TOKEN` plus `CLOUDFLARE_ACCOUNT_ID`. |
+| OAuth declarations | Gemini and OpenRouter specs declare authorization-code metadata in `ProviderOAuthFlow`; OAuth token exchange and encrypted persistence are not implemented yet. |
+| Non-registry service exports | NVIDIA, Cerebras, Cloudflare and OpenCode need catalog/spec and SDK-runtime reconciliation before they can be treated as registry-supported providers. |
+| GitHub identity | `github/spec.yaml` and `github/service.py` describe GitHub Models; `api_services.yml` still includes Copilot SDK planning under the same id. Splitting those identities is tracked work. |
+
+## Target SDK Tiers
 
 | Tier                      | Pattern                                  | Providers                                                                                                                                       |
 |---------------------------|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -104,7 +120,7 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ### Gemini (`gemini`)
 
-**Tier**: A — Native SDK (`google-generativeai`) | **Status**: ✅ Complete | **OpenAI-compat**: ❌
+**Tier**: A — Native SDK (`google-genai`) | **Status**: 🟡 SDK cutover pending | **OpenAI-compat**: ❌
 
 **SDK Features**:
 | Feature | Supported |
@@ -126,7 +142,7 @@ system=[{"type": "text", "text": "...", "cache_control": {"type": "ephemeral"}}]
 
 ### Cohere (`cohere`)
 
-**Tier**: A — Native SDK | **Status**: ✅ Complete | **OpenAI-compat**: ❌
+**Tier**: A — Native SDK | **Status**: 🟡 registry/runtime convergence pending | **OpenAI-compat**: ❌
 
 **SDK Features**: Streaming ✅, Tool Use ✅, Embeddings ✅, Reranking ✅, Multilingual ✅, Batch API ✅, Fine-tuning ✅
 
@@ -148,23 +164,21 @@ this adapter owns LLM calls today.
 
 ---
 
-### GitHub Copilot (`github`)
+### GitHub Models / Copilot Planning Conflict (`github`)
 
-**Tier**: D — Complex Auth (JSON-RPC, Copilot CLI required) | **Status**: ✅ Complete | **OpenAI-compat**: ❌
+**Current typed spec/service**: GitHub Models with `GITHUB_TOKEN` and an
+OpenAI-compatible endpoint. **Status**: 🟡 credential/base-URL mismatch fixed;
+SDK convergence pending.
 
-**SDK Features**: Streaming ✅, Vision ✅, Tool Use ✅, Agentic Workflows ✅, MCP Support ✅
-
-**SDK**: `github-copilot-sdk` (Official, Public Preview April 2026). Requires Copilot CLI + `gh` auth.
-
-> ⚠️ **Do NOT use** `pip install github-copilot-sdk` — use `uv pip install github-copilot-sdk`
-
-**Copilot Extensions**: ⛔ Sunsetting Nov 10, 2025. Use MCP or Copilot SDK instead.
+`api_services.yml` separately describes a Copilot SDK/device-flow target under
+the same id. `provider-catalog-spec-coverage` must split the provider identity
+before any Copilot OAuth/device-flow implementation is wired.
 
 ---
 
 ### AI21 (`ai21`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.ai21.com/studio/v1"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://api.ai21.com/studio/v1"`) | **Status**: 🟡 SDK/runtime convergence pending
 
 **SDK Features**: Streaming ✅, Tool Use ✅, JSON Mode ✅, Batch API ✅, Fine-tuning ✅
 
@@ -174,7 +188,7 @@ this adapter owns LLM calls today.
 
 ### Cerebras (`cerebras`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.cerebras.ai/v1"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://api.cerebras.ai/v1"`) | **Status**: 🟡 SDK/runtime convergence pending
 
 **Models**: `llama-3.1-8b`, `llama-3.1-70b`, `llama-3.3-70b`, `qwen-3-32b`
 
@@ -182,9 +196,9 @@ this adapter owns LLM calls today.
 
 ### Cloudflare (`cloudflare`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"`) | **Status**: 🟡 SDK/runtime convergence pending
 
-**Requires**: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_ACCOUNT_ID` env vars. `account_id` injected into URL in constructor.
+**Requires**: `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` env vars. `account_id` injected into URL in constructor.
 
 **Models**: `@cf/meta/llama-3.1-8b-instruct`, `@cf/meta/llama-3.3-70b-instruct-fp8-fast`, `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b`
 
@@ -192,7 +206,7 @@ this adapter owns LLM calls today.
 
 ### DeepInfra (`deepinfra`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.deepinfra.com/v1/openai"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://api.deepinfra.com/v1/openai"`) | **Status**: 🟡 SDK/runtime convergence pending
 
 **SDK Features**: Streaming ✅, Vision ✅, Tool Use ✅, Embeddings ✅, 100+ Models ✅
 
@@ -200,7 +214,7 @@ this adapter owns LLM calls today.
 
 ### DeepSeek (`deepseek`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.deepseek.com/v1"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://api.deepseek.com/v1"`) | **Status**: 🟡 SDK/runtime convergence pending
 
 > Note: DeepSeek-R1 returns non-standard `reasoning_content` field. Handled: streaming emits it as `StreamChunk(metadata={"content_type": "reasoning"})`; buffered stores it in `LLMResponse.usage["reasoning"]`.
 
@@ -208,55 +222,55 @@ this adapter owns LLM calls today.
 
 ### Fireworks (`fireworks`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://api.fireworks.ai/inference/v1"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://api.fireworks.ai/inference/v1"`) | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### Groq (`groq`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### Lambda API (`lambda_api`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### Mistral (`mistral`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### Nscale (`nscale`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### OpenRouter (`openrouter`)
 
-**Tier**: B — OpenAI-compat (`base_url="https://openrouter.ai/api/v1"`) | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat (`base_url="https://openrouter.ai/api/v1"`) | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### Perplexity (`perplexity`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### SambaNova (`sambanova`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
 ### Together (`together`)
 
-**Tier**: B — OpenAI-compat | **Status**: ✅ Complete
+**Tier**: B — OpenAI-compat | **Status**: 🟡 SDK/runtime convergence pending
 
 ---
 
@@ -277,7 +291,7 @@ this adapter owns LLM calls today.
 
 ### OpenCode (`opencode`)
 
-**Tier**: C — Custom In-House | **Status**: ✅ Complete
+**Tier**: C — Custom In-House | **Status**: 🟡 registry/runtime convergence pending
 
 ---
 
@@ -293,7 +307,7 @@ this adapter owns LLM calls today.
 
 ## Rules (all providers)
 
-- HTTP client: always `aiohttp`, never `httpx`
+- Transport: use the declared Python SDK route when an SDK owner is defined; retain `aiohttp` for explicit custom HTTP providers only, and never use `httpx`.
 - Package manager: `uv`, never `pip`
 - `__all__` lives ONLY in `__init__.py`
 - Never mix `@dataclass` with `ABC` on same class
@@ -310,7 +324,7 @@ this adapter owns LLM calls today.
 |------|-------------------------|
 | `src/css/api_services/adapters.py` | `HttpProviderAdapter`, `get_adapter()`, `close_all_adapters()`. |
 | `src/css/api_services/registry.py` | `ProviderRegistry`, `get_registry()`. |
-| `src/css/api_services/xai/service.py` | `xAIApiService._default_base_url()`, `get_models()`, planned AsyncClient/chat stream bridge and tool/telemetry mapping. |
+| `src/css/api_services/xai/service.py` | `xAIApiService._default_base_url()`, `get_models()`, and official `AsyncClient` initialization; chat stream bridge and tool/telemetry mapping remain planned. |
 | `src/css/api_services/mistral/service.py` | `MistralApiService`; planned optional FIM/OCR provider behavior. |
 | `src/css/api_services/groq/service.py` | `GroqApiService`; planned audio capability behavior. |
 | `src/css/api_services/openrouter/service.py` | `OpenRouterApiService`; planned cost and catalog enrichment. |
@@ -324,9 +338,13 @@ this adapter owns LLM calls today.
 
 | Todo ID | Status | Required result |
 |---------|--------|-----------------|
-| `xai-config-base-url-yaml`, `xai-sdk-client-dependency-pin`, `xai-sdk-async-client-bridge`, `xai-sdk-chat-stream-bridge`, `xai-get-models-list`, `xai-sdk-server-side-tools-usage`, `xai-sdk-telemetry-policy` | pending | Cut xAI to official `xai-sdk` usage for call flow and model discovery while preserving explicit fallback behavior and permission/telemetry guarantees. |
+| `xai-config-base-url-yaml`, `xai-sdk-client-dependency-pin`, `xai-sdk-async-client-bridge` | done | Official dependency, configured base URL, and direct `AsyncClient` initialization are in place. |
+| `xai-sdk-chat-stream-bridge`, `xai-get-models-list`, `xai-sdk-server-side-tools-usage`, `xai-sdk-telemetry-policy` | pending | Finish official call flow and model discovery while preserving explicit fallback behavior and permission/telemetry guarantees. |
 | `mistral-fim-adapter`, `mistral-ocr-adapter`, `groq-audio-adapter` | pending | Add optional capabilities and permission-gated tool exposure through existing provider services. |
 | `openrouter-cost-tracking`, `openrouter-provider-list` | pending | Add non-fatal cost attribution and cached model catalog normalization. |
+| `provider-sdk-runtime-consolidation`, `provider-catalog-spec-coverage` | pending | Replace copied provider REST execution with canonical SDK routes and reconcile unregistered providers/GitHub identity ownership. |
+| `auth-provider-oauth-flows` | pending | Implement encrypted OAuth/device-flow credential handling after `auth-secrets-settings`; API-key execution remains current. |
+| `audit42-api-services-duplicate-fragments` | pending | Remove duplicated provider service bodies after SDK-runtime consolidation. |
 | `ollama-model-manager`, `ollama-router-check` | pending | Add provider-side model availability and integrate only after resilience routing exists. |
 | `ollama-install-checker`, `ollama-process-manager`, `ollama-lifespan-wire` | pending | Phase 33 future host-process ownership; it must not be represented as existing runtime. |
 

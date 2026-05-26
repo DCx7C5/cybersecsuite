@@ -1,11 +1,14 @@
 # @sdks — Unified SDK Architecture
 
 **Location**: `src/css/core/sdks/`
-**Status**: 🔧 Phase 10 — Unified SDK Architecture (active)
+**Status**: 🟡 Partial — Phase 10 unified gateway is implemented in part but is not the active provider runtime.
 
 ## Purpose
 
-Unified provider SDK abstraction layer. All LLM provider access goes through this module. Supports 4 adapter types:
+Target unified provider SDK abstraction layer. Runtime agent and proxy calls
+currently go through `css.api_services.registry.ProviderRegistry`, not
+`CSSLLMClient`; provider execution is not consolidated yet. The target layer
+supports 4 adapter types:
 - **NativeSDK**: full SDK features for Anthropic/OpenAI
 - **HttpProvider**: YAML-driven HTTP clients for all providers
 - **OllamaAdapter**: local HTTP client for Ollama
@@ -83,8 +86,11 @@ Unified provider SDK abstraction layer. All LLM provider access goes through thi
 - `sdk-model-name-mapper` — ✅ DONE (2026-05-09)
 - `sdk-ollama-adapter` — ✅ DONE (2026-05-09)
 - `sdk-builtin-tools-registry` — ✅ DONE (2026-05-09)
-- `sdk-unified-client` — ✅ DONE (2026-05-09)
-- `sdk-replace-queryexecutor` — ✅ DONE (2026-05-09) — already refactored to provider-agnostic AgentExecutor
+- `sdk-unified-client` — 📋 reopened (2026-05-26): `SDKRegistry` has no
+  registered providers and cannot route `CSSLLMClient` calls yet.
+- `sdk-replace-queryexecutor` — 📋 reopened (2026-05-26): QueryExecutor now
+  uses provider-agnostic `AgentExecutor`, but that active route still reaches
+  `api_services.ProviderRegistry`, not `CSSLLMClient`.
 - `sdk-browser-relay-adapter` — 📋 deferred (Phase 10 backlog)
 - `sdk-browser-relay-polling` — 📋 deferred (Phase 10 backlog)
 - `sdk-deepseek-adapter` — 📋 pending (Phase 10 T10.7)
@@ -178,13 +184,17 @@ official `xai-sdk` primitives.
 
 | Todo ID | Status | Execution order |
 |---------|--------|-----------------|
+| `provider-sdk-runtime-consolidation` | pending | Reconcile competing `api_services`/`core.sdks` adapter and registry ownership before claiming unified routing. |
+| `sdk-unified-client` | pending | Register canonical adapters in `SDKRegistry` after convergence and prove offline provider resolution. |
+| `sdk-replace-queryexecutor` | pending | Route QueryExecutor through the canonical unified client only after the unified client is functional. |
 | `sdk-browser-relay-adapter`, `sdk-browser-relay-polling` | pending | Implement relay request/result transport first. |
 | `sdk-deepseek-adapter` | pending | Add dedicated registered provider adapter. |
 | `sdk-browser-relay-provider-priority` | pending | Implement the ordered policy in `relay_router.py`, then call it from `CSSLLMClient`. |
 | `sdk-browser-relay-web-llm-relay` | pending | Add the web relay endpoint only after the policy and relay transport exist. |
 
-1. Preserve the current adapters/registry/client as the gateway and add only
-   the missing adapter/router modules.
+1. Reconcile the active `api_services.ProviderRegistry` route with the
+   currently unregistered `SDKRegistry` route and select one executable
+   provider gateway.
 2. Express fallback order `github`, `codex`, `openai`, `deepseek`, `nvidia`,
    `web_relay` as data in `RelayProviderPolicy`, recording typed failed/skipped
    attempts.

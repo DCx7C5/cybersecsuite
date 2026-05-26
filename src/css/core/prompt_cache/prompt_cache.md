@@ -3,7 +3,7 @@ Prompt caching remains a separate owner from general `core/cache`; any later
 package relocation requires explicit source/import migration.
 
 **Location target**: `src/css/core/prompt_cache/`
-**Status**: COMPLETE Phase 11 implementation; 9/10 todos done, 1 deferred to Phase 12
+**Status**: PARTIAL Phase 11 implementation; 8/11 todos done, streaming contract and metrics transport pending, Gemini blocked/deferred
 
 ## Purpose
 
@@ -57,12 +57,12 @@ UnifiedLLMClient request
 | `cache-response-stats-struct` | ✅ DONE | normalized cache usage/result type |
 | `cache-prompt-cache-manager` | ✅ DONE | manager coordinating exact and native caches |
 | `cache-redis-exact-match` | ✅ DONE | exact response cache for every provider |
-| `cache-redis-streaming-buffer` | ✅ DONE | store complete buffered streams |
+| `cache-redis-streaming-buffer` | PENDING | reconcile buffered-response assembly with the canonical `StreamChunk`/`LLMResponse` contract |
 | `cache-anthropic-breakpoint-injector` | ✅ DONE | optional explicit Anthropic layouts |
 | `cache-automatic-native-tracking` | ✅ DONE | Anthropic/OpenAI/DeepSeek usage parsing |
 | `cache-gemini-context-cache` | ❌ BLOCKED | Deferred Gemini resource lifecycle to Phase 12; explicit quota/billing approval required |
 | `cache-cost-savings-tracker` | ✅ DONE | estimate savings from usage/pricing |
-| `cache-metrics-openobserve` | ✅ DONE | observability events |
+| `cache-metrics-openobserve` | PENDING | OpenObserve transport is not wired; exporter retains events until Phase 35 telemetry client/stream work lands |
 
 ## Integration Points
 
@@ -79,19 +79,19 @@ UnifiedLLMClient request
 | `src/css/core/prompt_cache/types.py` | ✅ DONE | `CachingCapability` enum (5 levels), `ResponseCacheStats` msgspec struct, `CacheCapabilityMetadata` TypedDict |
 | `src/css/core/prompt_cache/manager.py` | ✅ DONE | `PromptCacheManager` orchestration: tier selection, message preparation, cache key computation, cost estimation |
 | `src/css/core/prompt_cache/exact_match_cache.py` | ✅ DONE | `ExactMatchPromptCache`: Redis O(1) lookup, get/set/delete/clear operations, TTL support |
-| `src/css/core/prompt_cache/streaming_buffer.py` | ✅ DONE | `StreamingBuffer` chunk accumulation, `PromptCacheStreamingBuffer` pass-through streaming with async buffering |
+| `src/css/core/prompt_cache/streaming_buffer.py` | PENDING | Stream accumulation exists, but its `StreamChunk` fields/constructor are inconsistent with the canonical type contract |
 | `src/css/core/prompt_cache/native_cache_tracking.py` | ✅ DONE | `NativeCacheDetector`: Anthropic/OpenAI/DeepSeek cache hit parsing, `NativeCacheTracker`: aggregation |
 | `src/css/core/prompt_cache/anthropic_breakpoints.py` | ✅ DONE | `inject_cache_breakpoints`: ephemeral cache control tokens, `estimate_message_tokens`: heuristic sizing |
 | `src/css/core/prompt_cache/cost_savings_tracker.py` | ✅ DONE | `CostSavingsTracker`: cumulative tracking by provider/source, hourly trends, summary reporting |
-| `src/css/core/prompt_cache/metrics_exporter.py` | ✅ DONE | `OpenObserveMetricsExporter`: batch export, `CacheMetricsCollector`: local buffering and flush |
+| `src/css/core/prompt_cache/metrics_exporter.py` | PARTIAL | `OpenObserveMetricsExporter` retains unsent events by returning `False`; actual OpenObserve transport remains pending |
 | `src/css/core/types/base_protocols.py` | ✅ DONE | Extended `LLMAdapter` with `cache_capability` property |
 
 Validation checklist:
 ✅ Key separation by provider/model/messages/system_prompt
 ✅ Tier selection decision tree (NONE→Tier3, EXACT_ONLY→Tier1, NATIVE_AUTO→Tier2, RESOURCE→Tier3-deferred)
-✅ Stream buffering with finalization and Redis storage
+PENDING Stream buffering finalization and Redis storage contract repair
 ✅ Native cache usage parsing (Anthropic, OpenAI, DeepSeek)
 ✅ Cost estimation with per-provider ratios
-✅ OpenObserve integration with metrics export
+PENDING OpenObserve transport and metrics stream integration
 ✅ Exception handling with Rule 70 compliance
 ✅ Type hints fully annotated (Rule 66 compliance)

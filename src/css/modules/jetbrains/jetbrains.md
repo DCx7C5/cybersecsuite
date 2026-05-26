@@ -43,6 +43,11 @@ The existing Python surfaces are interface scaffolding, not functioning IDE
 integration. Real connector invocation and error/availability behavior remain
 implementation work even where the tracker records scaffold todos as done.
 
+The 2026-05-26 duplicate-fragment audit found no persisted PyCharm inspection
+artifact in this package. Source comparison instead identified duplicated
+provider REST service bodies under `src/css/api_services/`, recorded as
+`audit42-api-services-duplicate-fragments`; this module does not own that fix.
+
 ## Type and Client Contract
 
 | Surface | Required contract |

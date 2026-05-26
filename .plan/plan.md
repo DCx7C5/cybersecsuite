@@ -4,95 +4,68 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (session: Phase 16 T1 + T10 complete, continuing provider SDK features)
+**Updated**: 2026-05-26 (plan/source, dependency-reference, and provider auth/SDK audit pass)
 
-## Current Session (2026-05-26 - Continuation #4)
+## Current Session (2026-05-26 - Audit Pass)
 
-**Session Goal**: Progress Phase 16 Provider SDK Features
+**Session Goal**: Audit plan/tracker/source consistency, repair bounded defects,
+and record remaining core connectivity and provider auth/SDK work with executable tracker ownership.
 
-**Status Entering Session**:
-- Total todos: 1036 | Done: 558 | Pending: 470 | Blocked: 6 | In Progress: 0
-- Overall Completion: 53.8%
-- Previous: Dynamic model fetching complete, Phase 16 foundation work in progress
-- Newly Completed: Token count method (T16.T1), OllamaModelManager (T16.T10)
+**Audited Outcome**:
 
-**Session Work Completed**:
+- Live tracker: 1045 todos | 556 done | 481 pending | 8 blocked | 0 active.
+- Hierarchy repair: zero `unassigned` todos and zero empty descriptions remain.
+- Five completed-to-incomplete dependency inconsistencies remain recorded by
+  pending `audit-phase-dependency-completeness`.
+- Direct source fixes: dependency-analyzer missing-symbol/deduplication support,
+  `core/orchestration` export repair, xAI SDK import/lifecycle correction,
+  streaming client-pool deadlock/protocol correction, and prompt-cache metrics
+  false-success correction.
+- False completions reopened: prompt-cache stream contract and metrics transport;
+  broader runtime/type/documentation findings remain in owned pending rows.
+- Provider/auth audit: corrected GitHub Models and Cloudflare credential
+  contracts, declared typed API-key/OAuth capability metadata, and recorded
+  SDK-runtime convergence, catalog/identity, OAuth lifecycle, and duplicated
+  provider-fragment rows.
+- SDK interconnectivity audit: repaired the active `AgentExecutor` call to
+  its declared provider-client interface and reopened unsupported Phase 10
+  claims because `core.sdks.SDKRegistry` has no registered providers while
+  live callers use `api_services.ProviderRegistry`.
 
-1. ✅ **DONE** Phase 16.T1 — Token Count Method (CSSLLMClient.estimate_tokens()):
-   - Added `estimate_tokens(model_id, messages)` method to CSSLLMClient
-   - Integrates token_counter.py heuristic utilities
-   - Falls back to heuristic if provider SDK tokenization unavailable
-   - Returns integer token count for routing/cost decisions
-   - 18 comprehensive tests: message/completion/cost estimation + integration
-   - Commit: 4a3c5297
+**Core Dependency/Reference Evidence**:
 
-2. ✅ **DONE** Phase 16.T10 — OllamaModelManager (Model Lifecycle):
-   - Full lifecycle: `pull()`, `list()`, `delete()`, `copy()`, `show()`, `is_available()`
-   - Event emission via NamespacedEventEmitter: pull_started/progress/complete/failed, list_complete, delete_complete, copy_complete
-   - Model caching via L1MemoryCache with configurable TTL (default 3600s)
-   - Async context manager support (__aenter__, __aexit__)
-   - Typed errors: OllamaDaemonUnavailableError, OllamaModelNotFoundError, OllamaModelPullError
-   - Async pull with streaming progress line parsing
-   - 20 unit tests: init, errors, context manager, methods callable, emitter, cache
-   - Commit: bff3ee87
+- `scripts/codebase_dependency_analyzer.py` scanned 179 `src/css/core` Python
+  files and reports 12 live `core -> modules` edges.
+- After repairing the broken `core/orchestration` facade, the sole confirmed
+  missing imported core symbol is `TeamLeader` in
+  `src/css/core/streaming/runner.py` against
+  `src/css/modules/teams/orchestrator.py`.
+- Core-owned Markdown reference scanning reports 14 Python files without a
+  file-level documentation hit; remediation is owned by
+  `audit42-core-owner-doc-boundaries`.
+- Boundary and architecture-document reconciliation is recorded by
+  `audit42-core-module-boundary-edges` and `audit42-plan-reference-cleanup`.
 
-**Phase 16 Progress**: 8/36 todos done (22.2%, up from 7/36 at 19.4%)
+**Validation Performed**:
 
-**Quality Verification**:
-- Type checking: 0 errors, 0 warnings (all modified files)
-- Linting: All checks pass (ruff)
-- Dependency analysis: Clean, no cross-module violations
+- `ruff check src/css tests scripts/codebase_dependency_analyzer.py` passed.
+- `basedpyright` passed for the directly repaired analyzer, xAI service,
+  orchestration facade, prompt-cache metrics exporter, and client pool.
+- Import smoke passed for `xAIApiService`, `UvicornProcessManager`, and
+  `ClientPool`.
+- Provider auth validation decoded all configured `spec.yaml` files; focused
+  `ruff` and `basedpyright` passed for the corrected services and typed auth
+  schema/exports, and dependency analysis scanned 58 `api_services` Python
+  files with no missing imported symbols.
+- SDK interconnectivity validation uses an offline `AgentExecutor` response
+  smoke plus dependency scans for `modules/agents`, `core/sdks`, and
+  `api_services`; the agents scan reports the existing missing
+  `AgentMetrics`/`AgentState`/`AgentMessage` manager imports now recorded in
+  `agent-execution-logic`, while the SDK/provider scans report no missing
+  imported symbols.
+- Phase-level test execution remains deferred by workflow rule; existing
+  ASGI and prompt-cache stream type failures are tracked rather than hidden.
 
-**Next Phase 16 Ready Todos** (in priority order):
-1. `ollama-router-check` (T16.10) — awaits resilience/routing package creation
-2. `openrouter-cost-tracking` (T16.11) — ready to implement
-3. `mistral-fim-adapter` (T16.12) — ready
-4. `mistral-ocr-adapter` (T16.12) — ready
-5. `groq-audio-adapter` (T16.13) — ready
-
-## Previous Session Work (2026-05-26 Continuation #3)
-
-**Dynamic Model Fetching Complete** ✅
-- Enhanced ModelRegistry with async discovery mechanism
-- 4 provider discovery implementations: OpenRouter (3600s), Ollama (300s), Mistral (7200s), Groq (7200s)
-- ASGI app integration with discovery_integration.py
-- 18 comprehensive tests (11 discovery + 7 integration)
-- Enables model discovery from multiple provider APIs at runtime
-
-## Current Session Goals (2026-05-26 - Continuation)
-
-**Phase 11 — Cross-Provider Prompt Caching** (9/10 complete):
-✅ COMPLETE - Multi-tier caching orchestration with 8 new modules created:
-- css/core/prompt_cache/types.py: CachingCapability enum (5 levels) + ResponseCacheStats
-- css/core/prompt_cache/manager.py: Multi-tier orchestration logic
-- css/core/prompt_cache/exact_match_cache.py: Tier 1 Redis backend
-- css/core/prompt_cache/streaming_buffer.py: Chunk accumulation
-- css/core/prompt_cache/anthropic_breakpoints.py: Explicit cache control
-- css/core/prompt_cache/native_cache_tracking.py: Provider detection
-- css/core/prompt_cache/cost_savings_tracker.py: Financial tracking
-- css/core/prompt_cache/metrics_exporter.py: OpenObserve integration
-Extended LLMAdapter protocol with cache_capability property.
-1 todo deferred to Phase 12 (Gemini cachedContent). Status: 90%.
-
-**Phase 39 — Code Quality Remediation** (5/5 complete):
-✅ COMPLETE - Fixed all type hints and exception handling in core/asgi/app.py:
-- Fixed dict[str, Any] type annotation
-- Replaced 8 bare Exception catches with BaseCoreException (Rule 70 compliance)
-- Fixed exception variable shadowing with descriptive names
-- Verified ToolRegistry attribute types. Status: 100%.
-
-**Phase 22 — MCP Protocol Layer** (verified complete):
-✅ VERIFIED 8/8 todos complete from prior session
-
-**Phase 42 — ACP + LSP + Marketplace Implementation** (unblocked):
-Now ready to activate - Phase 22 dependency satisfied.
-
-**Phase 20 — LLM Cost Optimization** (unblocked):
-Now ready to activate - Phase 11 dependency satisfied.
-
-**Implementation tranche** — Phase 40 still contains pending implementation
-work after Phase 41 preparation; `db40-lane-marketplace` is already recorded
-done and must not be reclaimed as active work.
 Audit report: `.plan/architecture/plan-audit-2026-05-25.md`
 **Tracker authority**: `.plan/session.db`
 **Local plan index**: `src/css/plan.md`
@@ -118,9 +91,11 @@ Snapshot queried from `.plan/session.db` on 2026-05-26 (end of session):
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1036 | 556 | 474 | 6 | 0 |
+| 1045 | 556 | 481 | 8 | 0 |
 
-Overall completion: 53.7%. Session work: Phase 16 Foundation Sequence A (3 todos) + prefix fix (1 todo) + security audit = +4 todos.
+Overall completion: 53.2%. Audit work repaired bounded defects, rehomed all
+unassigned rows, reopened unsupported completion claims, and added precisely
+owned remediation for remaining core/module boundary and provider SDK/auth work.
 
 ## Current Execution Boundary
 
@@ -150,42 +125,42 @@ and owner documents have been made executable before implementation resumes.
 | 6 | Architecture Overhaul | 37 | 37 | 0 | 0 | 0 |
 | 7 | Feature Completeness | 19 | 19 | 0 | 0 | 0 |
 | 8 | AI Execution Layer | 17 | 17 | 0 | 0 | 0 |
-| 40 | DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
 | 9 | ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
-| 10 | Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
-| 11 | Cross-Provider Prompt Caching | 11 | 10 | 0 | 1 | 0 |
+| 10 | Unified SDK Architecture | 16 | 9 | 7 | 0 | 0 |
+| 11 | Cross-Provider Prompt Caching | 11 | 8 | 2 | 1 | 0 |
 | 12 | QoL Output Controls Migration | 11 | 1 | 10 | 0 | 0 |
 | 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
 | 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 8 | 10 | 0 | 0 |
-| 15 | Permissions + WorkingDir | 31 | 0 | 31 | 0 | 0 |
-| 16 | Provider SDK Features | 36 | 6 | 30 | 0 | 0 |
-| 17 | Settings & Projects | 39 | 0 | 39 | 0 | 0 |
+| 15 | Permissions + WorkingDir | 32 | 0 | 31 | 1 | 0 |
+| 16 | Provider SDK Features | 38 | 10 | 28 | 0 | 0 |
+| 17 | Settings & Projects | 43 | 1 | 41 | 1 | 0 |
 | 18 | Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
 | 19 | Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
-| 20 | Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 |
+| 20 | Persistent Memory Layer | 44 | 8 | 36 | 0 | 0 |
 | 21 | Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
 | 22 | MCP Protocol Layer | 8 | 8 | 0 | 0 | 0 |
 | 23 | Prompt Registry | 11 | 1 | 10 | 0 | 0 |
 | 24 | Git Tracking & Worktree Isolation | 9 | 0 | 9 | 0 | 0 |
 | 25 | Integration Hardening | 14 | 8 | 6 | 0 | 0 |
-| 26 | Human Approval Workflows | 14 | 0 | 14 | 0 | 0 |
+| 26 | Human Approval Workflows | 15 | 0 | 15 | 0 | 0 |
 | 27 | Graph Visualization Engine | 17 | 0 | 17 | 0 | 0 |
-| 28 | Auth & Accounts | 6 | 1 | 5 | 0 | 0 |
-| 29 | Cybersec Domain Layer | 10 | 0 | 10 | 0 | 0 |
+| 28 | Auth & Accounts | 9 | 1 | 8 | 0 | 0 |
+| 29 | Cybersec Domain Layer | 12 | 0 | 12 | 0 | 0 |
 | 30 | Workflow Engine + IPC | 5 | 0 | 5 | 0 | 0 |
-| 31 | Production Readiness | 7 | 0 | 7 | 0 | 0 |
+| 31 | Production Readiness | 9 | 0 | 9 | 0 | 0 |
 | 32 | Reports Module | 11 | 0 | 11 | 0 | 0 |
 | 33 | Ollama Native | 6 | 0 | 6 | 0 | 0 |
 | 34 | Dependency Map | 20 | 2 | 18 | 0 | 0 |
 | 35 | Telemetry Infrastructure | 7 | 0 | 7 | 0 | 0 |
 | 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
-| — | unassigned | 26 | 0 | 26 | 0 | 0 |
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
-| 39 | Audit Remediation (A1/A2/A3) | 25 | 6 | 19 | 0 | 0 |
+| 39 | Audit Remediation (A1/A2/A3) | 42 | 7 | 35 | 0 | 0 |
 | 39 | Code Quality Remediation | 5 | 5 | 0 | 0 | 0 |
+| 40 | DB Model Consolidation & Rich Schemas | 39 | 7 | 32 | 0 | 0 |
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 | 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
+| — | Meta — Audit & Validation | 47 | 38 | 9 | 0 | 0 |
 
 ## Local Ownership Map
 
@@ -266,6 +241,9 @@ and, where relevant, architecture diagrams:
    a separate maintenance pass after source validation.
 5. Remaining policy reconciliation: validate historical schema-migration
    wording and any architecture claims against live implementation before use.
+6. Provider execution convergence: duplicated `api_services/*/service.py`
+   transport code, missing registry-spec coverage, GitHub Models/Copilot
+   identity collision, and OAuth token lifecycle are recorded in owned rows.
 
 ## Documentation Maintenance Rules
 

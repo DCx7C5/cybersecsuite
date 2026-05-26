@@ -477,7 +477,7 @@ Tool       → modules/tools/types.py
 |----|--------------------------------------------------------|-----------------------------------------|
 | 1  | Use `BigIntField(pk=True)` or custom `PrimaryKeyField` | Better than `IntField` for large tables |
 | 2  | Always use **async** methods (`await`)                 | Tortoise is async-native                |
-| 3  | Use **Aerich** for all migrations                      | Official and reliable migration tool    |
+| 3  | Defer Aerich until active phases are locked            | Development uses drop + reseed above    |
 | 4  | Use `tortoise.contrib.pydantic` for FastAPI            | Clean Pydantic schemas from models      |
 | 5  | Add indexes on frequently filtered fields              | Greatly improves query performance      |
 | 6  | Use `atomic()` for transactions                        | Ensures data consistency                |
@@ -493,7 +493,7 @@ Tool       → modules/tools/types.py
 | 1  | Using sync code inside async functions            | Blocks the event loop                |
 | 2  | Forgetting `prefetch_related()`                   | Causes N+1 query problem (very slow) |
 | 3  | Putting business logic inside models              | Hard to test and maintain            |
-| 4  | Not using Aerich for schema changes               | Manual SQL is error-prone            |
+| 4  | Ad hoc schema changes outside the active drop/reseed policy or later approved migration policy | Creates drift and unsafe deployments |
 | 5  | Overusing `raw()` SQL queries                     | Loses ORM benefits and safety        |
 | 6  | Creating too many connections without pooling     | Performance and resource issues      |
 | 7  | Using `IntField(pk=True)` on high-volume tables   | Risk of running out of IDs           |

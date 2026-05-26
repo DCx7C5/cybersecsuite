@@ -21,8 +21,11 @@ document owns the executable agent-management specification.
 
 ## Current State
 
-✅ **Active** — AgentExecutor implemented with provider-agnostic execution via HttpProviderAdapter.
-Claude SDK hardcode removed from streaming/runner.py.
+🟡 **Partial** — `base.AgentExecutor` is the active provider-backed executor.
+Its invocation contract now uses `BaseApiServiceClient.call_llm_buffered()`
+against `api_services.ProviderRegistry`; the intended `core.sdks.CSSLLMClient`
+gateway is not wired yet. The Claude SDK hardcode is removed from
+`streaming/runner.py`.
 
 ### Architecture Note (2026-05-09)
 
@@ -159,6 +162,8 @@ confirmed by the current source tree.
 | `gap-agents-plan-stale` | pending | Keep this matrix aligned with actual base/manager/tools/session ownership. |
 | `approval-agentexecutor-wire` | pending | Insert approval gating at tool preflight after permission evaluation and before side effects. |
 | `git-tracker-hook` | pending | After session artifact ownership exists, commit only successful turn artifacts via the event/hook boundary. |
+| `agent-execution-logic` | pending | The active `base.AgentExecutor` provider-call contract is repaired; reconcile the separate provisional executor in `manager.py`, which imports absent `AgentMetrics`, `AgentState`, and `AgentMessage`, and validate all public callers. |
+| `provider-sdk-runtime-consolidation` | pending | Move the active agent/provider route onto the selected canonical SDK/registry gateway. |
 
 1. Reconcile which `AgentExecutor` is imported by runtime callers and test
    that path before adding event or approval hooks.

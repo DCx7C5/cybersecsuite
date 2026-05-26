@@ -14,18 +14,18 @@
 
 **Script**: `scripts/codebase_dependency_analyzer.py`
 **Invocation**: `.venv/bin/python scripts/codebase_dependency_analyzer.py <path> [options]`
-**Output**: JSON — `{"<rel/file.py>": {"consumed_by": [...], "consumes": [...], "markdown_references": {...}}}`
+**Output**: JSON — `{"<rel/file.py>": {"consumed_by": [...], "consumes": [...], "missing_imported_symbols": [...], "markdown_references": {...}}}`
 
 ### Key Features
 
 | Feature                 | CLI Flags                                                    | Default                                                             | Use When                                                                                                                                                       |
 |-------------------------|--------------------------------------------------------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Convenience mode**    | `scripts/analyzer.py src/css/modules/foo/`                   | auto                                                                | Pass a subdirectory or file; root auto-detected from `.git` / `pyproject.toml`. Parses full project for accurate `consumed_by`, outputs only the focused path. |
+| **Convenience mode**    | `scripts/codebase_dependency_analyzer.py src/css/modules/foo/` | auto                                                              | Pass a subdirectory or file; root auto-detected from `.git` / `pyproject.toml`. Parses full project for accurate `consumed_by`, outputs only the focused path. |
 | **Bidirectional graph** | (always on)                                                  | —                                                                   | `consumed_by` = who imports me; `consumes` = who I import                                                                                                      |
 | **Exclude directories** | `--exclude .git __pycache__ .venv`                           | `.git __pycache__ venv .venv node_modules build dist .idea .vscode` | Skip noise in projects with generated dirs                                                                                                                     |
 | **Exclude globs**       | `--exclude-glob '**/migrations/**' '*.generated.py'`         | none                                                                | Skip test files, migrations, generated code                                                                                                                    |
-| **Markdown references** | `--markdown-case-insensitive --markdown-max-hits-per-term 5` | off, unlimited, 180 chars                                           | Find docs that mention this file or its symbols — verify docs stay in sync                                                                                     |
-| **Skip markdown**       | `--no-markdown-refs`                                         | on                                                                  | Speed up raw dep scans                                                                                                                                         |
+| **Markdown references** | `--markdown-case-insensitive --markdown-max-hits-per-term 5` | on, unlimited, 180 chars                                            | Find docs that mention this file or its symbols — verify docs stay in sync                                                                                     |
+| **Skip markdown**       | `--no-markdown-refs`                                         | opt-in                                                              | Speed up raw dep scans                                                                                                                                         |
 | **Output to file**      | `--output /tmp/deps.json`                                    | stdout                                                              | Pipe-able JSON for LLM consumption                                                                                                                             |
 | **Import roots**        | `--module-root src/`                                         | auto-detects `src/`                                                 | Projects with unusual package layouts                                                                                                                          |
 | **Concurrency**         | `--concurrency 64`                                           | 64                                                                  | Tune for very large projects                                                                                                                                   |
@@ -87,6 +87,7 @@ for f, data in d.items():
   "src/css/modules/foo/types.py": {
     "consumed_by": ["src/css/modules/foo/endpoints.py"],
     "consumes": ["src/css/core/types.py/base_entity.py"],
+    "missing_imported_symbols": [],
     "markdown_references": {
       "file_hits": [{"term": "types.py", "markdown_file": "src/css/modules/foo/foo.md", "line": 42, "snippet": "..."}],
       "symbols": {"FooType": {"kinds": ["class"], "definitions": [{"line": 12, "kind": "class"}], "hits": []}}
@@ -101,6 +102,7 @@ for f, data in d.items():
 |---------------|----------------------------------------------------|---------------------------------------------------|
 | **PRE-TODO**  | `convenience mode` → check `consumed_by`           | Who will break if you touch this file             |
 | **POST-TODO** | `convenience mode` → check `consumes` cross-module | Did you introduce illegal module imports          |
+| **POST-TODO** | `convenience mode` → check `missing_imported_symbols` | Did you import an absent internal symbol        |
 | **POST-TODO** | `convenience mode` + markdown refs                 | Which docs need updating after symbol renames     |
 | **TASK**      | `convenience mode` full module scan                | Module-internal dependency health + circular deps |
 | **PHASE**     | `full project scan` + markdown refs                | Project-wide impact analysis + doc sync audit     |
@@ -191,10 +193,13 @@ WHERE id = 'TODO_ID';
 
 **Read these files** (based on the todo's `phase`/`task`):
 ```bash
-# Always read the local planning markdown for the area you're working in:
+# Always read the local planning markdown for the area you're working in.
 cat "src/css/modules/$(echo TODO_ID | cut -d'-' -f1)/$(echo TODO_ID | cut -d'-' -f1).md" 2>/dev/null || \
-cat "src/css/core/$(echo TODO_ID | cut -d'-' -f1)/plan.md" 2>/dev/null || \
 cat "src/css/api_services/api_services.md" 2>/dev/null
+
+# For a core change, use the concrete source subdirectory named in the todo:
+find "src/css/core/<subdir>" -maxdepth 1 -name '*.md' -print
+cat "src/css/core/<subdir>/<owner-document>.md"
 
 # Read an architecture doc only if the todo or local owner doc requires it:
 # Phase 6 → read the owning src/css markdown first, then relevant .plan/architecture/*.md
@@ -603,8 +608,8 @@ Use Task tool with:
 # [ ] .plan/architecture/*.md — ONLY if system design changed (not for progress tracking)
 
 # Update every touched local planning markdown:
-# [ ] src/css/core.md — if root-level changes
-# [ ] src/css/core/<subdir>/core.md or the nearest area planning markdown
+# [ ] src/css/core/core.md — if root-level changes
+# [ ] the nearest existing `src/css/core/<subdir>/*.md` owner document
 # [ ] src/css/modules/<module>/<module>.md
 # [ ] src/css/api_services/api_services.md
 ```

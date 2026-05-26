@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-26 (mid-session) | **Session**: Phase 16 token counter + ollama manager complete
+**Last Updated**: 2026-05-26 (audit pass) | **Session**: plan/source, core dependency-reference, and provider auth/SDK validation
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -12,11 +12,11 @@
 
 ---
 
-## 📊 session.db State (2026-05-26 mid-session)
+## 📊 session.db State (2026-05-26 audit pass)
 
-**Total**: 1036 todos | **Done**: 558 | **Pending**: 470 | **Blocked**: 6 | **In Progress**: 0
+**Total**: 1045 todos | **Done**: 556 | **Pending**: 481 | **Blocked**: 8 | **In Progress**: 0
 
-**Overall Completion**: 53.8%
+**Overall Completion**: 53.2%
 
 **Last Verified**: 2026-05-26 (checked against live session.db totals)
 
@@ -24,15 +24,19 @@
 
 | Phase | Todos | Done | Pending | Blocked | In Progress | Progress |
 |-------|-------|------|---------|---------|-------------|----------|
-| Phase 16 — Provider SDK Features | 36 | 8 | 28 | 0 | 0 | 22.2% ↑ |
-| Phase 17 — Settings & Projects | 39 | 0 | 39 | 0 | 0 | 0% |
+| Phase 11 — Cross-Provider Prompt Caching | 11 | 8 | 2 | 1 | 0 | 72.7% |
+| Phase 10 — Unified SDK Architecture | 16 | 9 | 7 | 0 | 0 | 56.3% |
+| Phase 16 — Provider SDK Features | 38 | 10 | 28 | 0 | 0 | 26.3% |
+| Phase 17 — Settings & Projects | 43 | 1 | 41 | 1 | 0 | 2.3% |
 | Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 | 18.6% |
-| Phase 20 — Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 | 18.6% |
+| Phase 20 — Persistent Memory Layer | 44 | 8 | 36 | 0 | 0 | 18.2% |
 | Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 | 57.1% |
-| Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 | 18.9% |
+| Phase 28 — Auth & Accounts | 9 | 1 | 8 | 0 | 0 | 11.1% |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 42 | 7 | 35 | 0 | 0 | 16.7% |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 39 | 7 | 32 | 0 | 0 | 17.9% |
 | Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 | 5.3% |
 
-**Completed phases** (100%): Phase 0, 1, 2, 3, 5, 6, 7, 8, 9, 11, 22, 39, 41
+**Completed phases** (100%): Phase 0, 1, 2, 5, 6, 7, 8, 9, 22, 41, and the separate `Phase 39 — Code Quality Remediation` row set.
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -40,9 +44,9 @@
 
 ## 🔑 Recent Phase Key Points
 
-### Phase 11 Cross-Provider Prompt Caching (2026-05-26) ✅ COMPLETE (9/10)
+### Phase 11 Cross-Provider Prompt Caching (2026-05-26) PARTIAL (8/11)
 
-- **Status**: 9/10 todos DONE, 1 blocked (Gemini deferred to Phase 12)
+- **Status**: 8/11 todos DONE, 2 pending (`cache-redis-streaming-buffer`, `cache-metrics-openobserve`), 1 blocked (Gemini deferred to Phase 12)
 - **Modules Created**:
   - `types.py`: CachingCapability enum (5 levels: NONE, EXACT_ONLY, NATIVE_AUTOMATIC, NATIVE_AUTOMATIC_WITH_EXPLICIT_BREAKPOINTS, NATIVE_RESOURCE)
   - `manager.py`: PromptCacheManager orchestration with tier selection logic
@@ -51,20 +55,27 @@
   - `native_cache_tracking.py`: Provider-native cache detection (Anthropic, OpenAI, DeepSeek)
   - `anthropic_breakpoints.py`: Explicit cache control token injection
   - `cost_savings_tracker.py`: Financial tracking with per-provider aggregation
-  - `metrics_exporter.py`: OpenObserve integration for visibility
+  - `metrics_exporter.py`: preserves buffered metrics while OpenObserve transport is not yet wired
 - **Protocol Extension**: LLMAdapter.cache_capability property added
-- **Unblocks**: Phase 20 (LLM Cost Optimization)
+- **Gate**: do not treat Phase 11 as complete or use it to unblock dependent completion claims until the stream contract and telemetry transport are reconciled
 
-### Phase 39 Code Quality Remediation (2026-05-26) ✅ COMPLETE (5/5)
+### Phase 39 Code Quality Remediation (2026-05-26) - Historical Row Set Closed, Follow-up Audit Open
 
-- **Status**: 5/5 todos DONE (100% completion)
+- **Status**: the separate 5-row quality-remediation set is done; `Phase 39 — Audit Remediation (A1/A2/A3)` is active at 7/41 done
 - **Fixed in core/asgi/app.py**:
   - Type hint: marketplace_db_config: dict[str, Any]
   - Exception handling: Replaced 8 bare Exception catches with BaseCoreException (Rule 70)
   - Variable shadowing: Renamed exception variables (db_init_error, marketplace_db_error, etc.)
   - ToolRegistry attributes: Verified type hints for tools, hybrid_tools, initialize_runtime_state
-- **Rule 70 Compliance**: All bare exception catches replaced with custom exceptions
-- **Type Hint Compliance**: All dict/Any types properly annotated
+- **Follow-up evidence**: source audit found remaining broad exceptions, `Any` boundaries, ASGI registry typing errors, and prompt-cache stream-type drift; these are now owned by pending audit rows
+
+### Plan And Core Connectivity Audit (2026-05-26)
+
+- Rehomed all 26 prior `unassigned` todos into named phase/task owners and filled the sole empty description; live queries now report zero for both conditions.
+- Reopened false completions for prompt-cache streaming, prompt metrics transport, singleton standardization, and dependency completeness.
+- Enhanced `scripts/codebase_dependency_analyzer.py` to deduplicate Markdown evidence correctly and report missing internal imported symbols.
+- The analyzer reports 179 core Python files, 12 current `core -> modules` edges, and one remaining confirmed missing-symbol surface: `core/streaming/runner.py` imports absent `TeamLeader` from `modules/teams/orchestrator.py`.
+- A core-owner Markdown scan reports 14 files without file-level documentation hits; missing owner boundaries and stale integration-matrix assertions remain tracked rather than silently accepted.
 
 ### Phase 22 MCP Protocol Layer (2026-05-25, verified 2026-05-26) ✅ VERIFIED COMPLETE
 
@@ -86,6 +97,38 @@
 - Implementation/usage scope now explicitly includes `AsyncClient`, chat
   `stream()`/`sample()`, server-side tools (`web_search`, `x_search`,
   `code_execution`), and telemetry/retry policy wiring.
+
+### Provider SDK, Authentication, And Duplicate-Fragment Audit (2026-05-26)
+
+- Confirmed that the active YAML provider registry still executes through
+  generic `HttpProviderAdapter` while numerous provider `service.py` files
+  duplicate REST streaming/buffering code; no persisted PyCharm
+  duplicate-fragment report exists in `modules/jetbrains`.
+- Corrected bounded credential contract drift: GitHub Models now uses
+  `GITHUB_TOKEN` with its configured models endpoint, Cloudflare uses
+  `CLOUDFLARE_API_TOKEN`, and the Cerebras environment example is no longer
+  populated with a stray value.
+- Added typed `ProviderOAuthFlow` capability metadata; current execution
+  remains API-key based, with Gemini and OpenRouter declaring planned OAuth
+  authorization-code support.
+- Added `provider-sdk-runtime-consolidation`,
+  `provider-catalog-spec-coverage`, `auth-provider-oauth-flows`, and
+  `audit42-api-services-duplicate-fragments`; OAuth execution is gated on
+  encrypted provider secret storage.
+- Confirmed `core.sdks` is not currently joined to the live provider path:
+  `SDKRegistry` resolves no registered providers while agents and the local
+  proxy consume `api_services.ProviderRegistry`; reopened
+  `sdk-unified-client` and `sdk-replace-queryexecutor`.
+- Repaired the bounded live-path interface defect in `base.AgentExecutor`:
+  it now calls `BaseApiServiceClient.call_llm_buffered()` rather than a
+  nonexistent `HttpProviderAdapter.complete()` method.
+- The agent dependency scan additionally reports that provisional
+  `modules/agents/manager.py` imports absent `AgentMetrics`, `AgentState`, and
+  `AgentMessage`; that unresolved manager-surface work is retained under
+  `agent-execution-logic`.
+- Validation decoded all configured provider specs, passed focused `ruff` and
+  `basedpyright` for corrected services/auth schema, and dependency-scanned 58
+  provider Python files without missing imported symbols.
 
 ### Phase 42 ACP + LSP + Marketplace Implementation Intake (2026-05-26)
 
@@ -165,9 +208,9 @@
 
 ### Newly Unblocked Phases (2026-05-26)
 
-**Phase 20 — LLM Cost Optimization** (unblocked by Phase 11):
-- Ready to activate with cost_savings_tracker, metrics_exporter foundation
-- Depends on PromptCacheManager integration into unified LLM client
+**Phase 20 — LLM Cost Optimization** (still gated by incomplete Phase 11):
+- The cost tracker exists, but streaming contract repair and OpenObserve transport remain pending
+- Depends on PromptCacheManager integration into the unified LLM client and corrected Phase 11 completion evidence
 - Next owner: `src/css/core/cost/` or extend `core/prompt_cache`
 
 **Phase 42 — ACP + LSP + Marketplace Implementation** (unblocked by Phase 22):
@@ -225,13 +268,14 @@
 - Browser relay priority chain is now explicitly tracked: `github -> codex -> openai -> deepseek -> nvidia -> web-LLM relay`.
 - Phase 32 reports backlog task labels were normalized from `task='unassigned'` into explicit `T32.*` buckets for parallel planning.
 
-### Phase 39 Audit Remediation — 25 todos tracked (updated 2026-05-26)
+### Phase 39 Audit Remediation — 42 todos tracked (updated 2026-05-26)
 
 - Added a dedicated remediation phase from three audit streams (Architecture/Runtime, Plan/Tracker Integrity, Code Quality/Rules).
 - Task buckets:
-  - `T39.1 Agent 1 — Architecture & Runtime Gaps` (6 todos)
-  - `T39.2 Agent 2 — Plan & Tracker Integrity` (6 todos)
-  - `T39.3 Agent 3 — Code Quality & Rules Compliance` (6 todos)
+  - `T39.1 Agent 1 — Architecture & Runtime Gaps` (10 todos; 1 done, 9 pending)
+  - `T39.2 Agent 2 — Plan & Tracker Integrity` (9 todos; 3 done, 6 pending)
+  - `T39.3 Agent 3 — Code Quality & Rules Compliance` (17 todos; 17 pending)
+  - `T39.4 Runtime Validation & Completion` (6 todos; 3 done, 3 pending)
 - Critical tracked gaps now explicitly queued:
   - EventStore durability + Redis fan-out
   - OTEL runtime bridge and trace propagation
@@ -241,10 +285,13 @@
   - `__all__` policy enforcement and broad exception cleanup
 - `audit38-unassigned-rehome` is now completed: all prior pending `unassigned` rows were rehomed to explicit phase/task ownership.
 - Added `audit39-module-import-order-canonical` to codify `core/settings/config.py` `MODULES` line-order as canonical import-order reference.
+- Added `audit42-api-services-duplicate-fragments` after source comparison
+  found repeated provider REST implementations outside any stored PyCharm
+  inspection artifact.
 - Added `T39.4 Runtime Validation & Completion` with six bounded audit rows;
   dependency refresh is done and msgspec-boundary cleanup is active.
 
-### Phase 40 DB Model Consolidation — 37 todos prepared (2026-05-09)
+### Phase 40 DB Model Consolidation — 39 todos prepared (2026-05-09; live count updated 2026-05-26)
 
 - Added a dedicated plan intake phase for model-location and schema requests:
   - memory model move reconciliation and canonical import cutover
@@ -270,16 +317,20 @@
   - prioritize BaseTreeModel on menu/url/path/breadcrumb navigation use-cases
   - keep tag architecture focused on classification, not navigation
 
-### Phase 10 SDK Architecture — 9 todos completed (2026-05-09)
+### Phase 10 SDK Architecture — Historical Delivery, Two Claims Reopened (2026-05-26)
 
 - **T10.2 NativeSDK**: `AnthropicNativeAdapter` (prompt caching, computer_use, extended thinking) + `OpenAINativeAdapter` (structured output, assistants API) in `core/sdks/adapters/`
 - **T10.3 HTTP Provider**: `HttpProviderAdapter` in `core/sdks/adapters/http_provider.py` — YAML-driven, supports OpenAI-compatible + Anthropic `/messages` format via `ProviderSpec.api_type`
 - **T10.4 Ollama**: `OllamaAdapter` in `core/sdks/adapters/ollama.py` — wraps `ollama.AsyncClient`, model lifecycle (pull/list/delete)
-- **T10.6 Unified Client**: `CSSLLMClient` with `call()`/`call_buffered()` routing + `UniversalLLMClient` alias; `SDKRegistry` singleton with lazy-load + thundering-herd protection
+- **T10.6 Unified Client**: `CSSLLMClient` and `SDKRegistry` source surfaces
+  exist, but `sdk-unified-client` is reopened because no provider adapters
+  are registered in the live SDK registry.
 - **T10.6 Tools Bridge**: `modules/tools/adapter_bridge.py` — `register_adapter_tools()` converts adapter `builtin_tools()` → ToolRegistry
 - **ModelNameMapper**: `core/sdks/model_mapper.py` — 20+ canonical model mappings across 10+ providers
 - **Remaining**: `sdk-browser-relay-adapter` + `sdk-browser-relay-polling` (deferred)
-- `sdk-replace-queryexecutor` confirmed already done (code already provider-agnostic)
+- `sdk-replace-queryexecutor` is reopened: the Claude hardcode was removed,
+  but current QueryExecutor routing reaches `api_services.ProviderRegistry`,
+  not `core.sdks.CSSLLMClient`.
 
 ### DB Primitive Rollout Planning (2026-05-08)
 
@@ -309,7 +360,7 @@
 - The former `modules/rag_vector/` migration surface has been removed; active retrieval runtime code lives in `core/rag_vector/`.
 - Cache posture is now explicit: not every business module should depend on `core/cache/` directly. Direct cache consumers are mainly `core/settings`, `core/permissions`, `core/marketplace`, `core/memory`, `core/rag_vector`, `core/rag_graph`, `modules/llm_proxy`, and `modules/triage`.
 - Canonical source-of-truth modules such as `mitre`, `threat_intel`, `incidents`, `evidence`, `reports`, and `siem` should persist to their own primary stores first and only consume cached retrieval/prompt layers indirectly.
-- The repository dependency analyzer now lives in `scripts/codebase_dependency_analyzer.py`; module-scope scans currently report **9 live cross-module imports** across `agents`, `chat`, `strategies`, `tags`, `teams`, and `tools`, so the Phase 25/34 cleanup remains real, not theoretical.
+- The repository dependency analyzer now lives in `scripts/codebase_dependency_analyzer.py`; module-scope scans currently report **11 live cross-module imports** across the audited module paths, and the core scan reports **12 core-to-module edges**, so boundary cleanup remains real, not theoretical.
 
 ### Prompt Cache Planning Correction (2026-05-08)
 
@@ -476,7 +527,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 
 ## ⚠️ Structural Debt (open)
 
-- **`core/caching/` renamed → `core/prompt_cache/`**: Clearer name. Two-tier only (Redis + provider-native prompt caching). Anthropic uses automatic top-level `cache_control` by default with explicit breakpoints only when needed; OpenAI/DeepSeek native tracking is also part of Phase 11. Gemini `NATIVE_RESOURCE` stays deferred. Tracked: `cache-gemini-context-cache` blocked.
+- **`core/caching/` renamed → `core/prompt_cache/`**: Clearer name. Two-tier only (Redis + provider-native prompt caching). Anthropic uses automatic top-level `cache_control` by default with explicit breakpoints only when needed; OpenAI/DeepSeek native tracking is also part of Phase 11. Streaming-buffer contract and metrics transport are pending; Gemini `NATIVE_RESOURCE` stays blocked/deferred.
 - **`core/retry/` renamed → `core/resilience/`**: Already has `detection.py`, `orchestrator.py`, `config.py` — broader than retry alone.
 - **`working_dir` module deleted; replacement unresolved**: no implemented `core/workspace/` package was found during documentation sanitization. Retain the session-output/permission requirement, but validate source and architecture before creating a replacement owner.
 - **`modules/cache/` → `core/cache/` completed**: L4 SQLite removed. 3-layer cache stack is L1 memory, L2 redis.asyncio, L3 PostgreSQL; `core/cache/` is canonical.
@@ -494,7 +545,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **977 todos**, PHASE > TASK > TODO hierarchy (43 named phases; `unassigned` currently non-empty)
+- `.plan/session.db` — **1045 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero after the 2026-05-26 audit)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth

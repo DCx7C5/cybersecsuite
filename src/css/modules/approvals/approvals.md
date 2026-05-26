@@ -1,5 +1,5 @@
 # @approvals - Human Approval Workflow Plan
-# TODO - Make part of permissions core module
+Approval workflows remain module-owned and integrate with `core/permissions`; they are not folded into the core package by assumption.
 
 **Status**: Planned Phase 26 module; runtime package not yet implemented.
 

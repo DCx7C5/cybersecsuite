@@ -19,8 +19,13 @@
 
 ## Current State
 
-✅ **Active** — QueryExecutor updated to use AgentExecutor → HttpProviderAdapter.
-Claude SDK hardcode removed — provider-agnostic execution.
+✅ **Active** — QueryExecutor updated to use AgentExecutor -> HttpProviderAdapter.
+Query execution is provider-agnostic; `ClientPool` remains backed by
+`ClaudeSDKClient` until its separate lifecycle/ownership cutover is completed.
+
+`ClientPool` now releases its condition while waiting for an exhausted pool
+and tracks checked-out anonymous clients, so a concurrent `release()` can
+unblock an awaiting acquisition without exceeding the configured capacity.
 
 ---
 
@@ -42,6 +47,10 @@ Claude SDK hardcode removed — provider-agnostic execution.
 - [ ] Client lifecycle management
 - [ ] Stream filtering and transformation
 - [ ] Add logger initialization in `__init__.py`
+
+Completed audit repair: `audit42-streaming-client-pool-deadlock` prevents
+exhaustion deadlock in `client_pool.py`; the remaining lifecycle/error-policy
+cleanup is tracked separately.
 
 ---
 
