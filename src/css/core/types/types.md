@@ -271,12 +271,12 @@ class QueryHeader:
     pass
 ```
 
-### 8. **sdk_local.py**
+### 8. **base_sdk.py**
 
 Local SDK base:
 
 ```python
-class LocalSDKBase:
+class BaseLocalSDK(BaseApiServiceClient, ABC):
     """Base class for local SDK clients."""
     pass
 ```
@@ -341,7 +341,7 @@ from .headers import (
 )
 from .hook_events import HookContext, HookErrorStrategy
 from .query import Query, QueryHeader
-from .sdk_local import LocalSDKBase
+from .base_sdk import BaseLocalSDK
 
 __all__ = [
     # base
@@ -395,7 +395,7 @@ __all__ = [
     "Query",
     "QueryHeader",
     # sdk_local
-    "LocalSDKBase",
+    "BaseLocalSDK",
 ]
 ```
 
