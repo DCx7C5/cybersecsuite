@@ -11,7 +11,7 @@ from css.core.enums import ScopeLevel
 
 from .base import BaseModel
 from .enums import RedBlueMode
-from .mixins import SoftDeleteMixin
+from .mixins import SoftDeleteMixin, AuditTrailMixin
 
 
 class AppScopeInfo(msgspec.Struct, frozen=True, kw_only=True):
@@ -107,7 +107,7 @@ class SessionScopeManager:
         return await SessionScope.filter(project_id=project_id).order_by("-updated_at", "session_id")
 
     async def by_mode(self, mode: RedBlueMode | str) -> list["SessionScope"]:
-        mode_value = mode.value if hasattr(mode, "value") else str(mode)
+        mode_value = mode.value if hasattr(mode, "value") else str(mode)  # type: ignore[reportAttributeAccessIssue]
         return await SessionScope.filter(mode=mode_value).order_by("-updated_at", "session_id")
 
     async def in_phase(self, phase: str) -> list["SessionScope"]:
@@ -278,7 +278,7 @@ class SessionScope(BaseModel, SoftDeleteMixin):
     def to_domain(self) -> SessionScopeInfo:
         return SessionScopeInfo(
             id=self.id,
-            project_id=self.project_id,
+            project_id=self.project_id,  # type: ignore[reportAttributeAccessIssue]
             session_id=self.session_id,
             sdk_session_id=self.sdk_session_id,
             name=self.name,
@@ -340,7 +340,7 @@ class SessionScope(BaseModel, SoftDeleteMixin):
         await self.save_changes(phase=phase, updated_at=datetime.now(UTC))
 
     async def switch_mode(self, mode: RedBlueMode | str) -> None:
-        mode_value = mode.value if hasattr(mode, "value") else str(mode)
+        mode_value = mode.value if hasattr(mode, "value") else str(mode)  # type: ignore[reportAttributeAccessIssue]
         await self.save_changes(mode=mode_value, updated_at=datetime.now(UTC))
 
     async def set_working_dir(self, working_dir: str) -> None:
@@ -393,8 +393,12 @@ class SessionScope(BaseModel, SoftDeleteMixin):
         ]
 
 
-class ScopedEntry(BaseModel, SoftDeleteMixin):
-    """Abstract base for records that can be bound to project/runtime/session scopes."""
+class ScopedEntry(BaseModel, SoftDeleteMixin, AuditTrailMixin):
+    """Abstract base for records that can be bound to project/runtime/session scopes.
+
+    Combines scope binding fields, audit trail (via AuditTrailMixin), and soft-delete
+    support (via SoftDeleteMixin).
+    """
 
     project = fields.ForeignKeyField(
         "models.ProjectScope",
@@ -410,8 +414,6 @@ class ScopedEntry(BaseModel, SoftDeleteMixin):
         on_delete=fields.CASCADE,
         db_index=True,
     )
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     runtime_id = fields.CharField(
         max_length=64,
         null=True,
@@ -435,27 +437,27 @@ class ScopedEntry(BaseModel, SoftDeleteMixin):
 
     @property
     def scope_level_value(self) -> str:
-        return self.scope_level.value if hasattr(self.scope_level, "value") else str(self.scope_level)
+        return self.scope_level.value if hasattr(self.scope_level, "value") else str(self.scope_level)  # type: ignore[reportAttributeAccessIssue]
 
     @property
     def has_project_scope(self) -> bool:
-        return self.project_id is not None
+        return self.project_id is not None  # type: ignore[reportAttributeAccessIssue]
 
     @property
     def has_session_scope(self) -> bool:
-        return self.session_id is not None
+        return self.session_id is not None  # type: ignore[reportAttributeAccessIssue]
 
     @property
     def scope_anchor(self) -> str | None:
-        if self.scope_level == ScopeLevel.SESSION and self.session_id is not None:
-            return str(self.session_id)
+        if self.scope_level == ScopeLevel.SESSION and self.session_id is not None:  # type: ignore[reportAttributeAccessIssue]
+            return str(self.session_id)  # type: ignore[reportAttributeAccessIssue]
         if self.scope_level == ScopeLevel.RUNTIME and self.runtime_id:
             return self.runtime_id
-        if self.scope_level == ScopeLevel.PROJECT and self.project_id is not None:
-            return str(self.project_id)
-        if self.scope_level == ScopeLevel.APP and self.project_id is not None:
-            return str(self.project_id)
-        if self.scope_level == ScopeLevel.GLOBAL:
+        if self.scope_level == ScopeLevel.PROJECT and self.project_id is not None:  # type: ignore[reportAttributeAccessIssue]
+            return str(self.project_id)  # type: ignore[reportAttributeAccessIssue]
+        if self.scope_level == ScopeLevel.APP and self.project_id is not None:  # type: ignore[reportAttributeAccessIssue]
+            return str(self.project_id)  # type: ignore[reportAttributeAccessIssue]
+        if self.scope_level == ScopeLevel.GLOBAL:  # type: ignore[reportAttributeAccessIssue]
             return "global"
         return None
 
@@ -473,7 +475,7 @@ class ScopedEntry(BaseModel, SoftDeleteMixin):
         scope_level: ScopeLevel | str | None = None,
     ) -> list[str]:
         level_value = (
-            scope_level.value
+            scope_level.value  # type: ignore[reportAttributeAccessIssue]
             if scope_level is not None and hasattr(scope_level, "value")
             else scope_level
         )
@@ -497,7 +499,7 @@ class ScopedEntry(BaseModel, SoftDeleteMixin):
         scope_level: ScopeLevel | str | None = None,
     ) -> list[str]:
         level_value = (
-            scope_level.value
+            scope_level.value  # type: ignore[reportAttributeAccessIssue]
             if scope_level is not None and hasattr(scope_level, "value")
             else scope_level
         )
