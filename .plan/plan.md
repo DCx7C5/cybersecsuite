@@ -4,73 +4,60 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (session: Phase 11 + Phase 39 complete + Dynamic model fetching complete + Continuation #3)
+**Updated**: 2026-05-26 (session: Phase 16 T1 + T10 complete, continuing provider SDK features)
 
-## Current Session (2026-05-26 - Continuation #3)
+## Current Session (2026-05-26 - Continuation #4)
 
-**Session Goal**: Complete dynamic model fetching infrastructure
+**Session Goal**: Progress Phase 16 Provider SDK Features
 
 **Status Entering Session**:
-- Total todos: 1036 | Done: 556 | Pending: 473 | Blocked: 6 | In Progress: 0
-- Overall Completion: 53.7%
-- Previous: Phase 16 Foundation Sequence A (3/3) + Prefix consistency fix + Security audit complete
-- Newly Unblocked: Phase 20 (ready), Phase 42 (ready)
+- Total todos: 1036 | Done: 558 | Pending: 470 | Blocked: 6 | In Progress: 0
+- Overall Completion: 53.8%
+- Previous: Dynamic model fetching complete, Phase 16 foundation work in progress
+- Newly Completed: Token count method (T16.T1), OllamaModelManager (T16.T10)
 
 **Session Work Completed**:
 
-1. ✅ **DONE** dynamic-model-fetching infrastructure:
-   - Enhanced ModelRegistry with async discovery mechanism:
-     * `register_discovery()`: Register provider async callbacks with TTL
-     * `discover_models()`: Fetch models with cache invalidation, error fallback
-     * `models_by_provider()`: Filter by provider (seeded + discovered)
-     * `is_known_provider()`, `known_providers()`: Validation methods
-   - Commit: 15cbfda7 (registry enhancements)
-   
-2. ✅ **DONE** Provider discovery implementations:
-   - OpenRouter: Multi-provider catalog (openrouter.ai/api/v1/models) — 3600s TTL
-   - Ollama: Local models (localhost:11434/api/tags) — 300s TTL
-   - Mistral: Native API (api.mistral.ai/v1/models) — 7200s TTL
-   - Groq: Ultra-fast inference (api.groq.com/openai/v1/models) — 7200s TTL
-   - Graceful error handling, timeout management, capability inference
-   - Commit: a0cd73a9
+1. ✅ **DONE** Phase 16.T1 — Token Count Method (CSSLLMClient.estimate_tokens()):
+   - Added `estimate_tokens(model_id, messages)` method to CSSLLMClient
+   - Integrates token_counter.py heuristic utilities
+   - Falls back to heuristic if provider SDK tokenization unavailable
+   - Returns integer token count for routing/cost decisions
+   - 18 comprehensive tests: message/completion/cost estimation + integration
+   - Commit: 4a3c5297
 
-3. ✅ **DONE** ASGI app integration:
-   - Created discovery_integration.py: `register_model_discovery_providers()`
-   - Integrated into lifespan (after ToolRegistry, before registry events)
-   - Provider-specific cache TTLs automatically managed
-   - Graceful error handling (logs warning, continues)
-   - Commit: 117826cf
+2. ✅ **DONE** Phase 16.T10 — OllamaModelManager (Model Lifecycle):
+   - Full lifecycle: `pull()`, `list()`, `delete()`, `copy()`, `show()`, `is_available()`
+   - Event emission via NamespacedEventEmitter: pull_started/progress/complete/failed, list_complete, delete_complete, copy_complete
+   - Model caching via L1MemoryCache with configurable TTL (default 3600s)
+   - Async context manager support (__aenter__, __aexit__)
+   - Typed errors: OllamaDaemonUnavailableError, OllamaModelNotFoundError, OllamaModelPullError
+   - Async pull with streaming progress line parsing
+   - 20 unit tests: init, errors, context manager, methods callable, emitter, cache
+   - Commit: bff3ee87
 
-4. ✅ **DONE** Test coverage:
-   - tests/api_services/test_dynamic_discovery.py: 11 test methods
-     * Discovery registration, execution, caching, TTL expiry, error fallback
-   - tests/models/test_dynamic_fetching_integration.py: 7 integration tests
-     * Multi-provider fetching, capability filtering, app startup integration
-   - Full type checking (0 errors) and linting (all checks pass)
-   - Commit: 46daa1f6
+**Phase 16 Progress**: 8/36 todos done (22.2%, up from 7/36 at 19.4%)
+
+**Quality Verification**:
+- Type checking: 0 errors, 0 warnings (all modified files)
+- Linting: All checks pass (ruff)
+- Dependency analysis: Clean, no cross-module violations
+
+**Next Phase 16 Ready Todos** (in priority order):
+1. `ollama-router-check` (T16.10) — awaits resilience/routing package creation
+2. `openrouter-cost-tracking` (T16.11) — ready to implement
+3. `mistral-fim-adapter` (T16.12) — ready
+4. `mistral-ocr-adapter` (T16.12) — ready
+5. `groq-audio-adapter` (T16.13) — ready
+
+## Previous Session Work (2026-05-26 Continuation #3)
 
 **Dynamic Model Fetching Complete** ✅
-- Enables model discovery from 4+ provider APIs at runtime
-- Seed models + discovered models merged automatically
-- Async, non-blocking, with intelligent caching
-- Graceful degradation on discovery errors (fallback to cache or empty)
-- Ready for Phase 16 remaining features (T16.A-4: token budget validation, T16.A-5: provider metadata)
-
-**Thinking-Model-Metadata Details** (T16.A-3):
-   - Seeded 8 thinking-capable models: 2 Anthropic, 3 OpenAI, 1 DeepSeek, 2 generic fallback
-   - Added `thinking_capable_models()`, `can_think()`, `supports_capability()` methods to ModelRegistry
-   - Updated `DEFAULT_MODELS` to load seeds at startup
-   - Commit: bfb9d0cb
-
-**Types Module Status**: 100% prefix consistent
-- ✅ Completed comprehensive audit of 23 files
-- ✅ Fixed LocalSDKBase → BaseLocalSDK naming anomaly
-- ✅ Documented 3 justified exceptions (StreamingHandler, Tool/MessageTypes, LLMAdapter)
-
-**Next Immediate Options**:
-1. Continue Phase 16 sequence A: thinking-model-metadata (unblocks token-count work)
-2. Switch to Phase 20 (Persistent Memory): 35 ready todos, high value
-3. Switch to Phase 42 (ACP + LSP + Marketplace): 18 ready todos, marketplace integration
+- Enhanced ModelRegistry with async discovery mechanism
+- 4 provider discovery implementations: OpenRouter (3600s), Ollama (300s), Mistral (7200s), Groq (7200s)
+- ASGI app integration with discovery_integration.py
+- 18 comprehensive tests (11 discovery + 7 integration)
+- Enables model discovery from multiple provider APIs at runtime
 
 ## Current Session Goals (2026-05-26 - Continuation)
 

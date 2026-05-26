@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-26 (end of session) | **Session**: Phase 11 + Phase 39 completion + Phase 42/20 unblocked
+**Last Updated**: 2026-05-26 (mid-session) | **Session**: Phase 16 token counter + ollama manager complete
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -12,36 +12,27 @@
 
 ---
 
-## 📊 session.db State (2026-05-26 end of session)
+## 📊 session.db State (2026-05-26 mid-session)
 
-**Total**: 1036 todos | **Done**: 552 | **Pending**: 477 | **Blocked**: 6 | **In Progress**: 1
+**Total**: 1036 todos | **Done**: 558 | **Pending**: 470 | **Blocked**: 6 | **In Progress**: 0
 
-**Overall Completion**: 53.3%
+**Overall Completion**: 53.8%
 
 **Last Verified**: 2026-05-26 (checked against live session.db totals)
 
 **Selected active phases**:
 
-| Phase | Todos | Done | Pending | Blocked | In Progress |
-|-------|-------|------|---------|---------|-------------|
-| Phase 9 — ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
-| Phase 10 — Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
-| Phase 16 — Provider SDK Features | 36 | 0 | 36 | 0 | 0 |
-| Phase 17 — Settings & Projects | 39 | 0 | 39 | 0 | 0 |
-| Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
-| Phase 19 — Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
-| Phase 20 — Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 |
-| Phase 21 — Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
-| Phase 22 — MCP Protocol Layer | 8 | 5 | 3 | 0 | 0 |
-| Phase 27 — Graph Visualization Engine | 17 | 0 | 17 | 0 | 0 |
-| Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 |
-| Phase 34 — Dependency Map | 20 | 2 | 18 | 0 | 0 |
-| Phase 36 — Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
-| Phase 37 — SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
-| Phase 39 — Audit Remediation (A1/A2/A3) | 25 | 6 | 19 | 0 | 0 |
-| Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
-| Phase 41 — Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
-| Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
+| Phase | Todos | Done | Pending | Blocked | In Progress | Progress |
+|-------|-------|------|---------|---------|-------------|----------|
+| Phase 16 — Provider SDK Features | 36 | 8 | 28 | 0 | 0 | 22.2% ↑ |
+| Phase 17 — Settings & Projects | 39 | 0 | 39 | 0 | 0 | 0% |
+| Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 | 18.6% |
+| Phase 20 — Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 | 18.6% |
+| Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 | 57.1% |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 | 18.9% |
+| Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 | 5.3% |
+
+**Completed phases** (100%): Phase 0, 1, 2, 3, 5, 6, 7, 8, 9, 11, 22, 39, 41
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
