@@ -3,7 +3,7 @@
 from css.core.logger import getLogger
 from typing import AsyncGenerator, Any, Optional, override
 
-from css.core.routing.pipeline import Stage
+from css.core.pipeline import Stage
 from .engine import TriageEngine
 from .models import TriageRequest
 

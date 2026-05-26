@@ -44,7 +44,7 @@ unblock an awaiting acquisition without exceeding the configured capacity.
 ## Implementation Checklist
 
 - [ ] WebSocket connection management
-- [ ] Event streaming pipeline
+- [ ] Event streaming integration via shared `core/pipeline.py` primitives (`pipe`, `Stage`, `ExecuteStage`, `ObserveStage`)
 - [ ] Backpressure handling
 - [ ] Client lifecycle management
 - [ ] Stream filtering and transformation

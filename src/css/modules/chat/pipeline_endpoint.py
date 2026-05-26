@@ -11,9 +11,9 @@ from css.core.logger import getLogger
 from typing import AsyncGenerator, Any
 
 from css.core import pipe
+from css.core.pipeline import ExecuteStage, ObserveStage
 from css.modules.agents import AgentExecutor
 from css.modules.triage import classify
-from css.core.routing.pipeline import ExecuteStage, ObserveStage
 from css.modules.strategies import route
 from css.core.events import DomainEvent, EventStore
 from css.core.settings.config import OLLAMA_MODEL
@@ -112,7 +112,7 @@ async def chat_pipeline(message: dict[str, Any]) -> AsyncGenerator[Any, None]:
         yield result
 
 
-async def process_chat_message(message: dict) -> dict:
+async def process_chat_message(message: dict[str, Any]) -> dict[str, Any]:
     """Process a single chat message through the pipeline.
 
     Args:
