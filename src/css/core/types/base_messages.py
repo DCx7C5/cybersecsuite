@@ -80,8 +80,8 @@ class ExecutorResult(msgspec.Struct, frozen=True, kw_only=True):
     headers: dict[str, str] = msgspec.field(default_factory=dict)
     body: dict[str, Any] | None = None
     stream: AsyncIterator[bytes] | None = None
-    error: str | None = None
-    latency_ms: float = 0.0
+    error: str | None = None  # TODO: Specify BaseException
+    latency_ms: float = 0.0  # TODO: maybe make dynamic with default values and connect with `core/settings/`
     provider_id: str = ""
     model_id: str = ""
     request_id: str | None = None
