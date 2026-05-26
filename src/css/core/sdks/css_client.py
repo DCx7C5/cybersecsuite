@@ -1,11 +1,20 @@
-from collections.abc import AsyncIterator
-from typing import Any
+from collections.abc import AsyncIterator, Awaitable
+from inspect import isawaitable
+from typing import Any, cast
 
+from css.core.sdks.adapters.browser_relay import BrowserRelayAdapter
 from css.core.sdks.registry import SDKRegistry
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.types.base_messages import LLMResponse
 from css.core.utils.token_counter import estimate_message_tokens
 from css.core.models import get_model_registry
+
+_BROWSER_RELAY_PROVIDER_IDS = {
+    "browser-relay",
+    "browser_relay",
+    "browser-plugin",
+    "browser_plugin",
+}
 
 
 class CSSLLMClient:
@@ -36,12 +45,23 @@ class CSSLLMClient:
         messages: list[Any],
         **kwargs: Any,
     ) -> AsyncIterator[Any]:
+        if provider_id.strip().lower() in _BROWSER_RELAY_PROVIDER_IDS:
+            adapter = BrowserRelayAdapter()
+            return await adapter.call_llm(
+                model_id=model_id,
+                messages=messages,
+                **kwargs,
+            )
+
         sdk = await self._registry.get(provider_id, **kwargs)
-        return await sdk.call_llm(
+        stream_or_future = sdk.call_llm(
             model_id=model_id,
             messages=messages,
             **kwargs,
         )
+        if isawaitable(stream_or_future):
+            return await cast(Awaitable[AsyncIterator[Any]], stream_or_future)
+        return cast(AsyncIterator[Any], stream_or_future)
 
     async def call_buffered(
         self,
@@ -50,6 +70,14 @@ class CSSLLMClient:
         messages: list[Any],
         **kwargs: Any,
     ) -> LLMResponse:
+        if provider_id.strip().lower() in _BROWSER_RELAY_PROVIDER_IDS:
+            adapter = BrowserRelayAdapter()
+            return await adapter.call_llm_buffered(
+                model_id=model_id,
+                messages=messages,
+                **kwargs,
+            )
+
         sdk = await self._registry.get(provider_id, **kwargs)
         return await sdk.call_llm_buffered(
             model_id=model_id,

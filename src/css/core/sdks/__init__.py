@@ -8,6 +8,7 @@ from .registry import (
 from .css_client import CSSLLMClient
 from .adapters.anthropic import AnthropicNativeAdapter, COMPUTER_USE_TOOLS
 from .adapters.openai import OpenAINativeAdapter, BUILTIN_TOOLS
+from .adapters.browser_relay import BrowserRelayAdapter
 from .adapters.http_provider import HttpProviderAdapter
 from .adapters.ollama import OllamaAdapter
 
@@ -22,6 +23,7 @@ __all__ = [
     "COMPUTER_USE_TOOLS",
     "OpenAINativeAdapter",
     "BUILTIN_TOOLS",
+    "BrowserRelayAdapter",
     "HttpProviderAdapter",
     "OllamaAdapter",
 ]

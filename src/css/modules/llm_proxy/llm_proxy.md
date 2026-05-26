@@ -28,9 +28,13 @@ This module is **not**:
 ## Current Source Reality
 
 `endpoints.py` currently implements `/v1/health`, `/v1/models`, and a
-non-streaming `/v1/chat/completions` route. Request execution now imports the
-canonical public `css.modules.agents.AgentExecutor` API; no nonexistent
-root-level agent-runtime facade is required.
+non-streaming `/v1/chat/completions` route. `browser_plugin.py` now owns the
+plugin relay surface under `/api/plugin/register`, `/api/plugin/heartbeat`,
+`/api/plugin/inject`, and `/api/plugin/result`.
+
+Request execution now imports the canonical public
+`css.modules.agents.AgentExecutor` API; no nonexistent root-level
+agent-runtime facade is required.
 
 Authorization, streaming normalization, cache/routing/resilience integration,
 and full usage/audit handling remain implementation work.
