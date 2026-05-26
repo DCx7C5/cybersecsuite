@@ -15,8 +15,29 @@
 
 | File | Responsibility |
 |------|----------------|
-| `endpoints.py` | `/api/menu/items` read surface (currently uses seeded/upserted `MenuItem` tree) |
+| `endpoints.py` | `/api/menu/items` endpoint with optional `?menu_id=` filter (sidebar/settings/topnav) |
 | `../db/models/menu.py` | `MenuItem` ORM model, `sync_default_menu_items()`, tree helpers, breadcrumb helper |
+
+## Runtime API Surface (`db40-menu-menuid-endpoints`)
+
+### Endpoint: `/api/menu/items`
+
+Query parameters:
+- **`menu_id`** (optional): Filter results to one partition
+  - Valid values: `sidebar`, `settings`, `topnav`
+  - Missing or empty: returns all roots (all partitions, unfiltered)
+  - Invalid value: returns HTTP 400 with error message
+
+Examples:
+- `GET /api/menu/items?menu_id=sidebar` — Returns only sidebar root(s) and their children
+- `GET /api/menu/items?menu_id=settings` — Returns only settings root(s) and their children
+- `GET /api/menu/items?menu_id=topnav` — Returns only topnav root(s) and their children
+- `GET /api/menu/items` — Returns all roots from all partitions (fallback behavior)
+- `GET /api/menu/items?menu_id=bogus` — Returns 400 Bad Request
+
+Response: `{ "items": [ { id, parent_id, menu_id, name, url, icon_path, icon_url, order, children: [...] } ] }`
+
+Serialization preserves `menu_id` on every node and never mixes children from different partitions than the requested root set.
 
 ## Phase 40 Work Queue (session.db)
 
