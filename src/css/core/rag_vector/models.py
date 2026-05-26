@@ -46,7 +46,7 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
     )
     
     # Tagging
-    tags = fields.JSONField( # TODO: relation to tags 
+    tags = fields.JSONField(
         default=list,
         help_text="searchable tags (cve, malware, lateral_movement, etc.)"
     )

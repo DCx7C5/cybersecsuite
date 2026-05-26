@@ -111,4 +111,4 @@ class TaskPriority(str, Enum):
     HIGH = "high"
     URGENT = "urgent"
 
-# TODO: No ProviderTypes Enum here. ProviderTypes is loaded dynamically from api_services.yml
+# ProviderTypes: not a static Enum — loaded dynamically from api_services.yml at startup (see tracker 'provider-types-dynamic')

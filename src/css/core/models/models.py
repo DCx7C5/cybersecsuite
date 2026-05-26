@@ -13,7 +13,7 @@ class ModelPricing(msgspec.Struct, frozen=True, kw_only=True):
     currency: str = "USD"
 
 class LLMModel(BaseModel):
-    # TODO: implement real database table; get rid off @dataclass ModelMetadata and ModelPricing. Find other ways to implement
+    # stub: real ORM table tracked in 'db-model-metadata-orm'
     ...
 
 class ModelMetadata(msgspec.Struct, frozen=True, kw_only=True):

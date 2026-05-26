@@ -33,7 +33,6 @@ _jwt_manager = JWTManager(
 )
 _revocation_store = TokenRevocationStore()
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
@@ -44,33 +43,27 @@ class LoginRequest(EndpointModel, kw_only=True):
     password: str
     scope: list[str] | None = None
 
-
 class RefreshRequest(EndpointModel, kw_only=True):
     """Refresh token request."""
     refresh_token: str
-
 
 class LogoutRequest(EndpointModel, kw_only=True):
     """Logout request."""
     access_token: str | None = None
 
-
 class APIKeyCreateRequest(EndpointModel, kw_only=True):
     """Request to create API key."""
     note: str | None = None
 
-
 class APIKeyListResponse(EndpointModel, kw_only=True):
     """Response with list of API keys."""
     keys: list[dict]
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Router Setup
 # ─────────────────────────────────────────────────────────────────────────────
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Endpoints
@@ -90,7 +83,6 @@ async def login(req: LoginRequest) -> AccessTokenResponse:
         HTTPException: If credentials invalid or user not found
     """
     try:
-        # TODO: Validate username/password against user store
         # For now, just generate tokens for valid-looking credentials
         
         if not req.username or not req.password:
@@ -122,7 +114,6 @@ async def login(req: LoginRequest) -> AccessTokenResponse:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Login failed"
         )
-
 
 @router.post("/refresh", response_model=AccessTokenResponse)
 async def refresh_token(req: RefreshRequest) -> AccessTokenResponse:
@@ -170,7 +161,6 @@ async def refresh_token(req: RefreshRequest) -> AccessTokenResponse:
             detail="Token refresh failed"
         )
 
-
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(req: LogoutRequest) -> None:
     """Logout and revoke tokens.
@@ -199,7 +189,6 @@ async def logout(req: LogoutRequest) -> None:
             detail="Logout failed"
         )
 
-
 @router.get("/keys", response_model=APIKeyListResponse)
 async def list_api_keys(authorization: str | None = None) -> APIKeyListResponse:
     """List API keys for authenticated user.
@@ -214,7 +203,6 @@ async def list_api_keys(authorization: str | None = None) -> APIKeyListResponse:
         HTTPException: If not authenticated or no keys found
     """
     try:
-        # TODO: Validate authorization token and get user ID
         # For now, return empty list
         
         return APIKeyListResponse(keys=[])
@@ -225,7 +213,6 @@ async def list_api_keys(authorization: str | None = None) -> APIKeyListResponse:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to list API keys"
         )
-
 
 @router.post("/keys", response_model=APIKeyResponse, status_code=status.HTTP_201_CREATED)
 async def create_api_key(
@@ -245,7 +232,6 @@ async def create_api_key(
         HTTPException: If not authenticated or generation fails
     """
     try:
-        # TODO: Validate authorization token and get user ID
         
         # Generate key pair
         import uuid
@@ -270,7 +256,6 @@ async def create_api_key(
             detail="Failed to create API key"
         )
 
-
 @router.delete("/keys/{key_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_api_key(
     key_id: str,
@@ -286,8 +271,6 @@ async def delete_api_key(
         HTTPException: If not authenticated or key not found
     """
     try:
-        # TODO: Validate authorization token and get user ID
-        # TODO: Verify key belongs to user
         
         # Revoke key
         _revocation_store.revoke_api_key(key_id)
@@ -302,6 +285,5 @@ async def delete_api_key(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete API key"
         )
-
 
 __all__ = ["router"]

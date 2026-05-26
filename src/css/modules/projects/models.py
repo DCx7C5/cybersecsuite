@@ -10,7 +10,7 @@ class ProjectFile(BaseModel, TimestampMixin):
 
     name = LabelField()
     path = PathField(max_length=255)
-    permissions = 1 # TODO: relation to PermissionTable
+    permissions = 1  # stub: FK to permission set — see tracker 'projects-permissions-relation'
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "project_file"
         table_verbose = "Project File"

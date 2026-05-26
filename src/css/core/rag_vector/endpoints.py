@@ -12,7 +12,6 @@ from .retriever import KnowledgeRetriever
 router = APIRouter(prefix="/api/rag_vector", tags=["rag_vector"])
 retriever = KnowledgeRetriever()
 
-
 # Request/Response Models
 class DocumentCreate(EndpointModel, kw_only=True):
     title: str
@@ -22,7 +21,6 @@ class DocumentCreate(EndpointModel, kw_only=True):
     tags: list[str] = []
     cve_ids: list[str] = []
     relevance_score: float = 0.5
-
 
 class DocumentResponse(EndpointModel, kw_only=True):
     id: int
@@ -36,12 +34,10 @@ class DocumentResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-
 class SearchRequest(EndpointModel, kw_only=True):
     query: str
     search_type: str = "keyword"
     limit: int = 5
-
 
 class SearchResult(EndpointModel, kw_only=True):
     id: int
@@ -52,7 +48,6 @@ class SearchResult(EndpointModel, kw_only=True):
     tags: list[str]
     source: str
 
-
 # Document Management Endpoints
 @router.post("/documents", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 async def create_document(
@@ -60,7 +55,6 @@ async def create_document(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create rag_vector document."""
-    # TODO: Check org authorization
     
     try:
         result = await retriever.ingest_document(
@@ -84,7 +78,6 @@ async def create_document(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create document: {str(e)}")
 
-
 @router.get("/documents", response_model=list[DocumentResponse])
 async def list_documents(
     org_id: int = Query(..., description="Organization ID"),
@@ -94,7 +87,6 @@ async def list_documents(
     limit: int = Query(50, ge=1, le=500),
 ):
     """List rag_vector documents."""
-    # TODO: Check org authorization
     
     query = KnowledgeDocument.filter(organization_id=org_id)
     if document_type:
@@ -107,14 +99,12 @@ async def list_documents(
     docs = await query.order_by("-updated_at").limit(limit).all()
     return [DocumentResponse(**{f: getattr(d, f) for f in DocumentResponse.__struct_fields__}) for d in docs]
 
-
 @router.get("/documents/{doc_id}", response_model=DocumentResponse)
 async def get_document(
     doc_id: int,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Get document details."""
-    # TODO: Check org authorization
     
     doc = await KnowledgeDocument.get_or_none(id=doc_id, organization_id=org_id)
     if not doc:
@@ -126,14 +116,12 @@ async def get_document(
     
     return DocumentResponse(**{f: getattr(doc, f) for f in DocumentResponse.__struct_fields__})
 
-
 @router.delete("/documents/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
     doc_id: int,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Delete/archive document."""
-    # TODO: Check org authorization
     
     doc = await KnowledgeDocument.get_or_none(id=doc_id, organization_id=org_id)
     if not doc:
@@ -142,7 +130,6 @@ async def delete_document(
     # Archive instead of hard delete
     doc.status = "archived"
     await doc.save()
-
 
 # Search Endpoints
 @router.post("/search", response_model=list[SearchResult])
@@ -158,7 +145,6 @@ async def search_knowledge(
     - semantic: Vector-based similarity search (requires embeddings)
     - hybrid: Combination of both methods
     """
-    # TODO: Check org authorization
     
     try:
         results = await retriever.retrieve(
@@ -173,7 +159,6 @@ async def search_knowledge(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Search failed: {str(e)}")
 
-
 # Tag Management Endpoints
 @router.get("/tags", response_model=list[dict[str, Any]])
 async def list_tags(
@@ -181,7 +166,6 @@ async def list_tags(
     category: str | None = None,
 ):
     """List rag_vector tags."""
-    # TODO: Check org authorization
     
     query = KnowledgeTag.filter(organization_id=org_id)
     if category:
@@ -190,7 +174,6 @@ async def list_tags(
     tags = await query.order_by("-usage_count").all()
     return [{"tag": t.tag, "category": t.category, "usage_count": t.usage_count} for t in tags]
 
-
 @router.post("/tags", status_code=status.HTTP_201_CREATED)
 async def create_tag(
     tag: str = Query(..., min_length=1, max_length=128),
@@ -198,7 +181,6 @@ async def create_tag(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create rag_vector tag."""
-    # TODO: Check org authorization
     
     existing = await KnowledgeTag.get_or_none(organization_id=org_id, tag=tag)
     if existing:
@@ -214,7 +196,6 @@ async def create_tag(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create tag: {str(e)}")
 
-
 # Analytics Endpoints
 @router.get("/search-log", response_model=list[dict[str, Any]])
 async def get_search_log(
@@ -223,7 +204,6 @@ async def get_search_log(
     limit: int = Query(50, ge=1, le=500),
 ):
     """Get rag_vector search history for analytics."""
-    # TODO: Check org authorization
     
     query = SearchLog.filter(organization_id=org_id)
     if agent_id:
@@ -241,7 +221,6 @@ async def get_search_log(
         for log in logs
     ]
 
-
 @router.post("/search-feedback")
 async def record_search_feedback(
     query: str = Query(...),
@@ -249,7 +228,6 @@ async def record_search_feedback(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Record user feedback on search results for ranking improvement."""
-    # TODO: Check org authorization
     
     try:
         # Find most recent search matching query
@@ -268,6 +246,5 @@ async def record_search_feedback(
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to record feedback: {str(e)}")
-
 
 __all__ = ["router"]

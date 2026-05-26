@@ -108,7 +108,7 @@ class KnowledgeRetriever:
         """Semantic search using embeddings (placeholder)."""
         from .models import KnowledgeDocument
         
-        # TODO: Implement actual vector search with pgvector
+        # stub: pgvector nearest-neighbour query — see tracker 'pgvector-retriever-impl'
         # For now, return top documents by relevance_score
         docs = await KnowledgeDocument.filter(
             organization_id=org_id,

@@ -47,11 +47,11 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         self._session: aiohttp.AsyncClient | None = None
 
     def _default_base_url(self) -> str:
-        return "https://api.openai.com/v1" # TODO: import from api_services.yml
+        return "https://api.openai.com/v1"  # stub: load from api_services.yml (see tracker 'provider-types-dynamic')
 
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
-        # TODO:
+        # stub: fetch from /v1/models (see tracker 'provider-types-dynamic')
         ...
 
     @override

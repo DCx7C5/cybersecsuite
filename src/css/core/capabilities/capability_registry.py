@@ -271,7 +271,7 @@ class DynamicCapabilityRegistry:
 
         File path: config/capabilities.yaml (or env var CAPABILITY_CONFIG_PATH)
         """
-        # TODO: Implement YAML loading when config system is ready
+        # stub: YAML config loading — see tracker 'capability-yaml-loading'
         logger.debug("YAML config loading not yet implemented")
 
     async def _query_provider_endpoints(self, provider_registry: object) -> None:
@@ -284,5 +284,5 @@ class DynamicCapabilityRegistry:
         Args:
             provider_registry: ProviderRegistry instance for loading providers
         """
-        # TODO: Implement provider endpoint querying
+        # stub: provider endpoint querying — see tracker 'capability-yaml-loading'
         logger.debug("Provider endpoint querying not yet implemented")

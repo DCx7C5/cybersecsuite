@@ -8,10 +8,11 @@ Hierarchy (lowest → highest priority):
 
 Usage:
   from css.core.config import ProviderDefaults, MarketplaceConfig, SystemConfig
+
+Note: db-driven settings live in src/css/core/settings/config.py (Settings model).
 """
 
 import os
-# TODO: Everything has to go to src/css/config.py
 
 class ProviderDefaults:
     """Default settings shared across all LLM provider clients."""

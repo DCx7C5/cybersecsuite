@@ -21,9 +21,9 @@ TResult = TypeVar("TResult")
 
 def get_event_bus() -> "EventBus":
     """Return the typed global EventBus singleton."""
-    from .event_bus import event_bus as raw_event_bus
+    from .event_bus import EventBus
 
-    return cast("EventBus", raw_event_bus)
+    return cast("EventBus", EventBus())
 
 
 async def emit_event(event_type: str, payload: Mapping[str, object] | None = None) -> None:

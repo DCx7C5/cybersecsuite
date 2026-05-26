@@ -101,7 +101,7 @@ class LLMModel(BaseModel, TimestampMixin):
     """Persistent metadata for one available LLM model."""
 
     name = fields.CharField(max_length=128, unique=True, db_index=True)
-    provider = fields.CharField(max_length=64, db_index=True)  # TODO: many to many relation with providers
+    provider = fields.CharField(max_length=64, db_index=True)
     family = fields.CharField(max_length=64, db_index=True)
     display_name = LabelField(max_length=255, db_index=True)
     description = DescriptionField(default="")

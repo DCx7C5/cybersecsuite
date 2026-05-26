@@ -98,7 +98,7 @@ class QueryExecutor:
             return None
 
         if self._team_leader is None:
-            from css.modules.teams.orchestrator import TeamLeader  # TODO: implement/export TeamLeader runtime
+            from css.modules.teams.orchestrator import TeamLeader  # stub: see tracker 'team-leader-runtime'
             self._team_leader = TeamLeader(self.team_id, self.orchestrator_id)
             await self._team_leader.initialize()
 

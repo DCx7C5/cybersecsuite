@@ -63,7 +63,7 @@ class ScopeContext(msgspec.Struct, frozen=True, kw_only=True):
 
     def has_tool_permission(self, tool_id: str) -> bool:
         """Check if role can access tool."""
-        return True  # TODO: Implement tool permission checks
+        return True  # stub: see tracker todo 'tool-permission-checks'
 
 class TokenPayload(msgspec.Struct, frozen=True, kw_only=True):
     """JWT token payload for scope context."""

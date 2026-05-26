@@ -41,12 +41,12 @@ class xAIApiService(BaseApiServiceClient, StreamingHandler):
         )
     
     def _default_base_url(self) -> str:
-        # TODO: must be loaded from api_services.yml
+        # stub: load from api_services.yml (see tracker 'provider-types-dynamic')
         ...
     
     async def get_models(self) -> list[ModelMetadata]:
         """Get available models for this provider."""
-        # TODO: implement sdk method to fetch available models
+        # stub: fetch from xAI /models endpoint (see tracker 'provider-types-dynamic')
         ...
 
     @override

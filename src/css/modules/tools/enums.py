@@ -31,11 +31,10 @@ class ToolStatus(str, Enum):
 
 class ToolType(str, Enum):
     """Type of tool."""
-    # TODO: Add comments
-    BUILTIN = "builtin"         #
-    CUSTOM = "custom"           #
-    EXTERNAL = "external"
-    MCP = "mcp"
+    BUILTIN = "builtin"        # shipped with the platform, always available
+    CUSTOM = "custom"          # user-defined, org-scoped
+    EXTERNAL = "external"      # third-party integration via HTTP/API
+    MCP = "mcp"                # Machine Conversation Protocol tool
 
 
 class CompositionStrategy(str, Enum):
@@ -43,9 +42,8 @@ class CompositionStrategy(str, Enum):
     
     Defines how component tools are combined and executed in a hybrid tool.
     """
-    # TODO: Add comments
-    SEQUENTIAL = "sequential"
-    PARALLEL = "parallel"
-    CONDITIONAL = "conditional"
-    FALLBACK = "fallback"
-    LOAD_BALANCED = "load_balanced"
+    SEQUENTIAL = "sequential"       # tools run one after another, each receives prior output
+    PARALLEL = "parallel"           # all tools run concurrently, results merged
+    CONDITIONAL = "conditional"     # next tool selected based on prior tool's result
+    FALLBACK = "fallback"           # try each tool in order until one succeeds
+    LOAD_BALANCED = "load_balanced" # distribute requests across equivalent tools

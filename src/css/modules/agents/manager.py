@@ -160,7 +160,7 @@ class AgentExecutor:
         try:
             self.registry.update_status(agent_id, AgentStatus.RUNNING)
             
-            # TODO: Actual execution logic here
+            # stub: actual tool/skill execution — see tracker 'agent-execution-logic'
             # - Call agent's execute method
             # - Handle timeouts
             # - Capture metrics

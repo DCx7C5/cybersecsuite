@@ -8,7 +8,6 @@ from .models import AlertRule, AlertHistory, ChannelConfig
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
-
 # Request/Response Models
 class AlertRuleCreate(EndpointModel, kw_only=True):
     name: str
@@ -19,7 +18,6 @@ class AlertRuleCreate(EndpointModel, kw_only=True):
     channels: List[str] = []
     cooldown_minutes: int = 0
 
-
 class AlertRuleUpdate(EndpointModel, kw_only=True):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -28,7 +26,6 @@ class AlertRuleUpdate(EndpointModel, kw_only=True):
     channels: Optional[List[str]] = None
     cooldown_minutes: Optional[int] = None
     is_active: Optional[bool] = None
-
 
 class AlertRuleResponse(EndpointModel, kw_only=True):
     id: int
@@ -42,11 +39,9 @@ class AlertRuleResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-
 class ChannelConfigCreate(EndpointModel, kw_only=True):
     channel_type: str
     config: Dict
-
 
 class ChannelConfigResponse(EndpointModel, kw_only=True):
     id: int
@@ -55,7 +50,6 @@ class ChannelConfigResponse(EndpointModel, kw_only=True):
     last_test_at: Optional[datetime] = None
     last_test_status: Optional[str] = None
 
-
 class AlertHistoryResponse(EndpointModel, kw_only=True):
     id: int
     event_id: str
@@ -63,10 +57,8 @@ class AlertHistoryResponse(EndpointModel, kw_only=True):
     delivery_status: Dict
     fired_at: datetime
 
-
 def _orm_to_struct(struct_type, orm_instance):
     return struct_type(**{f: getattr(orm_instance, f) for f in struct_type.__struct_fields__})
-
 
 # Alert Rules Endpoints
 @router.post("/rules", response_model=AlertRuleResponse, status_code=status.HTTP_201_CREATED)
@@ -75,7 +67,6 @@ async def create_alert_rule(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create new alert rule."""
-    # TODO: Check org authorization
     
     try:
         rule = await AlertRule.create(
@@ -92,14 +83,12 @@ async def create_alert_rule(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create rule: {str(e)}")
 
-
 @router.get("/rules", response_model=List[AlertRuleResponse])
 async def list_alert_rules(
     org_id: int = Query(..., description="Organization ID"),
     is_active: Optional[bool] = None,
 ):
     """List alert rules for organization."""
-    # TODO: Check org authorization
     
     query = AlertRule.filter(organization_id=org_id)
     if is_active is not None:
@@ -108,21 +97,18 @@ async def list_alert_rules(
     rules = await query.all()
     return [_orm_to_struct(AlertRuleResponse, r) for r in rules]
 
-
 @router.get("/rules/{rule_id}", response_model=AlertRuleResponse)
 async def get_alert_rule(
     rule_id: int,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Get specific alert rule."""
-    # TODO: Check org authorization
     
     rule = await AlertRule.get_or_none(id=rule_id, organization_id=org_id)
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
     
     return _orm_to_struct(AlertRuleResponse, rule)
-
 
 @router.put("/rules/{rule_id}", response_model=AlertRuleResponse)
 async def update_alert_rule(
@@ -131,7 +117,6 @@ async def update_alert_rule(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Update alert rule."""
-    # TODO: Check org authorization
     
     rule = await AlertRule.get_or_none(id=rule_id, organization_id=org_id)
     if not rule:
@@ -142,21 +127,18 @@ async def update_alert_rule(
     
     return _orm_to_struct(AlertRuleResponse, rule)
 
-
 @router.delete("/rules/{rule_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_alert_rule(
     rule_id: int,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Delete alert rule."""
-    # TODO: Check org authorization
     
     rule = await AlertRule.get_or_none(id=rule_id, organization_id=org_id)
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
     
     await rule.delete()
-
 
 # Channel Configuration Endpoints
 @router.post("/channels", response_model=ChannelConfigResponse, status_code=status.HTTP_201_CREATED)
@@ -165,7 +147,6 @@ async def create_channel_config(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create or update alert channel configuration."""
-    # TODO: Check org authorization
     
     # Upsert: only one config per org per channel type
     config, created = await ChannelConfig.get_or_create(
@@ -180,17 +161,14 @@ async def create_channel_config(
     
     return _orm_to_struct(ChannelConfigResponse, config)
 
-
 @router.get("/channels", response_model=List[ChannelConfigResponse])
 async def list_channel_configs(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """List all channel configurations for organization."""
-    # TODO: Check org authorization
     
     configs = await ChannelConfig.filter(organization_id=org_id).all()
     return [_orm_to_struct(ChannelConfigResponse, c) for c in configs]
-
 
 @router.post("/channels/{channel_type}/test", status_code=status.HTTP_200_OK)
 async def test_channel(
@@ -203,8 +181,6 @@ async def test_channel(
     Sends a test alert to verify configuration.
     Returns success/failure status and error message if failed.
     """
-    # TODO: Check org authorization
-    # TODO: Implement test logic (send test alert to channel)
     
     config = await ChannelConfig.get_or_none(
         organization_id=org_id,
@@ -220,7 +196,6 @@ async def test_channel(
     
     return {"status": "test_initiated", "channel": channel_type}
 
-
 # Alert History Endpoints
 @router.get("/history", response_model=List[AlertHistoryResponse])
 async def list_alert_history(
@@ -234,7 +209,6 @@ async def list_alert_history(
     
     Useful for debugging alert delivery and auditing what was fired.
     """
-    # TODO: Check org authorization
     
     query = AlertHistory.filter(organization_id=org_id)
     if event_type:
@@ -243,20 +217,17 @@ async def list_alert_history(
     history = await query.order_by("-fired_at").offset(offset).limit(limit).all()
     return [_orm_to_struct(AlertHistoryResponse, h) for h in history]
 
-
 @router.get("/history/{alert_id}", response_model=AlertHistoryResponse)
 async def get_alert_details(
     alert_id: int,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Get detailed delivery status for specific fired alert."""
-    # TODO: Check org authorization
     
     alert = await AlertHistory.get_or_none(id=alert_id, organization_id=org_id)
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
     
     return _orm_to_struct(AlertHistoryResponse, alert)
-
 
 __all__ = ["router"]

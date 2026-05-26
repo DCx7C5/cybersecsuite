@@ -73,7 +73,7 @@ async def run_task_now(
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     
-    # TODO: Queue task for execution
+    # stub: enqueue to task queue — see tracker 'scheduler-task-queue'
     return {"status": "queued"}
 
 

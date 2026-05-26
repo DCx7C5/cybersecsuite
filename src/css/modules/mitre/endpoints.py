@@ -68,7 +68,7 @@ async def map_incident_technique(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Map incident to ATT&CK technique."""
-    # TODO: Get technique, validate, create mapping
+    # stub: MITRE technique lookup and mapping — see tracker 'mitre-technique-mapping'
     return {"status": "mapped"}
 
 

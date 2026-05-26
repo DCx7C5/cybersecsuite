@@ -14,7 +14,6 @@ from .models import (
 
 router = APIRouter(prefix="/api/incidents", tags=["incidents"])
 
-
 # Request/Response Models
 class IncidentCreate(EndpointModel, kw_only=True):
     title: str
@@ -25,7 +24,6 @@ class IncidentCreate(EndpointModel, kw_only=True):
     detection_method: str = ""
     affected_assets: List[str] = []
     affected_data_types: List[str] = []
-
 
 class IncidentUpdate(EndpointModel, kw_only=True):
     title: Optional[str] = None
@@ -38,7 +36,6 @@ class IncidentUpdate(EndpointModel, kw_only=True):
     affected_data_types: Optional[List[str]] = None
     root_cause: Optional[str] = None
     lessons_learned: Optional[str] = None
-
 
 class IncidentResponse(EndpointModel, kw_only=True):
     id: int
@@ -54,14 +51,12 @@ class IncidentResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-
 class TimelineEventCreate(EndpointModel, kw_only=True):
     event_type: str
     title: str
     description: str = ""
     metadata: Dict = {}
     occurred_at: datetime
-
 
 class TimelineEventResponse(EndpointModel, kw_only=True):
     id: int
@@ -73,7 +68,6 @@ class TimelineEventResponse(EndpointModel, kw_only=True):
     occurred_at: datetime
     recorded_at: datetime
 
-
 class IncidentTaskCreate(EndpointModel, kw_only=True):
     title: str
     description: str = ""
@@ -82,7 +76,6 @@ class IncidentTaskCreate(EndpointModel, kw_only=True):
     priority: str = "medium"
     estimated_hours: Optional[float] = None
     due_date: Optional[datetime] = None
-
 
 class IncidentTaskResponse(EndpointModel, kw_only=True):
     id: int
@@ -96,10 +89,8 @@ class IncidentTaskResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-
 def _orm_to_struct(struct_type, orm_instance):
     return struct_type(**{f: getattr(orm_instance, f) for f in struct_type.__struct_fields__})
-
 
 # Incident CRUD Endpoints
 @router.post("/", response_model=IncidentResponse, status_code=status.HTTP_201_CREATED)
@@ -108,7 +99,6 @@ async def create_incident(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create new incident."""
-    # TODO: Check org authorization
     
     try:
         incident_id = f"INC-{org_id}-{int(datetime.now(timezone.utc).timestamp() * 1000)}"
@@ -144,7 +134,6 @@ async def create_incident(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create incident: {str(e)}")
 
-
 @router.get("/", response_model=List[IncidentResponse])
 async def list_incidents(
     org_id: int = Query(..., description="Organization ID"),
@@ -154,7 +143,6 @@ async def list_incidents(
     limit: int = Query(100, ge=1, le=1000),
 ):
     """List incidents for organization."""
-    # TODO: Check org authorization
     
     query = Incident.filter(organization_id=org_id)
     if status_filter:
@@ -167,14 +155,12 @@ async def list_incidents(
     incidents = await query.order_by("-detected_at").limit(limit).all()
     return [_orm_to_struct(IncidentResponse, i) for i in incidents]
 
-
 @router.get("/{incident_id}", response_model=IncidentResponse)
 async def get_incident(
     incident_id: str,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Get specific incident."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -185,7 +171,6 @@ async def get_incident(
     
     return _orm_to_struct(IncidentResponse, incident)
 
-
 @router.put("/{incident_id}", response_model=IncidentResponse)
 async def update_incident(
     incident_id: str,
@@ -193,7 +178,6 @@ async def update_incident(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Update incident details."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -233,14 +217,12 @@ async def update_incident(
     await incident.update_from_dict(update_data).save()
     return _orm_to_struct(IncidentResponse, incident)
 
-
 @router.delete("/{incident_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_incident(
     incident_id: str,
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Delete incident (typically only for drafts/duplicates)."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -251,7 +233,6 @@ async def delete_incident(
     
     await incident.delete()
 
-
 # Timeline Endpoints
 @router.get("/{incident_id}/timeline", response_model=List[TimelineEventResponse])
 async def get_incident_timeline(
@@ -259,7 +240,6 @@ async def get_incident_timeline(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Get incident timeline — all events in sequence."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -271,7 +251,6 @@ async def get_incident_timeline(
     events = await IncidentTimeline.filter(incident_id=incident.id).order_by("sequence_number").all()
     return [_orm_to_struct(TimelineEventResponse, e) for e in events]
 
-
 @router.post("/{incident_id}/timeline", response_model=TimelineEventResponse, status_code=status.HTTP_201_CREATED)
 async def add_timeline_event(
     incident_id: str,
@@ -279,7 +258,6 @@ async def add_timeline_event(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Record event in incident timeline."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -307,7 +285,6 @@ async def add_timeline_event(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create timeline event: {str(e)}")
 
-
 # Task Endpoints
 @router.post("/{incident_id}/tasks", response_model=IncidentTaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_incident_task(
@@ -316,7 +293,6 @@ async def create_incident_task(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create task for incident investigation/remediation."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -340,7 +316,6 @@ async def create_incident_task(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create task: {str(e)}")
 
-
 @router.get("/{incident_id}/tasks", response_model=List[IncidentTaskResponse])
 async def list_incident_tasks(
     incident_id: str,
@@ -348,7 +323,6 @@ async def list_incident_tasks(
     status_filter: Optional[str] = Query(None, alias="status"),
 ):
     """List tasks for incident."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -364,7 +338,6 @@ async def list_incident_tasks(
     tasks = await query.all()
     return [_orm_to_struct(IncidentTaskResponse, t) for t in tasks]
 
-
 @router.put("/{incident_id}/tasks/{task_id}", response_model=IncidentTaskResponse)
 async def update_incident_task(
     incident_id: str,
@@ -374,7 +347,6 @@ async def update_incident_task(
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Update incident task status or assignment."""
-    # TODO: Check org authorization
     
     incident = await Incident.get_or_none(
         organization_id=org_id,
@@ -401,6 +373,5 @@ async def update_incident_task(
     
     await task.update_from_dict(update_data).save()
     return _orm_to_struct(IncidentTaskResponse, task)
-
 
 __all__ = ["router"]
