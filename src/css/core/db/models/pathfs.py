@@ -1,12 +1,13 @@
 """PathFS model for filesystem monitoring and path hierarchy tracking."""
 
+from typing import cast, override
 from datetime import datetime
 
 import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
-from .base import BaseModel
+from .base import BaseTreeModel
 from .mixins import TimestampMixin
 from ..fields import NonNegativeIntField
 
@@ -18,7 +19,7 @@ class PathFSInfo(msgspec.Struct, frozen=True, kw_only=True):
     host_id: int
     path: str
     path_type: str
-    parent_path_id: int | None
+    parent_id: int | None
     file_size: int
     is_monitored: bool
     last_scanned: datetime | None
@@ -41,8 +42,8 @@ class PathFSManager:
     async def by_type(self, path_type: str) -> list["PathFS"]:
         return await PathFS.filter(path_type=path_type).order_by("host_id", "path", "id")
 
-    async def children_of(self, parent_path_id: int) -> list["PathFS"]:
-        return await PathFS.filter(parent_path_id=parent_path_id).order_by("path", "id")
+    async def roots(self, host_id: int) -> list["PathFS"]:
+        return await PathFS.filter(host_id=host_id, parent_id=None).order_by("path", "id")
 
     async def monitored_paths(self) -> list["PathFS"]:
         return await PathFS.filter(
@@ -50,7 +51,7 @@ class PathFSManager:
         ).order_by("host_id", "path", "id")
 
 
-class PathFS(BaseModel, TimestampMixin):
+class PathFS(BaseTreeModel, TimestampMixin):
     """Filesystem path record for monitoring file/directory hierarchy and metadata."""
 
     host = fields.ForeignKeyField(
@@ -60,14 +61,6 @@ class PathFS(BaseModel, TimestampMixin):
     )
     path = fields.CharField(max_length=1024, db_index=True)
     path_type = fields.CharField(max_length=64, db_index=True)
-    parent_path = fields.ForeignKeyField(
-        "models.PathFS",
-        on_delete=fields.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="children",
-        description="Parent path in hierarchy",
-    )
     file_size = NonNegativeIntField(default=0)
     is_monitored = fields.BooleanField(default=True, db_index=True)
     last_scanned = fields.DatetimeField(null=True)
@@ -75,12 +68,13 @@ class PathFS(BaseModel, TimestampMixin):
     manager = PathFSManager()
 
     def to_domain(self) -> PathFSInfo:
+        parent_id: int | None = getattr(self, "parent_id", None)
         return PathFSInfo(
             id=self.id,
             host_id=self.host_id,  # type: ignore[reportAttributeAccessIssue]
             path=self.path,
             path_type=self.path_type,
-            parent_path_id=self.parent_path_id,  # type: ignore[reportAttributeAccessIssue]
+            parent_id=parent_id,
             file_size=self.file_size,
             is_monitored=self.is_monitored,
             last_scanned=self.last_scanned,
@@ -94,11 +88,35 @@ class PathFS(BaseModel, TimestampMixin):
             host_id=info.host_id,
             path=info.path,
             path_type=info.path_type,
-            parent_path_id=info.parent_path_id,
+            parent_id=info.parent_id,
             file_size=info.file_size,
             is_monitored=info.is_monitored,
             last_scanned=info.last_scanned,
         )
+
+    @override
+    async def ordered_children(self) -> list["PathFS"]:  # type: ignore[reportIncompatibleMethodOverride]
+        """Load direct children in stable order by path."""
+
+        parent_id: int | None = getattr(self, "parent_id", None)
+        return cast(list["PathFS"], await type(self).filter(parent_id=parent_id).order_by("path", "id"))
+
+    @override
+    async def siblings(  # type: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        include_self: bool = False,
+    ) -> list["PathFS"]:
+        """Load sibling paths in display order."""
+
+        parent_id: int | None = getattr(self, "parent_id", None)
+        items = cast(
+            list["PathFS"],
+            await type(self).filter(parent_id=parent_id).order_by("path", "id"),
+        )
+        if include_self:
+            return items
+        return [item for item in items if item.id != self.id]
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "path_fs"
@@ -106,7 +124,7 @@ class PathFS(BaseModel, TimestampMixin):
         indexes = [
             Index(fields=["host_id", "path"]),
             Index(fields=["host_id", "path_type"]),
-            Index(fields=["parent_path_id", "path"]),
+            Index(fields=["parent_id", "path"]),
             Index(fields=["is_monitored", "last_scanned"]),
         ]
         ordering = ["host_id", "path"]
