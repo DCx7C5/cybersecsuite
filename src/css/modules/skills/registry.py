@@ -5,7 +5,6 @@ import inspect
 from typing import Any
 from datetime import datetime, timezone
 
-from css.core.types.meta import singleton
 from css.core.types.context import ConversationContext
 from .base import BaseSkill
 from .models import SkillDefinition, SkillResult
@@ -15,7 +14,6 @@ from .exceptions import SkillNotFoundError, SkillExecutionError, SkillConfigurat
 logger = getLogger(__name__)
 
 
-@singleton
 class SkillRegistry:
     """Registry for managing skill definitions and execution."""
     
@@ -73,8 +71,7 @@ class SkillRegistry:
         """Search skills by name or description."""
         query_lower = query.lower()
         return [
-            s for s in self._skills.values()
-            if query_lower in s.name.lower() or query_lower in s.description.lower()
+            s for s in self._skills.values() if query_lower in s.name.lower() or query_lower in s.description.lower()
         ]
     
     async def execute(self, skill_id: str, **parameters) -> SkillResult:

@@ -20,7 +20,7 @@ class WebhookEndpoint(BaseModel, TimestampMixin):
     event_filter = fields.JSONField(default=list)
     retry_policy = fields.JSONField(default={"max_attempts": 3, "base_delay_seconds": 2})
     is_active = fields.BooleanField(default=True, db_index=True)
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "webhook_endpoint"
         table_verbose = "Webhook Endpoint"
         table_verbose_plural = "Webhook Endpoints"
@@ -44,7 +44,7 @@ class WebhookDelivery(BaseModel):
     error = fields.TextField(default="")
     dispatched_at = fields.DatetimeField(auto_now_add=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "webhook_delivery"
         table_verbose = "Webhook Delivery"
         table_verbose_plural = "Webhook Deliveries"

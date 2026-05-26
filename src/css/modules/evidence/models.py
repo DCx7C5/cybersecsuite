@@ -6,7 +6,7 @@ Models:
 - EvidenceTagging: Tag evidence by incident/case/type
 """
 
-from tortoise import fields
+from tortoise import fields, models
 from css.core.db.fields import DescriptionField, QualityScoreField
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
@@ -101,13 +101,13 @@ class Evidence(BaseModel, TimestampMixin):
         help_text="Evidence classification level"
     )
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "evidence"
         unique_together = (("organization", "evidence_id"),)
         indexes = [
-            fields.Index(["organization", "case_id", "status"]),
-            fields.Index(["organization", "evidence_type"]),
-            fields.Index(["source_agent_id", "collected_at"]),
+            models.Index(fields=["organization", "case_id", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization", "evidence_type"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["source_agent_id", "collected_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -162,13 +162,13 @@ class EvidenceChain(BaseModel):
     occurred_at = fields.DatetimeField(db_index=True)
     recorded_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "evidence_chain"
         unique_together = (("evidence", "sequence_number"),)
         ordering = ["evidence_id", "sequence_number"]
         indexes = [
-            fields.Index(["evidence", "event_type"]),
-            fields.Index(["actor_id", "occurred_at"]),
+            models.Index(fields=["evidence", "event_type"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["actor_id", "occurred_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -202,7 +202,7 @@ class EvidenceTagging(BaseModel, TimestampMixin):
     )
     notes = fields.TextField(default="")
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "evidence_tagging"
         unique_together = (("evidence", "incident_id"),)
 

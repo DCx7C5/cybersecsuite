@@ -21,6 +21,18 @@ Canonical MITRE ATT&CK domain ownership:
 - Project ATT&CK graph structure into Neo4j for GraphRAG retrieval.
 - Do not treat Neo4j as the only source of truth for MITRE data.
 
+## Current Gap And Contract
+
+| Gap | Required implementation |
+|-----|-------------------------|
+| Incident mapping route | Replace the TODO in `map_incident_technique()` with lookup/validation of the canonical technique and creation of an incident-technique mapping. |
+| Graph projection | Project stable ATT&CK nodes/relationships to `core/rag_graph` idempotently while keeping this module canonical. |
+
+## Validation
+
+- Reject unknown technique identifiers and invalid incident mappings.
+- Verify tactic/technique query behavior and idempotent graph projection.
+
 ## Local Rules
 
 - ORM table models inherit `css.core.db.models.base.BaseModel`

@@ -1,6 +1,6 @@
 # @tools — Builtin Tool Registry and Shared Execution Surface
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable module tool-registry specification.
 
 ---
 

@@ -1,19 +1,21 @@
-"""MCP Runtime Registry — multiserver management with AsyncSafeSingletonMeta."""
+"""MCP runtime registry for multi-server connection and tool routing."""
 
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from typing import override
 
-from css.core.types.meta import AsyncSafeSingletonMeta
+from css.core.logger import getLogger
+from css.core.types.base_registry import BaseToggleRegistry
 
-if TYPE_CHECKING:
-    from .types import McpServerConfig, McpCallResult
+from .client import McpClient
+from .enums import McpServerStatus
+from .models import McpServerConfigRecord
+from .types import McpCallResult, McpServerConfig
+
+logger = getLogger(__name__)
 
 
-class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
-    """Multi-server MCP runtime registry (singleton).
-
-    Uses AsyncSafeSingletonMeta for async-safe singleton pattern.
-    Manages connections to multiple MCP servers with different transports.
-    """
+class McpRuntimeRegistry(BaseToggleRegistry[McpServerConfig]):
+    """Multi-server MCP runtime registry."""
 
     _initialized: bool = False
 
@@ -24,119 +26,171 @@ class McpRuntimeRegistry(metaclass=AsyncSafeSingletonMeta):
         self._initialized = True
         self._servers: dict[str, McpServerConfig] = {}
         self._tool_to_server: dict[str, str] = {}  # tool_id → server_id
-        self._connections: dict[str, object] = {}  # server_id → Client
+        self._connections: dict[str, McpClient] = {}  # server_id → async MCP client
 
     async def register(
         self,
         server_id: str,
-        config: "McpServerConfig",
+        config: McpServerConfig,
     ) -> None:
         """Register a MCP server configuration in memory."""
         self._servers[server_id] = config
 
     async def connect(self, server_id: str) -> None:
-        """Connect to a registered MCP server using its transport type."""
-        from fastmcp import Client
-        from fastmcp.client.transports import (
-            FastMCPTransport,
-            UvStdioTransport,
-            SSETransport,
-            StreamableHttpTransport,
-        )
+        """Connect to a registered MCP server."""
+        config = self._servers.get(server_id)
+        if config is None:
+            raise RuntimeError(f"MCP server config not registered: {server_id}")
+        if server_id in self._connections:
+            return
 
-        config = self._servers[server_id]
-        transport = config.transport
-        transport_value = getattr(transport, "value", transport)
-
-        if transport_value == "PYTHON_DIRECT":
-            module, attr = config.module_path.rsplit(":", 1)
-            from importlib import import_module
-
-            server = getattr(import_module(module), attr)()
-            client = await Client(FastMCPTransport(server))
-        elif transport_value == "STDIO":
-            client = await Client(
-                UvStdioTransport(config.command, env_vars=config.env)
-            )
-        elif transport_value == "STREAMABLE_HTTP":
-            url = config.url or ""
-            client = await Client(StreamableHttpTransport(url))
-        else:  # SSE
-            url = config.url or ""
-            client = await Client(SSETransport(url))
-
+        config.status = McpServerStatus.CONNECTING
+        client = McpClient(config)
+        try:
+            await client.connect()
+        except Exception:
+            config.status = McpServerStatus.ERROR
+            raise
+        config.status = McpServerStatus.CONNECTED
         self._connections[server_id] = client
 
     async def disconnect(self, server_id: str) -> None:
         """Disconnect from an MCP server."""
-        if server_id in self._connections:
-            client = self._connections[server_id]
-            if hasattr(client, "close"):
-                await client.close()
-            del self._connections[server_id]
+        client = self._connections.pop(server_id, None)
+        if client is not None:
+            await client.close()
+        config = self._servers.get(server_id)
+        if config is not None:
+            config.status = McpServerStatus.DISCONNECTED
 
     async def call_tool(
         self,
         tool_id: str,
-        args: dict,
-    ) -> "McpCallResult":
+        args: dict[str, object],
+    ) -> McpCallResult:
         """Call a tool on its registered MCP server."""
-        from .types import McpCallResult
-
         server_id = self._tool_to_server.get(tool_id)
         if not server_id or server_id not in self._connections:
             raise RuntimeError(f"Server not connected for tool: {tool_id}")
 
         client = self._connections[server_id]
         result = await client.call_tool(tool_id, args)
+        is_error = bool(
+            getattr(result, "isError", False)
+            or getattr(result, "is_error", False)
+        )
 
         return McpCallResult(
             server_id=server_id,
             tool_name=tool_id,
             content=str(result) if result else "",
-            is_error=bool(getattr(result, "isError", False)),
+            is_error=is_error,
         )
 
-    async def list_tools(self, server_id: str) -> list[dict]:
+    async def list_tools(self, server_id: str) -> list[dict[str, object]]:
         """List all tools available from a connected MCP server."""
         if server_id not in self._connections:
             raise RuntimeError(f"Server not connected: {server_id}")
-        client = self._connections[server_id]
-        tools = await client.list_tools()
-        return [t.__dict__ for t in tools] if tools else []
+        tools = await self._connections[server_id].list_tools()
+        return [_tool_to_dict(tool) for tool in tools]
 
     def register_tool_mapping(self, tool_id: str, server_id: str) -> None:
         """Register a tool_id → server_id mapping."""
         self._tool_to_server[tool_id] = server_id
 
+    @override
+    async def get(self, identifier: str) -> McpServerConfig | None:
+        """Return a registered MCP server config by server ID."""
+        return self._servers.get(identifier)
+
+    @override
+    async def list(
+        self,
+        predicate: Callable[[McpServerConfig], bool] | None = None,
+    ) -> list[McpServerConfig]:
+        """List registered MCP server configs."""
+        configs = list(self._servers.values())
+        if predicate is None:
+            return configs
+        return [config for config in configs if predicate(config)]
+
+    @override
+    async def invalidate(self, identifier: str | None = None) -> None:
+        """Invalidate one server runtime entry or clear all runtime entries."""
+        if identifier is None:
+            for server_id in list(self._connections):
+                await self.disconnect(server_id)
+            self._servers.clear()
+            self._tool_to_server.clear()
+            return
+
+        await self.disconnect(identifier)
+        self._servers.pop(identifier, None)
+        self._tool_to_server = {
+            tool_id: server_id
+            for tool_id, server_id in self._tool_to_server.items()
+            if server_id != identifier
+        }
+
+    @override
+    async def reload(self) -> None:
+        """Reload MCP server configurations from persisted DB state."""
+        await self.invalidate()
+        await self.load_from_db()
+
+    @override
+    async def enable(self, identifier: str) -> None:
+        """Enable a registered server config by ID."""
+        config = self._servers.get(identifier)
+        if config is None:
+            raise RuntimeError(f"MCP server config not found: {identifier}")
+        config.enabled = True
+
+    @override
+    async def disable(self, identifier: str) -> None:
+        """Disable a registered server config by ID and disconnect it."""
+        config = self._servers.get(identifier)
+        if config is None:
+            raise RuntimeError(f"MCP server config not found: {identifier}")
+        config.enabled = False
+        await self.disconnect(identifier)
+
+    @override
+    async def is_enabled(self, identifier: str) -> bool:
+        """Check whether a server config is enabled."""
+        config = self._servers.get(identifier)
+        if config is None:
+            raise RuntimeError(f"MCP server config not found: {identifier}")
+        return bool(config.enabled)
+
     async def load_from_db(self) -> None:
         """Restore server configurations from DB on startup."""
-        try:
-            from .models import McpServerConfigRecord
-
-            records = await McpServerConfigRecord.all()
-            for rec in records:
-                config = rec.to_schema()  # Returns McpServerConfig
-                self._servers[rec.server_id] = config
-        except (ImportError, RuntimeError):
-            pass  # Models not yet created
+        records = await McpServerConfigRecord.all()
+        for rec in records:
+            self._servers[rec.server_id] = rec.to_schema()
 
     async def auto_connect(self) -> None:
         """Connect all servers with auto_connect=True."""
         for server_id, config in self._servers.items():
-            if getattr(config, "auto_connect", False):
+            if config.auto_connect and config.enabled:
                 try:
                     await self.connect(server_id)
                 except Exception as e:
-                    from css.core.logger import getLogger
-
-                    logger = getLogger(__name__)
                     logger.warning(f"Failed to auto-connect to {server_id}: {e}")
 
 
 def get_mcp_registry() -> McpRuntimeRegistry:
     """Return the global McpRuntimeRegistry singleton."""
     return McpRuntimeRegistry()
+
+
+def _tool_to_dict(tool: object) -> dict[str, object]:
+    """Normalize a fastmcp tool object into a JSON-safe dict shape."""
+    if isinstance(tool, dict):
+        return dict(tool)
+    if hasattr(tool, "__dict__"):
+        return dict(vars(tool))
+    return {"name": str(tool)}
 
 
 __all__ = ["McpRuntimeRegistry", "get_mcp_registry"]

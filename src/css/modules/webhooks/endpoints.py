@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from fastapi import APIRouter, HTTPException, Query, status
 
 from .dispatcher import WebhookDispatcher
@@ -14,12 +15,14 @@ router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
 dispatcher = WebhookDispatcher()
 
 
-class WebhookCreateRequest(msgspec.Struct, frozen=True):
+class WebhookCreateRequest(EndpointModel, kw_only=True):
     name: str
     url: str
     secret: str = ""
     event_filter: list[str] = []
-    retry_policy: dict[str, Any] = {"max_attempts": 3, "base_delay_seconds": 2}
+    retry_policy: dict[str, Any] = msgspec.field(
+        default_factory=lambda: {"max_attempts": 3, "base_delay_seconds": 2},
+    )
 
 
 @router.post("/endpoints", status_code=status.HTTP_201_CREATED)

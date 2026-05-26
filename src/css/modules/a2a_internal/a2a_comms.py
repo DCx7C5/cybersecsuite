@@ -3,29 +3,36 @@ import msgspec
 from typing import Any
 from datetime import UTC, datetime
 
-from css.core.a2a.models import Message as A2AMessage, Task, TaskStatus, TaskArtifact, TextPart, Part
-from css.core.a2a.enums import TaskState, MessageRole
+from css.modules.a2a_google.enums import MessageRole, TaskState
+from css.modules.a2a_google.types import (
+    Message as A2AMessage,
+    Part,
+    Task,
+    TaskArtifact,
+    TaskStatus,
+    TextPart,
+)
 from css.core.redis.messaging import Message as InternalMessage
 
 from .dispatcher import MessageDispatcher
 
 log = getLogger(__name__)
 
-class DelegationMessage(msgspec.Struct, frozen=True):
+class DelegationMessage(msgspec.Struct, frozen=True, kw_only=True):
     """Typed IPC payload for team task delegation."""
 
     task_id: str
     data: Any
 
 
-class ResultMessage(msgspec.Struct, frozen=True):
+class ResultMessage(msgspec.Struct, frozen=True, kw_only=True):
     """Typed IPC payload for task message forwarding."""
 
     task_id: str
     message: dict[str, Any]
 
 
-class A2ACommunicator(msgspec.Struct):
+class A2ACommunicator(msgspec.Struct, frozen=True, kw_only=True):
     """High-level async interface for A2A protocol messaging.
 
     Translates between:
@@ -157,7 +164,7 @@ class A2ACommunicator(msgspec.Struct):
             await self.dispatcher.send(msg)
             log.debug("A2A task %r: dispatched to %r", task_id, member_id)
 
-class A2ACommunicationGroup(msgspec.Struct):
+class A2ACommunicationGroup(msgspec.Struct, frozen=True, kw_only=True):
     """A2A protocol group for multi-agents collaboration.
 
     Manages a named team of agents responding to A2A protocol requests,
@@ -210,7 +217,7 @@ class A2ACommunicationGroup(msgspec.Struct):
         sender = from_agent or self.name
 
         for member_id in list(self.members):
-            result_payload = ResultMessage(task_id=task_id, message=message.model_dump(mode="json"))
+            result_payload = ResultMessage(task_id=task_id, message=msgspec.to_builtins(message))
             msg = InternalMessage(
                 from_id=sender,
                 to_id=member_id,
@@ -235,7 +242,7 @@ class A2ACommunicationGroup(msgspec.Struct):
         dispatcher = self._require_dispatcher()
         sender = from_agent or self.name
 
-        result_payload = ResultMessage(task_id=task_id, message=message.model_dump(mode="json"))
+        result_payload = ResultMessage(task_id=task_id, message=msgspec.to_builtins(message))
         msg = InternalMessage(
             from_id=sender,
             to_id=agent_id,

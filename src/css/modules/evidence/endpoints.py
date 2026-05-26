@@ -1,6 +1,6 @@
 """Evidence management endpoints — chain-of-custody, collection, verification."""
 
-import msgspec
+from css.core.types.base_endpoint import EndpointModel
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/evidence", tags=["evidence"])
 
 
 # Request/Response Models
-class EvidenceCollect(msgspec.Struct, frozen=True):
+class EvidenceCollect(EndpointModel, kw_only=True):
     evidence_type: str
     source: str
     case_id: str
@@ -32,7 +32,7 @@ class EvidenceCollect(msgspec.Struct, frozen=True):
     access_level: str = "restricted"
 
 
-class EvidenceResponse(msgspec.Struct, frozen=True):
+class EvidenceResponse(EndpointModel, kw_only=True):
     id: int
     evidence_id: str
     case_id: str
@@ -50,7 +50,7 @@ class EvidenceResponse(msgspec.Struct, frozen=True):
     size_bytes: int | None = None
 
 
-class ChainEventRecord(msgspec.Struct, frozen=True):
+class ChainEventRecord(EndpointModel, kw_only=True):
     event_type: str
     actor: str
     action: str
@@ -58,7 +58,7 @@ class ChainEventRecord(msgspec.Struct, frozen=True):
     metadata: dict = {}
 
 
-class ChainEventResponse(msgspec.Struct, frozen=True):
+class ChainEventResponse(EndpointModel, kw_only=True):
     id: int
     sequence_number: int
     event_type: str
@@ -70,14 +70,14 @@ class ChainEventResponse(msgspec.Struct, frozen=True):
     hash_after: str
 
 
-class ChainResponse(msgspec.Struct, frozen=True):
+class ChainResponse(EndpointModel, kw_only=True):
     evidence_id: str
     events: list[ChainEventResponse]
     is_valid: bool
     integrity_status: str
 
 
-class EvidenceTaggingReq(msgspec.Struct, frozen=True):
+class EvidenceTaggingReq(EndpointModel, kw_only=True):
     incident_id: str | None = None
     case_id: str | None = None
     relevance_score: float = 0.0

@@ -7,7 +7,7 @@ import json
 
 import aiohttp
 
-from css.config import OLLAMA_API_URL, OLLAMA_MODEL
+from css.core.settings.config import OLLAMA_API_URL, OLLAMA_MODEL
 
 from .models import TriageRequest, TriageResult
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 class TriageEngine:
     """Triage engine for classification and routing."""
     
-    def __init__(self, ollama_client=None):
+    def __init__(self, ollama_client: object | None = None):
         """Initialize triage engine."""
         self.ollama_client = ollama_client
         self._results_cache: dict[str, TriageResult] = {}
@@ -157,7 +157,7 @@ class TriageEngine:
         """Get cached triage result."""
         return self._results_cache.get(request_id)
     
-    def get_stats(self) -> dict[str, any]:
+    def get_stats(self) -> dict[str, object]:
         """Get triage statistics."""
         completed = sum(1 for r in self._results_cache.values() if r.status == TriageStatus.COMPLETED)
         failed = sum(1 for r in self._results_cache.values() if r.status == TriageStatus.FAILED)
@@ -181,3 +181,19 @@ class TriageEngine:
             "avg_duration_ms": avg_duration,
             "by_decision": by_decision,
         }
+
+
+async def classify_query(
+    query: str,
+    *,
+    context: str = "",
+    metadata: dict[str, object] | None = None,
+) -> TriageResult:
+    """Classify a single query through the canonical triage engine."""
+
+    request = TriageRequest(
+        query=query,
+        context=context,
+        metadata=metadata or {},
+    )
+    return await TriageEngine().classify(request)

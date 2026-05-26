@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
-from css.core.a2a.enums import ResponseInjectionStrategy
+from css.modules.a2a_google.enums import ResponseInjectionStrategy
 
 
-@dataclass
 class DirectStrategy:
     """Return assistant output without extra context wrapping."""
 
@@ -16,7 +14,6 @@ class DirectStrategy:
         return assistant_output
 
 
-@dataclass
 class PrependContextStrategy:
     """Prepend selected context before assistant output."""
 
@@ -29,7 +26,6 @@ class PrependContextStrategy:
         return f"{context_block}\n\n{assistant_output}"
 
 
-@dataclass
 class ChainStrategy:
     """Attach chain metadata for multi-step responses."""
 
@@ -43,11 +39,11 @@ class ChainStrategy:
         return f"{assistant_output}\n\nReasoning trace:\n{trace_lines}"
 
 
-@dataclass
 class BalancedStrategy:
     """Round-robin provider selection for balanced distribution."""
 
-    _cursor: int = 0
+    def __init__(self) -> None:
+        self._cursor = 0
 
     def choose_provider(self, providers: list[str]) -> str:
         if not providers:
@@ -57,7 +53,6 @@ class BalancedStrategy:
         return providers[idx]
 
 
-@dataclass
 class CostOptimizedStrategy:
     """Select provider with the lowest estimated per-token cost."""
 
@@ -68,7 +63,6 @@ class CostOptimizedStrategy:
         return min(providers, key=lambda provider: costs.get(provider, 1.0))
 
 
-@dataclass
 class LatencyOptimizedStrategy:
     """Select provider with the lowest observed latency."""
 

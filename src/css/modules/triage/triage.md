@@ -219,23 +219,22 @@ Consumer (response_strategy_router, task router, etc)
 #### 1. `models.py` (120 lines)
 ```python
 import msgspec
-from typing import Optional, List
 
-class TriageRequest(BaseModel):
+class TriageRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Input: User query or event for classification."""
-    query: str = Field(..., description="Query or event text")
-    context: Optional[str] = Field(None, description="Additional context")
-    examples: Optional[list[str]] = Field(None, description="Few-shot examples")
-    decision_type: str = Field("binary", description="binary|classification|routing")
+    query: str
+    context: str | None = None
+    examples: list[str] | None = None
+    decision_type: str = "binary"
 
-class TriageDecision(BaseModel):
+class TriageDecision(msgspec.Struct, frozen=True, kw_only=True):
     """Output: Classification result with confidence."""
-    decision: str = Field(..., description="Decision value (yes/no/simple/etc)")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence 0.0-1.0")
-    reasoning: str = Field(..., description="Why this decision")
-    alternatives: Optional[list[str]] = Field(None)
-    latency_ms: float = Field(..., description="Inference latency")
-    model: str = Field("qwen3:0.6b", description="Model used")
+    decision: str
+    confidence: float
+    reasoning: str
+    alternatives: list[str] | None = None
+    latency_ms: float
+    model: str = "qwen3:0.6b"
 ```
 
 #### 2. `types.py` (90 lines)

@@ -21,6 +21,6 @@ class ReportRecord(BaseModel):
     generated_by = fields.CharField(max_length=255, default="system")
     generated_at = fields.DatetimeField(auto_now_add=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "reports"
         indexes = [("organization_id", "source_type", "source_id", "generated_at")]

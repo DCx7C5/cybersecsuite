@@ -12,6 +12,12 @@ class HybridToolDefinitionManager:
     async def by_name(self, name: str) -> HybridToolDefinition | None:
         return await HybridToolDefinition.get_or_none(name=name)
 
+    async def delete_by_name(self, name: str) -> bool:
+        record = await HybridToolDefinition.get_or_none(name=name)
+        if record is None:
+            return False
+        await record.delete()
+        return True
+
 
 hybrid_tool_definition_manager = HybridToolDefinitionManager()
-

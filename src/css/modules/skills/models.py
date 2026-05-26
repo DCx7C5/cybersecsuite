@@ -12,7 +12,7 @@ from css.core.db.models.mixins import TimestampMixin
 from .enums import SkillStatus, SkillCategory
 
 
-class SkillParameter(msgspec.Struct):
+class SkillParameter(msgspec.Struct, frozen=True, kw_only=True):
     """Definition of a skill parameter."""
     name: str
     param_type: str  # "string", "integer", "boolean", "array", "object"
@@ -22,7 +22,7 @@ class SkillParameter(msgspec.Struct):
     validation_rules: dict[str, object] = msgspec.field(default_factory=dict)
 
 
-class SkillResult(msgspec.Struct):
+class SkillResult(msgspec.Struct, frozen=True, kw_only=True):
     """Result from skill execution."""
     skill_id: str
     success: bool
@@ -32,7 +32,7 @@ class SkillResult(msgspec.Struct):
     executed_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class SkillDefinition(msgspec.Struct):
+class SkillDefinition(msgspec.Struct, frozen=True, kw_only=True):
     """Complete definition of a skill."""
     skill_id: str
     name: str
@@ -43,7 +43,7 @@ class SkillDefinition(msgspec.Struct):
     
     # Parameters and execution
     parameters: list[SkillParameter] = msgspec.field(default_factory=list)
-    handler: Callable[..., object] | None = msgspec.field(default=None, exclude=True)  # Execution function
+    handler: Callable[..., object] | None = None  # Execution function
     
     # Metadata
     author: str = ""
@@ -97,13 +97,13 @@ class SkillDefinitionModel(BaseModel, TimestampMixin):
     tags = fields.JSONField(default=list)
     dependencies = fields.JSONField(default=list)
     custom_metadata = fields.JSONField(default=dict)
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "skill_definitions"
         table_description = "Persistent skill definitions and metadata"
         ordering = ["skill_id"]
         indexes = [
-            models.Index(fields=["category", "status"]),
-            models.Index(fields=["is_builtin", "status"]),
+            models.Index(fields=["category", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["is_builtin", "status"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
     def to_domain(self) -> SkillDefinition:

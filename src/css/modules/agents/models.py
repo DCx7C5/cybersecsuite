@@ -5,7 +5,7 @@ import msgspec
 from datetime import datetime
 
 
-class TokenUsage(msgspec.Struct):
+class TokenUsage(msgspec.Struct, frozen=True, kw_only=True):
     """Token usage statistics.
     
     Attributes:
@@ -23,7 +23,7 @@ class TokenUsage(msgspec.Struct):
             object.__setattr__(self, 'total_tokens', self.input_tokens + self.output_tokens)
 
 
-class AgentConfig(msgspec.Struct):
+class AgentConfig(msgspec.Struct, frozen=True, kw_only=True):
     """Agent configuration and initialization parameters.
     
     Attributes:
@@ -48,7 +48,7 @@ class AgentConfig(msgspec.Struct):
     temperature: float | None = None
 
 
-class AgentResult(msgspec.Struct):
+class AgentResult(msgspec.Struct, frozen=True, kw_only=True):
     """Result from agent execution.
     
     Canonical result type shared by AgentExecutor and conversation turns.
@@ -110,7 +110,7 @@ class AgentResult(msgspec.Struct):
         )
 
 
-class AgentTurn(msgspec.Struct):
+class AgentTurn(msgspec.Struct, frozen=True, kw_only=True):
     """Single turn in agent conversation.
     
     Represents one request-response cycle in a multi-turn conversation.
@@ -127,7 +127,7 @@ class AgentTurn(msgspec.Struct):
     metadata: dict[str, object] = msgspec.field(default_factory=dict)
 
 
-class ConversationContext(msgspec.Struct):
+class ConversationContext(msgspec.Struct, frozen=True, kw_only=True):
     """Conversation context and history.
     
     Attributes:

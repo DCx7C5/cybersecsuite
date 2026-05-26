@@ -12,7 +12,7 @@ under a dedicated `/ws/*` surface.
 from css.core.logger import getLogger
 import json
 
-import msgspec
+from css.core.types.base_endpoint import EndpointModel
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
 
@@ -31,14 +31,14 @@ _session_manager = ChatSessionManager()
 # API Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class CreateSessionRequest(msgspec.Struct, frozen=True):
+class CreateSessionRequest(EndpointModel, kw_only=True):
     """Request to create a new chat session."""
     title: str = "New Chat"
     system_prompt: str = ""
     model_id: str | None = None
 
 
-class CreateSessionResponse(msgspec.Struct, frozen=True):
+class CreateSessionResponse(EndpointModel, kw_only=True):
     """Response after creating a session."""
     session_id: str
     title: str
@@ -46,7 +46,7 @@ class CreateSessionResponse(msgspec.Struct, frozen=True):
     created_at: str
 
 
-class ChatMessageResponse(msgspec.Struct, frozen=True):
+class ChatMessageResponse(EndpointModel, kw_only=True):
     """Single chat message response."""
     id: str
     role: str
@@ -55,7 +55,7 @@ class ChatMessageResponse(msgspec.Struct, frozen=True):
     created_at: str
 
 
-class GetMessagesResponse(msgspec.Struct, frozen=True):
+class GetMessagesResponse(EndpointModel, kw_only=True):
     """Response containing session messages."""
     session_id: str
     title: str
@@ -63,13 +63,13 @@ class GetMessagesResponse(msgspec.Struct, frozen=True):
     messages: list[ChatMessageResponse]
 
 
-class SendMessageRequest(msgspec.Struct, frozen=True):
+class SendMessageRequest(EndpointModel, kw_only=True):
     """Request to send a message to a session."""
     content: str
     role: str = "user"
 
 
-class SendMessageResponse(msgspec.Struct, frozen=True):
+class SendMessageResponse(EndpointModel, kw_only=True):
     """Response after sending a message."""
     message_id: str
     status: str

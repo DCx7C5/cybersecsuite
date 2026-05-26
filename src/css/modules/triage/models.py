@@ -6,14 +6,14 @@ from datetime import datetime, timezone
 
 from .enums import TriageStatus, TriageCategory, TriageDecision, SeverityLevel
 
-class TriageRequest(msgspec.Struct):
+class TriageRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Request for triage classification."""
     query: str
     context: str = ""
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
 
-class TriageResult(msgspec.Struct):
+class TriageResult(msgspec.Struct, frozen=True, kw_only=True):
     """Result from triage classification."""
     request_id: str
     status: TriageStatus

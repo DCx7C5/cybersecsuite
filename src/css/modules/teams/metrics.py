@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass
 
 
-@dataclass
 class BudgetState:
     """Token budget state for one scope."""
 
-    limit: int
-    used: int = 0
+    def __init__(self, limit: int, used: int = 0) -> None:
+        self.limit = limit
+        self.used = used
 
     @property
     def remaining(self) -> int:

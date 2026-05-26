@@ -1,6 +1,7 @@
 # @prompts — Prompt Registry & Template Engine
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This
+document owns the executable prompt-registry specification.
 
 ---
 
@@ -182,7 +183,7 @@ registry.get("sec-audit-system", version="1.0.0")
 
 ---
 
-## 🔄 Sync Reminder
+## Status Lookup
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.  
-> Phase 23 — Prompt Registry | 10 todos | All pending as of 2026-05-04
+Read live Phase 23 todo status from `.plan/session.db` before implementation;
+do not infer completion state from this specification.

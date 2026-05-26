@@ -3,14 +3,14 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Dict, Optional
 from datetime import datetime, timezone
-import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from .models import AlertRule, AlertHistory, ChannelConfig
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
 
 # Request/Response Models
-class AlertRuleCreate(msgspec.Struct, frozen=True):
+class AlertRuleCreate(EndpointModel, kw_only=True):
     name: str
     description: str = ""
     event_type: str
@@ -20,7 +20,7 @@ class AlertRuleCreate(msgspec.Struct, frozen=True):
     cooldown_minutes: int = 0
 
 
-class AlertRuleUpdate(msgspec.Struct, frozen=True):
+class AlertRuleUpdate(EndpointModel, kw_only=True):
     name: Optional[str] = None
     description: Optional[str] = None
     severity_threshold: Optional[str] = None
@@ -30,7 +30,7 @@ class AlertRuleUpdate(msgspec.Struct, frozen=True):
     is_active: Optional[bool] = None
 
 
-class AlertRuleResponse(msgspec.Struct, frozen=True):
+class AlertRuleResponse(EndpointModel, kw_only=True):
     id: int
     name: str
     description: str
@@ -43,12 +43,12 @@ class AlertRuleResponse(msgspec.Struct, frozen=True):
     updated_at: datetime
 
 
-class ChannelConfigCreate(msgspec.Struct, frozen=True):
+class ChannelConfigCreate(EndpointModel, kw_only=True):
     channel_type: str
     config: Dict
 
 
-class ChannelConfigResponse(msgspec.Struct, frozen=True):
+class ChannelConfigResponse(EndpointModel, kw_only=True):
     id: int
     channel_type: str
     is_active: bool
@@ -56,7 +56,7 @@ class ChannelConfigResponse(msgspec.Struct, frozen=True):
     last_test_status: Optional[str] = None
 
 
-class AlertHistoryResponse(msgspec.Struct, frozen=True):
+class AlertHistoryResponse(EndpointModel, kw_only=True):
     id: int
     event_id: str
     event_type: str

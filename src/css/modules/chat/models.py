@@ -11,7 +11,7 @@ from css.core.db.models.mixins import SoftDeleteMixin
 
 from .enums import ChatRole, ChatMessageType, ChatStatus
 
-class ChatMessage(msgspec.Struct):
+class ChatMessage(msgspec.Struct, frozen=True, kw_only=True):
     """Single chat message."""
     id: str
     role: ChatRole
@@ -21,7 +21,7 @@ class ChatMessage(msgspec.Struct):
     created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
     tokens: int = 0
 
-class ChatSession(msgspec.Struct):
+class ChatSession(msgspec.Struct, frozen=True, kw_only=True):
     """Chat session containing messages."""
     session_id: str
     title: str
@@ -78,14 +78,14 @@ class ChatSessionModel(BaseModel, SoftDeleteMixin):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "chat_session"
         table_description = "Persisted chat sessions"
         ordering = ["-updated_at"]
         indexes = [
-            models.Index(fields=["project", "status"]),
-            models.Index(fields=["status", "updated_at"]),
-            models.Index(fields=["model_id", "provider_slug"]),
+            models.Index(fields=["project", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["status", "updated_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["model_id", "provider_slug"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -105,11 +105,11 @@ class ChatMessageModel(BaseModel):
     extra_meta = fields.JSONField(default=dict)
     created_at = fields.DatetimeField(auto_now_add=True, db_index=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "chat_message"
         table_description = "Persisted chat messages"
         ordering = ["created_at"]
         indexes = [
-            models.Index(fields=["chat_session", "role"]),
-            models.Index(fields=["chat_session", "created_at"]),
+            models.Index(fields=["chat_session", "role"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["chat_session", "created_at"]),  # type: ignore[reportPrivateImportUsage]
         ]

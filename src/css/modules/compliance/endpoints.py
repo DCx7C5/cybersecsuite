@@ -1,6 +1,6 @@
 """Compliance management endpoints — frameworks, controls, mappings, reports."""
 
-import msgspec
+from css.core.types.base_endpoint import EndpointModel
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -18,14 +18,14 @@ report_generator = ComplianceReportGenerator()
 
 
 # Request/Response Models
-class ComplianceFrameworkCreate(msgspec.Struct, frozen=True):
+class ComplianceFrameworkCreate(EndpointModel, kw_only=True):
     framework_type: str
     name: str
     description: str = ""
     version: str = "1.0"
 
 
-class ComplianceFrameworkResponse(msgspec.Struct, frozen=True):
+class ComplianceFrameworkResponse(EndpointModel, kw_only=True):
     id: int
     framework_type: str
     name: str
@@ -36,7 +36,7 @@ class ComplianceFrameworkResponse(msgspec.Struct, frozen=True):
     updated_at: datetime
 
 
-class FrameworkControlCreate(msgspec.Struct, frozen=True):
+class FrameworkControlCreate(EndpointModel, kw_only=True):
     control_id: str
     name: str
     description: str = ""
@@ -47,7 +47,7 @@ class FrameworkControlCreate(msgspec.Struct, frozen=True):
     risk_impact: str = ""
 
 
-class FrameworkControlResponse(msgspec.Struct, frozen=True):
+class FrameworkControlResponse(EndpointModel, kw_only=True):
     id: int
     control_id: str
     name: str
@@ -59,7 +59,7 @@ class FrameworkControlResponse(msgspec.Struct, frozen=True):
     risk_impact: str
 
 
-class ControlMappingCreate(msgspec.Struct, frozen=True):
+class ControlMappingCreate(EndpointModel, kw_only=True):
     control_id: int
     finding_type: str
     finding_id: str
@@ -69,14 +69,14 @@ class ControlMappingCreate(msgspec.Struct, frozen=True):
     found_at: datetime | None = None
 
 
-class ControlMappingUpdate(msgspec.Struct, frozen=True):
+class ControlMappingUpdate(EndpointModel, kw_only=True):
     status: str | None = None
     evidence: str | None = None
     remediation_notes: str | None = None
     verified_at: datetime | None = None
 
 
-class ControlMappingResponse(msgspec.Struct, frozen=True):
+class ControlMappingResponse(EndpointModel, kw_only=True):
     id: int
     control_id: int
     finding_type: str
@@ -89,7 +89,7 @@ class ControlMappingResponse(msgspec.Struct, frozen=True):
     verified_at: datetime | None = None
 
 
-class ComplianceReportResponse(msgspec.Struct, frozen=True):
+class ComplianceReportResponse(EndpointModel, kw_only=True):
     id: int
     framework_id: int
     total_controls: int

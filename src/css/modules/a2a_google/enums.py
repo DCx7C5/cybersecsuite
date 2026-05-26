@@ -15,14 +15,15 @@ class TaskState(str, Enum):
 
 
 class MessageRole(str, Enum):
-    """Role of a message sender."""
+    """Role of an A2A message sender."""
 
     USER = "user"
     AGENT = "agent"
+    SYSTEM = "system"
 
 
 class PartType(str, Enum):
-    """Type of a message part."""
+    """Message part kinds."""
 
     TEXT = "text"
     FILE = "file"
@@ -39,9 +40,11 @@ class StreamState(str, Enum):
 
 
 class ResponseInjectionStrategy(str, Enum):
-    """How external content is merged into the model response stream."""
+    """How external content is merged into model output."""
 
+    INJECT = "inject"
     PREPEND = "prepend"
+    CHAIN = "chain"
     APPEND = "append"
     REPLACE = "replace"
 

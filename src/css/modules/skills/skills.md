@@ -1,6 +1,6 @@
 # @skills — Skill Registry & Execution
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable skill-registry specification.
 
 ---
 
@@ -10,13 +10,25 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| *(fill in module-specific relationships)* | | |
+| `css.core.marketplace` | → integrates | Publish/install skill marketplace items through the bridge surface. |
+| `css.core.tools` | → consumes | Skill execution invokes registered tool contracts. |
+| `css.modules.agents` | ← consumed by | Agents select and execute installed skills. |
+| `css.core.events` | → emits | Skill installation/execution lifecycle events when wired. |
 
 ---
 
 ## Current State
 
 🟡 **Skeleton** (method signatures with docstrings, bodies marked `pass`)
+
+---
+
+## Marketplace Integration Surface
+
+- `marketplace_bridge.py` maps `Skill` objects to marketplace items (`MarketplaceItemType.skill`) and keeps marketplace cache entries in sync after create/update.
+- Bridge helpers:
+  - `skill_to_marketplace_item(skill)`
+  - `get_skill_marketplace_item(skill_id)`
 
 ---
 
@@ -75,16 +87,16 @@ __all__ = ['SkillRegistry']
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain skill implementation detail in this local document.
 
 ---
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

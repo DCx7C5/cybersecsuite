@@ -11,12 +11,12 @@ from css.core.logger import getLogger
 from typing import AsyncGenerator, Any
 
 from css.core import pipe
+from css.modules.agents import AgentExecutor
 from css.modules.triage import classify
+from css.core.routing.pipeline import ExecuteStage, ObserveStage
 from css.modules.strategies import route
-from css.core.pipeline import ExecuteStage, ObserveStage
-from css.modules.agents.base import AgentExecutor
 from css.core.events import DomainEvent, EventStore
-from css.config import OLLAMA_MODEL
+from css.core.settings.config import OLLAMA_MODEL
 
 log = getLogger(__name__)
 _EVENT_STORE = EventStore()

@@ -58,7 +58,7 @@ class Scan(BaseModel, TimestampMixin):
     scanner_name = fields.CharField(max_length=128, default="")
     scanner_version = fields.CharField(max_length=32, default="")
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "scans"
         unique_together = (("organization", "scan_id"),)
 
@@ -101,7 +101,7 @@ class Finding(BaseModel, TimestampMixin):
         db_index=True,
     )
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "scan_findings"
         unique_together = (("scan", "finding_id"),)
 

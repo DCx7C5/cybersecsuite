@@ -2,14 +2,14 @@
 import msgspec
 
 
-class TagSuggestion(msgspec.Struct, frozen=True):
+class TagSuggestion(msgspec.Struct, frozen=True, kw_only=True):
     """Autocomplete suggestion for a tag."""
 
     id: int
     name: str
     slug: str
 
-class TagConflictResolution(msgspec.Struct, frozen=True):
+class TagConflictResolution(msgspec.Struct, frozen=True, kw_only=True):
     """Result payload after conflict normalization."""
 
     kept_tag_ids: list[int] = msgspec.field(default_factory=list)

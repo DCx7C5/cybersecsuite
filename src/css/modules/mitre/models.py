@@ -1,6 +1,6 @@
 """MITRE ATT&CK module — threat framework mapping (Phase 7)."""
 
-from tortoise import fields
+from tortoise import fields, models
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
@@ -41,11 +41,11 @@ class MITRETechnique(BaseModel, TimestampMixin):
     
 
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "mitre_techniques"
         unique_together = (("organization", "technique_id", "subtechnique_id"),)
         indexes = [
-            fields.Index(["organization", "tactic"]),
+            models.Index(fields=["organization", "tactic"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -89,7 +89,7 @@ class ThreatActor(BaseModel, TimestampMixin):
         help_text="Industries/sectors targeted"
     )
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "threat_actors"
         unique_together = (("organization", "actor_name"),)
 
@@ -122,7 +122,7 @@ class IncidentTechniqueMaping(BaseModel):
     mapped_by = fields.CharField(max_length=255)
     mapped_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incident_technique_mappings"
         unique_together = (("incident", "technique"),)
 

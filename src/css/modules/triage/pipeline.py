@@ -1,9 +1,9 @@
 """Triage pipeline stages for message classification (Phase 6 T6.5)."""
 
 from css.core.logger import getLogger
-from typing import AsyncGenerator, Any, Optional
+from typing import AsyncGenerator, Any, Optional, override
 
-from css.core.pipeline import Stage
+from css.core.routing.pipeline import Stage
 from .engine import TriageEngine
 from .models import TriageRequest
 
@@ -30,6 +30,7 @@ class ClassifyStage(Stage):
         """
         self.engine = engine or TriageEngine()
 
+    @override
     async def __call__(self, stream: AsyncGenerator[Any, None]) -> AsyncGenerator[Any, None]:
         """Classify each message in the stream.
 

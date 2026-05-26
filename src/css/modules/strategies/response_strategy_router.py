@@ -3,8 +3,8 @@
 Decides PREPEND vs INJECT vs CHAIN based on query complexity using local LLM.
 """
 
-from css.core.a2a.enums import ResponseInjectionStrategy
-from css.modules.triage import TriageCategory, TriageEngine, TriageRequest
+from css.modules.triage import classify_query
+from css.modules.a2a_google.enums import ResponseInjectionStrategy
 from .enums import QueryComplexity
 
 
@@ -31,10 +31,7 @@ class ResponseStrategyRouter:
 
     @staticmethod
     def qwen_classify_complexity(query_text: str) -> QueryComplexity:
-        """Classify query complexity via heuristics (placeholder for Qwen integration).
-
-        TODO (Phase 2): Replace with actual Qwen call when triage layer added.
-        """
+        """Classify query complexity heuristically for explicit fallback callers."""
         q_count = query_text.count("?")
         and_or = query_text.lower().count(" and ") + query_text.lower().count(" or ")
         synthesis = any(kw in query_text.lower() for kw in ["synthesize", "compare", "combine"])
@@ -47,20 +44,23 @@ class ResponseStrategyRouter:
             return QueryComplexity.SIMPLE
 
     @staticmethod
-    def from_triage_category(category: TriageCategory) -> QueryComplexity:
+    def from_triage_category(category: object | None) -> QueryComplexity:
         """Map triage category to routing complexity."""
-        if category == TriageCategory.SIMPLE:
-            return QueryComplexity.SIMPLE
-        if category == TriageCategory.MODERATE:
+        value = getattr(category, "value", category)
+        if not isinstance(value, str):
             return QueryComplexity.MODERATE
-        if category in (TriageCategory.COMPLEX, TriageCategory.CRITICAL):
+        normalized = value.lower()
+        if normalized == "simple":
+            return QueryComplexity.SIMPLE
+        if normalized == "moderate":
+            return QueryComplexity.MODERATE
+        if normalized in {"complex", "critical"}:
             return QueryComplexity.COMPLEX
         return QueryComplexity.MODERATE
 
     async def classify_complexity(self, query_text: str) -> QueryComplexity:
         """Classify complexity using TriageEngine instead of heuristics."""
-        triage = TriageEngine()
-        result = await triage.classify(TriageRequest(query=query_text))
+        result = await classify_query(query_text)
         if result.category is None:
             return QueryComplexity.MODERATE
         return self.from_triage_category(result.category)

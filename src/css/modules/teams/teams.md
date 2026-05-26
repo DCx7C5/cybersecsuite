@@ -1,6 +1,6 @@
 # @teams — Team Management & Coordination
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable team-management specification.
 
 ---
 
@@ -10,13 +10,21 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| *(fill in module-specific relationships)* | | |
+| `css.modules.agents` | → coordinates | Team membership and per-agent execution assignment. |
+| `css.modules.a2a_internal` | → consumes | Internal task/result communication between team participants. |
+| `css.core.redis` | → consumes | Dispatch/queue transport used by orchestration runtime. |
+| `css.core.events` | → emits | Team lifecycle, task assignment, and result events. |
 
 ---
 
 ## Current State
 
 🟡 **Skeleton** (method signatures with docstrings, bodies marked `pass`)
+
+### Architecture Note (2026-05-09)
+
+- `orchestrator.py` delegates through `css.modules.a2a_internal` and `css.core.redis.dispatcher`.
+- The team orchestrator value object is `msgspec.Struct`, replacing the earlier dataclass-based stub.
 
 ---
 
@@ -103,8 +111,7 @@ ISOLATION BENEFITS:
 
 ### Team Data Model
 ```python
-@dataclass
-class Team:
+class Team(msgspec.Struct, frozen=True):
     id: int
     session_id: int
     name: str                          # "engineering", "security", etc.
@@ -151,16 +158,16 @@ Transitions:
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain team implementation detail in this local document.
 
 ---
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

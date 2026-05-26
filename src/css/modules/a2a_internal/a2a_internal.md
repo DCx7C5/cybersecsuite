@@ -1,6 +1,6 @@
 # @a2a_internal — Fast Internal Agent-to-Agent Communication
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable internal A2A specification.
 
 ---
 
@@ -37,6 +37,11 @@ Agent B (Team Member)
     ↓
 Task execution + findings handoff
 ```
+
+## Architecture Note (2026-05-09)
+
+- Canonical Google-facing A2A enums and value models live under `src/css/modules/a2a_google/`.
+- `@a2a_internal` remains the transport/runtime owner and depends on those protocol contracts directly.
 
 ---
 
@@ -393,7 +398,8 @@ class TeamLeader:
 - `A2ACommunicator` — Per-agent interface for task management
 - `A2ACommunicationGroup` — Team management (add/remove members, broadcast)
 - `MessageDispatcher` — Redis pub/sub routing
-- `InternalMessage` — Typed message schema (Pydantic)
+- `InternalMessage` — Typed message schema implemented with `msgspec.Struct`
+- `int_comms.py` — compatibility shim that re-exports `css.core.redis.communicator` for legacy imports.
 
 ---
 
@@ -461,16 +467,16 @@ __all__ = ['A2ACommunicator', 'A2ACommunicationGroup', 'MessageDispatcher']
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain A2A implementation detail in this local document.
 
 ---
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

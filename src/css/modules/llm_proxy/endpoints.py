@@ -1,0 +1,109 @@
+"""OpenAI-compatible local LLM proxy endpoints."""
+
+import time
+import uuid
+from typing import Any
+
+from fastapi import APIRouter, HTTPException, status
+
+router = APIRouter(prefix="/v1", tags=["llm-proxy"])
+
+
+def _extract_prompt(messages: list[dict[str, Any]]) -> str:
+    for message in reversed(messages):
+        if message.get("role") != "user":
+            continue
+        content = message.get("content", "")
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):
+            chunks = [str(chunk.get("text", "")) for chunk in content if isinstance(chunk, dict)]
+            return " ".join(part for part in chunks if part)
+    return ""
+
+
+def _parse_provider_model(payload: dict[str, Any]) -> tuple[str, str]:
+    provider = str(payload.get("provider", "")).strip()
+    model = str(payload.get("model", "")).strip()
+    if not provider and "/" in model:
+        provider, model = model.split("/", 1)
+    if not provider:
+        provider = "ollama"
+    if not model:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="model is required")
+    return provider, model
+
+
+@router.get("/health")
+async def llm_proxy_health() -> dict[str, str]:
+    return {"status": "ok", "component": "llm_proxy"}
+
+
+@router.get("/models")
+async def list_models() -> dict[str, Any]:
+    from css.api_services.registry import get_registry
+
+    registry = get_registry()
+    data: list[dict[str, str]] = []
+    for provider in registry.list_providers():
+        spec = registry.get_spec(provider)
+        if spec is None:
+            continue
+        for model_id in spec.models:
+            data.append({"id": f"{provider}/{model_id}", "object": "model", "owned_by": provider})
+    return {"object": "list", "data": data}
+
+
+@router.post("/chat/completions")
+async def create_chat_completion(payload: dict[str, Any]) -> dict[str, Any]:
+    from css.modules.agents import AgentExecutor
+
+    if payload.get("stream"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="stream=true is not yet supported by the local proxy",
+        )
+
+    provider, model = _parse_provider_model(payload)
+    messages = payload.get("messages")
+    if not isinstance(messages, list) or not messages:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="messages must be a non-empty list",
+        )
+
+    prompt = _extract_prompt(messages)
+    if not prompt:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="no user prompt found in messages",
+        )
+
+    executor = AgentExecutor(provider=provider, model=model)
+    started = time.time()
+    try:
+        result = await executor.execute(prompt=prompt, context={"agent_id": "llm-proxy"})
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"provider request failed: {exc}") from exc
+
+    completion_id = f"chatcmpl-{uuid.uuid4().hex[:24]}"
+    created = int(started)
+    finish_reason = result.stop_reason if result.stop_reason else "stop"
+    return {
+        "id": completion_id,
+        "object": "chat.completion",
+        "created": created,
+        "model": f"{provider}/{model}",
+        "choices": [
+            {
+                "index": 0,
+                "message": {"role": "assistant", "content": result.response},
+                "finish_reason": finish_reason,
+            }
+        ],
+        "usage": {
+            "prompt_tokens": result.input_tokens,
+            "completion_tokens": result.output_tokens,
+            "total_tokens": result.input_tokens + result.output_tokens,
+        },
+    }

@@ -15,7 +15,21 @@ IOC storage, threat feed ingestion, and threat-match tracking.
 
 ## Current State
 
-Documentation stub created to satisfy the module markdown naming rule.
+Implemented threat-intel API and persistence for IOC and feed-backed enrichment data.
+
+The module is mounted via `css.modules` entry points and is expected to remain the canonical relational owner before graph projection.
+
+## Remaining Contract
+
+| Work area | Required behavior |
+|-----------|-------------------|
+| Feed lifecycle | Normalize feed-supplied indicators into canonical IOC records with provenance and deduplication. |
+| Retrieval projection | Emit stable actors, malware, campaigns, observables, CVEs, infrastructure, and relationships to `core/rag_graph`; relational records remain canonical. |
+| Consumer bridge | Make IOC matches resolvable by incidents, reports, and SIEM analysis without duplicating source-of-truth storage. |
+
+## Validation
+
+- Test feed deduplication/provenance, IOC querying, and graph projection idempotence.
 
 ## Local Rules
 

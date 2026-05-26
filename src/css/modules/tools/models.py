@@ -27,7 +27,7 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
     enabled = fields.BooleanField(default=True)
     created_by = fields.CharField(max_length=256, null=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "hybrid_tool"
         ordering = ["name"]
 
@@ -84,8 +84,8 @@ class HybridToolDefinitionTag(BaseModel):
     )
     created_at = fields.DatetimeField(auto_now_add=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "hybrid_tool_tag"
         table_description = "M2M relationship between hybrid tools and tags"
         unique_together = [("hybrid_tool", "tag")]
-        indexes = [models.Index(fields=["hybrid_tool", "tag"])]
+        indexes = [models.Index(fields=["hybrid_tool", "tag"])]  # type: ignore[reportPrivateImportUsage]

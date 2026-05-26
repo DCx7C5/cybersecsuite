@@ -14,10 +14,10 @@ from typing import Protocol, runtime_checkable, TYPE_CHECKING, Any
 from datetime import datetime
 
 if TYPE_CHECKING:
-    from css.modules.capabilities.capability_registry import DynamicCapabilityRegistry
+    from css.core.capabilities.capability_registry import DynamicCapabilityRegistry
 
 from .models import AgentResult
-from css.modules.tools.tool_call_loop import ToolCallLoop
+from css.core.tools.tool_call_loop import ToolCallLoop
 
 log = getLogger(__name__)
 

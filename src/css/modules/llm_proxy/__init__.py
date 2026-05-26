@@ -1,3 +1,5 @@
-"""Planned local LLM proxy facade module."""
+"""OpenAI-compatible local LLM proxy facade module."""
 
-__all__ = []
+from .endpoints import router
+
+__all__ = ["router"]

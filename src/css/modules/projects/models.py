@@ -11,7 +11,7 @@ class ProjectFile(BaseModel, TimestampMixin):
     name = LabelField()
     path = PathField(max_length=255)
     permissions = 1 # TODO: relation to PermissionTable
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "project_file"
         table_verbose = "Project File"
         table_verbose_plural = "Project Files"
@@ -24,7 +24,7 @@ class Project(BaseModel, TimestampMixin):
     name = LabelField()
     description = DescriptionField(null=True)
     project_dir = PathField(max_length=255)
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "project"
         table_verbose = "Project"
         table_verbose_plural = "Projects"

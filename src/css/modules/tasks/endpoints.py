@@ -1,5 +1,6 @@
 """Task CRUD endpoints."""
 
+from datetime import UTC, datetime
 from typing import Any
 
 from .enums import TaskStatus, TaskPriority
@@ -28,7 +29,12 @@ async def create_task(
         Task instance (persisted to DB)
     """
     import uuid
-    from css.core.db.models import TaskAssignment
+    from css.core.db.models.quotas import TaskAssignment
+
+    try:
+        orchestrator_pk = int(orchestrator_id)
+    except ValueError as exc:
+        raise ValueError(f"orchestrator_id must be numeric, got {orchestrator_id!r}") from exc
     
     task_id = str(uuid.uuid4())
     scope = TaskScope(
@@ -45,7 +51,7 @@ async def create_task(
     # Persist to ORM (B9)
     await TaskAssignment.create(
         team_id=team_id,
-        orchestrator_id=orchestrator_id,
+        orchestrator_id=orchestrator_pk,
         task_id=task_id,
         status=TaskStatus.PENDING.value,
         priority=priority,
@@ -63,7 +69,7 @@ async def get_task(task_id: str) -> Task | None:
     
     Deserialize from TaskAssignment.task_payload.
     """
-    from css.core.db.models import TaskAssignment
+    from css.core.db.models.quotas import TaskAssignment
     
     try:
         task_assignment = await TaskAssignment.get(task_id=task_id)
@@ -107,7 +113,7 @@ async def list_tasks(
     Returns:
         List of tasks
     """
-    from css.core.db.models import TaskAssignment
+    from css.core.db.models.quotas import TaskAssignment
     
     query = TaskAssignment.filter(team_id=team_id)
     if status:
@@ -143,7 +149,26 @@ async def update_task_status(
     Returns:
         Updated task
     """
-    pass
+    from css.core.db.models.quotas import TaskAssignment
+
+    task_status = TaskStatus(new_status)
+    task_assignment = await TaskAssignment.get_or_none(task_id=task_id)
+    if task_assignment is None:
+        raise ValueError(f"Task {task_id!r} not found")
+
+    updates: dict[str, object] = {"status": task_status.value}
+    if task_status == TaskStatus.EXECUTING:
+        updates["started_at"] = datetime.now(UTC)
+    if task_status in (TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.CANCELLED):
+        updates["completed_at"] = datetime.now(UTC)
+    if task_status in (TaskStatus.PENDING, TaskStatus.QUEUED, TaskStatus.PAUSED):
+        updates["completed_at"] = None
+
+    await task_assignment.save_changes(**updates)
+    updated = await get_task(task_id)
+    if updated is None:
+        raise RuntimeError(f"Failed to hydrate task {task_id!r} after status update")
+    return updated
 
 
 async def cancel_task(task_id: str) -> Task:
@@ -155,7 +180,12 @@ async def cancel_task(task_id: str) -> Task:
     Returns:
         Cancelled task
     """
-    pass
+    task = await get_task(task_id)
+    if task is None:
+        raise ValueError(f"Task {task_id!r} not found")
+    if not task.can_cancel():
+        raise ValueError(f"Task {task_id!r} in state {task.status.value!r} cannot be cancelled")
+    return await update_task_status(task_id, TaskStatus.CANCELLED.value)
 
 
 async def retry_task(task_id: str) -> Task:
@@ -167,12 +197,36 @@ async def retry_task(task_id: str) -> Task:
     Returns:
         Task in pending state
     """
-    pass
+    from css.core.db.models.quotas import TaskAssignment
+
+    task = await get_task(task_id)
+    if task is None:
+        raise ValueError(f"Task {task_id!r} not found")
+    if not task.can_retry():
+        raise ValueError(
+            f"Task {task_id!r} in state {task.status.value!r} cannot be retried "
+            f"(retry_count={task.retry_count}, max_retries={task.scope.max_retries})"
+        )
+
+    task_assignment = await TaskAssignment.get_or_none(task_id=task_id)
+    if task_assignment is None:
+        raise ValueError(f"Task {task_id!r} not found")
+
+    await task_assignment.save_changes(
+        status=TaskStatus.PENDING.value,
+        completed_at=None,
+        started_at=None,
+        assigned_member_id=None,
+    )
+    retried = await get_task(task_id)
+    if retried is None:
+        raise RuntimeError(f"Failed to hydrate task {task_id!r} after retry")
+    return retried
 
 
 # ── Helper functions for serialization/deserialization ──────────────────────
 
-def _deserialize_task_scope(payload: dict) -> TaskScope:
+def _deserialize_task_scope(payload: dict[str, Any]) -> TaskScope:
     """Deserialize TaskScope from ORM JSON payload."""
     from css.core.types import Query
     from datetime import datetime

@@ -6,7 +6,7 @@ import msgspec
 
 from .enums import TeamStatus, OrchestratorMode
 
-class TeamScope(msgspec.Struct):
+class TeamScope(msgspec.Struct, frozen=True, kw_only=True):
     """Immutable team context snapshot."""
 
     team_id: int
@@ -19,7 +19,7 @@ class TeamScope(msgspec.Struct):
     created_at: str | None = None
     paused_at: str | None = None
 
-class Team(msgspec.Struct):
+class Team(msgspec.Struct, frozen=True, kw_only=True):
     """Team entity — mutable team state with lifecycle management."""
 
     team_id: int

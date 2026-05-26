@@ -7,7 +7,7 @@ Models:
 - FrameworkControl: Individual control definition within framework
 """
 
-from tortoise import fields
+from tortoise import fields, models
 from css.core.db.fields import DescriptionField, VersionField
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
@@ -38,7 +38,7 @@ class ComplianceFramework(BaseModel, TimestampMixin):
     # Status
     is_active = fields.BooleanField(default=True, db_index=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "compliance_frameworks"
         unique_together = (("organization", "framework_type"),)
 
@@ -78,11 +78,11 @@ class FrameworkControl(BaseModel, TimestampMixin):
     )
     risk_impact = fields.CharField(max_length=255, default="")
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "framework_controls"
         unique_together = (("framework", "control_id"),)
         indexes = [
-            fields.Index(["framework", "category"]),
+            models.Index(fields=["framework", "category"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -129,12 +129,12 @@ class ControlMapping(BaseModel, TimestampMixin):
     remediated_at = fields.DatetimeField(null=True)
     verified_at = fields.DatetimeField(null=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "control_mappings"
         unique_together = (("control", "finding_id"),)
         indexes = [
-            fields.Index(["organization", "status"]),
-            fields.Index(["finding_type", "finding_id"]),
+            models.Index(fields=["organization", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["finding_type", "finding_id"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -181,11 +181,11 @@ class ComplianceReport(BaseModel):
         help_text="e.g., 'all systems', 'production only', 'data processing'"
     )
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "compliance_reports"
         ordering = ["-generated_at"]
         indexes = [
-            fields.Index(["organization", "framework", "-generated_at"]),
+            models.Index(fields=["organization", "framework", "-generated_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 

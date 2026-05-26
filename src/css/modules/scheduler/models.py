@@ -57,7 +57,7 @@ class ScheduledTask(BaseModel, TimestampMixin):
     created_by = fields.CharField(max_length=255, default="system")
 
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "scheduled_tasks"
         unique_together = (("organization", "task_id"),)
 
@@ -88,7 +88,7 @@ class TaskExecution(BaseModel):
     # Metrics
     duration_seconds = fields.FloatField()
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "task_executions"
         ordering = ["-completed_at"]
 

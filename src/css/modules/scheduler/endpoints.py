@@ -4,12 +4,13 @@ from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from .models import ScheduledTask
 
 router = APIRouter(prefix="/api/scheduler", tags=["scheduler"])
 
 
-class TaskCreate(msgspec.Struct, frozen=True):
+class TaskCreate(EndpointModel, kw_only=True):
     task_type: str
     name: str
     description: str = ""
@@ -18,7 +19,7 @@ class TaskCreate(msgspec.Struct, frozen=True):
     task_config: Dict = {}
 
 
-class TaskResponse(msgspec.Struct, frozen=True):
+class TaskResponse(EndpointModel, kw_only=True):
     id: int
     task_id: str
     task_type: str

@@ -1,14 +1,13 @@
 """Team orchestrator wired to internal CSS A2A delegation flow."""
 
-from __future__ import annotations
-
 import asyncio
-from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
-from css.modules.a2a_internal.a2a_comms import A2ACommunicator
-from css.modules.a2a_internal.dispatcher import MessageDispatcher
+import msgspec
+
+from css.core.redis.dispatcher import MessageDispatcher
+from css.modules.a2a_internal import A2ACommunicator
 
 
 def _state_name(task: Any) -> str:
@@ -18,8 +17,7 @@ def _state_name(task: Any) -> str:
     return str(state).lower()
 
 
-@dataclass
-class TeamOrchestrator:
+class TeamOrchestrator(msgspec.Struct, kw_only=True):
     """Delegates tasks to team members via A2A communicator + dispatcher."""
 
     team_id: str
@@ -28,7 +26,7 @@ class TeamOrchestrator:
     timeout_seconds: float = 30.0
     poll_interval_seconds: float = 0.2
     communicator: A2ACommunicator | None = None
-    _rr_cursor: int = field(default=0, init=False)
+    _rr_cursor: int = 0
 
     def __post_init__(self) -> None:
         if self.communicator is None:
@@ -83,4 +81,3 @@ class TeamOrchestrator:
                 return task
             await asyncio.sleep(self.poll_interval_seconds)
         raise TimeoutError(f"Timed out waiting for delegated task completion: {task_id}")
-

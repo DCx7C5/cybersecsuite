@@ -9,7 +9,7 @@ from css.modules.tools.enums import CompositionStrategy, ParameterType
 
 # TODO: Don't use objects as types here. Create precise TypedDicts if possible, create new type or find other solutions
 
-class ToolParameter(msgspec.Struct):
+class ToolParameter(msgspec.Struct, frozen=True, kw_only=True):
     name: str
     type: ParameterType
     description: str
@@ -32,7 +32,7 @@ class ToolParameter(msgspec.Struct):
         }
 
 
-class ToolReturnType(msgspec.Struct):
+class ToolReturnType(msgspec.Struct, frozen=True, kw_only=True):
     type: str
     description: str
     schema: dict[str, object] = msgspec.field(default_factory=dict)
@@ -45,7 +45,7 @@ class ToolReturnType(msgspec.Struct):
         }
 
 
-class ToolSchema(msgspec.Struct):
+class ToolSchema(msgspec.Struct, frozen=True, kw_only=True):
     provider: str
     name: str
     description: str
@@ -138,7 +138,7 @@ class ToolSchema(msgspec.Struct):
         )
 
 
-class HybridToolSchema(msgspec.Struct):
+class HybridToolSchema(msgspec.Struct, frozen=True, kw_only=True):
     name: str
     description: str
     component_tools: list[str]
@@ -178,7 +178,7 @@ class HybridToolSchema(msgspec.Struct):
         }
 
 
-class ManagedTool(msgspec.Struct):
+class ManagedTool(msgspec.Struct, kw_only=True):
     schema: ToolSchema | HybridToolSchema
     last_called: float | None = None
     call_count: int = 0

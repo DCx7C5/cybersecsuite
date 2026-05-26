@@ -9,7 +9,7 @@ Alert Dispatcher subscribes to EventStore and fires alerts based on rules.
 Multi-channel delivery: email (SMTP), Slack, webhooks.
 """
 
-from tortoise import fields
+from tortoise import fields, models
 from css.core.db.fields import DescriptionField
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
@@ -61,7 +61,7 @@ class AlertRule(BaseModel, TimestampMixin):
         help_text="Minimum minutes between alerts for same event type"
     )
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "alert_rules"
         unique_together = (("organization", "name"),)
 
@@ -99,12 +99,12 @@ class AlertHistory(BaseModel):
     fired_at = fields.DatetimeField(auto_now_add=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "alert_history"
         ordering = ["-fired_at"]
         indexes = [
-            fields.Index(["organization", "event_type", "fired_at"]),
-            fields.Index(["event_id"]),
+            models.Index(fields=["organization", "event_type", "fired_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["event_id"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -138,7 +138,7 @@ class ChannelConfig(BaseModel, TimestampMixin):
     last_test_at = fields.DatetimeField(null=True)
     last_test_status = fields.CharField(max_length=16, null=True)  # success/failed
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "alert_channel_configs"
         unique_together = (("organization", "channel_type"),)
 

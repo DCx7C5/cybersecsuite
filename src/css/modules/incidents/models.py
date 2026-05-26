@@ -123,7 +123,7 @@ class Incident(BaseModel, TimestampMixin):
     
     created_by = fields.CharField(max_length=255, default="system")
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incidents"
         unique_together = (("organization", "incident_id"),)
         indexes = [
@@ -178,7 +178,7 @@ class IncidentTimeline(BaseModel):
     occurred_at = fields.DatetimeField(db_index=True)
     recorded_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incident_timeline"
         unique_together = (("incident", "sequence_number"),)
         ordering = ["incident", "sequence_number"]
@@ -234,7 +234,7 @@ class IncidentTask(BaseModel, TimestampMixin):
     
 
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incident_tasks"
         ordering = ["-priority", "due_date"]
         indexes = [

@@ -3,20 +3,20 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
-import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from .models import Scan, Finding
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
 
 
-class ScanCreate(msgspec.Struct, frozen=True):
+class ScanCreate(EndpointModel, kw_only=True):
     scan_type: str
     target: str
     scope: str = ""
     scheduled_at: datetime
 
 
-class ScanResponse(msgspec.Struct, frozen=True):
+class ScanResponse(EndpointModel, kw_only=True):
     id: int
     scan_id: str
     scan_type: str
@@ -25,7 +25,7 @@ class ScanResponse(msgspec.Struct, frozen=True):
     findings_count: int
 
 
-class FindingResponse(msgspec.Struct, frozen=True):
+class FindingResponse(EndpointModel, kw_only=True):
     id: int
     finding_id: str
     title: str

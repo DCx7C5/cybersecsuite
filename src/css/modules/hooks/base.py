@@ -1,11 +1,10 @@
 """Base hook data contract."""
 
 import fnmatch
-
 import msgspec
 
 
-class BaseHookClass(msgspec.Struct, frozen=True):
+class BaseHookClass(msgspec.Struct, frozen=True, kw_only=True):
     """Canonical hook registration record."""
 
     pattern: str

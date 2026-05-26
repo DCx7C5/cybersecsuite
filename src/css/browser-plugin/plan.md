@@ -37,3 +37,12 @@ Browser-plugin backend provider order is explicitly tracked as:
 - `src/css/core/sdks/adapters/` (browser relay + deepseek adapter)
 - `src/css/modules/llm_proxy/` (stream/result normalization path)
 - `src/css/core/settings/` (relay provider preferences/config)
+
+## Acceptance Contract
+
+- Provider fallback follows the declared priority order and reports the chosen
+  relay/provider in normalized metadata.
+- Authentication or browser-session material is not logged or exposed to
+  frontend callers.
+- Failed relay attempts degrade to the next configured provider with typed
+  failure reporting.

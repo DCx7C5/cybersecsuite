@@ -50,7 +50,7 @@ class IOC(BaseModel, TimestampMixin):
     # Status
     is_active = fields.BooleanField(default=True, db_index=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "iocs"
         unique_together = (("organization", "ioc_type", "value"),)
 
@@ -77,7 +77,7 @@ class ThreatFeed(BaseModel):
     
     created_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "threat_feeds"
         unique_together = (("organization", "name"),)
 
@@ -103,7 +103,7 @@ class IOCMatch(BaseModel):
     
     matched_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "ioc_matches"
 
 

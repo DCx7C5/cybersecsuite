@@ -4,12 +4,13 @@ from fastapi import APIRouter, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from .models import IOC, ThreatFeed
 
 router = APIRouter(prefix="/api/threat-intel", tags=["threat-intel"])
 
 
-class IOCCreate(msgspec.Struct, frozen=True):
+class IOCCreate(EndpointModel, kw_only=True):
     ioc_type: str
     value: str
     threat_level: str = "medium"
@@ -18,7 +19,7 @@ class IOCCreate(msgspec.Struct, frozen=True):
     tags: List[str] = []
 
 
-class IOCResponse(msgspec.Struct, frozen=True):
+class IOCResponse(EndpointModel, kw_only=True):
     id: int
     ioc_type: str
     value: str

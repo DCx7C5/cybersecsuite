@@ -1,6 +1,6 @@
 # @llm_proxy — Local-Compatible LLM Proxy Facade
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable local-proxy specification.
 
 ---
 
@@ -24,6 +24,16 @@ This module is **not**:
 - a separate Docker service
 - a generic internet reverse proxy
 - the owner of provider SDKs
+
+## Current Source Reality
+
+`endpoints.py` currently implements `/v1/health`, `/v1/models`, and a
+non-streaming `/v1/chat/completions` route. Request execution now imports the
+canonical public `css.modules.agents.AgentExecutor` API; no nonexistent
+root-level agent-runtime facade is required.
+
+Authorization, streaming normalization, cache/routing/resilience integration,
+and full usage/audit handling remain implementation work.
 
 ---
 

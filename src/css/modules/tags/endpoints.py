@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException, Query
 from tortoise.expressions import Q
 
 from css.core.db.models.marketplace import MarketplaceItemTag, MarketplaceItem
+from css.core.tools.models import HybridToolDefinitionTag, HybridToolDefinition
 from css.modules.tags.models import Tag
-from css.modules.tools.models import HybridToolDefinitionTag, HybridToolDefinition
 
 logger = getLogger(__name__)
 router = APIRouter(prefix="/api/tags", tags=["tags"])

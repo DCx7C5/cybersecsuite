@@ -6,7 +6,7 @@ import inspect
 import time
 import uuid
 from collections.abc import Awaitable, Callable
-from typing import TypeAlias, cast
+from typing import TypeAlias
 
 import msgspec
 
@@ -32,7 +32,7 @@ class HookBlockedError(RuntimeError):
         self.namespace = namespace
 
 
-class HookContext(msgspec.Struct):
+class HookContext(msgspec.Struct, kw_only=True):
     """Mutable context that flows through pre- / post-interceptor chains."""
 
     namespace: str
@@ -218,7 +218,7 @@ class InterceptorRegistry:
 
 def get_interceptor_registry() -> InterceptorRegistry:
     """Return typed singleton InterceptorRegistry instance."""
-    return cast(InterceptorRegistry, InterceptorRegistry())
+    return InterceptorRegistry()
 
 
 class InterceptorRegistryHandle:
@@ -272,13 +272,3 @@ def post_hook(
     return get_interceptor_registry().post(pattern, priority=priority)
 
 
-__all__ = [
-    "HookContext",
-    "HookBlockedError",
-    "InterceptorRegistry",
-    "get_interceptor_registry",
-    "InterceptorRegistryHandle",
-    "interceptor_registry",
-    "pre_hook",
-    "post_hook",
-]
