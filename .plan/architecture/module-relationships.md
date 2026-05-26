@@ -60,7 +60,7 @@ MarketplaceItem (kind=agent/skill/tool)
 ```
 Tag M2M Junction Tables:
 ├── marketplace_item_tag (TagId → MarketplaceItemId)
-├── hybrid_tool_tag (TagId → HybridToolDefinitionId)
+├── hybrid_tool_definition_tag (TagId → HybridToolDefinitionId)
 ├── permission_grant_tag (TagId → PermissionGrantId)
 ├── cache_entry_tag (TagId → CacheEntryId)
 ├── llm_model_tag (TagId → ModelMetadataId)

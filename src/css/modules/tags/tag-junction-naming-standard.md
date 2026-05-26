@@ -42,7 +42,7 @@ All tag junction models MUST follow this pattern:
 
 ### 3. Table Naming
 - **Format**: snake_case `<model>_tag` (derived from entity)
-- **Examples**: `llm_model_tag`, `marketplace_item_tag`, `hybrid_tool_tag`, `skill_definition_model_tag`
+- **Examples**: `llm_model_tag`, `marketplace_item_tag`, `hybrid_tool_definition_tag`, `skill_definition_model_tag`
 
 ### 4. Related Name on Tag Model
 - **Format**: `<models>` (plural, lowercase, referring to the collection of entity instances)
@@ -205,4 +205,3 @@ Lane E execution order continues:
 ---
 
 **Status**: ✓ Complete | **Owner**: Phase 40 Lane E (Tagging consolidation) | **Validated**: basedpyright --project pyrightconfig.json
-

@@ -112,7 +112,7 @@ class HybridToolDefinitionTag(BaseModel, TimestampMixin):
         )
 
     @classmethod
-    def from_domain(cls, info: HybridToolDefinitionTagInfo) -> "HybridToolDefinitionTag":
+    def from_domain(cls, info: HybridToolDefinitionTagInfo) -> HybridToolDefinitionTag:
         return cls(
             id=info.id,
             hybrid_tool_id=info.hybrid_tool_id,
@@ -120,7 +120,7 @@ class HybridToolDefinitionTag(BaseModel, TimestampMixin):
         )
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
-        table = "hybrid_tool_tag"
+        table = "hybrid_tool_definition_tag"
         table_description = "M2M junction between HybridToolDefinition and Tag"
         unique_together = (
             ("hybrid_tool_id", "tag_id"),
