@@ -47,26 +47,174 @@
 
 ---
 
-## Phase 40 Lane E Scope Freeze (`db40-lane-tagging`)
+## Canonical Tagging Concept (Phase 40)
 
-Tagging is a **classification/filter/search/policy metadata** surface.
-It is **not** a menu, tree, or navigation hierarchy owner.
+**Defined**: 2026-05-26 (db40-tagging-db-concept)
 
-Execution order for Lane E child todos:
-1. `db40-taggable-entity-inventory`
-2. `db40-tag-junction-naming-standard`
-3. `db40-tag-junction-meta-backfill`
-4. `db40-tagging-db-concept`
-5. `db40-llmmodel-tag-runtime-wire`
+### Definition: Shared vs. Domain-Local Tags
 
-Owned write surface for this lane:
-- `src/css/modules/tags/*`
-- `src/css/core/db/models/llm_models.py`
-- `src/css/core/db/models/marketplace.py`
-- `src/css/modules/tools/models.py`
-- `src/css/core/tools/models.py`
+**Canonical pattern (shared Tag ORM)**: 
+- `Tag` table stores reusable classification taxonomy (independent, persistent)
+- `<Entity>Tag` M2M junctions attach tags to taggable entities
+- Example: `LLMModelTag` links `LLMModel` rows to `Tag` rows (N:M relationship)
+- **Purpose**: Classification, filtering, search, discovery, policy metadata
+- **Scope**: Shared taxonomy across multiple entity types; enables cross-domain filtering
 
-Out-of-scope for Lane E: menu/tree/navigation modeling and unrelated model cleanup.
+**Domain-local pattern (JSONField or dedicated table)**:
+- Tags are stored as JSON array on the entity or in a domain-specific table
+- Example: `SkillDefinitionModel.tags` JSONField (unstructured list of strings)
+- **Purpose**: Local classification within a single domain; doesn't need cross-entity sharing
+- **Scope**: Domain-specific, often with different semantics than shared taxonomy
+
+### Architectural Boundary (CRITICAL)
+
+**Tags do NOT own**:
+- ❌ URLs or routing paths
+- ❌ Breadcrumbs or hierarchical navigation
+- ❌ Sidebar placement or menu structure
+- ❌ Any tree/hierarchy semantics
+
+**Tags are ONLY classification/filter/search/policy metadata**. Navigation hierarchy is owned by:
+- `MenuItem` (navigation tree, menu partitioning)
+- Module-specific routers and endpoints
+- Frontend URL structure
+
+---
+
+## Current Tagging Patterns in Codebase
+
+### Pattern 1: Shared Tags with M2M Junctions (Canonical)
+
+**Current implementations** (Phase 40 Lane E):
+- `LLMModel` + `LLMModelTag` — Models classified by capability, provider tier
+- `MarketplaceItem` + `MarketplaceItemTag` — Marketplace items discoverable by category
+- `HybridToolDefinition` + `HybridToolDefinitionTag` — Tools classified by language, composition
+- `SkillDefinitionModel` + `SkillDefinitionModelTag` — Skills classified by category/level (NEW in Lane E)
+
+**Meta pattern**: All follow canonical structure in `.plan/tag-junction-naming-standard.md`
+
+**When to use**: 
+- ✓ Entity is discoverable across multiple interfaces
+- ✓ Tags should be queryable across entities ("find all items tagged with 'vision-capable'")
+- ✓ Tags represent stable, domain-independent classifications
+- ✓ Need cross-cutting filtering/policy behavior
+
+---
+
+### Pattern 2: JSON Array Tags (Domain-local, unstructured)
+
+**Current implementations**:
+
+| Model | Location | Reason | Status |
+|-------|----------|--------|--------|
+| `KnowledgeDocument` | `src/css/core/rag_vector/models.py` | RAG-specific tagging for retrieval metadata | KEEP (domain-specific semantics) |
+| `SkillDefinitionModel` | `src/css/modules/skills/models.py` | Inline skill metadata (pre-Phase 40) | MIXED (has both JSONField and M2M now) |
+| `Evidence` | `src/css/modules/evidence/models.py` | Incident classification (incident_type, severity) | DEFER (decision needed) |
+| `ThreatIntel` | `src/css/modules/threat_intel/models.py` | Threat actor classification | DEFER (decision needed) |
+
+**When to use**: 
+- ✓ Tags are local to one entity type
+- ✓ Tags have domain-specific semantics (not cross-cutting)
+- ✓ Performance matters more than query flexibility
+- ✓ Unstructured/evolving classification (not a stable taxonomy)
+
+---
+
+### Pattern 3: Domain-Specific Tag Tables
+
+**Current implementations**:
+
+| Model | Location | Purpose | Related To | Status |
+|-------|----------|---------|------------|--------|
+| `KnowledgeTag` | `src/css/core/rag_vector/models.py` | RAG knowledge base tags | `KnowledgeDocument` (1:N) | KEEP (domain-specific with retrieval semantics) |
+| `EvidenceTagging` | `src/css/modules/evidence/models.py` | Evidence classification audit trail | `Evidence` (M:M via association) | KEEP (audit/evidence context) |
+
+**When to use**:
+- ✓ Tags have domain-specific structure or metadata (not just strings)
+- ✓ Need audit trail, timestamps, or other context on the tagging relationship
+- ✓ Domain has specialized query semantics (e.g., RAG retrieval, evidence chains)
+
+---
+
+## Entity-to-Strategy Decision Table
+
+| Entity | Current Pattern | Proposed Pattern | Rationale | Priority |
+|--------|-----------------|------------------|-----------|----------|
+| **LLMModel** | Canonical (M2M) | ✓ Keep canonical | Cross-cutting discovery, runtime queries | ✓ Done (Phase 40) |
+| **MarketplaceItem** | Canonical (M2M) | ✓ Keep canonical | Marketplace filtering, user discovery | ✓ Done (Phase 40) |
+| **HybridToolDefinition** | Canonical (M2M) | ✓ Keep canonical | Tool composition, runtime selection | ✓ Done (Phase 40) |
+| **SkillDefinitionModel** | JSON array + M2M | Migrate to M2M only (remove JSONField) | Align with tools; enable skill discovery/filtering | 🟡 Phase 40 Lane E |
+| **KnowledgeDocument** | JSON array | ✓ Keep JSON (RAG context) | RAG retrieval semantics differ from general tags; no cross-entity querying needed | Phase 42+ |
+| **Evidence** | JSON array | Candidate for canonical M2M | Incident classification is cross-cutting policy concern; could benefit from shared taxonomy | 🟡 Defer to Phase 42 |
+| **ThreatIntel** | JSON array | Keep JSON or create domain table | Threat intelligence has specialized semantics; evaluate in security/intel lane | 🟡 Defer to Phase 42+ |
+
+---
+
+## Canonical Schema Reference
+
+**Shared Tag Taxonomy** (`Tag` table):
+- Single authority for classification taxonomy (names, descriptions, colors, hierarchy)
+- Owned by `src/css/modules/tags/models.py`
+- Imported and referenced by all taggable entity junctions
+
+**M2M Junction pattern** (for `<Entity>Tag`):
+- **Requirements**: `BaseModel + TimestampMixin`, `to_domain/from_domain`, symmetric indexes
+- **Reference**: `.plan/tag-junction-naming-standard.md` (canonical pattern template in `src/css/modules/tags/tags.md`)
+- **Foreign keys**: One to entity, one to `Tag`
+- **Related names**: `tags_m2m` (on entity), `<entities>` (on Tag)
+
+**Domain-local alternatives**:
+- JSONField for unstructured, non-queryable tags (cache, UI state, transient data)
+- Domain-specific tables for tags with audit/context (KnowledgeTag, EvidenceTagging)
+- Never mix canonical M2M with JSONField on the same entity (choose one pattern)
+
+---
+
+## Implementation Guidance
+
+### For New Taggable Entities
+
+1. **Assess if shared tags apply**:
+   - Will this entity be queried/filtered across domains?
+   - Is the classification stable and reusable?
+   - Does the entity appear in multiple discovery interfaces?
+   - If **ANY yes**: Use canonical M2M pattern
+
+2. **Follow canonical junction pattern**:
+   - Copy template from `src/css/modules/tags/tags.md`
+   - Name class `<Entity>Tag`, value type `<Entity>TagInfo`
+   - Inherit from `BaseModel + TimestampMixin`
+   - Implement `to_domain/from_domain`
+   - Add symmetric dual indexes
+
+3. **If domain-local tags**:
+   - Document **why** shared tags don't apply
+   - Use JSONField only if truly unstructured/non-queryable
+   - Consider domain-specific table if audit/context needed
+
+### For Existing Entities with JSON Tags
+
+- **SkillDefinitionModel**: Remove `tags` JSONField once M2M junction is wired (Phase 40 Lane E)
+- **Evidence**: Migrate to canonical M2M in Phase 42 security lane (candidate for shared incident taxonomy)
+- **ThreatIntel**: Evaluate in Phase 42+ (may keep domain-local or create specialized threat taxonomy)
+- **KnowledgeDocument**: Keep JSON tags (RAG-specific retrieval semantics incompatible with general taxonomy)
+
+---
+
+## Boundary Enforcement
+
+**Tags are NOT**:
+- Navigation hierarchy (that's MenuItem)
+- Organizational structure (that's Scope/Account/Team)
+- URL routing or page structure
+- Breadcrumb generation or menu placement
+
+**When documentation or code mixes tags with menu/tree concerns**:
+- Explicitly separate the concepts in code
+- Use `MenuItem` for navigation, `Tag` for filtering
+- File an issue if a design conflates the two
+
+
 
 ---
 
