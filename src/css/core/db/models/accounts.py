@@ -10,6 +10,7 @@ Models:
 Integrated with core/roles for RBAC enforcement via path permissions.
 Internal user/admin identity is owned by `user.py`; provider catalog ownership
 is in `provider.py` + `llm_models.py`.
+Account owns identity/registration/profile/organization tenancy records.
 """
 
 from datetime import datetime

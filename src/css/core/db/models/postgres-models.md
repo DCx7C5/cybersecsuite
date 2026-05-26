@@ -130,10 +130,11 @@ being completed.
 Lane C canonical ownership:
 - `tasks.py`: `TaskAssignment`, `TaskResult`
 - `quotas.py`: `TeamQuota` only
-- `user.py`: internal/admin user identity
-- `accounts.py`: account/profile/organization tenancy records
+- `user.py`: internal user/admin runtime identity
+- `accounts.py`: account/profile/organization tenancy records; Account owns identity
 - `provider.py` + `llm_models.py`: provider and model catalog ownership
 - `modules/tasks/models.py`: auto-discovery stub only; no module-local task ORM ownership
+- boundary phrase retained: user/admin vs provider-account
 
 Lane C child todo execution constraints:
 1. `db40-taskmodel-import-cutover` before `db40-quotas-task-residual-cleanup`.

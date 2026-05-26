@@ -1,4 +1,8 @@
-"""Internal user/admin identity ORM model and query helpers."""
+"""Internal user/admin runtime identity ORM model and query helpers.
+
+This surface is for internal/admin runtime identity and optional API-key helpers.
+Tenant-facing registration/profile/organization flows remain on the Account surface.
+"""
 
 from typing import override
 from datetime import UTC, datetime
@@ -42,7 +46,7 @@ class UserManager:
 
 
 class User(BaseUserModel):
-    """Internal system user with roles and optional API key access."""
+    """Internal user/admin runtime identity with roles and optional API-key access."""
 
     hashed_password = fields.CharField(max_length=255)
     api_key_hash = fields.CharField(max_length=255, null=True, db_index=True)
