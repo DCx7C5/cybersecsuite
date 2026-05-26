@@ -269,11 +269,3 @@ class TestCostTrackingIntegration:
                 # Should emit failure event
                 call_args = mock_emit.call_args
                 assert call_args[0][0] == "openrouter.generation.cost_tracking_failed"
-
-
-__all__ = [
-    "TestCaptureGenerationId",
-    "TestFetchCostAttribution",
-    "TestEmitCostTrackingEvent",
-    "TestCostTrackingIntegration",
-]
