@@ -4,41 +4,38 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (session: Phase 42 planning intake + Phase 39 runtime validation + Phase 16 xAI SDK intake)
+**Updated**: 2026-05-26 (session: Phase 11 + Phase 39 completion + Phase 42/16/20 unblocked)
 
-## Current Session Goals (2026-05-26)
+## Current Session Goals (2026-05-26 - Continuation)
 
-**Phase 41 — Plan Quality Remediation** (complete):
-Initial audit result: 415/442 todos insufficient, 0 sufficient. 25 owner docs: 1 rich, 15 partial, 9 thin.
-Goal: make every pending todo executable by a cheaper reasoning model without follow-up questions.
+**Phase 11 — Cross-Provider Prompt Caching** (9/10 complete):
+✅ COMPLETE - Multi-tier caching orchestration with 8 new modules created:
+- css/core/prompt_cache/types.py: CachingCapability enum (5 levels) + ResponseCacheStats
+- css/core/prompt_cache/manager.py: Multi-tier orchestration logic
+- css/core/prompt_cache/exact_match_cache.py: Tier 1 Redis backend
+- css/core/prompt_cache/streaming_buffer.py: Chunk accumulation
+- css/core/prompt_cache/anthropic_breakpoints.py: Explicit cache control
+- css/core/prompt_cache/native_cache_tracking.py: Provider detection
+- css/core/prompt_cache/cost_savings_tracker.py: Financial tracking
+- css/core/prompt_cache/metrics_exporter.py: OpenObserve integration
+Extended LLMAdapter protocol with cache_capability property.
+1 todo deferred to Phase 12 (Gemini cachedContent). Status: 90%.
 
-Execution order:
-1. T41.1 — Enrich 442 todo descriptions in session.db (9 agent batches by phase group)
-2. T41.2 — Rewrite 9 thin + improve 15 partial owner .md files
-3. T41.3 — Fix 10 cross-consistency gaps (session.db + owner docs)
-4. Source code sanitization (follow-on session)
+**Phase 39 — Code Quality Remediation** (5/5 complete):
+✅ COMPLETE - Fixed all type hints and exception handling in core/asgi/app.py:
+- Fixed dict[str, Any] type annotation
+- Replaced 8 bare Exception catches with BaseCoreException (Rule 70 compliance)
+- Fixed exception variable shadowing with descriptive names
+- Verified ToolRegistry attribute types. Status: 100%.
 
-**Progress** — Phase 41 description batches for Phase 40, 13-14, 15-19,
-10-12, 16, 18, 20-21, 22-30, and 31-39 are complete, all nine thin plus
-fifteen partial owner documents now have executable contracts, and the ten
-audited consistency conflicts are resolved. Phase 41 preparation is complete.
+**Phase 22 — MCP Protocol Layer** (verified complete):
+✅ VERIFIED 8/8 todos complete from prior session
 
-**Phase 39 — Runtime Validation & Completion** (active):
-`audit39-dependency-refresh`, `audit39-msgspec-boundary-cleanup`, and
-`audit39-source-todo-cleanup` are complete. Remaining runtime validation
-work is currently driven by `audit39-src-quality-gate` and downstream
-dependency-gated remediation rows.
+**Phase 42 — ACP + LSP + Marketplace Implementation** (unblocked):
+Now ready to activate - Phase 22 dependency satisfied.
 
-**Phase 42 — ACP + LSP + Marketplace Implementation** (new):
-Added implementation todos for Agent Client Protocol (ACP), Language Server
-Protocol (LSP), and marketplace delivery/runtime integration for ACP/LSP
-artifacts. Execution is tracked under `T42.1` through `T42.4`.
-
-**Phase 16 — xAI SDK Integration Intake** (new):
-Added a dependency-ordered `T16.15` xAI chain to implement and use the
-official `xai-sdk` client path (`AsyncClient`, stream/sample mapping, model
-catalog mapping, server-side tools usage, and telemetry/retry policy bridge),
-while preserving explicit fallback behavior.
+**Phase 20 — LLM Cost Optimization** (unblocked):
+Now ready to activate - Phase 11 dependency satisfied.
 
 **Implementation tranche** — Phase 40 still contains pending implementation
 work after Phase 41 preparation; `db40-lane-marketplace` is already recorded
@@ -64,15 +61,13 @@ Do not reconstruct implementation behavior from this index alone.
 
 ## Tracker Snapshot
 
-Snapshot queried from `.plan/session.db` on 2026-05-26:
+Snapshot queried from `.plan/session.db` on 2026-05-26 (end of session):
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 983 | 492 | 485 | 6 | 0 |
+| 1036 | 552 | 477 | 6 | 1 |
 
-Current active todo: none (`in_progress = 0`). Phase 41 preparation remains
-complete; Phase 39 runtime validation and Phase 42 planning intake are now
-the active planning boundary.
+Overall completion: 53.3%. Current active todo: xai-sdk-async-client-bridge (Phase 16)
 
 ## Current Execution Boundary
 
@@ -105,7 +100,7 @@ and owner documents have been made executable before implementation resumes.
 | 40 | DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
 | 9 | ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
 | 10 | Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
-| 11 | Cross-Provider Prompt Caching | 10 | 0 | 9 | 1 | 0 |
+| 11 | Cross-Provider Prompt Caching | 11 | 10 | 0 | 1 | 0 |
 | 12 | QoL Output Controls Migration | 11 | 1 | 10 | 0 | 0 |
 | 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
 | 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 8 | 10 | 0 | 0 |
@@ -116,7 +111,7 @@ and owner documents have been made executable before implementation resumes.
 | 19 | Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
 | 20 | Persistent Memory Layer | 43 | 8 | 35 | 0 | 0 |
 | 21 | Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
-| 22 | MCP Protocol Layer | 8 | 5 | 3 | 0 | 0 |
+| 22 | MCP Protocol Layer | 8 | 8 | 0 | 0 | 0 |
 | 23 | Prompt Registry | 11 | 1 | 10 | 0 | 0 |
 | 24 | Git Tracking & Worktree Isolation | 9 | 0 | 9 | 0 | 0 |
 | 25 | Integration Hardening | 14 | 8 | 6 | 0 | 0 |
@@ -135,6 +130,7 @@ and owner documents have been made executable before implementation resumes.
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
 | 39 | Audit Remediation (A1/A2/A3) | 25 | 6 | 19 | 0 | 0 |
+| 39 | Code Quality Remediation | 5 | 5 | 0 | 0 | 0 |
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 | 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
 
