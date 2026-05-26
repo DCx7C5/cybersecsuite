@@ -4,50 +4,57 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (session: Phase 11 + Phase 39 completion + Phase 42/16/20 unblocked + Continuation #2)
+**Updated**: 2026-05-26 (session: Phase 11 + Phase 39 complete + Dynamic model fetching complete + Continuation #3)
 
-## Current Session (2026-05-26 - Continuation #2)
+## Current Session (2026-05-26 - Continuation #3)
 
-**Session Goal**: Resume Phase 16 work, implement foundation sequence A
+**Session Goal**: Complete dynamic model fetching infrastructure
 
 **Status Entering Session**:
-- Total todos: 1036 | Done: 552 | Pending: 477 | Blocked: 6 | In Progress: 1
-- Overall Completion: 53.3%
-- In Progress: xai-sdk-async-client-bridge (Phase 16 — Provider SDK Features)
-- Newly Unblocked: Phase 20 (35 ready todos), Phase 42 (18 ready todos)
+- Total todos: 1036 | Done: 556 | Pending: 473 | Blocked: 6 | In Progress: 0
+- Overall Completion: 53.7%
+- Previous: Phase 16 Foundation Sequence A (3/3) + Prefix consistency fix + Security audit complete
+- Newly Unblocked: Phase 20 (ready), Phase 42 (ready)
 
 **Session Work Completed**:
-1. ✅ **DONE** xai-sdk-async-client-bridge (Phase 16 — T16.15):
-   - Implemented lazy AsyncClient initialization with timeout/channel config
-   - Added gRPC error mapping support via XAIErrorMapper
-   - Implemented async lifecycle methods (__aenter__, __aexit__)
-   - Commit: 99e875ba
 
-2. ✅ **DONE** thinking-config-struct (Phase 16 — T16.A-1):
-   - Created ThinkingConfig msgspec.Struct with budget_tokens and effort fields
-   - Frozen immutable with positive validation for budget_tokens
-   - Exported from css.core.types
-   - Created test suite
-   - Commit: 420c45eb
+1. ✅ **DONE** dynamic-model-fetching infrastructure:
+   - Enhanced ModelRegistry with async discovery mechanism:
+     * `register_discovery()`: Register provider async callbacks with TTL
+     * `discover_models()`: Fetch models with cache invalidation, error fallback
+     * `models_by_provider()`: Filter by provider (seeded + discovered)
+     * `is_known_provider()`, `known_providers()`: Validation methods
+   - Commit: 15cbfda7 (registry enhancements)
+   
+2. ✅ **DONE** Provider discovery implementations:
+   - OpenRouter: Multi-provider catalog (openrouter.ai/api/v1/models) — 3600s TTL
+   - Ollama: Local models (localhost:11434/api/tags) — 300s TTL
+   - Mistral: Native API (api.mistral.ai/v1/models) — 7200s TTL
+   - Groq: Ultra-fast inference (api.groq.com/openai/v1/models) — 7200s TTL
+   - Graceful error handling, timeout management, capability inference
+   - Commit: a0cd73a9
 
-3. ✅ **DONE** thinking-config-adapter (Phase 16 — T16.A-2):
-   - Updated AnthropicNativeAdapter: budget_tokens → thinking parameter
-   - Updated OpenAINativeAdapter: effort → reasoning_effort parameter
-   - Backward compatibility for legacy parameters
-   - Debug logging for configuration decisions
-   - Commit: ca2fd5c5
+3. ✅ **DONE** ASGI app integration:
+   - Created discovery_integration.py: `register_model_discovery_providers()`
+   - Integrated into lifespan (after ToolRegistry, before registry events)
+   - Provider-specific cache TTLs automatically managed
+   - Graceful error handling (logs warning, continues)
+   - Commit: 117826cf
 
-4. ✅ **DONE** prefix-consistency-fix (Types Module Maintenance):
-   - Renamed LocalSDKBase → BaseLocalSDK for naming convention compliance
-   - All base_* files now contain only Base* classes (3 justified exceptions)
-   - Updated 2 files: base_sdk.py definition + __init__.py import/export
-   - No other files import this class directly
-   - Commit: 46d285d0
+4. ✅ **DONE** Test coverage:
+   - tests/api_services/test_dynamic_discovery.py: 11 test methods
+     * Discovery registration, execution, caching, TTL expiry, error fallback
+   - tests/models/test_dynamic_fetching_integration.py: 7 integration tests
+     * Multi-provider fetching, capability filtering, app startup integration
+   - Full type checking (0 errors) and linting (all checks pass)
+   - Commit: 46daa1f6
 
-**Foundation Sequence A Status**: 3/3 complete ✅
-- ✅ thinking-config-struct (provides contract)
-- ✅ thinking-config-adapter (translator in adapters)
-- ✅ thinking-model-metadata (mark models as thinking-capable)
+**Dynamic Model Fetching Complete** ✅
+- Enables model discovery from 4+ provider APIs at runtime
+- Seed models + discovered models merged automatically
+- Async, non-blocking, with intelligent caching
+- Graceful degradation on discovery errors (fallback to cache or empty)
+- Ready for Phase 16 remaining features (T16.A-4: token budget validation, T16.A-5: provider metadata)
 
 **Thinking-Model-Metadata Details** (T16.A-3):
    - Seeded 8 thinking-capable models: 2 Anthropic, 3 OpenAI, 1 DeepSeek, 2 generic fallback
