@@ -23,7 +23,7 @@ class ChatMessageRecord(BaseModel):
 
     message_id = fields.CharField(max_length=64, unique=True, db_index=True)
     session: fields.ForeignKeyRelation[ChatSessionRecord] = fields.ForeignKeyField(
-        "css.ChatSessionRecord",
+        "models.ChatSessionRecord",
         related_name="messages",
         on_delete=fields.CASCADE,
     )

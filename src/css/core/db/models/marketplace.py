@@ -10,7 +10,7 @@ from tortoise.indexes import Index
 
 from css.core.db.fields import (
     DescriptionField,
-    NameField,
+    LabelField,
     PathField,
     SHA512SumField,
     SlugField,
@@ -66,7 +66,7 @@ class MarketplaceItemTagInfo(msgspec.Struct, frozen=True, kw_only=True):
 
 
 class BaseMarketPlace(BaseModel):
-    name = NameField(max_length=255, db_index=True)
+    name = LabelField(max_length=255, db_index=True)
     description = DescriptionField(null=True)
     version = VersionField(max_length=20, default="0.1.0")
     remote_index_hash = SHA512SumField(null=True)
@@ -295,11 +295,11 @@ class MarketplaceItem(BaseMarketPlace):
 class MarketplaceItemTag(BaseModel, TimestampMixin):
     """M2M junction table linking MarketplaceItem to Tag."""
     marketplace_item = fields.ForeignKeyField(
-        "css.MarketplaceItem",
+        "models.MarketplaceItem",
         related_name="tags_m2m"
     )
     tag = fields.ForeignKeyField(
-        "css.Tag",
+        "models.Tag",
         related_name="marketplace_items"
     )
 
@@ -327,9 +327,9 @@ class MarketplaceItemTag(BaseModel, TimestampMixin):
         table_verbose_plural = "Marketplace Item Tags"
 
         unique_together = (
-            ("marketplace_item", "tag"),
+            ("marketplace_item_id", "tag_id"),
         )
         indexes = (
-            Index(fields=["marketplace_item", "tag"]),
-            Index(fields=["tag", "marketplace_item"]),
+            Index(fields=["marketplace_item_id", "tag_id"]),
+            Index(fields=["tag_id", "marketplace_item_id"]),
         )

@@ -14,8 +14,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import jwt
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError, VerificationError
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 
 log = getLogger(__name__)
 
@@ -23,19 +25,14 @@ log = getLogger(__name__)
 ALGORITHM_HS256 = "HS256"
 ALGORITHM_RS256 = "RS256"
 
-# Hash context for API keys and passwords
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto",
-    bcrypt__rounds=12,
-)
+_ph = PasswordHasher()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TokenPayload(msgspec.Struct, frozen=True, kw_only=True):
+class TokenPayload(EndpointModel, kw_only=True):
     """JWT token payload."""
     sub: str
     exp: float
@@ -44,7 +41,7 @@ class TokenPayload(msgspec.Struct, frozen=True, kw_only=True):
     scopes: list[str] = []
 
 
-class AccessTokenResponse(msgspec.Struct, frozen=True, kw_only=True):
+class AccessTokenResponse(EndpointModel, kw_only=True):
     """Response after token issuance."""
     access_token: str
     refresh_token: str | None = None
@@ -52,7 +49,7 @@ class AccessTokenResponse(msgspec.Struct, frozen=True, kw_only=True):
     expires_in: int
 
 
-class APIKeyResponse(msgspec.Struct, frozen=True, kw_only=True):
+class APIKeyResponse(EndpointModel, kw_only=True):
     """Response after API key generation."""
     key_id: str
     secret: str
@@ -205,7 +202,7 @@ class APIKeyManager:
         secret = secrets.token_urlsafe(32)
         
         # Hash for storage
-        hashed = pwd_context.hash(secret)
+        hashed = _ph.hash(secret)
         
         log.debug(f"Generated API key {key_id}")
         return secret, hashed
@@ -222,15 +219,15 @@ class APIKeyManager:
             True if valid, False otherwise
         """
         try:
-            return pwd_context.verify(secret, hashed)
-        except Exception as e:
+            return _ph.verify(hashed, secret)
+        except (VerifyMismatchError, VerificationError) as e:
             log.debug(f"Key verification error: {e}")
             return False
     
     @staticmethod
     def hash_key(secret: str) -> str:
         """Hash API key for storage."""
-        return pwd_context.hash(secret)
+        return _ph.hash(secret)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -242,7 +239,7 @@ class PasswordManager:
     
     @staticmethod
     def hash_password(password: str) -> str:
-        """Hash password using bcrypt.
+        """Hash password using argon2.
         
         Args:
             password: Plain password
@@ -250,7 +247,7 @@ class PasswordManager:
         Returns:
             Hashed password
         """
-        return pwd_context.hash(password)
+        return _ph.hash(password)
     
     @staticmethod
     def verify_password(password: str, hashed: str) -> bool:
@@ -264,8 +261,8 @@ class PasswordManager:
             True if valid, False otherwise
         """
         try:
-            return pwd_context.verify(password, hashed)
-        except Exception as e:
+            return _ph.verify(hashed, password)
+        except (VerifyMismatchError, VerificationError) as e:
             log.debug(f"Password verification error: {e}")
             return False
 

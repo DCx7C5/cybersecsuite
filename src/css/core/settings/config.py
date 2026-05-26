@@ -131,7 +131,7 @@ POSTGRES_DATABASE = {
     'port': getenv('CYBERSEC_DB_PORT', getenv('POSTGRES_PORT', '5432')),
     'user': getenv('CYBERSEC_DB_USER', getenv('POSTGRES_USER', 'cybersec')),
     'password': getenv('CYBERSEC_DB_PASSWORD', getenv('POSTGRES_PASSWORD', 'change_me')),
-    'database': getenv('CYBERSEC_DB_NAME', getenv('POSTGRES_DB', 'cybersec')),
+    'database': getenv('CYBERSEC_DB_NAME', getenv('POSTGRES_DB', 'cybersec_forensics')),
     'driver': 'asyncpg',
     'min_size': 5,
     'max_size': 20,

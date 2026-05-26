@@ -90,15 +90,28 @@ def create_app() -> FastAPI:
             for model_paths in tortoise_modules.values()
             for model_path in model_paths
         })
-        for required_path in ("css.core.db.models.menu", "css.core.db.models.marketplace"):
-            if required_path not in css_model_paths:
-                css_model_paths.append(required_path)
+        # Core db models are not discoverable via entry points — include them all.
+        core_db_model_paths = [
+            "css.core.db.models.accounts",
+            "css.core.db.models.events",
+            "css.core.db.models.llm_models",
+            "css.core.db.models.marketplace",
+            "css.core.db.models.memory",
+            "css.core.db.models.menu",
+            "css.core.db.models.orchestrator",
+            "css.core.db.models.permissions",
+            "css.core.db.models.provider",
+            "css.core.db.models.quotas",
+            "css.core.db.models.scope",
+            "css.core.db.models.tasks",
+            "css.core.db.models.team",
+            "css.core.db.models.user",
+        ]
+        for path in core_db_model_paths:
+            if path not in css_model_paths:
+                css_model_paths.append(path)
         css_model_paths.sort()
         tortoise_apps = {
-            "css": {
-                "models": css_model_paths,
-                "default_connection": "default",
-            },
             "models": {
                 "models": css_model_paths,
                 "default_connection": "default",
@@ -130,7 +143,8 @@ def create_app() -> FastAPI:
                 config={
                     "connections": {"default": build_tortoise_connection(POSTGRES_DATABASE)},
                     "apps": tortoise_apps,
-                }
+                },
+                _enable_global_fallback=True,
             )
             if ENVIRONMENT == "development":
                 await Tortoise.generate_schemas(safe=True)
@@ -155,21 +169,18 @@ def create_app() -> FastAPI:
                     config={
                         "connections": {"default": build_tortoise_connection(marketplace_db_config)},
                         "apps": {
-                            "css": {
-                                "models": [
-                                    "css.core.db.models.marketplace",
-                                ],
-                                "default_connection": "default",
-                            },
                             "models": {
                                 "models": [
+                                    "css.core.db.models.accounts",
                                     "css.core.db.models.marketplace",
                                     "css.core.db.models.menu",
+                                    "css.modules.tags.models",
                                 ],
                                 "default_connection": "default",
                             },
                         },
-                    }
+                    },
+                    _enable_global_fallback=True,
                 )
                 if ENVIRONMENT == "development":
                     await Tortoise.generate_schemas(safe=True)

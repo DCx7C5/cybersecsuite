@@ -17,7 +17,7 @@ class Evidence(BaseModel, TimestampMixin):
     """Individual evidence item — forensic artifact."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="evidence_items",
         on_delete=fields.CASCADE,
     )
@@ -103,10 +103,10 @@ class Evidence(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "evidence"
-        unique_together = (("organization", "evidence_id"),)
+        unique_together = (("organization_id", "evidence_id"),)
         indexes = [
-            models.Index(fields=["organization", "case_id", "status"]),  # type: ignore[reportPrivateImportUsage]
-            models.Index(fields=["organization", "evidence_type"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization_id", "case_id", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization_id", "evidence_type"]),  # type: ignore[reportPrivateImportUsage]
             models.Index(fields=["source_agent_id", "collected_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
@@ -115,7 +115,7 @@ class EvidenceChain(BaseModel):
     """Immutable chain-of-custody transaction log."""
 
     evidence: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Evidence",
+        "models.Evidence",
         related_name="chain_events",
         on_delete=fields.CASCADE,
     )
@@ -164,10 +164,10 @@ class EvidenceChain(BaseModel):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "evidence_chain"
-        unique_together = (("evidence", "sequence_number"),)
+        unique_together = (("evidence_id", "sequence_number"),)
         ordering = ["evidence_id", "sequence_number"]
         indexes = [
-            models.Index(fields=["evidence", "event_type"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["evidence_id", "event_type"]),  # type: ignore[reportPrivateImportUsage]
             models.Index(fields=["actor_id", "occurred_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
@@ -176,7 +176,7 @@ class EvidenceTagging(BaseModel, TimestampMixin):
     """Tag evidence by incident, case, or classification."""
 
     evidence: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Evidence",
+        "models.Evidence",
         related_name="incident_tags",
         on_delete=fields.CASCADE,
     )
@@ -204,7 +204,7 @@ class EvidenceTagging(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "evidence_tagging"
-        unique_together = (("evidence", "incident_id"),)
+        unique_together = (("evidence_id", "incident_id"),)
 
 
 __all__ = [

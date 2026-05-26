@@ -15,8 +15,8 @@ from tortoise.fields import (
 )
 from tortoise.indexes import Index
 
-from models import BaseModel
-from models.enums import TaskAssignmentStatus, TaskPriority
+from .base import BaseModel
+from .enums import TaskAssignmentStatus, TaskPriority
 
 
 class TaskAssignmentInfo(msgspec.Struct, frozen=True, kw_only=True):

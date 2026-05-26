@@ -8,7 +8,7 @@ class ReportRecord(BaseModel):
     """Generated report metadata and payload."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="reports",
         on_delete=fields.CASCADE,
     )

@@ -89,16 +89,15 @@ class DescriptionField(TextField):
     Clean description field with sensible defaults.
     - Default max_length = 2000 characters
     - Automatically strips whitespace
-    - ASCII characters only
+    - Allows Unicode (international content, markdown, etc.)
     """
     def __init__(self, max_length: int = 2000, *args, **kwargs):
         super().__init__(*args, max_length=max_length, **kwargs)
-        self.validators.append(self._validate_description)
 
-    @staticmethod
-    def _validate_description(value: str | None):
-        if value and not value.isascii():
-            raise ValueError("Description must contain only ASCII characters")
+    def to_db_value(self, value: str | None, instance) -> str | None:
+        if isinstance(value, str):
+            value = value.strip()
+        return super().to_db_value(value, instance)
 
 
 class IPv6Field(CharField):

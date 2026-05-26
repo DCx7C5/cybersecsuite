@@ -10,6 +10,7 @@ Endpoints:
 """
 
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from css.core.logger import getLogger
 import os
 
@@ -37,29 +38,29 @@ _revocation_store = TokenRevocationStore()
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class LoginRequest(msgspec.Struct, frozen=True, kw_only=True):
+class LoginRequest(EndpointModel, kw_only=True):
     """Login request with credentials."""
     username: str
     password: str
     scope: list[str] | None = None
 
 
-class RefreshRequest(msgspec.Struct, frozen=True, kw_only=True):
+class RefreshRequest(EndpointModel, kw_only=True):
     """Refresh token request."""
     refresh_token: str
 
 
-class LogoutRequest(msgspec.Struct, frozen=True, kw_only=True):
+class LogoutRequest(EndpointModel, kw_only=True):
     """Logout request."""
     access_token: str | None = None
 
 
-class APIKeyCreateRequest(msgspec.Struct, frozen=True, kw_only=True):
+class APIKeyCreateRequest(EndpointModel, kw_only=True):
     """Request to create API key."""
     note: str | None = None
 
 
-class APIKeyListResponse(msgspec.Struct, frozen=True, kw_only=True):
+class APIKeyListResponse(EndpointModel, kw_only=True):
     """Response with list of API keys."""
     keys: list[dict]
 

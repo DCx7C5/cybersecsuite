@@ -12,6 +12,7 @@ Endpoints:
 """
 
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 from css.core.logger import getLogger
 
 from fastapi import APIRouter, HTTPException, status
@@ -29,7 +30,7 @@ log = getLogger(__name__)
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class AccountResponse(msgspec.Struct, frozen=True, kw_only=True):
+class AccountResponse(EndpointModel, kw_only=True):
     """Account response model."""
     id: int
     username: str
@@ -40,7 +41,7 @@ class AccountResponse(msgspec.Struct, frozen=True, kw_only=True):
     last_login: str | None = None
 
 
-class UserProfileResponse(msgspec.Struct, frozen=True, kw_only=True):
+class UserProfileResponse(EndpointModel, kw_only=True):
     """User profile response model."""
     bio: str
     timezone: str
@@ -52,14 +53,14 @@ class UserProfileResponse(msgspec.Struct, frozen=True, kw_only=True):
     phone: str | None = None
 
 
-class RegisterRequest(msgspec.Struct, frozen=True, kw_only=True):
+class RegisterRequest(EndpointModel, kw_only=True):
     """Account registration request."""
     username: str
     email: str
     password: str
 
 
-class UpdateProfileRequest(msgspec.Struct, frozen=True, kw_only=True):
+class UpdateProfileRequest(EndpointModel, kw_only=True):
     """Update user profile request."""
     first_name: str | None = None
     last_name: str | None = None
@@ -71,7 +72,7 @@ class UpdateProfileRequest(msgspec.Struct, frozen=True, kw_only=True):
     preferences: dict | None = None
 
 
-class OrganizationResponse(msgspec.Struct, frozen=True, kw_only=True):
+class OrganizationResponse(EndpointModel, kw_only=True):
     """Organization response model."""
     id: int
     name: str
@@ -82,7 +83,7 @@ class OrganizationResponse(msgspec.Struct, frozen=True, kw_only=True):
     created_at: str
 
 
-class CreateOrganizationRequest(msgspec.Struct, frozen=True, kw_only=True):
+class CreateOrganizationRequest(EndpointModel, kw_only=True):
     """Create organization request."""
     name: str
     slug: str
@@ -90,14 +91,14 @@ class CreateOrganizationRequest(msgspec.Struct, frozen=True, kw_only=True):
     tier: str = "free"
 
 
-class MembershipResponse(msgspec.Struct, frozen=True, kw_only=True):
+class MembershipResponse(EndpointModel, kw_only=True):
     """Organization membership response."""
     account_id: int
     role: str
     joined_at: str
 
 
-class AddMemberRequest(msgspec.Struct, frozen=True, kw_only=True):
+class AddMemberRequest(EndpointModel, kw_only=True):
     """Add member to organization request."""
     account_id: int
     role: str = "member"

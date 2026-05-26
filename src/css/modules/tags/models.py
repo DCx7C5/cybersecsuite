@@ -19,11 +19,12 @@ class Tag(BaseModel, TimestampMixin):
     manager = TagManager()
 
     class Meta(BaseModel.Meta, TimestampMixin.Meta):
+        abstract = False
         table = "tag"
         table_description = "Reusable tags with optional hierarchy parent"
         ordering = ["name"]
         indexes = [
             Index(fields=["name"]),
             Index(fields=["slug"]),
-            Index(fields=["parent_tag"]),
+            Index(fields=["parent_tag_id"]),
         ]

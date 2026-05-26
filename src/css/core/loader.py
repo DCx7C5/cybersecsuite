@@ -120,7 +120,7 @@ def build_tortoise_connection(db_config: dict[str, DbConfigValue]) -> dict[str, 
             credentials["host"] = host
             credentials["port"] = int(port) if port else 5432
         else:
-            credentials["host"] = "/var/run/postgresql"
+            credentials["host"] = "127.0.0.1"
         credentials["user"] = db_config.get("user", "cybersec")
         credentials["password"] = db_config.get("password", "change_me")
         credentials["database"] = db_config.get("database", "cybersec_forensics")

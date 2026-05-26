@@ -10,7 +10,6 @@ from collections.abc import Awaitable, Callable
 from functools import partial
 from typing import TypeAlias, override
 
-from css.core.events.emitter import get_event_bus
 from css.core.logger import getLogger
 from css.core.types.base_registry import BaseRegistry
 from css.core.types.meta import singleton
@@ -20,7 +19,11 @@ logger = getLogger(__name__)
 
 HookResult: TypeAlias = object | None
 HookHandler: TypeAlias = Callable[[str, object], HookResult | Awaitable[HookResult]]
-EVENT_BUS = get_event_bus()
+
+
+def _get_event_bus():
+    from css.core.events.emitter import get_event_bus
+    return get_event_bus()
 
 HookRegistration = BaseHookClass
 
@@ -116,12 +119,13 @@ class HookRegistry(BaseRegistry[HookRegistration]):
         """Bind one wildcard dispatcher to capture all emitted events."""
         if "*" in self._bound_events:
             return
-        EVENT_BUS.register("*", self._dispatch)
+        _get_event_bus().register("*", self._dispatch)
         self._bound_events.add("*")
 
     def _unbind_all_dispatchers(self) -> None:
+        event_bus = _get_event_bus()
         for event_name in list(self._bound_events):
-            EVENT_BUS.unregister(event_name, self._dispatch)
+            event_bus.unregister(event_name, self._dispatch)
         self._bound_events.clear()
 
     def _matching_bindings(self, event_type: str) -> list[_HookBinding]:

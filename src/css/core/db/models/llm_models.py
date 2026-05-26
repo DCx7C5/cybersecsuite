@@ -126,6 +126,7 @@ class LLMModel(BaseModel, TimestampMixin):
     manager = LLMModelManager()
 
     class Meta(BaseModel.Meta, TimestampMixin.Meta):
+        abstract = False
         table = "llm_model"
         table_description_singular = "LLM Model"
         table_description_plural = "LLM Models"
@@ -338,11 +339,11 @@ class LLMModelTag(BaseModel, TimestampMixin):
     """M2M junction table linking LLMModel to Tag."""
 
     llm_model = fields.ForeignKeyField(
-        "css.LLMModel",
+        "models.LLMModel",
         related_name="tags_m2m",
     )
     tag = fields.ForeignKeyField(
-        "css.Tag",
+        "models.Tag",
         related_name="llm_models",
     )
 
@@ -372,6 +373,6 @@ class LLMModelTag(BaseModel, TimestampMixin):
             ("llm_model", "tag"),
         )
         indexes = (
-            Index(fields=["llm_model", "tag"]),
-            Index(fields=["tag", "llm_model"]),
+            Index(fields=["llm_model_id", "tag_id"]),
+            Index(fields=["tag_id", "llm_model_id"]),
         )

@@ -10,7 +10,7 @@ class WebhookEndpoint(BaseModel, TimestampMixin):
     """Configured outbound webhook endpoint."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="webhook_endpoints",
         on_delete=fields.CASCADE,
     )
@@ -24,14 +24,14 @@ class WebhookEndpoint(BaseModel, TimestampMixin):
         table = "webhook_endpoint"
         table_verbose = "Webhook Endpoint"
         table_verbose_plural = "Webhook Endpoints"
-        unique_together = (("organization", "name"),)
+        unique_together = (("organization_id", "name"),)
 
 
 class WebhookDelivery(BaseModel):
     """Delivery attempt log for each webhook call."""
 
     endpoint: fields.ForeignKeyRelation[WebhookEndpoint] = fields.ForeignKeyField(
-        "css.WebhookEndpoint",
+        "models.WebhookEndpoint",
         related_name="deliveries",
         on_delete=fields.CASCADE,
     )

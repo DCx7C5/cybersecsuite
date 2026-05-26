@@ -11,7 +11,7 @@ class Scan(BaseModel, TimestampMixin):
     """Vulnerability/compliance scan."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="scans",
         on_delete=fields.CASCADE,
     )
@@ -60,14 +60,14 @@ class Scan(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "scans"
-        unique_together = (("organization", "scan_id"),)
+        unique_together = (("organization_id", "scan_id"),)
 
 
 class Finding(BaseModel, TimestampMixin):
     """Individual vulnerability/compliance finding."""
 
     scan: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Scan",
+        "models.Scan",
         related_name="findings",
         on_delete=fields.CASCADE,
     )
@@ -103,7 +103,7 @@ class Finding(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "scan_findings"
-        unique_together = (("scan", "finding_id"),)
+        unique_together = (("scan_id", "finding_id"),)
 
 
 __all__ = [

@@ -10,7 +10,7 @@ class MITRETechnique(BaseModel, TimestampMixin):
     """MITRE ATT&CK technique."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="mitre_techniques",
         on_delete=fields.CASCADE,
     )
@@ -43,9 +43,9 @@ class MITRETechnique(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "mitre_techniques"
-        unique_together = (("organization", "technique_id", "subtechnique_id"),)
+        unique_together = (("organization_id", "technique_id", "subtechnique_id"),)
         indexes = [
-            models.Index(fields=["organization", "tactic"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization_id", "tactic"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -53,7 +53,7 @@ class ThreatActor(BaseModel, TimestampMixin):
     """Threat actor/campaign/group."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="threat_actors",
         on_delete=fields.CASCADE,
     )
@@ -91,19 +91,19 @@ class ThreatActor(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "threat_actors"
-        unique_together = (("organization", "actor_name"),)
+        unique_together = (("organization_id", "actor_name"),)
 
 
 class IncidentTechniqueMaping(BaseModel):
     """Link incident to ATT&CK techniques."""
 
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Incident",
+        "models.Incident",
         related_name="attck_mappings",
         on_delete=fields.CASCADE,
     )
     technique: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.MITRETechnique",
+        "models.MITRETechnique",
         related_name="incident_mappings",
         on_delete=fields.CASCADE,
     )
@@ -124,7 +124,7 @@ class IncidentTechniqueMaping(BaseModel):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incident_technique_mappings"
-        unique_together = (("incident", "technique"),)
+        unique_together = (("incident_id", "technique_id"),)
 
 
 __all__ = [

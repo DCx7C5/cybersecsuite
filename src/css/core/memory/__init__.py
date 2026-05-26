@@ -4,7 +4,6 @@ from .contracts import MemoryPolicy, MemoryRetriever, MemoryStore
 from .context_window import ContextWindow, TokenEstimate, WindowConfig
 from .enums import MemoryEntryKind, MemoryScope, MemoryTier
 from .exceptions import BaseMemoryException, MemoryNotFoundError, MemoryPersistenceError
-from .memory import MemoryEntryRecord, MemorySnapshotRecord
 from .service import DefaultMemoryPolicy, MemoryService
 from .session_store import SessionStore
 from .types import (
@@ -47,8 +46,6 @@ __all__ = [
     "MemoryListResult",
     "MemoryPolicyConfig",
     "MemoryPolicyDecision",
-    "MemoryEntryRecord",
-    "MemorySnapshotRecord",
     "ContextWindow",
     "TokenEstimate",
     "WindowConfig",

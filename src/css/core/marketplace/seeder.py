@@ -18,6 +18,8 @@ from .exceptions import MarketplaceSeedingError
 
 log = getLogger(__name__)
 
+_VALID_SLUG = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
+
 # Load URLs from configuration
 INDEX_URL = MARKETPLACE_CONFIG['index_url']
 INDEX_SHA512_URL = MARKETPLACE_CONFIG['index_hash_url']
@@ -254,6 +256,12 @@ class MarketplaceSeeder:
                 if not item_id:
                     skipped += 1
                     continue
+                normalized = item_id.lower().strip()
+                if not _VALID_SLUG.match(normalized):
+                    log.debug("Skipping item with invalid slug %r", item_id)
+                    skipped += 1
+                    continue
+                item_id = normalized
 
                 existing = await MarketplaceItem.get_or_none(slug=item_id)
                 if existing and not force:

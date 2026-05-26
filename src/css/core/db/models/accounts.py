@@ -104,7 +104,7 @@ class UserProfile(BaseModel, TimestampMixin):
     """Extended user profile information."""
 
     account: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
-        "css.Account",
+        "models.Account",
         related_name="profile",
         on_delete=fields.CASCADE,
     )
@@ -257,12 +257,12 @@ class OrganizationMembership(BaseModel):
     """User membership in organization with role assignment."""
 
     organization: fields.ForeignKeyRelation[Organization] = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="memberships",
         on_delete=fields.CASCADE,
     )
     account: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
-        "css.Account",
+        "models.Account",
         related_name="org_memberships",
         on_delete=fields.CASCADE,
     )
@@ -280,7 +280,7 @@ class OrganizationMembership(BaseModel):
 
     # Metadata
     invited_by: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
-        "css.Account",
+        "models.Account",
         related_name="invitations_sent",
         on_delete=fields.SET_NULL,
         null=True,
@@ -314,10 +314,10 @@ class OrganizationMembership(BaseModel):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "organization_memberships"
-        unique_together = (("organization", "account"),)
+        unique_together = (("organization_id", "account_id"),)
         indexes = [
-            models.Index(fields=["organization", "role"]),
-            models.Index(fields=["account", "role"]),
+            models.Index(fields=["organization_id", "role"]),
+            models.Index(fields=["account_id", "role"]),
         ]
 
 
@@ -325,12 +325,12 @@ class RoleAssignment(BaseModel, TimestampMixin):
     """Bind Account to Role at Organization scope (for core.roles RBAC)."""
 
     account: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
-        "css.Account",
+        "models.Account",
         related_name="role_assignments",
         on_delete=fields.CASCADE,
     )
     organization: fields.ForeignKeyRelation[Organization] = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="role_assignments",
         on_delete=fields.CASCADE,
     )
@@ -381,10 +381,10 @@ class RoleAssignment(BaseModel, TimestampMixin):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "role_assignments"
-        unique_together = (("account", "organization", "role_id", "scope_level", "scope_id"),)
+        unique_together = (("account_id", "organization_id", "role_id", "scope_level", "scope_id"),)
         indexes = [
-            models.Index(fields=["account", "is_active"]),
-            models.Index(fields=["organization", "role_id"]),
+            models.Index(fields=["account_id", "is_active"]),
+            models.Index(fields=["organization_id", "role_id"]),
         ]
 
 

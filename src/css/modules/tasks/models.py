@@ -1,3 +1,5 @@
-"""Task module integration — auto-discovery loader."""
+"""Task module — ORM models live in css.core.db.models.tasks."""
 
-# Import from submodules (auto-discovery pattern)
+from css.core.db.models.tasks import TaskAssignment, TaskResult
+
+tortoise_models = [TaskAssignment, TaskResult]

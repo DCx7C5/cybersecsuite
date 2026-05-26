@@ -1,0 +1,185 @@
+ID: gap-context-antipattern
+Files: src/css/core/types/context.py
+Symbols: ConversationContext, ModelContext, ExecutionContext, ContextConfig
+Deps: none
+Notes: Replace @dataclass+BaseModel combo with msgspec.Struct for all 4 context classes.
+
+ID: gap-scopelevel-deduplicate
+Files: src/css/core/enums.py, src/css/core/db/models/enums.py, src/css/core/db/__init__.py
+Symbols: ScopeLevel
+Deps: perm-rename-scope-to-session, scopes-module-remove
+Notes: Deduplicate 3 ScopeLevel enum definitions; consolidate to core/enums.py.
+
+ID: naming-clarity-docs
+Files: src/css/modules/sessions/sessions.md, src/css/core/permissions/permissions.md
+Symbols: none
+Deps: working-dir-manager
+Notes: Document session_dir vs project.source_dir vocabulary; wait for workspace owner decision.
+
+ID: naming-scope-utils-paths
+Files: src/css/core/db/models/scope.py
+Symbols: SessionScope.working_dir, get_filesystem_path
+Deps: working-dir-manager, session-context-create
+Notes: Fix path model so sessions are independent from projects; requires workspace owner decision.
+
+ID: naming-session-context-rename
+Files: src/css/core/session.py (new)
+Symbols: SessionContext.project_dir (rename to session_dir)
+Deps: session-context-create, working-dir-manager
+Notes: Rename field to correct concept after SessionContext is created.
+
+ID: perm-checker-can-elevated
+Files: src/css/core/permissions/checker.py
+Symbols: PermissionChecker.can_elevated, PermissionChecker.require_elevated, ElevationDenied
+Deps: perm-checker-exceptions, perm-path-grant-struct, perm-grant-redis-cache
+Notes: Separate elevation check from path check; both must pass for sudo actions.
+
+ID: perm-checker-can-path
+Files: src/css/core/permissions/checker.py
+Symbols: PermissionChecker.can_path, PermissionChecker.require_path, PathGrant.allows
+Deps: perm-checker-exceptions, perm-path-grant-struct, perm-path-op-flag, perm-grant-redis-cache
+Notes: Replace existing checker; use fnmatch for path patterns and PathOp for operations.
+
+ID: perm-checker-can-tool
+Files: src/css/core/permissions/checker.py
+Symbols: PermissionChecker.can_tool, PermissionChecker.require_tool
+Deps: perm-checker-exceptions, perm-tool-grant-struct, perm-grant-redis-cache
+Notes: Implement deny-wins logic for ToolGrant; any allowed=False match denies immediately.
+
+ID: perm-checker-exceptions
+Files: src/css/core/permissions/exceptions.py
+Symbols: AccessDenied, PermissionDenied, ElevationDenied
+Deps: none
+Notes: Add to existing exceptions.py; replace current PermissionError hierarchy.
+
+ID: perm-decorator-require-path
+Files: src/css/core/permissions/decorators.py (new)
+Symbols: require_path
+Deps: perm-checker-can-path
+Notes: Extract agent_id from kwargs, call checker.require_path; async functions only.
+
+ID: perm-decorator-require-tool
+Files: src/css/core/permissions/decorators.py
+Symbols: require_tool
+Deps: perm-checker-can-tool
+Notes: Extract agent_id from kwargs, call checker.require_tool; async functions only.
+
+ID: perm-grant-manager
+Files: src/css/core/permissions/manager.py (new)
+Symbols: GrantManager, grant_path, revoke_path, grant_tool, revoke_tool, list_grants, clear_agent
+Deps: perm-path-grant-struct, perm-tool-grant-struct, perm-grant-models, perm-grant-redis-cache
+Notes: CRUD operations for grants; must invalidate cache on writes.
+
+ID: perm-grant-models
+Files: src/css/core/permissions/models.py (new), src/css/core/db/models/permissions.py
+Symbols: PathGrantRecord, ToolGrantRecord
+Deps: perm-path-grant-struct, perm-tool-grant-struct, perm-path-op-flag
+Notes: Replace PermissionGrant with two Tortoise models; JSON field for ops.
+
+ID: perm-grant-profiles
+Files: src/css/core/permissions/profiles.py (new)
+Symbols: GrantProfile, PROFILE_DEFINITIONS
+Deps: perm-grant-manager, working-dir-manager
+Notes: Wait for session-output owner decision; profiles apply path/tool grants.
+
+ID: perm-grant-redis-cache
+Files: src/css/core/permissions/cache.py (new)
+Symbols: GrantCache, load, invalidate
+Deps: perm-path-grant-struct, perm-tool-grant-struct
+Notes: Redis cache with 60s TTL; key pattern "perm:agent:{agent_id}"; msgspec JSON.
+
+ID: perm-hook-path-enforcement
+Files: src/css/core/permissions/hooks.py
+Symbols: pre_hook("agent.run.*")
+Deps: perm-checker-can-path, perm-hook-tool-enforcement, working-dir-manager
+Notes: Wait for session-output owner; extract path context and check can_path.
+
+ID: perm-hook-tool-enforcement
+Files: src/css/core/permissions/hooks.py (new)
+Symbols: pre_hook("tool.call.*")
+Deps: perm-checker-can-tool, src/css/modules/hooks/interceptors.py
+Notes: Extract agent_id and tool_name from HookContext; raise HookBlockedError on deny.
+
+ID: perm-path-grant-struct
+Files: src/css/core/permissions/types.py
+Symbols: PathGrant, PathGrant.allows
+Deps: perm-path-op-flag
+Notes: Replace PermissionPolicy; msgspec.Struct frozen, ops as frozenset[str].
+
+ID: perm-path-op-flag
+Files: src/css/core/permissions/enums.py (new)
+Symbols: PathOp, PathOp.READ, PathOp.WRITE, PathOp.EXECUTE, PathOp.ALL
+Deps: none
+Notes: Python Flag enum; combinable with bitwise OR.
+
+ID: perm-rename-scope-to-session
+Files: src/css/core/permissions/types.py, src/css/core/permissions/checker.py, src/css/core/permissions/manager.py, src/css/core/permissions/models.py
+Symbols: scope_id (rename to session_id in PathGrant, ToolGrant, PathGrantRecord, ToolGrantRecord)
+Deps: perm-path-grant-struct, perm-tool-grant-struct, perm-grant-models
+Notes: Find/replace scope_id to session_id within permissions/ dir only.
+
+ID: perm-rest-endpoints
+Files: src/css/core/permissions/endpoints.py (new)
+Symbols: router, GET /permissions/grants/{agent_id}, POST /permissions/grants/path, POST /permissions/grants/tool, DELETE /permissions/grants/path/{grant_id}, DELETE /permissions/grants/tool/{grant_id}, POST /permissions/check/path, POST /permissions/check/tool, POST /permissions/profiles/apply
+Deps: perm-grant-manager, perm-checker-can-path, perm-checker-can-tool
+Notes: FastAPI router; write endpoints require orchestrator role.
+
+ID: perm-scopes-cleanup
+Files: src/css/core/permissions/types.py, src/css/core/permissions/checker.py
+Symbols: ScopeContext, PermissionPolicy
+Deps: perm-path-grant-struct, perm-tool-grant-struct, scopes-module-remove
+Notes: Remove stale permission logic referencing removed modules/scopes.
+
+ID: perm-tool-grant-struct
+Files: src/css/core/permissions/types.py
+Symbols: ToolGrant
+Deps: none
+Notes: msgspec.Struct frozen; allowed=False for deny-wins; remove PermissionPolicy.
+
+ID: scopes-module-remove
+Files: src/css/core/permissions/types.py, src/css/core/permissions/checker.py, src/css/core/permissions/__init__.py, src/css/core/streaming/options_manager.py
+Symbols: ScopeContext, PermissionPolicy, imports from modules/scopes
+Deps: gap-scopelevel-deduplicate, streaming-decouple-from-scopes, perm-scopes-cleanup
+Notes: Remove all imports/references to removed modules/scopes package.
+
+ID: session-context-create
+Files: src/css/core/session.py (new)
+Symbols: SessionContext, session_id, agent_id, project_dir (later session_dir), target
+Deps: working-dir-manager
+Notes: msgspec.Struct frozen; project_dir field name wrong, fix in naming-session-context-rename.
+
+ID: streaming-decouple-from-scopes
+Files: src/css/core/streaming/options_manager.py
+Symbols: ConfigLayer (local enum), Scope (type alias)
+Deps: none
+Notes: Already uses local Scope type alias; verify no modules/scopes imports remain.
+
+ID: working-dir-agent-subdir
+Files: TBD (workspace owner)
+Symbols: TBD
+Deps: working-dir-manager
+Notes: Per-agent isolated scratch/output under session_dir; requires workspace owner decision.
+
+ID: working-dir-cleanup
+Files: TBD (workspace owner)
+Symbols: TBD
+Deps: working-dir-manager
+Notes: Lifecycle cleanup with optional archive; requires workspace owner decision.
+
+ID: working-dir-manager
+Files: TBD (workspace owner), src/css/modules/sessions/sessions.md
+Symbols: WorkspaceRegistry, SessionContext creation
+Deps: none
+Notes: Canonical session-output component decision required; core/workspace does not exist.
+
+ID: working-dir-planner-layout
+Files: TBD (workspace owner)
+Symbols: findings/, artifacts/, tools/, per-agent dirs
+Deps: working-dir-manager
+Notes: Planner layout with findings, artifacts, tools; requires workspace owner decision.
+
+ID: working-dir-search-layout
+Files: TBD (workspace owner)
+Symbols: findings/, artifacts/
+Deps: working-dir-manager
+Notes: Minimal search layout with findings/artifacts; requires workspace owner decision.

@@ -1,6 +1,7 @@
 """Knowledge base management endpoints."""
 
 import msgspec
+from css.core.types.base_endpoint import EndpointModel
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -13,7 +14,7 @@ retriever = KnowledgeRetriever()
 
 
 # Request/Response Models
-class DocumentCreate(msgspec.Struct, frozen=True, kw_only=True):
+class DocumentCreate(EndpointModel, kw_only=True):
     title: str
     content: str
     document_type: str
@@ -23,7 +24,7 @@ class DocumentCreate(msgspec.Struct, frozen=True, kw_only=True):
     relevance_score: float = 0.5
 
 
-class DocumentResponse(msgspec.Struct, frozen=True, kw_only=True):
+class DocumentResponse(EndpointModel, kw_only=True):
     id: int
     title: str
     document_type: str
@@ -36,13 +37,13 @@ class DocumentResponse(msgspec.Struct, frozen=True, kw_only=True):
     updated_at: datetime
 
 
-class SearchRequest(msgspec.Struct, frozen=True, kw_only=True):
+class SearchRequest(EndpointModel, kw_only=True):
     query: str
     search_type: str = "keyword"
     limit: int = 5
 
 
-class SearchResult(msgspec.Struct, frozen=True, kw_only=True):
+class SearchResult(EndpointModel, kw_only=True):
     id: int
     title: str
     content: str
@@ -193,7 +194,7 @@ async def list_tags(
 @router.post("/tags", status_code=status.HTTP_201_CREATED)
 async def create_tag(
     tag: str = Query(..., min_length=1, max_length=128),
-    category: str = Query("custom", regex="^(tactic|technique|threat_actor|malware|tool|vulnerability|custom)$"),
+    category: str = Query("custom", pattern="^(tactic|technique|threat_actor|malware|tool|vulnerability|custom)$"),
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Create rag_vector tag."""
@@ -244,7 +245,7 @@ async def get_search_log(
 @router.post("/search-feedback")
 async def record_search_feedback(
     query: str = Query(...),
-    feedback: str = Query(..., regex="^(relevant|irrelevant|partially_relevant)$"),
+    feedback: str = Query(..., pattern="^(relevant|irrelevant|partially_relevant)$"),
     org_id: int = Query(..., description="Organization ID"),
 ):
     """Record user feedback on search results for ranking improvement."""

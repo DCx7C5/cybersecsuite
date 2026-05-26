@@ -18,7 +18,7 @@ class ComplianceFramework(BaseModel, TimestampMixin):
     """Compliance framework definition."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="compliance_frameworks",
         on_delete=fields.CASCADE,
     )
@@ -40,14 +40,14 @@ class ComplianceFramework(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "compliance_frameworks"
-        unique_together = (("organization", "framework_type"),)
+        unique_together = (("organization_id", "framework_type"),)
 
 
 class FrameworkControl(BaseModel, TimestampMixin):
     """Individual control within compliance framework."""
 
     framework: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.ComplianceFramework",
+        "models.ComplianceFramework",
         related_name="controls",
         on_delete=fields.CASCADE,
     )
@@ -80,9 +80,9 @@ class FrameworkControl(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "framework_controls"
-        unique_together = (("framework", "control_id"),)
+        unique_together = (("framework_id", "control_id"),)
         indexes = [
-            models.Index(fields=["framework", "category"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["framework_id", "category"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 
@@ -90,13 +90,13 @@ class ControlMapping(BaseModel, TimestampMixin):
     """Map findings/incidents/scans to compliance controls."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="control_mappings",
         on_delete=fields.CASCADE,
     )
     
     control: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.FrameworkControl",
+        "models.FrameworkControl",
         related_name="mappings",
         on_delete=fields.CASCADE,
     )
@@ -131,9 +131,9 @@ class ControlMapping(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "control_mappings"
-        unique_together = (("control", "finding_id"),)
+        unique_together = (("control_id", "finding_id"),)
         indexes = [
-            models.Index(fields=["organization", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization_id", "status"]),  # type: ignore[reportPrivateImportUsage]
             models.Index(fields=["finding_type", "finding_id"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
@@ -142,12 +142,12 @@ class ComplianceReport(BaseModel):
     """Compliance report snapshot — % coverage per framework."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="compliance_reports",
         on_delete=fields.CASCADE,
     )
     framework: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.ComplianceFramework",
+        "models.ComplianceFramework",
         related_name="reports",
         on_delete=fields.CASCADE,
     )
@@ -185,7 +185,7 @@ class ComplianceReport(BaseModel):
         table = "compliance_reports"
         ordering = ["-generated_at"]
         indexes = [
-            models.Index(fields=["organization", "framework", "-generated_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization_id", "framework_id", "generated_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
 

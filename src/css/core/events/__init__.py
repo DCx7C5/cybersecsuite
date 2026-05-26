@@ -24,18 +24,6 @@ from .domain_event import (
 from .event_bus import EventBus, event_bus
 from .emitter import EventEmitterMixin, NamespacedEventEmitter, emit_event, emit_events, event, get_event_bus
 from .instrument import instrument
-from .hooks import (
-    BaseHookClass,
-    HookBlockedError,
-    HookContext,
-    HookRegistry,
-    InterceptorRegistry,
-    hook_registry,
-    interceptor_registry,
-    on_event,
-    post_hook,
-    pre_hook,
-)
 from .otel_bridge import EventStoreObserver, OtelBridge
 from .projections import (
     AuditTrailProjection,
@@ -52,6 +40,10 @@ from .types import (
     EVENT_TYPES_PHASE14,
 )
 from .exceptions import EventError, HookRegistrationError, HookTimeoutError, EventBusError
+
+# Hook re-exports omitted here — import directly from css.modules.hooks to
+# avoid a circular import: css.core.events → css.modules.hooks.registry →
+# css.core.events.emitter → css.core.events (partial).
 
 __all__ = [
     "DomainEvent",
@@ -87,16 +79,6 @@ __all__ = [
     "instrument",
     "NamespacedEventEmitter",
     "EventEmitterMixin",
-    "BaseHookClass",
-    "HookContext",
-    "HookBlockedError",
-    "InterceptorRegistry",
-    "interceptor_registry",
-    "pre_hook",
-    "post_hook",
-    "HookRegistry",
-    "hook_registry",
-    "on_event",
     "ALL_EVENT_TYPES",
     "EVENT_TYPES_PHASE3",
     "EVENT_TYPES_PHASE5",

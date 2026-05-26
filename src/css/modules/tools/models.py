@@ -75,11 +75,11 @@ class HybridToolDefinition(BaseModel, TimestampMixin):
 class HybridToolDefinitionTag(BaseModel):
     """M2M junction table linking HybridToolDefinition to Tag."""
     hybrid_tool = fields.ForeignKeyField(
-        "css.HybridToolDefinition",
+        "models.HybridToolDefinition",
         related_name="tags_m2m"
     )
     tag = fields.ForeignKeyField(
-        "css.Tag",
+        "models.Tag",
         related_name="hybrid_tools"
     )
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -87,5 +87,5 @@ class HybridToolDefinitionTag(BaseModel):
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "hybrid_tool_tag"
         table_description = "M2M relationship between hybrid tools and tags"
-        unique_together = [("hybrid_tool", "tag")]
-        indexes = [models.Index(fields=["hybrid_tool", "tag"])]  # type: ignore[reportPrivateImportUsage]
+        unique_together = [("hybrid_tool_id", "tag_id")]
+        indexes = [models.Index(fields=["hybrid_tool_id", "tag_id"])]  # type: ignore[reportPrivateImportUsage]

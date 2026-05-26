@@ -20,7 +20,7 @@ class AlertRule(BaseModel, TimestampMixin):
     """Alert rule — trigger condition + notification channels."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="alert_rules",
         on_delete=fields.CASCADE,
     )
@@ -63,19 +63,19 @@ class AlertRule(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "alert_rules"
-        unique_together = (("organization", "name"),)
+        unique_together = (("organization_id", "name"),)
 
 
 class AlertHistory(BaseModel):
     """History of fired alerts with delivery status per channel."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="alert_history",
         on_delete=fields.CASCADE,
     )
     rule: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.AlertRule",
+        "models.AlertRule",
         related_name="firing_history",
         on_delete=fields.SET_NULL,
         null=True,
@@ -103,7 +103,7 @@ class AlertHistory(BaseModel):
         table = "alert_history"
         ordering = ["-fired_at"]
         indexes = [
-            models.Index(fields=["organization", "event_type", "fired_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["organization_id", "event_type", "fired_at"]),  # type: ignore[reportPrivateImportUsage]
             models.Index(fields=["event_id"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
@@ -112,7 +112,7 @@ class ChannelConfig(BaseModel, TimestampMixin):
     """Configuration for alert delivery channels."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="alert_channels",
         on_delete=fields.CASCADE,
     )
@@ -140,7 +140,7 @@ class ChannelConfig(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "alert_channel_configs"
-        unique_together = (("organization", "channel_type"),)
+        unique_together = (("organization_id", "channel_type"),)
 
 
 __all__ = [

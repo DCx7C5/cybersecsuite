@@ -62,7 +62,7 @@ class ChatSessionModel(BaseModel, SoftDeleteMixin):
 
     session_uuid = fields.CharField(max_length=128, unique=True, db_index=True)
     project: fields.ForeignKeyNullableRelation[Model] = fields.ForeignKeyField(
-        "css.ProjectScope",
+        "models.ProjectScope",
         related_name="chat_sessions",
         null=True,
         on_delete=fields.SET_NULL,
@@ -83,7 +83,7 @@ class ChatSessionModel(BaseModel, SoftDeleteMixin):
         table_description = "Persisted chat sessions"
         ordering = ["-updated_at"]
         indexes = [
-            models.Index(fields=["project", "status"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["project_id", "status"]),  # type: ignore[reportPrivateImportUsage]
             models.Index(fields=["status", "updated_at"]),  # type: ignore[reportPrivateImportUsage]
             models.Index(fields=["model_id", "provider_slug"]),  # type: ignore[reportPrivateImportUsage]
         ]
@@ -93,7 +93,7 @@ class ChatMessageModel(BaseModel):
     """Persistent chat message row."""
 
     chat_session: fields.ForeignKeyRelation[ChatSessionModel] = fields.ForeignKeyField(
-        "css.ChatSessionModel",
+        "models.ChatSessionModel",
         related_name="messages",
         on_delete=fields.CASCADE,
     )
@@ -110,6 +110,6 @@ class ChatMessageModel(BaseModel):
         table_description = "Persisted chat messages"
         ordering = ["created_at"]
         indexes = [
-            models.Index(fields=["chat_session", "role"]),  # type: ignore[reportPrivateImportUsage]
-            models.Index(fields=["chat_session", "created_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["chat_session_id", "role"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["chat_session_id", "created_at"]),  # type: ignore[reportPrivateImportUsage]
         ]

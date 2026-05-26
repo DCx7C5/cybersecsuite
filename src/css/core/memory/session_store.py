@@ -11,13 +11,27 @@ This enables fast session resumption while ensuring durability.
 from css.core.logger import getLogger
 import msgspec
 from datetime import datetime, timezone
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from css.core.types.context import ConversationContext
 from css.core.types.base_messages import BaseMessage
 from css.core.types.enums import MessageRole
-from css.core.memory.memory import MemoryEntryRecord, MemorySnapshotRecord
 from css.core.memory.types import MemoryListResult, MemoryQuery
+
+if TYPE_CHECKING:
+    from css.core.db.models.memory import MemoryEntryRecord as _MER
+    from css.core.db.models.memory import MemorySnapshotRecord as _MSR
+
+
+def _entry_cls() -> "type[_MER]":
+    from css.core.db.models.memory import MemoryEntryRecord
+    return MemoryEntryRecord
+
+
+def _snapshot_cls() -> "type[_MSR]":
+    from css.core.db.models.memory import MemorySnapshotRecord
+    return MemorySnapshotRecord
+
 
 log = getLogger(__name__)
 
@@ -208,7 +222,7 @@ class SessionStore:
         try:
             log.debug(f"Falling back to PostgreSQL for session {session_id}")
             snapshot = (
-                await MemorySnapshotRecord.filter(session_id=session_id)
+                await _snapshot_cls().filter(session_id=session_id)
                 .order_by("-created_at")
                 .first()
             )
@@ -265,7 +279,7 @@ class SessionStore:
         try:
             entries_payload = self._serialize_messages(context.messages)
             # Create snapshot record
-            await MemorySnapshotRecord.create(
+            await _snapshot_cls().create(
                 snapshot_id=f"checkpoint-{session_id}-{datetime.now(timezone.utc).isoformat()}",
                 session_id=session_id,
                 summary=f"Session {session_id} turn {context.turn_number}",
@@ -289,7 +303,7 @@ class SessionStore:
         if query is None:
             query = MemoryQuery()
 
-        queryset = MemoryEntryRecord.all()
+        queryset = _entry_cls().all()
         if query.session_id:
             queryset = queryset.filter(session_id=query.session_id)
         if query.agent_id:
@@ -332,7 +346,7 @@ class SessionStore:
     async def prune_expired_entries(self, now: datetime | None = None) -> int:
         """Delete memory entries whose expires_at has elapsed."""
         cutoff = now or datetime.now(timezone.utc)
-        return await MemoryEntryRecord.filter(
+        return await _entry_cls().filter(
             expires_at__isnull=False,
             expires_at__lte=cutoff,
         ).delete()
@@ -343,14 +357,14 @@ class SessionStore:
             return 0
 
         overflow = (
-            await MemoryEntryRecord.filter(session_id=session_id)
+            await _entry_cls().filter(session_id=session_id)
             .order_by("-created_at")
             .offset(max_entries)
         )
         overflow_ids = [record.id for record in overflow]
         if not overflow_ids:
             return 0
-        return await MemoryEntryRecord.filter(id__in=overflow_ids).delete()
+        return await _entry_cls().filter(id__in=overflow_ids).delete()
 
     async def delete_session(self, session_id: str) -> bool:
         """Delete session from Redis (will remain in PostgreSQL archive).
@@ -437,7 +451,7 @@ class SessionStore:
         # Check PostgreSQL (would need Tortoise connection check)
         try:
             # Simple query to verify DB connection
-            await MemorySnapshotRecord.get_or_none(id=0)
+            await _snapshot_cls().get_or_none(id=0)
             health["postgresql"] = True
         except Exception as e:
             log.warning(f"PostgreSQL health check failed: {e}")

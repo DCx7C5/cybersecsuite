@@ -20,7 +20,7 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
     """Searchable rag_vector document with embeddings."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="knowledge_documents",
         on_delete=fields.CASCADE,
     )
@@ -100,8 +100,8 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "knowledge_documents"
         indexes = [
-            Index(fields=["organization", "document_type", "status"]),
-            Index(fields=["organization", "-updated_at"]),
+            Index(fields=["organization_id", "document_type", "status"]),
+            Index(fields=["organization_id", "updated_at"]),
         ]
 
 
@@ -109,7 +109,7 @@ class KnowledgeIndex(BaseModel):
     """Index entry for full-text search across documents."""
 
     document: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.KnowledgeDocument",
+        "models.KnowledgeDocument",
         related_name="index_entries",
         on_delete=fields.CASCADE,
     )
@@ -127,7 +127,7 @@ class KnowledgeIndex(BaseModel):
         table_verbose_plural = "Knowledge Indices"
         ordering = ["-document__updated_at"]
         indexes = [
-            Index(fields=["document", "term"]),
+            Index(fields=["document_id", "term"]),
         ]
         unique_together = (
             ("document", "term"),
@@ -138,7 +138,7 @@ class KnowledgeTag(BaseModel):
     """Taxonomy tags for rag_vector organization."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="knowledge_tags",
         on_delete=fields.CASCADE,
     )
@@ -154,14 +154,14 @@ class KnowledgeTag(BaseModel):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "knowledge_tags"
-        unique_together = (("organization", "tag"),)
+        unique_together = (("organization_id", "tag"),)
 
 
 class SearchLog(BaseModel):
     """Log of agent/user rag_vector base searches for analytics."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="knowledge_searches",
         on_delete=fields.CASCADE,
     )

@@ -1,9 +1,9 @@
-"""Core memory service API for CRUD/search/summarize operations."""
+"""Core memory service API for CRUD/search/optimise operations."""
 
 from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from models.memory import MemoryEntryRecord, MemorySnapshotRecord
 from .contracts import MemoryPolicy
 from .session_store import SessionStore
 from .types import (
@@ -18,6 +18,20 @@ from .types import (
     MemoryWriteRequest,
     MemoryWriteResult,
 )
+
+if TYPE_CHECKING:
+    from css.core.db.models.memory import MemoryEntryRecord as _MER
+    from css.core.db.models.memory import MemorySnapshotRecord as _MSR
+
+
+def _record_cls() -> "type[_MER]":
+    from css.core.db.models.memory import MemoryEntryRecord
+    return MemoryEntryRecord
+
+
+def _snapshot_cls() -> "type[_MSR]":
+    from css.core.db.models.memory import MemorySnapshotRecord
+    return MemorySnapshotRecord
 
 
 class DefaultMemoryPolicy:
@@ -96,9 +110,9 @@ class MemoryService:
         )
 
         entry_id = request.entry_id or str(uuid4())
-        existing = await MemoryEntryRecord.get_or_none(entry_id=entry_id)
+        existing = await _record_cls().get_or_none(entry_id=entry_id)
         if existing is None:
-            record = await MemoryEntryRecord.create(
+            record = await _record_cls().create(
                 entry_id=entry_id,
                 session_id=request.session_id,
                 agent_id=request.agent_id,
@@ -136,7 +150,7 @@ class MemoryService:
 
     async def get(self, entry_id: str) -> MemoryEntry | None:
         """Get one entry by ID."""
-        record = await MemoryEntryRecord.get_or_none(entry_id=entry_id)
+        record = await _record_cls().get_or_none(entry_id=entry_id)
         if record is None:
             return None
         return record.to_struct()
@@ -147,7 +161,7 @@ class MemoryService:
 
     async def delete(self, request: MemoryDeleteRequest) -> MemoryDeleteResult:
         """Delete entries based on request scope."""
-        queryset = MemoryEntryRecord.all()
+        queryset = (_record_cls()).all()
         if request.entry_id:
             queryset = queryset.filter(entry_id=request.entry_id)
         if request.session_id:
@@ -173,7 +187,7 @@ class MemoryService:
         """Create a memory snapshot from current session entries."""
         query = MemoryQuery(session_id=session_id, include_ephemeral=True, limit=500)
         entries = await self.list(query)
-        snapshot = await MemorySnapshotRecord.create(
+        snapshot = await _snapshot_cls().create(
             snapshot_id=f"snapshot-{session_id}-{uuid4()}",
             session_id=session_id,
             summary=summary,

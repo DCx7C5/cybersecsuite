@@ -19,7 +19,7 @@ class Incident(BaseModel, TimestampMixin):
     """Incident — security event requiring response."""
     
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="incidents",
         on_delete=fields.CASCADE,
     )
@@ -28,7 +28,7 @@ class Incident(BaseModel, TimestampMixin):
     incident_id = fields.CharField(
         max_length=64,
         db_index=True,
-        unique_together=("organization",),
+        unique_together=("organization_id",),
         help_text="e.g., INC-2024-001"
     )
     
@@ -125,11 +125,11 @@ class Incident(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incidents"
-        unique_together = (("organization", "incident_id"),)
+        unique_together = (("organization_id", "incident_id"),)
         indexes = [
-            Index(["organization", "status", "-detected_at"]),
-            Index(["organization", "severity", "-detected_at"]),
-            Index(["assigned_team_id", "status"]),
+            Index(fields=["organization_id", "status", "detected_at"]),
+            Index(fields=["organization_id", "severity", "detected_at"]),
+            Index(fields=["assigned_team_id", "status"]),
         ]
 
 
@@ -137,7 +137,7 @@ class IncidentTimeline(BaseModel):
     """Append-only incident progression log."""
 
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Incident",
+        "models.Incident",
         related_name="timeline_events",
         on_delete=fields.CASCADE,
     )
@@ -180,7 +180,7 @@ class IncidentTimeline(BaseModel):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "incident_timeline"
-        unique_together = (("incident", "sequence_number"),)
+        unique_together = (("incident_id", "sequence_number"),)
         ordering = ["incident", "sequence_number"]
 
 
@@ -188,7 +188,7 @@ class IncidentTask(BaseModel, TimestampMixin):
     """Task items within incident investigation/containment/remediation."""
 
     incident: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Incident",
+        "models.Incident",
         related_name="tasks",
         on_delete=fields.CASCADE,
     )
@@ -238,6 +238,6 @@ class IncidentTask(BaseModel, TimestampMixin):
         table = "incident_tasks"
         ordering = ["-priority", "due_date"]
         indexes = [
-            Index(["incident", "status"]),
-            Index(["assigned_to", "status"]),
+            Index(fields=["incident_id", "status"]),
+            Index(fields=["assigned_to", "status"]),
         ]

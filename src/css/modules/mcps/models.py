@@ -64,5 +64,6 @@ class McpServerConfigRecord(BaseModel, TimestampMixin):
         )
 
     class Meta(BaseModel.Meta, TimestampMixin.Meta):
+        abstract = False
         table = "mcp_server_config"
         ordering = ["server_id"]

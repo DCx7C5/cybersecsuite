@@ -12,7 +12,7 @@ class ScheduledTask(BaseModel, TimestampMixin):
     """Cron-scheduled task."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="scheduled_tasks",
         on_delete=fields.CASCADE,
     )
@@ -59,14 +59,14 @@ class ScheduledTask(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "scheduled_tasks"
-        unique_together = (("organization", "task_id"),)
+        unique_together = (("organization_id", "task_id"),)
 
 
 class TaskExecution(BaseModel):
     """Record of task execution."""
 
     task: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.ScheduledTask",
+        "models.ScheduledTask",
         related_name="executions",
         on_delete=fields.CASCADE,
     )

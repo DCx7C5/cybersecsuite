@@ -11,7 +11,7 @@ class IOC(BaseModel, TimestampMixin):
     """Indicator of Compromise."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="iocs",
         on_delete=fields.CASCADE,
     )
@@ -52,14 +52,14 @@ class IOC(BaseModel, TimestampMixin):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "iocs"
-        unique_together = (("organization", "ioc_type", "value"),)
+        unique_together = (("organization_id", "ioc_type", "value"),)
 
 
 class ThreatFeed(BaseModel):
     """External threat feed integration."""
 
     organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.Organization",
+        "models.Organization",
         related_name="threat_feeds",
         on_delete=fields.CASCADE,
     )
@@ -79,14 +79,14 @@ class ThreatFeed(BaseModel):
     
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "threat_feeds"
-        unique_together = (("organization", "name"),)
+        unique_together = (("organization_id", "name"),)
 
 
 class IOCMatch(BaseModel):
     """Record of IOC matched against observables."""
 
     ioc: fields.ForeignKeyRelation = fields.ForeignKeyField(
-        "css.IOC",
+        "models.IOC",
         related_name="matches",
         on_delete=fields.CASCADE,
     )
