@@ -32,6 +32,9 @@ from .base_messages import (
     ExecutorResult,
 )
 
+# ── Thinking config (extended thinking/reasoning) ───────────────────────────
+from .thinking import ThinkingConfig
+
 # ── Base entity + header types ───────────────────────────────────────────────
 from .base_entity import (
     BaseEntity,
@@ -159,6 +162,8 @@ __all__ = [
     "StreamChunk",
     "LLMResponse",
     "ExecutorResult",
+    # thinking/reasoning
+    "ThinkingConfig",
     # entities
     "BaseEntity",
     "BaseAgent",
