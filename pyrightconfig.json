@@ -1,0 +1,48 @@
+{
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.14",
+  "venvPath": ".",
+  "venv": ".venv",
+
+  "include": ["src", "tests", "manage.py"],
+
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv",
+    "**/venv",
+    "**/node_modules",
+    "**/build",
+    "**/dist",
+    "**/.git",
+    "**/migrations"
+  ],
+
+  "reportAttributeAccessIssue": "error",
+  "reportUndefinedVariable": "error",
+  "reportMissingImports": "error",
+
+  "reportArgumentType": "error",
+  "reportAssignmentType": "error",
+  "reportReturnType": "error",
+  "reportCallIssue": "error",
+
+  "reportPrivateUsage": "none",
+
+  "reportOptionalMemberAccess": "none",
+  "reportOptionalCall": "none",
+  "reportOptionalSubscript": "none",
+  "reportOptionalIterable": "none",
+  "reportOptionalOperand": "none",
+
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownParameterType": "warning",
+  "reportMissingParameterType": "warning",
+  "reportMissingTypeArgument": "warning",
+  "reportMissingTypeStubs": "none",
+  "reportUnusedCallResult": "none",
+  "reportImplicitOverride": "error",
+  "reportIncompatibleMethodOverride": "error",
+  "reportIncompatibleVariableOverride": "error"
+}

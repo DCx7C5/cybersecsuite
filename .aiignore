@@ -27,8 +27,6 @@ src/db/fixtures/
 ./data/
 
 # Secrets & credentials
-.env
-.env.*
 secrets/
 *.key
 *.pem
@@ -80,3 +78,8 @@ dump.rdb
 resume
 legacy_docs/
 src/legacy/
+
+
+# env
+!.env.example
+.env

@@ -140,3 +140,4 @@ resume
 .ollama/
 
 src/legacy/
+!pyrightconfig.json
