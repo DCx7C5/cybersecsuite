@@ -488,8 +488,31 @@ implementation work must use these concrete boundaries:
 |--------------------|--------|----------------------|
 | Phase 40 model lanes | pending | Audit imports, preserve canonical models, cut consumers over, and validate ORM discovery/imports before removal. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints` | pending | Seed partitions idempotently, implement `list_menu_items()` filter, initialize DB, and exercise each partition route. |
+| `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | in_progress | Keep tagging as classification/filter/search/policy metadata only; finalize naming/meta/runtime wire in the documented order without menu/tree/navigation scope creep. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
 | `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
+
+### Lane E Tagging Contract
+
+Tagging scope in Phase 40:
+- Classification, filter, search, and policy metadata.
+- Not navigation/menu/tree hierarchy.
+
+Lane E child todo execution order:
+1. `db40-taggable-entity-inventory`
+2. `db40-tag-junction-naming-standard`
+3. `db40-tag-junction-meta-backfill`
+4. `db40-tagging-db-concept`
+5. `db40-llmmodel-tag-runtime-wire`
+
+Lane E owned write surface:
+- `src/css/modules/tags/*`
+- `src/css/core/db/models/llm_models.py`
+- `src/css/core/db/models/marketplace.py`
+- `src/css/modules/tools/models.py`
+- `src/css/core/tools/models.py`
+
+Out-of-scope for Lane E: menu/tree/navigation and unrelated model cleanup.
 
 ### Lane F Ordered Dependency Contract
 

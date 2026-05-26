@@ -25,7 +25,7 @@
 
 ## Purpose
 
-- Define tag hierarchies and categories
+- Define tag classification categories and metadata facets
 - Assign tags to resources (tasks, findings, projects)
 - Support tag-based searching and filtering
 - Manage tag autocomplete and suggestions
@@ -35,7 +35,7 @@
 
 ## Implementation Checklist
 
-- [x] Tag hierarchy and schema
+- [x] Tag classification schema (non-navigation)
 - [x] Tag assignment storage
 - [x] Tag search and filtering
 - [x] Tag suggestions and autocomplete
@@ -44,6 +44,29 @@
 - [x] Marketplace tag relations resolve item identity via `MarketplaceItem.slug`
 - [x] Tag manager is ORM-backed (no in-memory tag dict cache)
 - [x] Tag manager/model imports use lazy-safe structure to avoid circular init failures
+
+---
+
+## Phase 40 Lane E Scope Freeze (`db40-lane-tagging`)
+
+Tagging is a **classification/filter/search/policy metadata** surface.
+It is **not** a menu, tree, or navigation hierarchy owner.
+
+Execution order for Lane E child todos:
+1. `db40-taggable-entity-inventory`
+2. `db40-tag-junction-naming-standard`
+3. `db40-tag-junction-meta-backfill`
+4. `db40-tagging-db-concept`
+5. `db40-llmmodel-tag-runtime-wire`
+
+Owned write surface for this lane:
+- `src/css/modules/tags/*`
+- `src/css/core/db/models/llm_models.py`
+- `src/css/core/db/models/marketplace.py`
+- `src/css/modules/tools/models.py`
+- `src/css/core/tools/models.py`
+
+Out-of-scope for Lane E: menu/tree/navigation modeling and unrelated model cleanup.
 
 ---
 

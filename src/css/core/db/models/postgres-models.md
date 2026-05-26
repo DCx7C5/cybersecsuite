@@ -122,8 +122,30 @@ being completed.
 | `db40-memory-*`, `db40-lane-memory` | done | Canonical memory model ownership is reconciled; import cutover and snapshot payload contract are aligned. |
 | `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | pending | Settle task/provider/user ownership without duplicate model classes. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition and serialize navigation deterministically through `menu_id`. |
-| `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | pending | Complete tagging standards before broad model Meta rollout. |
+| `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | in_progress | Freeze tagging as classification/filter/search/policy metadata and keep it out of menu/tree/navigation ownership. |
 | `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
+
+### Lane E Tagging Scope, Order, and Write Surface
+
+Tagging lane contract:
+- Tagging is classification, filter, search, and policy metadata.
+- Tagging is not navigation/menu/tree hierarchy ownership.
+
+Lane E child todo order:
+1. `db40-taggable-entity-inventory`
+2. `db40-tag-junction-naming-standard`
+3. `db40-tag-junction-meta-backfill`
+4. `db40-tagging-db-concept`
+5. `db40-llmmodel-tag-runtime-wire`
+
+Lane E owned write surface:
+- `src/css/modules/tags/*`
+- `src/css/core/db/models/llm_models.py`
+- `src/css/core/db/models/marketplace.py`
+- `src/css/modules/tools/models.py`
+- `src/css/core/tools/models.py`
+
+Out-of-scope for Lane E: menu/tree routes and unrelated model cleanup.
 
 ### Lane F Child Scope And Ordered Dependencies
 
