@@ -38,6 +38,7 @@ from .menu import MenuItem, MenuItemInfo
 from .provider import ApiServiceProvider
 from .machine import Machine, MachineInfo, MachineManager
 from .host import Host, HostInfo, HostManager
+from .pathfs import PathFS, PathFSInfo, PathFSManager
 
 __all__ = [
     "BaseModel",
@@ -69,4 +70,7 @@ __all__ = [
     "Host",
     "HostInfo",
     "HostManager",
+    "PathFS",
+    "PathFSInfo",
+    "PathFSManager",
 ]

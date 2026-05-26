@@ -19,6 +19,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 | `menu.py` | Navigation tree and `menu_id` partitioning. | Complete deterministic seed/filter/tree constraints. |
 | `machine.py` | Infrastructure machine/endpoint records for monitoring. | Phase 40 foundational model for host/pathfs hierarchy. |
 | `host.py` | Host/asset records for individual systems within machines. | Phase 40 host model with machine FK and query helpers. |
+| `pathfs.py` | Filesystem path records for file/directory hierarchy monitoring. | Phase 40 pathfs model with host FK and parent_path self-reference. |
 | `tasks.py`, `quotas.py` | Task results/assignments versus team quota storage. | Remove residual task ownership from quota paths. |
 | `permissions.py`, `scope.py` | Existing permission/scope session records. | Reconcile with permissions redesign and unresolved scope/session replacement. |
 | `events.py`, `orchestrator.py`, `team.py` | Event persistence and execution/team coordination. | Retain model/meta/index standards during audit remediation. |
@@ -29,7 +30,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 |------|----------------------------------------------------|
 | Marketplace | `BaseMarketPlace`, `MarketplaceMeta`, `MarketplaceMetaManager`, `MarketplaceItem`, `MarketplaceItemManager`, `MarketplaceItemTag`, and their `*Info` structs in `marketplace.py`. |
 | Menu/tree | `MenuItem`, `MenuItemInfo`, `MenuItemManager`, `sync_default_menu_items` in `menu.py`. |
-| Infrastructure | `Machine`, `MachineInfo`, `MachineManager` in `machine.py`; `Host`, `HostInfo`, `HostManager` in `host.py` (Phase 40 machine/host/pathfs hierarchy). |
+| Infrastructure | `Machine`, `MachineInfo`, `MachineManager` in `machine.py`; `Host`, `HostInfo`, `HostManager` in `host.py`; `PathFS`, `PathFSInfo`, `PathFSManager` in `pathfs.py` (complete Phase 40 machine/host/pathfs hierarchy). |
 
 ## TODOs
 - [x] `db-add-taskassignment-updated-at` — Add `updated_at` to `TaskAssignment` (completed 2026-05-07)
