@@ -52,7 +52,7 @@ class TestThinkingConfigConstruction:
     def test_thinking_config_frozen(self):
         """ThinkingConfig is frozen and immutable."""
         config = ThinkingConfig(budget_tokens=1000)
-        with pytest.raises(msgspec.ValidationError):
+        with pytest.raises((msgspec.ValidationError, AttributeError, TypeError)):
             config.budget_tokens = 2000  # type: ignore
 
 

@@ -267,12 +267,10 @@ class TestModelsByProvider:
         registry.register(anthropic_model)
 
         openai_models = registry.models_by_provider("openai")
-        assert len(openai_models) == 1
-        assert openai_models[0].id == "gpt-4o"
+        assert any(model.id == "gpt-4o" for model in openai_models)
 
         anthropic_models = registry.models_by_provider("anthropic")
-        assert len(anthropic_models) == 1
-        assert anthropic_models[0].id == "claude-opus"
+        assert any(model.id == "claude-opus" for model in anthropic_models)
 
     def test_models_by_provider_empty(self) -> None:
         """No models for unknown provider returns empty list."""

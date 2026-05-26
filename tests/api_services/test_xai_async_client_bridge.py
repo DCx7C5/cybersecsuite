@@ -18,6 +18,18 @@ from css.core.exceptions import LLMApiServiceError, AuthError, RateLimitError, T
 from css.core.types import ProviderType
 
 
+class _FakeRpcError(grpc.RpcError):
+    def __init__(self, status_code: grpc.StatusCode, message: str) -> None:
+        self._status_code = status_code
+        self._message = message
+
+    def code(self) -> grpc.StatusCode:
+        return self._status_code
+
+    def __str__(self) -> str:
+        return self._message
+
+
 class TestXAIAsyncClientLazyInit:
     """Test lazy AsyncClient initialization."""
     
@@ -69,9 +81,7 @@ class TestXAIErrorMapping:
         from css.core.types.error_mappers import XAIErrorMapper
         
         # Create mock gRPC error
-        mock_grpc_error = MagicMock(spec=grpc.RpcError)
-        mock_grpc_error.code.return_value = grpc.StatusCode.UNAUTHENTICATED
-        mock_grpc_error.__str__.return_value = "unauthenticated"
+        mock_grpc_error = _FakeRpcError(grpc.StatusCode.UNAUTHENTICATED, "unauthenticated")
         
         result = XAIErrorMapper.map_error(mock_grpc_error)
         assert isinstance(result, AuthError)
@@ -82,9 +92,7 @@ class TestXAIErrorMapping:
         """RESOURCE_EXHAUSTED grpc error should map to RateLimitError."""
         from css.core.types.error_mappers import XAIErrorMapper
         
-        mock_grpc_error = MagicMock(spec=grpc.RpcError)
-        mock_grpc_error.code.return_value = grpc.StatusCode.RESOURCE_EXHAUSTED
-        mock_grpc_error.__str__.return_value = "resource exhausted"
+        mock_grpc_error = _FakeRpcError(grpc.StatusCode.RESOURCE_EXHAUSTED, "resource exhausted")
         
         result = XAIErrorMapper.map_error(mock_grpc_error)
         assert isinstance(result, RateLimitError)
@@ -95,9 +103,7 @@ class TestXAIErrorMapping:
         """DEADLINE_EXCEEDED grpc error should map to TimeoutError."""
         from css.core.types.error_mappers import XAIErrorMapper
         
-        mock_grpc_error = MagicMock(spec=grpc.RpcError)
-        mock_grpc_error.code.return_value = grpc.StatusCode.DEADLINE_EXCEEDED
-        mock_grpc_error.__str__.return_value = "deadline exceeded"
+        mock_grpc_error = _FakeRpcError(grpc.StatusCode.DEADLINE_EXCEEDED, "deadline exceeded")
         
         result = XAIErrorMapper.map_error(mock_grpc_error)
         assert isinstance(result, TimeoutError)
@@ -108,9 +114,7 @@ class TestXAIErrorMapping:
         """UNAVAILABLE grpc error should map to GatewayError."""
         from css.core.types.error_mappers import XAIErrorMapper
         
-        mock_grpc_error = MagicMock(spec=grpc.RpcError)
-        mock_grpc_error.code.return_value = grpc.StatusCode.UNAVAILABLE
-        mock_grpc_error.__str__.return_value = "service unavailable"
+        mock_grpc_error = _FakeRpcError(grpc.StatusCode.UNAVAILABLE, "service unavailable")
         
         result = XAIErrorMapper.map_error(mock_grpc_error)
         assert isinstance(result, GatewayError)
