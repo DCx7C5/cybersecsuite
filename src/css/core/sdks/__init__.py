@@ -9,6 +9,7 @@ from .css_client import CSSLLMClient
 from .adapters.anthropic import AnthropicNativeAdapter, COMPUTER_USE_TOOLS
 from .adapters.openai import OpenAINativeAdapter, BUILTIN_TOOLS
 from .adapters.browser_relay import BrowserRelayAdapter
+from .adapters.deepseek import DeepSeekAdapter
 from .adapters.http_provider import HttpProviderAdapter
 from .adapters.ollama import OllamaAdapter
 
@@ -24,6 +25,7 @@ __all__ = [
     "OpenAINativeAdapter",
     "BUILTIN_TOOLS",
     "BrowserRelayAdapter",
+    "DeepSeekAdapter",
     "HttpProviderAdapter",
     "OllamaAdapter",
 ]

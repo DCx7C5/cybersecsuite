@@ -3,6 +3,7 @@
 from .anthropic import AnthropicNativeAdapter, COMPUTER_USE_TOOLS
 from .openai import OpenAINativeAdapter, BUILTIN_TOOLS
 from .browser_relay import BrowserRelayAdapter
+from .deepseek import DeepSeekAdapter
 from .http_provider import HttpProviderAdapter
 from .ollama import OllamaAdapter
 
@@ -12,6 +13,7 @@ __all__ = [
     "OpenAINativeAdapter",
     "BUILTIN_TOOLS",
     "BrowserRelayAdapter",
+    "DeepSeekAdapter",
     "HttpProviderAdapter",
     "OllamaAdapter",
 ]

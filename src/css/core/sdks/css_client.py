@@ -3,6 +3,7 @@ from inspect import isawaitable
 from typing import Any, cast
 
 from css.core.sdks.adapters.browser_relay import BrowserRelayAdapter
+from css.core.sdks.adapters.deepseek import DeepSeekAdapter
 from css.core.sdks.registry import SDKRegistry
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.types.base_messages import LLMResponse
@@ -14,6 +15,11 @@ _BROWSER_RELAY_PROVIDER_IDS = {
     "browser_relay",
     "browser-plugin",
     "browser_plugin",
+}
+_DEEPSEEK_PROVIDER_IDS = {
+    "deepseek",
+    "deepseek-ai",
+    "deepseek_ai",
 }
 
 
@@ -30,13 +36,26 @@ class CSSLLMClient:
     def __init__(self) -> None:
         self._registry: SDKRegistry = SDKRegistry()
         self._model_registry = get_model_registry()
+        self._register_builtin_sdks()
+
+    @staticmethod
+    def _normalize_provider_id(provider_id: str) -> str:
+        normalized = provider_id.strip().lower()
+        if normalized in _DEEPSEEK_PROVIDER_IDS:
+            return "deepseek"
+        return normalized
+
+    def _register_builtin_sdks(self) -> None:
+        if "deepseek" not in self._registry.list_registered():
+            self._registry.register("deepseek", DeepSeekAdapter)
 
     async def get_sdk(
         self,
         provider_id: str,
         **kwargs: Any,
     ) -> BaseApiServiceClient:
-        return await self._registry.get(provider_id, **kwargs)
+        normalized_provider_id = self._normalize_provider_id(provider_id)
+        return await self._registry.get(normalized_provider_id, **kwargs)
 
     async def call(
         self,
@@ -45,7 +64,8 @@ class CSSLLMClient:
         messages: list[Any],
         **kwargs: Any,
     ) -> AsyncIterator[Any]:
-        if provider_id.strip().lower() in _BROWSER_RELAY_PROVIDER_IDS:
+        normalized_provider_id = self._normalize_provider_id(provider_id)
+        if normalized_provider_id in _BROWSER_RELAY_PROVIDER_IDS:
             adapter = BrowserRelayAdapter()
             return await adapter.call_llm(
                 model_id=model_id,
@@ -53,7 +73,7 @@ class CSSLLMClient:
                 **kwargs,
             )
 
-        sdk = await self._registry.get(provider_id, **kwargs)
+        sdk = await self._registry.get(normalized_provider_id, **kwargs)
         stream_or_future = sdk.call_llm(
             model_id=model_id,
             messages=messages,
@@ -70,7 +90,8 @@ class CSSLLMClient:
         messages: list[Any],
         **kwargs: Any,
     ) -> LLMResponse:
-        if provider_id.strip().lower() in _BROWSER_RELAY_PROVIDER_IDS:
+        normalized_provider_id = self._normalize_provider_id(provider_id)
+        if normalized_provider_id in _BROWSER_RELAY_PROVIDER_IDS:
             adapter = BrowserRelayAdapter()
             return await adapter.call_llm_buffered(
                 model_id=model_id,
@@ -78,7 +99,7 @@ class CSSLLMClient:
                 **kwargs,
             )
 
-        sdk = await self._registry.get(provider_id, **kwargs)
+        sdk = await self._registry.get(normalized_provider_id, **kwargs)
         return await sdk.call_llm_buffered(
             model_id=model_id,
             messages=messages,
