@@ -3,6 +3,13 @@
 from .client import OllamaClient
 from .service import OllamaApiService
 from .compat import OllamaClientCompat
+from .manager import (
+    OllamaModelManager,
+    OllamaModelManagerError,
+    OllamaDaemonUnavailableError,
+    OllamaModelNotFoundError,
+    OllamaModelPullError,
+)
 from .types import (
     OllamaCapabilities,
     OllamaConfig,
@@ -15,6 +22,11 @@ __all__ = [
     "OllamaApiService",
     "OllamaClientCompat",
     "OllamaClient",
+    "OllamaModelManager",
+    "OllamaModelManagerError",
+    "OllamaDaemonUnavailableError",
+    "OllamaModelNotFoundError",
+    "OllamaModelPullError",
     "OllamaConfig",
     "OllamaModel",
     "OllamaCapabilities",
