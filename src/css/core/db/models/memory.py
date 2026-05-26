@@ -5,13 +5,18 @@ from tortoise.indexes import Index
 
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
-from css.core.memory import (
-    MemoryScope,
-    MemoryTier,
-    MemoryEntryKind,
-    MemoryEntry,
-    MemorySnapshot,
-)
+from css.core.memory.enums import MemoryEntryKind, MemoryScope, MemoryTier
+from css.core.memory.types import MemoryEntry, MemorySnapshot
+
+
+def _normalize_snapshot_entries(value: object) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        return []
+    normalized: list[dict[str, object]] = []
+    for item in value:
+        if isinstance(item, dict):
+            normalized.append({str(key): payload for key, payload in item.items()})
+    return normalized
 
 
 class MemoryEntryRecord(BaseModel, TimestampMixin):
@@ -84,7 +89,7 @@ class MemorySnapshotRecord(BaseModel, TimestampMixin):
             snapshot_id=self.snapshot_id,
             session_id=self.session_id,
             summary=self.summary,
-            entries=self.entries or [],
+            entries=_normalize_snapshot_entries(self.entries),
             metadata=self.metadata or {},
             created_at=self.created_at.isoformat() if self.created_at else "",
         )

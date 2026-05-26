@@ -31,7 +31,7 @@ class MemorySnapshot(msgspec.Struct, frozen=True, kw_only=True):
     snapshot_id: str
     session_id: str
     summary: str
-    entries: list[str] = msgspec.field(default_factory=list)
+    entries: list[dict[str, object]] = msgspec.field(default_factory=list)
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
     created_at: str = ""
 

@@ -187,11 +187,26 @@ class MemoryService:
         """Create a memory snapshot from current session entries."""
         query = MemoryQuery(session_id=session_id, include_ephemeral=True, limit=500)
         entries = await self.list(query)
+        entries_payload: list[dict[str, object]] = []
+        for entry in entries.entries:
+            entries_payload.append(
+                {
+                    "role": "assistant",
+                    "content": entry.content,
+                    "metadata": {
+                        "entry_id": entry.entry_id,
+                        "kind": entry.kind.value,
+                        "scope": entry.scope.value,
+                        "tier": entry.tier.value,
+                        "importance": entry.importance,
+                    },
+                }
+            )
         snapshot = await _snapshot_cls().create(
             snapshot_id=f"snapshot-{session_id}-{uuid4()}",
             session_id=session_id,
             summary=summary,
-            entries=[entry.content for entry in entries.entries],
+            entries=entries_payload,
             metadata=metadata or {},
             entry_count=len(entries.entries),
         )
