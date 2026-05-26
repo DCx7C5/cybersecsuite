@@ -1,6 +1,6 @@
 """Navigation menu ORM model and query helpers."""
 
-from typing import override
+from typing import NotRequired, TypedDict, cast, override
 import msgspec
 from tortoise import fields
 from tortoise.fields import IntField
@@ -15,6 +15,7 @@ class MenuItemInfo(msgspec.Struct, frozen=True, kw_only=True):
     """Domain value type for one menu node."""
 
     id: int
+    menu_id: str | None
     parent_id: int | None
     name: str
     url: str
@@ -26,17 +27,36 @@ class MenuItemInfo(msgspec.Struct, frozen=True, kw_only=True):
 class MenuItemManager:
     """Query helpers for ``MenuItem`` tree operations."""
 
-    async def roots(self) -> list[MenuItem]:
-        return await MenuItem.filter(parent_id=None).order_by("order", "id")
+    async def roots(self, menu_id: str | None = None) -> list[MenuItem]:
+        query = MenuItem.filter(parent_id=None)
+        if menu_id is not None:
+            query = query.filter(menu_id=menu_id)
+        return await query.order_by("menu_id", "order", "id")
 
-    async def children_of(self, parent_id: int) -> list["MenuItem"]:
-        return await MenuItem.filter(parent_id=parent_id).order_by("order", "id")
+    async def children_of(
+        self,
+        parent_id: int,
+        *,
+        menu_id: str | None = None,
+    ) -> list["MenuItem"]:
+        query = MenuItem.filter(parent_id=parent_id)
+        if menu_id is not None:
+            query = query.filter(menu_id=menu_id)
+        return await query.order_by("order", "id")
 
     async def by_url(self, url: str) -> MenuItem | None:
         return await MenuItem.get_or_none(url=url)
 
-    async def next_order(self, parent_id: int | None) -> int:
-        sibling = await MenuItem.filter(parent_id=parent_id).order_by("-order", "-id").first()
+    async def next_order(
+        self,
+        parent_id: int | None,
+        *,
+        menu_id: str | None = None,
+    ) -> int:
+        query = MenuItem.filter(parent_id=parent_id)
+        if parent_id is None:
+            query = query.filter(menu_id=menu_id)
+        sibling = await query.order_by("-order", "-id").first()
         if sibling is None:
             return 0
         return int(sibling.order) + 1
@@ -48,15 +68,21 @@ class MenuItemManager:
         url: str = "",
         icon_path: str = "",
         icon_url: str | None = None,
+        menu_id: str | None = None,
         parent_id: int | None = None,
         order: int | None = None,
     ) -> "MenuItem":
-        resolved_order = await self.next_order(parent_id) if order is None else order
+        resolved_order = (
+            await self.next_order(parent_id, menu_id=menu_id)
+            if order is None
+            else order
+        )
         return await MenuItem.create(
             name=name,
             url=url,
             icon_path=icon_path,
             icon_url=icon_url,
+            menu_id=menu_id,
             parent_id=parent_id,
             order=resolved_order,
         )
@@ -86,6 +112,7 @@ class MenuItem(BaseTreeModel):
 
         return MenuItemInfo(
             id=self.id,
+            menu_id=self.menu_id,
             parent_id=self.parent_id,
             name=self.name,
             url=self.url,
@@ -103,6 +130,7 @@ class MenuItem(BaseTreeModel):
             url=info.url,
             icon_path=info.icon_path,
             icon_url=info.icon_url,
+            menu_id=info.menu_id,
             parent_id=info.parent_id,
             order=info.order,
         )
@@ -132,16 +160,23 @@ class MenuItem(BaseTreeModel):
         return self.url.startswith(("http://", "https://"))
 
     @override
-    async def ordered_children(self) -> list[MenuItem]:
+    async def ordered_children(self) -> list[MenuItem]:  # type: ignore[reportIncompatibleMethodOverride]
         """Load direct children in stable display order."""
 
-        return await type(self).filter(parent_id=self.id).order_by("order", "id")
+        return cast(list[MenuItem], await type(self).filter(parent_id=self.id).order_by("order", "id"))
 
     @override
-    async def siblings(self, *, include_self: bool = False) -> list[MenuItem]:
+    async def siblings(  # type: ignore[reportIncompatibleMethodOverride]
+        self,
+        *,
+        include_self: bool = False,
+    ) -> list[MenuItem]:
         """Load sibling menu items in display order."""
 
-        items = await type(self).filter(parent_id=self.parent_id).order_by("order", "id")
+        items = cast(
+            list[MenuItem],
+            await type(self).filter(parent_id=self.parent_id).order_by("order", "id"),
+        )
         if include_self:
             return items
         return [item for item in items if item.id != self.id]
@@ -184,7 +219,7 @@ class MenuItem(BaseTreeModel):
             trail.append(parent)
             current = parent
         trail.reverse()
-        return trail
+        return cast(list[MenuItem], trail)
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "menu_item"
@@ -193,14 +228,33 @@ class MenuItem(BaseTreeModel):
         ordering = ["order", "id"]
         indexes = [
             Index(fields=["url"]),
+            Index(fields=["menu_id", "parent_id", "order"]),
             Index(fields=["parent_id", "order"]),
         ]
 
 
-DEFAULT_MENU_ITEMS: list[dict[str, str | int | list[dict[str, str | int]]]] = [
-    {"name": "Dashboard", "url": "/", "icon_path": "LayoutDashboard", "order": 0},
-    {"name": "Settings", "url": "/settings", "icon_path": "Settings", "order": 1},
+class MenuSeedChild(TypedDict):
+    name: str
+    url: str
+    icon_path: str
+    order: int
+    menu_id: NotRequired[str]
+
+
+class MenuSeedEntry(TypedDict):
+    menu_id: str
+    name: str
+    url: str
+    icon_path: str
+    order: int
+    children: NotRequired[list[MenuSeedChild]]
+
+
+DEFAULT_MENU_ITEMS: list[MenuSeedEntry] = [
+    {"menu_id": "sidebar", "name": "Dashboard", "url": "/", "icon_path": "LayoutDashboard", "order": 0},
+    {"menu_id": "sidebar", "name": "Settings", "url": "/settings", "icon_path": "Settings", "order": 1},
     {
+        "menu_id": "sidebar",
         "name": "Marketplace",
         "url": "/marketplace",
         "icon_path": "Store",
@@ -262,16 +316,22 @@ DEFAULT_MENU_ITEMS: list[dict[str, str | int | list[dict[str, str | int]]]] = [
             },
         ],
     },
-    {"name": "Chat", "url": "/chat", "icon_path": "MessageSquare", "order": 3},
+    {"menu_id": "sidebar", "name": "Chat", "url": "/chat", "icon_path": "MessageSquare", "order": 3},
+    {"menu_id": "settings", "name": "General", "url": "/settings", "icon_path": "Settings", "order": 0},
+    {"menu_id": "settings", "name": "Account", "url": "/settings/account", "icon_path": "Settings", "order": 1},
+    {"menu_id": "topnav", "name": "Dashboard", "url": "/", "icon_path": "LayoutDashboard", "order": 0},
+    {"menu_id": "topnav", "name": "Marketplace", "url": "/marketplace", "icon_path": "Store", "order": 1},
+    {"menu_id": "topnav", "name": "Chat", "url": "/chat", "icon_path": "MessageSquare", "order": 2},
 ]
 
 
 async def sync_default_menu_items() -> list[MenuItem]:
     """Seed on empty table and keep known navigation items up-to-date."""
-    existing = await MenuItem.all().order_by("order", "id")
+    existing = await MenuItem.all().order_by("menu_id", "parent_id", "order", "id")
 
     async def upsert_item(
         *,
+        menu_id: str,
         parent_id: int | None,
         name: str,
         url: str,
@@ -282,7 +342,7 @@ async def sync_default_menu_items() -> list[MenuItem]:
             (
                 item
                 for item in existing
-                if item.parent_id == parent_id and item.name == name
+                if item.menu_id == menu_id and item.parent_id == parent_id and item.name == name
             ),
             None,
         )
@@ -291,6 +351,7 @@ async def sync_default_menu_items() -> list[MenuItem]:
                 name=name,
                 url=url,
                 icon_path=icon_path,
+                menu_id=menu_id,
                 parent_id=parent_id,
                 order=order,
             )
@@ -300,17 +361,20 @@ async def sync_default_menu_items() -> list[MenuItem]:
             name=name,
             url=url,
             icon_path=icon_path,
+            menu_id=menu_id,
             order=order,
             parent_id=parent_id,
         )
         return current
 
     for entry in DEFAULT_MENU_ITEMS:
+        menu_id = str(entry.get("menu_id") or "sidebar")
         name = str(entry["name"])
         url = str(entry["url"])
         icon_path = str(entry["icon_path"])
         order = int(entry["order"])
         root = await upsert_item(
+            menu_id=menu_id,
             parent_id=None,
             name=name,
             url=url,
@@ -321,7 +385,9 @@ async def sync_default_menu_items() -> list[MenuItem]:
         if not isinstance(children, list):
             continue
         for child in children:
+            child_menu_id = str(child.get("menu_id") or menu_id)
             await upsert_item(
+                menu_id=child_menu_id,
                 parent_id=int(root.id),
                 name=str(child["name"]),
                 url=str(child["url"]),
@@ -329,4 +395,4 @@ async def sync_default_menu_items() -> list[MenuItem]:
                 order=int(child["order"]),
             )
 
-    return await MenuItem.manager.roots()
+    return await MenuItem.manager.roots(menu_id="sidebar")

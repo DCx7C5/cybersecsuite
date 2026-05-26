@@ -30,8 +30,8 @@
 ### Active execution snapshot (2026-05-09)
 
 - `db40-menu-sidebar-contract` is now **done**.
+- `db40-menu-menuid-upsert` is now **done**.
 - `db40-lane-menu-tree` lane claim is complete and unblocked follow-up work is focused on:
-  - `db40-menu-menuid-upsert`
   - `db40-menu-menuid-endpoints`
   - `db40-menu-marketplace-children-contract`
   - `db40-menu-tree-constraints`
@@ -74,3 +74,12 @@ Tag-adoption guardrail (`db40-basetree-tag-adoption-plan`):
   - `settings`
   - `topnav`
 - `menu_id` participates in deterministic ordering (`menu_id`, `parent_id`, `order`, `id`) and read partitioning.
+
+## menu_id upsert baseline (`db40-menu-menuid-upsert`)
+
+- `sync_default_menu_items()` now upserts with the identity key
+  (`menu_id`, `parent_id`, `name`) so partitions are deterministic.
+- Seed data is explicit per partition (`sidebar`, `settings`, `topnav`) while
+  current default endpoint behavior keeps returning sidebar roots.
+- Root ordering and child upserts are stable under
+  (`menu_id`, `parent_id`, `order`, `id`) ordering.
