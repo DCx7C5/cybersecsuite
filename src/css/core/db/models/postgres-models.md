@@ -84,7 +84,7 @@ being completed.
 | Identity | `user.py` is internal user/admin identity; provider and provider-account surfaces remain external account relationships. |
 | Seeds | Seed providers from canonical YAML only when the table is empty; enrich/upsert non-destructively after provider/model ownership is explicit. |
 | Navigation | Startup upserts known routes deterministically and keeps partition/tree behavior in `menu.py`. |
-| Schema policy | Phase 40 currently uses direct model/schema edits; production migration/versioning is a later explicit decision. |
+| Schema policy | Phase 40 currently uses direct model/schema edits with no migration files; production migration/versioning is a later explicit decision. |
 
 ## Cross-Area Destinations
 
@@ -122,7 +122,30 @@ being completed.
 | `db40-memory-*`, `db40-lane-memory` | done | Canonical memory model ownership is reconciled; import cutover and snapshot payload contract are aligned. |
 | `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | pending | Settle task/provider/user ownership without duplicate model classes. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition and serialize navigation deterministically through `menu_id`. |
-| `db40-lane-tagging`, `db40-lane-platform-polish`, `db40-direct-schema-policy` | pending | Apply fields/mixins/meta/document standards after lane-level evidence. |
+| `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | pending | Complete tagging standards before broad model Meta rollout. |
+| `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
+
+### Lane F Child Scope And Ordered Dependencies
+
+| Todo ID | Scope owner and boundary |
+|---------|--------------------------|
+| `db40-direct-schema-policy` | Keep `src/css/core/db/postgres-db.md` and this file aligned on the direct schema policy for Phase 40. |
+| `db40-cache-md-reference-fix` | Normalize cache planning references to `src/css/core/cache/` and `src/css/core/prompt_cache/`. |
+| `db40-field-library-expansion` | Expand semantic DB field helpers and expose canonical imports via `src/css/core/db/fields/`. |
+| `db40-mixins-expansion` | Apply/standardize mixin contracts on DB models after the field-library expansion baseline. |
+| `db40-model-meta-standardization` | Standardize model `Meta` conventions after tagging meta backfill is complete. |
+| `db40-intelligence-home-plan` | Keep intelligence-owner planning in `src/css/modules/triage/` and retrieval owners. |
+| `db40-pipeline-home-plan` | Keep runtime pipeline-owner planning centered on `src/css/core/pipeline.py`. |
+
+Ordered constraints for Lane F work:
+1. `db40-field-library-expansion` before `db40-mixins-expansion`.
+2. `db40-tag-junction-meta-backfill` before `db40-model-meta-standardization`.
+3. `db40-intelligence-home-plan` before `db40-pipeline-home-plan`.
+
+Shared Phase 40 schema-change flow for DB ownership work:
+1. Edit the ORM model directly.
+2. Rebuild and reseed through `python manage.py init-db`.
+3. Re-run read-side/import checks before closing TODO rows.
 
 ### Numbered Validation Contract
 

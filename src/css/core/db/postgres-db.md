@@ -19,8 +19,9 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 **Services**:
 - **cybersec-postgres**: custom PostgreSQL 18-alpine build (port 5432 internal)
 - **Connection pooling**: Managed by asyncpg (Tortoise default)
-- **Schema policy**: Phase 40 currently uses direct model/schema edits for the
-  development tranche; production migration/versioning is a later explicit decision.
+- **Schema policy**: Phase 40 currently uses direct model/schema edits with no
+  migration files for the development tranche; production
+  migration/versioning is a later explicit decision.
 
 **Current infra note**:
 - Phase 20 plans PostgreSQL + `pgvector` for VectorRAG, but the current custom image does not yet install the extension package. `mem-pgvector-setup` now explicitly includes the Docker image prerequisite.
@@ -395,7 +396,7 @@ async def lifespan(app: FastAPI):
 - ✅ Scope/team/quota management
 - ✅ Connection pooling (asyncpg)
 - ✅ Schema generation
-- ⚠️ Migrations strategy TBD (Tortoise vs Alembic)
+- ✅ Phase 40 uses direct model/schema edits and no migration files during this tranche
 
 ### Readiness Assessment
 🟢 **Production Ready** — Minor issue: utils.py is empty (refactor opportunity)
@@ -433,7 +434,7 @@ deleting scope models or utilities.
 - **Files**: 10 (5 top + 4 model files) | **LOC**: 969
 - **Dependencies**: asgi, logger, config (3 components)
 - **Reverse Dependencies**: asgi, loader, modules (50+ dependents)
-- **Blockers**: None (migrations strategy TBD, not blocking)
+- **Blockers**: None (direct-schema policy is explicit for this tranche)
 - **Phase Ready**: Phase 2 ✅ (Production Ready)
 - **Last Audited**: 2026-05-03 by Agent 2
 - **Audit Reference**: this local document and `models/postgres-models.md`; query `.plan/session.db` for live status
@@ -488,4 +489,25 @@ implementation work must use these concrete boundaries:
 | Phase 40 model lanes | pending | Audit imports, preserve canonical models, cut consumers over, and validate ORM discovery/imports before removal. |
 | `db40-menu-menuid-upsert`, `db40-menu-menuid-endpoints` | pending | Seed partitions idempotently, implement `list_menu_items()` filter, initialize DB, and exercise each partition route. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
-| Direct schema policy | pending | Keep direct development edits explicit; do not infer a production migration/versioning policy. |
+| `db40-lane-platform-polish`, `db40-direct-schema-policy`, `db40-cache-md-reference-fix`, `db40-field-library-expansion`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-intelligence-home-plan`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
+
+### Lane F Ordered Dependency Contract
+
+Lane F child todo execution order is fixed to avoid ownership overlap:
+1. `db40-field-library-expansion` before `db40-mixins-expansion`.
+2. `db40-tag-junction-meta-backfill` before `db40-model-meta-standardization`.
+3. `db40-intelligence-home-plan` before `db40-pipeline-home-plan`.
+
+Direct schema policy requirement in both DB planning docs:
+- Phase 40 uses direct model and schema edits in development.
+- Do not infer or backfill a production migration/versioning policy in this lane.
+
+### Phase 40 Schema-Change Development Flow
+
+For schema-changing implementation work in this tranche:
+1. Edit the ORM model directly in `src/css/core/db/models/`.
+2. Rebuild the dev schema through the existing initialization path:
+   `python manage.py init-db`.
+3. Reseed deterministic owner/bootstrap data through the same init flow.
+4. Re-run read-side checks (imports, ORM discovery, and query paths) before
+   marking tracker todos done.

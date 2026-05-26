@@ -500,6 +500,11 @@ core/prompt_cache/
 | `cache-anthropic-breakpoint-injector` | Anthropic explicit-cache helper for advanced layouts |
 | `cache-automatic-native-tracking` | Parse Anthropic/OpenAI/DeepSeek native cache stats |
 
+Canonical runtime-home links for active planning:
+- general cache ownership: `core/cache`
+- intelligence routing/planning owner: `modules/triage`
+- shared pipeline primitives owner: `core/pipeline.py`
+
 ---
 
 # core/cache/ — KV Caching Layer (moved from modules/cache/)
