@@ -168,3 +168,53 @@ class SkillDefinitionModel(BaseModel, TimestampMixin):
             dependencies=skill.dependencies,
             custom_metadata=skill.custom_metadata,
         )
+
+
+class SkillDefinitionModelTagInfo(msgspec.Struct, frozen=True, kw_only=True):
+    """Domain value type for skill definition/tag relation."""
+
+    id: int
+    skill_model_id: int
+    tag_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class SkillDefinitionModelTag(BaseModel, TimestampMixin):
+    """M2M junction table linking SkillDefinitionModel to Tag."""
+
+    skill_model = fields.ForeignKeyField(
+        "models.SkillDefinitionModel",
+        related_name="tags_m2m",
+    )
+    tag = fields.ForeignKeyField(
+        "models.Tag",
+        related_name="skill_models",
+    )
+
+    def to_domain(self) -> SkillDefinitionModelTagInfo:
+        from typing import cast
+
+        skill_model_id = cast(int, getattr(self, "skill_model_id"))
+        tag_id = cast(int, getattr(self, "tag_id"))
+        return SkillDefinitionModelTagInfo(
+            id=self.id,
+            skill_model_id=skill_model_id,
+            tag_id=tag_id,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
+
+    @classmethod
+    def from_domain(cls, info: SkillDefinitionModelTagInfo) -> "SkillDefinitionModelTag":
+        return cls(
+            id=info.id,
+            skill_model_id=info.skill_model_id,
+            tag_id=info.tag_id,
+        )
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        table = "skill_definition_model_tag"
+        table_description = "M2M relationship between skill definitions and tags"
+        unique_together = [("skill_model_id", "tag_id")]
+        indexes = [models.Index(fields=["skill_model_id", "tag_id"])]  # type: ignore[reportPrivateImportUsage]

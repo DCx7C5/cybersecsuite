@@ -5,6 +5,9 @@ the orchestration architecture (process-level and in-process roles).
 """
 import msgspec
 
+# TODO: Fix redundancy `OrchestrationRole` and `OrchestratorRole`
+# TODO: Where is triage/background ollama assistant ?
+
 class OrchestrationRole(msgspec.Struct, tag=True):
     """Base class for orchestration-specific roles (not tied to system-wide roles)."""
 
@@ -145,6 +148,7 @@ class PlannerRole(OrchestrationRole):
     can_delegate: bool = False
     can_execute_tasks: bool = False
 
+# TODO: Singletons via own SingletonMetaClass / remove these here
 # Built-in role singletons
 ORCHESTRATOR = OrchestratorRole()
 TEAM_LEADER = TeamLeaderRole()

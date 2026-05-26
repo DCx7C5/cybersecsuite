@@ -26,8 +26,8 @@ class BaseModel(Model):
 
     id = BigIntField(primary_key=True)
 
-    @property
     @override
+    @property
     def pk(self) -> int:
         """Typed primary-key accessor."""
 
