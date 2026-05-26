@@ -1,6 +1,5 @@
 """OpenTelemetry config surface (lightweight placeholder)."""
 
-from __future__ import annotations
 
 import os
 

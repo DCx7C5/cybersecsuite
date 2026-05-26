@@ -1,6 +1,5 @@
 """Source tree analyzer for planner bootstrap context."""
 
-from __future__ import annotations
 
 from pathlib import Path
 

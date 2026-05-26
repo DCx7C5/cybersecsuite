@@ -1,6 +1,5 @@
 """Async webhook dispatcher with HMAC signing and retry."""
 
-from __future__ import annotations
 
 import hashlib
 import hmac

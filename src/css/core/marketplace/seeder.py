@@ -212,7 +212,9 @@ class MarketplaceSeeder:
             session = await self._get_session()
             async with session.get(INDEX_SHA512_URL) as resp:
                 resp.raise_for_status()
-                return (await resp.text()).strip()
+                raw = (await resp.text()).strip()
+                # sha512sum format: "<hash>  <filename>" — extract just the hash
+                return raw.split()[0] if raw else raw
         except Exception as e:
             raise MarketplaceSeedingError(
                 message=f"Failed to fetch index hash: {e}",
@@ -402,7 +404,7 @@ class MarketplaceSeeder:
             return None
 
 
-async def seed_marketplace_on_startup(force: bool = True):
+async def seed_marketplace_on_startup(force: bool = False):
     """Convenience function to seed marketplace on startup.
 
     Usage in manager.py or startup hook:

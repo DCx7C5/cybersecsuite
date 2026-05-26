@@ -90,3 +90,7 @@ class EventBus(metaclass=AsyncSafeSingletonMeta):
             if handler in self._handlers[event_type]:
                 self._handlers[event_type].remove(handler)
 
+
+# Module-level singleton accessor — EventBus uses AsyncSafeSingletonMeta,
+# so EventBus() always returns the same instance.
+event_bus = EventBus()

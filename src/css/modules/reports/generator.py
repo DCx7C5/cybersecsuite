@@ -1,6 +1,5 @@
 """Report rendering for Markdown, HTML, and PDF-like output."""
 
-from __future__ import annotations
 
 from datetime import datetime
 from html import escape

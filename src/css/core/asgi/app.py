@@ -216,7 +216,7 @@ def create_app() -> FastAPI:
                 from css.core.marketplace.seeder import seed_marketplace_on_startup
 
                 await sync_default_menu_items()
-                await seed_marketplace_on_startup(force=True)
+                await seed_marketplace_on_startup(force=False)
                 marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
             except Exception as exc:
                 log.warning("Marketplace startup integration failed: %s", exc)

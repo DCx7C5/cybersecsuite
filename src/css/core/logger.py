@@ -21,7 +21,6 @@ def _get_log_level() -> int:
 
 def _ensure_root() -> logging.Logger:
     """Lazily configure root logger (runs once on first getLogger call)."""
-    global _loggers
     if "cybersecsuite" in _loggers:
         return _loggers["cybersecsuite"]
 

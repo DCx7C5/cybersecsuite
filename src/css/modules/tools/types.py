@@ -7,7 +7,7 @@ import msgspec
 from css.modules.tools.enums import CompositionStrategy, ParameterType
 
 
-
+class ToolParameter(msgspec.Struct, frozen=True, kw_only=True):
     name: str
     type: ParameterType
     description: str

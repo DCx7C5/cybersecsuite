@@ -79,15 +79,11 @@ class SessionStore:
         self.enable_auto_checkpoint = enable_auto_checkpoint
 
     @staticmethod
-    def _serialize_messages(messages: list[BaseMessage]) -> list[dict[str, str]]:
-        """Serialize conversation messages for persistence."""
-        return [
-            {
-                "role": message.role.value,
-                "content": message.content,
-            }
-            for message in messages
-        ]
+    def _serialize_messages(messages: list[BaseMessage]) -> list[dict[str, object]]:
+        """Serialize conversation messages for persistence (all fields preserved)."""
+        enc = msgspec.json.Encoder()
+        dec = msgspec.json.Decoder(dict)
+        return [dec.decode(enc.encode(m)) for m in messages]
 
     @staticmethod
     def _deserialize_messages(raw_messages: object) -> list[BaseMessage]:
@@ -95,19 +91,22 @@ class SessionStore:
         if not isinstance(raw_messages, list):
             return []
 
+        enc = msgspec.json.Encoder()
+        dec = msgspec.json.Decoder(BaseMessage)
         messages: list[BaseMessage] = []
         for raw in raw_messages:
             if not isinstance(raw, dict):
                 continue
-            role_raw = raw.get("role")
-            content_raw = raw.get("content")
-            if not isinstance(role_raw, str) or not isinstance(content_raw, str):
-                continue
             try:
-                role = MessageRole(role_raw)
-            except ValueError:
-                role = MessageRole.USER
-            messages.append(BaseMessage(role=role, content=content_raw))
+                messages.append(dec.decode(enc.encode(raw)))
+            except (msgspec.ValidationError, msgspec.DecodeError):
+                role_raw = raw.get("role", "user")
+                content_raw = raw.get("content", "")
+                try:
+                    role = MessageRole(str(role_raw))
+                except ValueError:
+                    role = MessageRole.USER
+                messages.append(BaseMessage(role=role, content=str(content_raw)))
         return messages
 
     def _serialize_context(self, context: ConversationContext) -> dict[str, object]:
