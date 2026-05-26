@@ -4,7 +4,6 @@ Tests that models can be fetched dynamically from various providers,
 and that the registry integrates with the ASGI app startup.
 """
 
-import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest

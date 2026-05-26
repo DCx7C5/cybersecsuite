@@ -4,14 +4,13 @@ Tests cover:
 - Provider selection based on token count
 - Context window limit enforcement
 - Graceful degradation on estimation failure
-- Fallback to largest context window
+- Fallback to the largest context window
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from css.modules.strategies import TokenAwareStrategy
-from css.core.types import BaseMessage
 
 
 class TestTokenAwareStrategyBasic:

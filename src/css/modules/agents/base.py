@@ -10,12 +10,14 @@ Replaces Claude SDK hardcode with provider-agnostic execution.
 """
 
 from css.core.logger import getLogger
-from typing import Protocol, runtime_checkable, TYPE_CHECKING, Any
+from typing import Protocol, runtime_checkable, TYPE_CHECKING, Any, cast
 from datetime import datetime
 
 if TYPE_CHECKING:
     from css.core.capabilities.capability_registry import DynamicCapabilityRegistry
 
+from css.core.types.base_messages import BaseMessage, LLMResponse
+from css.core.types.enums import MessageRole
 from .models import AgentResult
 from css.core.tools.tool_call_loop import ToolCallLoop
 
@@ -36,8 +38,8 @@ class BaseAgent(Protocol):
     async def execute(
         self,
         prompt: str,
-        context: dict | None = None,
-        **kwargs,
+        context: dict[str, object] | None = None,
+        **kwargs: object,
     ) -> AgentResult:
         """Execute the agent with a prompt.
         
@@ -55,12 +57,27 @@ class BaseAgent(Protocol):
         ...
 
 
+class BufferedProvider(Protocol):
+    """Minimal provider interface consumed by the active agent executor."""
+
+    async def call_llm_buffered(
+        self,
+        *,
+        model_id: str,
+        messages: list[BaseMessage],
+        system_prompt: str | None = None,
+        **kwargs: object,
+    ) -> LLMResponse:
+        """Execute one buffered completion using the shared provider contract."""
+        ...
+
+
 class AgentExecutor:
     """Executes agent prompts via ProviderRegistry + HttpProviderAdapter.
     
     Wires together:
     - AgentExecutor.execute() → DynamicCapabilityRegistry.select_provider()
-    - → HttpProviderAdapter.complete()
+    - → BaseApiServiceClient.call_llm_buffered()
     - → AgentResult
     
     No more Claude SDK hardcode — agents become provider-agnostic.
@@ -76,22 +93,22 @@ class AgentExecutor:
         self.provider = provider
         self.model = model
         self._capability_registry: DynamicCapabilityRegistry | None = None
-        self._adapter = None
+        self._adapter: BufferedProvider | None = None
     
-    async def _get_adapter(self):
+    async def _get_adapter(self) -> BufferedProvider:
         """Lazily get HttpProviderAdapter from ProviderRegistry."""
         if self._adapter is None:
             from css.api_services.registry import get_registry
             registry = get_registry()
-            self._adapter = registry.get_provider(self.provider)
+            self._adapter = cast(BufferedProvider, registry.get_provider(self.provider))
         return self._adapter
     
     async def execute(
         self,
         prompt: str,
-        context: dict | None = None,
+        context: dict[str, object] | None = None,
         system: str | None = None,
-        **kwargs,
+        **kwargs: object,
     ) -> AgentResult:
         """Execute agent prompt via provider-agnostic adapter.
         
@@ -105,17 +122,33 @@ class AgentExecutor:
             AgentResult with response and metadata
         """
         import time
-        
+
         adapter = await self._get_adapter()
-        
+        provider_kwargs = dict(kwargs)
+        raw_max_tool_iterations = provider_kwargs.pop("max_tool_iterations", 5)
+        max_tool_iterations = (
+            raw_max_tool_iterations if isinstance(raw_max_tool_iterations, int) else 5
+        )
+
         start = time.time()
         async def _call_provider(call_prompt: str) -> dict[str, Any]:
-            return await adapter.complete(
-                prompt=call_prompt,
-                model=self.model,
-                system=system,
-                **kwargs,
+            response = await adapter.call_llm_buffered(
+                model_id=self.model,
+                messages=[
+                    BaseMessage(role=MessageRole.USER, content=call_prompt),
+                ],
+                system_prompt=system,
+                **provider_kwargs,
             )
+            input_tokens = response.usage.get("prompt_tokens", 0)
+            output_tokens = response.usage.get("completion_tokens", 0)
+            return {
+                "response": response.text,
+                "stop_reason": response.stop_reason,
+                "input_tokens": input_tokens if isinstance(input_tokens, int) else 0,
+                "output_tokens": output_tokens if isinstance(output_tokens, int) else 0,
+                "tool_calls": [],
+            }
 
         try:
             result_dict = await _call_provider(prompt)
@@ -125,7 +158,7 @@ class AgentExecutor:
 
         executed_tool_messages: list[dict[str, Any]] = []
         if result_dict.get("tool_calls"):
-            loop = ToolCallLoop(max_iterations=int(kwargs.get("max_tool_iterations", 5)))
+            loop = ToolCallLoop(max_iterations=max_tool_iterations)
             result_dict, executed_tool_messages = await loop.run(
                 initial_response=result_dict,
                 llm_caller=_call_provider,

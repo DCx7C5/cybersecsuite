@@ -1,9 +1,11 @@
 """Agent data models — configuration and result structures using msgspec."""
 
 
-from typing import override
+from typing import Any, override
 import msgspec
-from datetime import datetime
+from datetime import datetime, timezone
+
+from .enums import AgentStatus, AgentType
 
 
 class TokenUsage(msgspec.Struct, frozen=True, kw_only=True):
@@ -45,8 +47,43 @@ class AgentConfig(msgspec.Struct, frozen=True, kw_only=True):
     system_prompt: str
     tools: list[str] = msgspec.field(default_factory=list)
     skills: list[str] = msgspec.field(default_factory=list)
+    agent_type: AgentType = AgentType.LLM
+    enabled: bool = True
     max_tokens: int = 2048
     temperature: float | None = None
+
+
+class AgentMessage(msgspec.Struct, kw_only=True):
+    """Inter-agent message envelope."""
+
+    sender_id: str
+    recipient_id: str
+    content: str
+    metadata: dict[str, Any] = msgspec.field(default_factory=dict)
+    created_at: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class AgentMetrics(msgspec.Struct, kw_only=True):
+    """Mutable execution metrics for one agent."""
+
+    agent_id: str
+    total_executions: int = 0
+    successful_executions: int = 0
+    failed_executions: int = 0
+    total_duration_ms: float = 0.0
+    last_execution_at: datetime | None = None
+    errors: list[str] = msgspec.field(default_factory=list)
+
+
+class AgentState(msgspec.Struct, kw_only=True):
+    """Mutable runtime state tracked by AgentRegistry."""
+
+    agent_id: str
+    status: AgentStatus
+    config: AgentConfig
+    metrics: AgentMetrics
+    last_updated: datetime = msgspec.field(default_factory=lambda: datetime.now(timezone.utc))
+    last_error: str | None = None
 
 
 class AgentResult(msgspec.Struct, frozen=True, kw_only=True):

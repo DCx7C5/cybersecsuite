@@ -2,16 +2,16 @@
 
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Protocol, TypeAlias, runtime_checkable
 
 import msgspec
 
 from .enums import MessageRole, PartType, StreamState, TaskState
 
-type JsonScalar = str | int | float | bool | None
-type JsonValue = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
-type JsonObject = dict[str, JsonValue]
-type A2AToolFunction = Callable[[JsonObject], Awaitable[JsonObject] | JsonObject]
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+A2AToolFunction: TypeAlias = Callable[[JsonObject], Awaitable[JsonObject] | JsonObject]
 
 
 class TextPart(msgspec.Struct, frozen=True, kw_only=True):
@@ -47,7 +47,7 @@ class DataPart(msgspec.Struct, frozen=True, kw_only=True):
     metadata: dict[str, Any] | None = None
 
 
-type Part = TextPart | FilePart | DataPart
+Part: TypeAlias = TextPart | FilePart | DataPart
 
 
 class Message(msgspec.Struct, frozen=True, kw_only=True):

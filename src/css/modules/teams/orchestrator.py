@@ -81,3 +81,26 @@ class TeamOrchestrator(msgspec.Struct, kw_only=True):
                 return task
             await asyncio.sleep(self.poll_interval_seconds)
         raise TimeoutError(f"Timed out waiting for delegated task completion: {task_id}")
+
+
+class TeamLeader:
+    """Compatibility facade expected by QueryExecutor team mode."""
+
+    def __init__(self, team_id: int | str, orchestrator_id: str) -> None:
+        self.team_id = str(team_id)
+        self.orchestrator_id = orchestrator_id
+        self._initialized = False
+
+    async def initialize(self) -> None:
+        self._initialized = True
+
+    async def delegate(self, task: dict[str, Any] | Any) -> dict[str, Any]:
+        if not self._initialized:
+            raise RuntimeError("TeamLeader must be initialized before delegation")
+        raise NotImplementedError(
+            "TeamLeader runtime wiring is not implemented. "
+            "Use TeamOrchestrator with an initialized MessageDispatcher and team members."
+        )
+
+    async def shutdown(self) -> None:
+        self._initialized = False

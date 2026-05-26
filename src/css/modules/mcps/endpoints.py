@@ -6,7 +6,6 @@ from css.core.logger import getLogger
 
 from .models import McpServerConfigRecord
 from .registry import get_mcp_registry
-from .types import McpServerConfig
 
 logger = getLogger(__name__)
 

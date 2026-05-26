@@ -1,3 +1,3 @@
-"""DEPRECATED: Use css.core.redis.dispatcher instead."""
+"""Backward-compatible re-export of the canonical dispatcher."""
 
-from css.core.redis.dispatcher import *  # noqa: F401, F403
+from css.core.redis.dispatcher import MessageDispatcher

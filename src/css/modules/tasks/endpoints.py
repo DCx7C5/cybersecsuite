@@ -29,7 +29,7 @@ async def create_task(
         Task instance (persisted to DB)
     """
     import uuid
-    from css.core.db.models.quotas import TaskAssignment
+    from css.core.db.models.tasks import TaskAssignment
 
     try:
         orchestrator_pk = int(orchestrator_id)
@@ -69,7 +69,7 @@ async def get_task(task_id: str) -> Task | None:
     
     Deserialize from TaskAssignment.task_payload.
     """
-    from css.core.db.models.quotas import TaskAssignment
+    from css.core.db.models.tasks import TaskAssignment
     
     try:
         task_assignment = await TaskAssignment.get(task_id=task_id)
@@ -113,7 +113,7 @@ async def list_tasks(
     Returns:
         List of tasks
     """
-    from css.core.db.models.quotas import TaskAssignment
+    from css.core.db.models.tasks import TaskAssignment
     
     query = TaskAssignment.filter(team_id=team_id)
     if status:
@@ -149,7 +149,7 @@ async def update_task_status(
     Returns:
         Updated task
     """
-    from css.core.db.models.quotas import TaskAssignment
+    from css.core.db.models.tasks import TaskAssignment
 
     task_status = TaskStatus(new_status)
     task_assignment = await TaskAssignment.get_or_none(task_id=task_id)
@@ -197,7 +197,7 @@ async def retry_task(task_id: str) -> Task:
     Returns:
         Task in pending state
     """
-    from css.core.db.models.quotas import TaskAssignment
+    from css.core.db.models.tasks import TaskAssignment
 
     task = await get_task(task_id)
     if task is None:
