@@ -44,10 +44,16 @@ Detailed implementation contracts live in the owning Markdown files below
    - No other files import this class directly
    - Commit: 46d285d0
 
-**Foundation Sequence A Status**: 2/3 complete
+**Foundation Sequence A Status**: 3/3 complete ✅
 - ✅ thinking-config-struct (provides contract)
 - ✅ thinking-config-adapter (translator in adapters)
-- ⏳ thinking-model-metadata (mark models as thinking-capable)
+- ✅ thinking-model-metadata (mark models as thinking-capable)
+
+**Thinking-Model-Metadata Details** (T16.A-3):
+   - Seeded 8 thinking-capable models: 2 Anthropic, 3 OpenAI, 1 DeepSeek, 2 generic fallback
+   - Added `thinking_capable_models()`, `can_think()`, `supports_capability()` methods to ModelRegistry
+   - Updated `DEFAULT_MODELS` to load seeds at startup
+   - Commit: bfb9d0cb
 
 **Types Module Status**: 100% prefix consistent
 - ✅ Completed comprehensive audit of 23 files
@@ -118,9 +124,9 @@ Snapshot queried from `.plan/session.db` on 2026-05-26 (end of session):
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1036 | 552 | 477 | 6 | 1 |
+| 1036 | 556 | 474 | 6 | 0 |
 
-Overall completion: 53.3%. Current active todo: xai-sdk-async-client-bridge (Phase 16)
+Overall completion: 53.7%. Session work: Phase 16 Foundation Sequence A (3 todos) + prefix fix (1 todo) + security audit = +4 todos.
 
 ## Current Execution Boundary
 
@@ -158,7 +164,7 @@ and owner documents have been made executable before implementation resumes.
 | 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
 | 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 8 | 10 | 0 | 0 |
 | 15 | Permissions + WorkingDir | 31 | 0 | 31 | 0 | 0 |
-| 16 | Provider SDK Features | 36 | 0 | 36 | 0 | 0 |
+| 16 | Provider SDK Features | 36 | 6 | 30 | 0 | 0 |
 | 17 | Settings & Projects | 39 | 0 | 39 | 0 | 0 |
 | 18 | Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
 | 19 | Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
