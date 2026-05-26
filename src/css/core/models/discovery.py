@@ -191,6 +191,206 @@ def _get_openrouter_provider(model_id: str) -> Optional[ModelProvider]:
         return None
 
 
+async def discover_ollama_models() -> list[ModelMetadata]:
+    """Fetch available models from a local Ollama instance.
+
+    Ollama API endpoint: GET http://localhost:11434/api/tags
+    Returns: { models: [{ name, modified_at, size, ... }, ...] }
+    """
+    url = "http://localhost:11434/api/tags"
+    models: list[ModelMetadata] = []
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as resp:
+                if resp.status != 200:
+                    logger.debug(f"Ollama discovery failed: HTTP {resp.status}")
+                    return models
+
+                data = await resp.json()
+                if not isinstance(data, dict) or "models" not in data:
+                    logger.debug("Ollama discovery: unexpected response format")
+                    return models
+
+                for item in data.get("models", []):
+                    try:
+                        model = _parse_ollama_model(item)
+                        if model:
+                            models.append(model)
+                    except Exception as e:
+                        logger.debug(f"Ollama: failed to parse model {item.get('name')}: {e}")
+                        continue
+
+    except asyncio.TimeoutError:
+        logger.debug("Ollama discovery: request timeout (Ollama may not be running)")
+    except Exception as e:
+        logger.debug(f"Ollama discovery failed: {e}")
+
+    return models
+
+
+def _parse_ollama_model(item: dict[str, Any]) -> Optional[ModelMetadata]:
+    """Parse a single Ollama model entry into ModelMetadata."""
+    model_id = item.get("name")
+    if not model_id:
+        return None
+
+    # Ollama models have simple structure; infer from name
+    display_name = model_id
+    capabilities = _infer_ollama_capabilities(model_id)
+
+    # All Ollama models are "local" until we have better mapping
+    family = ModelFamily.OPEN_SOURCE
+
+    return ModelMetadata(
+        id=f"ollama/{model_id}",
+        provider=ModelProvider("ollama"),
+        family=family,
+        display_name=f"Ollama: {display_name}",
+        context_window=item.get("context_window", 2048),
+        max_output_tokens=item.get("max_output_tokens", 256),
+        latency_ms=item.get("latency_ms", 1000),
+        pricing=None,  # Local models have no cost
+        capabilities=capabilities,
+    )
+
+
+def _infer_ollama_capabilities(model_id: str) -> set[ModelCapability]:
+    """Infer capabilities from Ollama model name."""
+    capabilities = set()
+    lower_id = model_id.lower()
+
+    if "vision" in lower_id or "llava" in lower_id:
+        capabilities.add(ModelCapability.VISION)
+
+    capabilities.add(ModelCapability.STREAMING)
+    return capabilities
+
+
+async def discover_mistral_models() -> list[ModelMetadata]:
+    """Fetch available models from Mistral API.
+
+    Mistral endpoint: GET https://api.mistral.ai/v1/models
+    Returns: { object: "list", data: [{ id, object, owned_by, ... }, ...] }
+    """
+    url = "https://api.mistral.ai/v1/models"
+    models: list[ModelMetadata] = []
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status != 200:
+                    logger.debug(f"Mistral discovery failed: HTTP {resp.status}")
+                    return models
+
+                data = await resp.json()
+                if not isinstance(data, dict) or "data" not in data:
+                    logger.debug("Mistral discovery: unexpected response format")
+                    return models
+
+                for item in data.get("data", []):
+                    try:
+                        model = _parse_mistral_model(item)
+                        if model:
+                            models.append(model)
+                    except Exception as e:
+                        logger.debug(f"Mistral: failed to parse model {item.get('id')}: {e}")
+                        continue
+
+    except asyncio.TimeoutError:
+        logger.debug("Mistral discovery: request timeout")
+    except Exception as e:
+        logger.debug(f"Mistral discovery failed: {e}")
+
+    return models
+
+
+def _parse_mistral_model(item: dict[str, Any]) -> Optional[ModelMetadata]:
+    """Parse a single Mistral model entry into ModelMetadata."""
+    model_id = item.get("id")
+    if not model_id:
+        return None
+
+    display_name = model_id
+    family = ModelFamily.MISTRAL_MODEL
+    capabilities = set()
+
+    # Mistral doesn't include pricing in API; use defaults
+    return ModelMetadata(
+        id=model_id,
+        provider=ModelProvider("mistral"),
+        family=family,
+        display_name=display_name,
+        context_window=item.get("context_window", 32768),
+        max_output_tokens=item.get("max_output_tokens", 4096),
+        latency_ms=item.get("latency_ms", 300),
+        capabilities=capabilities,
+    )
+
+
+async def discover_groq_models() -> list[ModelMetadata]:
+    """Fetch available models from Groq API.
+
+    Groq endpoint: GET https://api.groq.com/openai/v1/models
+    Returns: { object: "list", data: [{ id, object, owned_by, ... }, ...] }
+    """
+    url = "https://api.groq.com/openai/v1/models"
+    models: list[ModelMetadata] = []
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status != 200:
+                    logger.debug(f"Groq discovery failed: HTTP {resp.status}")
+                    return models
+
+                data = await resp.json()
+                if not isinstance(data, dict) or "data" not in data:
+                    logger.debug("Groq discovery: unexpected response format")
+                    return models
+
+                for item in data.get("data", []):
+                    try:
+                        model = _parse_groq_model(item)
+                        if model:
+                            models.append(model)
+                    except Exception as e:
+                        logger.debug(f"Groq: failed to parse model {item.get('id')}: {e}")
+                        continue
+
+    except asyncio.TimeoutError:
+        logger.debug("Groq discovery: request timeout")
+    except Exception as e:
+        logger.debug(f"Groq discovery failed: {e}")
+
+    return models
+
+
+def _parse_groq_model(item: dict[str, Any]) -> Optional[ModelMetadata]:
+    """Parse a single Groq model entry into ModelMetadata."""
+    model_id = item.get("id")
+    if not model_id:
+        return None
+
+    display_name = model_id
+    capabilities = set()
+    capabilities.add(ModelCapability.STREAMING)
+
+    return ModelMetadata(
+        id=model_id,
+        provider=ModelProvider("groq"),
+        family=ModelFamily.OPEN_SOURCE,
+        display_name=display_name,
+        context_window=item.get("context_window", 8192),
+        max_output_tokens=item.get("max_output_tokens", 4096),
+        latency_ms=item.get("latency_ms", 100),
+        capabilities=capabilities,
+    )
+
+
 __all__ = [
     "discover_openrouter_models",
+    "discover_ollama_models",
+    "discover_mistral_models",
+    "discover_groq_models",
 ]
