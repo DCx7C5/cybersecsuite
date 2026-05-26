@@ -12,6 +12,7 @@ from typing import Any
 from css.core.logger import getLogger
 from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
 from css.core.types.enums import ProviderType
+from css.core.types.thinking import ThinkingConfig
 
 logger = getLogger(__name__)
 
@@ -297,8 +298,31 @@ class AnthropicNativeAdapter:
             if formatted_tools:
                 call_kwargs["tools"] = formatted_tools
 
-        if "thinking" in kwargs:
+        # Handle ThinkingConfig for extended thinking support
+        thinking_config = kwargs.get("thinking_config")
+        if thinking_config is not None:
+            if isinstance(thinking_config, ThinkingConfig):
+                # Translate ThinkingConfig to Anthropic thinking parameters
+                if thinking_config.budget_tokens is not None:
+                    # Anthropic uses budget_tokens directly in thinking parameter
+                    call_kwargs["thinking"] = {
+                        "type": "enabled",
+                        "budget_tokens": thinking_config.budget_tokens,
+                    }
+                    logger.debug(
+                        f"Anthropic extended thinking enabled with {thinking_config.budget_tokens} tokens"
+                    )
+                # Note: effort field is ignored for Anthropic (not supported)
+                if thinking_config.effort:
+                    logger.debug(f"Anthropic adapter ignoring thinking effort level: {thinking_config.effort}")
+            else:
+                # Support legacy "thinking" parameter for backward compatibility
+                call_kwargs["thinking"] = thinking_config
+                logger.debug("Using legacy 'thinking' parameter format")
+        elif "thinking" in kwargs:
+            # Backward compatibility: direct "thinking" parameter
             call_kwargs["thinking"] = kwargs["thinking"]
+            logger.debug("Using legacy 'thinking' parameter from kwargs")
 
         return call_kwargs
 

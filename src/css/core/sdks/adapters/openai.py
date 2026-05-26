@@ -4,6 +4,7 @@ Preserves OpenAI-only features lost in the generic HTTP path:
 - Strict structured output (response_format with json_schema)
 - Assistants API (code_interpreter, file_search threads)
 - Realtime API
+- Reasoning/thinking (o1, o3 models with reasoning_effort)
 """
 
 from collections.abc import AsyncIterator
@@ -13,6 +14,7 @@ from openai import AsyncOpenAI
 from css.core.logger import getLogger
 from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
 from css.core.types.enums import ProviderType
+from css.core.types.thinking import ThinkingConfig
 
 logger = getLogger(__name__)
 
@@ -270,6 +272,36 @@ class OpenAINativeAdapter:
 
         if "response_format" in kwargs:
             call_kwargs["response_format"] = kwargs["response_format"]
+
+        # Handle ThinkingConfig for reasoning/thinking support (o1, o3 models)
+        thinking_config = kwargs.get("thinking_config")
+        if thinking_config is not None:
+            if isinstance(thinking_config, ThinkingConfig):
+                # OpenAI uses reasoning_effort (not budget_tokens directly)
+                if thinking_config.effort:
+                    # Map ThinkingConfig effort levels to OpenAI reasoning_effort values
+                    call_kwargs["reasoning_effort"] = thinking_config.effort
+                    logger.debug(
+                        f"OpenAI reasoning enabled with effort: {thinking_config.effort}"
+                    )
+                else:
+                    # Default to medium if effort not specified but thinking_config provided
+                    call_kwargs["reasoning_effort"] = "medium"
+                    logger.debug("OpenAI reasoning enabled with default effort: medium")
+                
+                # Note: budget_tokens is not directly supported in OpenAI reasoning
+                if thinking_config.budget_tokens is not None:
+                    logger.debug(
+                        f"OpenAI adapter ignoring budget_tokens (not supported): {thinking_config.budget_tokens}"
+                    )
+            else:
+                # Support legacy reasoning_effort parameter for backward compatibility
+                call_kwargs["reasoning_effort"] = thinking_config
+                logger.debug("Using legacy 'reasoning_effort' parameter format")
+        elif "reasoning_effort" in kwargs:
+            # Backward compatibility: direct "reasoning_effort" parameter
+            call_kwargs["reasoning_effort"] = kwargs["reasoning_effort"]
+            logger.debug("Using legacy 'reasoning_effort' parameter from kwargs")
 
         return call_kwargs
 
