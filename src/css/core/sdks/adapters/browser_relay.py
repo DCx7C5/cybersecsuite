@@ -1,5 +1,6 @@
 """Browser relay adapter backed by the local browser-plugin request store."""
 
+import asyncio
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -108,32 +109,88 @@ class BrowserRelayAdapter:
             metadata=metadata,
         )
 
-        result_record = await self._session_store.fetch_result(
-            session_id=session_id,
-            request_id=record["request_id"],
-        )
-        if (
-            result_record is not None
-            and result_record["status"] == "completed"
-            and result_record["result"] is not None
-        ):
-            result = result_record["result"]
-            return LLMResponse(
-                text=result["content"],
-                stop_reason=result["stop_reason"],
-                usage=result["usage"],
-            )
+        poll_interval_obj = kwargs.get("poll_interval_seconds")
+        poll_timeout_obj = kwargs.get("poll_timeout_seconds")
+        cancel_event_obj = kwargs.get("cancel_event")
 
-        return LLMResponse(
-            text="",
-            stop_reason="relay_pending",
-            usage={
-                "request_id": record["request_id"],
-                "session_id": session_id,
-                "provider": self.provider_id,
-                "model": model_id or _DEFAULT_BROWSER_RELAY_MODEL,
-            },
+        poll_interval = (
+            float(poll_interval_obj)
+            if isinstance(poll_interval_obj, (int, float)) and float(poll_interval_obj) > 0
+            else 1.0
         )
+        poll_timeout = (
+            float(poll_timeout_obj)
+            if isinstance(poll_timeout_obj, (int, float)) and float(poll_timeout_obj) > 0
+            else 30.0
+        )
+        cancel_event = cancel_event_obj if isinstance(cancel_event_obj, asyncio.Event) else None
+        deadline = asyncio.get_running_loop().time() + poll_timeout
+
+        while True:
+            if cancel_event is not None and cancel_event.is_set():
+                return LLMResponse(
+                    text="",
+                    stop_reason="relay_cancelled",
+                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                )
+
+            result_record = await self._session_store.get_result(
+                session_id=session_id,
+                request_id=record["request_id"],
+            )
+            if result_record is None:
+                return LLMResponse(
+                    text="",
+                    stop_reason="relay_unknown_request",
+                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                )
+
+            if (
+                result_record["status"] == "completed"
+                and result_record["result"] is not None
+            ):
+                result = result_record["result"]
+                usage: dict[str, Any] = dict(result["usage"])
+                usage["request_id"] = record["request_id"]
+                usage["session_id"] = session_id
+                usage["provider"] = self.provider_id
+                usage["model"] = model_id or _DEFAULT_BROWSER_RELAY_MODEL
+                return LLMResponse(
+                    text=result["content"],
+                    stop_reason=result["stop_reason"],
+                    usage=usage,
+                )
+
+            if (
+                result_record["status"] == "failed"
+                and result_record["result"] is not None
+            ):
+                result = result_record["result"]
+                usage = self._relay_usage(record["request_id"], session_id, model_id)
+                if result["error_code"] is not None:
+                    usage["error_code"] = result["error_code"]
+                if result["error_message"] is not None:
+                    usage["error_message"] = result["error_message"]
+                return LLMResponse(
+                    text=result["content"],
+                    stop_reason=result["error_code"] or "relay_failed",
+                    usage=usage,
+                )
+
+            if result_record["status"] == "expired":
+                return LLMResponse(
+                    text="",
+                    stop_reason="relay_timeout",
+                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                )
+
+            if asyncio.get_running_loop().time() >= deadline:
+                return LLMResponse(
+                    text="",
+                    stop_reason="relay_timeout",
+                    usage=self._relay_usage(record["request_id"], session_id, model_id),
+                )
+            await asyncio.sleep(poll_interval)
 
     @staticmethod
     def _extract_prompt(messages: list[Any]) -> str:
@@ -161,6 +218,14 @@ class BrowserRelayAdapter:
             if isinstance(content, str) and content.strip():
                 return content.strip()
         return ""
+
+    def _relay_usage(self, request_id: str, session_id: str, model_id: str) -> dict[str, Any]:
+        return {
+            "request_id": request_id,
+            "session_id": session_id,
+            "provider": self.provider_id,
+            "model": model_id or _DEFAULT_BROWSER_RELAY_MODEL,
+        }
 
 
 __all__ = ["BrowserRelayAdapter"]

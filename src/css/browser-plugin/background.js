@@ -17,6 +17,10 @@ let cfg = null;
 
 /** @type {{ [tabId: number]: { url: string, hostname: string, form: any, timestamp: number } }} */
 const detectedForms = {};  // Cache detected forms by tab ID
+let pluginSessionId = null;
+let heartbeatTimer = null;
+let relayPollTimer = null;
+let relayPollInFlight = false;
 
 const DEFAULT_CFG = {
   dashboardUrl:  'http://localhost:8000',
@@ -227,7 +231,149 @@ chrome.tabs.onRemoved.addListener(tabId => {
   delete detectedForms[tabId];
 });
 
-// ── Plugin registration ──────────────────────────────────────────────────────
+// ── Plugin registration + relay polling ──────────────────────────────────────
+
+function pickRelayTargetTabId() {
+  return new Promise(resolve => {
+    // Prefer currently active tab when a form was detected there.
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      const active = tabs[0];
+      if (active?.id && detectedForms[active.id]) {
+        resolve(active.id);
+        return;
+      }
+
+      // Fallback: any detected target tab.
+      const detectedTabIds = Object.keys(detectedForms).map(v => Number(v)).filter(Number.isFinite);
+      if (detectedTabIds.length > 0) {
+        resolve(detectedTabIds[0]);
+        return;
+      }
+
+      // Last fallback: any active-domain tab.
+      chrome.tabs.query({}, allTabs => {
+        const firstActiveDomain = allTabs.find(tab => {
+          if (!tab?.url || !tab.id) return false;
+          try { return isDomainActive(new URL(tab.url).hostname); }
+          catch (_) { return false; }
+        });
+        resolve(firstActiveDomain?.id || null);
+      });
+    });
+  });
+}
+
+async function postRelayResult(payload) {
+  if (!cfg?.dashboardUrl || !pluginSessionId) return;
+  try {
+    await fetch(`${cfg.dashboardUrl}/api/plugin/result`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: pluginSessionId,
+        request_id: payload.request_id,
+        status: payload.status,
+        content: payload.content || '',
+        stop_reason: payload.stop_reason || 'stop',
+        error_code: payload.error_code || null,
+        error_message: payload.error_message || null,
+        usage: payload.usage || {},
+      }),
+    });
+  } catch (_) {
+    // keep failures local; the backend timeout path handles stale requests.
+  }
+}
+
+async function dispatchRelayInjection(request) {
+  const tabId = await pickRelayTargetTabId();
+  if (!tabId) {
+    return {
+      ok: false,
+      error_code: 'tab_closed',
+      error_message: 'no eligible tab available for relay injection',
+    };
+  }
+
+  return new Promise(resolve => {
+    chrome.tabs.sendMessage(tabId, {
+      action: 'relayInject',
+      requestId: request.request_id,
+      prompt: request.prompt,
+      options: {
+        typingSpeedMs: cfg?.typingSpeedMs || 28,
+        autoSubmit: cfg?.autoSubmit !== false,
+        timeoutMs: 30000,
+      },
+    }, response => {
+      if (chrome.runtime.lastError) {
+        resolve({
+          ok: false,
+          error_code: 'tab_closed',
+          error_message: chrome.runtime.lastError.message || 'tab not reachable',
+        });
+        return;
+      }
+      if (!response?.ok) {
+        resolve({
+          ok: false,
+          error_code: response?.error_code || 'injection_failed',
+          error_message: response?.error || 'relay injection failed',
+        });
+        return;
+      }
+      resolve({
+        ok: true,
+        content: response.content || '',
+        stop_reason: response.stop_reason || 'stop',
+      });
+    });
+  });
+}
+
+async function pollRelayQueue() {
+  if (!cfg?.dashboardUrl || !pluginSessionId || !cfg.enabled || relayPollInFlight) return;
+  relayPollInFlight = true;
+  try {
+    const resp = await fetch(
+      `${cfg.dashboardUrl}/api/plugin/inject/next?session_id=${encodeURIComponent(pluginSessionId)}`
+    );
+    if (resp.status === 404) {
+      pluginSessionId = null;
+      await registerPluginWithDashboard();
+      return;
+    }
+    if (!resp.ok) return;
+
+    const nextRequest = await resp.json();
+    if (!nextRequest?.available) return;
+    if (!nextRequest.request_id || typeof nextRequest.prompt !== 'string') return;
+
+    const relayOutcome = await dispatchRelayInjection(nextRequest);
+    if (relayOutcome.ok) {
+      await postRelayResult({
+        request_id: nextRequest.request_id,
+        status: 'completed',
+        content: relayOutcome.content,
+        stop_reason: relayOutcome.stop_reason,
+      });
+      return;
+    }
+
+    await postRelayResult({
+      request_id: nextRequest.request_id,
+      status: 'failed',
+      content: '',
+      stop_reason: 'relay_failed',
+      error_code: relayOutcome.error_code || 'injection_failed',
+      error_message: relayOutcome.error_message || 'relay injection failed',
+    });
+  } catch (_) {
+    // polling should be best-effort
+  } finally {
+    relayPollInFlight = false;
+  }
+}
 
 async function registerPluginWithDashboard() {
   if (!cfg?.dashboardUrl) return;
@@ -240,11 +386,13 @@ async function registerPluginWithDashboard() {
         domain: 'browser-plugin',
         version: '3.0',
         timestamp: Date.now(),
+        session_id: pluginSessionId,
       }),
     });
     
     if (resp.ok) {
       const data = await resp.json();
+      pluginSessionId = data.plugin_session_id || pluginSessionId;
       console.log('[CCS] Registered with dashboard v' + data.dashboard_version);
     }
   } catch (e) {
@@ -252,11 +400,36 @@ async function registerPluginWithDashboard() {
   }
 }
 
-// Periodic heartbeat: re-register every 20 seconds
-let heartbeatTimer = null;
+async function heartbeatPluginSession() {
+  if (!cfg?.dashboardUrl || !pluginSessionId) {
+    await registerPluginWithDashboard();
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${cfg.dashboardUrl}/api/plugin/heartbeat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plugin_session_id: pluginSessionId }),
+    });
+    if (resp.status === 404) {
+      pluginSessionId = null;
+      await registerPluginWithDashboard();
+    }
+  } catch (_) {
+    // ignore and retry on next heartbeat tick
+  }
+}
+
+// Periodic heartbeat and relay queue poll
 function startHeartbeat() {
   if (heartbeatTimer) clearInterval(heartbeatTimer);
-  heartbeatTimer = setInterval(registerPluginWithDashboard, 20000);
+  heartbeatTimer = setInterval(heartbeatPluginSession, 20000);
+}
+
+function startRelayPolling() {
+  if (relayPollTimer) clearInterval(relayPollTimer);
+  relayPollTimer = setInterval(pollRelayQueue, 1500);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -264,6 +437,7 @@ function startHeartbeat() {
 loadCfg().then(() => {
   registerPluginWithDashboard();
   startHeartbeat();
+  startRelayPolling();
   // Auto-detect forms on all active domain tabs on startup
   scanAllActiveDomainTabs();
   console.log('[CCS] Background worker ready v3.0 (auto-detecting forms)');

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Body, HTTPException, Query, status
 
 from css.core.types.base_endpoint import EndpointModel
 
-RequestStatus = Literal["pending", "completed", "expired"]
+RequestStatus = Literal["pending", "in_progress", "completed", "failed", "expired"]
 
 
 class PluginRegistrationRequest(EndpointModel, kw_only=True, frozen=True):
@@ -63,8 +63,11 @@ class BrowserResultSubmission(EndpointModel, kw_only=True, frozen=True):
 
     session_id: str
     request_id: str
-    content: str
+    status: Literal["completed", "failed"] = "completed"
+    content: str = ""
     stop_reason: str = "stop"
+    error_code: str | None = None
+    error_message: str | None = None
     usage: dict[str, int] | None = None
 
 
@@ -77,12 +80,26 @@ class BrowserResultResponse(EndpointModel, kw_only=True, frozen=True):
     expires_at: datetime
     content: str | None = None
     stop_reason: str | None = None
+    error_code: str | None = None
+    error_message: str | None = None
     usage: dict[str, int] | None = None
+
+
+class BrowserNextInjectionResponse(EndpointModel, kw_only=True, frozen=True):
+    available: bool
+    request_id: str | None = None
+    session_id: str | None = None
+    prompt: str | None = None
+    provider: str | None = None
+    model: str | None = None
+    expires_at: datetime | None = None
 
 
 class StoredResult(TypedDict):
     content: str
     stop_reason: str
+    error_code: str | None
+    error_message: str | None
     usage: dict[str, int]
 
 
@@ -130,7 +147,7 @@ class BrowserPluginSessionStore:
             self._sessions.pop(session_id, None)
 
         for record in self._requests.values():
-            if record["status"] == "pending" and record["expires_at"] <= now:
+            if record["status"] in {"pending", "in_progress"} and record["expires_at"] <= now:
                 record["status"] = "expired"
                 record["result"] = None
 
@@ -207,8 +224,11 @@ class BrowserPluginSessionStore:
         *,
         session_id: str,
         request_id: str,
+        status: Literal["completed", "failed"] = "completed",
         content: str,
         stop_reason: str = "stop",
+        error_code: str | None = None,
+        error_message: str | None = None,
         usage: dict[str, int] | None = None,
     ) -> StoredRequest:
         now = self._now()
@@ -224,12 +244,33 @@ class BrowserPluginSessionStore:
             if record["status"] == "expired":
                 raise TimeoutError(request_id)
 
-            record["status"] = "completed"
+            record["status"] = status
             record["result"] = {
                 "content": content,
                 "stop_reason": stop_reason,
+                "error_code": error_code,
+                "error_message": error_message,
                 "usage": dict(usage or {}),
             }
+            return record
+
+    async def claim_next_injection(self, *, session_id: str) -> StoredRequest | None:
+        now = self._now()
+        async with self._lock:
+            self._prune_locked(now)
+            self._ensure_session_locked(session_id, now)
+
+            pending = [
+                record
+                for record in self._requests.values()
+                if record["session_id"] == session_id and record["status"] == "pending"
+            ]
+            if not pending:
+                return None
+
+            pending.sort(key=lambda record: record["created_at"])
+            record = pending[0]
+            record["status"] = "in_progress"
             return record
 
     async def fetch_result(self, *, session_id: str, request_id: str) -> StoredRequest | None:
@@ -243,10 +284,36 @@ class BrowserPluginSessionStore:
                 return None
             if record["session_id"] != session_id:
                 raise PermissionError(request_id)
-            if record["status"] == "pending" and record["expires_at"] <= now:
+            if record["status"] in {"pending", "in_progress"} and record["expires_at"] <= now:
                 record["status"] = "expired"
                 record["result"] = None
             return record
+
+    async def put_result(
+        self,
+        *,
+        session_id: str,
+        request_id: str,
+        status: Literal["completed", "failed"] = "completed",
+        content: str,
+        stop_reason: str = "stop",
+        error_code: str | None = None,
+        error_message: str | None = None,
+        usage: dict[str, int] | None = None,
+    ) -> StoredRequest:
+        return await self.submit_result(
+            session_id=session_id,
+            request_id=request_id,
+            status=status,
+            content=content,
+            stop_reason=stop_reason,
+            error_code=error_code,
+            error_message=error_message,
+            usage=usage,
+        )
+
+    async def get_result(self, *, session_id: str, request_id: str) -> StoredRequest | None:
+        return await self.fetch_result(session_id=session_id, request_id=request_id)
 
     async def reset(self) -> None:
         async with self._lock:
@@ -316,14 +383,40 @@ async def submit_injection(req: BrowserInjectionRequest = Body(...)) -> BrowserI
     )
 
 
+@router.get("/inject/next", response_model=BrowserNextInjectionResponse)
+async def fetch_next_injection(
+    session_id: str = Query(..., min_length=1),
+) -> BrowserNextInjectionResponse:
+    try:
+        record = await _SESSION_STORE.claim_next_injection(session_id=session_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="plugin session not found") from exc
+
+    if record is None:
+        return BrowserNextInjectionResponse(available=False)
+
+    return BrowserNextInjectionResponse(
+        available=True,
+        request_id=record["request_id"],
+        session_id=record["session_id"],
+        prompt=record["prompt"],
+        provider=record["provider"],
+        model=record["model"],
+        expires_at=record["expires_at"],
+    )
+
+
 @router.post("/result", response_model=BrowserResultResponse)
 async def submit_result(req: BrowserResultSubmission = Body(...)) -> BrowserResultResponse:
     try:
-        record = await _SESSION_STORE.submit_result(
+        record = await _SESSION_STORE.put_result(
             session_id=req.session_id,
             request_id=req.request_id,
+            status=req.status,
             content=req.content,
             stop_reason=req.stop_reason,
+            error_code=req.error_code,
+            error_message=req.error_message,
             usage=req.usage,
         )
     except KeyError as exc:
@@ -343,6 +436,8 @@ async def submit_result(req: BrowserResultSubmission = Body(...)) -> BrowserResu
         expires_at=record["expires_at"],
         content=result["content"] if result is not None else None,
         stop_reason=result["stop_reason"] if result is not None else None,
+        error_code=result["error_code"] if result is not None else None,
+        error_message=result["error_message"] if result is not None else None,
         usage=result["usage"] if result is not None else None,
     )
 
@@ -353,7 +448,7 @@ async def fetch_result(
     session_id: str = Query(..., min_length=1),
 ) -> BrowserResultResponse:
     try:
-        record = await _SESSION_STORE.fetch_result(session_id=session_id, request_id=request_id)
+        record = await _SESSION_STORE.get_result(session_id=session_id, request_id=request_id)
     except KeyError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="plugin session not found") from exc
     except PermissionError as exc:
@@ -372,6 +467,8 @@ async def fetch_result(
         expires_at=record["expires_at"],
         content=result["content"] if result is not None else None,
         stop_reason=result["stop_reason"] if result is not None else None,
+        error_code=result["error_code"] if result is not None else None,
+        error_message=result["error_message"] if result is not None else None,
         usage=result["usage"] if result is not None else None,
     )
 
@@ -381,6 +478,7 @@ __all__ = [
     "get_browser_plugin_session_store",
     "register_plugin",
     "submit_injection",
+    "fetch_next_injection",
     "fetch_result",
     "router",
 ]

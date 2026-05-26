@@ -30,7 +30,8 @@ This module is **not**:
 `endpoints.py` currently implements `/v1/health`, `/v1/models`, and a
 non-streaming `/v1/chat/completions` route. `browser_plugin.py` now owns the
 plugin relay surface under `/api/plugin/register`, `/api/plugin/heartbeat`,
-`/api/plugin/inject`, and `/api/plugin/result`.
+`/api/plugin/inject`, `/api/plugin/inject/next`, `/api/plugin/result`, and
+`/api/plugin/result/{request_id}`.
 
 Request execution now imports the canonical public
 `css.modules.agents.AgentExecutor` API; no nonexistent root-level

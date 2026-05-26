@@ -434,6 +434,115 @@
     return { ok: true, length: text.length };
   }
 
+  function extractAjaxResponseSince(startTimestamp) {
+    for (const event of ajaxLog) {
+      if (!event || event.timestamp < startTimestamp) continue;
+      if (typeof event.responseBody !== 'string') continue;
+      const body = event.responseBody.trim();
+      if (!body || body === '[SSE stream]') continue;
+      return body.slice(0, 12000);
+    }
+    return '';
+  }
+
+  function collectAssistantText() {
+    const selectors = [
+      '[data-message-author-role="assistant"]',
+      '[data-testid*="assistant" i]',
+      '[class*="assistant-message" i]',
+      '[class*="assistant" i]',
+    ];
+    for (const selector of selectors) {
+      try {
+        const nodes = Array.from(document.querySelectorAll(selector))
+          .map(node => (node.textContent || '').trim())
+          .filter(Boolean);
+        if (nodes.length > 0) {
+          return nodes.slice(-3).join('\n').slice(-12000);
+        }
+      } catch (_) {}
+    }
+    return '';
+  }
+
+  async function waitForRelayResponse(startTimestamp, assistantBaseline, timeoutMs) {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      const ajaxBody = extractAjaxResponseSince(startTimestamp);
+      if (ajaxBody) {
+        return { ok: true, content: ajaxBody, stop_reason: 'stop' };
+      }
+
+      const assistantText = collectAssistantText();
+      if (assistantText && assistantText !== assistantBaseline) {
+        if (assistantBaseline && assistantText.startsWith(assistantBaseline)) {
+          const delta = assistantText.slice(assistantBaseline.length).trim();
+          if (delta) {
+            return { ok: true, content: delta.slice(0, 12000), stop_reason: 'stop' };
+          }
+        } else {
+          return { ok: true, content: assistantText.slice(0, 12000), stop_reason: 'stop' };
+        }
+      }
+
+      await sleep(250);
+    }
+
+    return {
+      ok: false,
+      error_code: 'response_timeout',
+      error: 'timed out while waiting for response observation',
+    };
+  }
+
+  async function relayInjectPrompt(requestId, prompt, options = {}) {
+    if (!requestId) {
+      return { ok: false, error_code: 'unknown_request_id', error: 'missing request id' };
+    }
+    const relayPrompt = String(prompt || '').trim();
+    if (!relayPrompt) {
+      return { ok: false, error_code: 'injection_failed', error: 'empty prompt' };
+    }
+    const inputEl = detectChatInput();
+    if (!inputEl) {
+      return { ok: false, error_code: 'injection_failed', error: 'no input found' };
+    }
+
+    chrome.runtime.sendMessage({ action: 'formDetected', form: describeForm(inputEl) });
+
+    const speedMs = options.typingSpeedMs ?? cfg?.typingSpeedMs ?? 28;
+    const timeoutMsRaw = options.timeoutMs;
+    const timeoutMs = Number.isFinite(timeoutMsRaw) && timeoutMsRaw > 0 ? Number(timeoutMsRaw) : 30000;
+    const autoSubmit = options.autoSubmit ?? cfg?.autoSubmit;
+    const startTimestamp = Date.now();
+    const assistantBaseline = collectAssistantText();
+
+    await clearInput(inputEl);
+    await humanType(inputEl, relayPrompt, speedMs);
+
+    if (autoSubmit) {
+      const btn = findSubmitButton(inputEl);
+      if (btn) {
+        await sleep(150);
+        btn.click();
+      } else {
+        inputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }));
+      }
+    }
+
+    const observed = await waitForRelayResponse(startTimestamp, assistantBaseline, timeoutMs);
+    if (!observed.ok) {
+      return observed;
+    }
+
+    return {
+      ok: true,
+      request_id: requestId,
+      content: observed.content || '',
+      stop_reason: observed.stop_reason || 'stop',
+    };
+  }
+
   // ── Message handler ───────────────────────────────────────────────────────
 
   chrome.runtime.onMessage.addListener((req, _sender, sendResponse) => {
@@ -444,6 +553,10 @@
 
       case 'injectText':
         injectText(req.text, req.options || {}).then(sendResponse);
+        return true;
+
+      case 'relayInject':
+        relayInjectPrompt(req.requestId, req.prompt, req.options || {}).then(sendResponse);
         return true;
 
       case 'detectForm': {

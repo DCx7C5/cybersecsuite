@@ -74,7 +74,7 @@ supports 4 adapter types:
 | `adapters/openai.py` | ✅ DONE — OpenAINativeAdapter |
 | `adapters/http_provider.py` | ✅ DONE — HttpProviderAdapter (YAML-driven, OpenAI + Anthropic format) |
 | `adapters/ollama.py` | ✅ DONE — OllamaAdapter |
-| `adapters/browser_relay.py` | ✅ DONE — BrowserRelayAdapter + pending-result normalization contract |
+| `adapters/browser_relay.py` | ✅ DONE — BrowserRelayAdapter with active polling, timeout/cancel, and failed-result normalization |
 | `adapters/deepseek.py` | 📋 pending — dedicated DeepSeek adapter surface (T10.7) |
 
 ## Phase 10 Todo Status
@@ -92,7 +92,7 @@ supports 4 adapter types:
   uses provider-agnostic `AgentExecutor`, but that active route still reaches
   `api_services.ProviderRegistry`, not `CSSLLMClient`.
 - `sdk-browser-relay-adapter` — ✅ DONE (2026-05-26)
-- `sdk-browser-relay-polling` — 📋 pending (Phase 10 backlog)
+- `sdk-browser-relay-polling` — ✅ DONE (2026-05-26)
 - `sdk-deepseek-adapter` — 📋 pending (Phase 10 T10.7)
 - `sdk-browser-relay-provider-priority` — 📋 pending (Phase 10 T10.7)
 - `sdk-browser-relay-web-llm-relay` — 📋 pending (Phase 10 T10.7)
@@ -176,8 +176,8 @@ official `xai-sdk` primitives.
 | `src/css/core/sdks/registry.py` | Existing `SDKRegistry`, `register_sdk()`, `get_sdk()`. |
 | `src/css/core/sdks/adapters/http_provider.py` | Existing `HttpProviderAdapter`. |
 | `src/css/core/sdks/adapters/deepseek.py` | Planned dedicated DeepSeek adapter. |
-| `src/css/core/sdks/adapters/browser_relay.py` | Planned `BrowserRelayAdapter` transport implementation. |
-| `src/css/modules/llm_proxy/browser_plugin.py` | Browser-plugin relay endpoints (`/api/plugin/register`, `/heartbeat`, `/inject`, `/result`). |
+| `src/css/core/sdks/adapters/browser_relay.py` | `BrowserRelayAdapter` transport with queued-request polling and normalized relay outcomes. |
+| `src/css/modules/llm_proxy/browser_plugin.py` | Browser-plugin relay endpoints (`/api/plugin/register`, `/heartbeat`, `/inject`, `/inject/next`, `/result`, `/result/{request_id}`). |
 | `src/css/core/sdks/relay_router.py` | Planned `RelayProviderPolicy`, `RelayAttempt`, provider-priority selection/fallback. |
 | `src/css/core/sdks/__init__.py` | Stable exports after adapter/router implementation. |
 
@@ -189,7 +189,7 @@ official `xai-sdk` primitives.
 | `sdk-unified-client` | pending | Register canonical adapters in `SDKRegistry` after convergence and prove offline provider resolution. |
 | `sdk-replace-queryexecutor` | pending | Route QueryExecutor through the canonical unified client only after the unified client is functional. |
 | `sdk-browser-relay-adapter` | done | Relay adapter and backend plugin endpoints implemented with bounded TTL state. |
-| `sdk-browser-relay-polling` | pending | Add active result polling/bridge contract over the queued relay requests. |
+| `sdk-browser-relay-polling` | done | Active result polling/bridge contract over queued relay requests with completed/failed/expired/unknown lifecycle handling. |
 | `sdk-deepseek-adapter` | pending | Add dedicated registered provider adapter. |
 | `sdk-browser-relay-provider-priority` | pending | Implement the ordered policy in `relay_router.py`, then call it from `CSSLLMClient`. |
 | `sdk-browser-relay-web-llm-relay` | pending | Add the web relay endpoint only after the policy and relay transport exist. |
