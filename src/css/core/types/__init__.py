@@ -59,7 +59,7 @@ from .base_client import (
     BaseApiServiceClient,
 )
 
-from .base_sdk import LocalSDKBase
+from .base_sdk import BaseLocalSDK
 
 # ── Base emitter ──────────────────────────────────────────────────────────────
 from .base_emitter import BaseEmitterClass
@@ -180,7 +180,7 @@ __all__ = [
     # client/SDK
     "StreamingHandler",
     "BaseApiServiceClient",
-    "LocalSDKBase",
+    "BaseLocalSDK",
     "BaseEmitterClass",
     "BaseRegistry",
     "SDKRegistry",

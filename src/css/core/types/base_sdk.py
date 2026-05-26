@@ -20,7 +20,7 @@ from css.core.types import BaseApiServiceClient, ProviderType, ModelMetadata, Ba
 logger = getLogger(__name__)
 
 
-class LocalSDKBase(BaseApiServiceClient, ABC):
+class BaseLocalSDK(BaseApiServiceClient, ABC):
     """
     Abstract base class for all local LLM SDKs.
     
