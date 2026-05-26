@@ -53,6 +53,14 @@ from .base_headers import (
     BaseRoleHeader,
 )
 
+# ── Base serializers ─────────────────────────────────────────────────────────
+from .base_serializer import (
+    SerializerValidationError,
+    BaseSerializer,
+    BaseModelSerializer,
+    BaseListSerializer,
+)
+
 # ── Base client + SDK ────────────────────────────────────────────────────────
 from .base_client import (
     StreamingHandler,
@@ -178,6 +186,11 @@ __all__ = [
     "BaseAccountHeader",
     "BaseToolHeader",
     "BaseRoleHeader",
+    # serializers
+    "SerializerValidationError",
+    "BaseSerializer",
+    "BaseModelSerializer",
+    "BaseListSerializer",
     # client/SDK
     "StreamingHandler",
     "BaseApiServiceClient",

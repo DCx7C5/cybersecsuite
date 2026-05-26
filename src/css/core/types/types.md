@@ -16,6 +16,7 @@ this documentation-movement pass intentionally does not edit the tracker.
 
 Core types module exports:
 - **Base classes** — Entities, communicators, contexts
+- **Base serializers** — Django-pattern serializer infrastructure for ORM ↔ dict conversion
 - **Enums** — Capability types, message roles, provider types
 - **Data models** — `msgspec.Struct` values for API requests/responses, using
   `EndpointModel` only where FastAPI schema generation needs its adapter hook
@@ -24,6 +25,39 @@ Core types module exports:
 ---
 
 ## Key Modules
+
+### 0. **base_serializer.py** ✅ Implemented (Phase 43)
+
+Django REST Framework-pattern serializers adapted for FastAPI + Tortoise ORM + msgspec.
+
+| Class | Purpose |
+|-------|---------|
+| `SerializerValidationError(BaseCoreException)` | Raised on field or object validation failure; carries `errors: dict[str, list[str]]`. |
+| `BaseSerializer[T]` | Generic input/output serializer. `data`/`async_data()` for output; `is_valid()` + `validated_data` for input; `async_save()` for persistence. |
+| `BaseModelSerializer[M]` | Tortoise ORM model serializer. Auto-maps fields via `Meta.model`, `Meta.fields`, `Meta.exclude`, `Meta.read_only_fields`. Provides `async_create`/`async_update` via `BaseModel.save_changes`. |
+| `BaseListSerializer[T]` | Collection wrapper; delegates sync/async representation to a child `BaseSerializer`. |
+
+**Subclass pattern**::
+
+    class AgentSerializer(BaseModelSerializer[AgentModel]):
+        class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+            model = AgentModel
+            fields = "__all__"
+            exclude: tuple[str, ...] = ()
+            read_only_fields = ("id", "created_at")
+
+        @override
+        def to_representation(self, instance: AgentModel) -> dict[str, Any]:
+            base = super().to_representation(instance)
+            # custom field transforms here
+            return base
+
+**Applied to** (Phase 43 T43.1):
+- `src/css/core/rag_vector/serializers.py` — `KnowledgeDocumentSerializer`, `SearchResultSerializer`
+- `src/css/core/menu/serializers.py` — `MenuItemSerializer`
+
+**Rollout pending** (Phase 43 T43.2, tracked in `session.db`):
+- `core/accounts/serializers.py`, `core/memory/serializers.py`, and all module-level inline helpers.
 
 ### 1. **base.py**
 

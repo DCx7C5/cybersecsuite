@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from .enums import DocumentStatus, RelevanceFeedback
 from .models import KnowledgeDocument, KnowledgeTag, SearchLog
 from .retriever import KnowledgeRetriever
+from .serializers import KnowledgeDocumentSerializer, SearchResultSerializer
 
 router = APIRouter(prefix="/api/rag_vector", tags=["rag_vector"])
 retriever = KnowledgeRetriever()
@@ -16,70 +17,14 @@ def _normalize_tag_value(tag: str) -> str:
     return tag.strip().lower()
 
 
-async def _serialize_document(doc: KnowledgeDocument) -> DocumentResponse:
-    await doc.fetch_related("tag_links__tag")
-    tag_values: list[str] = []
-    seen: set[str] = set()
-    links = getattr(doc, "tag_links", None)
-    if links is None:
-        links_iter = []
-    else:
-        try:
-            links_iter = iter(links)
-        except TypeError:
-            links_iter = []
-
-    for link in links_iter:
-        tag_obj = getattr(link, "tag", None)
-        tag_name = getattr(tag_obj, "tag", None)
-        if not isinstance(tag_name, str):
-            continue
-        normalized = _normalize_tag_value(tag_name)
-        if not normalized or normalized in seen:
-            continue
-        tag_values.append(normalized)
-        seen.add(normalized)
-
-    return DocumentResponse(
-        id=doc.id,
-        title=doc.title,
-        document_type=str(doc.document_type),
-        source=doc.source,
-        tags=tag_values,
-        cve_ids=[str(cve_id) for cve_id in doc.cve_ids if isinstance(cve_id, str)],
-        status=str(doc.status),
-        version=doc.version,
-        created_at=doc.created_at,
-        updated_at=doc.updated_at,
-    )
+async def _serialize_document(doc: KnowledgeDocument) -> "DocumentResponse":
+    data = await KnowledgeDocumentSerializer(instance=doc).async_data()
+    return DocumentResponse(**data)
 
 
-def _serialize_search_result(result: dict[str, object]) -> SearchResult:
-    raw_id = result.get("id")
-    doc_id = raw_id if isinstance(raw_id, int) else 0
-    raw_title = result.get("title")
-    title = raw_title if isinstance(raw_title, str) else ""
-    raw_content = result.get("content")
-    content = raw_content if isinstance(raw_content, str) else ""
-    raw_document_type = result.get("document_type")
-    document_type = raw_document_type if isinstance(raw_document_type, str) else ""
-    raw_source = result.get("source")
-    source = raw_source if isinstance(raw_source, str) else ""
-
-    raw_tags = result.get("tags")
-    tags = [tag for tag in raw_tags if isinstance(tag, str)] if isinstance(raw_tags, list) else []
-    score_value = result.get("score")
-    score = float(score_value) if isinstance(score_value, (int, float)) else 0.0
-
-    return SearchResult(
-        id=doc_id,
-        title=title,
-        content=content,
-        document_type=document_type,
-        score=score,
-        tags=tags,
-        source=source,
-    )
+def _serialize_search_result(result: dict[str, object]) -> "SearchResult":
+    data = SearchResultSerializer(instance=result).data
+    return SearchResult(**data)
 
 # Request/Response Models
 class DocumentCreate(EndpointModel, kw_only=True, frozen=True):
