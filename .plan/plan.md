@@ -8,7 +8,7 @@ Detailed implementation contracts live in the owning Markdown files below
 
 ## Current Session (2026-05-26 - Continuation #2)
 
-**Session Goal**: Resume Phase 16 work, determine optimal priority path
+**Session Goal**: Resume Phase 16 work, implement foundation sequence A
 
 **Status Entering Session**:
 - Total todos: 1036 | Done: 552 | Pending: 477 | Blocked: 6 | In Progress: 1
@@ -17,19 +17,35 @@ Detailed implementation contracts live in the owning Markdown files below
 - Newly Unblocked: Phase 20 (35 ready todos), Phase 42 (18 ready todos)
 
 **Session Work Completed**:
-1. ✅ **DONE** xai-sdk-async-client-bridge (Phase 16):
-   - Implemented lazy AsyncClient initialization
-   - Added gRPC timeout and channel configuration  
+1. ✅ **DONE** xai-sdk-async-client-bridge (Phase 16 — T16.15):
+   - Implemented lazy AsyncClient initialization with timeout/channel config
+   - Added gRPC error mapping support via XAIErrorMapper
    - Implemented async lifecycle methods (__aenter__, __aexit__)
-   - Integrated XAIErrorMapper for exception handling
-   - Created comprehensive test suite
    - Commit: 99e875ba
 
-**Next Decision Point**: Phase priority selection
-- **Phase 16 continuation**: thinking-config-struct (foundation work sequence A)
-- **Phase 20 unblocked**: 35 ready todos, newly executable
-- **Phase 42 unblocked**: 18 ready todos, newly executable
-- **Phase 3/4 unblocking**: 2+2 blocked todos each, nearly complete
+2. ✅ **DONE** thinking-config-struct (Phase 16 — T16.A-1):
+   - Created ThinkingConfig msgspec.Struct with budget_tokens and effort fields
+   - Frozen immutable with positive validation for budget_tokens
+   - Exported from css.core.types
+   - Created test suite
+   - Commit: 420c45eb
+
+3. ✅ **DONE** thinking-config-adapter (Phase 16 — T16.A-2):
+   - Updated AnthropicNativeAdapter: budget_tokens → thinking parameter
+   - Updated OpenAINativeAdapter: effort → reasoning_effort parameter
+   - Backward compatibility for legacy parameters
+   - Debug logging for configuration decisions
+   - Commit: ca2fd5c5
+
+**Foundation Sequence A Status**: 2/3 complete
+- ✅ thinking-config-struct (provides contract)
+- ✅ thinking-config-adapter (translator in adapters)
+- ⏳ thinking-model-metadata (mark models as thinking-capable)
+
+**Next Immediate Options**:
+1. Continue Phase 16 sequence A: thinking-model-metadata (unblocks token-count work)
+2. Switch to Phase 20 (Persistent Memory): 35 ready todos, high value
+3. Switch to Phase 42 (ACP + LSP + Marketplace): 18 ready todos, marketplace integration
 
 ## Current Session Goals (2026-05-26 - Continuation)
 
