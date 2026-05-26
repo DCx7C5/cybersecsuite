@@ -180,12 +180,10 @@ class OrchestratorInstance(BaseModel):
         table = "orchestrator_instance"
 ```
 
-#### `tasks.py` + `quotas.py` (task lifecycle + quota ownership split)
-
-Task lifecycle and quotas:
+#### `tasks.py` (task lifecycle ownership)
 
 ```python
-class TaskAssignment(Model):  # tasks.py
+class TaskAssignment(Model):
     """Task assigned to team member."""
     
     task_id: str
@@ -197,7 +195,7 @@ class TaskAssignment(Model):  # tasks.py
     class Meta:
         table = "task_assignment"
 
-class TaskResult(Model):  # tasks.py
+class TaskResult(Model):
     """Result of completed task."""
     
     task_id: str
@@ -209,7 +207,12 @@ class TaskResult(Model):  # tasks.py
     class Meta:
         table = "task_result"
 
-class TeamQuota(Model):  # quotas.py
+```
+
+#### `quotas.py` (team quota ownership only)
+
+```python
+class TeamQuota(Model):
     """Resource quotas for team."""
     
     team: ForeignKeyField = ForeignKey(Team)
