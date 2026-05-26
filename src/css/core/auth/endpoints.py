@@ -9,7 +9,6 @@ Endpoints:
 - DELETE /api/auth/keys/{id}      — Revoke API key
 """
 
-import msgspec
 from css.core.types.base_endpoint import EndpointModel
 from css.core.logger import getLogger
 import os

@@ -16,7 +16,6 @@ from typing import Optional
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
-import msgspec
 from css.core.types.base_endpoint import EndpointModel
 
 log = getLogger(__name__)

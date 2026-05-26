@@ -3,7 +3,6 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
-import msgspec
 from css.core.types.base_endpoint import EndpointModel
 from .models import ScheduledTask
 

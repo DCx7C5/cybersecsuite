@@ -24,12 +24,12 @@ def init_clients(client: PyCharmToolClient, db_client: DatabaseClient) -> None:
 
 @router.get("/status")
 async def get_status() -> dict:
-    if _state.client is None or _db_client is None:
+    if _state.client is None or _state.db_client is None:
         return {"available": False, "client": False, "database": False}
     return {
         "available": _state.client.is_available,
         "client": _state.client.is_available,
-        "database": _db_state.client.is_available,
+        "database": _state.db_client.is_available,
     }
 
 

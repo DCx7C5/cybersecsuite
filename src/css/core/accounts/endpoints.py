@@ -11,7 +11,6 @@ Endpoints:
 - GET    /api/organizations/{org_id}/members  — List org members
 """
 
-import msgspec
 from css.core.types.base_endpoint import EndpointModel
 from css.core.logger import getLogger
 

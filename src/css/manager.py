@@ -71,8 +71,8 @@ async def _serve_impl(
         click.echo("  Frontend: serving static build")
     else:
         click.echo("  Frontend: NOT available (no dist/ build found)")
-        click.echo(f"    Build with: cd src/frontend && bun run build")
-        click.echo(f"    Dev server: cd src/frontend && bun run dev  (→ http://localhost:5173)")
+        click.echo("    Build with: cd src/frontend && bun run build")
+        click.echo("    Dev server: cd src/frontend && bun run dev  (→ http://localhost:5173)")
     if reload:
         click.echo("  Hot-reload enabled (dev mode)")
     elif workers > 1:

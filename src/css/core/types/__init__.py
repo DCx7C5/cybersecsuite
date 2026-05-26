@@ -81,17 +81,6 @@ from css.core.sdks.adapters import (
     OllamaAdapter,
 )
 from css.core.sdks.model_mapper import ModelNameMapper
-# Lazy import to break circular dependency chain:
-#   types.__init__ → adapter_bridge → registry → core.tools.base → executor → events → emitter → base_emitter → types.__init__
-def __getattr__(name: str):
-    if name == "register_adapter_tools":
-        from css.modules.tools.adapter_bridge import register_adapter_tools
-        return register_adapter_tools
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
-def __dir__() -> list[str]:
-    return __all__
 
 # ── Capabilities ─────────────────────────────────────────────────────────────
 from .capabilities import (
@@ -134,6 +123,19 @@ from .qol import (
     QoLSettings,
     toggle_description,
 )
+
+# Lazy import to break circular dependency chain:
+#   types.__init__ → adapter_bridge → registry → core.tools.base → executor → events → emitter → base_emitter → types.__init__
+def __getattr__(name: str):
+    if name == "register_adapter_tools":
+        from css.modules.tools.adapter_bridge import register_adapter_tools
+        return register_adapter_tools
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return __all__
+
 
 __all__ = [
     # enums

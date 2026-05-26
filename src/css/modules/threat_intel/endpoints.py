@@ -3,7 +3,6 @@
 from fastapi import APIRouter, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
-import msgspec
 from css.core.types.base_endpoint import EndpointModel
 from .models import IOC, ThreatFeed
 

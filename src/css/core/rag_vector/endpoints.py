@@ -1,6 +1,5 @@
 """Knowledge base management endpoints."""
 
-import msgspec
 from css.core.types.base_endpoint import EndpointModel
 
 from fastapi import APIRouter, HTTPException, Query, status
