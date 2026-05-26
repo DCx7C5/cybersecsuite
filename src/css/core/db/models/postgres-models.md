@@ -65,7 +65,7 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - `db40-tag-junction-naming-standard` + `db40-model-meta-standardization` — singular class/table/meta conventions for rich junction models.
 - `db40-llmmodel-tag-runtime-wire` — pending runtime-query wiring detail is
   owned locally in
-  [`llmmodel-tag-runtime-wire-plan.md`](llmmodel-tag-runtime-wire-plan.md).
+  [`tagging/llmmodel-tag-runtime-wire-plan.md`](tagging/llmmodel-tag-runtime-wire-plan.md).
 
 ## Phase 40 Execution Contract
 

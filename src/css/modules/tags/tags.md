@@ -102,7 +102,7 @@
 - `SkillDefinitionModel` + `SkillDefinitionModelTag` — Skills classified by category/level (NEW in Lane E)
 
 **Meta pattern**: All follow canonical structure in
-[`tag-junction-naming-standard.md`](tag-junction-naming-standard.md).
+[`core/db/models/tagging/tag-junction-naming-standard.md`](../../core/db/models/tagging/tag-junction-naming-standard.md).
 
 **When to use**: 
 - ✓ Entity is discoverable across multiple interfaces
@@ -169,8 +169,8 @@
 
 **M2M Junction pattern** (for `<Entity>Tag`):
 - **Requirements**: `BaseModel + TimestampMixin`, `to_domain/from_domain`, symmetric indexes
-- **Reference**: [`tag-junction-naming-standard.md`](tag-junction-naming-standard.md)
-  (canonical pattern template in this owner directory)
+- **Reference**: [`core/db/models/tagging/tag-junction-naming-standard.md`](../../core/db/models/tagging/tag-junction-naming-standard.md)
+  (canonical pattern template for Phase 40 tagging junction models)
 - **Foreign keys**: One to entity, one to `Tag`
 - **Related names**: `tags_m2m` (on entity), `<entities>` (on Tag)
 
@@ -250,8 +250,8 @@ __all__ = ['TagManager']
 ## Canonical Tag Junction Pattern
 
 **Reference**: See
-[`tag-junction-naming-standard.md`](tag-junction-naming-standard.md) for the
-full specification.
+[`core/db/models/tagging/tag-junction-naming-standard.md`](../../core/db/models/tagging/tag-junction-naming-standard.md)
+for the full specification.
 
 All models that are taggable MUST create an M2M junction following this canonical pattern:
 

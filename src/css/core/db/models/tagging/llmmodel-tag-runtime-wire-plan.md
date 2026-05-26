@@ -1,12 +1,13 @@
 # Phase 40 Lane E - LLMModel Tag Runtime Wire Implementation Plan
 
-**Tracking authority**: `.plan/session.db` | **Status**: In progress | **Date**: 2026-05-26
+**Tracking authority**: `.plan/session.db` | **Status**: Complete | **Date**: 2026-05-26
 
 ---
 
 ## Overview
 
 Final Lane E todo to wire `LLMModelTag` junction table into runtime model discovery and filtering.
+Implementation completed in commit `efc9d95c`; this file is retained as the execution record.
 
 **Objective**: Make LLM model tags accessible and usable in runtime queries, not just schema-level.
 
@@ -17,11 +18,12 @@ Final Lane E todo to wire `LLMModelTag` junction table into runtime model discov
 - `LLMModelTag` M2M junction exists in schema ✓
 - `Tag` taxonomy table exists ✓
 - `LLMModel.tags_m2m` reverse relation configured ✓
-- Runtime metadata (`ModelMetadata`, `ModelRegistry`) **does NOT expose tags** ✗
+- Runtime metadata (`ModelMetadata`, `ModelRegistry`) exposes canonical tag slugs ✓
+- Runtime model listing supports `tag` and `tags` filtering via `ModelRegistry` ✓
 
 ---
 
-## Implementation Steps (Ordered)
+## Implementation Steps (Completed)
 
 ### Step 1: Extend ModelMetadata Domain Type
 
@@ -304,4 +306,3 @@ After this todo completes:
 ---
 
 **Implementation owner**: Next available session | **Estimated effort**: 2-3 hours | **Risk**: Medium (ORM async prefetch patterns)
-
