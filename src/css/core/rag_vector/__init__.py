@@ -10,6 +10,7 @@ from .enums import (
 )
 from .models import (
     KnowledgeDocument,
+    KnowledgeDocumentTag,
     KnowledgeIndex,
     KnowledgeTag,
     SearchLog,
@@ -21,6 +22,7 @@ __all__ = [
     "DocumentStatus",
     "DocumentType",
     "KnowledgeDocument",
+    "KnowledgeDocumentTag",
     "KnowledgeIndex",
     "KnowledgeTag",
     "RelevanceFeedback",

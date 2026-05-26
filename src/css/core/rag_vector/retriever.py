@@ -1,10 +1,15 @@
 """Knowledge retriever — semantic search for LLM agent context."""
 
-from css.core.logger import getLogger
 import hashlib
-from typing import List, Dict
+from collections.abc import Iterable
+from typing import TypeAlias
+
+from css.core.logger import getLogger
 
 logger = getLogger(__name__)
+
+SearchPayload: TypeAlias = dict[str, object]
+SearchPayloads: TypeAlias = list[SearchPayload]
 
 
 class KnowledgeRetriever:
@@ -12,7 +17,50 @@ class KnowledgeRetriever:
     
     def __init__(self, embedding_model: str = "sentence-transformers/all-mpnet-base-v2"):
         self.embedding_model = embedding_model
-        self._embedding_cache = {}
+        self._embedding_cache: dict[str, list[float]] = {}
+
+    @staticmethod
+    def _to_float(value: object) -> float:
+        if isinstance(value, (int, float)):
+            return float(value)
+        return 0.0
+
+    @staticmethod
+    def _normalize_tags(tags: list[str]) -> list[str]:
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for tag in tags:
+            normalized_tag = tag.strip().lower()
+            if not normalized_tag or normalized_tag in seen:
+                continue
+            normalized.append(normalized_tag)
+            seen.add(normalized_tag)
+        return normalized
+
+    @staticmethod
+    def _document_tags(document: object) -> list[str]:
+        links = getattr(document, "tag_links", None)
+        if links is None:
+            return []
+        links_iter: Iterable[object]
+        try:
+            links_iter = iter(links)
+        except TypeError:
+            return []
+
+        tags: list[str] = []
+        seen: set[str] = set()
+        for link in links_iter:
+            tag_obj = getattr(link, "tag", None)
+            tag_name = getattr(tag_obj, "tag", None)
+            if not isinstance(tag_name, str):
+                continue
+            normalized_tag = tag_name.strip().lower()
+            if not normalized_tag or normalized_tag in seen:
+                continue
+            tags.append(normalized_tag)
+            seen.add(normalized_tag)
+        return tags
     
     async def retrieve(
         self,
@@ -20,7 +68,7 @@ class KnowledgeRetriever:
         organization_id: int,
         limit: int = 5,
         search_type: str = "keyword",  # keyword, semantic, hybrid
-    ) -> List[Dict]:
+    ) -> SearchPayloads:
         """
         Retrieve relevant documents for query.
         
@@ -47,7 +95,11 @@ class KnowledgeRetriever:
                 results = self._merge_results(kw_results, sem_results)[:limit]
             
             # Log search for analytics
-            matched_ids = [r["id"] for r in results]
+            matched_ids = [
+                result_id
+                for result in results
+                if isinstance((result_id := result.get("id")), int)
+            ]
             await SearchLog.create(
                 organization_id=organization_id,
                 query=query,
@@ -62,7 +114,7 @@ class KnowledgeRetriever:
             logger.exception(f"Knowledge retrieval failed: {e}")
             return []
     
-    async def _keyword_search(self, query: str, org_id: int, limit: int) -> List[Dict]:
+    async def _keyword_search(self, query: str, org_id: int, limit: int) -> SearchPayloads:
         """Keyword-based search using inverted index."""
         from .models import KnowledgeIndex
         
@@ -70,13 +122,13 @@ class KnowledgeRetriever:
         terms = query.lower().split()
         
         # Find documents matching any term
-        matching_docs = {}
+        matching_docs: dict[int, SearchPayload] = {}
         for term in terms:
             entries = await KnowledgeIndex.filter(
                 term__startswith=term[:3],
                 document__organization_id=org_id,
                 document__status="published",
-            ).select_related("document").all()
+            ).select_related("document").prefetch_related("document__tag_links__tag").all()
             
             for entry in entries:
                 doc_id = entry.document.id
@@ -85,26 +137,39 @@ class KnowledgeRetriever:
                         "id": entry.document.id,
                         "title": entry.document.title,
                         "content": entry.document.content[:500],
-                        "document_type": entry.document.document_type,
-                        "tags": entry.document.tags,
+                        "document_type": str(entry.document.document_type),
+                        "tags": self._document_tags(entry.document),
                         "source": entry.document.source,
                         "score": 0.0,
                         "matched_terms": set(),
                     }
                 
-                matching_docs[doc_id]["score"] += entry.frequency * 0.1
-                matching_docs[doc_id]["matched_terms"].add(term)
+                existing = matching_docs[doc_id]
+                existing["score"] = self._to_float(existing.get("score")) + (entry.frequency * 0.1)
+                matched_terms = existing.get("matched_terms")
+                if isinstance(matched_terms, set):
+                    matched_terms.add(term)
+                else:
+                    existing["matched_terms"] = {term}
         
         # Sort by score
-        results = sorted(matching_docs.values(), key=lambda x: x["score"], reverse=True)
+        results: SearchPayloads = sorted(
+            matching_docs.values(),
+            key=lambda result: self._to_float(result.get("score")),
+            reverse=True,
+        )
         
         # Clean up sets for JSON serialization
-        for r in results:
-            r["matched_terms"] = list(r["matched_terms"])
+        for result in results:
+            matched_terms = result.get("matched_terms")
+            if isinstance(matched_terms, set):
+                result["matched_terms"] = [
+                    term for term in matched_terms if isinstance(term, str)
+                ]
         
         return results[:limit]
     
-    async def _semantic_search(self, query: str, org_id: int, limit: int) -> List[Dict]:
+    async def _semantic_search(self, query: str, org_id: int, limit: int) -> SearchPayloads:
         """Semantic search using embeddings (placeholder)."""
         from .models import KnowledgeDocument
         
@@ -113,40 +178,60 @@ class KnowledgeRetriever:
         docs = await KnowledgeDocument.filter(
             organization_id=org_id,
             status="published",
-        ).order_by("-relevance_score").limit(limit).all()
+        ).prefetch_related("tag_links__tag").order_by("-relevance_score").limit(limit).all()
         
         return [
             {
                 "id": d.id,
                 "title": d.title,
                 "content": d.content[:500],
-                "document_type": d.document_type,
-                "tags": d.tags,
+                "document_type": str(d.document_type),
+                "tags": self._document_tags(d),
                 "source": d.source,
-                "score": d.relevance_score,
+                "score": float(d.relevance_score),
             }
             for d in docs
         ]
     
-    def _merge_results(self, kw_results: List[Dict], sem_results: List[Dict]) -> List[Dict]:
+    def _merge_results(self, kw_results: SearchPayloads, sem_results: SearchPayloads) -> SearchPayloads:
         """Merge keyword and semantic results, deduplicating by doc ID."""
-        merged = {}
+        merged: dict[int, SearchPayload] = {}
         
-        for r in kw_results:
-            merged[r["id"]] = {**r, "keyword_score": r.get("score", 0.0), "score": 0}
+        for result in kw_results:
+            doc_id = result.get("id")
+            if not isinstance(doc_id, int):
+                continue
+            keyword_score = self._to_float(result.get("score"))
+            merged[doc_id] = {
+                **result,
+                "keyword_score": keyword_score,
+                "score": keyword_score,
+            }
         
-        for r in sem_results:
-            if r["id"] in merged:
-                merged[r["id"]]["semantic_score"] = r.get("score", 0.0)
+        for result in sem_results:
+            doc_id = result.get("id")
+            if not isinstance(doc_id, int):
+                continue
+            semantic_score = self._to_float(result.get("score"))
+            if doc_id in merged:
+                merged[doc_id]["semantic_score"] = semantic_score
                 # Average scores
-                merged[r["id"]]["score"] = (
-                    merged[r["id"]].get("keyword_score", 0.0) +
-                    r.get("score", 0.0)
+                merged[doc_id]["score"] = (
+                    self._to_float(merged[doc_id].get("keyword_score")) +
+                    semantic_score
                 ) / 2
             else:
-                merged[r["id"]] = {**r, "semantic_score": r.get("score", 0.0)}
+                merged[doc_id] = {
+                    **result,
+                    "semantic_score": semantic_score,
+                    "score": semantic_score,
+                }
         
-        return sorted(merged.values(), key=lambda x: x.get("score", 0), reverse=True)
+        return sorted(
+            merged.values(),
+            key=lambda result: self._to_float(result.get("score")),
+            reverse=True,
+        )
     
     async def ingest_document(
         self,
@@ -155,11 +240,12 @@ class KnowledgeRetriever:
         content: str,
         document_type: str,
         source: str,
-        tags: List[str],
+        tags: list[str],
         created_by: str = "system",
-    ) -> Dict:
+    ) -> dict[str, object]:
         """Ingest new document into rag_vector base."""
-        from .models import KnowledgeDocument, KnowledgeIndex
+        from .enums import TagCategory
+        from .models import KnowledgeDocument, KnowledgeDocumentTag, KnowledgeIndex, KnowledgeTag
         
         try:
             # Calculate content hash for deduplication
@@ -182,15 +268,34 @@ class KnowledgeRetriever:
                 content=content,
                 document_type=document_type,
                 source=source,
-                tags=tags,
                 created_by=created_by,
                 content_hash=content_hash,
                 status="published",
             )
+
+            normalized_tags = self._normalize_tags(tags)
+            for tag_name in normalized_tags:
+                tag, created = await KnowledgeTag.get_or_create(
+                    organization_id=organization_id,
+                    tag=tag_name,
+                    defaults={
+                        "category": TagCategory.CUSTOM,
+                        "usage_count": 0,
+                    },
+                )
+                if created:
+                    tag.usage_count = 1
+                else:
+                    tag.usage_count += 1
+                await tag.save()
+                await KnowledgeDocumentTag.get_or_create(
+                    document_id=document.id,
+                    tag_id=tag.id,
+                )
             
             # Index content (simple tokenization)
             terms = content.lower().split()
-            term_freq = {}
+            term_freq: dict[str, int] = {}
             for term in terms:
                 if len(term) > 3:  # Skip short words
                     term_freq[term] = term_freq.get(term, 0) + 1

@@ -4,15 +4,85 @@ from css.core.types.base_endpoint import EndpointModel
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
-from typing import Any
+from .enums import DocumentStatus, RelevanceFeedback
 from .models import KnowledgeDocument, KnowledgeTag, SearchLog
 from .retriever import KnowledgeRetriever
 
 router = APIRouter(prefix="/api/rag_vector", tags=["rag_vector"])
 retriever = KnowledgeRetriever()
 
+
+def _normalize_tag_value(tag: str) -> str:
+    return tag.strip().lower()
+
+
+async def _serialize_document(doc: KnowledgeDocument) -> DocumentResponse:
+    await doc.fetch_related("tag_links__tag")
+    tag_values: list[str] = []
+    seen: set[str] = set()
+    links = getattr(doc, "tag_links", None)
+    if links is None:
+        links_iter = []
+    else:
+        try:
+            links_iter = iter(links)
+        except TypeError:
+            links_iter = []
+
+    for link in links_iter:
+        tag_obj = getattr(link, "tag", None)
+        tag_name = getattr(tag_obj, "tag", None)
+        if not isinstance(tag_name, str):
+            continue
+        normalized = _normalize_tag_value(tag_name)
+        if not normalized or normalized in seen:
+            continue
+        tag_values.append(normalized)
+        seen.add(normalized)
+
+    return DocumentResponse(
+        id=doc.id,
+        title=doc.title,
+        document_type=str(doc.document_type),
+        source=doc.source,
+        tags=tag_values,
+        cve_ids=[str(cve_id) for cve_id in doc.cve_ids if isinstance(cve_id, str)],
+        status=str(doc.status),
+        version=doc.version,
+        created_at=doc.created_at,
+        updated_at=doc.updated_at,
+    )
+
+
+def _serialize_search_result(result: dict[str, object]) -> SearchResult:
+    raw_id = result.get("id")
+    doc_id = raw_id if isinstance(raw_id, int) else 0
+    raw_title = result.get("title")
+    title = raw_title if isinstance(raw_title, str) else ""
+    raw_content = result.get("content")
+    content = raw_content if isinstance(raw_content, str) else ""
+    raw_document_type = result.get("document_type")
+    document_type = raw_document_type if isinstance(raw_document_type, str) else ""
+    raw_source = result.get("source")
+    source = raw_source if isinstance(raw_source, str) else ""
+
+    raw_tags = result.get("tags")
+    tags = [tag for tag in raw_tags if isinstance(tag, str)] if isinstance(raw_tags, list) else []
+    score_value = result.get("score")
+    score = float(score_value) if isinstance(score_value, (int, float)) else 0.0
+
+    return SearchResult(
+        id=doc_id,
+        title=title,
+        content=content,
+        document_type=document_type,
+        score=score,
+        tags=tags,
+        source=source,
+    )
+
 # Request/Response Models
-class DocumentCreate(EndpointModel, kw_only=True):
+class DocumentCreate(EndpointModel, kw_only=True, frozen=True):
     title: str
     content: str
     document_type: str
@@ -21,7 +91,7 @@ class DocumentCreate(EndpointModel, kw_only=True):
     cve_ids: list[str] = []
     relevance_score: float = 0.5
 
-class DocumentResponse(EndpointModel, kw_only=True):
+class DocumentResponse(EndpointModel, kw_only=True, frozen=True):
     id: int
     title: str
     document_type: str
@@ -33,12 +103,12 @@ class DocumentResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-class SearchRequest(EndpointModel, kw_only=True):
+class SearchRequest(EndpointModel, kw_only=True, frozen=True):
     query: str
     search_type: str = "keyword"
     limit: int = 5
 
-class SearchResult(EndpointModel, kw_only=True):
+class SearchResult(EndpointModel, kw_only=True, frozen=True):
     id: int
     title: str
     content: str
@@ -46,6 +116,22 @@ class SearchResult(EndpointModel, kw_only=True):
     score: float
     tags: list[str]
     source: str
+
+class TagResponse(EndpointModel, kw_only=True, frozen=True):
+    tag: str
+    category: str
+    usage_count: int
+
+class TagCreateResponse(EndpointModel, kw_only=True, frozen=True):
+    tag: str
+    category: str
+
+class SearchLogResponse(EndpointModel, kw_only=True, frozen=True):
+    query: str
+    search_type: str
+    result_count: int
+    relevance_feedback: str
+    searched_at: datetime
 
 # Document Management Endpoints
 @router.post("/documents", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
@@ -71,8 +157,10 @@ async def create_document(
         if result["status"] == "duplicate":
             raise HTTPException(status_code=409, detail="Document already exists (duplicate)")
         
-        doc = await KnowledgeDocument.get_by_id(result["document_id"])
-        return DocumentResponse(**{f: getattr(doc, f) for f in DocumentResponse.__struct_fields__})
+        doc = await KnowledgeDocument.get_or_none(id=result["document_id"])
+        if doc is None:
+            raise HTTPException(status_code=404, detail="Document not found after ingestion")
+        return await _serialize_document(doc)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create document: {str(e)}")
@@ -93,10 +181,10 @@ async def list_documents(
     if status_filter:
         query = query.filter(status=status_filter)
     if tag:
-        query = query.filter(tags__contains=tag)
+        query = query.filter(tag_links__tag__tag=_normalize_tag_value(tag)).distinct()
     
-    docs = await query.order_by("-updated_at").limit(limit).all()
-    return [DocumentResponse(**{f: getattr(d, f) for f in DocumentResponse.__struct_fields__}) for d in docs]
+    docs = await query.prefetch_related("tag_links__tag").order_by("-updated_at").limit(limit).all()
+    return [await _serialize_document(d) for d in docs]
 
 @router.get("/documents/{doc_id}", response_model=DocumentResponse)
 async def get_document(
@@ -113,7 +201,7 @@ async def get_document(
     doc.last_accessed_at = datetime.now(timezone.utc)
     await doc.save()
     
-    return DocumentResponse(**{f: getattr(doc, f) for f in DocumentResponse.__struct_fields__})
+    return await _serialize_document(doc)
 
 @router.delete("/documents/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
@@ -127,7 +215,7 @@ async def delete_document(
         raise HTTPException(status_code=404, detail="Document not found")
     
     # Archive instead of hard delete
-    doc.status = "archived"
+    doc.status = DocumentStatus.ARCHIVED
     await doc.save()
 
 # Search Endpoints
@@ -153,17 +241,17 @@ async def search_knowledge(
             search_type=req.search_type,
         )
         
-        return [SearchResult(**r) for r in results]
+        return [_serialize_search_result(r) for r in results]
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Search failed: {str(e)}")
 
 # Tag Management Endpoints
-@router.get("/tags", response_model=list[dict[str, Any]])
+@router.get("/tags", response_model=list[TagResponse])
 async def list_tags(
     org_id: int = Query(..., description="Organization ID"),
     category: str | None = None,
-):
+) -> list[TagResponse]:
     """List rag_vector tags."""
     
     query = KnowledgeTag.filter(organization_id=org_id)
@@ -171,37 +259,45 @@ async def list_tags(
         query = query.filter(category=category)
     
     tags = await query.order_by("-usage_count").all()
-    return [{"tag": t.tag, "category": t.category, "usage_count": t.usage_count} for t in tags]
+    return [
+        TagResponse(
+            tag=t.tag,
+            category=str(t.category),
+            usage_count=t.usage_count,
+        )
+        for t in tags
+    ]
 
-@router.post("/tags", status_code=status.HTTP_201_CREATED)
+@router.post("/tags", response_model=TagCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_tag(
     tag: str = Query(..., min_length=1, max_length=128),
     category: str = Query("custom", pattern="^(tactic|technique|threat_actor|malware|tool|vulnerability|custom)$"),
     org_id: int = Query(..., description="Organization ID"),
-):
+) -> TagCreateResponse:
     """Create rag_vector tag."""
     
-    existing = await KnowledgeTag.get_or_none(organization_id=org_id, tag=tag)
+    normalized_tag = _normalize_tag_value(tag)
+    existing = await KnowledgeTag.get_or_none(organization_id=org_id, tag=normalized_tag)
     if existing:
         raise HTTPException(status_code=409, detail="Tag already exists")
     
     try:
         tag_obj = await KnowledgeTag.create(
             organization_id=org_id,
-            tag=tag,
+            tag=normalized_tag,
             category=category,
         )
-        return {"tag": tag_obj.tag, "category": tag_obj.category}
+        return TagCreateResponse(tag=tag_obj.tag, category=str(tag_obj.category))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to create tag: {str(e)}")
 
 # Analytics Endpoints
-@router.get("/search-log", response_model=list[dict[str, Any]])
+@router.get("/search-log", response_model=list[SearchLogResponse])
 async def get_search_log(
     org_id: int = Query(..., description="Organization ID"),
     agent_id: str | None = None,
     limit: int = Query(50, ge=1, le=500),
-):
+) -> list[SearchLogResponse]:
     """Get rag_vector search history for analytics."""
     
     query = SearchLog.filter(organization_id=org_id)
@@ -210,13 +306,13 @@ async def get_search_log(
     
     logs = await query.order_by("-searched_at").limit(limit).all()
     return [
-        {
-            "query": log.query,
-            "search_type": log.search_type,
-            "result_count": log.result_count,
-            "relevance_feedback": log.relevance_feedback,
-            "searched_at": log.searched_at,
-        }
+        SearchLogResponse(
+            query=log.query,
+            search_type=str(log.search_type),
+            result_count=log.result_count,
+            relevance_feedback=str(log.relevance_feedback),
+            searched_at=log.searched_at,
+        )
         for log in logs
     ]
 
@@ -238,7 +334,7 @@ async def record_search_feedback(
         if not log:
             raise HTTPException(status_code=404, detail="Search log not found")
         
-        log.relevance_feedback = feedback
+        log.relevance_feedback = RelevanceFeedback(feedback)
         await log.save()
         
         return {"status": "recorded"}

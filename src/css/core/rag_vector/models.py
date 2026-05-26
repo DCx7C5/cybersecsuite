@@ -4,6 +4,7 @@ from tortoise import fields
 from tortoise.fields import CharEnumField
 
 from css.core.db.fields import DescriptionField, QualityScoreField
+from css.core.db.models.accounts import Organization
 from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
 from css.core.rag_vector.enums import (
@@ -19,7 +20,7 @@ from css.core.rag_vector.enums import (
 class KnowledgeDocument(BaseModel, TimestampMixin):
     """Searchable rag_vector document with embeddings."""
 
-    organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
+    organization: fields.ForeignKeyRelation[Organization] = fields.ForeignKeyField(
         "models.Organization",
         related_name="knowledge_documents",
         on_delete=fields.CASCADE,
@@ -46,10 +47,6 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
     )
     
     # Tagging
-    tags = fields.JSONField(
-        default=list,
-        help_text="searchable tags (cve, malware, lateral_movement, etc.)"
-    )
     cve_ids = fields.JSONField(
         default=list,
         help_text="CVE IDs mentioned in document"
@@ -108,7 +105,7 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
 class KnowledgeIndex(BaseModel):
     """Index entry for full-text search across documents."""
 
-    document: fields.ForeignKeyRelation = fields.ForeignKeyField(
+    document: fields.ForeignKeyRelation[KnowledgeDocument] = fields.ForeignKeyField(
         "models.KnowledgeDocument",
         related_name="index_entries",
         on_delete=fields.CASCADE,
@@ -137,7 +134,7 @@ class KnowledgeIndex(BaseModel):
 class KnowledgeTag(BaseModel):
     """Taxonomy tags for rag_vector organization."""
 
-    organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
+    organization: fields.ForeignKeyRelation[Organization] = fields.ForeignKeyField(
         "models.Organization",
         related_name="knowledge_tags",
         on_delete=fields.CASCADE,
@@ -157,10 +154,33 @@ class KnowledgeTag(BaseModel):
         unique_together = (("organization_id", "tag"),)
 
 
+class KnowledgeDocumentTag(BaseModel):
+    """M2M association between knowledge documents and knowledge tags."""
+
+    document: fields.ForeignKeyRelation[KnowledgeDocument] = fields.ForeignKeyField(
+        "models.KnowledgeDocument",
+        related_name="tag_links",
+        on_delete=fields.CASCADE,
+    )
+    tag: fields.ForeignKeyRelation[KnowledgeTag] = fields.ForeignKeyField(
+        "models.KnowledgeTag",
+        related_name="document_links",
+        on_delete=fields.CASCADE,
+    )
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        table = "knowledge_document_tags"
+        unique_together = (("document_id", "tag_id"),)
+        indexes = [
+            Index(fields=["document_id", "tag_id"]),
+            Index(fields=["tag_id", "document_id"]),
+        ]
+
+
 class SearchLog(BaseModel):
     """Log of agent/user rag_vector base searches for analytics."""
 
-    organization: fields.ForeignKeyRelation = fields.ForeignKeyField(
+    organization: fields.ForeignKeyRelation[Organization] = fields.ForeignKeyField(
         "models.Organization",
         related_name="knowledge_searches",
         on_delete=fields.CASCADE,
@@ -201,6 +221,7 @@ __all__ = [
     "DocumentType",
     "DocumentStatus",
     "KnowledgeDocument",
+    "KnowledgeDocumentTag",
     "KnowledgeIndex",
     "KnowledgeTag",
     "SearchLog",

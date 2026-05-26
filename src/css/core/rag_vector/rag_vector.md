@@ -30,10 +30,11 @@ registration, and tests before carrying out that source move.
 | Class | File | Purpose |
 |-------|------|---------|
 | `KnowledgeRetriever` | `retriever.py` | Semantic + keyword hybrid document retrieval |
-| `KnowledgeDocument` | `models.py` | ORM model for stored documents (content, type, source, tags, relevance_score, content_hash) |
+| `KnowledgeDocument` | `models.py` | ORM model for stored documents (content, type, source, relevance_score, content_hash). |
+| `KnowledgeDocumentTag` | `models.py` | Document↔knowledge-tag FK association table (replaces inline JSON tag list). |
 | `KnowledgeIndex` | `models.py` | Inverted index with term frequency tracking |
 | `SearchLog` | `models.py` | Query logging for analytics |
-| `KnowledgeTag` | `models.py` | Tag/document associations |
+| `KnowledgeTag` | `models.py` | Organization-scoped rag_vector taxonomy tags. |
 | `DocumentType`, `DocumentStatus`, `SourceType`, `SearchType`, `RelevanceFeedback`, `TagCategory` | `enums.py` | Current enum definitions for document/search/tag concepts. |
 | `router`, request/response structs | `endpoints.py` | Current `/api/rag_vector` document, search, tag, search-log, and feedback API. |
 
@@ -64,7 +65,7 @@ until those boundaries and `pgvector` behavior are validated in source.
 - **Keyword search**: inverted index via `KnowledgeIndex` model, TF-weighted scoring
 - **Semantic search**: pgvector placeholder — falls back to `relevance_score` ordering
 - **Hybrid search**: merges keyword + semantic results with score averaging
-- **Document ingestion**: content hash dedup → `KnowledgeDocument` create → term indexing (top 100 terms)
+- **Document ingestion**: content hash dedup → `KnowledgeDocument` create → `KnowledgeTag` upsert + `KnowledgeDocumentTag` associations → term indexing (top 100 terms)
 - **Search logging**: every query logged to `SearchLog` for analytics
 
 ### Planned Responsibilities

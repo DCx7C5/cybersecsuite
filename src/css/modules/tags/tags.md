@@ -118,7 +118,6 @@
 
 | Model | Location | Reason | Status |
 |-------|----------|--------|--------|
-| `KnowledgeDocument` | `src/css/core/rag_vector/models.py` | RAG-specific tagging for retrieval metadata | KEEP (domain-specific semantics) |
 | `SkillDefinitionModel` | `src/css/modules/skills/models.py` | Inline skill metadata (pre-Phase 40) | MIXED (has both JSONField and M2M now) |
 | `Evidence` | `src/css/modules/evidence/models.py` | Incident classification (incident_type, severity) | DEFER (decision needed) |
 | `ThreatIntel` | `src/css/modules/threat_intel/models.py` | Threat actor classification | DEFER (decision needed) |
@@ -137,7 +136,7 @@
 
 | Model | Location | Purpose | Related To | Status |
 |-------|----------|---------|------------|--------|
-| `KnowledgeTag` | `src/css/core/rag_vector/models.py` | RAG knowledge base tags | `KnowledgeDocument` (1:N) | KEEP (domain-specific with retrieval semantics) |
+| `KnowledgeTag` + `KnowledgeDocumentTag` | `src/css/core/rag_vector/models.py` | RAG knowledge taxonomy and document tag links | `KnowledgeDocument` (M:N via FK junction) | KEEP (domain-specific with retrieval semantics) |
 | `EvidenceTagging` | `src/css/modules/evidence/models.py` | Evidence classification audit trail | `Evidence` (M:M via association) | KEEP (audit/evidence context) |
 
 **When to use**:
@@ -155,7 +154,7 @@
 | **MarketplaceItem** | Canonical (M2M) | ✓ Keep canonical | Marketplace filtering, user discovery | ✓ Done (Phase 40) |
 | **HybridToolDefinition** | Canonical (M2M) | ✓ Keep canonical | Tool composition, runtime selection | ✓ Done (Phase 40) |
 | **SkillDefinitionModel** | JSON array + M2M | Migrate to M2M only (remove JSONField) | Align with tools; enable skill discovery/filtering | 🟡 Phase 40 Lane E |
-| **KnowledgeDocument** | JSON array | ✓ Keep JSON (RAG context) | RAG retrieval semantics differ from general tags; no cross-entity querying needed | Phase 42+ |
+| **KnowledgeDocument** | Domain-local FK M2M (`KnowledgeDocumentTag`) | ✓ Keep domain-local relation | RAG tagging stays domain-local but now uses normalized FK associations instead of JSON arrays | ✓ Done (Phase 40) |
 | **Evidence** | JSON array | Candidate for canonical M2M | Incident classification is cross-cutting policy concern; could benefit from shared taxonomy | 🟡 Defer to Phase 42 |
 | **ThreatIntel** | JSON array | Keep JSON or create domain table | Threat intelligence has specialized semantics; evaluate in security/intel lane | 🟡 Defer to Phase 42+ |
 
@@ -177,7 +176,7 @@
 
 **Domain-local alternatives**:
 - JSONField for unstructured, non-queryable tags (cache, UI state, transient data)
-- Domain-specific tables for tags with audit/context (KnowledgeTag, EvidenceTagging)
+- Domain-specific tables for tags with audit/context (`KnowledgeTag`, `KnowledgeDocumentTag`, `EvidenceTagging`)
 - Never mix canonical M2M with JSONField on the same entity (choose one pattern)
 
 ---
@@ -209,7 +208,7 @@
 - **SkillDefinitionModel**: Remove `tags` JSONField once M2M junction is wired (Phase 40 Lane E)
 - **Evidence**: Migrate to canonical M2M in Phase 42 security lane (candidate for shared incident taxonomy)
 - **ThreatIntel**: Evaluate in Phase 42+ (may keep domain-local or create specialized threat taxonomy)
-- **KnowledgeDocument**: Keep JSON tags (RAG-specific retrieval semantics incompatible with general taxonomy)
+- **KnowledgeDocument**: Completed migration to domain-local FK relation via `KnowledgeDocumentTag` in Phase 40
 
 ---
 
