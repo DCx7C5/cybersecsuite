@@ -7,7 +7,7 @@ from uuid import uuid4
 import msgspec
 
 
-class DomainEvent(msgspec.Struct, frozen=True):
+class DomainEvent(msgspec.Struct, frozen=True, kw_only=True):
     """Immutable domain event for audit trail and replay.
 
     All domain mutations are represented as events and persisted to EventStore.

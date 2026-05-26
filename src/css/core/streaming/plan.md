@@ -3,7 +3,7 @@
 > **MOVED TO CORE**: Originally `core/streaming/`, now at `src/css/core/streaming/`
 > Reflects infrastructure nature of streaming/real-time processing.
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable streaming specification.
 
 ---
 
@@ -67,7 +67,7 @@ __all__ = ['StreamManager']
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain streaming implementation detail in this local document.
 
 ---
 
@@ -94,10 +94,10 @@ class ConfigLayer(str, Enum):
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

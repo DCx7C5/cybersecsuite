@@ -4,18 +4,18 @@ from typing import Any, Literal
 import msgspec
 
 
-class Message(msgspec.Struct, frozen=True):
-    id: str = ""
+class Message(msgspec.Struct, frozen=True, kw_only=True):
     from_id: str
     to_id: str
-    type: str = "task"
     payload: Any
+    id: str = ""
+    type: str = "task"
     routing_mode: Literal["direct", "shortest_path"] = "shortest_path"
-    timestamp: datetime = datetime.now(UTC)
+    timestamp: datetime = msgspec.field(default_factory=lambda: datetime.now(UTC))
 
     def to_msgpack(self) -> bytes:
         """Serialize for Redis IPC transport using msgpack."""
-        return msgspec.msgpack.encode(msgspec.to_builtians(self))
+        return msgspec.msgpack.encode(msgspec.to_builtins(self))
 
     @classmethod
     def from_msgpack(cls, raw: bytes) -> "Message":

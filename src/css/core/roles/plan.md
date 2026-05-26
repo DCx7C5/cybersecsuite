@@ -1,6 +1,6 @@
 # @roles — Role Definitions & Management
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable roles specification.
 
 ---
 
@@ -10,7 +10,10 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| *(fill in module-specific relationships)* | | |
+| `css.core.permissions` | ← consumed by | Role grants constrain path/tool authorization policy. |
+| `css.modules.agents` | ← consumed by | Agent role assignment and execution capability checks. |
+| `css.modules.teams` | ← consumed by | Team leader/member role semantics. |
+| `css.core.events` | → emits | Role assignment/change audit events when wired. |
 
 ---
 
@@ -36,12 +39,14 @@
 - [x] Role registry — REGISTRY dict + get() lookup function
 - [x] Role enums — RoleType (3 roles) and Permission (16+ permissions)
 - [x] Role exceptions — RoleNotFoundError, PermissionDeniedError, InvalidRoleError
-- [x] Role inheritance resolution — Via dataclass defaults and field factories
+- [x] Role inheritance resolution — Current behavior exists; any touched
+  value-type implementation must use `msgspec.Struct` rather than dataclasses.
 - [x] Role-to-permission mapping — permissions list on each role
 - [x] Add logger initialization in `__init__.py` — Full logging setup
 
 **Completed (Phase 2 Foundation)**:
-✅ OrchestrationRole base dataclass with standard fields
+✅ OrchestrationRole value-type surface with standard fields; touched
+implementations must use `msgspec.Struct`.
 ✅ OrchestratorRole (process-level, 60s heartbeat, 7 permissions)
 ✅ TeamLeaderRole (in-process, 30s heartbeat, 7 permissions)
 ✅ TeamMemberRole (executor, 15s heartbeat, 4 permissions)
@@ -149,14 +154,13 @@ Team Subprocess (Per Team)
 
 A **Role** definition:
 ```python
-@dataclass
-class Role:
+class Role(msgspec.Struct, frozen=True):
     """Role = unified capability across agents, skills, tools, MCPs"""
     role_id: str           # e.g., "senior-engineer"
     agents: list[Agent]    # Which agents can this role spawn?
     skills: list[Skill]    # Which skills are attached?
     tools: list[Tool]      # Which tools can it call?
-    sdk_access: Dict       # Which MCPs/SDKs are available?
+    sdk_access: dict[str, object]  # Which MCPs/SDKs are available?
     max_concurrent: int    # Parallelism limit
     timeout_sec: int       # Execution timeout
 ```
@@ -344,16 +348,16 @@ session:
 ## Audit (2026-05-03)
 
 **Status**: Audited by Agent 3 | **Timestamp**: 2026-05-03T19:55
-**Details**: See .plan/plan.md for current audit and phase status.
+**Details**: Query `.plan/session.db` for current status; retain role implementation detail in this local document.
 
 ---
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

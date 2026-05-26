@@ -35,7 +35,7 @@ pwd_context = CryptContext(
 # Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TokenPayload(msgspec.Struct, frozen=True):
+class TokenPayload(msgspec.Struct, frozen=True, kw_only=True):
     """JWT token payload."""
     sub: str
     exp: float
@@ -44,7 +44,7 @@ class TokenPayload(msgspec.Struct, frozen=True):
     scopes: list[str] = []
 
 
-class AccessTokenResponse(msgspec.Struct, frozen=True):
+class AccessTokenResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Response after token issuance."""
     access_token: str
     refresh_token: str | None = None
@@ -52,7 +52,7 @@ class AccessTokenResponse(msgspec.Struct, frozen=True):
     expires_in: int
 
 
-class APIKeyResponse(msgspec.Struct, frozen=True):
+class APIKeyResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Response after API key generation."""
     key_id: str
     secret: str

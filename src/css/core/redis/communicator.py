@@ -10,7 +10,7 @@ from .messaging import Message
 
 log = getLogger(__name__)
 
-class RedisCommunicator(msgspec.Struct):
+class RedisCommunicator(msgspec.Struct, kw_only=True):
     """High-level async messaging interface for a single agents/entity.
 
     Wraps ``MessageDispatcher`` with a sender identity so callers never
@@ -23,7 +23,7 @@ class RedisCommunicator(msgspec.Struct):
 
     _entity_id: str
     _dispatcher: MessageDispatcher
-    _handlers: dict[str, list[Callable]] = msgspec.field(default_factory=dict, exclude=True)
+    _handlers: dict[str, list[Callable]] = msgspec.field(default_factory=dict)
 
     @property
     def entity_id(self) -> str:

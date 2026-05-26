@@ -29,10 +29,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from css.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
+from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
 from css.core.loader import (
     build_tortoise_connection,
@@ -83,7 +84,26 @@ def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         log.info("CyberSecSuite starting — host=%s port=%d", ASGI_HOST, ASGI_PORT)
-        tortoise_apps = build_tortoise_modules()
+        tortoise_modules = build_tortoise_modules()
+        css_model_paths = sorted({
+            model_path
+            for model_paths in tortoise_modules.values()
+            for model_path in model_paths
+        })
+        for required_path in ("css.core.db.models.menu", "css.core.db.models.marketplace"):
+            if required_path not in css_model_paths:
+                css_model_paths.append(required_path)
+        css_model_paths.sort()
+        tortoise_apps = {
+            "css": {
+                "models": css_model_paths,
+                "default_connection": "default",
+            },
+            "models": {
+                "models": css_model_paths,
+                "default_connection": "default",
+            },
+        }
         marketplace_update_task: asyncio.Task | None = None
         marketplace_update_stop = asyncio.Event()
 
@@ -103,25 +123,72 @@ def create_app() -> FastAPI:
                 except asyncio.TimeoutError:
                     continue
 
-        await Tortoise.init(
-            config={
-                "connections": {"default": build_tortoise_connection(POSTGRES_DATABASE)},
-                "apps": tortoise_apps,
-            }
-        )
-        if ENVIRONMENT == "development":
-            await Tortoise.generate_schemas(safe=True)
+        db_ready = False
+        marketplace_db_ready = False
+        try:
+            await Tortoise.init(
+                config={
+                    "connections": {"default": build_tortoise_connection(POSTGRES_DATABASE)},
+                    "apps": tortoise_apps,
+                }
+            )
+            if ENVIRONMENT == "development":
+                await Tortoise.generate_schemas(safe=True)
+            db_ready = True
+            marketplace_db_ready = True
+        except Exception as exc:
+            log.warning("DB init failed; continuing without DB-backed startup services: %s", exc)
+            try:
+                await Tortoise.close_connections()
+            except Exception:
+                pass
+            try:
+                # Keep marketplace available even when broader model graph is broken.
+                marketplace_db_config = dict(POSTGRES_DATABASE)
+                if not marketplace_db_config.get("host"):
+                    marketplace_db_config["host"] = "127.0.0.1"
+                if not marketplace_db_config.get("port"):
+                    marketplace_db_config["port"] = "5432"
+                if marketplace_db_config.get("database") in {None, "", "cybersec"}:
+                    marketplace_db_config["database"] = "cybersec_forensics"
+                await Tortoise.init(
+                    config={
+                        "connections": {"default": build_tortoise_connection(marketplace_db_config)},
+                        "apps": {
+                            "css": {
+                                "models": [
+                                    "css.core.db.models.marketplace",
+                                ],
+                                "default_connection": "default",
+                            },
+                            "models": {
+                                "models": [
+                                    "css.core.db.models.marketplace",
+                                    "css.core.db.models.menu",
+                                ],
+                                "default_connection": "default",
+                            },
+                        },
+                    }
+                )
+                if ENVIRONMENT == "development":
+                    await Tortoise.generate_schemas(safe=True)
+                marketplace_db_ready = True
+                log.info("Marketplace-only DB init succeeded")
+            except Exception as marketplace_exc:
+                log.warning("Marketplace-only DB init failed: %s", marketplace_exc)
 
         # Load async tool-registry runtime state after DB init.
-        from css.modules.tools.registry import ToolRegistry
+        if db_ready:
+            from css.modules.tools.registry import ToolRegistry
 
-        tool_registry = ToolRegistry()
-        await tool_registry.initialize_runtime_state()
-        log.info(
-            "ToolRegistry ready: %d builtin tools, %d hybrid tools",
-            len(tool_registry.tools),
-            len(tool_registry.hybrid_tools),
-        )
+            tool_registry = ToolRegistry()
+            await tool_registry.initialize_runtime_state()
+            log.info(
+                "ToolRegistry ready: %d builtin tools, %d hybrid tools",
+                len(tool_registry.tools),
+                len(tool_registry.hybrid_tools),
+            )
 
         # Wire registry cache invalidation to marketplace events.
         try:
@@ -132,13 +199,16 @@ def create_app() -> FastAPI:
         except Exception as exc:
             log.warning("Failed to wire registry events: %s", exc)
 
-        try:
-            from css.core.marketplace.seeder import seed_marketplace_on_startup
+        if marketplace_db_ready:
+            try:
+                from css.core.db.models.menu import sync_default_menu_items
+                from css.core.marketplace.seeder import seed_marketplace_on_startup
 
-            await seed_marketplace_on_startup()
-            marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
-        except Exception as exc:
-            log.warning("Marketplace startup integration failed: %s", exc)
+                await sync_default_menu_items()
+                await seed_marketplace_on_startup(force=True)
+                marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
+            except Exception as exc:
+                log.warning("Marketplace startup integration failed: %s", exc)
 
         try:
             yield
@@ -151,7 +221,8 @@ def create_app() -> FastAPI:
                     await marketplace_update_task
                 except asyncio.CancelledError:
                     pass
-            await Tortoise.close_connections()
+            if db_ready or marketplace_db_ready:
+                await Tortoise.close_connections()
 
     _app = FastAPI(
         title="CyberSecSuite",
@@ -172,13 +243,38 @@ def create_app() -> FastAPI:
     try:
         from css.core.marketplace.endpoints import router as marketplace_router
         _app.include_router(marketplace_router)
+        _app.include_router(marketplace_router, prefix="/api")
         log.info("Mounted core endpoints: marketplace")
     except Exception as e:
         log.warning(f"Failed to mount marketplace endpoints: {e}")
 
+    try:
+        from css.core.menu.endpoints import router as menu_router
+
+        _app.include_router(menu_router)
+        log.info("Mounted core endpoints: menu")
+    except Exception as e:
+        log.warning(f"Failed to mount menu endpoints: {e}")
+
     # Auto-discover and mount all modules/*/endpoints.py routers
     mounted = mount_app_routers(_app)
     log.info("App endpoints mounted: %s", mounted or ["(none)"])
+
+    # Mount frontend static build if available
+    frontend_dist = Path(__file__).resolve().parent.parent.parent.parent / "frontend" / "dist"
+    if frontend_dist.is_dir():
+        _app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="frontend_assets")
+
+        @_app.api_route("/{full_path:path}", methods=["GET"])
+        async def serve_frontend(full_path: str) -> FileResponse:
+            file_path = frontend_dist / full_path
+            if full_path and file_path.is_file():
+                return FileResponse(str(file_path))
+            return FileResponse(str(frontend_dist / "index.html"))
+
+        log.info("Mounted frontend static build from %s", frontend_dist)
+    else:
+        log.info("No frontend dist at %s — frontend not served", frontend_dist)
 
     return _app
 

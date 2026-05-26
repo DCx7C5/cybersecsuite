@@ -5,7 +5,7 @@ the orchestration architecture (process-level and in-process roles).
 """
 import msgspec
 
-class OrchestrationRole(msgspec.Struct):
+class OrchestrationRole(msgspec.Struct, tag=True):
     """Base class for orchestration-specific roles (not tied to system-wide roles)."""
 
     role_id: str

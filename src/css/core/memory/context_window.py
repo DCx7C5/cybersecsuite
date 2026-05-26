@@ -11,7 +11,7 @@ from typing import Any
 from css.core.types.base_messages import BaseMessage
 
 
-class TokenEstimate(msgspec.Struct):
+class TokenEstimate(msgspec.Struct, frozen=True, kw_only=True):
     """Token count estimate for a message or text.
     
     Attributes:
@@ -24,7 +24,7 @@ class TokenEstimate(msgspec.Struct):
     estimated: bool = True
 
 
-class ContextWindow(msgspec.Struct):
+class ContextWindow(msgspec.Struct, frozen=True, kw_only=True):
     """Sliding context window with rolling token budget.
     
     Maintains a FIFO queue of messages within max_tokens capacity.
@@ -203,7 +203,7 @@ class ContextWindow(msgspec.Struct):
         object.__setattr__(self, 'evicted_count', 0)
 
 
-class WindowConfig(msgspec.Struct):
+class WindowConfig(msgspec.Struct, frozen=True, kw_only=True):
     """Configuration for context window behavior.
     
     Attributes:

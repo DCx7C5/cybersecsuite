@@ -97,7 +97,7 @@ class KnowledgeDocument(BaseModel, TimestampMixin):
         help_text="SHA256 hash for deduplication"
     )
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "knowledge_documents"
         indexes = [
             Index(fields=["organization", "document_type", "status"]),
@@ -121,7 +121,7 @@ class KnowledgeIndex(BaseModel):
     # Position tracking for phrase matching
     positions = fields.JSONField(default=list)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "knowledge_index"
         table_verbose = "Knowledge Index"
         table_verbose_plural = "Knowledge Indices"
@@ -152,7 +152,7 @@ class KnowledgeTag(BaseModel):
     description = DescriptionField(default="")
     usage_count = fields.IntField(default=0)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "knowledge_tags"
         unique_together = (("organization", "tag"),)
 
@@ -192,7 +192,7 @@ class SearchLog(BaseModel):
     
     searched_at = fields.DatetimeField(auto_now_add=True)
     
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "knowledge_search_log"
         ordering = ["-searched_at"]
 

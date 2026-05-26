@@ -1,8 +1,9 @@
 """Retry configuration and strategy primitives."""
 
-from dataclasses import dataclass, field
 from enum import Enum
 import random
+
+import msgspec
 
 
 class RetryStrategy(str, Enum):
@@ -22,15 +23,14 @@ class RetryableErrorType(str, Enum):
     NOT_FOUND = "not_found"
 
 
-@dataclass
-class RetryConfig:
+class RetryConfig(msgspec.Struct, kw_only=True):
     max_retries: int = 3
     base_delay_ms: float = 1000.0
     max_delay_ms: float = 60000.0
     exponential_base: float = 2.0
     jitter_min: float = 0.9
     jitter_max: float = 1.1
-    retryable_errors: list[RetryableErrorType] = field(
+    retryable_errors: list[RetryableErrorType] = msgspec.field(
         default_factory=lambda: [
             RetryableErrorType.TIMEOUT,
             RetryableErrorType.RATE_LIMIT,

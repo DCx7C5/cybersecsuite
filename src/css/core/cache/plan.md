@@ -7,7 +7,7 @@
 
 ---
 
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This document owns the executable cache specification.
 
 ---
 
@@ -17,7 +17,11 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
-| *(fill in module-specific relationships)* | | |
+| `css.core.redis` | → consumes | L2 hot distributed-cache backend. |
+| `css.core.prompt_cache` | ← consumed by | Prompt-response caching shares cache infrastructure without owning general policy. |
+| `css.core.settings` | ← consumed by | Runtime configuration caching and invalidation. |
+| `css.core.marketplace` | ← consumed by | Catalog/listing caches. |
+| `css.core.memory` / retrieval owners | ← consumed by | Memory and retrieval-result cache paths where provenance-aware invalidation exists. |
 
 ---
 
@@ -128,10 +132,10 @@ L5 sits above the L1-L3 cache stack and is handled at the provider SDK level, no
 
 ## 🔄 Sync Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

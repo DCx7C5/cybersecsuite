@@ -9,7 +9,7 @@ from css.core.db.models.base import BaseModel
 from css.core.db.models.mixins import TimestampMixin
 
 
-class CacheEntry(msgspec.Struct):
+class CacheEntry(msgspec.Struct, frozen=True, kw_only=True):
     """Runtime cache entry used by in-memory cache layers."""
 
     key: str
@@ -24,7 +24,7 @@ class CacheEntry(msgspec.Struct):
         return datetime.now(UTC) >= self.created_at + timedelta(seconds=self.ttl_seconds)
 
 
-class CacheStats(msgspec.Struct):
+class CacheStats(msgspec.Struct, frozen=True, kw_only=True):
     """Runtime cache metrics counters."""
 
     hits: int = 0
@@ -50,10 +50,10 @@ class CacheEntryModel(BaseModel, TimestampMixin):
     ttl_seconds = fields.IntField(default=0)
     expires_at = fields.DatetimeField(null=True, db_index=True)
 
-    class Meta:
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "cache_entries"
         indexes = [
-            models.Index(fields=["namespace", "expires_at"]),
-            models.Index(fields=["cache_key", "expires_at"]),
-            models.Index(fields=["expires_at"]),
+            models.Index(fields=["namespace", "expires_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["cache_key", "expires_at"]),  # type: ignore[reportPrivateImportUsage]
+            models.Index(fields=["expires_at"]),  # type: ignore[reportPrivateImportUsage]
         ]

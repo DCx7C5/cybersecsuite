@@ -3,7 +3,6 @@
 from css.core.logger import getLogger
 import asyncio
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Generic, TypeVar
 
@@ -17,14 +16,22 @@ logger = getLogger(__name__)
 T = TypeVar("T")
 
 
-@dataclass
 class RetryAttempt:
-    attempt_number: int
-    start_time: datetime
-    end_time: datetime | None = None
-    error: Exception | None = None
-    latency_ms: float = 0.0
-    success: bool = False
+    def __init__(
+        self,
+        attempt_number: int,
+        start_time: datetime,
+        end_time: datetime | None = None,
+        error: Exception | None = None,
+        latency_ms: float = 0.0,
+        success: bool = False,
+    ) -> None:
+        self.attempt_number = attempt_number
+        self.start_time = start_time
+        self.end_time = end_time
+        self.error = error
+        self.latency_ms = latency_ms
+        self.success = success
 
     @property
     def duration_ms(self) -> float:
@@ -33,14 +40,22 @@ class RetryAttempt:
         return 0.0
 
 
-@dataclass
 class RetryResult(Generic[T]):
-    success: bool
-    result: T | None = None
-    error: Exception | None = None
-    attempts: list[RetryAttempt] = field(default_factory=list)
-    total_retries: int = 0
-    total_latency_ms: float = 0.0
+    def __init__(
+        self,
+        success: bool,
+        result: T | None = None,
+        error: Exception | None = None,
+        attempts: list[RetryAttempt] | None = None,
+        total_retries: int = 0,
+        total_latency_ms: float = 0.0,
+    ) -> None:
+        self.success = success
+        self.result = result
+        self.error = error
+        self.attempts = attempts or []
+        self.total_retries = total_retries
+        self.total_latency_ms = total_latency_ms
 
     @property
     def attempt_count(self) -> int:

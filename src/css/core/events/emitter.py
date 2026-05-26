@@ -11,11 +11,6 @@ from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec, TypeVar, cast
 
 from css.core.types.base_emitter import BaseEmitterClass
-from css.modules.hooks.interceptors import (
-    HookBlockedError,
-    HookContext,
-    interceptor_registry,
-)
 
 if TYPE_CHECKING:
     from .event_bus import EventBus
@@ -131,6 +126,12 @@ def _lifecycle_decorator(
 
         @wraps(func)
         async def wrapped(*args: P.args, **kwargs: P.kwargs) -> TResult:
+            from css.modules.hooks.interceptors import (
+                HookBlockedError,
+                HookContext,
+                interceptor_registry,
+            )
+
             arg_tuple = cast(tuple[object, ...], args)
             resolved_event = _resolve_event_name(default_event_name, arg_tuple)
             enabled = _event_enabled_for_call(resolved_event, arg_tuple)

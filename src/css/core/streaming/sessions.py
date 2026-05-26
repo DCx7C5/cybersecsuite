@@ -11,7 +11,7 @@ from typing import Any
 
 logger = getLogger("agents.sessions")
 
-class SessionRecord(msgspec.Struct):
+class SessionRecord(msgspec.Struct, frozen=True, kw_only=True):
     """In-memory record of a Claude SDK session."""
     session_id: str
     agent_name: str

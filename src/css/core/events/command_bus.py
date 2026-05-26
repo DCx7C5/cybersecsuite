@@ -19,7 +19,7 @@ import msgspec
 
 log = getLogger(__name__)
 
-class Command(msgspec.Struct):
+class Command(msgspec.Struct, tag=True):
     """Base command struct.
 
     All commands should inherit from this to enable type-safe dispatch.

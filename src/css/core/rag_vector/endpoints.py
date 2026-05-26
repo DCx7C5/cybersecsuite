@@ -13,7 +13,7 @@ retriever = KnowledgeRetriever()
 
 
 # Request/Response Models
-class DocumentCreate(msgspec.Struct, frozen=True):
+class DocumentCreate(msgspec.Struct, frozen=True, kw_only=True):
     title: str
     content: str
     document_type: str
@@ -23,7 +23,7 @@ class DocumentCreate(msgspec.Struct, frozen=True):
     relevance_score: float = 0.5
 
 
-class DocumentResponse(msgspec.Struct, frozen=True):
+class DocumentResponse(msgspec.Struct, frozen=True, kw_only=True):
     id: int
     title: str
     document_type: str
@@ -36,13 +36,13 @@ class DocumentResponse(msgspec.Struct, frozen=True):
     updated_at: datetime
 
 
-class SearchRequest(msgspec.Struct, frozen=True):
+class SearchRequest(msgspec.Struct, frozen=True, kw_only=True):
     query: str
     search_type: str = "keyword"
     limit: int = 5
 
 
-class SearchResult(msgspec.Struct, frozen=True):
+class SearchResult(msgspec.Struct, frozen=True, kw_only=True):
     id: int
     title: str
     content: str

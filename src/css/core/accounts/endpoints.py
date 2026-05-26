@@ -29,18 +29,18 @@ log = getLogger(__name__)
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class AccountResponse(msgspec.Struct, frozen=True):
+class AccountResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Account response model."""
     id: int
     username: str
     email: str
     is_active: bool
     is_verified: bool
-    last_login: str | None = None
     created_at: str
+    last_login: str | None = None
 
 
-class UserProfileResponse(msgspec.Struct, frozen=True):
+class UserProfileResponse(msgspec.Struct, frozen=True, kw_only=True):
     """User profile response model."""
     bio: str
     timezone: str
@@ -52,14 +52,14 @@ class UserProfileResponse(msgspec.Struct, frozen=True):
     phone: str | None = None
 
 
-class RegisterRequest(msgspec.Struct, frozen=True):
+class RegisterRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Account registration request."""
     username: str
     email: str
     password: str
 
 
-class UpdateProfileRequest(msgspec.Struct, frozen=True):
+class UpdateProfileRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Update user profile request."""
     first_name: str | None = None
     last_name: str | None = None
@@ -71,7 +71,7 @@ class UpdateProfileRequest(msgspec.Struct, frozen=True):
     preferences: dict | None = None
 
 
-class OrganizationResponse(msgspec.Struct, frozen=True):
+class OrganizationResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Organization response model."""
     id: int
     name: str
@@ -82,7 +82,7 @@ class OrganizationResponse(msgspec.Struct, frozen=True):
     created_at: str
 
 
-class CreateOrganizationRequest(msgspec.Struct, frozen=True):
+class CreateOrganizationRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Create organization request."""
     name: str
     slug: str
@@ -90,14 +90,14 @@ class CreateOrganizationRequest(msgspec.Struct, frozen=True):
     tier: str = "free"
 
 
-class MembershipResponse(msgspec.Struct, frozen=True):
+class MembershipResponse(msgspec.Struct, frozen=True, kw_only=True):
     """Organization membership response."""
     account_id: int
     role: str
     joined_at: str
 
 
-class AddMemberRequest(msgspec.Struct, frozen=True):
+class AddMemberRequest(msgspec.Struct, frozen=True, kw_only=True):
     """Add member to organization request."""
     account_id: int
     role: str = "member"
