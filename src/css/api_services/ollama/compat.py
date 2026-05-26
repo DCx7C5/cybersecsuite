@@ -12,8 +12,9 @@ Architecture:
 
 from css.core.logger import getLogger
 from collections.abc import AsyncIterator
+import json
 
-from css.core.types.api_services import (
+from css.core.types import (
     BaseApiServiceClient,
     StreamChunk,
     BaseMessage,
@@ -117,18 +118,13 @@ class OllamaClientCompat(BaseApiServiceClient):
                     models = []
                     
                     for model_info in data.get("models", []):
-                        model_name = model_info.get("name", "")
+                        model_name: str = model_info.get("name", "")
                         if model_name:
                             models.append(
                                 ModelMetadata(
-                                    name=model_name,
+                                    id=model_name,
                                     provider=ProviderType.OLLAMA,
-                                    capabilities={},
-                                    metadata={
-                                        "digest": model_info.get("digest"),
-                                        "size": model_info.get("size"),
-                                        "modified_at": model_info.get("modified_at"),
-                                    }
+                                    display_name=model_name,
                                 )
                             )
                     
@@ -145,9 +141,11 @@ class OllamaClientCompat(BaseApiServiceClient):
         )
         
         if not result.success:
-            raise OllamaConnectionError(f"Failed to fetch models: {result.error}")
+            raise OllamaConnectionError(f"Failed to fetch models: {result.error or 'unknown error'}")
         
         self._cached_models = result.result
+        if self._cached_models is None:
+            self._cached_models = []
         return self._cached_models
     
     async def call_llm(
@@ -211,24 +209,27 @@ class OllamaClientCompat(BaseApiServiceClient):
             call_body["tools"] = self._format_tools(tools)
         
         # Make call with retry
-        async def make_call():
-            return await self._stream_or_buffer(call_body, streaming)
-        
+        async def make_call() -> list[StreamChunk]:
+            collected: list[StreamChunk] = []
+            async for chunk in self._stream_or_buffer(call_body, streaming):
+                collected.append(chunk)
+            return collected
+
         result = await self.retry_orchestrator.execute_with_retry(
             api_call=make_call,
             provider_id=ProviderType.OLLAMA,
         )
-        
+
         if not result.success:
-            # Map error to unified type and raise
+            error = result.error or GatewayError("Ollama call failed")
             mapped_error = self.retry_orchestrator.map_error_to_unified(
-                result.error, ProviderType.OLLAMA
+                error, ProviderType.OLLAMA
             )
             raise mapped_error
-        
-        # result.result is AsyncIterator[StreamChunk]
-        async for chunk in result.result:
-            yield chunk
+
+        if result.result is not None:
+            for chunk in result.result:
+                yield chunk
     
     async def _stream_or_buffer(
         self,
@@ -282,7 +283,7 @@ class OllamaClientCompat(BaseApiServiceClient):
                 if not decoded:
                     continue
                 
-                chunk = await self._parse_stream_chunk(decoded)
+                chunk = self._parse_stream_chunk(decoded)
                 if chunk:
                     yield chunk
         except Exception as e:
@@ -291,10 +292,9 @@ class OllamaClientCompat(BaseApiServiceClient):
                 metadata={"error": str(e)}
             )
     
-    async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
+    @staticmethod
+    def _parse_stream_chunk(line: str) -> StreamChunk | None:
         """Parse SSE line to StreamChunk."""
-        import json
-        
         if not line.startswith("data: "):
             return None
         
@@ -323,9 +323,9 @@ class OllamaClientCompat(BaseApiServiceClient):
         
         return None
     
-    def _parse_buffered_response(self, data: dict) -> StreamChunk:
+    @staticmethod
+    def _parse_buffered_response(data: dict) -> StreamChunk:
         """Parse buffered response to complete StreamChunk."""
-        
         text = ""
         for choice in data.get("choices", []):
             if choice.get("message", {}).get("content"):

@@ -2,7 +2,7 @@
 
 import json
 import os
-from typing import Any
+from typing import override,  Any
 from collections.abc import AsyncIterator
 
 
@@ -54,6 +54,7 @@ class OpenAIApiService(BaseApiServiceClient, StreamingHandler):
         # TODO:
         ...
 
+    @override
     async def call_llm(
         self,
         model_id: str,

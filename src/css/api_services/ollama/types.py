@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 import msgspec
 
 
-class OllamaModel(msgspec.Struct, frozen=True):
+class OllamaModel(msgspec.Struct, frozen=True, kw_only=True):
     """Metadata for a local Ollama model."""
 
     name: str
@@ -24,7 +24,7 @@ class OllamaModel(msgspec.Struct, frozen=True):
     modified_at: datetime = datetime.now(timezone.utc)
 
 
-class OllamaCapabilities(msgspec.Struct, frozen=True):
+class OllamaCapabilities(msgspec.Struct, frozen=True, kw_only=True):
     """Capabilities supported by a specific Ollama model."""
 
     model_name: str
@@ -38,7 +38,7 @@ class OllamaCapabilities(msgspec.Struct, frozen=True):
     discovered_at: datetime = datetime.now(timezone.utc)
 
 
-class OllamaConfig(msgspec.Struct, frozen=True):
+class OllamaConfig(msgspec.Struct, frozen=True, kw_only=True):
     """Configuration for connecting to local Ollama instance."""
 
     base_url: str = "http://localhost:11434"
@@ -56,7 +56,7 @@ class OllamaConfig(msgspec.Struct, frozen=True):
     detect_capabilities: bool = True
 
 
-class OllamaExecutionContext(msgspec.Struct):
+class OllamaExecutionContext(msgspec.Struct, frozen=True, kw_only=True):
     """Execution context specific to Ollama models.
 
     Tracks streaming, interruptions, and local resource usage.
@@ -98,7 +98,7 @@ class OllamaExecutionContext(msgspec.Struct):
         return (self.eval_count / self.total_duration_ms) * 1000
 
 
-class OllamaHealthCheck(msgspec.Struct, frozen=True):
+class OllamaHealthCheck(msgspec.Struct, frozen=True, kw_only=True):
     """Health check result for Ollama instance."""
 
     is_healthy: bool = False

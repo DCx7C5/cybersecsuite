@@ -3,7 +3,7 @@
 from css.core.logger import getLogger
 import json
 import os
-from typing import Any
+from typing import override,  Any
 from collections.abc import AsyncIterator
 
 from css.core.types import (
@@ -81,6 +81,7 @@ class GeminiApiService(BaseApiServiceClient, StreamingHandler):
             ),
         ]
     
+    @override
     async def call_llm(
         self,
         model_id: str,
