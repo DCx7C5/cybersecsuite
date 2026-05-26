@@ -1,4 +1,5 @@
-⚠️ **CRITICAL SESSION.DB SYNC REQUIREMENT**: All todos, tasks, or implementation changes added to this plan must be synchronized with `.plan/session.db`. When you add/modify/remove TODOs in this file, update session.db accordingly. This file and session.db are **bidirectional sources-of-truth** for implementation tracking.
+**Tracking rule**: `.plan/session.db` is authoritative for todo status. This
+document owns the executable planner specification.
 
 ---
 
@@ -10,10 +11,10 @@
 |-----------|-----------|--------------|
 | `css.core.types` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models for plan persistence |
-| `css.modules.working_dir` | → consumes | `planner` mode creates session dir + plan.md template |
+| Session/output-directory owner | → consumes | Confirmed owner creates planner-mode output and its plan template. |
 | `css.modules.tasks` | ← provides to | Plan steps become @tasks tasks |
 | `css.modules.agents` | ← provides to | Agents execute plan steps |
-| `css.core.session` | → consumes | SessionContext (session_id, project_dir) |
+| `css.core.session` | → consumes | Planned `SessionContext(session_id, session_dir, project_id)`; output owner remains to be approved |
 
 ---
 
@@ -32,7 +33,8 @@ Key responsibilities:
 
 ## Working Directory Integration
 
-When an agent session starts in **`planner` mode**, `WorkingDirManager.create(session_id, agent_id, mode="planner")` creates the full directory layout:
+When an agent session starts in **`planner` mode**, the confirmed
+session-output owner must create the full directory layout:
 
 ```
 {session_dir}/
@@ -56,7 +58,7 @@ The planer module is responsible for reading/updating this file as steps execute
 
 ```
 1. PlanCreator.create(objective, steps) → Plan
-2. WorkingDirManager.create(mode="planner") → writes plan.md template
+2. Confirmed session-output owner creates planner mode and writes the plan template
 3. PlanExecutor.run_next_step() → dispatches step as @task
 4. Step completes → PlanTracker.mark_complete(step_id)
 5. plan.md updated in-place with progress markers
@@ -81,7 +83,7 @@ The planer module is responsible for reading/updating this file as steps execute
 ## Module Pattern
 
 ```python
-# src/css/modules/planer/__init__.py
+# src/css/modules/planner-dev/__init__.py
 """Structured multi-step planning for agent sessions."""
 
 from css.core.logger import getLogger
@@ -101,12 +103,12 @@ __all__ = ['PlanCreator', 'PlanExecutor', 'PlanTracker']
 
 ---
 
-## 🔄 Sync Reminder
+## Tracker Reminder
 
-> **BIDIRECTIONAL SYNC REQUIRED**: This file and `.plan/session.db` must always be in sync.
+> **STATUS AUTHORITY**: Query `.plan/session.db` for live todo progress.
 >
-> - When adding/completing a TODO: update `status` in `.plan/session.db`
-> - When updating session.db: reflect changes back to this checklist
+> - This file defines the implementation contract, not completion state.
+> - Update tracker state as required by `.plan/rules.md`.
 > - **PHASE > TASK > TODO is ABSOLUTE** — every TODO belongs to exactly one TASK in one PHASE
 > - See `.plan/rules.md` CRITICAL section for full rules
 >

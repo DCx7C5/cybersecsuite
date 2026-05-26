@@ -8,7 +8,7 @@ import msgspec
 from .enums import PlanStepStatus
 
 
-class PlanStep(msgspec.Struct):
+class PlanStep(msgspec.Struct, frozen=True, kw_only=True):
     """A single executable planning step."""
 
     step_id: str
@@ -18,7 +18,7 @@ class PlanStep(msgspec.Struct):
     depends_on: list[str] = msgspec.field(default_factory=list)
 
 
-class PlannerSession(msgspec.Struct):
+class PlannerSession(msgspec.Struct, frozen=True, kw_only=True):
     """Plan session and progress state."""
 
     session_id: str
