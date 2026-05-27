@@ -5,7 +5,11 @@ from .circuit_breaker import CircuitBreaker, circuit_breaker
 from .models import ComboTarget, ComboConfig, ResolvedTarget
 from .rate_limiter import ProviderLimits, RateLimiter, rate_limiter
 from .strategies import _apply_strategy, _record_good
+from .usage_tracker import UsageRecord, UsageTracker, usage_tracker
 from .strategy import Strategy, ProviderTier, PROVIDER_TIER_LIST
+from .tier_selector import TierSelector
+from .token_counter import TokenCounter
+from .triage import RequestComplexity
 
 __all__ = [
     "Strategy",
@@ -14,6 +18,8 @@ __all__ = [
     "ComboTarget",
     "ComboConfig",
     "ResolvedTarget",
+    "BudgetGuard",
+    "budget_guard",
     "_apply_strategy",
     "_record_good",
     "CircuitBreaker",
@@ -21,4 +27,7 @@ __all__ = [
     "ProviderLimits",
     "RateLimiter",
     "rate_limiter",
+    "UsageRecord",
+    "UsageTracker",
+    "usage_tracker",
 ]
