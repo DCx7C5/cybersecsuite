@@ -120,6 +120,8 @@ from css.core.settings.qol import (
     validate_toggle_combo,
     toggle_description,
 )
+from .context_management import ContextManagementConfig
+from .qol_injector import QoLInjector, FRAGMENTS
 
 # Lazy imports to break circular dependency chains:
 #   types.__init__ → sdks.* → ... → api_services → types.__init__
@@ -255,6 +257,8 @@ __all__ = [
     "ModelNameMapper",
     # tool bridge
     "register_adapter_tools",  # pyright: ignore[reportUnsupportedDunderAll]
+    # context management
+    "ContextManagementConfig",
     # qol
     "QoLToggle",
     "QoLSettings",
@@ -262,6 +266,8 @@ __all__ = [
     "QoLSecurityError",
     "validate_toggle_combo",
     "toggle_description",
+    "QoLInjector",
+    "FRAGMENTS",
     # error mappers
     "BaseErrorMapper",
     "AnthropicErrorMapper",

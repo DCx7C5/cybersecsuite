@@ -513,7 +513,7 @@ resolve settings: session -> project -> global
 | `qol-builtin-presets` | done | Built-in preset definitions. | Types and validator. |
 | `qol-tortoise-model` | pending | Persisted scoped settings and manager. | ORM conventions. |
 | `qol-preset-registry` | pending | Startup-loaded built-in/user preset registry. | Persistence and presets. |
-| `qol-injector-service` | pending | Prompt directive construction and fragment cache. | Validator/settings resolution. |
+| `qol-injector-service` | done | Prompt directive construction and fragment cache. | Validator/settings resolution. |
 | `qol-unified-client-middleware` | pending | Pre-request integration in unified client. | Injector and Phase 10 client. |
 | `qol-cache-key-toggle-hash` | done | Output-control-sensitive prompt-cache key. | Phase 11 prompt cache and injector. |
 | `qol-a2a-integration` | pending | Scope change propagation. | A2A runtime. |
@@ -531,6 +531,7 @@ record later in this file. Current source uses split `base_*` files and
 
 | Path | Current or planned symbols |
 |------|----------------------------|
+| `src/css/core/types/context_management.py` | `ContextManagementConfig` struct with `auto_compact_at_tokens`, `clear_thinking_on_compact`, `custom_summary_prompt`. |
 | `src/css/core/settings/qol.py` | Existing `QoLToggle`, `QoLSettings`; add `BUILTIN_PRESETS`, `QoLSecurityError`, `validate_toggle_combo()`. |
 | `src/css/core/types/qol_injector.py` | Planned `QoLInjector.build_fragment_block()`, `inject_into_messages()`, `inject_into_system()`. |
 | `src/css/core/types/qol_registry.py` | Planned `QoLPresetRegistry.get()`, `list_all()`, `reload()`, `invalidate()`. |
