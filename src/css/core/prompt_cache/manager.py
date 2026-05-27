@@ -8,14 +8,29 @@ Manages decision logic for which cache tier to use per request:
 
 import hashlib
 import json
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Protocol
 
 from css.core.logger import getLogger
+from css.core.types.base_messages import LLMResponse, StreamChunk
 from .anthropic_breakpoints import inject_cache_breakpoints, estimate_message_tokens
+from .streaming_buffer import PromptCacheStreamingBuffer
 from .types import CachingCapability, ResponseCacheStats
 
 logger = getLogger(__name__)
+
+
+class SupportsPromptResponseCache(Protocol):
+    """Minimal cache contract used by PromptCacheManager streaming helpers."""
+
+    async def get(self, cache_key: str) -> LLMResponse | None:
+        """Load buffered response by exact cache key."""
+        ...
+
+    async def set(self, cache_key: str, response: LLMResponse) -> bool:
+        """Store buffered response by exact cache key."""
+        ...
 
 
 class PromptCacheManager:
@@ -105,6 +120,54 @@ class PromptCacheManager:
         payload_str = json.dumps(payload, sort_keys=True, default=str)
         key_hash = hashlib.sha256(payload_str.encode()).hexdigest()
         return f"prompt_cache:exact:{key_hash}"
+
+    def response_to_stream(self, response: LLMResponse) -> AsyncIterator[StreamChunk]:
+        """Adapt cached buffered responses into the public stream contract."""
+
+        async def _iterator() -> AsyncIterator[StreamChunk]:
+            usage_payload = dict(response.usage)
+            if response.text:
+                yield StreamChunk(
+                    type="content_block_delta",
+                    content=response.text,
+                    metadata={"usage": usage_payload},
+                )
+            yield StreamChunk(
+                type="message_stop",
+                stop_reason=response.stop_reason,
+                metadata={"usage": usage_payload},
+            )
+
+        return _iterator()
+
+    async def stream_from_exact_cache(
+        self,
+        exact_match_cache: SupportsPromptResponseCache,
+        cache_key: str,
+    ) -> AsyncIterator[StreamChunk] | None:
+        """Resolve an exact-match hit into stream chunks if present."""
+        cached = await exact_match_cache.get(cache_key)
+        if cached is None:
+            return None
+        return self.response_to_stream(cached)
+
+    async def stream(
+        self,
+        chunk_iterator: AsyncIterator[StreamChunk],
+        exact_match_cache: SupportsPromptResponseCache | None = None,
+        cache_key: str | None = None,
+        store_in_cache: bool = True,
+    ) -> AsyncIterator[StreamChunk]:
+        """Yield provider stream unchanged while caching successful completions."""
+        if not store_in_cache or exact_match_cache is None or cache_key is None:
+            return chunk_iterator
+
+        streaming_buffer = PromptCacheStreamingBuffer(exact_match_cache=exact_match_cache)
+        return streaming_buffer.stream_and_yield(
+            chunk_iterator=chunk_iterator,
+            cache_key=cache_key,
+            store_in_cache=True,
+        )
 
     def estimate_cache_savings(
         self,

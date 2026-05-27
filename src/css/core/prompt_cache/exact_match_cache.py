@@ -4,7 +4,7 @@ Provides O(1) cached LLM responses for identical input prompts across all provid
 Uses SHA256(messages + model + system_prompt) as cache key, stores complete response.
 """
 
-import json
+import msgspec
 
 from css.core.cache.redis_cache import L2RedisCache
 from css.core.logger import getLogger
@@ -41,17 +41,43 @@ class ExactMatchPromptCache:
         Returns:
             LLMResponse if found, None if miss/error
         """
-        try:
-            raw = await self.backend.get(cache_key)
-            if raw is None:
-                return None
-
-            data = json.loads(raw) if isinstance(raw, str) else raw
-            logger.debug(f"Exact-match cache hit for key {cache_key[:16]}...")
-            return LLMResponse(**data)
-        except Exception as e:
-            logger.warning(f"Exact-match cache get error: {e}")
+        raw = await self.backend.get(cache_key)
+        if raw is None:
             return None
+
+        raw_bytes: bytes
+        if isinstance(raw, bytes):
+            raw_bytes = raw
+        elif isinstance(raw, str):
+            raw_bytes = raw.encode()
+        else:
+            logger.warning(
+                "Exact-match cache get received unsupported payload type %s",
+                type(raw).__name__,
+            )
+            return None
+
+        try:
+            decoded = msgspec.json.decode(raw_bytes)
+        except msgspec.DecodeError:
+            logger.warning("Exact-match cache get failed to decode payload")
+            return None
+
+        if not isinstance(decoded, dict):
+            logger.warning(
+                "Exact-match cache get decoded unsupported payload type %s",
+                type(decoded).__name__,
+            )
+            return None
+
+        try:
+            response = LLMResponse(**decoded)
+        except TypeError:
+            logger.warning("Exact-match cache get decoded invalid LLMResponse payload")
+            return None
+
+        logger.debug("Exact-match cache hit for key %s...", cache_key[:16])
+        return response
 
     async def set(
         self,
@@ -68,18 +94,19 @@ class ExactMatchPromptCache:
             True if stored, False on error
         """
         try:
-            serialized = json.dumps(response.__dict__, default=str)
-            success = await self.backend.set(
-                cache_key,
-                serialized,
-                ttl_seconds=self.ttl_seconds,
-            )
-            if success:
-                logger.debug(f"Exact-match cache stored for key {cache_key[:16]}...")
-            return success
-        except Exception as e:
-            logger.warning(f"Exact-match cache set error: {e}")
+            serialized = msgspec.json.encode(msgspec.to_builtins(response))
+        except msgspec.EncodeError:
+            logger.warning("Exact-match cache set failed to encode LLMResponse payload")
             return False
+
+        success = await self.backend.set(
+            cache_key,
+            serialized,
+            ttl_seconds=self.ttl_seconds,
+        )
+        if success:
+            logger.debug("Exact-match cache stored for key %s...", cache_key[:16])
+        return success
 
     async def delete(self, cache_key: str) -> bool:
         """Invalidate cached response by key.
@@ -90,11 +117,7 @@ class ExactMatchPromptCache:
         Returns:
             True if deleted, False if not found or error
         """
-        try:
-            return await self.backend.delete(cache_key)
-        except Exception as e:
-            logger.warning(f"Exact-match cache delete error: {e}")
-            return False
+        return await self.backend.delete(cache_key)
 
     async def clear(self) -> bool:
         """Clear all entries in this cache namespace.
@@ -102,11 +125,7 @@ class ExactMatchPromptCache:
         Returns:
             True if cleared, False on error
         """
-        try:
-            return await self.backend.clear()
-        except Exception as e:
-            logger.warning(f"Exact-match cache clear error: {e}")
-            return False
+        return await self.backend.clear()
 
     @property
     def stats(self):
