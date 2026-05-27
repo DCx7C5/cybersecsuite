@@ -9,8 +9,8 @@ from typing import Any
 
 from ollama import AsyncClient
 from css.core.logger import getLogger
-from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
-from css.core.types.enums import ProviderType
+from css.core.messages.types import LLMResponse, StreamChunk, Tool
+from css.core.types.base_enums import ProviderType
 
 logger = getLogger(__name__)
 

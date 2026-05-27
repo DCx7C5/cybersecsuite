@@ -294,6 +294,17 @@ ENCRYPTION_ENABLED = getenv('ENCRYPTION_ENABLED', 'true').lower() == 'true'
 ENCRYPTION_KEY = getenv('ENCRYPTION_KEY', '')  # Must be set in production
 
 
+# ── SecureMD / Prompt Injection Prevention ─────────────────────────────────────
+
+SECUREMD_ENABLED = getenv('SECUREMD_ENABLED', 'true').lower() == 'true'
+"""Master switch for SecureMD protocol. When false, verify_and_get_body() returns
+the body directly with a log warning and no signature verification."""
+
+SECUREMD_ENFORCE_HEADER = getenv('SECUREMD_ENFORCE_HEADER', 'true').lower() == 'true'
+"""When true, BaseFrontmatterHeader rejects documents missing any of the minimum
+required fields: name, description, signature, hash."""
+
+
 # ── Performance Tuning ──────────────────────────────────────────────────────────
 
 # Connection pooling

@@ -17,7 +17,7 @@ from .context_window import ContextWindow
 from .enums import MemoryEntryKind, MemoryScope, MemoryTier
 from .session_store import SessionStore
 from .types import MemoryEntry
-from css.core.types.context import ConversationContext
+from css.core.sdks.context import ConversationContext
 
 log = getLogger(__name__)
 

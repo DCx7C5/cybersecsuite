@@ -11,8 +11,8 @@ from typing import TypeAlias
 import msgspec
 
 from css.core.logger import getLogger
-from css.core.types.enums import HookErrorStrategy
-from css.core.types.meta import singleton
+from css.core.types.base_enums import HookErrorStrategy
+from css.core.types.base_meta import singleton
 
 logger = getLogger(__name__)
 

@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from typing import Any, Protocol
 
 from css.core.logger import getLogger
-from css.core.types.base_messages import LLMResponse, StreamChunk
+from css.core.messages.types import LLMResponse, StreamChunk
 from .anthropic_breakpoints import inject_cache_breakpoints, estimate_message_tokens
 from .streaming_buffer import PromptCacheStreamingBuffer
 from .types import CachingCapability, ResponseCacheStats
@@ -46,7 +46,7 @@ class PromptCacheManager:
         """Initialize cache manager for a specific adapter.
 
         Args:
-            adapter: LLMAdapter instance with cache_capability property
+            adapter: BaseLLMAdapter instance with cache_capability property
             use_exact_match: Enable Tier 1 (Redis exact-match)
             use_native: Enable Tier 2 (provider-native automatic)
             use_native_resource: Enable Tier 3 (resource caching, usually deferred)

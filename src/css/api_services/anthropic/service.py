@@ -15,14 +15,14 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
-from css.core.types.base_client import BaseApiServiceClient, StreamingHandler
+from css.core.types.base_client import BaseApiServiceClient, BaseStreamingHandler
 from css.core.config import ProviderDefaults
 
 
 logger = getLogger(__name__)
 
 
-class AnthropicApiService(BaseApiServiceClient, StreamingHandler):
+class AnthropicApiService(BaseApiServiceClient, BaseStreamingHandler):
     """Anthropic API service with streaming support."""
 
     def __init__(

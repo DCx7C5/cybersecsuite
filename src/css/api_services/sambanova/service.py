@@ -12,7 +12,7 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
@@ -22,7 +22,7 @@ from css.core.config import ProviderDefaults
 logger = getLogger(__name__)
 
 
-class SambaNovaApiService(BaseApiServiceClient, StreamingHandler):
+class SambaNovaApiService(BaseApiServiceClient, BaseStreamingHandler):
     """SambaNova API service with streaming support."""
     
     def __init__(

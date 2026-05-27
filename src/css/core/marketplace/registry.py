@@ -7,7 +7,7 @@ from css.core.db.models.marketplace import MarketplaceItem
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType
 from css.core.events.emitter import emit_events, get_event_bus
 from css.core.types import BaseRegistry
-from css.core.types.meta import singleton
+from css.core.types.base_meta import singleton
 
 
 MARKETPLACE_UPDATES_AVAILABLE_EVENT = "marketplace.updates.available"

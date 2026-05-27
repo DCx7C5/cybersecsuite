@@ -5,7 +5,7 @@ import uuid
 from typing import Any
 
 import msgspec
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from fastapi import APIRouter, HTTPException, Query, status
 
 from .generator import ReportGenerator
@@ -15,12 +15,12 @@ router = APIRouter(prefix="/api/reports", tags=["reports"])
 generator = ReportGenerator()
 
 
-class ReportSection(EndpointModel, kw_only=True):
+class ReportSection(BaseEndpoint, kw_only=True):
     title: str
     content: Any = ""
 
 
-class GenerateReportRequest(EndpointModel, kw_only=True):
+class GenerateReportRequest(BaseEndpoint, kw_only=True):
     title: str
     report_type: str
     source_type: str = "incident"

@@ -8,7 +8,7 @@ import msgspec
 
 from css.core.cache.redis_cache import L2RedisCache
 from css.core.logger import getLogger
-from css.core.types.base_messages import LLMResponse
+from css.core.messages.types import LLMResponse
 
 logger = getLogger(__name__)
 

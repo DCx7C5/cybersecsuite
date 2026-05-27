@@ -12,7 +12,7 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
@@ -23,7 +23,7 @@ from css.core.config import ProviderDefaults
 logger = getLogger(__name__)
 
 
-class OllamaApiService(BaseApiServiceClient, StreamingHandler):
+class OllamaApiService(BaseApiServiceClient, BaseStreamingHandler):
     """Ollama API service with streaming support."""
     
     def __init__(

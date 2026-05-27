@@ -14,7 +14,7 @@ from datetime import UTC, datetime
 from typing import Any, Protocol
 
 from css.core.logger import getLogger
-from css.core.types.base_messages import LLMResponse, StreamChunk
+from css.core.messages.types import LLMResponse, StreamChunk
 
 logger = getLogger(__name__)
 

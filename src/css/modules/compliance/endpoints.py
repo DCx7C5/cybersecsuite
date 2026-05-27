@@ -1,6 +1,6 @@
 """Compliance management endpoints — frameworks, controls, mappings, reports."""
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -17,13 +17,13 @@ router = APIRouter(prefix="/api/compliance", tags=["compliance"])
 report_generator = ComplianceReportGenerator()
 
 # Request/Response Models
-class ComplianceFrameworkCreate(EndpointModel, kw_only=True):
+class ComplianceFrameworkCreate(BaseEndpoint, kw_only=True):
     framework_type: str
     name: str
     description: str = ""
     version: str = "1.0"
 
-class ComplianceFrameworkResponse(EndpointModel, kw_only=True):
+class ComplianceFrameworkResponse(BaseEndpoint, kw_only=True):
     id: int
     framework_type: str
     name: str
@@ -33,7 +33,7 @@ class ComplianceFrameworkResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-class FrameworkControlCreate(EndpointModel, kw_only=True):
+class FrameworkControlCreate(BaseEndpoint, kw_only=True):
     control_id: str
     name: str
     description: str = ""
@@ -43,7 +43,7 @@ class FrameworkControlCreate(EndpointModel, kw_only=True):
     priority: str = "medium"
     risk_impact: str = ""
 
-class FrameworkControlResponse(EndpointModel, kw_only=True):
+class FrameworkControlResponse(BaseEndpoint, kw_only=True):
     id: int
     control_id: str
     name: str
@@ -54,7 +54,7 @@ class FrameworkControlResponse(EndpointModel, kw_only=True):
     priority: str
     risk_impact: str
 
-class ControlMappingCreate(EndpointModel, kw_only=True):
+class ControlMappingCreate(BaseEndpoint, kw_only=True):
     control_id: int
     finding_type: str
     finding_id: str
@@ -63,13 +63,13 @@ class ControlMappingCreate(EndpointModel, kw_only=True):
     remediation_notes: str = ""
     found_at: datetime | None = None
 
-class ControlMappingUpdate(EndpointModel, kw_only=True):
+class ControlMappingUpdate(BaseEndpoint, kw_only=True):
     status: str | None = None
     evidence: str | None = None
     remediation_notes: str | None = None
     verified_at: datetime | None = None
 
-class ControlMappingResponse(EndpointModel, kw_only=True):
+class ControlMappingResponse(BaseEndpoint, kw_only=True):
     id: int
     control_id: int
     finding_type: str
@@ -81,7 +81,7 @@ class ControlMappingResponse(EndpointModel, kw_only=True):
     remediated_at: datetime | None = None
     verified_at: datetime | None = None
 
-class ComplianceReportResponse(EndpointModel, kw_only=True):
+class ComplianceReportResponse(BaseEndpoint, kw_only=True):
     id: int
     framework_id: int
     total_controls: int

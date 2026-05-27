@@ -2,13 +2,13 @@
 
 from fastapi import APIRouter, Query, status
 from typing import List, Optional
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from .models import MITRETechnique, ThreatActor, Tactic
 
 router = APIRouter(prefix="/api/mitre", tags=["mitre"])
 
 
-class TechniqueResponse(EndpointModel, kw_only=True):
+class TechniqueResponse(BaseEndpoint, kw_only=True):
     id: int
     technique_id: str
     subtechnique_id: Optional[str]
@@ -17,7 +17,7 @@ class TechniqueResponse(EndpointModel, kw_only=True):
     description: str
 
 
-class ThreatActorResponse(EndpointModel, kw_only=True):
+class ThreatActorResponse(BaseEndpoint, kw_only=True):
     id: int
     actor_name: str
     actor_aliases: List[str]
@@ -26,7 +26,7 @@ class ThreatActorResponse(EndpointModel, kw_only=True):
     techniques: List[str]
 
 
-class TechniqueMappingCreate(EndpointModel, kw_only=True):
+class TechniqueMappingCreate(BaseEndpoint, kw_only=True):
     technique_id: str
     evidence: str
     confidence: str

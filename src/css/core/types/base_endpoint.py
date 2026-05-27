@@ -9,14 +9,16 @@ and response values remain ``msgspec.Struct`` instances, while FastAPI still
 requires a Pydantic-core schema hook for response-model/OpenAPI generation.
 """
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import msgspec
-from pydantic import GetCoreSchemaHandler
-from pydantic_core import CoreSchema, core_schema
+
+if TYPE_CHECKING:
+    from pydantic import GetCoreSchemaHandler
+    from pydantic_core import CoreSchema
 
 
-class EndpointModel(msgspec.Struct, kw_only=True, frozen=True):
+class BaseEndpoint(msgspec.Struct, kw_only=True, frozen=True):
     """Base class for FastAPI endpoint request/response models.
 
     Subclass this instead of plain ``msgspec.Struct`` in any module that
@@ -29,11 +31,11 @@ class EndpointModel(msgspec.Struct, kw_only=True, frozen=True):
 
     Example::
 
-        class MyRequest(EndpointModel):
+        class MyRequest(BaseEndpoint):
             name: str
             value: int
 
-        class MyResponse(EndpointModel):
+        class MyResponse(BaseEndpoint):
             id: int
             name: str
             created_at: datetime
@@ -41,8 +43,9 @@ class EndpointModel(msgspec.Struct, kw_only=True, frozen=True):
 
     @classmethod
     def __get_pydantic_core_schema__(
-        cls, source_type: type[Any], handler: GetCoreSchemaHandler
+        cls, source_type: type[Any], handler_info: "GetCoreSchemaHandler"
     ) -> CoreSchema:
+        from pydantic_core import core_schema
         return core_schema.no_info_plain_validator_function(
             cls._validate,
             serialization=core_schema.plain_serializer_function_ser_schema(
@@ -55,11 +58,15 @@ class EndpointModel(msgspec.Struct, kw_only=True, frozen=True):
     def _validate(cls, data: Any) -> Any:
         if isinstance(data, cls):
             return data
-        if isinstance(data, dict):
-            return cls(**data)
-        raise TypeError(
-            f"Expected dict or {cls.__name__}, got {type(data).__name__}"
-        )
+        try:
+            return msgspec.json.decode(
+                data if isinstance(data, bytes) else msgspec.json.encode(data),
+                type=cls
+            )
+        except Exception as e:
+            raise TypeError(
+                f"Validation failed for {cls.__name__}: {e}"
+            ) from e
 
     @classmethod
     def _serialize(cls, instance: Any) -> Any:

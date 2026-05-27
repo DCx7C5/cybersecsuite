@@ -12,7 +12,7 @@ under a dedicated `/ws/*` surface.
 from css.core.logger import getLogger
 import json
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
 
@@ -31,14 +31,14 @@ _session_manager = ChatSessionManager()
 # API Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class CreateSessionRequest(EndpointModel, kw_only=True):
+class CreateSessionRequest(BaseEndpoint, kw_only=True):
     """Request to create a new chat session."""
     title: str = "New Chat"
     system_prompt: str = ""
     model_id: str | None = None
 
 
-class CreateSessionResponse(EndpointModel, kw_only=True):
+class CreateSessionResponse(BaseEndpoint, kw_only=True):
     """Response after creating a session."""
     session_id: str
     title: str
@@ -46,7 +46,7 @@ class CreateSessionResponse(EndpointModel, kw_only=True):
     created_at: str
 
 
-class ChatMessageResponse(EndpointModel, kw_only=True):
+class ChatMessageResponse(BaseEndpoint, kw_only=True):
     """Single chat message response."""
     id: str
     role: str
@@ -55,7 +55,7 @@ class ChatMessageResponse(EndpointModel, kw_only=True):
     created_at: str
 
 
-class GetMessagesResponse(EndpointModel, kw_only=True):
+class GetMessagesResponse(BaseEndpoint, kw_only=True):
     """Response containing session messages."""
     session_id: str
     title: str
@@ -63,13 +63,13 @@ class GetMessagesResponse(EndpointModel, kw_only=True):
     messages: list[ChatMessageResponse]
 
 
-class SendMessageRequest(EndpointModel, kw_only=True):
+class SendMessageRequest(BaseEndpoint, kw_only=True):
     """Request to send a message to a session."""
     content: str
     role: str = "user"
 
 
-class SendMessageResponse(EndpointModel, kw_only=True):
+class SendMessageResponse(BaseEndpoint, kw_only=True):
     """Response after sending a message."""
     message_id: str
     status: str

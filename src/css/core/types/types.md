@@ -244,24 +244,20 @@ def get_role(role_name: str) -> Role:
 Request/response header types:
 
 ```python
-class BaseHeader:
-    """Base header type."""
+class BaseEntity:
+    """Root entity — name + description (mirrors BaseFrontmatterHeader)."""
     pass
 
-class BaseAccountHeader(BaseHeader):
-    """Account header."""
+class BaseAgentHeader:
+    """Agent header — defined in base_entity.py."""
     pass
 
-class BaseAgentHeader(BaseHeader):
-    """Agent header."""
+class BaseRoleHeader:
+    """Role header — defined in base_entity.py."""
     pass
 
-class BaseRoleHeader(BaseHeader):
-    """Role header."""
-    pass
-
-class BaseSkillHeader(BaseHeader):
-    """Skill header."""
+class BaseSkillHeader:
+    """Skill header — defined in base_entity.py."""
     pass
 ```
 
@@ -357,7 +353,6 @@ from .entities import (
 from .headers import (
     BaseAccountHeader,
     BaseAgentHeader,
-    BaseHeader,
     BaseRoleHeader,
     BaseSkillHeader,
 )
@@ -407,7 +402,6 @@ __all__ = [
     # headers
     "BaseAccountHeader",
     "BaseAgentHeader",
-    "BaseHeader",
     "BaseRoleHeader",
     "BaseSkillHeader",
     # hook_events
@@ -448,17 +442,19 @@ caps = ModelCapabilities(
 ```python
 # src/css/modules/chat/endpoints.py
 from css.core.types import BaseMessage, MessageRole
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
+
 
 # Receive message
-class ChatRequest(EndpointModel):
-    message: BaseMessage
-    role: MessageRole
+class ChatRequest(BaseEndpoint):
+   message: BaseMessage
+   role: MessageRole
+
 
 # Return response
-class ChatResponse(EndpointModel):
-    message: BaseMessage
-    role: MessageRole = MessageRole.ASSISTANT
+class ChatResponse(BaseEndpoint):
+   message: BaseMessage
+   role: MessageRole = MessageRole.ASSISTANT
 ```
 
 ---

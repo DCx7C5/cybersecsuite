@@ -16,8 +16,6 @@ dependencies = [
     # Database
     "tortoise-orm[asyncpg]>=1.1.7",
     "asyncpg>=0.31.0",
-    # Agent loader
-    "pyyaml>=6.0.3",
     # Cryptography
     "cryptography>=48.0.0",
     # Event loop

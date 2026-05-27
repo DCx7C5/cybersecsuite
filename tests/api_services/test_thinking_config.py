@@ -2,7 +2,7 @@
 
 import pytest
 import msgspec
-from css.core.types.thinking import ThinkingConfig
+from css.core.sdks.thinking import ThinkingConfig
 
 
 class TestThinkingConfigConstruction:

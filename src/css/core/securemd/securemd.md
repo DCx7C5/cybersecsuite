@@ -1,7 +1,7 @@
 # core/securemd — Signed Markdown Integrity Gate
 
 **Location**: `src/css/core/securemd/`
-**Status**: New package scaffold; Phase 44 implementation is pending.
+**Status**: Phase 44 securemd44-header-integrity is in_progress. BaseFrontmatterHeader being implemented in core/types/base_frontmatter_header.py (not in this package).
 **Tracker authority**: `.plan/session.db`; this document owns the executable SecureMD specification.
 **Architecture**: `.plan/architecture/securemd-architecture.md`
 
@@ -16,8 +16,8 @@
 
 | File | Contents / current status |
 |------|---------------------------|
-| `header.py` | Incomplete header scaffold; currently references an undefined base class. |
-| `__init__.py` | Empty public package scaffold; exports are pending. |
+| `header.py` | FrontMatterHeader inheriting from BaseFrontmatterHeader (now in core/types/base_frontmatter_header.py). Fix applied: corrected BaseFrontMatterHeader → BaseFrontmatterHeader reference. |
+| `__init__.py` | Re-exports FrontMatterHeader. |
 | `securemd.md` | This executable owner document. |
 
 ## Ownership Rule
@@ -36,10 +36,10 @@ and downstream content/prompt policy remain required.
 
 ## Current Source Reality
 
-- `header.py` currently declares `FrontMatterHeader(BaseFrontMatterHeader)`
-  while the base is undefined and the architecture names the canonical symbol
-  `BaseFrontmatterHeader`.
-- There is no verified-body implementation or public export yet.
+- `BaseFrontmatterHeader` is now implemented in `core/types/base_frontmatter_header.py`.
+- `header.py` now correctly inherits `BaseFrontmatterHeader`.
+- `verify_and_get_body()` respects `SECUREMD_ENABLED` config toggle (pass-through when disabled).
+- `BaseFrontmatterHeader.__post_init__()` respects `SECUREMD_ENFORCE_HEADER` config toggle (rejects missing name/description/signature/hash when enabled).
 - Serializer implementation is blocked on the Phase 43 canonical
   `core/serializers` contract.
 
@@ -47,14 +47,16 @@ and downstream content/prompt policy remain required.
 
 | Todo ID | Status in `session.db` | Required change |
 |---------|------------------------|-----------------|
-| `securemd44-header-integrity` | pending | Implement canonical header and signature verification. |
+| `securemd-config-toggles` | in_progress | SECUREMD_ENABLED and SECUREMD_ENFORCE_HEADER env toggles in config.py. |
+| `crypto44-key-boundary` | in_progress | Ed25519 primitives in core/cryptography consumed by SecureMD. |
+| `securemd44-header-integrity` | in_progress | BaseFrontmatterHeader implemented in core/types/base_frontmatter_header.py. FrontMatterHeader re-exports from securemd/header.py. Config-aware sign/verify/verify_and_get_body. |
 | `securemd44-frontmatter-serializer` | pending | Strictly parse/serialize signed Markdown and reject invalid documents. |
 | `securemd44-context-ingestion-gate` | pending | Gate marketplace-origin prompt Markdown before `PromptRenderer`/`AgentExecutor` execution. |
 | `securemd44-security-validation` | pending | Test tamper, wrong-key, malformed and untrusted-publisher rejection. |
 
 ## Dependencies
 
-- `securemd44-header-integrity` depends on `crypto44-key-boundary`.
+- `securemd44-header-integrity` depends on `crypto44-key-boundary` and `securemd-config-toggles`.
 - `securemd44-frontmatter-serializer` depends on the canonical serializer
   cutover owned by Phase 43.
 - `securemd44-context-ingestion-gate` depends on `prompt-marketplace-wire`

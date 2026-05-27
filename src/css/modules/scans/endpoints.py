@@ -3,20 +3,20 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from .models import Scan, Finding
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
 
 
-class ScanCreate(EndpointModel, kw_only=True):
+class ScanCreate(BaseEndpoint, kw_only=True):
     scan_type: str
     target: str
     scope: str = ""
     scheduled_at: datetime
 
 
-class ScanResponse(EndpointModel, kw_only=True):
+class ScanResponse(BaseEndpoint, kw_only=True):
     id: int
     scan_id: str
     scan_type: str
@@ -25,7 +25,7 @@ class ScanResponse(EndpointModel, kw_only=True):
     findings_count: int
 
 
-class FindingResponse(EndpointModel, kw_only=True):
+class FindingResponse(BaseEndpoint, kw_only=True):
     id: int
     finding_id: str
     title: str

@@ -3,13 +3,13 @@
 from fastapi import APIRouter, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from .models import IOC, ThreatFeed
 
 router = APIRouter(prefix="/api/threat-intel", tags=["threat-intel"])
 
 
-class IOCCreate(EndpointModel, kw_only=True):
+class IOCCreate(BaseEndpoint, kw_only=True):
     ioc_type: str
     value: str
     threat_level: str = "medium"
@@ -18,7 +18,7 @@ class IOCCreate(EndpointModel, kw_only=True):
     tags: List[str] = []
 
 
-class IOCResponse(EndpointModel, kw_only=True):
+class IOCResponse(BaseEndpoint, kw_only=True):
     id: int
     ioc_type: str
     value: str

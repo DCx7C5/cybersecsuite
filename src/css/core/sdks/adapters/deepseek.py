@@ -6,8 +6,9 @@ from typing import Any, override
 
 from css.api_services.deepseek.service import DeepSeekApiService
 from css.core.types.base_client import BaseApiServiceClient
-from css.core.types.base_messages import BaseMessage, LLMResponse, ModelMetadata, StreamChunk, Tool
-from css.core.types.enums import MessageRole, ProviderType
+from css.core.types.base_messages import BaseMessage
+from css.core.messages.types import LLMResponse, ModelMetadata, StreamChunk, Tool
+from css.core.types.base_enums import MessageRole, ProviderType
 
 _DEFAULT_DEEPSEEK_MODEL = "deepseek-chat"
 

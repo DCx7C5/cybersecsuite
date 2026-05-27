@@ -7,12 +7,12 @@ import uuid
 
 from fastapi import APIRouter, Body, HTTPException, Query, status
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 
 RequestStatus = Literal["pending", "in_progress", "completed", "failed", "expired"]
 
 
-class PluginRegistrationRequest(EndpointModel, kw_only=True, frozen=True):
+class PluginRegistrationRequest(BaseEndpoint, kw_only=True, frozen=True):
     """Payload sent by the browser extension on startup and refresh."""
 
     domain: str = "browser-plugin"
@@ -21,7 +21,7 @@ class PluginRegistrationRequest(EndpointModel, kw_only=True, frozen=True):
     session_id: str | None = None
 
 
-class PluginRegistrationResponse(EndpointModel, kw_only=True, frozen=True):
+class PluginRegistrationResponse(BaseEndpoint, kw_only=True, frozen=True):
     """Session metadata returned to the browser extension."""
 
     plugin_session_id: str
@@ -29,17 +29,17 @@ class PluginRegistrationResponse(EndpointModel, kw_only=True, frozen=True):
     expires_at: datetime
 
 
-class PluginHeartbeatRequest(EndpointModel, kw_only=True, frozen=True):
+class PluginHeartbeatRequest(BaseEndpoint, kw_only=True, frozen=True):
     plugin_session_id: str
 
 
-class PluginHeartbeatResponse(EndpointModel, kw_only=True, frozen=True):
+class PluginHeartbeatResponse(BaseEndpoint, kw_only=True, frozen=True):
     plugin_session_id: str
     status: str
     expires_at: datetime
 
 
-class BrowserInjectionRequest(EndpointModel, kw_only=True, frozen=True):
+class BrowserInjectionRequest(BaseEndpoint, kw_only=True, frozen=True):
     """Queue one browser-side execution request."""
 
     session_id: str
@@ -51,14 +51,14 @@ class BrowserInjectionRequest(EndpointModel, kw_only=True, frozen=True):
     metadata: dict[str, str] | None = None
 
 
-class BrowserInjectionAccepted(EndpointModel, kw_only=True, frozen=True):
+class BrowserInjectionAccepted(BaseEndpoint, kw_only=True, frozen=True):
     request_id: str
     session_id: str
     status: str
     expires_at: datetime
 
 
-class BrowserResultSubmission(EndpointModel, kw_only=True, frozen=True):
+class BrowserResultSubmission(BaseEndpoint, kw_only=True, frozen=True):
     """Store browser-side completion result for a queued relay request."""
 
     session_id: str
@@ -71,7 +71,7 @@ class BrowserResultSubmission(EndpointModel, kw_only=True, frozen=True):
     usage: dict[str, Any] | None = None
 
 
-class BrowserResultResponse(EndpointModel, kw_only=True, frozen=True):
+class BrowserResultResponse(BaseEndpoint, kw_only=True, frozen=True):
     request_id: str
     session_id: str
     status: str
@@ -85,7 +85,7 @@ class BrowserResultResponse(EndpointModel, kw_only=True, frozen=True):
     usage: dict[str, Any] | None = None
 
 
-class BrowserNextInjectionResponse(EndpointModel, kw_only=True, frozen=True):
+class BrowserNextInjectionResponse(BaseEndpoint, kw_only=True, frozen=True):
     available: bool
     request_id: str | None = None
     session_id: str | None = None

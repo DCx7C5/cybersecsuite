@@ -6,7 +6,7 @@ from css.core.sdks import CSSLLMClient, SDKRegistry
 from css.core.sdks.adapters.browser_relay import BrowserRelayAdapter
 from css.core.sdks.adapters.deepseek import DeepSeekAdapter
 from css.core.sdks.relay_router import RelayProviderPolicy
-from css.core.types.base_messages import LLMResponse
+from css.core.messages.types import LLMResponse
 
 
 def test_relay_provider_policy_is_deterministic() -> None:

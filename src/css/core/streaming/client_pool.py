@@ -5,7 +5,7 @@ import asyncio
 from typing import Protocol, runtime_checkable
 
 from claude_agent_sdk import ClaudeAgentOptions, ClaudeSDKClient
-from css.core.types.meta import singleton
+from css.core.types.base_meta import singleton
 
 logger = getLogger("agents.client_pool")
 

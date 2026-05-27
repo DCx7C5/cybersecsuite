@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from css.core.db.models.menu import MenuItem, sync_default_menu_items
-from .serializers import MenuItemSerializer
+from .serializers import MenuItemTreeSerializer
 
 router = APIRouter(prefix="/api/menu", tags=["menu"])
 
@@ -25,7 +25,7 @@ async def list_menu_items(menu_id: str | None = Query(None)) -> dict[str, object
     else:
         items = await MenuItem.manager.roots()
 
-    ser = MenuItemSerializer()
+    ser = MenuItemTreeSerializer()
     return {
         "items": [await ser.async_to_representation(item) for item in items]
     }

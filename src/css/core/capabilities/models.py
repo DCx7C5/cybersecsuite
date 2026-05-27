@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 
 import msgspec
 
-from .enums import CapabilityType, MemorySupportMode
+from css.core.types.base_enums import CapabilityType, MemorySupportMode
 
 
 class Capability(msgspec.Struct, frozen=True, kw_only=True):
@@ -92,35 +92,3 @@ class CapabilityRegistry(msgspec.Struct, kw_only=True):
         """
         has_provider = any(key.startswith(f"{provider}:") for key in self.capabilities.keys())
         return not has_provider or self.is_cache_stale()
-
-
-# Preset capability sets for common models
-
-DEFAULT_CAPABILITIES: dict[str, list[CapabilityType]] = {
-    "gpt-4": [
-        CapabilityType.STREAMING,
-        CapabilityType.VISION,
-        CapabilityType.TOOL_USE,
-        CapabilityType.VISION_AND_TOOL,
-        CapabilityType.JSON_MODE,
-        CapabilityType.LONG_CONTEXT,
-    ],
-    "claude-3-sonnet": [
-        CapabilityType.STREAMING,
-        CapabilityType.VISION,
-        CapabilityType.TOOL_USE,
-        CapabilityType.VISION_AND_TOOL,
-        CapabilityType.JSON_MODE,
-        CapabilityType.LONG_CONTEXT,
-        CapabilityType.MEMORY_PERSISTENCE,
-    ],
-    "gpt-3.5-turbo": [
-        CapabilityType.STREAMING,
-        CapabilityType.TOOL_USE,
-        CapabilityType.JSON_MODE,
-    ],
-    "ollama": [
-        CapabilityType.STREAMING,
-        CapabilityType.EMBEDDINGS,
-    ],
-}

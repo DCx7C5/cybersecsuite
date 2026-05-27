@@ -1,6 +1,6 @@
 """Knowledge base management endpoints."""
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -27,7 +27,7 @@ def _serialize_search_result(result: dict[str, object]) -> "SearchResult":
     return SearchResult(**data)
 
 # Request/Response Models
-class DocumentCreate(EndpointModel, kw_only=True, frozen=True):
+class DocumentCreate(BaseEndpoint, kw_only=True, frozen=True):
     title: str
     content: str
     document_type: str
@@ -36,7 +36,7 @@ class DocumentCreate(EndpointModel, kw_only=True, frozen=True):
     cve_ids: list[str] = []
     relevance_score: float = 0.5
 
-class DocumentResponse(EndpointModel, kw_only=True, frozen=True):
+class DocumentResponse(BaseEndpoint, kw_only=True, frozen=True):
     id: int
     title: str
     document_type: str
@@ -48,12 +48,12 @@ class DocumentResponse(EndpointModel, kw_only=True, frozen=True):
     created_at: datetime
     updated_at: datetime
 
-class SearchRequest(EndpointModel, kw_only=True, frozen=True):
+class SearchRequest(BaseEndpoint, kw_only=True, frozen=True):
     query: str
     search_type: str = "keyword"
     limit: int = 5
 
-class SearchResult(EndpointModel, kw_only=True, frozen=True):
+class SearchResult(BaseEndpoint, kw_only=True, frozen=True):
     id: int
     title: str
     content: str
@@ -62,16 +62,16 @@ class SearchResult(EndpointModel, kw_only=True, frozen=True):
     tags: list[str]
     source: str
 
-class TagResponse(EndpointModel, kw_only=True, frozen=True):
+class TagResponse(BaseEndpoint, kw_only=True, frozen=True):
     tag: str
     category: str
     usage_count: int
 
-class TagCreateResponse(EndpointModel, kw_only=True, frozen=True):
+class TagCreateResponse(BaseEndpoint, kw_only=True, frozen=True):
     tag: str
     category: str
 
-class SearchLogResponse(EndpointModel, kw_only=True, frozen=True):
+class SearchLogResponse(BaseEndpoint, kw_only=True, frozen=True):
     query: str
     search_type: str
     result_count: int

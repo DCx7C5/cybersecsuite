@@ -25,8 +25,9 @@ from aiohttp import ClientSession
 from css.core.exceptions import ProviderRegistryError
 from css.core.types.providers import ProviderSpec
 from css.core.types.base_client import BaseApiServiceClient
-from css.core.types.base_messages import BaseMessage, ModelMetadata, StreamChunk
-from css.core.types.enums import ProviderType
+from css.core.types.base_messages import BaseMessage
+from css.core.messages.types import ModelMetadata, StreamChunk
+from css.core.types.base_enums import ProviderType
 
 
 logger = getLogger(__name__)
@@ -42,7 +43,7 @@ class HttpProviderAdapter(BaseApiServiceClient):
     Supports streaming and buffered responses via async generators.
     
     Attributes:
-        spec: ProviderSpec with endpoint, auth, and model config
+        spec: ProviderSpec with endpoint, authentication, and model config
     """
     
     def __init__(self, provider_name: str, spec: ProviderSpec):

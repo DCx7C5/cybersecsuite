@@ -5,7 +5,7 @@ import msgspec
 from typing import Any, override
 
 from css.core.types.base_entity import BaseAgent
-from css.core.types.base_headers import BaseAgentHeader
+from css.core.types.base_entity import BaseAgentHeader
 
 class Agent(BaseAgent, msgspec.Struct):
     """Concrete agents entity with HTTP endpoint and metadata.

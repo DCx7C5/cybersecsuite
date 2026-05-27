@@ -12,7 +12,7 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
@@ -22,7 +22,7 @@ from css.core.config import ProviderDefaults
 logger = getLogger(__name__)
 
 
-class DeepInfraApiService(BaseApiServiceClient, StreamingHandler):
+class DeepInfraApiService(BaseApiServiceClient, BaseStreamingHandler):
     """DeepInfra API service with streaming support."""
     
     def __init__(

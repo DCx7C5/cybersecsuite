@@ -11,7 +11,7 @@ Tests:
 
 import pytest
 import grpc
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 from css.api_services.xai.service import xAIApiService
 from css.core.exceptions import LLMApiServiceError, AuthError, RateLimitError, TimeoutError, GatewayError
@@ -78,7 +78,7 @@ class TestXAIErrorMapping:
     @pytest.mark.asyncio
     async def test_auth_error_mapping(self):
         """UNAUTHENTICATED grpc error should map to AuthError."""
-        from css.core.types.error_mappers import XAIErrorMapper
+        from css.core.errors.mappers import XAIErrorMapper
         
         # Create mock gRPC error
         mock_grpc_error = _FakeRpcError(grpc.StatusCode.UNAUTHENTICATED, "unauthenticated")
@@ -90,7 +90,7 @@ class TestXAIErrorMapping:
     @pytest.mark.asyncio
     async def test_rate_limit_error_mapping(self):
         """RESOURCE_EXHAUSTED grpc error should map to RateLimitError."""
-        from css.core.types.error_mappers import XAIErrorMapper
+        from css.core.errors.mappers import XAIErrorMapper
         
         mock_grpc_error = _FakeRpcError(grpc.StatusCode.RESOURCE_EXHAUSTED, "resource exhausted")
         
@@ -101,7 +101,7 @@ class TestXAIErrorMapping:
     @pytest.mark.asyncio
     async def test_timeout_error_mapping(self):
         """DEADLINE_EXCEEDED grpc error should map to TimeoutError."""
-        from css.core.types.error_mappers import XAIErrorMapper
+        from css.core.errors.mappers import XAIErrorMapper
         
         mock_grpc_error = _FakeRpcError(grpc.StatusCode.DEADLINE_EXCEEDED, "deadline exceeded")
         
@@ -112,7 +112,7 @@ class TestXAIErrorMapping:
     @pytest.mark.asyncio
     async def test_gateway_error_mapping(self):
         """UNAVAILABLE grpc error should map to GatewayError."""
-        from css.core.types.error_mappers import XAIErrorMapper
+        from css.core.errors.mappers import XAIErrorMapper
         
         mock_grpc_error = _FakeRpcError(grpc.StatusCode.UNAVAILABLE, "service unavailable")
         

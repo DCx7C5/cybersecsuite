@@ -168,10 +168,10 @@ class BaseTeamMemberLike(Protocol):
 
 
 @runtime_checkable
-class LLMAdapter(Protocol):
+class BaseLLMAdapter(Protocol):
     """Protocol for LLM provider adapters (replaces ABC BaseApiServiceClient).
 
-    All provider adapters (native SDK, HTTP, custom, complex auth) must implement
+    All provider adapters (native SDK, HTTP, custom, complex authentication) must implement
     this protocol. The streaming contract is: always return AsyncIterator[StreamChunk],
     even for buffered calls (yield one final chunk).
     """
@@ -231,5 +231,5 @@ __all__ = [
     "BaseSkillLike",
     "BaseToolLike",
     "BaseTeamMemberLike",
-    "LLMAdapter",
+    "BaseLLMAdapter",
 ]

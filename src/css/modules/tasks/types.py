@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any
 
 from css.core.types.base_workflow import BaseTask, BaseTaskScope
-from css.core.types.query import Query
+from css.core.query import Query
 from .enums import TaskStatus, TaskPriority
 
 

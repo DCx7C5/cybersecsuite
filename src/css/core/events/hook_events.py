@@ -1,11 +1,11 @@
 """Hook event types and context — foundational contracts for hook system.
 
-Converted to msgspec.Struct (Phase 6 P1) for faster serialization.
+Converted to msgspec.Struct for faster serialization.
 """
 
 import msgspec
 
-from .enums import HookErrorStrategy
+from css.core.types.base_enums import HookErrorStrategy
 
 
 class HookContext(msgspec.Struct, frozen=True, kw_only=True):
@@ -16,6 +16,3 @@ class HookContext(msgspec.Struct, frozen=True, kw_only=True):
     timestamp: float
     tool_use_id: str | None = None
     agent_id: str | None = None
-
-
-__all__ = ["HookContext", "HookErrorStrategy"]

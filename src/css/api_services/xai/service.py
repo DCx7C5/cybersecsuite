@@ -16,13 +16,13 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
 from css.core.exceptions import LLMApiServiceError
 from css.core.types.base_client import BaseApiServiceClient
-from css.core.types.error_mappers import map_provider_error
+from css.core.errors.mappers import map_provider_error
 from css.core.config import ProviderDefaults
 from css.core.settings import config as settings_config
 from css.core.types.providers import decode_provider_spec_file
@@ -30,7 +30,7 @@ from css.core.types.providers import decode_provider_spec_file
 logger = getLogger(__name__)
 
 
-class xAIApiService(BaseApiServiceClient, StreamingHandler):
+class xAIApiService(BaseApiServiceClient, BaseStreamingHandler):
     """xAI (Grok) API service with streaming support.
     
     Supports both OpenAI-compatible fallback and native gRPC AsyncClient from xai-sdk.

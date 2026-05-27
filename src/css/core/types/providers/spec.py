@@ -12,7 +12,7 @@ OAuthFlow = Literal["authorization_code", "device_code"]
 
 
 class ProviderOAuthFlow(msgspec.Struct, frozen=True, kw_only=True):
-    """Declared OAuth flow metadata; token acquisition is owned by core/auth."""
+    """Declared OAuth flow metadata; token acquisition is owned by core/authentication."""
 
     flow: OAuthFlow
     token_url: str

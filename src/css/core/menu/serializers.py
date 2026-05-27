@@ -1,17 +1,17 @@
 """Serializers for the menu module.
 
 Replaces the inline ``serialize(item)`` async closure in ``endpoints.py``
-with a proper ``MenuItemSerializer`` built on ``BaseModelSerializer``.
+with a proper ``MenuItemTreeSerializer`` built on ``BaseModelSerializer``.
 """
 
-from typing import Any, override
+from typing import override
 
 from css.core.db.serializers import BaseModelSerializer
 
 from css.core.db.models.menu import MenuItem
 
 
-class MenuItemSerializer(BaseModelSerializer[MenuItem]):
+class MenuItemTreeSerializer(BaseModelSerializer[MenuItem]):
     """Serializes a ``MenuItem`` ORM instance to a nested response dict.
 
     The ``async_to_representation`` method fetches direct children recursively
@@ -25,7 +25,7 @@ class MenuItemSerializer(BaseModelSerializer[MenuItem]):
         read_only_fields = ("id",)
 
     @override
-    def to_representation(self, instance: MenuItem) -> dict[str, Any]:
+    def to_representation(self, instance: MenuItem) -> dict[str, object]:
         return {
             "id": int(instance.id),
             "parent_id": instance.parent_id,
@@ -39,15 +39,15 @@ class MenuItemSerializer(BaseModelSerializer[MenuItem]):
         }
 
     @override
-    async def async_to_representation(self, instance: MenuItem) -> dict[str, Any]:
+    async def async_to_representation(self, instance: MenuItem) -> dict[str, object]:
         """Recursively serialize item and all its children."""
         base = self.to_representation(instance)
         children = await instance.ordered_children()
-        child_ser = MenuItemSerializer()
+        child_ser = MenuItemTreeSerializer()
         base["children"] = [
             await child_ser.async_to_representation(child) for child in children
         ]
         return base
 
 
-__all__ = ["MenuItemSerializer"]
+__all__ = ["MenuItemTreeSerializer"]

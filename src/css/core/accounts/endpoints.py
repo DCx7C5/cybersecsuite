@@ -11,7 +11,7 @@ Endpoints:
 - GET    /api/organizations/{org_id}/members  — List org members
 """
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from css.core.logger import getLogger
 
 from fastapi import APIRouter, HTTPException, status
@@ -29,7 +29,7 @@ log = getLogger(__name__)
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class AccountResponse(EndpointModel, kw_only=True):
+class AccountResponse(BaseEndpoint, kw_only=True):
     """Account response model."""
     id: int
     username: str
@@ -40,7 +40,7 @@ class AccountResponse(EndpointModel, kw_only=True):
     last_login: str | None = None
 
 
-class UserProfileResponse(EndpointModel, kw_only=True):
+class UserProfileResponse(BaseEndpoint, kw_only=True):
     """User profile response model."""
     bio: str
     timezone: str
@@ -52,14 +52,14 @@ class UserProfileResponse(EndpointModel, kw_only=True):
     phone: str | None = None
 
 
-class RegisterRequest(EndpointModel, kw_only=True):
+class RegisterRequest(BaseEndpoint, kw_only=True):
     """Account registration request."""
     username: str
     email: str
     password: str
 
 
-class UpdateProfileRequest(EndpointModel, kw_only=True):
+class UpdateProfileRequest(BaseEndpoint, kw_only=True):
     """Update user profile request."""
     first_name: str | None = None
     last_name: str | None = None
@@ -71,7 +71,7 @@ class UpdateProfileRequest(EndpointModel, kw_only=True):
     preferences: dict | None = None
 
 
-class OrganizationResponse(EndpointModel, kw_only=True):
+class OrganizationResponse(BaseEndpoint, kw_only=True):
     """Organization response model."""
     id: int
     name: str
@@ -82,7 +82,7 @@ class OrganizationResponse(EndpointModel, kw_only=True):
     created_at: str
 
 
-class CreateOrganizationRequest(EndpointModel, kw_only=True):
+class CreateOrganizationRequest(BaseEndpoint, kw_only=True):
     """Create organization request."""
     name: str
     slug: str
@@ -90,14 +90,14 @@ class CreateOrganizationRequest(EndpointModel, kw_only=True):
     tier: str = "free"
 
 
-class MembershipResponse(EndpointModel, kw_only=True):
+class MembershipResponse(BaseEndpoint, kw_only=True):
     """Organization membership response."""
     account_id: int
     role: str
     joined_at: str
 
 
-class AddMemberRequest(EndpointModel, kw_only=True):
+class AddMemberRequest(BaseEndpoint, kw_only=True):
     """Add member to organization request."""
     account_id: int
     role: str = "member"
@@ -143,8 +143,8 @@ async def register_account(req: RegisterRequest) -> AccountResponse:
                 detail="Email already registered"
             )
         
-        # Hash password (TODO: use PasswordManager from core.auth)
-        from css.core.auth import PasswordManager
+        # Hash password (TODO: use PasswordManager from core.authentication)
+        from css.core.authentication import PasswordManager
         password_hash = PasswordManager.hash_password(req.password)
         
         # Create account

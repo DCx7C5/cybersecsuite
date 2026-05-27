@@ -2,8 +2,8 @@
 
 from datetime import datetime
 
-from css.core.types.enums import CapabilityType
-from css.core.types.enums import MemorySupportMode
+from css.core.types.base_enums import CapabilityType
+from css.core.types.base_enums import MemorySupportMode
 
 from css.core.logger import getLogger
 

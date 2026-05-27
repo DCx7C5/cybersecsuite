@@ -10,9 +10,9 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 from css.core.logger import getLogger
-from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
-from css.core.types.enums import ProviderType
-from css.core.types.thinking import ThinkingConfig
+from css.core.messages.types import LLMResponse, StreamChunk, Tool
+from css.core.types.base_enums import ProviderType
+from css.core.sdks.thinking import ThinkingConfig
 
 logger = getLogger(__name__)
 
@@ -84,7 +84,7 @@ COMPUTER_USE_TOOLS: list[Tool] = [
 
 
 class AnthropicNativeAdapter:
-    """Native SDK adapter for Anthropic — implements LLMAdapter.
+    """Native SDK adapter for Anthropic — implements BaseLLMAdapter.
 
     Wraps anthropic.AsyncAnthropic directly to support features not
     available through the generic HTTP path:

@@ -12,7 +12,7 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
@@ -22,7 +22,7 @@ from css.core.config import ProviderDefaults
 logger = getLogger(__name__)
 
 
-class HuggingfaceApiService(BaseApiServiceClient, StreamingHandler):
+class HuggingfaceApiService(BaseApiServiceClient, BaseStreamingHandler):
     """HuggingFace API service with streaming support."""
     
     def __init__(

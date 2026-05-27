@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Callable, Any, TYPE_CHECKING
 import time
 
-from css.core.types.meta import AsyncSafeSingletonMeta
+from css.core.types.base_meta import AsyncSafeSingletonMeta
 
 from .models import ModelMetadata
 from .enums import ModelCapability

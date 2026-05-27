@@ -8,7 +8,7 @@ from css.core.prompt_cache.exact_match_cache import ExactMatchPromptCache
 from css.core.prompt_cache.manager import PromptCacheManager
 from css.core.prompt_cache.streaming_buffer import PromptCacheStreamingBuffer
 from css.core.prompt_cache.types import CachingCapability
-from css.core.types.base_messages import LLMResponse, StreamChunk
+from css.core.messages.types import LLMResponse, StreamChunk
 
 
 class _DummyAdapter:

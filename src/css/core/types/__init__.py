@@ -1,7 +1,7 @@
 """Core types for CyberSecSuite — flat re-export surface (Phase 6 P1)."""
 
 # ── Enums (single source of truth) ──────────────────────────────────────────
-from .enums import (
+from .base_enums import (
     MessageRole,
     ProviderType,
     CapabilityType,
@@ -16,15 +16,15 @@ from .base_protocols import (
     BaseSkillLike,
     BaseToolLike,
     BaseTeamMemberLike,
-    LLMAdapter,
+    BaseLLMAdapter,
 )
 
 # ── Module protocol ──────────────────────────────────────────────────────────
-from .module_protocol import CSSModule
+from .base_module_protocol import CSSModule
 
 # ── Base message/API value objects ───────────────────────────────────────────
-from .base_messages import (
-    BaseMessage,
+from .base_messages import BaseMessage
+from css.core.messages.types import (
     Tool,
     ModelMetadata,
     StreamChunk,
@@ -33,7 +33,7 @@ from .base_messages import (
 )
 
 # ── Thinking config (extended thinking/reasoning) ───────────────────────────
-from .thinking import ThinkingConfig
+from css.core.sdks.thinking import ThinkingConfig
 
 # ── Base entity + header types ───────────────────────────────────────────────
 from .base_entity import (
@@ -44,8 +44,7 @@ from .base_entity import (
     BaseRole,
 )
 
-from .base_headers import (
-    BaseHeader,
+from .base_entity import (
     BaseAgentHeader,
     BaseSkillHeader,
     BaseAccountHeader,
@@ -63,7 +62,7 @@ from css.core.db.serializers import (
 
 # ── Base client + SDK ────────────────────────────────────────────────────────
 from .base_client import (
-    StreamingHandler,
+    BaseStreamingHandler,
     BaseApiServiceClient,
 )
 
@@ -94,15 +93,14 @@ from css.core.sdks.adapters import (
 from css.core.sdks.model_mapper import ModelNameMapper
 
 # ── Capabilities ─────────────────────────────────────────────────────────────
-from .capabilities import (
+from css.core.capabilities.models import (
     Capability,
     CapabilityRegistry,
-    DEFAULT_CAPABILITIES,
     ModelCapabilities,
 )
 
 # ── Context types ─────────────────────────────────────────────────────────────
-from .context import (
+from css.core.sdks.context import (
     ConversationContext,
     ModelContext,
     ExecutionContext,
@@ -110,10 +108,10 @@ from .context import (
 )
 
 # ── Hook event types ─────────────────────────────────────────────────────────
-from .hook_events import HookContext
+from css.core.events.hook_events import HookContext
 
 # ── Query types ───────────────────────────────────────────────────────────────
-from .query import Query, QueryHeader
+from css.core.query import Query, QueryHeader
 
 # ── Provider spec types ───────────────────────────────────────────────────────
 from .providers import (
@@ -129,8 +127,21 @@ from .providers import (
 # ── Base workflow types ───────────────────────────────────────────────────────
 from .base_workflow import BaseTask, BaseTaskScope
 
+# ── Error mappers ─────────────────────────────────────────────────────────────
+from .base_error_mapper import BaseErrorMapper
+from css.core.errors.mappers import (
+    AnthropicErrorMapper,
+    OpenAIErrorMapper,
+    OllamaErrorMapper,
+    GeminiErrorMapper,
+    GroqErrorMapper,
+    XAIErrorMapper,
+    ERROR_MAPPERS,
+    map_provider_error,
+)
+
 # ── QoL output controls ───────────────────────────────────────────────────────
-from .qol import (
+from css.core.settings.qol import (
     QoLToggle,
     QoLSettings,
     toggle_description,
@@ -162,7 +173,7 @@ __all__ = [
     "BaseSkillLike",
     "BaseToolLike",
     "BaseTeamMemberLike",
-    "LLMAdapter",
+    "BaseLLMAdapter",
     "CSSModule",
     # messages
     "BaseMessage",
@@ -180,7 +191,6 @@ __all__ = [
     "BaseSkill",
     "BaseRole",
     # headers
-    "BaseHeader",
     "BaseAgentHeader",
     "BaseSkillHeader",
     "BaseAccountHeader",
@@ -192,7 +202,7 @@ __all__ = [
     "BaseModelSerializer",
     "BaseListSerializer",
     # client/SDK
-    "StreamingHandler",
+    "BaseStreamingHandler",
     "BaseApiServiceClient",
     "BaseLocalSDK",
     "BaseEmitterClass",
@@ -205,9 +215,7 @@ __all__ = [
     "list_registered_sdks",
     # capabilities
     "Capability",
-    "CapabilityType",
     "CapabilityRegistry",
-    "DEFAULT_CAPABILITIES",
     "ModelCapabilities",
     # context
     "ConversationContext",
@@ -246,4 +254,14 @@ __all__ = [
     "QoLToggle",
     "QoLSettings",
     "toggle_description",
+    # error mappers
+    "BaseErrorMapper",
+    "AnthropicErrorMapper",
+    "OpenAIErrorMapper",
+    "OllamaErrorMapper",
+    "GeminiErrorMapper",
+    "GroqErrorMapper",
+    "XAIErrorMapper",
+    "ERROR_MAPPERS",
+    "map_provider_error",
 ]

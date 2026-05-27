@@ -14,7 +14,7 @@ Usage::
 from css.core.logger import getLogger
 from pathlib import Path
 
-from css.core.types.meta import AsyncSafeSingletonMeta
+from css.core.types.base_meta import AsyncSafeSingletonMeta
 from css.core.types.providers import (
     ProviderSpec,
     decode_provider_spec_file,

@@ -4,7 +4,7 @@ import asyncio
 from collections.abc import AsyncIterator
 from typing import Any
 
-from css.core.types.base_messages import LLMResponse, StreamChunk
+from css.core.messages.types import LLMResponse, StreamChunk
 from css.modules.llm_proxy.browser_plugin import get_browser_plugin_session_store
 
 _BROWSER_RELAY_PROVIDER = "browser-relay"

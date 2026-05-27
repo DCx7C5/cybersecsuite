@@ -12,7 +12,7 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
@@ -26,7 +26,7 @@ from .cost_tracking import (
 logger = getLogger(__name__)
 
 
-class OpenRouterApiService(BaseApiServiceClient, StreamingHandler):
+class OpenRouterApiService(BaseApiServiceClient, BaseStreamingHandler):
     """OpenRouter API service with streaming support."""
     
     def __init__(

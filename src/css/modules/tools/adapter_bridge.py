@@ -8,7 +8,7 @@ from collections.abc import Callable, Sequence
 from typing import Any, cast
 
 from css.core.logger import getLogger
-from css.core.types.base_messages import Tool as AdapterTool
+from css.core.messages.types import Tool as AdapterTool
 from css.modules.tools.enums import ParameterType
 from css.modules.tools.registry import ToolRegistry
 from css.modules.tools.types import ToolParameter, ToolReturnType, ToolSchema

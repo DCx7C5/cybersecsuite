@@ -8,7 +8,7 @@ import pytest
 
 from css.core.sdks.adapters.browser_relay import BrowserRelayAdapter
 from css.core.sdks.css_client import CSSLLMClient
-from css.core.types.base_messages import LLMResponse
+from css.core.messages.types import LLMResponse
 from css.modules.llm_proxy.browser_plugin import (
     get_browser_plugin_session_store,
     router as plugin_router,

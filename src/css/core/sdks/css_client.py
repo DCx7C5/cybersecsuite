@@ -7,7 +7,7 @@ from css.core.sdks.adapters.deepseek import DeepSeekAdapter
 from css.core.sdks.relay_router import RelayAttempt, RelayProviderPolicy
 from css.core.sdks.registry import SDKRegistry
 from css.core.types.base_client import BaseApiServiceClient
-from css.core.types.base_messages import LLMResponse
+from css.core.messages.types import LLMResponse
 from css.core.utils.token_counter import estimate_message_tokens
 from css.core.models import get_model_registry
 

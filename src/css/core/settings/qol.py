@@ -1,6 +1,6 @@
-"""QoL Output Controls — msgspec.Struct models (Phase 12).
+"""QoL Output Controls — msgspec.Struct models.
 
-QoLToggle   — individual boolean switch (8 values)
+QoLToggle   — individual boolean switch
 QoLSettings — aggregated per-scope configuration as immutable msgspec.Struct
 """
 
@@ -54,13 +54,13 @@ class QoLSettings(msgspec.Struct, frozen=True, kw_only=True):
         t = QoLToggle(toggle) if isinstance(toggle, str) else toggle
         return t in self.enabled_toggles
 
-    def activate(self, *toggles: QoLToggle | str) -> QoLSettings:
+    def activate(self, *toggles: QoLToggle | str) -> "QoLSettings":
         new_set = set(self.enabled_toggles)
         for t in toggles:
             new_set.add(QoLToggle(t) if isinstance(t, str) else t)
         return QoLSettings(enabled_toggles=new_set, scope=self.scope, preset_name=self.preset_name)
 
-    def deactivate(self, *toggles: QoLToggle | str) -> QoLSettings:
+    def deactivate(self, *toggles: QoLToggle | str) -> "QoLSettings":
         new_set = set(self.enabled_toggles)
         for t in toggles:
             new_set.discard(QoLToggle(t) if isinstance(t, str) else t)
@@ -74,7 +74,7 @@ class QoLSettings(msgspec.Struct, frozen=True, kw_only=True):
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> QoLSettings:
+    def from_dict(cls, data: dict[str, Any]) -> "QoLSettings":
         raw_toggles = data.get("enabled_toggles", [])
         toggles: set[QoLToggle] = set()
         for v in raw_toggles:
@@ -87,10 +87,3 @@ class QoLSettings(msgspec.Struct, frozen=True, kw_only=True):
             scope=data.get("scope", "session"),
             preset_name=data.get("preset_name"),
         )
-
-
-__all__ = [
-    "QoLToggle",
-    "QoLSettings",
-    "toggle_description",
-]

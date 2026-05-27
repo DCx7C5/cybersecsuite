@@ -16,8 +16,9 @@ from datetime import datetime
 if TYPE_CHECKING:
     from css.core.capabilities.capability_registry import DynamicCapabilityRegistry
 
-from css.core.types.base_messages import BaseMessage, LLMResponse
-from css.core.types.enums import MessageRole
+from css.core.types.base_messages import BaseMessage
+from css.core.messages.types import LLMResponse
+from css.core.types.base_enums import MessageRole
 from .models import AgentResult
 from css.core.tools.tool_call_loop import ToolCallLoop
 
@@ -223,7 +224,7 @@ class AgentExecutor:
             return False
         
         # Import here to avoid circular imports
-        from css.core.types.capabilities import CapabilityType
+        from css.core.capabilities.models import CapabilityType
         
         try:
             cap = CapabilityType(capability_type.lower())
@@ -253,7 +254,7 @@ class AgentExecutor:
             log.warning("Capability registry not initialized, cannot select provider")
             return None
         
-        from css.core.types.capabilities import CapabilityType
+        from css.core.capabilities.models import CapabilityType
         
         try:
             cap = CapabilityType(required_capability.lower())
@@ -289,7 +290,7 @@ class AgentExecutor:
         log.warning(f"No provider found for capability: {required_capability}")
         return None
         
-        from css.core.types.capabilities import CapabilityType
+        from css.core.capabilities.models import CapabilityType
         
         try:
             cap = CapabilityType(required_capability.lower())

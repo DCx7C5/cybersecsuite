@@ -4,7 +4,7 @@
 from typing import Any
 
 import msgspec
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from fastapi import APIRouter, HTTPException, Query, status
 
 from .dispatcher import WebhookDispatcher
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
 dispatcher = WebhookDispatcher()
 
 
-class WebhookCreateRequest(EndpointModel, kw_only=True):
+class WebhookCreateRequest(BaseEndpoint, kw_only=True):
     name: str
     url: str
     secret: str = ""

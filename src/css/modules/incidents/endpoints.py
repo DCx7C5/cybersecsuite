@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from .models import (
     Incident,
     IncidentTimeline,
@@ -14,7 +14,7 @@ from .models import (
 router = APIRouter(prefix="/api/incidents", tags=["incidents"])
 
 # Request/Response Models
-class IncidentCreate(EndpointModel, kw_only=True):
+class IncidentCreate(BaseEndpoint, kw_only=True):
     title: str
     description: str = ""
     severity: str = "medium"
@@ -24,7 +24,7 @@ class IncidentCreate(EndpointModel, kw_only=True):
     affected_assets: List[str] = []
     affected_data_types: List[str] = []
 
-class IncidentUpdate(EndpointModel, kw_only=True):
+class IncidentUpdate(BaseEndpoint, kw_only=True):
     title: Optional[str] = None
     description: Optional[str] = None
     severity: Optional[str] = None
@@ -36,7 +36,7 @@ class IncidentUpdate(EndpointModel, kw_only=True):
     root_cause: Optional[str] = None
     lessons_learned: Optional[str] = None
 
-class IncidentResponse(EndpointModel, kw_only=True):
+class IncidentResponse(BaseEndpoint, kw_only=True):
     id: int
     incident_id: str
     title: str
@@ -50,14 +50,14 @@ class IncidentResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-class TimelineEventCreate(EndpointModel, kw_only=True):
+class TimelineEventCreate(BaseEndpoint, kw_only=True):
     event_type: str
     title: str
     description: str = ""
     metadata: Dict = {}
     occurred_at: datetime
 
-class TimelineEventResponse(EndpointModel, kw_only=True):
+class TimelineEventResponse(BaseEndpoint, kw_only=True):
     id: int
     sequence_number: int
     event_type: str
@@ -67,7 +67,7 @@ class TimelineEventResponse(EndpointModel, kw_only=True):
     occurred_at: datetime
     recorded_at: datetime
 
-class IncidentTaskCreate(EndpointModel, kw_only=True):
+class IncidentTaskCreate(BaseEndpoint, kw_only=True):
     title: str
     description: str = ""
     task_type: str
@@ -76,7 +76,7 @@ class IncidentTaskCreate(EndpointModel, kw_only=True):
     estimated_hours: Optional[float] = None
     due_date: Optional[datetime] = None
 
-class IncidentTaskResponse(EndpointModel, kw_only=True):
+class IncidentTaskResponse(BaseEndpoint, kw_only=True):
     id: int
     incident_id: int
     title: str

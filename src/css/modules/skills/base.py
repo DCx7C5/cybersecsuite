@@ -3,7 +3,7 @@
 
 from typing import Any, Protocol, runtime_checkable
 
-from css.core.types.context import ConversationContext
+from css.core.sdks.context import ConversationContext
 
 from .models import SkillParameter, SkillResult
 

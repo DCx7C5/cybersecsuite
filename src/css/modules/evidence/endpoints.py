@@ -1,6 +1,6 @@
 """Evidence management endpoints — chain-of-custody, collection, verification."""
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -16,7 +16,7 @@ from .models import (
 router = APIRouter(prefix="/api/evidence", tags=["evidence"])
 
 # Request/Response Models
-class EvidenceCollect(EndpointModel, kw_only=True):
+class EvidenceCollect(BaseEndpoint, kw_only=True):
     evidence_type: str
     source: str
     case_id: str
@@ -30,7 +30,7 @@ class EvidenceCollect(EndpointModel, kw_only=True):
     mime_type: str | None = None
     access_level: str = "restricted"
 
-class EvidenceResponse(EndpointModel, kw_only=True):
+class EvidenceResponse(BaseEndpoint, kw_only=True):
     id: int
     evidence_id: str
     case_id: str
@@ -47,14 +47,14 @@ class EvidenceResponse(EndpointModel, kw_only=True):
     sealed_at: datetime | None = None
     size_bytes: int | None = None
 
-class ChainEventRecord(EndpointModel, kw_only=True):
+class ChainEventRecord(BaseEndpoint, kw_only=True):
     event_type: str
     actor: str
     action: str
     occurred_at: datetime
     metadata: dict = {}
 
-class ChainEventResponse(EndpointModel, kw_only=True):
+class ChainEventResponse(BaseEndpoint, kw_only=True):
     id: int
     sequence_number: int
     event_type: str
@@ -65,13 +65,13 @@ class ChainEventResponse(EndpointModel, kw_only=True):
     hash_before: str
     hash_after: str
 
-class ChainResponse(EndpointModel, kw_only=True):
+class ChainResponse(BaseEndpoint, kw_only=True):
     evidence_id: str
     events: list[ChainEventResponse]
     is_valid: bool
     integrity_status: str
 
-class EvidenceTaggingReq(EndpointModel, kw_only=True):
+class EvidenceTaggingReq(BaseEndpoint, kw_only=True):
     incident_id: str | None = None
     case_id: str | None = None
     relevance_score: float = 0.0
@@ -106,7 +106,7 @@ async def collect_evidence(
             hash_md5=req.hash_md5,
             evidence_type=req.evidence_type,
             source=req.source,
-            source_agent_id="system",  # stub: replace with auth context actor_id
+            source_agent_id="system",  # stub: replace with authentication context actor_id
             description=req.description,
             tags=req.tags,
             size_bytes=req.size_bytes,
@@ -240,7 +240,7 @@ async def record_chain_event(
             sequence_number=seq_num,
             event_type=req.event_type,
             actor=req.actor,
-            actor_id="",  # stub: replace with auth context actor_id
+            actor_id="",  # stub: replace with authentication context actor_id
             action=req.action,
             metadata=req.metadata,
             hash_before=evidence.hash_sha256,

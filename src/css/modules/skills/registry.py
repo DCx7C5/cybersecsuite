@@ -5,7 +5,7 @@ import inspect
 from typing import Any
 from datetime import datetime, timezone
 
-from css.core.types.context import ConversationContext
+from css.core.sdks.context import ConversationContext
 from .base import BaseSkill
 from .models import SkillDefinition, SkillResult
 from .enums import SkillStatus, SkillCategory

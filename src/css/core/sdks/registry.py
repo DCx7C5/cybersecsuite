@@ -5,7 +5,7 @@ from typing import Any, Callable, override
 from css.core.logger import getLogger
 from css.core.types.base_client import BaseApiServiceClient
 from css.core.types.base_registry import BaseRegistry
-from css.core.types.meta import singleton
+from css.core.types.base_meta import singleton
 
 logger = getLogger(__name__)
 

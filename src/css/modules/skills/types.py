@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Literal
 
 from css.core.types.base_entity import BaseSkill
-from css.core.types.base_headers import BaseSkillHeader
+from css.core.types.base_entity import BaseSkillHeader
 
 
 class Skill(BaseSkill, frozen=True):

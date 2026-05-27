@@ -12,7 +12,7 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    StreamingHandler,
+    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
@@ -22,7 +22,7 @@ from css.core.config import ProviderDefaults
 logger = getLogger(__name__)
 
 
-class CloudflareApiService(BaseApiServiceClient, StreamingHandler):
+class CloudflareApiService(BaseApiServiceClient, BaseStreamingHandler):
     """Cloudflare Workers AI service using the OpenAI-compatible endpoint.
 
     Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID env vars.

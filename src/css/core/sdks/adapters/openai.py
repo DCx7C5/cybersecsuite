@@ -12,9 +12,9 @@ from typing import Any
 
 from openai import AsyncOpenAI
 from css.core.logger import getLogger
-from css.core.types.base_messages import LLMResponse, StreamChunk, Tool
-from css.core.types.enums import ProviderType
-from css.core.types.thinking import ThinkingConfig
+from css.core.messages.types import LLMResponse, StreamChunk, Tool
+from css.core.types.base_enums import ProviderType
+from css.core.sdks.thinking import ThinkingConfig
 
 logger = getLogger(__name__)
 
@@ -56,7 +56,7 @@ BUILTIN_TOOLS: list[Tool] = [
 
 
 class OpenAINativeAdapter:
-    """Native SDK adapter for OpenAI — implements LLMAdapter.
+    """Native SDK adapter for OpenAI — implements BaseLLMAdapter.
 
     Wraps openai.AsyncOpenAI directly to support features not
     available through the generic HTTP path:

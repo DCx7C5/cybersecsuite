@@ -1,4 +1,4 @@
-"""Base API service client — implements LLMAdapter Protocol.
+"""Base API service client — implements BaseLLMAdapter Protocol.
 
 Provider-agnostic base with shared session management and buffered call logic.
 """
@@ -8,21 +8,16 @@ from collections.abc import AsyncIterator, Awaitable
 from aiohttp import ClientSession
 
 from css.core.config import ProviderDefaults
-from .enums import ProviderType
-from .base_messages import (
-    BaseMessage,
-    Tool,
-    ModelMetadata,
-    StreamChunk,
-    LLMResponse,
-)
+from .base_enums import ProviderType
+from .base_messages import BaseMessage
+from css.core.messages.types import Tool, ModelMetadata, StreamChunk, LLMResponse
 
 
 from css.core.logger import getLogger
 logger = getLogger(__name__)
 
 
-class StreamingHandler:
+class BaseStreamingHandler:
     """Mixin for providers that parse streaming responses."""
     
     async def _parse_stream_chunk(self, line: str) -> StreamChunk | None:
@@ -31,7 +26,7 @@ class StreamingHandler:
 
 
 class BaseApiServiceClient:
-    """Base for all API service providers — implements LLMAdapter Protocol."""
+    """Base for all API service providers — implements BaseLLMAdapter Protocol."""
 
     provider_id: ProviderType
     api_key: str | None
@@ -156,7 +151,7 @@ class BaseApiServiceClient:
         header_name: str = "Authorization",
         prefix: str = "Bearer",
     ) -> dict[str, str]:
-        """Ensure auth header is set."""
+        """Ensure authentication header is set."""
         if api_key:
             if prefix:
                 headers[header_name] = f"{prefix} {api_key}"

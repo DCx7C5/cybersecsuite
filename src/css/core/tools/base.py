@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 from collections.abc import Sequence
-from css.core.types.meta import AsyncSafeSingletonMeta
+from css.core.types.base_meta import AsyncSafeSingletonMeta
 
 
 class BaseToolRegistry(metaclass=AsyncSafeSingletonMeta):

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from css.core.enums import ScopeLevel, Permission
 from css.core.types.base_entity import BaseRole
-from css.core.types.base_headers import BaseRoleHeader
+from css.core.types.base_entity import BaseRoleHeader
 
 class PermissionPolicy(msgspec.Struct, frozen=True, kw_only=True):
     """Permission policy for a role at a scope level."""

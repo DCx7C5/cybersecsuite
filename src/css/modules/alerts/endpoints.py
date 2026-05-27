@@ -3,13 +3,13 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Dict, Optional
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from .models import AlertRule, AlertHistory, ChannelConfig
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
 # Request/Response Models
-class AlertRuleCreate(EndpointModel, kw_only=True):
+class AlertRuleCreate(BaseEndpoint, kw_only=True):
     name: str
     description: str = ""
     event_type: str
@@ -18,7 +18,7 @@ class AlertRuleCreate(EndpointModel, kw_only=True):
     channels: List[str] = []
     cooldown_minutes: int = 0
 
-class AlertRuleUpdate(EndpointModel, kw_only=True):
+class AlertRuleUpdate(BaseEndpoint, kw_only=True):
     name: Optional[str] = None
     description: Optional[str] = None
     severity_threshold: Optional[str] = None
@@ -27,7 +27,7 @@ class AlertRuleUpdate(EndpointModel, kw_only=True):
     cooldown_minutes: Optional[int] = None
     is_active: Optional[bool] = None
 
-class AlertRuleResponse(EndpointModel, kw_only=True):
+class AlertRuleResponse(BaseEndpoint, kw_only=True):
     id: int
     name: str
     description: str
@@ -39,18 +39,18 @@ class AlertRuleResponse(EndpointModel, kw_only=True):
     created_at: datetime
     updated_at: datetime
 
-class ChannelConfigCreate(EndpointModel, kw_only=True):
+class ChannelConfigCreate(BaseEndpoint, kw_only=True):
     channel_type: str
     config: Dict
 
-class ChannelConfigResponse(EndpointModel, kw_only=True):
+class ChannelConfigResponse(BaseEndpoint, kw_only=True):
     id: int
     channel_type: str
     is_active: bool
     last_test_at: Optional[datetime] = None
     last_test_status: Optional[str] = None
 
-class AlertHistoryResponse(EndpointModel, kw_only=True):
+class AlertHistoryResponse(BaseEndpoint, kw_only=True):
     id: int
     event_id: str
     event_type: str
