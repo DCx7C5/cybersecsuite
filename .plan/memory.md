@@ -1,11 +1,11 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-27 (core boundary/schema intake) | **Session**: planning-only authentication, serializer, manager, and host-topology reconciliation
+**Last Updated**: 2026-05-27 (host-topology decision resolution) | **Session**: planning-only schema and ownership reconciliation
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
 ⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use the nearest planning markdown, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work.  
-⚠️ **Architecture**: `accounts`, `authentication`, `cryptography`, `events`, `marketplace`, `memory`, `rag_vector`, `rag_graph`, `securemd`, and `serializers` are core-owned or planned core-owned. `core/auth/` is retired in favor of `core/authentication/`. Phase 45 proposes `Host` as the asset owner, with normalized address/network junctions; it is blocked on explicit cardinality/data-transition decisions.
+⚠️ **Architecture**: `accounts`, `authentication`, `cryptography`, `events`, `marketplace`, `memory`, `rag_vector`, `rag_graph`, `securemd`, and `serializers` are core-owned or planned core-owned. `core/auth/` is retired in favor of `core/authentication/`. Phase 45 uses organization-owned `Host` as the canonical asset, migrates `Machine` data before removal, renames paths to `FilesystemPath`, and adds normalized address/network junctions.
 ⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve/neo4j). Ollama provider calls currently use `api_services/ollama/`; native process ownership is Phase 33 work. Frontend: `cd src/frontend && bun run dev`.
 ⚠️ **Memory sync rule**: `memory.md` is still phase-end by default, but it must also be refreshed immediately after major architecture, source-of-truth, or tracker-structure changes.
 ⚠️ **Todo quality rule**: every new or revised todo must be concrete enough for GitHub Copilot Auto to implement: exact files/symbols, ordered steps, actual dependencies, boundaries, and runnable validation.
@@ -13,11 +13,11 @@
 
 ---
 
-## 📊 session.db State (2026-05-27 core boundary/schema intake)
+## 📊 session.db State (2026-05-27 host-topology decision resolution)
 
-**Total**: 1079 todos | **Done**: 597 | **Pending**: 473 | **Blocked**: 9 | **In Progress**: 0
+**Total**: 1081 todos | **Done**: 598 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 0
 
-**Overall Completion**: 55.3%
+**Overall Completion**: 55.4%
 
 **Last Verified**: 2026-05-27 (checked against live session.db totals)
 
@@ -38,7 +38,7 @@
 | Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 | 5.3% |
 | Phase 43 — Serializer Layer | 13 | 0 | 13 | 0 | 0 | 0.0% |
 | Phase 44 — Cryptography + SecureMD Integrity | 5 | 0 | 5 | 0 | 0 | 0.0% |
-| Phase 45 — Host Topology + Account Provider Schema | 9 | 0 | 8 | 1 | 0 | 0.0% |
+| Phase 45 — Host Topology + Account Provider Schema | 11 | 1 | 10 | 0 | 0 | 9.1% |
 
 **Completed phases** (100%): Phase 0, 1, 2, 5, 6, 7, 8, 9, 22, 40, 41, and the separate `Phase 39 — Code Quality Remediation` row set.
 
@@ -104,19 +104,29 @@
   files/symbols, steps, dependencies, boundaries, and validation so GitHub
   Copilot Auto can implement them without guessing.
 
-### Host Topology And Account Provider Schema Planning (2026-05-27)
+### Host Topology And Account Provider Schema Decision Resolution (2026-05-27)
 
-- Added planning-only Phase 45 with nine rows. `db45-schema-decision-gates`
-  is blocked until the user confirms data-retention, topology-tenancy,
-  identity/profile cardinality, provider-connection multiplicity, and
-  `PathFS` naming choices.
+- Resolved `db45-schema-decision-gates`: existing `Machine` data must be
+  migrated into `Host`; topology records are owned by `Organization` rather
+  than `ProjectScope`; `UserAccountMembership` represents `User <-> Account`
+  M:N while `Account -> UserProfile` is one-to-one; provider connections are
+  repeatable through normalized names; `PathFS` is renamed to
+  `FilesystemPath`.
+- Added `db45-machine-data-cutover` and
+  `db45-machine-retirement-finalization` so schema implementation cannot drop
+  `Machine` until a fan-out/tenant-mapping preflight, data copy, and
+  verification pass have completed while the source table is still readable.
 - Source-backed starting point: `Host` currently depends on `Machine`,
   `PathFS` already points directly to `Host`, host IPs are scalar fields,
   network/address tables are absent, `UserProfile.account` is not unique, and
   `ApiServiceProvider` has no `Account` relation.
-- Proposed topology uses explicit junctions:
+- Approved topology uses explicit organization-isolated junctions:
   `Host -> HostAddress -> Address -> NetworkAddress -> Network`, enabling
   reverse traversal from a network address back to every associated host.
+- Rich model classes are approved for persistence-domain invariants, relation
+  mutation, tenancy validation, lifecycle methods, and domain conversion;
+  manager modules still own collection/bulk migration queries and serializer
+  modules still own representations.
 - `Machine` retirement is a new follow-on requirement, not a rewrite of the
   completed Phase 40 history; implementation remains out of scope for this
   planning session.

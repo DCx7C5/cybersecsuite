@@ -1,7 +1,7 @@
 # core/db/models — Core ORM Schema Boundary
 
 **Location**: `src/css/core/db/models/`
-**Status**: Active model owner | **Current gate**: Phase 45 decision row blocked; planning only
+**Status**: Active model owner | **Current gate**: Phase 45 decisions resolved; implementation not started
 **Tracker authority**: `.plan/session.db`; this document owns executable model
 consolidation guidance for the database package.
 
@@ -13,14 +13,14 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 | File | Primary model responsibility | Reconciliation focus |
 |------|------------------------------|----------------------|
 | `base.py`, `mixins.py`, `enums.py` | Shared model base, lifecycle/version/frontmatter mixins, database enums. | Apply semantic fields and enum rules consistently. |
-| `accounts.py`, `user.py`, `provider.py` | Account/organization, internal user/admin, external provider identity. | Phase 45 defines the requested identity/profile and account/provider junctions after cardinality confirmation. |
+| `accounts.py`, `user.py`, `provider.py` | Account/organization, internal user/admin, external provider identity. | Phase 45 defines confirmed `UserAccountMembership` and repeatable account/provider connection junctions. |
 | `llm_models.py` | Model metadata, pricing/capability persistence and query helpers. | Keep the provider slug field as a bridge; Provider↔LLMModel relation remains explicit deferred work. |
 | `marketplace.py` | Canonical marketplace model surface. `marketplace_catalog.py` removed in Phase 40. | No further reconciliation needed. |
 | `memory.py` | Memory entry/snapshot persistence. | Phase 40 aligns consumers with the canonical surface. |
 | `menu.py` | Navigation tree and `menu_id` partitioning. | Complete deterministic seed/filter/tree constraints. |
-| `machine.py` | Current infrastructure machine/endpoint record. | Phase 45 target retires this table after data-transition policy is confirmed and retained asset fields move to `Host`. |
+| `machine.py` | Current infrastructure machine/endpoint record. | Phase 45 migrates retained data into `Host` and retires this table only after migration verification. |
 | `host.py` | Current host/asset record with required `Machine` FK and scalar IP fields. | Phase 45 target promotes `Host` to the canonical asset and connects normalized addresses and paths. |
-| `pathfs.py` | Filesystem path hierarchy with an existing direct `Host` FK. | Retain the relation; remove only the Machine-dependent seeding chain unless an explicit rename is approved. |
+| `pathfs.py` | Filesystem path hierarchy with an existing direct `Host` FK. | Rename to `filesystem_path.py` / `FilesystemPath` while retaining the relation and parent hierarchy. |
 | `network.py`, `address.py` | Not present in current source. | Phase 45 planned owners for `Network`, `Address`, `HostAddress`, and `NetworkAddress`. |
 | `../managers/` | New package scaffold is incomplete; model files still define manager classes. | Phase 45 moves query managers out of ORM modules with a cycle-safe import pattern. |
 | `../../serializers/` | New package scaffold is incomplete; serializers still appear in model/feature files. | Phase 43 moves all serializer implementations out of ORM ownership. |
@@ -35,8 +35,8 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 | Marketplace | `BaseMarketPlace`, `MarketplaceMeta`, `MarketplaceMetaManager`, `MarketplaceItem`, `MarketplaceItemManager`, `MarketplaceItemTag`, and their `*Info` structs in `marketplace.py`. |
 | Menu/tree | `MenuItem`, `MenuItemInfo`, `MenuItemManager`, `sync_default_menu_items` in `menu.py`. |
 | Infrastructure baseline | `Machine`, `Host`, and `PathFS` currently exist; `Host.machine` and Machine-dependent host seeding remain live in source. |
-| Phase 45 topology target | Retire `Machine`; use `Host` plus `PathFS`, `Address`, `HostAddress`, `Network`, and `NetworkAddress` as the traversable inventory graph. |
-| Ownership relocation target | Managers live in `core/db/managers/<domain>.py`; serializers live in `core/serializers/<domain>.py`; ORM modules contain records/value types only. |
+| Phase 45 topology target | Retire `Machine` after verified data migration; use organization-owned `Host`, `FilesystemPath`, `Address`, `HostAddress`, `Network`, and `NetworkAddress` as the traversable inventory graph. |
+| Ownership relocation target | Managers live in `core/db/managers/<domain>.py`; serializers live in `core/serializers/<domain>.py`; ORM modules retain rich persistence-domain behavior and value conversion. |
 
 ## TODOs
 - [x] `db-add-taskassignment-updated-at` — Add `updated_at` to `TaskAssignment` (completed 2026-05-07)
@@ -67,14 +67,15 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
   machine/host/path work as approval of the new topology target.
 - `orm-provider-llmmodel-relation` — explicit Provider ↔ LLMModel relation contract for startup seeding and query flows.
 - `seed-providers-empty-table-yaml` — provider table cardinality gate (seed only when empty, otherwise non-destructive enrich).
-- `db45-schema-decision-gates` — blocked decision root for Machine transition,
-  topology tenancy, identity/profile cardinality, provider connections, and
-  `PathFS` naming.
+- `db45-schema-decision-gates` — resolved decision root: migrate `Machine`
+  data, own topology by `Organization`, add `UserAccountMembership`, allow
+  named repeated provider connections, and rename paths to
+  `FilesystemPath`.
 - `db45-manager-package-relocation` — move manager implementations to
   `core/db/managers/` without changing query behavior.
-- `db45-machine-retirement-host-promotion`, `db45-host-pathfs-chain`, and
-  `db45-network-address-topology` — implement the asset/relation graph after
-  the decision gate.
+- `db45-machine-retirement-host-promotion`, `db45-machine-data-cutover`,
+  `db45-host-pathfs-chain`, and `db45-network-address-topology` — implement
+  the asset/relation graph while preserving existing Machine-owned data.
 - `db45-identity-account-profile-schema` and
   `db45-account-provider-junction` — implement confirmed identity/provider
   associations without storing secrets in relation tables.
@@ -104,7 +105,7 @@ Phase 45.
 | Identity | `user.py` is internal user/admin identity; provider and provider-account surfaces remain external account relationships. |
 | Seeds | Seed providers from canonical YAML only when the table is empty; enrich/upsert non-destructively after provider/model ownership is explicit. |
 | Navigation | Startup upserts known routes deterministically and keeps partition/tree behavior in `menu.py`. |
-| Schema policy | Phase 40 used direct model/schema edits; Phase 45 must not assume rebuild versus migration until its decision gate is answered. |
+| Schema policy | Phase 40 used direct model/schema edits; Phase 45 must implement a verified Machine-to-Host data cutover because existing data must be integrated, not discarded. |
 
 ### Canonical Meta Pattern (Phase 40)
 
@@ -132,74 +133,87 @@ class Meta:
 | Finding | Implementation consequence |
 |---------|----------------------------|
 | `Host.machine` is required and `HostInfo` exposes `machine_id`. | `Machine` cannot be deleted until retained asset fields and seed behavior are transferred to `Host`. |
-| `PathFS.host` already exists with unique `host_id` plus `path`. | Keep the direct host/path chain; only repair seed and ownership relocation unless a rename is approved. |
+| `PathFS.host` already exists with unique `host_id` plus `path`. | Keep the direct host/path chain while renaming the non-idiomatic model/module/table to `FilesystemPath` / `filesystem_path`. |
 | `Host` stores `ipv4_address` and `ipv6_address` as scalars. | Normalize IP identity into `Address` and link through an explicit junction. |
 | No `Network` or address junction model exists. | Add new ORM modules and register them in both CLI and ASGI Tortoise model lists. |
-| `UserProfile.account` is a non-unique FK with singular `related_name="profile"`. | Confirm the desired identity/profile cardinality before modifying it. |
-| `ApiServiceProvider` is catalog-only. | Add a connection junction to accounts; never store credential bytes on the junction. |
+| `UserProfile.account` is a non-unique FK with singular `related_name="profile"`. | Make this relation one-to-one and add confirmed `UserAccountMembership` for the M:N identity association. |
+| `ApiServiceProvider` is catalog-only. | Add named repeatable account-provider connections; never store credential bytes on the junction. |
+| Phase 15 removes stale scope-module ownership but preserves useful ORM/session records. | Own topology by `Organization`; do not attach inventory to `ProjectScope` or revive deprecated scopes. |
 
-### Recommended Normalized Table Layout
+### Approved Normalized Table Layout
 
-This is the recommended baseline pending the decision questions below:
+The user decisions on 2026-05-27 approve this implementation target:
 
 | Table / model | Required ownership and key relations |
 |---------------|--------------------------------------|
-| `host` / `Host` | Canonical system asset. Absorb retained `Machine` fields: `hostname`, `os_type`, `os_version`, `asset_uuid`, activity/last-seen and capacity fields. Keep `fqdn` and `host_role`. |
-| `path_fs` / `PathFS` | Existing tree record. `host_id -> host.id`; preserve unique `(host_id, path)` and parent hierarchy. |
-| `network` / `Network` | Named network boundary with canonical CIDR/prefix, family, label/description, and approved tenant owner. |
-| `address` / `Address` | One canonical IPv4/IPv6 value plus family and optional display metadata; do not duplicate the same IP per host. |
-| `host_address` / `HostAddress` | Junction `host_id -> host.id`, `address_id -> address.id`; carry interface, primary/role, and observation timestamps. |
-| `network_address` / `NetworkAddress` | Junction `network_id -> network.id`, `address_id -> address.id`; supports overlapping/observed networks without copying address rows. |
-| `user_account_membership` / `UserAccountMembership` | Only if confirmed: explicit M:N junction between internal `User` and tenant/login `Account`; carry role/status/audit fields, not credentials. |
-| `account_provider_connection` / `AccountProviderConnection` | Explicit M:N association from `Account` to `ApiServiceProvider`; carry status, auth method, scope and encrypted-setting reference, never plaintext tokens. |
+| `host` / `Host` | Canonical organization-owned system asset. Add required `organization_id -> organization.id`; absorb migrated `Machine` fields: `hostname`, `os_type`, `os_version`, `asset_uuid`, activity/last-seen and capacity fields. Keep `fqdn` and `host_role`. |
+| `filesystem_path` / `FilesystemPath` | Renamed tree record replacing `PathFS`. `host_id -> host.id`; preserve unique `(host_id, path)`, parent hierarchy, and reverse relation `Host.filesystem_paths`. Do not keep a `PathFS` compatibility alias after cutover. |
+| `network` / `Network` | Organization-owned named network boundary with canonical CIDR/prefix and family; enforce unique canonical network identity within `organization_id`. |
+| `address` / `Address` | Organization-owned canonical IPv4/IPv6 value; enforce unique `(organization_id, family, canonical_value)` so matching private addresses in separate organizations are not conflated. |
+| `host_address` / `HostAddress` | Organization-owned junction `host_id -> host.id`, `address_id -> address.id`; carry interface, primary/role, and observation timestamps; relation mutation must reject cross-organization links. |
+| `network_address` / `NetworkAddress` | Organization-owned junction `network_id -> network.id`, `address_id -> address.id`; retain overlapping/observed network membership without copying address rows; relation mutation must reject cross-organization links. |
+| `user_profile` / `UserProfile` | Exactly one profile per `Account`; enforce a one-to-one account relation rather than a shared profile collection. |
+| `user_account_membership` / `UserAccountMembership` | Confirmed explicit M:N junction between internal `User` and tenant/login `Account`; enforce unique `(user_id, account_id)` and carry role/status/audit fields, not credentials. |
+| `account_provider_connection` / `AccountProviderConnection` | Confirmed repeatable M:N association from `Account` to `ApiServiceProvider`; require normalized `connection_name` and unique `(account_id, provider_id, connection_name)`; carry status, auth method, scopes and encrypted-setting reference, never plaintext tokens. |
 
 Required traversal contract:
 
 ```text
 Host -> HostAddress -> Address -> NetworkAddress -> Network
 Network -> NetworkAddress -> Address -> HostAddress -> Host
-Host -> PathFS -> child PathFS
+Host -> FilesystemPath -> child FilesystemPath
+User -> UserAccountMembership -> Account -> UserProfile
 Account -> AccountProviderConnection -> ApiServiceProvider
 ```
 
-### Open Decisions Blocking Implementation
+### Resolved Decisions
 
-The tracker row `db45-schema-decision-gates` remains `blocked` until these
-answers are supplied:
+| Decision | Approved contract |
+|----------|-------------------|
+| Machine data transition | Integrate existing data. Add migration-ready `Host` fields while `Machine` still exists, copy and verify retained values through an explicit migration command, then perform final table/FK retirement only after its report succeeds. |
+| Topology tenancy | `Organization` owns `Host`, `Network`, `Address`, `HostAddress`, and `NetworkAddress`. `ProjectScope` is not a topology tenant; deprecated scope-module work must not be revived for this graph. |
+| Identity/profile | Add `UserAccountMembership` for `User <-> Account` M:N; enforce exactly one `UserProfile` per `Account`. |
+| Provider multiplicity | Allow multiple provider connections per account/provider through required normalized `connection_name`. |
+| Filesystem naming | Rename `PathFS` to descriptive `FilesystemPath` in `filesystem_path.py`, with table `filesystem_path`; remove the old symbol/module/table contract during cutover. |
 
-1. `Machine` data transition: may development tables be rebuilt, or must
-   existing `Machine` rows be migrated into `Host` without loss?
-2. Topology tenancy: should `Host` and `Network` belong to `Organization`,
-   `ProjectScope`, both through junctions, or remain global inventory?
-3. Identity meaning: does “useraccount/profile many to many rel to accounts”
-   mean `User <-> Account` is many-to-many while each `Account` has exactly
-   one `UserProfile` (recommended), or must profiles themselves be shared?
-4. Provider multiplicity: may one `Account` connect multiple credentials to
-   the same `ApiServiceProvider`, requiring `connection_name` in uniqueness?
-5. Naming: retain current `PathFS`/`path_fs`, or explicitly rename it to
-   `FSPath` and its table as part of the schema change?
+### Rich ORM Model Boundary
+
+The requested thick model style is the Phase 45 default, with explicit limits:
+
+| Owner | Permitted responsibility |
+|-------|--------------------------|
+| ORM model class | Field constraints, relation invariants, tenancy checks, lifecycle transitions, link/unlink mutation methods, `to_domain()` / `from_domain()`, and narrow idempotent seed behavior. Examples: `Host.attach_address()`, `Network.attach_address()`, `User.add_account_membership()`, and `Account.connect_provider()`. |
+| Manager class in `core/db/managers/` | Collection queries, organization-filtered traversals, search/filter operations, and bulk/data-cutover orchestration such as Machine-to-Host migration. |
+| Serializer class in `core/serializers/` | Wire/frontmatter/JSON/Markdown representation only. It must not own database relation behavior. |
+| Authentication/settings/service owner | Secret values, OAuth/token exchange, external I/O, request authorization, and transport behavior. These do not belong inside ORM classes. |
+
+Every relation-creation method must require or derive `organization_id` and
+reject linking records from different organizations before saving a junction.
 
 ### Implementation Order
 
 | Todo ID | Status | Concrete outcome |
 |---------|--------|------------------|
-| `db45-schema-decision-gates` | blocked | Capture the five decisions above before schema mutation. |
+| `db45-schema-decision-gates` | done | Captured the five approved schema decisions above. |
 | `audit44-db-manager-import-cutover` | pending | Repair `BaseManager` package contract. |
 | `db45-manager-package-relocation` | pending | Move all existing manager implementations to mirrored `core/db/managers/*.py` files. |
 | `serializer-base-create`, `serializer-relocate-base` | pending | Establish canonical serializer bases and move serializer implementations to `core/serializers/*.py`. |
-| `db45-machine-retirement-host-promotion` | pending | Delete the Machine owner only after `Host` carries retained asset data. |
-| `db45-host-pathfs-chain`, `db45-network-address-topology` | pending | Preserve paths and add reversible address/network traversal. |
-| `db45-identity-account-profile-schema`, `db45-account-provider-junction` | pending | Implement confirmed identity and provider associations. |
+| `db45-machine-retirement-host-promotion` | pending | Add organization-owned, migration-ready `Host` fields while retaining Machine as copy source. |
+| `db45-machine-data-cutover` | pending | Add and run an explicit migration command that preflights fan-out/tenant mapping and copies/verifies Machine data while `Machine` remains present. |
+| `db45-machine-retirement-finalization` | pending | Remove the Machine model/table/FK/registration only after a successful migration report. |
+| `db45-host-pathfs-chain`, `db45-network-address-topology` | pending | Rename paths to `FilesystemPath` and add organization-isolated reversible address/network traversal. |
+| `db45-identity-account-profile-schema`, `db45-account-provider-junction` | pending | Implement membership, one-to-one profile, and named repeatable provider associations. |
 | `db45-model-registration-seeding`, `db45-schema-validation` | pending | Register modules, seed retained defaults, and verify complete relation chains. |
 
 ### Runtime Registration And Ownership Boundary
 
-- Add `host.py`, `pathfs.py`, `network.py`, and `address.py` to model module
+- Add `host.py`, `filesystem_path.py`, `network.py`, and `address.py` to model module
   enumeration in `src/css/manager.py` and `src/css/core/asgi/app.py`; remove
-  `machine.py` only after the replacement is implementable.
-- `core/db/models/*.py` owns ORM records and domain value types only.
+  `machine.py` only after the data-copy cutover passes.
+- `core/db/models/*.py` owns ORM records, domain value conversion, and rich
+  persistence-domain behavior/invariants.
 - `core/db/managers/*.py` owns query manager implementations; manager modules
-  must use cycle-safe model imports.
+  must use cycle-safe model imports and bulk migration/query orchestration.
 - `core/serializers/*.py` owns every serializer implementation; ORM files must
   not import serializer bases.
 - Provider connection rows may reference encrypted secret storage, but actual

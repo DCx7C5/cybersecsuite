@@ -20,8 +20,9 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 - **cybersec-postgres**: custom PostgreSQL 18-alpine build (port 5432 internal)
 - **Connection pooling**: Managed by asyncpg (Tortoise default)
 - **Schema policy**: Phase 40 used direct model/schema edits for its completed
-  development tranche. Phase 45 is planning-only and blocked until the user
-  decides whether Machine data may be rebuilt or must be migrated into Host.
+  development tranche. Phase 45 remains planning-only, but its decision gate
+  is resolved: existing `Machine` data must be migrated into `Host` and
+  verified before the old model/table is removed.
 
 **Current infra note**:
 - Phase 20 plans PostgreSQL + `pgvector` for VectorRAG, but the current custom image does not yet install the extension package. `mem-pgvector-setup` now explicitly includes the Docker image prerequisite.
@@ -58,7 +59,7 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 
 | Stage | Required behavior |
 |-------|-------------------|
-| Development schema initialization | Do not implement Phase 45 deletion/addition work until `db45-schema-decision-gates` resolves rebuild versus data migration. |
+| Development schema initialization | Phase 45 must use staged tasks: add replacement fields, run a reported data migration while Machine is still registered, then retire Machine only after verification. A destructive rebuild is not the accepted path. |
 | Provider bootstrap | Seed from canonical YAML only if the provider table is empty; otherwise enrich without destructive reset. |
 | Provider/model bootstrap | Establish Provider-to-LLMModel ownership before model upserts. |
 | Runtime menu bootstrap | Idempotently upsert known navigation routes grouped by `menu_id`. |
@@ -400,11 +401,12 @@ async def lifespan(app: FastAPI):
 - ✅ Connection pooling (asyncpg)
 - ✅ Schema generation
 - ✅ Phase 40 used direct model/schema edits and is complete in the tracker
-- ⏸ Phase 45 topology/relation implementation is blocked on schema decisions
+- 📋 Phase 45 topology/relation decisions are resolved; implementation has not started
 
 ### Readiness Assessment
 🟡 **Schema follow-up planned** — Phase 45 replaces the Machine-centred asset
-layout and requires explicit data/cardinality decisions before code changes.
+layout through a verified data cutover, organization-owned topology, and
+confirmed account/provider relation cardinalities.
 
 ---
 
@@ -412,17 +414,20 @@ layout and requires explicit data/cardinality decisions before code changes.
 
 Earlier plans made this cleanup depend on a `working-dir-manager` /
 `core/workspace` package. No implemented `core/workspace` directory was found
-during documentation cleanup. Reconcile tracker rows and current source before
-deleting scope models or utilities.
+during documentation cleanup. The live tracker now distinguishes deprecated
+scope-module/runtime references from ORM records that may still carry useful
+session/project data. Phase 45 does not use those scope records for topology
+tenancy; it uses `Organization`.
 
 | Item | Action | Todo ID |
 |------|--------|---------|
-| `scope_utils.py` | Delete entire file | `scopes-module-remove` |
-| `enums.py` | Remove `ScopeLevel` enum | `scopes-module-remove` |
-| `models/scope.py` | Drop/migrate `SessionScope` and `ProjectScope` DB models | `scopes-module-remove` |
+| `scope_utils.py` | Remove obsolete utility ownership or retain only a narrowly documented compatibility forwarder if an active caller requires it. | `scopes-module-remove` |
+| `enums.py` | Deduplicate `ScopeLevel` under the canonical enum owner; do not conflate this with topology tenancy. | `gap-scopelevel-deduplicate` |
+| `models/scope.py` | Remove stale deleted-module dependencies while retaining still-needed `SessionScope` / `ProjectScope` persistence until its replacement contract is implemented. | `scopes-module-remove` |
 
-> Do not execute the legacy deletion sequence until the session/output-directory
-> owner and permissions/session replacement contracts have been validated.
+> Do not delete surviving scope/session ORM data solely because the deprecated
+> scope module is removed. Any later record migration requires its own
+> validated owner and data-transition contract.
 
 ---
 
@@ -486,7 +491,7 @@ implementation work must use these concrete boundaries:
 | `src/css/core/db/models/memory.py`, `src/css/core/db/models/marketplace.py`, `src/css/core/db/models/tasks.py`, `src/css/core/db/models/quotas.py` | Canonical model consolidation lanes. |
 | `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider/user/account/model ownership and startup seeding. `provider.py` owns the provider table; Provider↔LLMModel relation remains deferred. |
 | `src/css/core/db/models/menu.py` | `MenuItem`, `MenuItemManager.roots()`, `sync_default_menu_items()`. |
-| `src/css/core/db/models/machine.py`, `src/css/core/db/models/host.py`, `src/css/core/db/models/pathfs.py` | Current asset/path baseline; Phase 45 retires `Machine`, promotes `Host`, and retains direct paths after decision approval. |
+| `src/css/core/db/models/machine.py`, `src/css/core/db/models/host.py`, `src/css/core/db/models/pathfs.py` | Current asset/path baseline; Phase 45 migrates `Machine` data into organization-owned `Host` and renames `PathFS` to `FilesystemPath`. |
 | `src/css/core/db/models/network.py`, `src/css/core/db/models/address.py` | Planned Phase 45 owners for `Network`, `Address`, `HostAddress`, and `NetworkAddress`. |
 | `src/css/core/db/managers/*.py` | Planned query-manager owner; current package scaffold requires repair and manager extraction from model files. |
 | `src/css/core/serializers/*.py` | Planned sole serializer owner; model modules must no longer define serializer classes after Phase 43. |
@@ -511,10 +516,10 @@ implementation work must use these concrete boundaries:
 
 | Todo ID | Status | Required output |
 |---------|--------|-----------------|
-| `db45-schema-decision-gates` | blocked | Decide Machine data transition, Host/Network tenancy, identity/profile cardinality, same-provider multiplicity, and `PathFS` naming. |
+| `db45-schema-decision-gates` | done | Decisions captured: migrate Machine data; organization-owned topology; User/Account membership plus one profile/account; named repeated provider connections; `FilesystemPath` rename. |
 | `audit44-db-manager-import-cutover`, `db45-manager-package-relocation` | pending | Make `core/db/managers/` the implementation owner for query managers using cycle-safe imports. |
-| `db45-machine-retirement-host-promotion` | pending | Remove `Machine` only after retained asset fields move to `Host`. |
-| `db45-host-pathfs-chain`, `db45-network-address-topology` | pending | Retain `Host -> PathFS`; add `Host -> HostAddress -> Address -> NetworkAddress -> Network` and reverse traversal. |
+| `db45-machine-retirement-host-promotion`, `db45-machine-data-cutover`, `db45-machine-retirement-finalization` | pending | Promote `Host`, copy and verify existing Machine rows while the source remains queryable, and remove `Machine` only in the post-report finalization task. |
+| `db45-host-pathfs-chain`, `db45-network-address-topology` | pending | Implement `Host -> FilesystemPath`; add organization-isolated `Host -> HostAddress -> Address -> NetworkAddress -> Network` and reverse traversal. |
 | `db45-identity-account-profile-schema`, `db45-account-provider-junction` | pending | Add confirmed account/profile/user and account/provider associations without secret material in junction rows. |
 | `db45-model-registration-seeding`, `db45-schema-validation` | pending | Update both Tortoise registration lists, replace Machine seed dependency, and validate final relations. |
 
@@ -603,8 +608,8 @@ an explicit junction-rename todo requires otherwise.
 
 Historical direct schema policy requirement for Phase 40:
 - Phase 40 used direct model and schema edits in development.
-- Phase 45 must not reuse that decision for Machine retirement until
-  `db45-schema-decision-gates` answers rebuild versus migration.
+- Phase 45 must not reuse destructive rebuild semantics for Machine
+  retirement: the approved contract requires a verified data-copy cutover.
 
 ### Historical Phase 40 Schema-Change Development Flow
 

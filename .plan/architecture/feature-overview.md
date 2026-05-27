@@ -598,7 +598,7 @@ they are not new completion claims.
 | Feature | Status | Phase | Description |
 |---------|--------|-------|-------------|
 | **ASGI Module** | 🟡 PARTIAL RUNTIME | 36 | FastAPI lifespan/router/process surfaces exist; mounted transport policy remains pending |
-| **DB Module** | 🟡 SCHEMA FOLLOW-UP | 40/45 | Phase 40 baseline is complete; Phase 45 plans Host/address/network and account/provider relations after blocked design decisions. |
+| **DB Module** | 🟡 SCHEMA FOLLOW-UP | 40/45 | Phase 40 baseline is complete; Phase 45 decisions now specify organization-owned host topology, Machine data migration, and confirmed account/provider relations. |
 | **Types Module** | ✅ DONE | — | 1654 LOC, 13 root files + 5 provider files (oversized, needs refactor) |
 | **Config System** | 🟡 PARTIAL RUNTIME | 17 | Current core/config source has a migration TODO toward canonical settings/config ownership |
 | **Module Auto-Discovery** | ✅ DONE | 2 | Dynamic module scanning via importlib |
@@ -677,15 +677,15 @@ they are not new completion claims.
 | **Marketplace Model Lane** | ✅ DONE | 40 | Canonical marketplace model consolidation is complete in the tracker. |
 | **Menu/Tree Contract** | ✅ DONE | 40 | Phase 40 menu/tree rows are complete in the tracker. |
 | **Direct Development Schema Policy** | ✅ RETAINED | 40 | Production migration/versioning remains a later explicit decision |
-| **Host/Network/Address Graph** | ⏸ BLOCKED | 45 | Planned `Host -> HostAddress -> Address -> NetworkAddress -> Network` topology awaits schema decisions. |
-| **Account/Provider Relations** | ⏸ BLOCKED | 45 | Planned identity/provider junctions await cardinality and credential-multiplicity decisions. |
+| **Host/FilesystemPath/Address Graph** | 📋 PLANNED | 45 | Approved organization-owned `Host -> HostAddress -> Address -> NetworkAddress -> Network` topology plus `Host -> FilesystemPath`; Machine data must be migrated before retirement. |
+| **Account/Provider Relations** | 📋 PLANNED | 45 | Approved `UserAccountMembership`, one profile per account, and named repeated `AccountProviderConnection` records without plaintext credentials. |
 
 ---
 
 ## Phase Completion Summary
 
 Live totals are maintained only in `.plan/plan.md` and `.plan/session.db`.
-As of the 2026-05-27 schema intake, Phase 40 is complete and Phase 45 has
-nine planned rows with `db45-schema-decision-gates` blocked pending user
-answers. Implementation must resume through that owner specification and a
-dependency-ready tracker row.
+As of the 2026-05-27 decision resolution, Phase 40 is complete and Phase 45
+has eleven rows: its decision gate is done and ten implementation rows remain
+pending. Implementation must follow the migration-first owner specification
+and dependency-ready tracker rows.

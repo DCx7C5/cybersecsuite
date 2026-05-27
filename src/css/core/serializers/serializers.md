@@ -21,7 +21,7 @@
 | `frontmatter.py` | Placeholder `FrontMatterSerializer`; naming/implementation must align with SecureMD. |
 | `markdown.py` | Placeholder `MarkdownSerializer`; signed-document integration is pending. |
 | `__init__.py` | Empty public package scaffold; exports are pending. |
-| `<domain>.py` | Planned mirrored serializers for ORM/feature domains: `accounts`, `user`, `host`, `pathfs`, `network`, `address`, `provider`, `menu`, `memory`, `tasks`, `events`, `scope`, `permissions`, `llm_models`, `marketplace`, `team`, `orchestrator`, `quotas`, and `rag_vector`. |
+| `<domain>.py` | Planned mirrored serializers for ORM/feature domains: `accounts`, `user`, `host`, `filesystem_path`, `network`, `address`, `provider`, `menu`, `memory`, `tasks`, `events`, `scope`, `permissions`, `llm_models`, `marketplace`, `team`, `orchestrator`, `quotas`, and `rag_vector`. |
 | `serializers.md` | This executable owner document. |
 
 ## Ownership Rule
@@ -51,11 +51,11 @@ responses, and SecureMD frontmatter/Markdown parsing. It also owns all
 | Todo ID | Status in `session.db` | Required change |
 |---------|------------------------|-----------------|
 | `serializer-base-create` | pending | Implement the public base/format contract in this package. |
-| `serializer-relocate-base` | pending | Extract all existing ORM serializer classes into mirrored `css.core.serializers.<domain>` modules. |
+| `serializer-relocate-base` | pending | Extract serializer classes for stable ORM shapes into mirrored modules; defer `Host`/`Machine`/`PathFS`/provider topology serializers to `serializer-model-infra` so no temporary target contract is created. |
 | `serializer-apply-rag-vector`, `serializer-apply-menu` | pending | Move feature-local serializer classes into canonical ownership and cut endpoint imports over. |
 | `serializer-model-*`, `serializer-apply-*` | pending | Move and integrate each domain serializer group after its model shape is stable. |
 | `serializer-db-hub-complete` | pending | Validate canonical exports and prove no model/feature-local serializer implementations remain. |
-| `db45-machine-retirement-host-promotion`, `db45-network-address-topology` | pending | Supply the final `Host`, `PathFS`, `Network`, `Address`, `HostAddress`, and `NetworkAddress` model shapes for infrastructure serializers. |
+| `db45-machine-retirement-host-promotion`, `db45-machine-data-cutover`, `db45-machine-retirement-finalization`, `db45-network-address-topology` | pending | Supply the final `Host`, `FilesystemPath`, `Network`, `Address`, `HostAddress`, and `NetworkAddress` model shapes for infrastructure serializers. |
 | `db45-identity-account-profile-schema`, `db45-account-provider-junction` | pending | Supply final identity and provider relation models before their serializers are finalized. |
 
 ## Dependencies
@@ -73,7 +73,7 @@ responses, and SecureMD frontmatter/Markdown parsing. It also owns all
 | Current owner | Final serializer owner | Required removal |
 |---------------|------------------------|------------------|
 | `core/db/models/accounts.py`, `user.py` | `core/serializers/accounts.py`, `core/serializers/user.py` | Remove model-local serializer classes/imports after identity shape is approved. |
-| `core/db/models/host.py`, `pathfs.py`, `provider.py`, other infrastructure model modules | Mirrored `core/serializers/<domain>.py` modules | Remove model-local serializers; do not create `MachineSerializer` in the target schema. |
+| `core/db/models/host.py`, current `pathfs.py` renamed to `filesystem_path.py`, `provider.py`, other topology-mutated model modules | `core/serializers/host.py`, `filesystem_path.py`, `network.py`, `address.py`, `provider.py` | Defer extraction to `serializer-model-infra`; remove model-local serializers and expose `FilesystemPathSerializer`, not `PathFSSerializer` or `MachineSerializer`, in the target schema. |
 | `core/menu/serializers.py` | `core/serializers/menu.py` | Move `MenuItemTreeSerializer`; endpoints import the canonical owner. |
 | `core/rag_vector/serializers.py` | `core/serializers/rag_vector.py` | Move retrieval response serializers; preserve endpoint response shape. |
 

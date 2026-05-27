@@ -4,7 +4,7 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-27 (core boundary and host-topology planning intake)
+**Updated**: 2026-05-27 (host-topology decision resolution)
 
 ## Current Session (2026-05-27 - Core Boundary And Schema Intake)
 
@@ -15,7 +15,7 @@ account/provider, serializer, and manager schema work without implementing it.
 
 **Audited Outcome**:
 
-- Live tracker: 1079 todos | 597 done | 473 pending | 9 blocked | 0 active.
+- Live tracker after decision resolution: 1081 todos | 598 done | 475 pending | 8 blocked | 0 active.
 - Hierarchy repair: zero `unassigned` todos and zero empty descriptions remain.
 - Phase 43 was reopened and retargeted to canonical `core/serializers`
   ownership: all `*Serializer` implementations must be extracted from ORM
@@ -46,10 +46,11 @@ account/provider, serializer, and manager schema work without implementing it.
   live callers use `api_services.ProviderRegistry`.
 - Workflow policy update: development workflow now requires passing
   `--project pyrightconfig.json` for `basedpyright` commands.
-- Phase 40 remains historical completion. New Phase 45 plans the requested
-  follow-on schema: retire `Machine`, promote `Host`, retain `Host -> PathFS`,
-  add `HostAddress`/`NetworkAddress` traversal, and add account/provider
-  junctions after explicit cardinality decisions.
+- Phase 40 remains historical completion. Phase 45 now has approved schema
+  decisions: migrate `Machine` data into organization-owned `Host`, rename
+  paths to `FilesystemPath`, add reversible address/network traversal, enforce
+  `UserAccountMembership` plus one profile/account, and permit named repeated
+  account/provider connections.
 
 **Core Dependency/Reference Evidence**:
 
@@ -120,11 +121,11 @@ Snapshot queried from `.plan/session.db` on 2026-05-27:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1079 | 597 | 473 | 9 | 0 |
+| 1081 | 598 | 475 | 8 | 0 |
 
-Overall completion: 55.3%. This planning intake preserves the new core
-boundaries, replaces incompatible serializer/manager ownership assumptions,
-and adds blocked schema decisions before destructive model work.
+Overall completion: 55.4%. This planning pass preserves the new core
+boundaries, resolves the Phase 45 schema decisions, and adds separate
+Machine-to-Host migration and retirement tasks before destructive model work.
 
 ## Current Execution Boundary
 
@@ -141,11 +142,11 @@ and owner documents have been made executable before implementation resumes.
   ORM modules, before consumer or SecureMD serializer work.
 - Phase 44 implementation starts with `crypto44-key-boundary`; verified
   document ingestion is downstream of both cryptography and serializers.
-- Phase 45 implementation is planning-blocked at `db45-schema-decision-gates`
-  for data retention, topology tenancy, identity cardinality, provider
-  connection multiplicity, and `PathFS` naming decisions.
-- Production migration/versioning policy is a later explicit decision, not an
-  assumption to introduce during model cleanup.
+- Phase 45 design decisions are recorded as complete. Implementation remains
+  pending and must use the verified Machine-to-Host migration cutover rather
+  than a destructive table rebuild.
+- Topology is organization-owned, not `ProjectScope`-owned; deprecated scope
+  module cleanup must not be reversed to implement inventory tenancy.
 
 ## Phase Status
 
@@ -197,7 +198,7 @@ and owner documents have been made executable before implementation resumes.
 | 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
 | 43 | Serializer Layer | 13 | 0 | 13 | 0 | 0 |
 | 44 | Cryptography + SecureMD Integrity | 5 | 0 | 5 | 0 | 0 |
-| 45 | Host Topology + Account Provider Schema | 9 | 0 | 8 | 1 | 0 |
+| 45 | Host Topology + Account Provider Schema | 11 | 1 | 10 | 0 | 0 |
 | — | Meta — Audit & Validation | 47 | 38 | 9 | 0 | 0 |
 
 ## Local Ownership Map
@@ -288,9 +289,9 @@ and, where relevant, architecture diagrams:
 6. Provider execution convergence: duplicated `api_services/*/service.py`
    transport code, missing registry-spec coverage, GitHub Models/Copilot
    identity collision, and OAuth token lifecycle are recorded in owned rows.
-7. Phase 45 schema decisions: confirm Machine data transition, Host/Network
-   tenancy, User/Account/Profile cardinality, repeated provider connections,
-   and whether `PathFS` should be renamed before implementation.
+7. Phase 45 implementation: execute the approved staged Machine-to-Host data
+   cutover, organization-owned topology, `FilesystemPath` rename,
+   `UserAccountMembership`, and named provider connection requirements.
 8. SecureMD enforcement: the source currently provides an incomplete header
    scaffold only. Implement and validate signer/key policy and context
    ingestion consumers before treating signed Markdown as trusted input.

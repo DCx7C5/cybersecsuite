@@ -55,7 +55,7 @@ work queues.
 | Authentication/accounts | `core/authentication/authentication.md`, `core/accounts/accounts.md` | Auth runtime and account identity boundary; `core/auth/` is retired. |
 | Cryptography/SecureMD | `core/cryptography/cryptography.md`, `core/securemd/securemd.md` | Key-purpose ownership and signed Markdown integrity/origin verification. |
 | Serializers | `core/serializers/serializers.md` | Canonical structured serialization boundary; Phase 43 extracts serializer implementations from model and feature-local modules. |
-| Database/model consolidation | `core/db/postgres-db.md`, `core/db/models/postgres-models.md` | ORM ownership and Phase 45 planned Host/PathFS/Address/Network plus account/provider relation graph. |
+| Database/model consolidation | `core/db/postgres-db.md`, `core/db/models/postgres-models.md` | ORM ownership and Phase 45 planned organization-owned Host/FilesystemPath/Address/Network graph plus confirmed account/provider relations. |
 | Events/observability | `core/events/events.md`, `core/otel/plan.md` | Event runtime, interceptors, telemetry. |
 | Cache/prompt cache | `core/cache/plan.md`, `core/prompt_cache/prompt_cache.md`, `core/redis/plan.md` | Generic and provider-aware caching. |
 | Models/capabilities/SDKs | `core/models/models.md`, `core/capabilities/plan.md`, `core/sdks/sdks.md` | Provider/model dispatch and advanced SDK capabilities. |
