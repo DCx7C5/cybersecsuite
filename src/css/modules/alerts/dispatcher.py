@@ -212,6 +212,16 @@ class AlertDispatcher:
 </html>
 """
     
+    async def send_test(self, channel: str) -> dict:
+        """Send a test notification and return delivery status."""
+        dummy_rule = type("Rule", (), {"id": "test", "name": "Test Alert"})()
+        dummy_event = {
+            "kind": "test",
+            "severity": "low",
+            "description": "This is a test notification from CyberSecSuite.",
+        }
+        return await self._dispatch_to_channel(channel, dummy_rule, dummy_event)
+
     def _is_cooled_down(self, key: str, cooldown_minutes: int) -> bool:
         """Check if cooldown period has elapsed."""
         if cooldown_minutes <= 0:

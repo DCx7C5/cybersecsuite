@@ -189,12 +189,19 @@ async def test_channel(
     if not config:
         raise HTTPException(status_code=404, detail=f"Channel {channel_type} not configured")
     
-    # Placeholder: mark attempted test
+    from .dispatcher import AlertDispatcher
+    dispatcher = AlertDispatcher(event_store=None, channel_configs={channel_type: config.config})
+    result = await dispatcher.send_test(channel_type)
+    
+    status_val = result.get("status", "failed")
     config.last_test_at = datetime.now(timezone.utc)
-    config.last_test_status = "pending"
+    config.last_test_status = status_val
     await config.save()
     
-    return {"status": "test_initiated", "channel": channel_type}
+    if status_val == "failed":
+        raise HTTPException(status_code=502, detail=result.get("error", "Delivery failed"))
+    
+    return {"status": "sent", "channel": channel_type}
 
 # Alert History Endpoints
 @router.get("/history", response_model=List[AlertHistoryResponse])

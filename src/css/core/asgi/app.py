@@ -204,7 +204,7 @@ def create_app() -> FastAPI:
         if db_ready:
             from css.modules.tools.registry import ToolRegistry
 
-            tool_registry = ToolRegistry()
+            tool_registry: Any = ToolRegistry()
             await tool_registry.initialize_runtime_state()
             log.info(
                 "ToolRegistry ready: %d builtin tools, %d hybrid tools",

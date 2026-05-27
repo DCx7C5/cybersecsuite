@@ -17,7 +17,14 @@ class _FakeTagManager:
     async def get_tag_by_slug(self, slug: str) -> _FakeTag | None:
         return self.by_slug.get(slug)
 
-    async def create_tag(self, name: str, color: TagColor, description: str) -> _FakeTag:
+    async def create_tag(
+        self,
+        *,
+        name: str,
+        color: TagColor = TagColor.GRAY,
+        description: str = "",
+        parent_tag_id: int | None = None,
+    ) -> _FakeTag:
         tag = _FakeTag(name=name)
         self.by_slug[name.lower().replace(" ", "-")] = tag
         self.created_names.append(name)
