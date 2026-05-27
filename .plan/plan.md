@@ -4,7 +4,7 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-27 (TYPE_CHECKING elimination)
+**Updated**: 2026-05-27 (TYPE_CHECKING elimination; Protocol prod-ready upgrade)
 
 ## Current Session (2026-05-27 - TYPE_CHECKING Elimination)
 

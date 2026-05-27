@@ -19,16 +19,72 @@ import msgspec
 
 
 class _GetCoreSchemaHandler(Protocol):
-    """Minimal protocol matching pydantic's GetCoreSchemaHandler interface."""
+    """Protocol matching pydantic's GetCoreSchemaHandler interface.
 
-    def __call__(self, source_type: type, /) -> dict[str, object]: ...
+    Implemented as an inline Protocol so that FastAPI can call
+    ``__get_pydantic_core_schema__`` without requiring a module-level
+    import of ``pydantic`` or ``pydantic_core``.
+    """
 
-    def generate_schema(self, source_type: type, /) -> dict[str, object]: ...
+    def __call__(self, source_type: type, /) -> dict[str, object]:
+        """Call the inner handler and get the CoreSchema it returns.
 
-    def resolve_ref_schema(self, maybe_ref_schema: dict[str, object], /) -> dict[str, object]: ...
+        This will call the next CoreSchema modifying function up until it calls
+        into Pydantic's internal schema generation machinery, which will raise a
+        ``pydantic.errors.PydanticSchemaGenerationError`` if it cannot generate
+        a CoreSchema for the given source type.
+
+        Args:
+            source_type: The input type.
+
+        Returns:
+            The ``pydantic-core`` CoreSchema generated.
+        """
+
+    def generate_schema(self, source_type: type, /) -> dict[str, object]:
+        """Generate a schema unrelated to the current context.
+
+        Use this function if e.g. you are handling schema generation for a
+        sequence and want to generate a schema for its items. Otherwise you
+        may end up applying a ``min_length`` constraint intended for the
+        sequence itself to its items.
+
+        Args:
+            source_type: The input type.
+
+        Returns:
+            The ``pydantic-core`` CoreSchema generated.
+        """
+
+    def resolve_ref_schema(
+        self, maybe_ref_schema: dict[str, object], /
+    ) -> dict[str, object]:
+        """Resolve a ``definition-ref`` schema to its concrete schema.
+
+        If *maybe_ref_schema* is not a ``definition-ref`` schema it is
+        returned as-is.
+
+        Args:
+            maybe_ref_schema: A ``CoreSchema``, ref-based or not.
+
+        Raises:
+            LookupError: If the ``ref`` key is not found.
+
+        Returns:
+            The concrete ``CoreSchema``.
+        """
 
     @property
-    def field_name(self) -> str | None: ...
+    def field_name(self) -> str | None:
+        """The name of the closest field to this validator, or ``None``."""
+
+    def _get_types_namespace(self) -> tuple[dict[str, object], ...]:
+        """Internal method used during type resolution for serializer annotations.
+
+        Returns:
+            A tuple with (types_namespace, parent_namespace).
+            This is considered an implementation detail of pydantic.
+        """
 
 
 class BaseEndpoint(msgspec.Struct, kw_only=True, frozen=True):
@@ -57,7 +113,7 @@ class BaseEndpoint(msgspec.Struct, kw_only=True, frozen=True):
     @classmethod
     def __get_pydantic_core_schema__(
         cls, source_type: type, handler_info: _GetCoreSchemaHandler
-    ) -> dict[str, object]:
+    ):
         from pydantic_core import core_schema
         return core_schema.no_info_plain_validator_function(
             cls._validate,

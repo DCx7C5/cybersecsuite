@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-27 (TYPE_CHECKING elimination) | **Session**: TYPE_CHECKING elimination across 12 files, commit review, stale pipeline import detection
+**Last Updated**: 2026-05-27 (Protocol prod-ready upgrade) | **Session**: TYPE_CHECKING elimination across 12 files, Protocol production-ready upgrade, commit review, stale pipeline import detection
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -615,7 +615,13 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - **Scope**: 12 files identified with `if TYPE_CHECKING:` blocks.
 - **8 eliminated**:
   - `core/logger.py` — used `logging.Logger` directly (stdlib, no circular risk)
-  - `core/types/base_endpoint.py` — pydantic types unconditional (pydantic is a dep)
+  - `core/types/base_endpoint.py` — pydantic types moved to inline
+    `_GetCoreSchemaHandler` Protocol; later upgraded to production-ready
+    version with full docstrings (matching pydantic's originals), all
+    interface methods (including `_get_types_namespace`), and removed
+    redundant `-> dict[str, object]` return annotation on
+    `__get_pydantic_core_schema__` (type checker infers
+    `PlainValidatorFunctionSchema` from body instead).
   - `core/memory/session_store.py` — ORM model imports unconditional (no circular)
   - `core/memory/service.py` — ORM model imports unconditional (no circular)
   - `core/models/registry.py` — `LLMModel` import unconditional (no circular)
