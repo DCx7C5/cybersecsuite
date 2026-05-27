@@ -4,6 +4,7 @@ from .budget import BudgetGuard, budget_guard
 from .circuit_breaker import CircuitBreaker, circuit_breaker
 from .models import ComboTarget, ComboConfig, ResolvedTarget
 from .rate_limiter import ProviderLimits, RateLimiter, rate_limiter
+from .registry import ComboRegistry, combo_registry
 from .strategies import _apply_strategy, _record_good
 from .usage_tracker import UsageRecord, UsageTracker, usage_tracker
 from .strategy import Strategy, ProviderTier, PROVIDER_TIER_LIST
@@ -30,6 +31,8 @@ __all__ = [
     "UsageRecord",
     "UsageTracker",
     "usage_tracker",
+    "ComboRegistry",
+    "combo_registry",
     "TierSelector",
     "TokenCounter",
     "RequestComplexity",

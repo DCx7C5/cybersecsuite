@@ -1,0 +1,72 @@
+combos:
+  - id: default
+    name: Default Priority
+    strategy: priority
+    budget_usd: 0.50
+    description: Default priority-ordered combo for general use
+    tags: [default, general]
+    targets:
+      - provider_id: openai
+        model_id: gpt-4o-mini
+        weight: 1.0
+        enabled: true
+      - provider_id: anthropic
+        model_id: claude-haiku
+        weight: 1.0
+        enabled: true
+
+  - id: local-only
+    name: Local-Only Fallback
+    strategy: priority
+    budget_usd: 0.0
+    description: Local models only, no cloud cost
+    tags: [local, offline]
+    targets:
+      - provider_id: ollama
+        model_id: qwen3:0.6b
+        weight: 1.0
+        enabled: true
+      - provider_id: ollama
+        model_id: llama3.2:1b
+        weight: 1.0
+        enabled: true
+
+  - id: cost-optimized
+    name: Cost-Optimized
+    strategy: cost_optimized
+    budget_usd: 0.10
+    description: Cheapest available target first
+    tags: [cost, budget]
+    targets:
+      - provider_id: groq
+        model_id: llama-3.1-8b
+        weight: 1.0
+        enabled: true
+        metadata:
+          cost: 0.0001
+      - provider_id: openai
+        model_id: gpt-4o-mini
+        weight: 1.0
+        enabled: true
+        metadata:
+          cost: 0.0005
+
+  - id: premium
+    name: Premium Fallback
+    strategy: priority
+    budget_usd: 5.00
+    description: Highest-quality models for critical tasks
+    tags: [premium, high-quality]
+    targets:
+      - provider_id: anthropic
+        model_id: claude-opus
+        weight: 1.0
+        enabled: true
+      - provider_id: openai
+        model_id: gpt-4o
+        weight: 1.0
+        enabled: true
+      - provider_id: openai
+        model_id: o3-mini
+        weight: 1.0
+        enabled: true

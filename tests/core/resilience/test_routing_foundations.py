@@ -10,6 +10,7 @@ from css.core.resilience.routing import (
     Strategy,
     TierSelector,
     TokenCounter,
+    analyze_complexity,
     _apply_strategy,
 )
 
@@ -105,3 +106,9 @@ def test_token_counter_best_effort_returns_int_or_none() -> None:
         provider_id="openai",
     )
     assert count is None or count >= 1
+
+
+def test_analyze_complexity_returns_valid_enum_and_security_bounds() -> None:
+    metrics = analyze_complexity("write a python exploit proof of concept for a long prompt with code blocks")
+    assert metrics.complexity in RequestComplexity
+    assert 1 <= metrics.security_level <= 10
