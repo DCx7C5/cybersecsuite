@@ -4,8 +4,10 @@ from css.core.resilience.routing import (
     ComboConfig,
     ComboTarget,
     PROVIDER_TIER_LIST,
+    RequestComplexity,
     ResolvedTarget,
     Strategy,
+    TierSelector,
     _apply_strategy,
 )
 
@@ -52,3 +54,27 @@ def test_apply_strategy_round_robin_rotates() -> None:
     second = _apply_strategy(targets, Strategy.ROUND_ROBIN, "combo-rr")
     assert first[0].model_id == "m1"
     assert second[0].model_id == "m2"
+
+
+def test_tier_selector_complexity_budget_hardware_and_fallback() -> None:
+    selected = TierSelector.filter(
+        RequestComplexity.COMPLEX,
+        budget_remaining_usd=5.0,
+        available_hardware=[{"vram_gb": 8}],
+        security_level=3,
+    )
+    assert selected
+    assert selected[-1].name == "S_PLUS"
+    assert all(tier.complexity_ceiling in {"COMPLEX", "CRITICAL"} for tier in selected[:-1])
+
+
+def test_tier_selector_security_rule_keeps_only_rank_9_plus() -> None:
+    selected = TierSelector.filter(
+        RequestComplexity.SIMPLE,
+        budget_remaining_usd=100.0,
+        available_hardware=[{"vram_gb": 64}],
+        security_level=9,
+    )
+    assert selected
+    assert selected[-1].name == "S_PLUS"
+    assert all(tier.rank >= 9 for tier in selected[:-1])

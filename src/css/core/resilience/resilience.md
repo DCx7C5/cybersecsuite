@@ -132,7 +132,8 @@ They must remain distinct from response injection strategy routing.
 |----------|-------------|----------------------|
 | `routing-strategy-enum`, `routing-combo-target-model` | done | Foundation value types and ordered tiers first. |
 | `routing-strategy-resolver` | done | `_apply_strategy()` implemented with all 13 strategy branches and deterministic state dictionaries. |
-| `routing-tier-selector`, `routing-triage-complexity`, `routing-token-counter` | pending | Remaining pure selection/classification logic. |
+| `routing-tier-selector` | done | `TierSelector.filter()` enforces complexity, hardware, budget, security, and `S_PLUS` fallback chain rules. |
+| `routing-triage-complexity`, `routing-token-counter` | pending | Remaining pure selection/classification logic. |
 | `routing-circuit-breaker`, `routing-budget-guard`, `routing-rate-limiter`, `routing-usage-tracker` | pending | Isolated runtime guards and accounting. |
 | `routing-combo-registry`, `routing-combo-router`, `routing-qwen-triage-router` | pending | Configuration and routed request execution. |
 | `routing-unified-client-wire`, `routing-rest-endpoints` | pending | Public client/API wiring after router behavior is tested. |

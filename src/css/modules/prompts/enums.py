@@ -10,4 +10,19 @@ class PromptCategory(str, Enum):
     CUSTOM = "custom"
 
 
-__all__ = ["PromptCategory"]
+class PromptStatus(str, Enum):
+    DRAFT = "draft"
+    ACTIVE = "active"
+    ARCHIVED = "archived"
+    DISABLED = "disabled"
+
+
+class PromptVariableType(str, Enum):
+    STRING = "string"
+    NUMBER = "number"
+    BOOLEAN = "boolean"
+    SELECT = "select"
+    CONTEXT = "context"
+
+
+__all__ = ["PromptCategory", "PromptStatus", "PromptVariableType"]
