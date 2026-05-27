@@ -47,7 +47,9 @@ from css.core.marketplace.registry import wire_registry_events
 from css.core.marketplace.seeder import seed_marketplace_on_startup
 from css.core.menu.endpoints import router as menu_router
 from css.core.resilience.routing.endpoints import router as routing_router
+from css.core.types.qol_endpoints import router as qol_router
 from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
+from css.modules.tags.seeds import seed_default_tags
 
 
 log = getLogger(__name__)
@@ -227,6 +229,7 @@ def create_app() -> FastAPI:
         if marketplace_db_ready:
             try:
                 await sync_default_menu_items()
+                await seed_default_tags()
                 await seed_marketplace_on_startup(force=False)
                 marketplace_update_task = asyncio.create_task(_periodic_marketplace_update_check())
             except BaseCoreException as startup_error:
@@ -280,6 +283,12 @@ def create_app() -> FastAPI:
         log.info("Mounted core endpoints: routing")
     except BaseCoreException as routing_mount_error:
         log.warning(f"Failed to mount routing endpoints: {routing_mount_error}")
+
+    try:
+        _app.include_router(qol_router)
+        log.info("Mounted core endpoints: QoL")
+    except BaseCoreException as qol_mount_error:
+        log.warning(f"Failed to mount QoL endpoints: {qol_mount_error}")
 
     # Auto-discover and mount all modules/*/endpoints.py routers
     mounted = mount_app_routers(_app)

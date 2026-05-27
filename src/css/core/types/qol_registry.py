@@ -131,6 +131,29 @@ class QoLPresetRegistry:
             bindings = self._agent_bindings.setdefault(normalized_user, {})
             bindings[agent_id] = preset_name
 
+    async def unbind_agent_preset(
+        self,
+        *,
+        user_id: str | None,
+        agent_id: str,
+    ) -> None:
+        """Remove one agent preset binding."""
+        normalized_user = self._normalized_user(user_id)
+        async with self._lock:
+            bindings = self._agent_bindings.get(normalized_user)
+            if bindings:
+                bindings.pop(agent_id, None)
+
+    async def list_bindings(
+        self,
+        *,
+        user_id: str | None = None,
+    ) -> dict[str, str]:
+        """Return all agent→preset bindings."""
+        normalized_user = self._normalized_user(user_id)
+        await self._ensure_loaded(normalized_user)
+        return dict(self._agent_bindings.get(normalized_user, {}))
+
     async def resolve_agent_preset(
         self,
         *,
@@ -144,3 +167,6 @@ class QoLPresetRegistry:
         if preset_name is None:
             return None
         return await self.get(preset_name, user_id=user_id)
+
+
+qol_preset_registry: QoLPresetRegistry = QoLPresetRegistry()

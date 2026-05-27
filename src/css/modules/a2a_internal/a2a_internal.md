@@ -398,6 +398,7 @@ class TeamLeader:
 - `A2ACommunicator` — Per-agent interface for task management
 - `A2ACommunicationGroup` — Team management (add/remove members, broadcast)
 - `MessageDispatcher` — Redis pub/sub routing
+- `QoLA2APublisher` / `QoLA2ASubscriber` — QoL state change propagation over internal dispatcher channels (`qol.toggle_changed`, `qol.preset_bound`, `qol.settings_sync`)
 - `InternalMessage` — Typed message schema implemented with `msgspec.Struct`
 - `int_comms.py` — compatibility shim that re-exports `css.core.redis.communicator` for legacy imports.
 
@@ -437,6 +438,7 @@ await group.broadcast_task(task_id="t1", message=message)
 ## Implementation Checklist
 
 - [x] Module move to `src/css/modules/a2a_internal/` completed
+- [x] Port QoL publisher/subscriber flow to internal dispatcher transport
 - [ ] Replace remaining legacy naming in runtime/docs and keep future `ipc/` rename separate from this stabilization pass
 - [ ] Add integration tests
 - [ ] Add telemetry/metrics
