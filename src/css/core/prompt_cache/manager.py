@@ -14,11 +14,25 @@ from typing import Any, Protocol
 
 from css.core.logger import getLogger
 from css.core.messages.types import LLMResponse, StreamChunk
+from css.core.settings.qol import QoLSettings
 from .anthropic_breakpoints import inject_cache_breakpoints, estimate_message_tokens
 from .streaming_buffer import PromptCacheStreamingBuffer
 from .types import CachingCapability, ResponseCacheStats
 
 logger = getLogger(__name__)
+
+
+def toggle_hash(qol_settings: QoLSettings | None) -> str:
+    """Build deterministic digest of active QoL toggle values.
+
+    Uses blake2b with digest_size=4 over sorted toggle values. Returns empty
+    string when no toggles are active.
+    """
+    if qol_settings is None or not qol_settings.enabled_toggles:
+        return ""
+    active_toggle_values = sorted(toggle.value for toggle in qol_settings.enabled_toggles)
+    canonical_payload = "|".join(active_toggle_values)
+    return hashlib.blake2b(canonical_payload.encode(), digest_size=4).hexdigest()
 
 
 class SupportsPromptResponseCache(Protocol):
@@ -99,23 +113,28 @@ class PromptCacheManager:
         messages: list[dict[str, Any]],
         model: str,
         system_prompt: str | None = None,
+        qol_settings: QoLSettings | None = None,
     ) -> str:
         """Compute Redis key for exact-match cache lookup.
 
-        Hashes (messages, model, system_prompt) for O(1) cache hit detection.
+        Hashes (messages, model, system_prompt, toggle_hash) for O(1) cache
+        hit detection.
 
         Args:
             messages: Input message list
             model: Model ID
             system_prompt: Optional system prompt
+            qol_settings: Resolved QoL output controls for this request
 
         Returns:
             Hex-encoded SHA256 hash suitable as Redis key
         """
+        toggle_value_hash = toggle_hash(qol_settings)
         payload = {
             "messages": messages,
             "model": model,
             "system_prompt": system_prompt,
+            "toggle_hash": toggle_value_hash,
         }
         payload_str = json.dumps(payload, sort_keys=True, default=str)
         key_hash = hashlib.sha256(payload_str.encode()).hexdigest()

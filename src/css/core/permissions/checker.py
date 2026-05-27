@@ -1,13 +1,25 @@
 """Permission checker — gate tool access via ScopeContext / PermissionGrant rules."""
 
 
+from typing import Protocol, runtime_checkable
 
 from css.core.logger import getLogger
-from css.core.enums import Permission
+from .enums import PathOp
 from .types import ScopeContext
 from .exceptions import PermissionDenied
 
 logger = getLogger(__name__)
+
+
+@runtime_checkable
+class PermissionPolicyContract(Protocol):
+    """Runtime contract for policy objects consumed by PermissionChecker."""
+
+    def has_tool_permission(self, tool_id: str) -> bool:
+        ...
+
+    def has_permission(self, permission: PathOp) -> bool:
+        ...
 
 
 class PermissionChecker:
@@ -25,9 +37,10 @@ class PermissionChecker:
 
     def can_tool(self, scope: ScopeContext, tool_id: str) -> bool:
         """Return True when *tool_id* is allowed in *scope*, False otherwise."""
-        try:
-            policy = scope.role.policy_for_scope(scope.scope_level)
-        except AttributeError:
+        policy_for_scope = getattr(scope.role, "policy_for_scope", None)
+        if callable(policy_for_scope):
+            policy = policy_for_scope(scope.scope_level)
+        else:
             # Role has no policy_for_scope — fall back to checking the policy
             # attached directly to the ScopeContext (PermissionPolicy may be in
             # scope.role.policies dict keyed by scope_level).
@@ -35,6 +48,9 @@ class PermissionChecker:
 
         if policy is None:
             logger.debug("No policy for %s at %s — deny", tool_id, scope.scope_level)
+            return False
+        if not isinstance(policy, PermissionPolicyContract):
+            logger.debug("Policy object for %s does not satisfy checker contract", scope.scope_level)
             return False
 
         allowed = policy.has_tool_permission(tool_id)
@@ -57,18 +73,19 @@ class PermissionChecker:
                 f"'{scope.role.role_id}' at scope '{scope.scope_level}'"
             )
 
-    def can_path(self, scope: ScopeContext, permission: Permission) -> bool:
+    def can_path(self, scope: ScopeContext, permission: PathOp) -> bool:
         """Return True when *permission* is granted in *scope*, False otherwise."""
-        try:
-            policy = scope.role.policy_for_scope(scope.scope_level)
-        except AttributeError:
+        policy_for_scope = getattr(scope.role, "policy_for_scope", None)
+        if callable(policy_for_scope):
+            policy = policy_for_scope(scope.scope_level)
+        else:
             policy = getattr(scope.role, "policies", {}).get(scope.scope_level)
 
-        if policy is None:
+        if policy is None or not isinstance(policy, PermissionPolicyContract):
             return False
         return policy.has_permission(permission)
 
-    def require_path(self, scope: ScopeContext, permission: Permission) -> None:
+    def require_path(self, scope: ScopeContext, permission: PathOp) -> None:
         """Raise :exc:`PermissionDenied` if *permission* is not granted in *scope*.
 
         Args:

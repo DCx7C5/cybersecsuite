@@ -120,9 +120,9 @@ core/permissions/
 
 | ID | Task | Status |
 |----|------|--------|
-| `perm-path-op-flag` | PathOp(Flag) enum | pending |
+| `perm-path-op-flag` | PathOp(Flag) enum | done |
 | `perm-path-grant-struct` | PathGrant msgspec.Struct | pending |
-| `perm-tool-grant-struct` | ToolGrant msgspec.Struct | pending |
+| `perm-tool-grant-struct` | ToolGrant msgspec.Struct | done |
 | `perm-grant-models` | PathGrantRecord + ToolGrantRecord ORM | pending |
 | `perm-grant-redis-cache` | GrantCache Redis layer | pending |
 | `perm-checker-exceptions` | PermissionDenied + ElevationDenied | pending |

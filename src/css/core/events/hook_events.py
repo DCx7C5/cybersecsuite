@@ -5,8 +5,6 @@ Converted to msgspec.Struct for faster serialization.
 
 import msgspec
 
-from css.core.types.base_enums import HookErrorStrategy
-
 
 class HookContext(msgspec.Struct, frozen=True, kw_only=True):
     """Metadata passed to every hook execution."""

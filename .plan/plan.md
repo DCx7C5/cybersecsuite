@@ -43,7 +43,7 @@ breakage, and discover the stale `core/pipeline.py` untracked leftover.
   prompt-ingestion orchestration boundary. Prompt registry/runtime ownership
   remains in `src/css/modules/prompts/`.
 
-- Live tracker after decision resolution: 1081 todos | 598 done | 475 pending | 8 blocked | 0 active.
+- Live tracker after decision resolution: 1085 todos | 601 done | 475 pending | 8 blocked | 1 active.
 - Hierarchy repair: zero `unassigned` todos and zero empty descriptions remain.
 - Phase 43 was reopened and retargeted to canonical `core/serializers`
   ownership: all `*Serializer` implementations must be extracted from ORM
@@ -169,9 +169,9 @@ Snapshot queried from `.plan/session.db` on 2026-05-27:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1083 | 601 | 474 | 8 | 0 |
+| 1085 | 601 | 475 | 8 | 1 |
 
-Overall completion: 55.5%. Active: 0 in_progress (3 Phase 44 todos found already implemented and marked done; TYPE_CHECKING elimination is a meta-cleanup task). This planning pass preserves the new core
+Overall completion: 55.4%. Active: 1 in_progress (`dep-map-modules-prompts`; TYPE_CHECKING elimination remains a meta-cleanup context). This planning pass preserves the new core
 boundaries, resolves the Phase 45 schema decisions, and adds separate
 Machine-to-Host migration and retirement tasks before destructive model work.
 
@@ -234,7 +234,7 @@ and owner documents have been made executable before implementation resumes.
 | 31 | Production Readiness | 9 | 0 | 9 | 0 | 0 |
 | 32 | Reports Module | 11 | 0 | 11 | 0 | 0 |
 | 33 | Ollama Native | 6 | 0 | 6 | 0 | 0 |
-| 34 | Dependency Map | 20 | 2 | 18 | 0 | 0 |
+| 34 | Dependency Map | 21 | 2 | 18 | 0 | 1 |
 | 35 | Telemetry Infrastructure | 7 | 0 | 7 | 0 | 0 |
 | 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
@@ -245,7 +245,7 @@ and owner documents have been made executable before implementation resumes.
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 | 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
 | 43 | Serializer Layer | 13 | 0 | 13 | 0 | 0 |
-| 44 | Cryptography + SecureMD Integrity | 6 | 3 | 3 | 0 | 0 |
+| 44 | Cryptography + SecureMD Integrity | 7 | 3 | 4 | 0 | 0 |
 | 45 | Host Topology + Account Provider Schema | 11 | 1 | 10 | 0 | 0 |
 | — | Meta — Audit & Validation | 47 | 38 | 9 | 0 | 0 |
 

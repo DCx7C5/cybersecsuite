@@ -3,7 +3,7 @@
 from css.core.types.base_frontmatter_header import BaseFrontmatterHeader
 
 
-class FrontMatterHeader(BaseFrontmatterHeader):
+class FrontMatterHeader(BaseFrontmatterHeader, frozen=True):
     """SecureMD frontmatter header.
 
     Inherits all behavior from ``BaseFrontmatterHeader``, including

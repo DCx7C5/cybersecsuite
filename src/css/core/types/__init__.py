@@ -115,6 +115,9 @@ from css.core.errors.mappers import (
 from css.core.settings.qol import (
     QoLToggle,
     QoLSettings,
+    BUILTIN_PRESETS,
+    QoLSecurityError,
+    validate_toggle_combo,
     toggle_description,
 )
 
@@ -255,6 +258,9 @@ __all__ = [
     # qol
     "QoLToggle",
     "QoLSettings",
+    "BUILTIN_PRESETS",
+    "QoLSecurityError",
+    "validate_toggle_combo",
     "toggle_description",
     # error mappers
     "BaseErrorMapper",

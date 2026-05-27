@@ -17,14 +17,14 @@ SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-
+# ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 # Entry points isolation (Phase 6 P4 test fixture)
 # ---------------------------------------------------------------------------
 
 def mock_entry_points(group=None):
-    """Mock entry_points to return only safe/available modules for testing.
-    
+    """Mock entry_points to \u0064 return only safe/available modules for testing.
+
     This prevents ModuleNotFoundError during test collection by filtering out
     modules that require external dependencies or are only partially implemented.
     """
@@ -35,7 +35,7 @@ def mock_entry_points(group=None):
         EntryPoint(name="teams", value="css.modules.teams.endpoints", group="css.modules"),
         EntryPoint(name="tools", value="css.modules.tools.endpoints", group="css.modules"),
     ]
-    
+
     # Only return api_services that have __init__.py (safe to import)
     services_eps = [
         EntryPoint(name="anthropic", value="css.api_services.anthropic", group="css.api_services"),
@@ -45,7 +45,7 @@ def mock_entry_points(group=None):
         EntryPoint(name="mistral", value="css.api_services.mistral", group="css.api_services"),
         EntryPoint(name="groq", value="css.api_services.groq", group="css.api_services"),
     ]
-    
+
     if group == "css.modules":
         return modules_eps
     elif group == "css.api_services":
@@ -60,7 +60,7 @@ def mock_entry_points(group=None):
 @pytest.fixture(scope="session", autouse=True)
 def mock_entry_points_session():
     """Auto-use fixture to mock entry_points for entire test session.
-    
+
     This is applied before any test collection, preventing ModuleNotFoundError
     from trying to import unavailable modules during pytest startup.
     """

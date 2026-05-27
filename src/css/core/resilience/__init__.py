@@ -3,6 +3,7 @@
 from .config import RetryConfig, RetryStrategy, RetryableErrorType
 from .detection import RetryDetector
 from .orchestrator import RetryAttempt, RetryOrchestrator, RetryResult
+from . import routing
 
 __all__ = [
     "RetryConfig",
@@ -12,4 +13,5 @@ __all__ = [
     "RetryOrchestrator",
     "RetryAttempt",
     "RetryResult",
+    "routing",
 ]

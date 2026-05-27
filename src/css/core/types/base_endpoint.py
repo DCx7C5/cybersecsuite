@@ -40,6 +40,7 @@ class _GetCoreSchemaHandler(Protocol):
         Returns:
             The ``pydantic-core`` CoreSchema generated.
         """
+        ...
 
     def generate_schema(self, source_type: type, /) -> dict[str, object]:
         """Generate a schema unrelated to the current context.
@@ -55,6 +56,7 @@ class _GetCoreSchemaHandler(Protocol):
         Returns:
             The ``pydantic-core`` CoreSchema generated.
         """
+        ...
 
     def resolve_ref_schema(
         self, maybe_ref_schema: dict[str, object], /
@@ -73,10 +75,12 @@ class _GetCoreSchemaHandler(Protocol):
         Returns:
             The concrete ``CoreSchema``.
         """
+        ...
 
     @property
     def field_name(self) -> str | None:
         """The name of the closest field to this validator, or ``None``."""
+        ...
 
     def _get_types_namespace(self) -> tuple[dict[str, object], ...]:
         """Internal method used during type resolution for serializer annotations.
@@ -85,6 +89,7 @@ class _GetCoreSchemaHandler(Protocol):
             A tuple with (types_namespace, parent_namespace).
             This is considered an implementation detail of pydantic.
         """
+        ...
 
 
 class BaseEndpoint(msgspec.Struct, kw_only=True, frozen=True):

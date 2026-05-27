@@ -1,6 +1,6 @@
 """Shared abstract base model for Tortoise ORM entities."""
 
-from typing import Any, Generic, TypeVar, override
+from typing import Any, Self, override
 
 from tortoise.fields import BigIntField
 from tortoise.models import Model
@@ -90,12 +90,12 @@ class BaseTreeModel(BaseModel):
 
         return self.parent_id is None
 
-    async def ordered_children(self) -> list[BaseTreeModel]:
+    async def ordered_children(self) -> list[Self]:
         """Load direct children in stable tree order."""
 
         return await type(self).filter(parent_id=self.id).order_by("id")
 
-    async def siblings(self, *, include_self: bool = False) -> list[BaseTreeModel]:
+    async def siblings(self, *, include_self: bool = False) -> list[Self]:
         """Load sibling tree nodes."""
 
         nodes = await type(self).filter(parent_id=self.parent_id).order_by("id")

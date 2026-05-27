@@ -17,7 +17,7 @@
 
 **Total**: 1085 todos | **Done**: 601 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 1
 
-**Overall Completion**: 55.6%
+**Overall Completion**: 55.4%
 
 **Last Verified**: 2026-05-27 (checked against live session.db totals)
 
@@ -33,11 +33,11 @@
 | Phase 20 — Persistent Memory Layer | 44 | 8 | 36 | 0 | 0 | 18.2% |
 | Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 | 57.1% |
 | Phase 28 — Auth & Accounts | 10 | 1 | 9 | 0 | 0 | 10.0% |
-| Phase 39 — Audit Remediation (A1/A2/A3) | 43 | 7 | 36 | 0 | 0 | 16.3% |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 44 | 7 | 37 | 0 | 0 | 15.9% |
 | Phase 40 — DB Model Consolidation & Rich Schemas | 42 | 42 | 0 | 0 | 0 | 100.0% |
 | Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 | 5.3% |
 | Phase 43 — Serializer Layer | 13 | 0 | 13 | 0 | 0 | 0.0% |
-| Phase 44 — Cryptography + SecureMD Integrity | 6 | 3 | 3 | 0 | 0 | 50.0% |
+| Phase 44 — Cryptography + SecureMD Integrity | 7 | 3 | 4 | 0 | 0 | 42.9% |
 | Phase 45 — Host Topology + Account Provider Schema | 11 | 1 | 10 | 0 | 0 | 9.1% |
 
 **Completed phases** (100%): Phase 0, 1, 2, 5, 6, 7, 8, 9, 22, 40, 41, and the separate `Phase 39 — Code Quality Remediation` row set.
@@ -75,7 +75,7 @@
 
 ### Phase 39 Code Quality Remediation (2026-05-26) - Historical Row Set Closed, Follow-up Audit Open
 
-- **Status**: the separate 5-row quality-remediation set is done; `Phase 39 — Audit Remediation (A1/A2/A3)` is active at 7/43 done
+- **Status**: the separate 5-row quality-remediation set is done; `Phase 39 — Audit Remediation (A1/A2/A3)` is active at 7/44 done
 - **Fixed in core/asgi/app.py**:
   - Type hint: marketplace_db_config: dict[str, Any]
   - Exception handling: Replaced 8 bare Exception catches with BaseCoreException (Rule 70)
@@ -611,7 +611,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **1083 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero; 3 in_progress: securemd-config-toggles, crypto44-key-boundary, securemd44-header-integrity)
+- `.plan/session.db` — **1085 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero; 1 in_progress: dep-map-modules-prompts)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
@@ -659,5 +659,5 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - Marked all three Phase 44 in_progress todos as done — they were implemented in the prior session but never tracked as complete.
 - Added `securemd-fix-duplicate-secret-key` (pending): remove duplicate SECRET_KEY at config.py lines 5-9.
 - `serializer-base-create` updated: FrontMatterSerializer must be compatible with BaseFrontmatterHeader and SECUREMD_ENFORCE_HEADER toggle.
-- Plan snapshot: 1083 total, 601 done, 474 pending, 8 blocked, 0 in_progress.
-- Phase 44 now has 6 todos (was 5). Phase 39 has 44 (was 43).
+- Plan snapshot: 1085 total, 601 done, 475 pending, 8 blocked, 1 in_progress.
+- Phase 44 now has 7 todos (was 5). Phase 39 has 44 (was 43).

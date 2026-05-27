@@ -16,6 +16,7 @@ Config-aware behavior:
 
 import logging
 import os
+from hashlib import sha512
 
 import msgspec
 import msgspec.yaml
@@ -38,7 +39,7 @@ def _securemd_enforce_header() -> bool:
     return os.getenv("SECUREMD_ENFORCE_HEADER", "true").lower() == "true"
 
 
-_REQUIRED_FIELDS = frozenset({"name", "description", "signature", "hash"})
+_REQUIRED_FIELDS = frozenset({"name", "description"})
 
 
 class BaseFrontmatterHeader(msgspec.Struct, frozen=True, kw_only=True):
@@ -70,6 +71,19 @@ class BaseFrontmatterHeader(msgspec.Struct, frozen=True, kw_only=True):
                 raise ValueError(
                     f"SecureMD header missing required fields: {', '.join(sorted(missing))}"
                 )
+            # A signed document must carry both signature and canonical content hash.
+            if bool(self.signature) != bool(self.hash):
+                raise ValueError(
+                    "SecureMD signed header must include both signature and hash"
+                )
+            if self.hash and self.hash != self._body_hash():
+                raise ValueError(
+                    "SecureMD header hash does not match body content"
+                )
+
+    def _body_hash(self) -> str:
+        """Stable uppercase SHA-512 digest of body bytes."""
+        return sha512(self.body.encode("utf-8")).hexdigest().upper()
 
     def _canonical(self) -> bytes:
         """Deterministic canonical bytes: sorted-key YAML frontmatter + body."""
@@ -90,6 +104,7 @@ class BaseFrontmatterHeader(msgspec.Struct, frozen=True, kw_only=True):
         The private_key must be an ``Ed25519PrivateKey`` instance from
         ``cryptography``.
         """
+        object.__setattr__(self, "hash", self._body_hash())
         canonical = self._canonical()
         sig = sign_bytes(private_key, canonical)
         object.__setattr__(self, "signature", sig)
@@ -103,6 +118,8 @@ class BaseFrontmatterHeader(msgspec.Struct, frozen=True, kw_only=True):
         if not _securemd_enabled():
             return True
         if not self.signature:
+            return False
+        if self.hash != self._body_hash():
             return False
         canonical = self._canonical()
         return verify_signature(public_key, canonical, self.signature)

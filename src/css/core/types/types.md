@@ -509,13 +509,13 @@ resolve settings: session -> project -> global
 | Todo ID | Live status | Deliverable | Dependency |
 |---------|-------------|-------------|------------|
 | `qol-models-msgspec` | done | `QoLToggle` and `QoLSettings` value types. | Implemented surface to validate against tracker. |
-| `qol-dangerous-combos-validator` | pending | Toggle-combination validator and security error. | Types. |
-| `qol-builtin-presets` | pending | Built-in preset definitions. | Types and validator. |
+| `qol-dangerous-combos-validator` | done | Toggle-combination validator and security error. | Types. |
+| `qol-builtin-presets` | done | Built-in preset definitions. | Types and validator. |
 | `qol-tortoise-model` | pending | Persisted scoped settings and manager. | ORM conventions. |
 | `qol-preset-registry` | pending | Startup-loaded built-in/user preset registry. | Persistence and presets. |
 | `qol-injector-service` | pending | Prompt directive construction and fragment cache. | Validator/settings resolution. |
 | `qol-unified-client-middleware` | pending | Pre-request integration in unified client. | Injector and Phase 10 client. |
-| `qol-cache-key-toggle-hash` | pending | Output-control-sensitive prompt-cache key. | Phase 11 prompt cache and injector. |
+| `qol-cache-key-toggle-hash` | done | Output-control-sensitive prompt-cache key. | Phase 11 prompt cache and injector. |
 | `qol-a2a-integration` | pending | Scope change propagation. | A2A runtime. |
 | `qol-openobserve-metrics` | pending | Injection events/metrics. | Observability surface. |
 | `qol-rest-endpoints` | pending | Toggle, preset, and agent-binding API. | Persistence/registry. |
@@ -531,7 +531,7 @@ record later in this file. Current source uses split `base_*` files and
 
 | Path | Current or planned symbols |
 |------|----------------------------|
-| `src/css/core/types/qol.py` | Existing `QoLToggle`, `QoLSettings`; add `BUILTIN_PRESETS`, `QoLSecurityError`, `validate_toggle_combo()`. |
+| `src/css/core/settings/qol.py` | Existing `QoLToggle`, `QoLSettings`; add `BUILTIN_PRESETS`, `QoLSecurityError`, `validate_toggle_combo()`. |
 | `src/css/core/types/qol_injector.py` | Planned `QoLInjector.build_fragment_block()`, `inject_into_messages()`, `inject_into_system()`. |
 | `src/css/core/types/qol_registry.py` | Planned `QoLPresetRegistry.get()`, `list_all()`, `reload()`, `invalidate()`. |
 | `src/css/core/types/qol_settings.py` | Planned `QoLSettingsManager.get_for_scope()`, `save_settings()`, `cascade_resolve()`. |

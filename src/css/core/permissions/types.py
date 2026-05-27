@@ -4,18 +4,19 @@ import msgspec
 from datetime import datetime, timezone
 from pathlib import Path
 
-from css.core.enums import ScopeLevel, Permission
+from css.core.enums import ScopeLevel
 from css.core.types.base_entity import BaseRole
 from css.core.types.base_entity import BaseRoleHeader
+from .enums import PathOp
 
 class PermissionPolicy(msgspec.Struct, frozen=True, kw_only=True):
     """Permission policy for a role at a scope level."""
 
-    path_permissions: set[Permission] = msgspec.field(default_factory=set)
+    path_permissions: set[PathOp] = msgspec.field(default_factory=set)
     tool_permissions: set[str] = msgspec.field(default_factory=set)
     allow_all_tools: bool = False
 
-    def has_permission(self, permission: Permission) -> bool:
+    def has_permission(self, permission: PathOp) -> bool:
         """Check if path permission is granted."""
         return permission in self.path_permissions
 
@@ -37,9 +38,7 @@ class ScopeContext(msgspec.Struct, frozen=True, kw_only=True):
 
     def get_filesystem_path(self) -> Path:
         """Get filesystem path for this scope."""
-        if self.scope_level == ScopeLevel.GLOBAL:
-            return Path("/var/cache/css")
-        elif self.scope_level == ScopeLevel.APP:
+        if self.scope_level == ScopeLevel.APP:
             return Path.home() / ".cybersec" / "app"
         elif self.scope_level == ScopeLevel.PROJECT:
             return Path.home() / ".cybersec" / "app" / "projects" / self.scope_id
@@ -54,7 +53,7 @@ class ScopeContext(msgspec.Struct, frozen=True, kw_only=True):
         """Get parent scope context."""
         return self.parent_scope
 
-    def has_permission(self, permission: Permission, level: ScopeLevel | None = None) -> bool:
+    def has_permission(self, permission: PathOp, level: ScopeLevel | None = None) -> bool:
         """Check if role has permission at scope level."""
         check_level = level or self.scope_level
         if check_level == self.scope_level:
@@ -77,6 +76,17 @@ class TokenPayload(msgspec.Struct, frozen=True, kw_only=True):
         if self.expires_at is None:
             return False
         return datetime.now(timezone.utc) > self.expires_at
+
+
+class ToolGrant(msgspec.Struct, frozen=True, kw_only=True):
+    """Deny-wins tool authorization payload."""
+
+    agent_id: str
+    tool_pattern: str
+    allowed: bool
+    session_id: str | None = None
+    expires_at: datetime | None = None
+
 
 class Role(BaseRole, frozen=True):
     """Concrete role entity with display metadata and a permission set.

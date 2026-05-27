@@ -3,7 +3,8 @@
 from css.core.logger import getLogger
 
 from css.core.enums import ScopeLevel, Permission, Role as RoleEnum
-from .types import Role, PermissionPolicy, ScopeContext, TokenPayload
+from .enums import PathOp
+from .types import Role, PermissionPolicy, ScopeContext, TokenPayload, ToolGrant
 from .checker import PermissionChecker, permission_checker
 from .exceptions import (
     PermissionError,
@@ -20,9 +21,11 @@ __all__ = [
     "RoleEnum",
     "ScopeLevel",
     "Permission",
+    "PathOp",
     "PermissionPolicy",
     "ScopeContext",
     "TokenPayload",
+    "ToolGrant",
     "PermissionChecker",
     "permission_checker",
     "PermissionError",

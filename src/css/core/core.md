@@ -17,6 +17,35 @@ The loader auto-discovers:
 2. **ORM models** — Each `modules/<app>/models.py`, `api_services/<app>/models.py`, `core/db/models/`
 3. **Tortoise ORM config** — Builds connection URL from environment
 
+## Dependency Edge Snapshot (2026-05-27)
+
+Source evidence (`scripts/codebase_dependency_analyzer.py src/css/ --no-markdown-refs`):
+
+- `core -> core`: 204 imports
+- `core -> modules`: 12 imports
+- `core -> api_services`: 1 import
+
+Top `core -> modules` edges:
+
+1. `core/events -> modules/hooks` (3)
+2. `core/tools -> modules/tools` (2)
+3. `core/asgi -> modules/tools` (1)
+4. `core/db -> modules/teams` (1)
+5. `core/sdks -> modules/llm_proxy` (1)
+6. `core/streaming -> modules/{agents,chat,projects,teams}` (4)
+
+Top `core -> api_services` edge:
+
+1. `core/sdks/adapters/deepseek.py -> api_services/deepseek/service.py` (1)
+
+Prompt-boundary note:
+
+- `core/prompt` now exists as a scaffold-only package.
+- Prompt registry/runtime ownership remains `modules/prompts`.
+- Verified marketplace-origin Markdown ingestion is still gated by
+  `securemd44-frontmatter-serializer` and
+  `securemd44-context-ingestion-gate`.
+
 ---
 
 ## Module Router Discovery

@@ -7,7 +7,7 @@ from css.core.sdks import CSSLLMClient, SDKRegistry
 from css.core.sdks.adapters.deepseek import DeepSeekAdapter
 from css.core.types.base_messages import BaseMessage
 from css.core.messages.types import StreamChunk
-from css.core.types.enums import MessageRole
+from css.core.types.base_enums import MessageRole
 
 
 @pytest.mark.asyncio

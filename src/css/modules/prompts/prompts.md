@@ -39,6 +39,16 @@ Prompts are:
 | `css.modules.tags` | → consumes | Prompts are taggable (tags module manages tag entities) |
 | `css.core.types.query` | → feeds | `Query.prompt` field populated from rendered PromptDefinition |
 | `css.core.db` | → persists to | Tortoise ORM PromptDefinition model |
+| `css.core.prompt` | ↔ planned boundary | Verified marketplace-origin Markdown ingestion boundary; package currently scaffold-only |
+
+### Current Prompt Boundary Reality
+
+- `src/css/core/prompt/` now exists as a core scaffold with no runtime symbols.
+- `modules/prompts` remains the canonical owner for prompt registry, rendering,
+  persistence, and API work in Phase 23.
+- Secure prompt-injection prevention remains dependency-gated by:
+  `securemd44-frontmatter-serializer` and
+  `securemd44-context-ingestion-gate`.
 
 ---
 
