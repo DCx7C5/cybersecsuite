@@ -36,6 +36,7 @@ from tortoise import Tortoise
 
 from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
 from css.core.db.models.menu import sync_default_menu_items
+from css.core.events import configure_event_runtime, shutdown_event_runtime
 from css.core.exceptions import BaseCoreException
 from css.core.loader import (
     build_tortoise_connection,
@@ -149,6 +150,7 @@ def create_app() -> FastAPI:
 
         db_ready = False
         marketplace_db_ready = False
+        configure_event_runtime()
         try:
             await Tortoise.init(
                 config={
@@ -248,6 +250,7 @@ def create_app() -> FastAPI:
                     pass
             if db_ready or marketplace_db_ready:
                 await Tortoise.close_connections()
+            shutdown_event_runtime()
 
     _app = FastAPI(
         title="CyberSecSuite",

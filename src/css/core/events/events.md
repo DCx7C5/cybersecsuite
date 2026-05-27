@@ -160,7 +160,7 @@ async with instrument("tool.call", tool_id="nmap"):
 
 ### Phase 14 T14.1–T14.5 (instrumentation + interceptors)
 - [ ] `events-instrument-decorator` — @instrument(namespace) + ContextVar
-- [ ] `events-event-bus-module` — Wire singletons in __init__.py + lifespan
+- [x] `events-event-bus-module` — Wire singletons in __init__.py + lifespan
 - [ ] `events-middleware-fastapi` — EventInstrumentationMiddleware
 - [ ] `events-instrument-command-bus` — CommandBus.execute wired
 - [ ] `events-instrument-llm-client` — UnifiedLLMClient.complete wired
