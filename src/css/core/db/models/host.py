@@ -9,6 +9,7 @@ from tortoise.indexes import Index
 from .base import BaseModel
 from .mixins import TimestampMixin
 from ..fields import NameField, IPv4Field, IPv6Field, LabelField
+from ..serializers import BaseModelSerializer
 
 
 class HostInfo(msgspec.Struct, frozen=True, kw_only=True):
@@ -102,6 +103,13 @@ class Host(BaseModel, TimestampMixin):
             Index(fields=["is_active", "last_seen"]),
         ]
         ordering = ["name"]
+
+
+class HostSerializer(BaseModelSerializer[Host]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Host
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
 
 
 async def sync_default_hosts() -> list[Host]:
