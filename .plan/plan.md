@@ -4,7 +4,7 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-27 (TYPE_CHECKING elimination; Protocol prod-ready upgrade)
+**Updated**: 2026-05-27 (TYPE_CHECKING cleanup, prompt boundary intake, dependency-edge snapshot)
 
 ## Current Session (2026-05-27 - TYPE_CHECKING Elimination)
 
@@ -32,6 +32,16 @@ breakage, and discover the stale `core/pipeline.py` untracked leftover.
   `core/pipeline.py` which survives only as an untracked leftover file.
   Documented for cleanup.
 - Last 5 commits reviewed for import correctness and class rename consistency.
+- Targeted regression repairs applied after review: SecureMD sign/hash
+  verification flow now supports sign-first construction with enforced
+  signed-pair integrity, stale renamed test imports are corrected, and
+  `_GetCoreSchemaHandler` Protocol stubs satisfy focused basedpyright checks.
+- Source-backed dependency snapshot recorded for planning:
+  `core -> core` 204 imports, `core -> modules` 12 imports,
+  `core -> api_services` 1 import.
+- New `src/css/core/prompt/` scaffold is now tracked as the planned verified
+  prompt-ingestion orchestration boundary. Prompt registry/runtime ownership
+  remains in `src/css/modules/prompts/`.
 
 - Live tracker after decision resolution: 1081 todos | 598 done | 475 pending | 8 blocked | 0 active.
 - Hierarchy repair: zero `unassigned` todos and zero empty descriptions remain.
@@ -117,6 +127,25 @@ breakage, and discover the stale `core/pipeline.py` untracked leftover.
 
 Audit report: `.plan/architecture/plan-audit-2026-05-25.md`
 **Tracker authority**: `.plan/session.db`
+**Tracker execution metadata**: `.plan/session.db::todos` carries
+`model_eligible`, `reasoning_stage` (1-4), `implementation_readiness`,
+`complexity_score`, `codex_fit_score`, `haiku_fit_score`,
+`sonnet_fit_score`, `opencode_fit_score`,
+`pair_recommended_model`, `pair_routing_reason`, `recommended_model`, and
+`candidate_models`, `parallelizable_no_crossover`, `parallelization_note`,
+`execution_lane`, `primary_assigned_model`, and `assignment_reason`
+to route and execution-split todos across GitHub, Anthropic (including
+`claude-sonnet-4.6` and `claude-sonnet-4.5`), Codex, and OpenCode (including
+`BigPickle` and `Zen`) model families. `recommended_model` stores an ordered
+token-aware shortlist of applicable models for the todo (cheaper/lower-reasoning
+models first when the task allows); `candidate_models` stores the broader
+cross-family model pool. `parallelizable_no_crossover=1` means the todo has no
+unresolved dependencies and no detected cross-task path overlap based on
+description path tokens. `execution_lane` + `primary_assigned_model` provide
+an executable assignment snapshot for batch dispatch.
+**Runtime table**: `.plan/session.db::runtime` stores active workers and their
+current `todo_id` while status is `in_progress`; rows are removed as soon as a
+todo leaves `in_progress`.
 **Local plan index**: `src/css/plan.md`
 **Governing documents**: `.plan/rules.md`, `.plan/development-workflow.md`,
 `.plan/checkpoints.md`, `.plan/memory.md`
@@ -256,7 +285,7 @@ Implementation detail is intentionally routed to these local documents:
 | 38 | `src/css/modules/jetbrains/jetbrains.md` |
 | 42 | `src/css/modules/acp/acp.md`, `src/css/modules/mcps/mcps.md`, `src/css/core/marketplace/marketplace.md`, `src/css/modules/approvals/approvals.md`, `src/css/modules/jetbrains/jetbrains.md` (legacy bridge) |
 | 43 | `src/css/core/serializers/serializers.md`, `src/css/core/types/types.md`, relevant serializer consumer owner docs |
-| 44 | `src/css/core/cryptography/cryptography.md`, `src/css/core/securemd/securemd.md`, `.plan/architecture/securemd-architecture.md` |
+| 44 | `src/css/core/cryptography/cryptography.md`, `src/css/core/securemd/securemd.md`, `src/css/core/prompt/prompt.md`, `.plan/architecture/securemd-architecture.md` |
 | 45 | `src/css/core/db/models/postgres-models.md`, `src/css/core/db/postgres-db.md`, `src/css/core/accounts/accounts.md`, `src/css/core/serializers/serializers.md` |
 
 ## Sanitization Movement Record

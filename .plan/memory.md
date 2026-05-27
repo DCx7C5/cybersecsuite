@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-27 (Protocol prod-ready upgrade) | **Session**: TYPE_CHECKING elimination across 12 files, Protocol production-ready upgrade, commit review, stale pipeline import detection
+**Last Updated**: 2026-05-27 (runtime execution tracking sync) | **Session**: runtime table workflow/triggers, model-fit claim flow, router script removal
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -13,9 +13,9 @@
 
 ---
 
-## 📊 session.db State (2026-05-27 TYPE_CHECKING elimination)
+## 📊 session.db State (2026-05-27 runtime execution tracking sync)
 
-**Total**: 1081 todos | **Done**: 601 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 0
+**Total**: 1085 todos | **Done**: 601 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 1
 
 **Overall Completion**: 55.6%
 
@@ -47,6 +47,16 @@
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Runtime Execution Table + Claim Flow (2026-05-27)
+
+- Removed `scripts/todo_model_router.py`; execution tracking is now DB-native.
+- Added `.plan/session.db::runtime` with triggers that auto-sync active rows
+  from `todos.status='in_progress'`.
+- Rule/workflow now require runtime-row cleanup immediately when a todo leaves
+  `in_progress` (`done`, `blocked`, or back to `pending`).
+- Worker flow now uses SQL claim/update patterns tied to model-fit metadata and
+  runtime row inspection/heartbeat.
 
 ### Phase 11 Cross-Provider Prompt Caching (2026-05-26) PARTIAL (9/11)
 

@@ -158,7 +158,72 @@ SELECT id, title, status FROM todos WHERE task = 'TASK_NAME' AND status != 'done
 
 -- Verify all phase todos are done
 SELECT COUNT(*) as remaining FROM todos WHERE phase = 'PHASE_NAME' AND status != 'done';
+
+-- Model routing view (if routing metadata columns are populated)
+SELECT id, title, reasoning_stage, implementation_readiness, complexity_score,
+       codex_fit_score, haiku_fit_score, sonnet_fit_score, opencode_fit_score,
+       pair_recommended_model,
+       pair_routing_reason, recommended_model, candidate_models,
+       parallelizable_no_crossover, parallelization_note,
+       execution_lane, primary_assigned_model, assignment_reason
+FROM todos
+WHERE model_eligible = 1
+ORDER BY (codex_fit_score - haiku_fit_score) DESC, sort_order, id;
+
+-- Independently parallelizable work candidates (no dep blockage and no detected
+-- cross-task file-path overlap from todo descriptions)
+SELECT id, title, phase, task, recommended_model, parallelization_note
+FROM todos
+WHERE status = 'pending'
+  AND parallelizable_no_crossover = 1
+ORDER BY sort_order, task, id;
+
+-- Assignment board (all active work)
+SELECT id, title, status, phase, task, execution_lane, primary_assigned_model,
+       assignment_reason
+FROM todos
+WHERE status IN ('pending', 'in_progress', 'blocked')
+ORDER BY sort_order, task, id;
+
+-- Claim next todo for a worker/model and move to in_progress
+-- Replace MODEL_ID with a concrete model (e.g. claude-haiku-4.5)
+WITH picked AS (
+  SELECT t.id
+  FROM todos t
+  WHERE t.status = 'pending'
+    AND NOT EXISTS (
+      SELECT 1 FROM todo_deps td
+      JOIN todos dep ON dep.id = td.depends_on
+      WHERE td.todo_id = t.id AND dep.status != 'done'
+    )
+    AND (
+      COALESCE(t.recommended_model, '') = ''
+      OR t.recommended_model LIKE '%' || 'MODEL_ID' || '%'
+    )
+  ORDER BY t.sort_order, t.task, t.id
+  LIMIT 1
+)
+UPDATE todos
+SET status = 'in_progress',
+    updated_at = datetime('now')
+WHERE id = (SELECT id FROM picked);
+
+-- Runtime board (active workers and todo relation)
+SELECT run_id, todo_id, phase, task, title, assigned_model, worker_slot,
+       started_at, heartbeat_at, note
+FROM runtime
+ORDER BY started_at ASC;
+
+-- Worker heartbeat while processing
+UPDATE runtime
+SET heartbeat_at = datetime('now')
+WHERE run_id = 'todo:TODO_ID';
 ```
+
+`runtime` is the active execution table and must mirror todos in
+`status='in_progress'`.
+When a todo is marked `done` or `blocked` (or moved back to `pending`), its
+`runtime` row must be removed in the same transition.
 
 **⚠️ THERE IS NO `tasks` TABLE. THERE IS NO `completed_at` COLUMN. DO NOT USE THEM.**
 
@@ -207,7 +272,8 @@ AND NOT EXISTS (
 ORDER BY sort_order, task, id LIMIT 1;
 
 -- 3. Mark it in_progress (replace TODO_ID with result from step 2)
-UPDATE todos SET status = 'in_progress', updated_at = datetime('now')
+UPDATE todos
+SET status = 'in_progress', updated_at = datetime('now')
 WHERE id = 'TODO_ID';
 ```
 
@@ -363,7 +429,15 @@ SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE phase = 'PHASE_NAME'
 **Step 3 — Mark done**
 ```sql
 UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'TODO_ID';
+
+-- Runtime row must be gone after completion
+SELECT COUNT(*) AS runtime_rows
+FROM runtime
+WHERE todo_id = 'TODO_ID';
 ```
+
+If you transition an active todo to `blocked` or back to `pending`, run the
+same runtime cleanup check (`runtime_rows` must still be `0`).
 
 **Step 4 — Commit (logical and atomic)**
 ```bash

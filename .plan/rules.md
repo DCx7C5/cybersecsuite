@@ -52,6 +52,7 @@ cat src/css/api_services/api_services.md
 ## Session & Project Planning
 - **ABSOLUTE: Git track everything. use worktrees for parallel working subagents if possible**
 - **ABSOLUTE: `.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
+- **ABSOLUTE: active execution ownership lives in `.plan/session.db::runtime`** — every worker/task in progress must map to one runtime row linked to `todos.id`, and that row must be removed immediately when the todo leaves `in_progress` (done/blocked/pending)
 - **ABSOLUTE: local planning Markdown exists across `src/css/` and must stay synchronized with `session.db` during work** — read the nearest file first (`<module>.md` in modules, nearest `plan.md` elsewhere) so each area document reflects current todos and milestones
 - **ABSOLUTE: every TODO and implementation instruction must be executable by GitHub Copilot Auto without guesswork** — name exact target files and symbols, ordered implementation steps, prerequisites/dependencies, out-of-scope boundaries, and runnable validation; do not leave open-ended discovery as the implementation contract
 - **ABSOLUTE: there is no backwards compatibility requirement** — if your changes make code deprecated, delete the deprecated code directly

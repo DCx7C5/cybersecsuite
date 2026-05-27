@@ -14,8 +14,9 @@ CyberSecSuite is an async-first Python platform for orchestrated cybersecurity w
 - Rules and constraints: `.plan/rules.md`
 - Workflow process: `.plan/development-workflow.md`
 - Memory File: `.plan/memory.md`
-- Checkpoint File: `.plan/checkpoint.md`
+- Checkpoint File: `.plan/checkpoints.md`
 - Session/Tracking Database: `.plan/session.db`
+- Runtime board (active in-progress todos): `sqlite3 .plan/session.db "SELECT run_id,todo_id,worker_slot,started_at,heartbeat_at FROM runtime ORDER BY started_at;"`
 - Module and core plans: `src/css/**/plan.md`
 
 ## Ownership notes
