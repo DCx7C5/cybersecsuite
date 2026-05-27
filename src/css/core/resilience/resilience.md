@@ -133,7 +133,8 @@ They must remain distinct from response injection strategy routing.
 | `routing-strategy-enum`, `routing-combo-target-model` | done | Foundation value types and ordered tiers first. |
 | `routing-strategy-resolver` | done | `_apply_strategy()` implemented with all 13 strategy branches and deterministic state dictionaries. |
 | `routing-tier-selector` | done | `TierSelector.filter()` enforces complexity, hardware, budget, security, and `S_PLUS` fallback chain rules. |
-| `routing-triage-complexity`, `routing-token-counter` | pending | Remaining pure selection/classification logic. |
+| `routing-token-counter` | done | Best-effort token counter with Anthropic hook path and tiktoken fallback exported for routing callers. |
+| `routing-triage-complexity` | pending | Remaining pure selection/classification logic. |
 | `routing-budget-guard` | done | In-memory per-combo spend guard with lock-safe record/check/get/reset plus shared singleton export. |
 | `routing-circuit-breaker`, `routing-rate-limiter`, `routing-usage-tracker` | pending | Remaining runtime guards and accounting. |
 | `routing-combo-registry`, `routing-combo-router`, `routing-qwen-triage-router` | pending | Configuration and routed request execution. |

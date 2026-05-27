@@ -9,7 +9,7 @@ from .usage_tracker import UsageRecord, UsageTracker, usage_tracker
 from .strategy import Strategy, ProviderTier, PROVIDER_TIER_LIST
 from .tier_selector import TierSelector
 from .token_counter import TokenCounter
-from .triage import RequestComplexity
+from .triage import RequestComplexity, TriageMetrics, analyze_complexity
 
 __all__ = [
     "Strategy",
@@ -30,4 +30,9 @@ __all__ = [
     "UsageRecord",
     "UsageTracker",
     "usage_tracker",
+    "TierSelector",
+    "TokenCounter",
+    "RequestComplexity",
+    "TriageMetrics",
+    "analyze_complexity",
 ]

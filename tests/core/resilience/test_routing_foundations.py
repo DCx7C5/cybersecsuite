@@ -9,6 +9,7 @@ from css.core.resilience.routing import (
     ResolvedTarget,
     Strategy,
     TierSelector,
+    TokenCounter,
     _apply_strategy,
 )
 
@@ -94,3 +95,13 @@ def test_budget_guard_tracks_resets_and_clamps_costs() -> None:
 
     guard.reset("default")
     assert guard.get_spent("default") == 0.0
+
+
+def test_token_counter_best_effort_returns_int_or_none() -> None:
+    counter = TokenCounter()
+    count = counter.count(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": "hello world"}],
+        provider_id="openai",
+    )
+    assert count is None or count >= 1
