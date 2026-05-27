@@ -53,6 +53,7 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: Git track everything. use worktrees for parallel working subagents if possible**
 - **ABSOLUTE: `.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
 - **ABSOLUTE: local planning Markdown exists across `src/css/` and must stay synchronized with `session.db` during work** — read the nearest file first (`<module>.md` in modules, nearest `plan.md` elsewhere) so each area document reflects current todos and milestones
+- **ABSOLUTE: every TODO and implementation instruction must be executable by GitHub Copilot Auto without guesswork** — name exact target files and symbols, ordered implementation steps, prerequisites/dependencies, out-of-scope boundaries, and runnable validation; do not leave open-ended discovery as the implementation contract
 - **ABSOLUTE: there is no backwards compatibility requirement** — if your changes make code deprecated, delete the deprecated code directly
 - **ABSOLUTE: use lazy imports only when clearly justified, and preserve existing directory, file, and content patterns when adding or changing code**
 
@@ -242,8 +243,9 @@ Current module directories include:
 `threat_intel`, `tools`, `triage`, `webhooks`, and `workflows`.
 
 **Binding ownership overrides**:
-- `accounts`, `events`, `marketplace`, `memory`, `rag_vector`, and `rag_graph` belong in `src/css/core/`.
+- `accounts`, `authentication`, `cryptography`, `events`, `marketplace`, `memory`, `rag_vector`, `rag_graph`, `securemd`, and `serializers` belong in `src/css/core/`.
 - Those core-owned areas must not have competing legacy module directories under `src/css/modules/`.
+- `core/auth/` is retired; authentication ownership is `src/css/core/authentication/`.
 - `working_dir` is retired terminology. No implemented replacement package is confirmed; read the sessions, projects, and permissions owner docs before introducing a session-output manager.
 
 **Moved to `core/` (infrastructure, not business logic)**:
@@ -567,6 +569,40 @@ Tool       → modules/tools/types.py
 
 ---
 
+## Avoid the following as well:
+```python
+    def to_domain(self) -> LLMModelInfo:
+        return LLMModelInfo(
+            id=self.id,
+            name=self.name,
+            provider=self.provider,
+            family=self.family,
+            display_name=self.display_name,
+            description=self.description,
+            context_window=self.context_window,
+            max_output_tokens=self.max_output_tokens,
+            latency_ms=self.latency_ms,
+            throughput_tokens_per_sec=self.throughput_tokens_per_sec,
+            input_tokens_per_1k=self.input_tokens_per_1k,
+            output_tokens_per_1k=self.output_tokens_per_1k,
+            pricing_currency=self.pricing_currency,
+            capabilities=self.capability_values,
+            temperature_min=self.temperature_min,
+            temperature_max=self.temperature_max,
+            top_p_min=self.top_p_min,
+            top_p_max=self.top_p_max,
+            top_k_min=self.top_k_min,
+            top_k_max=self.top_k_max,
+            released_at=self.released_at,
+            deprecated=self.deprecated,
+            custom_params=dict(self.custom_params or {}),
+        )
+```
+- work instead with `*args` and `**kwargs` except not possible
+- fix immediately if you see in source code or create todo
+
+---
+
 ## Quick Decision Guide
 
 **Use built-ins / `collections.abc` for:**
@@ -581,5 +617,10 @@ Tool       → modules/tools/types.py
 **Never use in new code (Python 3.14+):**
 - `typing.List`, `Dict`, `Tuple`, `Optional`, `Union`
 - `from __future__ import annotations`
+
+---
+
+# **GODRULE: REMEMBER CRITICAL RULE SECTION ABOVE !!!!!**
+# **GODRULE: USE WORKFLOWS IN `.plan/development-workflow.md`!!!**
 
 ---

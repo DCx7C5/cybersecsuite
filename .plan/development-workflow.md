@@ -166,6 +166,25 @@ SELECT COUNT(*) as remaining FROM todos WHERE phase = 'PHASE_NAME' AND status !=
 
 ---
 
+## Todo Specification Quality Gate
+
+Every created or revised todo must be clear enough for GitHub Copilot Auto to
+implement without inferring missing architecture. Before inserting a todo or
+marking it ready, ensure its `description` includes:
+
+1. Exact source, test, and owner-document file paths to edit or create.
+2. Named classes/functions/exports/routes when the surface is known.
+3. Ordered implementation steps with explicit boundaries for what not to do.
+4. Actual `todo_deps` prerequisites for unfinished required work.
+5. Runnable validation commands or test targets and acceptance outcomes.
+6. A source-backed observation when the todo was created from a defect.
+
+If investigation is still needed to find files or select an owner, create a
+bounded audit/design todo with a concrete deliverable first; do not present an
+open-ended discovery statement as an implementation todo.
+
+---
+
 ## ✅ WORKFLOW 1 — COMPLETING A SINGLE TODO
 
 This is the most common workflow. Do this for each todo.
