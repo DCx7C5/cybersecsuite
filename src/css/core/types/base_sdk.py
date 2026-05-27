@@ -15,7 +15,10 @@ from abc import ABC, abstractmethod
 
 from css.core.exceptions import GatewayError
 from css.core.resilience import RetryOrchestrator, RetryConfig
-from css.core.types import BaseApiServiceClient, ProviderType, ModelMetadata, BaseMessage, StreamChunk, Tool
+from css.core.types.base_client import BaseApiServiceClient
+from css.core.types.base_enums import ProviderType
+from css.core.messages.types import ModelMetadata, StreamChunk, Tool
+from css.core.types.base_messages import BaseMessage
 
 logger = getLogger(__name__)
 

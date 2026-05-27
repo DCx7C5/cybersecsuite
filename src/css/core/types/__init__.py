@@ -32,9 +32,6 @@ from css.core.messages.types import (
     ExecutorResult,
 )
 
-# ── Thinking config (extended thinking/reasoning) ───────────────────────────
-from css.core.sdks.thinking import ThinkingConfig
-
 # ── Base entity + header types ───────────────────────────────────────────────
 from .base_entity import (
     BaseEntity,
@@ -74,37 +71,11 @@ from .base_emitter import BaseEmitterClass
 # ── Base registry + universal client ────────────────────────────────────────
 from .base_registry import BaseRegistry
 
-from css.core.sdks import (
-    SDKRegistry,
-    CSSLLMClient,
-    register_sdk,
-    get_sdk,
-    clear_sdk_cache,
-    list_registered_sdks,
-)
-from css.core.sdks.adapters import (
-    AnthropicNativeAdapter,
-    COMPUTER_USE_TOOLS,
-    OpenAINativeAdapter,
-    BUILTIN_TOOLS,
-    HttpProviderAdapter,
-    OllamaAdapter,
-)
-from css.core.sdks.model_mapper import ModelNameMapper
-
 # ── Capabilities ─────────────────────────────────────────────────────────────
 from css.core.capabilities.models import (
     Capability,
     CapabilityRegistry,
     ModelCapabilities,
-)
-
-# ── Context types ─────────────────────────────────────────────────────────────
-from css.core.sdks.context import (
-    ConversationContext,
-    ModelContext,
-    ExecutionContext,
-    ContextConfig,
 )
 
 # ── Hook event types ─────────────────────────────────────────────────────────
@@ -147,12 +118,43 @@ from css.core.settings.qol import (
     toggle_description,
 )
 
-# Lazy import to break circular dependency chain:
+# Lazy imports to break circular dependency chains:
+#   types.__init__ → sdks.* → ... → api_services → types.__init__
 #   types.__init__ → adapter_bridge → registry → core.tools.base → executor → events → emitter → base_emitter → types.__init__
+_lazy: dict[str, tuple[str, str]] = {
+    # sdks
+    "ThinkingConfig": ("css.core.sdks.thinking", "ThinkingConfig"),
+    "SDKRegistry": ("css.core.sdks.registry", "SDKRegistry"),
+    "CSSLLMClient": ("css.core.sdks.css_client", "CSSLLMClient"),
+    "register_sdk": ("css.core.sdks.registry", "register_sdk"),
+    "get_sdk": ("css.core.sdks.registry", "get_sdk"),
+    "clear_sdk_cache": ("css.core.sdks.registry", "clear_sdk_cache"),
+    "list_registered_sdks": ("css.core.sdks.registry", "list_registered_sdks"),
+    # sdks adapters
+    "AnthropicNativeAdapter": ("css.core.sdks.adapters.anthropic", "AnthropicNativeAdapter"),
+    "COMPUTER_USE_TOOLS": ("css.core.sdks.adapters.anthropic", "COMPUTER_USE_TOOLS"),
+    "OpenAINativeAdapter": ("css.core.sdks.adapters.openai", "OpenAINativeAdapter"),
+    "BUILTIN_TOOLS": ("css.core.sdks.adapters.openai", "BUILTIN_TOOLS"),
+    "HttpProviderAdapter": ("css.core.sdks.adapters.http_provider", "HttpProviderAdapter"),
+    "OllamaAdapter": ("css.core.sdks.adapters.ollama", "OllamaAdapter"),
+    # sdks model mapper
+    "ModelNameMapper": ("css.core.sdks.model_mapper", "ModelNameMapper"),
+    # sdks context
+    "ConversationContext": ("css.core.sdks.context", "ConversationContext"),
+    "ModelContext": ("css.core.sdks.context", "ModelContext"),
+    "ExecutionContext": ("css.core.sdks.context", "ExecutionContext"),
+    "ContextConfig": ("css.core.sdks.context", "ContextConfig"),
+    # tool bridge
+    "register_adapter_tools": ("css.modules.tools.adapter_bridge", "register_adapter_tools"),
+}
+
+
 def __getattr__(name: str):
-    if name == "register_adapter_tools":
-        from css.modules.tools.adapter_bridge import register_adapter_tools
-        return register_adapter_tools
+    if name in _lazy:
+        mod_path, attr = _lazy[name]
+        import importlib
+        mod = importlib.import_module(mod_path)
+        return getattr(mod, attr)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
