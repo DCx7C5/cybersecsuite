@@ -16,12 +16,11 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
 from css.core.exceptions import LLMApiServiceError
-from css.core.types.base_client import BaseApiServiceClient
+from css.core.types.base_client import BaseApiServiceClient, BaseStreamingHandler
 from css.core.errors.mappers import map_provider_error
 from css.core.config import ProviderDefaults
 from css.core.settings import config as settings_config

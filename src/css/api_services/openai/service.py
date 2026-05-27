@@ -14,11 +14,10 @@ from css.core.types import (
     ModelMetadata,
     ProviderType,
     StreamChunk,
-    BaseStreamingHandler,
     Tool,
     LLMResponse,
 )
-from css.core.types.base_client import BaseApiServiceClient
+from css.core.types.base_client import BaseApiServiceClient, BaseStreamingHandler
 from css.core.config import ProviderDefaults
 
 logger = getLogger(__name__)
