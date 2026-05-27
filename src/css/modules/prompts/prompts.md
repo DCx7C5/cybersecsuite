@@ -173,6 +173,24 @@ registry.get("sec-audit-system", version="1.0.0")
 
 ---
 
+## SecureMD Execution Gate (Phase 44)
+
+Marketplace-origin Markdown prompts are a distinct trust boundary from locally
+created prompt records.
+
+| Todo ID | Dependency / required behavior |
+|---------|--------------------------------|
+| `securemd44-context-ingestion-gate` | After `prompt-marketplace-wire`, parse marketplace-origin Markdown through `core/serializers`, verify it through `core/securemd`, and only then allow `PromptRenderer` output to reach agent execution. |
+
+- Target files are `registry.py`, `renderer.py`, and the agent execution
+  caller selected by `agent-execution-logic`.
+- Marketplace preview responses are display-only and must not be accepted as
+  already verified execution content.
+- Unsigned, malformed, wrong-key, or tampered marketplace-origin Markdown
+  must fail before rendered text reaches provider invocation.
+
+---
+
 ## Rules
 
 - msgspec.Struct (frozen) for all value types — NOT dataclass

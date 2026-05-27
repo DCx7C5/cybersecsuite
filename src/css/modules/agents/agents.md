@@ -15,6 +15,7 @@ document owns the executable agent-management specification.
 | `css.core.permissions` | → consumes | `PermissionChecker.can_tool()` and `require_path()` |
 | Session/output-directory owner | → consumes | Resolve the canonical creator for isolated session state before wiring `SessionContext`. |
 | `css.core.models` / `css.core.resilience` | → consumes | Model metadata and future provider-routing/resilience policy |
+| `css.core.securemd` / `css.modules.prompts` | → consumes | Verified marketplace-origin prompt text only after Phase 44 ingestion gate. |
 | Session context owner (unresolved) | → consumes | `SessionContext(session_id, agent_id, session_dir, project_id)` after ownership decision |
 
 ---
@@ -163,6 +164,7 @@ confirmed by the current source tree.
 | `approval-agentexecutor-wire` | pending | Insert approval gating at tool preflight after permission evaluation and before side effects. |
 | `git-tracker-hook` | pending | After session artifact ownership exists, commit only successful turn artifacts via the event/hook boundary. |
 | `agent-execution-logic` | pending | The active `base.AgentExecutor` provider-call contract is repaired; reconcile the separate provisional executor in `manager.py`, which imports absent `AgentMetrics`, `AgentState`, and `AgentMessage`, and validate all public callers. |
+| `securemd44-context-ingestion-gate` | pending | After prompt marketplace wiring and executor-owner reconciliation, prevent unverified marketplace Markdown from reaching provider context. |
 | `provider-sdk-runtime-consolidation` | pending | Move the active agent/provider route onto the selected canonical SDK/registry gateway. |
 
 1. Reconcile which `AgentExecutor` is imported by runtime callers and test
@@ -173,3 +175,6 @@ confirmed by the current source tree.
    turn hooks in that order so one run emits one correlated lifecycle.
 4. Validate import ownership, success/failure instrumentation, approval
    no-side-effect behavior, session field names, and dependency direction.
+5. When prompt execution wiring exists, accept marketplace-origin Markdown
+   only through the SecureMD verified-body boundary; UI preview Markdown is
+   not execution input.

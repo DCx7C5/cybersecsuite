@@ -1,7 +1,7 @@
 # core/marketplace — Catalog, Install State, and Package Control Plane
 
 **Location**: `src/css/core/marketplace/`  
-**Status**: Implemented control plane; sidebar-child, prompt-link, and documentation mapping work remains pending
+**Status**: Implemented control plane; prompt-link, SecureMD execution gate, and documentation mapping work remains pending
 
 ## Purpose
 
@@ -19,7 +19,7 @@ It is **not** the runtime execution layer for MCP, tools, or SIEM integrations. 
 | File | Reality |
 |------|---------|
 | `registry.py` | DB-backed `MarketplaceItemRegistry` around `MarketplaceItem` ORM rows |
-| `endpoints.py` | Real FastAPI CRUD/install/toggle/list/detail routes |
+| `endpoints.py` | Real FastAPI CRUD/install/toggle/list/detail routes plus Markdown preview display; preview is not trusted prompt ingestion. |
 | `seeder.py` | Seeds built-in marketplace items, including `MarketplaceItemType.mcp` |
 | `cache.py` | Local in-memory TTL cache, not Redis-backed |
 | `installer.py` / `package_manager.py` | Package install/uninstall and local package orchestration |
@@ -33,7 +33,7 @@ It is **not** the runtime execution layer for MCP, tools, or SIEM integrations. 
 |------|---------------------------------------|
 | `src/css/core/db/models/marketplace.py` | Canonical `MarketplaceItem`, `MarketplaceMeta`, `MarketplaceItemTag`, `MarketplaceItemManager`, `MarketplaceMetaManager` ORM/model surface. |
 | `src/css/core/marketplace/registry.py` | `MarketplaceItemRegistry`, `wire_registry_events()`, `emit_marketplace_item_changed()`. |
-| `src/css/core/marketplace/endpoints.py` | `list_marketplace_items()`, `get_marketplace_item()`, `install_item()`, `uninstall_item()`, `toggle_item()`, `marketplace_status()`. |
+| `src/css/core/marketplace/endpoints.py` | `list_marketplace_items()`, `get_marketplace_item()`, `install_item()`, `uninstall_item()`, `toggle_item()`, `marketplace_status()`, `get_marketplace_item_preview()`. |
 | `src/css/core/marketplace/seeder.py` | `MarketplaceSeeder`, `seed_marketplace_on_startup()`. |
 | `src/css/core/marketplace/types.py` | `MarketplaceItemCreate`, `MarketplaceItemResponse`, install/toggle/upgrade response structs. |
 | `src/css/core/db/models/menu.py` | `DEFAULT_MENU_ITEMS`, `sync_default_menu_items()` for marketplace sidebar children. |
@@ -47,8 +47,9 @@ restore a competing catalog model file.
 | Todo ID | Status in `session.db` | Contract owned here |
 |---------|------------------------|---------------------|
 | `db40-lane-marketplace` | done | Canonical model reconciliation retained `MarketplaceItem`, `MarketplaceMeta`, `MarketplaceItemTag`, and their managers. |
-| `db40-menu-marketplace-children-contract` | pending | Document and consume the seven stable sidebar children seeded by `core/db/models/menu.py`. |
+| `db40-menu-marketplace-children-contract` | done | Seven stable sidebar children are seeded by `core/db/models/menu.py`. |
 | `prompt-marketplace-wire` | pending | Link catalog prompt entries to prompt definitions without moving prompt content ownership into marketplace. |
+| `securemd44-context-ingestion-gate` | pending | Require verified marketplace-origin prompt Markdown before prompt/agent execution; preserve preview as display-only. |
 | `dep-map-modules-marketplace` | pending | Verify API, registry, seeder, ORM, templates, menu, MCP, and prompt relationships. |
 | `market42-catalog-extensions` | pending | Extend marketplace metadata/types so ACP/LSP artifacts can be cataloged, versioned, and filtered. |
 | `market42-manifest-seeding` | pending | Seed curated ACP/LSP manifests with version and prerequisite metadata in idempotent startup flow. |
@@ -58,8 +59,8 @@ restore a competing catalog model file.
 
 ### Numbered Execution And Validation
 
-1. For `db40-menu-marketplace-children-contract`, edit the menu seed/upsert
-   surface and this contract together; the ordered child labels are `Agents`,
+1. The completed `db40-menu-marketplace-children-contract` retains the menu
+   seed/upsert contract; the ordered child labels are `Agents`,
    `Skills`, `MCPs`, `Workflows`, `Templates`, `Prompts`, and `Teams`.
    - Routes follow pattern: `/marketplace?kind={kind}` where kind is one of:
      `agent`, `skill`, `mcp`, `workflow`, `template`, `prompt`, `team`.
@@ -68,10 +69,13 @@ restore a competing catalog model file.
 2. For `prompt-marketplace-wire`, consume the existing
    `MarketplaceItemType.prompt` catalog kind and keep prompt versions and
    rendered content in the prompts owner.
-3. For `dep-map-modules-marketplace`, inspect imports, mounted routes,
+3. For `securemd44-context-ingestion-gate`, keep
+   `get_marketplace_item_preview()` display-only; verification is required
+   when marketplace-origin Markdown enters prompt rendering or agent context.
+4. For `dep-map-modules-marketplace`, inspect imports, mounted routes,
    registry event wiring, template bridge, and tracker state before changing
    integration prose.
-4. Validate menu synchronization with `python manage.py init-db` and an
+5. Validate menu synchronization with `python manage.py init-db` and an
    ordered-child query; validate prompt linking through marketplace/prompt API
    tests; validate dependency mapping with `rg` over the exact files above.
 

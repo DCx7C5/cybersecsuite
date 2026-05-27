@@ -1,4 +1,4 @@
-# @db — Database Layer (Tortoise ORM)
+# core/db — Database Runtime Boundary
 
 **Tracking rule**: `.plan/session.db` is authoritative for todo status. This
 document owns executable database-runtime guidance; documentation sanitization
@@ -19,9 +19,9 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 **Services**:
 - **cybersec-postgres**: custom PostgreSQL 18-alpine build (port 5432 internal)
 - **Connection pooling**: Managed by asyncpg (Tortoise default)
-- **Schema policy**: Phase 40 currently uses direct model/schema edits with no
-  migration files for the development tranche; production
-  migration/versioning is a later explicit decision.
+- **Schema policy**: Phase 40 used direct model/schema edits for its completed
+  development tranche. Phase 45 is planning-only and blocked until the user
+  decides whether Machine data may be rebuilt or must be migrated into Host.
 
 **Current infra note**:
 - Phase 20 plans PostgreSQL + `pgvector` for VectorRAG, but the current custom image does not yet install the extension package. `mem-pgvector-setup` now explicitly includes the Docker image prerequisite.
@@ -58,7 +58,7 @@ CyberSecSuite uses **Tortoise ORM** for async PostgreSQL access.
 
 | Stage | Required behavior |
 |-------|-------------------|
-| Development schema initialization | Follow the live Phase 40 direct-schema policy; do not invent migration files during this tranche. |
+| Development schema initialization | Do not implement Phase 45 deletion/addition work until `db45-schema-decision-gates` resolves rebuild versus data migration. |
 | Provider bootstrap | Seed from canonical YAML only if the provider table is empty; otherwise enrich without destructive reset. |
 | Provider/model bootstrap | Establish Provider-to-LLMModel ownership before model upserts. |
 | Runtime menu bootstrap | Idempotently upsert known navigation routes grouped by `menu_id`. |
@@ -399,10 +399,12 @@ async def lifespan(app: FastAPI):
 - ✅ Scope/team/quota management
 - ✅ Connection pooling (asyncpg)
 - ✅ Schema generation
-- ✅ Phase 40 uses direct model/schema edits and no migration files during this tranche
+- ✅ Phase 40 used direct model/schema edits and is complete in the tracker
+- ⏸ Phase 45 topology/relation implementation is blocked on schema decisions
 
 ### Readiness Assessment
-🟢 **Production Ready** — Minor issue: utils.py is empty (refactor opportunity)
+🟡 **Schema follow-up planned** — Phase 45 replaces the Machine-centred asset
+layout and requires explicit data/cardinality decisions before code changes.
 
 ---
 
@@ -473,7 +475,7 @@ deleting scope models or utilities.
 > - HTTP clients: always `aiohttp`, never `httpx`
 > - Package manager: always `uv`/`bun`, never `pip`/`npm`
 
-## Executable Database Contract (2026-05-26)
+## Executable Database Contract (2026-05-27)
 
 The historical inventory above records earlier source shape. Current
 implementation work must use these concrete boundaries:
@@ -484,22 +486,42 @@ implementation work must use these concrete boundaries:
 | `src/css/core/db/models/memory.py`, `src/css/core/db/models/marketplace.py`, `src/css/core/db/models/tasks.py`, `src/css/core/db/models/quotas.py` | Canonical model consolidation lanes. |
 | `src/css/core/db/models/provider.py`, `src/css/core/db/models/user.py`, `src/css/core/db/models/accounts.py`, `src/css/core/db/models/llm_models.py` | Provider/user/account/model ownership and startup seeding. `provider.py` owns the provider table; Provider↔LLMModel relation remains deferred. |
 | `src/css/core/db/models/menu.py` | `MenuItem`, `MenuItemManager.roots()`, `sync_default_menu_items()`. |
+| `src/css/core/db/models/machine.py`, `src/css/core/db/models/host.py`, `src/css/core/db/models/pathfs.py` | Current asset/path baseline; Phase 45 retires `Machine`, promotes `Host`, and retains direct paths after decision approval. |
+| `src/css/core/db/models/network.py`, `src/css/core/db/models/address.py` | Planned Phase 45 owners for `Network`, `Address`, `HostAddress`, and `NetworkAddress`. |
+| `src/css/core/db/managers/*.py` | Planned query-manager owner; current package scaffold requires repair and manager extraction from model files. |
+| `src/css/core/serializers/*.py` | Planned sole serializer owner; model modules must no longer define serializer classes after Phase 43. |
 | `src/css/core/menu/endpoints.py` | `list_menu_items(menu_id: str | None = None)` partitioned runtime API target. |
 | `src/css/core/settings/config.py` | DB connection bootstrap configuration after settings ownership reconciliation. |
 
 | Pending todo group | Status | Steps and validation |
 |--------------------|--------|----------------------|
-| Phase 40 model lanes | pending | Audit imports, preserve canonical models, cut consumers over, and validate ORM discovery/imports before removal. |
-| `db40-lane-task-provider-user`, `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-user-vs-account-boundary`, `db40-provider-model-cutover` | in_progress | Lock and apply ownership boundaries: task lifecycle in `tasks.py`, quota in `quotas.py`, internal user identity in `user.py`, tenant accounts in `accounts.py`, and provider/model catalog in `provider.py` + `llm_models.py`. |
+| Phase 40 model lanes | done | Historical baseline is complete; Phase 45 represents new requested model work. |
+| `db40-lane-task-provider-user`, `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-user-vs-account-boundary`, `db40-provider-model-cutover` | done | Retain the historical ownership baseline; extend it only through explicit Phase 45 relation rows. |
 | `db40-basetree-candidate-inventory` | done | Navigation URL/path/breadcrumb tree ownership remains in `MenuItem` (`BaseTreeModel`); no additional tree ORM adoption required in this tranche. |
 | `db40-basetree-tag-adoption-plan` | done | Tag taxonomy stays classification metadata on `Tag.parent_tag`; no default `BaseTreeModel` adoption without explicit navigation semantics. |
 | `db40-menu-menuid-upsert` | done | Seed/upsert flow now keys on (`menu_id`, `parent_id`, `name`) and preserves deterministic partition ordering. |
-| `db40-menu-menuid-endpoints` | pending | Implement partition filter in `list_menu_items()` and validate sidebar/settings/topnav API reads. |
-| `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | in_progress | Keep tagging as classification/filter/search/policy metadata only; finalize naming/meta/runtime wire in the documented order without menu/tree/navigation scope creep. |
+| `db40-menu-menuid-endpoints` | done | Retain completed menu partition behavior. |
+| `db40-lane-tagging`, `db40-taggable-entity-inventory`, `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire` | done | Retain completed tagging ownership separately from topology. |
 | Phase 17 provider/model seed rows | pending | Establish relation ownership before non-destructive YAML/bootstrap seeding and model upsert tests. |
 | `db40-field-library-expansion` | done | Expanded semantic field helpers across char/int/float/decimal/json modules and exposed canonical imports for model use. |
 | `db40-intelligence-home-plan` | done | Verified triage ownership is module-local after facade removal; retrieval ownership stays in `core/rag_vector` + `core/rag_graph`. |
-| `db40-lane-platform-polish`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-pipeline-home-plan` | in_progress | Lane F documentation pass defining field/mixin/Meta and runtime-home ownership boundaries (`core/cache`, `modules/triage`, `core/pipeline`). |
+| `db40-lane-platform-polish`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-pipeline-home-plan` | done | Retain completed field/mixin/Meta and runtime-home boundaries. |
+
+### Phase 45 Host Topology And Relation Graph
+
+| Todo ID | Status | Required output |
+|---------|--------|-----------------|
+| `db45-schema-decision-gates` | blocked | Decide Machine data transition, Host/Network tenancy, identity/profile cardinality, same-provider multiplicity, and `PathFS` naming. |
+| `audit44-db-manager-import-cutover`, `db45-manager-package-relocation` | pending | Make `core/db/managers/` the implementation owner for query managers using cycle-safe imports. |
+| `db45-machine-retirement-host-promotion` | pending | Remove `Machine` only after retained asset fields move to `Host`. |
+| `db45-host-pathfs-chain`, `db45-network-address-topology` | pending | Retain `Host -> PathFS`; add `Host -> HostAddress -> Address -> NetworkAddress -> Network` and reverse traversal. |
+| `db45-identity-account-profile-schema`, `db45-account-provider-junction` | pending | Add confirmed account/profile/user and account/provider associations without secret material in junction rows. |
+| `db45-model-registration-seeding`, `db45-schema-validation` | pending | Update both Tortoise registration lists, replace Machine seed dependency, and validate final relations. |
+
+`src/css/manager.py::_CORE_DB_MODEL_PATHS` and
+`src/css/core/asgi/app.py::create_app()` enumerate model modules separately.
+Any new `network.py` or `address.py` table plan must update both surfaces; a
+model file alone does not register a database table.
 
 ### Lane C Task/Provider/User Contract
 
@@ -579,13 +601,14 @@ class Meta:
 Use list containers for `ordering` and `indexes`; keep table names stable unless
 an explicit junction-rename todo requires otherwise.
 
-Direct schema policy requirement in both DB planning docs:
-- Phase 40 uses direct model and schema edits in development.
-- Do not infer or backfill a production migration/versioning policy in this lane.
+Historical direct schema policy requirement for Phase 40:
+- Phase 40 used direct model and schema edits in development.
+- Phase 45 must not reuse that decision for Machine retirement until
+  `db45-schema-decision-gates` answers rebuild versus migration.
 
-### Phase 40 Schema-Change Development Flow
+### Historical Phase 40 Schema-Change Development Flow
 
-For schema-changing implementation work in this tranche:
+For completed Phase 40 schema-changing work:
 1. Edit the ORM model directly in `src/css/core/db/models/`.
 2. Rebuild the dev schema through the existing initialization path:
    `python manage.py init-db`.

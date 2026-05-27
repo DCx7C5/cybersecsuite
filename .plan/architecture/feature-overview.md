@@ -1,9 +1,9 @@
 # CyberSecSuite — Feature Inventory
 
-**Verified**: 2026-05-26
+**Verified**: 2026-05-27
 **Source**: `src/css/modules/` (34 current directories), `src/css/api_services/`
 (24 provider directories), `src/css/core/`, local owner Markdown, and
-`.plan/session.db` (927 todos, 42 named phases)
+`.plan/session.db` (live tracker; query for current totals)
 
 **Status Legend**: ✅ DONE/REMOVED/CLEANED · 🟡 PARTIAL RUNTIME · 🔧 IN PROGRESS · 📋 PLANNED · ⏳ PENDING · ⚠️ BLOCKED
 
@@ -21,7 +21,7 @@ exceptions, and non-fatal cleanup paths are not automatically missing work.
 | Owner area | Explicit markers | High-signal outstanding contract |
 |------------|-----------------:|----------------------------------|
 | `core/rag_vector` | 11 | authorization enforcement, pgvector semantic search, tag relation |
-| `core/auth` + `core/accounts` | 6 | credential/token authorization and password-manager wiring |
+| `core/authentication` + `core/accounts` | 6 | credential/token authorization and password-manager wiring |
 | `api_services` | 4 | YAML-driven provider metadata and model discovery |
 | other `core` owners | 9 | capabilities/config/model/permission/event consolidation |
 | business modules | 11 | evidence auth/integrity, scheduling, tool typing and agent execution |
@@ -589,7 +589,7 @@ they are not new completion claims.
 | **SSE Client** | 📋 PLANNED | 18 | AsyncGenerator over HTTP SSE |
 | **ECharts + Worker Graphs** | 📋 PLANNED | 18/27 | Retained replacement for the prior Recharts proposal |
 | **Landing Dashboard** | 🟡 PARTIAL RUNTIME | 18 | `LandingDashboard.tsx` exists; live metrics wiring remains planned |
-| **Frontend Tracker Status** | 🟡 PARTIAL RUNTIME | 18 | 8 done / 35 pending in `.plan/session.db` |
+| **Frontend Tracker Status** | 🟡 PARTIAL RUNTIME | 18 | 8 done / 37 pending in `.plan/session.db` |
 
 ---
 
@@ -598,7 +598,7 @@ they are not new completion claims.
 | Feature | Status | Phase | Description |
 |---------|--------|-------|-------------|
 | **ASGI Module** | 🟡 PARTIAL RUNTIME | 36 | FastAPI lifespan/router/process surfaces exist; mounted transport policy remains pending |
-| **DB Module** | 🟡 PARTIAL RUNTIME | 40 | Tortoise/PostgreSQL source exists; remaining model consolidation work resumes after Phase 41 preparation |
+| **DB Module** | 🟡 SCHEMA FOLLOW-UP | 40/45 | Phase 40 baseline is complete; Phase 45 plans Host/address/network and account/provider relations after blocked design decisions. |
 | **Types Module** | ✅ DONE | — | 1654 LOC, 13 root files + 5 provider files (oversized, needs refactor) |
 | **Config System** | 🟡 PARTIAL RUNTIME | 17 | Current core/config source has a migration TODO toward canonical settings/config ownership |
 | **Module Auto-Discovery** | ✅ DONE | 2 | Dynamic module scanning via importlib |
@@ -674,62 +674,18 @@ they are not new completion claims.
 
 | Feature | Status | Phase | Description |
 |---------|--------|-------|-------------|
-| **Marketplace Model Lane** | 🟡 PARTIAL RUNTIME | 40 | `db40-lane-marketplace` is done in the tracker; remaining Phase 40 work resumes after the Phase 41 preparation gate |
-| **Menu/Tree Contract** | 🟡 PARTIAL RUNTIME | 40 | `menu.py` and menu-id contract exist; validate completed lane behavior against source/tests |
+| **Marketplace Model Lane** | ✅ DONE | 40 | Canonical marketplace model consolidation is complete in the tracker. |
+| **Menu/Tree Contract** | ✅ DONE | 40 | Phase 40 menu/tree rows are complete in the tracker. |
 | **Direct Development Schema Policy** | ✅ RETAINED | 40 | Production migration/versioning remains a later explicit decision |
+| **Host/Network/Address Graph** | ⏸ BLOCKED | 45 | Planned `Host -> HostAddress -> Address -> NetworkAddress -> Network` topology awaits schema decisions. |
+| **Account/Provider Relations** | ⏸ BLOCKED | 45 | Planned identity/provider junctions await cardinality and credential-multiplicity decisions. |
 
 ---
 
 ## Phase Completion Summary
 
-Queried from `.plan/session.db` on 2026-05-26. Phase 40 is positioned
-before Phase 9 by the current execution order.
-
-| Phase | Title | Total | Done | Pending | Blocked | Active |
-|------:|-------|------:|-----:|--------:|--------:|-------:|
-| 0 | TeamScope Foundation | 12 | 12 | 0 | 0 | 0 |
-| 1 | Multi-Orchestrator Core | 16 | 16 | 0 | 0 | 0 |
-| 2 | SDK Architecture | 64 | 64 | 0 | 0 | 0 |
-| 3 | Module Consistency | 155 | 153 | 0 | 2 | 0 |
-| 4 | Core Consistency + Types | 24 | 22 | 0 | 2 | 0 |
-| 5 | Integration & Testing | 32 | 32 | 0 | 0 | 0 |
-| 6 | Architecture Overhaul | 37 | 37 | 0 | 0 | 0 |
-| 7 | Feature Completeness | 19 | 19 | 0 | 0 | 0 |
-| 8 | AI Execution Layer | 17 | 17 | 0 | 0 | 0 |
-| 40 | DB Model Consolidation & Rich Schemas | 37 | 7 | 30 | 0 | 0 |
-| 9 | ORM / Manager / Registry | 32 | 32 | 0 | 0 | 0 |
-| 10 | Unified SDK Architecture | 16 | 11 | 5 | 0 | 0 |
-| 11 | Cross-Provider Prompt Caching | 10 | 0 | 9 | 1 | 0 |
-| 12 | QoL Output Controls Migration | 11 | 1 | 10 | 0 | 0 |
-| 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
-| 14 | Event Hooks & Instrumentation | 18 | 8 | 10 | 0 | 0 |
-| 15 | Permissions + WorkingDir | 31 | 0 | 31 | 0 | 0 |
-| 16 | Provider SDK Features | 31 | 0 | 31 | 0 | 0 |
-| 17 | Settings & Projects | 39 | 0 | 39 | 0 | 0 |
-| 18 | Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
-| 19 | Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
-| 20 | Persistent Memory Layer | 43 | 7 | 36 | 0 | 0 |
-| 21 | Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
-| 22 | MCP Protocol Layer | 8 | 5 | 3 | 0 | 0 |
-| 23 | Prompt Registry | 11 | 1 | 10 | 0 | 0 |
-| 24 | Git Tracking & Worktree Isolation | 9 | 0 | 9 | 0 | 0 |
-| 25 | Integration Hardening | 14 | 8 | 6 | 0 | 0 |
-| 26 | Human Approval Workflows | 14 | 0 | 14 | 0 | 0 |
-| 27 | Graph Visualization Engine | 17 | 0 | 17 | 0 | 0 |
-| 28 | Auth & Accounts | 6 | 1 | 5 | 0 | 0 |
-| 29 | Cybersec Domain Layer | 10 | 0 | 10 | 0 | 0 |
-| 30 | Workflow Engine + IPC | 5 | 0 | 5 | 0 | 0 |
-| 31 | Production Readiness | 7 | 0 | 7 | 0 | 0 |
-| 32 | Reports Module | 11 | 0 | 11 | 0 | 0 |
-| 33 | Ollama Native | 6 | 0 | 6 | 0 | 0 |
-| 34 | Dependency Map | 20 | 2 | 18 | 0 | 0 |
-| 35 | Telemetry Infrastructure | 7 | 0 | 7 | 0 | 0 |
-| 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
-| 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
-| 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
-| 39 | Audit Remediation (A1/A2/A3) | 19 | 1 | 18 | 0 | 0 |
-| 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
-
-**Overall**: 927 total / 485 done / 436 pending / 6 blocked / 0 in progress.
-Phase 41 preparation is complete; later implementation must resume through a
-dependency-ready tracker row and its verified owner specification.
+Live totals are maintained only in `.plan/plan.md` and `.plan/session.db`.
+As of the 2026-05-27 schema intake, Phase 40 is complete and Phase 45 has
+nine planned rows with `db45-schema-decision-gates` blocked pending user
+answers. Implementation must resume through that owner specification and a
+dependency-ready tracker row.

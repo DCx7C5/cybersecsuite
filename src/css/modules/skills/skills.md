@@ -29,6 +29,10 @@
 - Bridge helpers:
   - `skill_to_marketplace_item(skill)`
   - `get_skill_marketplace_item(skill_id)`
+- Current skill source stores structured definitions and has no Markdown file
+  loader that injects content into an LLM context. SecureMD prompt-ingestion
+  work must not invent a skill execution path; record a separate todo if a
+  Markdown-backed skill loader is later introduced.
 
 ---
 

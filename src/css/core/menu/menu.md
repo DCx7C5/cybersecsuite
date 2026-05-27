@@ -1,7 +1,7 @@
 # core/menu — Runtime Navigation Composition
 
 **Location**: `src/css/core/menu/`  
-**Status**: 🟡 Active schema/runtime refinement in Phase 40 (`T40.2 Menu + Tree Modeling`)
+**Status**: Runtime navigation contract implemented for Phase 40; frontend consumption work remains pending.
 
 ## Purpose
 
@@ -39,23 +39,49 @@ Response: `{ "items": [ { id, parent_id, menu_id, name, url, icon_path, icon_url
 
 Serialization preserves `menu_id` on every node and never mixes children from different partitions than the requested root set.
 
+## Phase 18 Work Queue — Marketplace Dropdown (session.db)
+
+| Todo ID | Title | Status |
+|---------|-------|--------|
+| `menu-marketplace-seed-icons` | Assign proper Lucide icons to Marketplace sidebar children | pending |
+| `menu-marketplace-dropdown-sidebar` | Implement collapsible Marketplace dropdown in sidebar | pending |
+
+**Icon mapping** (seed update `menu-marketplace-seed-icons`):
+
+| Subitem | `icon_path` (Lucide) |
+|---------|-------------|
+| Agents | `Bot` |
+| Skills | `Wrench` |
+| MCPs | `Plug` |
+| Workflows | `GitBranch` |
+| Templates | `LayoutTemplate` |
+| Prompts | `Sparkles` |
+| Teams | `Users` |
+
+**Frontend collapsible contract** (`menu-marketplace-dropdown-sidebar`):
+- Sidebar.tsx: items where `children.length > 0` render as a shadcn `Collapsible` (or Radix Accordion), never a plain link — click toggles expand/collapse.
+- Active child route auto-expands parent.
+- Collapsed state persisted (localStorage or URL).
+- Mobile: drawer closes on child link click.
+- Keyboard navigable (arrows expand/collapse, Tab moves through child links).
+- Depends on: `frontend-sidebar-menu-runtime`
+- Blocks: `frontend-marketplace-sidebar-children-nav`
+
 ## Phase 40 Work Queue (session.db)
 
-- `db40-menu-sidebar-contract`
-- `db40-menu-marketplace-children-contract`
-- `db40-menu-menuid-upsert`
-- `db40-menu-menuid-endpoints`
-- `db40-menu-tree-constraints`
-- `db40-basetree-candidate-inventory` (navigation-first tree candidates)
+| Todo ID | Status | Retained result |
+|---------|--------|-----------------|
+| `db40-menu-sidebar-contract` | done | `menu_id` partitions define sidebar/settings/topnav ownership. |
+| `db40-menu-marketplace-children-contract` | done | Marketplace children have deterministic routes and ordering. |
+| `db40-menu-menuid-upsert` | done | Seeding/upsert behavior is partition aware and idempotent. |
+| `db40-menu-menuid-endpoints` | done | Menu endpoints expose partition-filtered retrieval. |
+| `db40-menu-tree-constraints` | done | Tree integrity and ordering constraints are retained. |
+| `db40-basetree-candidate-inventory` | done | Navigation-first tree ownership remains with `MenuItem`. |
 
-### Active execution snapshot (2026-05-09)
+### Execution Snapshot (2026-05-27)
 
-- `db40-menu-sidebar-contract` is now **done**.
-- `db40-menu-menuid-upsert` is now **done**.
-- `db40-lane-menu-tree` lane claim is complete and unblocked follow-up work is focused on:
-  - `db40-menu-menuid-endpoints`
-  - `db40-menu-marketplace-children-contract`
-  - `db40-menu-tree-constraints`
+Phase 40 menu/tree rows are complete in `session.db`; later frontend
+navigation work consumes this runtime contract without reopening DB ownership.
 
 ## Rules
 

@@ -16,7 +16,7 @@ this documentation-movement pass intentionally does not edit the tracker.
 
 Core types module exports:
 - **Base classes** — Entities, communicators, contexts
-- **Base serializers** — Django-pattern serializer infrastructure for ORM ↔ dict conversion
+- **Shared serializer dependencies** — common value/error types consumed by the canonical `core/serializers` package
 - **Enums** — Capability types, message roles, provider types
 - **Data models** — `msgspec.Struct` values for API requests/responses, using
   `EndpointModel` only where FastAPI schema generation needs its adapter hook
@@ -26,38 +26,26 @@ Core types module exports:
 
 ## Key Modules
 
-### 0. **base_serializer.py** ✅ Implemented (Phase 43)
+### 0. **base_serializer.py** - Ownership Moved, Reconciliation Pending (Phase 43)
 
-Django REST Framework-pattern serializers adapted for FastAPI + Tortoise ORM + msgspec.
+`src/css/core/serializers/` is now the canonical serializer owner.
+`core/types/base_serializer.py` is currently a placeholder compatibility
+surface whose docstring points to the removed `core/db/serializers.py`; it is
+not evidence of an implemented base contract.
 
-| Class | Purpose |
-|-------|---------|
-| `SerializerValidationError(BaseCoreException)` | Raised on field or object validation failure; carries `errors: dict[str, list[str]]`. |
-| `BaseSerializer[T]` | Generic input/output serializer. `data`/`async_data()` for output; `is_valid()` + `validated_data` for input; `async_save()` for persistence. |
-| `BaseModelSerializer[M]` | Tortoise ORM model serializer. Auto-maps fields via `Meta.model`, `Meta.fields`, `Meta.exclude`, `Meta.read_only_fields`. Provides `async_create`/`async_update` via `BaseModel.save_changes`. |
-| `BaseListSerializer[T]` | Collection wrapper; delegates sync/async representation to a child `BaseSerializer`. |
+Phase 43 has been reopened in `.plan/session.db`:
 
-**Subclass pattern**::
+| Todo ID | Required outcome |
+|---------|------------------|
+| `serializer-base-create` | Implement the public serializer contract under `core/serializers`. |
+| `serializer-relocate-base` | Move model-owned serializer classes into mirrored `core/serializers/<domain>.py` modules and remove deleted DB-owner imports. |
+| `serializer-apply-rag-vector`, `serializer-apply-menu` | Move feature-local serializer classes into canonical ownership and update endpoint consumers. |
 
-    class AgentSerializer(BaseModelSerializer[AgentModel]):
-        class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
-            model = AgentModel
-            fields = "__all__"
-            exclude: tuple[str, ...] = ()
-            read_only_fields = ("id", "created_at")
+Model modules own ORM records and value types only after cutover; they must not
+continue defining or importing serializer implementations.
 
-        @override
-        def to_representation(self, instance: AgentModel) -> dict[str, Any]:
-            base = super().to_representation(instance)
-            # custom field transforms here
-            return base
-
-**Applied to** (Phase 43 T43.1):
-- `src/css/core/rag_vector/serializers.py` — `KnowledgeDocumentSerializer`, `SearchResultSerializer`
-- `src/css/core/menu/serializers.py` — `MenuItemSerializer`
-
-**Rollout pending** (Phase 43 T43.2, tracked in `session.db`):
-- `core/accounts/serializers.py`, `core/memory/serializers.py`, and all module-level inline helpers.
+Detailed implementation ownership and validation now live in
+`src/css/core/serializers/serializers.md`.
 
 ### 1. **base.py**
 

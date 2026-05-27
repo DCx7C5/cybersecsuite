@@ -1,6 +1,7 @@
-# Core DB Models Submodule
+# core/db/models — Core ORM Schema Boundary
 
-**Status**: Active model owner | **Current gate**: Phase 41 preparation before Phase 40 implementation resumes
+**Location**: `src/css/core/db/models/`
+**Status**: Active model owner | **Current gate**: Phase 45 decision row blocked; planning only
 **Tracker authority**: `.plan/session.db`; this document owns executable model
 consolidation guidance for the database package.
 
@@ -12,25 +13,30 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 | File | Primary model responsibility | Reconciliation focus |
 |------|------------------------------|----------------------|
 | `base.py`, `mixins.py`, `enums.py` | Shared model base, lifecycle/version/frontmatter mixins, database enums. | Apply semantic fields and enum rules consistently. |
-| `accounts.py`, `user.py`, `provider.py` | Account/organization, internal user/admin, external provider identity. | `provider.py` is the canonical provider table owner; preserve the explicit user vs provider-account boundary. |
+| `accounts.py`, `user.py`, `provider.py` | Account/organization, internal user/admin, external provider identity. | Phase 45 defines the requested identity/profile and account/provider junctions after cardinality confirmation. |
 | `llm_models.py` | Model metadata, pricing/capability persistence and query helpers. | Keep the provider slug field as a bridge; Provider↔LLMModel relation remains explicit deferred work. |
 | `marketplace.py` | Canonical marketplace model surface. `marketplace_catalog.py` removed in Phase 40. | No further reconciliation needed. |
 | `memory.py` | Memory entry/snapshot persistence. | Phase 40 aligns consumers with the canonical surface. |
 | `menu.py` | Navigation tree and `menu_id` partitioning. | Complete deterministic seed/filter/tree constraints. |
-| `machine.py` | Infrastructure machine/endpoint records for monitoring. | Phase 40 foundational model for host/pathfs hierarchy. |
-| `host.py` | Host/asset records for individual systems within machines. | Phase 40 host model with machine FK and query helpers. |
-| `pathfs.py` | Filesystem path records for file/directory hierarchy monitoring. | Phase 40 pathfs model inherits BaseTreeModel with host FK and parent_id self-reference. |
+| `machine.py` | Current infrastructure machine/endpoint record. | Phase 45 target retires this table after data-transition policy is confirmed and retained asset fields move to `Host`. |
+| `host.py` | Current host/asset record with required `Machine` FK and scalar IP fields. | Phase 45 target promotes `Host` to the canonical asset and connects normalized addresses and paths. |
+| `pathfs.py` | Filesystem path hierarchy with an existing direct `Host` FK. | Retain the relation; remove only the Machine-dependent seeding chain unless an explicit rename is approved. |
+| `network.py`, `address.py` | Not present in current source. | Phase 45 planned owners for `Network`, `Address`, `HostAddress`, and `NetworkAddress`. |
+| `../managers/` | New package scaffold is incomplete; model files still define manager classes. | Phase 45 moves query managers out of ORM modules with a cycle-safe import pattern. |
+| `../../serializers/` | New package scaffold is incomplete; serializers still appear in model/feature files. | Phase 43 moves all serializer implementations out of ORM ownership. |
 | `tasks.py`, `quotas.py` | Task results/assignments versus team quota storage. | Remove residual task ownership from quota paths. |
 | `permissions.py`, `scope.py` | Existing permission/scope session records. | Reconcile with permissions redesign and unresolved scope/session replacement. |
 | `events.py`, `orchestrator.py`, `team.py` | Event persistence and execution/team coordination. | Retain model/meta/index standards during audit remediation. |
 
-### Active Phase 40 Symbol Surface
+### Current Source Snapshot And Follow-On Target
 
 | Lane | Current symbols requiring deliberate consolidation |
 |------|----------------------------------------------------|
 | Marketplace | `BaseMarketPlace`, `MarketplaceMeta`, `MarketplaceMetaManager`, `MarketplaceItem`, `MarketplaceItemManager`, `MarketplaceItemTag`, and their `*Info` structs in `marketplace.py`. |
 | Menu/tree | `MenuItem`, `MenuItemInfo`, `MenuItemManager`, `sync_default_menu_items` in `menu.py`. |
-| Infrastructure | `Machine`, `MachineInfo`, `MachineManager` in `machine.py`; `Host`, `HostInfo`, `HostManager` in `host.py`; `PathFS`, `PathFSInfo`, `PathFSManager` in `pathfs.py` (complete Phase 40 machine/host/pathfs hierarchy). |
+| Infrastructure baseline | `Machine`, `Host`, and `PathFS` currently exist; `Host.machine` and Machine-dependent host seeding remain live in source. |
+| Phase 45 topology target | Retire `Machine`; use `Host` plus `PathFS`, `Address`, `HostAddress`, `Network`, and `NetworkAddress` as the traversable inventory graph. |
+| Ownership relocation target | Managers live in `core/db/managers/<domain>.py`; serializers live in `core/serializers/<domain>.py`; ORM modules contain records/value types only. |
 
 ## TODOs
 - [x] `db-add-taskassignment-updated-at` — Add `updated_at` to `TaskAssignment` (completed 2026-05-07)
@@ -56,23 +62,28 @@ Tortoise ORM models for all core infrastructure (teams, orchestrators, quotas, e
 - `LLMModel` and scope/session records now carry richer domain conversion and lifecycle/query helpers instead of thin field-only declarations.
 - Tree-model behavior remains in `BaseTreeModel`, but the concrete self-FK now lives in `menu.py` so the package imports cleanly under the current Tortoise version.
 
-### Active Pending DB Consolidation (Phase 40 + Phase 17 startup seeding)
-- `db40-provider-model-cutover` + `db40-user-vs-account-boundary` — finalize provider/account/user ownership boundaries.
+### Active Follow-On DB Work (Phase 17 + Phase 45)
+- Phase 40 is complete in `.plan/session.db`; do not reinterpret its historical
+  machine/host/path work as approval of the new topology target.
 - `orm-provider-llmmodel-relation` — explicit Provider ↔ LLMModel relation contract for startup seeding and query flows.
 - `seed-providers-empty-table-yaml` — provider table cardinality gate (seed only when empty, otherwise non-destructive enrich).
-- `db40-machine-host-pathfs-seeding` — localhost machine/host/pathfs auto-seed on first start via `sync_default_machines()`, `sync_default_hosts()`, `sync_default_paths()`.
-- `db40-menu-sidebar-contract` + `db40-menu-menuid-upsert` + `db40-menu-menuid-endpoints` — runtime menu partitioning (`sidebar`, `settings`, `topnav`) and deterministic sidebar children.
-- `db40-tag-junction-naming-standard` + `db40-model-meta-standardization` — singular class/table/meta conventions for rich junction models.
-- `db40-llmmodel-tag-runtime-wire` — pending runtime-query wiring detail is
-  owned locally in
-  [`tagging/llmmodel-tag-runtime-wire-plan.md`](tagging/llmmodel-tag-runtime-wire-plan.md).
+- `db45-schema-decision-gates` — blocked decision root for Machine transition,
+  topology tenancy, identity/profile cardinality, provider connections, and
+  `PathFS` naming.
+- `db45-manager-package-relocation` — move manager implementations to
+  `core/db/managers/` without changing query behavior.
+- `db45-machine-retirement-host-promotion`, `db45-host-pathfs-chain`, and
+  `db45-network-address-topology` — implement the asset/relation graph after
+  the decision gate.
+- `db45-identity-account-profile-schema` and
+  `db45-account-provider-junction` — implement confirmed identity/provider
+  associations without storing secrets in relation tables.
 
-## Phase 40 Execution Contract
+## Completed Phase 40 Baseline
 
-Phase 40 is ordered before Phase 9 in live tracker sort order.
-`db40-lane-marketplace` and the menu tree/sidebar-contract rows are done; no
-Phase 40 implementation row is active while the Phase 41 preparation gate is
-being completed.
+Phase 40 is complete in live tracker state. It established the present
+machine/host/path baseline and does not block recording a new schema target in
+Phase 45.
 
 | Work lane | Required outcome |
 |-----------|------------------|
@@ -93,7 +104,7 @@ being completed.
 | Identity | `user.py` is internal user/admin identity; provider and provider-account surfaces remain external account relationships. |
 | Seeds | Seed providers from canonical YAML only when the table is empty; enrich/upsert non-destructively after provider/model ownership is explicit. |
 | Navigation | Startup upserts known routes deterministically and keeps partition/tree behavior in `menu.py`. |
-| Schema policy | Phase 40 currently uses direct model/schema edits with no migration files; production migration/versioning is a later explicit decision. |
+| Schema policy | Phase 40 used direct model/schema edits; Phase 45 must not assume rebuild versus migration until its decision gate is answered. |
 
 ### Canonical Meta Pattern (Phase 40)
 
@@ -114,6 +125,86 @@ class Meta:
 
 `unique_together` is included only when the row contract truly requires uniqueness.
 
+## Phase 45 Executable Topology And Relation Contract (2026-05-27)
+
+### Source-Backed Findings
+
+| Finding | Implementation consequence |
+|---------|----------------------------|
+| `Host.machine` is required and `HostInfo` exposes `machine_id`. | `Machine` cannot be deleted until retained asset fields and seed behavior are transferred to `Host`. |
+| `PathFS.host` already exists with unique `host_id` plus `path`. | Keep the direct host/path chain; only repair seed and ownership relocation unless a rename is approved. |
+| `Host` stores `ipv4_address` and `ipv6_address` as scalars. | Normalize IP identity into `Address` and link through an explicit junction. |
+| No `Network` or address junction model exists. | Add new ORM modules and register them in both CLI and ASGI Tortoise model lists. |
+| `UserProfile.account` is a non-unique FK with singular `related_name="profile"`. | Confirm the desired identity/profile cardinality before modifying it. |
+| `ApiServiceProvider` is catalog-only. | Add a connection junction to accounts; never store credential bytes on the junction. |
+
+### Recommended Normalized Table Layout
+
+This is the recommended baseline pending the decision questions below:
+
+| Table / model | Required ownership and key relations |
+|---------------|--------------------------------------|
+| `host` / `Host` | Canonical system asset. Absorb retained `Machine` fields: `hostname`, `os_type`, `os_version`, `asset_uuid`, activity/last-seen and capacity fields. Keep `fqdn` and `host_role`. |
+| `path_fs` / `PathFS` | Existing tree record. `host_id -> host.id`; preserve unique `(host_id, path)` and parent hierarchy. |
+| `network` / `Network` | Named network boundary with canonical CIDR/prefix, family, label/description, and approved tenant owner. |
+| `address` / `Address` | One canonical IPv4/IPv6 value plus family and optional display metadata; do not duplicate the same IP per host. |
+| `host_address` / `HostAddress` | Junction `host_id -> host.id`, `address_id -> address.id`; carry interface, primary/role, and observation timestamps. |
+| `network_address` / `NetworkAddress` | Junction `network_id -> network.id`, `address_id -> address.id`; supports overlapping/observed networks without copying address rows. |
+| `user_account_membership` / `UserAccountMembership` | Only if confirmed: explicit M:N junction between internal `User` and tenant/login `Account`; carry role/status/audit fields, not credentials. |
+| `account_provider_connection` / `AccountProviderConnection` | Explicit M:N association from `Account` to `ApiServiceProvider`; carry status, auth method, scope and encrypted-setting reference, never plaintext tokens. |
+
+Required traversal contract:
+
+```text
+Host -> HostAddress -> Address -> NetworkAddress -> Network
+Network -> NetworkAddress -> Address -> HostAddress -> Host
+Host -> PathFS -> child PathFS
+Account -> AccountProviderConnection -> ApiServiceProvider
+```
+
+### Open Decisions Blocking Implementation
+
+The tracker row `db45-schema-decision-gates` remains `blocked` until these
+answers are supplied:
+
+1. `Machine` data transition: may development tables be rebuilt, or must
+   existing `Machine` rows be migrated into `Host` without loss?
+2. Topology tenancy: should `Host` and `Network` belong to `Organization`,
+   `ProjectScope`, both through junctions, or remain global inventory?
+3. Identity meaning: does “useraccount/profile many to many rel to accounts”
+   mean `User <-> Account` is many-to-many while each `Account` has exactly
+   one `UserProfile` (recommended), or must profiles themselves be shared?
+4. Provider multiplicity: may one `Account` connect multiple credentials to
+   the same `ApiServiceProvider`, requiring `connection_name` in uniqueness?
+5. Naming: retain current `PathFS`/`path_fs`, or explicitly rename it to
+   `FSPath` and its table as part of the schema change?
+
+### Implementation Order
+
+| Todo ID | Status | Concrete outcome |
+|---------|--------|------------------|
+| `db45-schema-decision-gates` | blocked | Capture the five decisions above before schema mutation. |
+| `audit44-db-manager-import-cutover` | pending | Repair `BaseManager` package contract. |
+| `db45-manager-package-relocation` | pending | Move all existing manager implementations to mirrored `core/db/managers/*.py` files. |
+| `serializer-base-create`, `serializer-relocate-base` | pending | Establish canonical serializer bases and move serializer implementations to `core/serializers/*.py`. |
+| `db45-machine-retirement-host-promotion` | pending | Delete the Machine owner only after `Host` carries retained asset data. |
+| `db45-host-pathfs-chain`, `db45-network-address-topology` | pending | Preserve paths and add reversible address/network traversal. |
+| `db45-identity-account-profile-schema`, `db45-account-provider-junction` | pending | Implement confirmed identity and provider associations. |
+| `db45-model-registration-seeding`, `db45-schema-validation` | pending | Register modules, seed retained defaults, and verify complete relation chains. |
+
+### Runtime Registration And Ownership Boundary
+
+- Add `host.py`, `pathfs.py`, `network.py`, and `address.py` to model module
+  enumeration in `src/css/manager.py` and `src/css/core/asgi/app.py`; remove
+  `machine.py` only after the replacement is implementable.
+- `core/db/models/*.py` owns ORM records and domain value types only.
+- `core/db/managers/*.py` owns query manager implementations; manager modules
+  must use cycle-safe model imports.
+- `core/serializers/*.py` owns every serializer implementation; ORM files must
+  not import serializer bases.
+- Provider connection rows may reference encrypted secret storage, but actual
+  provider tokens and API keys remain owned by `auth-secrets-settings`.
+
 ## Cross-Area Destinations
 
 | Domain | Local owner |
@@ -121,14 +212,15 @@ class Meta:
 | Settings and projects | `core/settings/settings.md`, `modules/projects/projects.md` |
 | Memory and hybrid retrieval | `core/memory/memory.md`, `core/rag_vector/rag_vector.md`, `core/rag_graph/rag_graph.md` |
 | Reports and artifacts | `modules/reports/reports.md` |
-| Auth/accounts | `core/auth/auth.md`, `core/accounts/accounts.md` |
+| Auth/accounts | `core/authentication/authentication.md`, `core/accounts/accounts.md` |
+| Structured serialization | `core/serializers/serializers.md` |
 | Menu/frontend composition | `core/menu/menu.md`, `core/templates/plan.md` |
 | Telemetry streams | `core/otel/plan.md` |
 
 ## Dependencies
 - `src/css/core/db/`
 
-## Executable Phase 40 Addendum (2026-05-26)
+## Historical Phase 40 Addendum (2026-05-26, Completed)
 
 ### Exact Files And Symbols
 
@@ -148,15 +240,15 @@ class Meta:
 |------------|--------|------------------|
 | `db40-lane-marketplace`, marketplace cutover/remove rows | done | Preserve the retained symbols in canonical `marketplace.py`. |
 | `db40-memory-*`, `db40-lane-memory` | done | Canonical memory model ownership is reconciled; import cutover and snapshot payload contract are aligned. |
-| `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | in_progress | Lane C ownership map is locked so task/provider/user cutovers can proceed without re-deciding boundaries. |
+| `db40-taskmodel-import-cutover`, `db40-quotas-task-residual-cleanup`, `db40-provider-model-cutover`, `db40-user-vs-account-boundary`, `db40-lane-task-provider-user` | done | Historical Lane C ownership map is complete; Phase 45 introduces follow-on identity/provider relations. |
 | `db40-basetree-candidate-inventory` | done | Inventory confirmed navigation URL/path/breadcrumb tree ownership stays with `MenuItem` (`BaseTreeModel`) and no extra tree adoption is needed in this tranche. |
 | `db40-basetree-tag-adoption-plan` | done | Evaluated `Tag.parent_tag` and kept it on `BaseModel`; no default `BaseTreeModel` adoption unless tagging later requires navigation semantics. |
 | `db40-field-library-expansion` | done | Expanded semantic DB field helpers (`CurrencyCodeField`, non-negative/ratio numeric fields, JSON object/list wrappers) and wired them into `LLMModel`. |
 | `db40-menu-menuid-upsert` | done | Seed/upsert flow now uses (`menu_id`, `parent_id`, `name`) identity and deterministic partition ordering. |
-| `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | pending | Partition-aware API filtering and tree constraints remain pending after upsert baseline completion. |
-| `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | in_progress | Freeze tagging as classification/filter/search/policy metadata and keep it out of menu/tree/navigation ownership. |
+| `db40-menu-menuid-endpoints`, `db40-menu-tree-constraints`, `db40-menu-marketplace-children-contract` | done | Historical menu partition/tree implementation is complete. |
+| `db40-lane-tagging` plus `db40-tag-junction-naming-standard`, `db40-tag-junction-meta-backfill`, `db40-tagging-db-concept`, `db40-llmmodel-tag-runtime-wire`, `db40-taggable-entity-inventory` | done | Historical tagging ownership is complete and remains outside Phase 45 topology. |
 | `db40-intelligence-home-plan` | done | Verified triage ownership is module-local after facade removal and kept retrieval ownership in `core/rag_vector` + `core/rag_graph`. |
-| `db40-lane-platform-polish`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-pipeline-home-plan` | in_progress | Lane F reconciles field/mixin/Meta standards and runtime-home documentation across DB + core planning docs. |
+| `db40-lane-platform-polish`, `db40-mixins-expansion`, `db40-model-meta-standardization`, `db40-pipeline-home-plan` | done | Historical platform/model-meta baseline is complete. |
 
 ### Lane C Task/Provider/User Ownership Map
 
@@ -255,4 +347,4 @@ Shared Phase 40 schema-change flow for DB ownership work:
    `/api/menu/items?menu_id=sidebar|settings|topnav` and invalid input; inspect
    canonical imports before deleting or deprecating any legacy model surface.
 
-**Last Updated**: 2026-05-09
+**Last Updated**: 2026-05-27

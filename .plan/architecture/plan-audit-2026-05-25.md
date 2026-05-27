@@ -1,5 +1,10 @@
 # Plan Quality Audit — 2026-05-25
 
+**Historical snapshot note (2026-05-27)**: This report records pre-rename
+evidence. Current authentication ownership is `src/css/core/authentication/`;
+live status and implementation instructions are authoritative in
+`.plan/session.db`, `.plan/plan.md`, and the nearest owner Markdown.
+
 ## Executive Summary
 - Total pending todos: 442
 - Sufficient: 0 (0.0%)

@@ -1,42 +1,46 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-26 (audit pass) | **Session**: plan/source, core dependency-reference, and provider auth/SDK validation
+**Last Updated**: 2026-05-27 (core boundary/schema intake) | **Session**: planning-only authentication, serializer, manager, and host-topology reconciliation
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
 ⚠️ **Remember**: `src/css/` uses local planning Markdown everywhere — core areas use the nearest planning markdown, modules use same-name docs like `agents/agents.md`. Read the nearest one FIRST and update it DURING work.  
-⚠️ **Architecture**: `accounts`, `events`, `marketplace`, `memory`, `rag_vector`, and `rag_graph` are core-owned or planned core-owned. `working_dir` is legacy terminology; its replacement owner is unresolved because no implemented `core/workspace/` package was found.
+⚠️ **Architecture**: `accounts`, `authentication`, `cryptography`, `events`, `marketplace`, `memory`, `rag_vector`, `rag_graph`, `securemd`, and `serializers` are core-owned or planned core-owned. `core/auth/` is retired in favor of `core/authentication/`. Phase 45 proposes `Host` as the asset owner, with normalized address/network junctions; it is blocked on explicit cardinality/data-transition decisions.
 ⚠️ **STARTUP**: `CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload` (Docker = infra-only: postgres/redis/openobserve/neo4j). Ollama provider calls currently use `api_services/ollama/`; native process ownership is Phase 33 work. Frontend: `cd src/frontend && bun run dev`.
 ⚠️ **Memory sync rule**: `memory.md` is still phase-end by default, but it must also be refreshed immediately after major architecture, source-of-truth, or tracker-structure changes.
+⚠️ **Todo quality rule**: every new or revised todo must be concrete enough for GitHub Copilot Auto to implement: exact files/symbols, ordered steps, actual dependencies, boundaries, and runnable validation.
 ⚠️ **Cleanup rule**: when changing code or plans, remove redundant scaffolding, stale exports, temp artifacts, dead docs, and superseded abstractions in the same pass whenever it is safe.
 
 ---
 
-## 📊 session.db State (2026-05-26 audit pass)
+## 📊 session.db State (2026-05-27 core boundary/schema intake)
 
-**Total**: 1045 todos | **Done**: 556 | **Pending**: 481 | **Blocked**: 8 | **In Progress**: 0
+**Total**: 1079 todos | **Done**: 597 | **Pending**: 473 | **Blocked**: 9 | **In Progress**: 0
 
-**Overall Completion**: 53.2%
+**Overall Completion**: 55.3%
 
-**Last Verified**: 2026-05-26 (checked against live session.db totals)
+**Last Verified**: 2026-05-27 (checked against live session.db totals)
 
 **Selected active phases**:
 
 | Phase | Todos | Done | Pending | Blocked | In Progress | Progress |
 |-------|-------|------|---------|---------|-------------|----------|
-| Phase 11 — Cross-Provider Prompt Caching | 11 | 8 | 2 | 1 | 0 | 72.7% |
-| Phase 10 — Unified SDK Architecture | 16 | 9 | 7 | 0 | 0 | 56.3% |
+| Phase 11 — Cross-Provider Prompt Caching | 11 | 9 | 1 | 1 | 0 | 81.8% |
+| Phase 10 — Unified SDK Architecture | 16 | 14 | 2 | 0 | 0 | 87.5% |
 | Phase 16 — Provider SDK Features | 38 | 10 | 28 | 0 | 0 | 26.3% |
 | Phase 17 — Settings & Projects | 43 | 1 | 41 | 1 | 0 | 2.3% |
-| Phase 18 — Frontend Foundation | 43 | 8 | 35 | 0 | 0 | 18.6% |
+| Phase 18 — Frontend Foundation | 45 | 8 | 37 | 0 | 0 | 17.8% |
 | Phase 20 — Persistent Memory Layer | 44 | 8 | 36 | 0 | 0 | 18.2% |
 | Phase 25 — Integration Hardening | 14 | 8 | 6 | 0 | 0 | 57.1% |
-| Phase 28 — Auth & Accounts | 9 | 1 | 8 | 0 | 0 | 11.1% |
-| Phase 39 — Audit Remediation (A1/A2/A3) | 42 | 7 | 35 | 0 | 0 | 16.7% |
-| Phase 40 — DB Model Consolidation & Rich Schemas | 39 | 7 | 32 | 0 | 0 | 17.9% |
+| Phase 28 — Auth & Accounts | 10 | 1 | 9 | 0 | 0 | 10.0% |
+| Phase 39 — Audit Remediation (A1/A2/A3) | 43 | 7 | 36 | 0 | 0 | 16.3% |
+| Phase 40 — DB Model Consolidation & Rich Schemas | 42 | 42 | 0 | 0 | 0 | 100.0% |
 | Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 | 5.3% |
+| Phase 43 — Serializer Layer | 13 | 0 | 13 | 0 | 0 | 0.0% |
+| Phase 44 — Cryptography + SecureMD Integrity | 5 | 0 | 5 | 0 | 0 | 0.0% |
+| Phase 45 — Host Topology + Account Provider Schema | 9 | 0 | 8 | 1 | 0 | 0.0% |
 
-**Completed phases** (100%): Phase 0, 1, 2, 5, 6, 7, 8, 9, 22, 41, and the separate `Phase 39 — Code Quality Remediation` row set.
+**Completed phases** (100%): Phase 0, 1, 2, 5, 6, 7, 8, 9, 22, 40, 41, and the separate `Phase 39 — Code Quality Remediation` row set.
 
 **DB note**: `sort_order INTEGER` column — use `ORDER BY sort_order` not `ORDER BY phase` (alphabetical breaks ordering).
 
@@ -44,9 +48,9 @@
 
 ## 🔑 Recent Phase Key Points
 
-### Phase 11 Cross-Provider Prompt Caching (2026-05-26) PARTIAL (8/11)
+### Phase 11 Cross-Provider Prompt Caching (2026-05-26) PARTIAL (9/11)
 
-- **Status**: 8/11 todos DONE, 2 pending (`cache-redis-streaming-buffer`, `cache-metrics-openobserve`), 1 blocked (Gemini deferred to Phase 12)
+- **Status**: 9/11 todos DONE, 1 pending (`cache-metrics-openobserve`), 1 blocked (Gemini deferred to Phase 12)
 - **Modules Created**:
   - `types.py`: CachingCapability enum (5 levels: NONE, EXACT_ONLY, NATIVE_AUTOMATIC, NATIVE_AUTOMATIC_WITH_EXPLICIT_BREAKPOINTS, NATIVE_RESOURCE)
   - `manager.py`: PromptCacheManager orchestration with tier selection logic
@@ -61,7 +65,7 @@
 
 ### Phase 39 Code Quality Remediation (2026-05-26) - Historical Row Set Closed, Follow-up Audit Open
 
-- **Status**: the separate 5-row quality-remediation set is done; `Phase 39 — Audit Remediation (A1/A2/A3)` is active at 7/41 done
+- **Status**: the separate 5-row quality-remediation set is done; `Phase 39 — Audit Remediation (A1/A2/A3)` is active at 7/43 done
 - **Fixed in core/asgi/app.py**:
   - Type hint: marketplace_db_config: dict[str, Any]
   - Exception handling: Replaced 8 bare Exception catches with BaseCoreException (Rule 70)
@@ -76,6 +80,46 @@
 - Enhanced `scripts/codebase_dependency_analyzer.py` to deduplicate Markdown evidence correctly and report missing internal imported symbols.
 - The analyzer reports 179 core Python files, 12 current `core -> modules` edges, and one remaining confirmed missing-symbol surface: `core/streaming/runner.py` imports absent `TeamLeader` from `modules/teams/orchestrator.py`.
 - A core-owner Markdown scan reports 14 files without file-level documentation hits; missing owner boundaries and stale integration-matrix assertions remain tracked rather than silently accepted.
+
+### Authentication, Serializer, Cryptography, And SecureMD Intake (2026-05-27)
+
+- Adopted `src/css/core/authentication/` as the planned sole authentication
+  owner after the source rename; Phase 28 now includes
+  `authentication-package-cutover` and active docs point at the new path.
+- Reopened all previously done Phase 43 serializer rows: the new
+  `src/css/core/serializers/` package is placeholder-only, while serializer
+  implementations must be removed from model/menu/retrieval modules and
+  moved into mirrored canonical serializer modules.
+- Added Phase 44 with five dependency-ordered rows for cryptographic key
+  ownership, SecureMD header verification, strict frontmatter serialization,
+  marketplace-origin prompt ingestion gating, and final security validation.
+- SecureMD is recorded as an integrity/signer-origin gate only. Marketplace
+  preview is display-only; Phase 23 prompt rendering and reconciled agent
+  execution are the planned verified-context boundary.
+- Recorded adjacent `audit44-db-manager-import-cutover` as the precursor to
+  Phase 45 manager extraction because focused basedpyright reports unresolved
+  `from models import BaseModel` in `core/db/managers/base.py` and manager
+  implementations still live beside ORM models.
+- Added the binding rule that todos and instructions must provide exact
+  files/symbols, steps, dependencies, boundaries, and validation so GitHub
+  Copilot Auto can implement them without guessing.
+
+### Host Topology And Account Provider Schema Planning (2026-05-27)
+
+- Added planning-only Phase 45 with nine rows. `db45-schema-decision-gates`
+  is blocked until the user confirms data-retention, topology-tenancy,
+  identity/profile cardinality, provider-connection multiplicity, and
+  `PathFS` naming choices.
+- Source-backed starting point: `Host` currently depends on `Machine`,
+  `PathFS` already points directly to `Host`, host IPs are scalar fields,
+  network/address tables are absent, `UserProfile.account` is not unique, and
+  `ApiServiceProvider` has no `Account` relation.
+- Proposed topology uses explicit junctions:
+  `Host -> HostAddress -> Address -> NetworkAddress -> Network`, enabling
+  reverse traversal from a network address back to every associated host.
+- `Machine` retirement is a new follow-on requirement, not a rewrite of the
+  completed Phase 40 history; implementation remains out of scope for this
+  planning session.
 
 ### Phase 22 MCP Protocol Layer (2026-05-25, verified 2026-05-26) ✅ VERIFIED COMPLETE
 
@@ -268,13 +312,13 @@
 - Browser relay priority chain is now explicitly tracked: `github -> codex -> openai -> deepseek -> nvidia -> web-LLM relay`.
 - Phase 32 reports backlog task labels were normalized from `task='unassigned'` into explicit `T32.*` buckets for parallel planning.
 
-### Phase 39 Audit Remediation — 42 todos tracked (updated 2026-05-26)
+### Phase 39 Audit Remediation — 43 todos tracked (updated 2026-05-27)
 
 - Added a dedicated remediation phase from three audit streams (Architecture/Runtime, Plan/Tracker Integrity, Code Quality/Rules).
 - Task buckets:
   - `T39.1 Agent 1 — Architecture & Runtime Gaps` (10 todos; 1 done, 9 pending)
   - `T39.2 Agent 2 — Plan & Tracker Integrity` (9 todos; 3 done, 6 pending)
-  - `T39.3 Agent 3 — Code Quality & Rules Compliance` (17 todos; 17 pending)
+  - `T39.3 Agent 3 — Code Quality & Rules Compliance` (18 todos; 18 pending)
   - `T39.4 Runtime Validation & Completion` (6 todos; 3 done, 3 pending)
 - Critical tracked gaps now explicitly queued:
   - EventStore durability + Redis fan-out
@@ -288,10 +332,12 @@
 - Added `audit42-api-services-duplicate-fragments` after source comparison
   found repeated provider REST implementations outside any stored PyCharm
   inspection artifact.
+- Added `audit44-db-manager-import-cutover` after the new manager package
+  failed focused import/type resolution.
 - Added `T39.4 Runtime Validation & Completion` with six bounded audit rows;
   dependency refresh is done and msgspec-boundary cleanup is active.
 
-### Phase 40 DB Model Consolidation — 39 todos prepared (2026-05-09; live count updated 2026-05-26)
+### Phase 40 DB Model Consolidation — 42 todos complete (2026-05-09; live count updated 2026-05-27)
 
 - Added a dedicated plan intake phase for model-location and schema requests:
   - memory model move reconciliation and canonical import cutover
@@ -545,7 +591,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **1045 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero after the 2026-05-26 audit)
+- `.plan/session.db` — **1079 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero after the 2026-05-27 intake)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth

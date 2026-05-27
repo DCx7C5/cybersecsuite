@@ -4,17 +4,30 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-26 (plan/source, dependency-reference, and provider auth/SDK audit pass)
+**Updated**: 2026-05-27 (core boundary and host-topology planning intake)
 
-## Current Session (2026-05-26 - Audit Pass)
+## Current Session (2026-05-27 - Core Boundary And Schema Intake)
 
-**Session Goal**: Audit plan/tracker/source consistency, repair bounded defects,
-and record remaining core connectivity and provider auth/SDK work with executable tracker ownership.
+**Session Goal**: Reconcile the newly introduced `core/authentication`,
+`core/serializers`, `core/cryptography`, and `core/securemd` source boundaries
+with executable tracker ownership, then define the requested host/network,
+account/provider, serializer, and manager schema work without implementing it.
 
 **Audited Outcome**:
 
-- Live tracker: 1045 todos | 556 done | 481 pending | 8 blocked | 0 active.
+- Live tracker: 1079 todos | 597 done | 473 pending | 9 blocked | 0 active.
 - Hierarchy repair: zero `unassigned` todos and zero empty descriptions remain.
+- Phase 43 was reopened and retargeted to canonical `core/serializers`
+  ownership: all `*Serializer` implementations must be extracted from ORM
+  and feature-local modules into mirrored serializer modules.
+- Phase 28 now owns the `core/auth` to `core/authentication` cutover and route
+  contract reconciliation.
+- New Phase 44 orders cryptographic key ownership, SecureMD
+  integrity/origin verification, strict serialization, ingestion gating, and
+  validation. Signed content is not automatically safe content.
+- The adjacent `core/db/managers` package relocation has an explicit precursor
+  repair and Phase 45 extraction row because its new `base.py` currently
+  imports unresolved `models` while manager classes remain model-local.
 - Five completed-to-incomplete dependency inconsistencies remain recorded by
   pending `audit-phase-dependency-completeness`.
 - Direct source fixes: dependency-analyzer missing-symbol/deduplication support,
@@ -33,9 +46,10 @@ and record remaining core connectivity and provider auth/SDK work with executabl
   live callers use `api_services.ProviderRegistry`.
 - Workflow policy update: development workflow now requires passing
   `--project pyrightconfig.json` for `basedpyright` commands.
-- DB model intake added: new Phase 40 todo chain records full implementation
-  of `core/db/models/machine.py`, `core/db/models/host.py`, and
-  `core/db/models/pathfs.py`.
+- Phase 40 remains historical completion. New Phase 45 plans the requested
+  follow-on schema: retire `Machine`, promote `Host`, retain `Host -> PathFS`,
+  add `HostAddress`/`NetworkAddress` traversal, and add account/provider
+  junctions after explicit cardinality decisions.
 
 **Core Dependency/Reference Evidence**:
 
@@ -70,6 +84,16 @@ and record remaining core connectivity and provider auth/SDK work with executabl
   imported symbols.
 - Phase-level test execution remains deferred by workflow rule; existing
   ASGI and prompt-cache stream type failures are tracked rather than hidden.
+- Current intake evidence: the dependency analyzer scanned each new core
+  package; focused Ruff identifies unresolved serializer/header symbols, and
+  focused basedpyright reports the deleted serializer imports plus the
+  database-manager import defect. These are recorded as pending work rather
+  than altered in source during planning.
+- Model intake evidence: `Host.machine` is required, `PathFS.host` already
+  exists, IP addresses are embedded on `Host`, no network/address model exists,
+  `UserProfile.account` is not one-to-one, and `ApiServiceProvider` has no
+  account junction. `src/css/manager.py` and `src/css/core/asgi/app.py` also
+  require explicit registration changes for new model modules.
 
 Audit report: `.plan/architecture/plan-audit-2026-05-25.md`
 **Tracker authority**: `.plan/session.db`
@@ -92,15 +116,15 @@ Do not reconstruct implementation behavior from this index alone.
 
 ## Tracker Snapshot
 
-Snapshot queried from `.plan/session.db` on 2026-05-26 (end of session):
+Snapshot queried from `.plan/session.db` on 2026-05-27:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1045 | 556 | 481 | 8 | 0 |
+| 1079 | 597 | 473 | 9 | 0 |
 
-Overall completion: 53.2%. Audit work repaired bounded defects, rehomed all
-unassigned rows, reopened unsupported completion claims, and added precisely
-owned remediation for remaining core/module boundary and provider SDK/auth work.
+Overall completion: 55.3%. This planning intake preserves the new core
+boundaries, replaces incompatible serializer/manager ownership assumptions,
+and adds blocked schema decisions before destructive model work.
 
 ## Current Execution Boundary
 
@@ -112,8 +136,14 @@ and owner documents have been made executable before implementation resumes.
   gates.
 - Phase 41 has no remaining pending preparation todo; the audited
   cross-consistency conflicts are recorded as resolved in `session.db`.
-- Phase 40 source work may resume only through a dependency-ready claimed row;
-  its direct development-schema/model edit policy remains retained.
+- Phase 43 implementation must start with `serializer-base-create`, then
+  `serializer-relocate-base`, which moves serializer implementations out of
+  ORM modules, before consumer or SecureMD serializer work.
+- Phase 44 implementation starts with `crypto44-key-boundary`; verified
+  document ingestion is downstream of both cryptography and serializers.
+- Phase 45 implementation is planning-blocked at `db45-schema-decision-gates`
+  for data retention, topology tenancy, identity cardinality, provider
+  connection multiplicity, and `PathFS` naming decisions.
 - Production migration/versioning policy is a later explicit decision, not an
   assumption to introduce during model cleanup.
 
@@ -131,15 +161,15 @@ and owner documents have been made executable before implementation resumes.
 | 7 | Feature Completeness | 19 | 19 | 0 | 0 | 0 |
 | 8 | AI Execution Layer | 17 | 17 | 0 | 0 | 0 |
 | 9 | ORM/Manager/Registry | 32 | 32 | 0 | 0 | 0 |
-| 10 | Unified SDK Architecture | 16 | 9 | 7 | 0 | 0 |
-| 11 | Cross-Provider Prompt Caching | 11 | 8 | 2 | 1 | 0 |
+| 10 | Unified SDK Architecture | 16 | 14 | 2 | 0 | 0 |
+| 11 | Cross-Provider Prompt Caching | 11 | 9 | 1 | 1 | 0 |
 | 12 | QoL Output Controls Migration | 11 | 1 | 10 | 0 | 0 |
 | 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
 | 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 8 | 10 | 0 | 0 |
 | 15 | Permissions + WorkingDir | 32 | 0 | 31 | 1 | 0 |
 | 16 | Provider SDK Features | 38 | 10 | 28 | 0 | 0 |
 | 17 | Settings & Projects | 43 | 1 | 41 | 1 | 0 |
-| 18 | Frontend Foundation | 43 | 8 | 35 | 0 | 0 |
+| 18 | Frontend Foundation | 45 | 8 | 37 | 0 | 0 |
 | 19 | Module Restructuring + Sessions | 15 | 3 | 11 | 1 | 0 |
 | 20 | Persistent Memory Layer | 44 | 8 | 36 | 0 | 0 |
 | 21 | Qwen3-0.6B Triage Intelligence | 15 | 0 | 15 | 0 | 0 |
@@ -149,7 +179,7 @@ and owner documents have been made executable before implementation resumes.
 | 25 | Integration Hardening | 14 | 8 | 6 | 0 | 0 |
 | 26 | Human Approval Workflows | 15 | 0 | 15 | 0 | 0 |
 | 27 | Graph Visualization Engine | 17 | 0 | 17 | 0 | 0 |
-| 28 | Auth & Accounts | 9 | 1 | 8 | 0 | 0 |
+| 28 | Auth & Accounts | 10 | 1 | 9 | 0 | 0 |
 | 29 | Cybersec Domain Layer | 12 | 0 | 12 | 0 | 0 |
 | 30 | Workflow Engine + IPC | 5 | 0 | 5 | 0 | 0 |
 | 31 | Production Readiness | 9 | 0 | 9 | 0 | 0 |
@@ -160,11 +190,14 @@ and owner documents have been made executable before implementation resumes.
 | 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
-| 39 | Audit Remediation (A1/A2/A3) | 42 | 7 | 35 | 0 | 0 |
+| 39 | Audit Remediation (A1/A2/A3) | 43 | 7 | 36 | 0 | 0 |
 | 39 | Code Quality Remediation | 5 | 5 | 0 | 0 | 0 |
-| 40 | DB Model Consolidation & Rich Schemas | 39 | 7 | 32 | 0 | 0 |
+| 40 | DB Model Consolidation & Rich Schemas | 42 | 42 | 0 | 0 | 0 |
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 | 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
+| 43 | Serializer Layer | 13 | 0 | 13 | 0 | 0 |
+| 44 | Cryptography + SecureMD Integrity | 5 | 0 | 5 | 0 | 0 |
+| 45 | Host Topology + Account Provider Schema | 9 | 0 | 8 | 1 | 0 |
 | — | Meta — Audit & Validation | 47 | 38 | 9 | 0 | 0 |
 
 ## Local Ownership Map
@@ -190,7 +223,7 @@ Implementation detail is intentionally routed to these local documents:
 | 25 | affected owner docs in `src/css/core/` and `src/css/modules/`; tracker selects pending gaps |
 | 26 | `src/css/modules/approvals/approvals.md` |
 | 27 | `src/css/modules/graphs/graphs.md` |
-| 28 | `src/css/core/auth/auth.md`, `src/css/core/accounts/accounts.md` |
+| 28 | `src/css/core/authentication/authentication.md`, `src/css/core/accounts/accounts.md` |
 | 29 | `src/css/modules/mitre/mitre.md`, `src/css/modules/threat_intel/threat_intel.md`, `src/css/modules/scans/scans.md`, `src/css/modules/incidents/incidents.md`, `src/css/modules/evidence/evidence.md`, `src/css/modules/compliance/compliance.md` |
 | 30 | `src/css/modules/workflows/workflows.md`, `src/css/modules/a2a_google/a2a_google.md`, `src/css/modules/a2a_internal/a2a_internal.md` |
 | 31 | `src/css/core/asgi/asgi.md`, `src/css/modules/alerts/alerts.md`, `src/css/modules/webhooks/webhooks.md`, `src/css/modules/scheduler/scheduler.md` |
@@ -202,6 +235,9 @@ Implementation detail is intentionally routed to these local documents:
 | 37 | `src/css/modules/siem/siem.md` |
 | 38 | `src/css/modules/jetbrains/jetbrains.md` |
 | 42 | `src/css/modules/acp/acp.md`, `src/css/modules/mcps/mcps.md`, `src/css/core/marketplace/marketplace.md`, `src/css/modules/approvals/approvals.md`, `src/css/modules/jetbrains/jetbrains.md` (legacy bridge) |
+| 43 | `src/css/core/serializers/serializers.md`, `src/css/core/types/types.md`, relevant serializer consumer owner docs |
+| 44 | `src/css/core/cryptography/cryptography.md`, `src/css/core/securemd/securemd.md`, `.plan/architecture/securemd-architecture.md` |
+| 45 | `src/css/core/db/models/postgres-models.md`, `src/css/core/db/postgres-db.md`, `src/css/core/accounts/accounts.md`, `src/css/core/serializers/serializers.md` |
 
 ## Sanitization Movement Record
 
@@ -219,9 +255,12 @@ unrelated code:
 | Persistent retrieval/memory ownership | `src/css/core/memory/memory.md`, `src/css/core/rag_vector/rag_vector.md`, `src/css/core/rag_graph/rag_graph.md` |
 | Session and git/worktree behavior | `src/css/modules/sessions/sessions.md` |
 | Approval and graph execution contracts | `src/css/modules/approvals/approvals.md`, `src/css/modules/graphs/graphs.md` |
-| Authentication contract | `src/css/core/auth/auth.md` |
+| Authentication contract | `src/css/core/authentication/authentication.md` |
+| Structured serializer contract | `src/css/core/serializers/serializers.md` |
+| Cryptographic and signed-Markdown integrity boundary | `src/css/core/cryptography/cryptography.md`, `src/css/core/securemd/securemd.md` |
 | Report generation/API pipeline | `src/css/modules/reports/reports.md` |
 | DB model lanes and initialization boundaries | `src/css/core/db/models/postgres-models.md`, `src/css/core/db/postgres-db.md` |
+| Host/network/address and account/provider relation graph | `src/css/core/db/models/postgres-models.md`, `src/css/core/accounts/accounts.md` |
 | Telemetry stream and storage boundary | `src/css/core/otel/plan.md` |
 | Local transport/proxy and SIEM contracts | `src/css/core/asgi/asgi.md`, `src/css/modules/llm_proxy/llm_proxy.md`, `src/css/modules/siem/siem.md` |
 | IDE integration contract | `src/css/modules/jetbrains/jetbrains.md` |
@@ -249,6 +288,12 @@ and, where relevant, architecture diagrams:
 6. Provider execution convergence: duplicated `api_services/*/service.py`
    transport code, missing registry-spec coverage, GitHub Models/Copilot
    identity collision, and OAuth token lifecycle are recorded in owned rows.
+7. Phase 45 schema decisions: confirm Machine data transition, Host/Network
+   tenancy, User/Account/Profile cardinality, repeated provider connections,
+   and whether `PathFS` should be renamed before implementation.
+8. SecureMD enforcement: the source currently provides an incomplete header
+   scaffold only. Implement and validate signer/key policy and context
+   ingestion consumers before treating signed Markdown as trusted input.
 
 ## Documentation Maintenance Rules
 
@@ -257,6 +302,10 @@ and, where relevant, architecture diagrams:
 - Do not duplicate local API/type/todo specifications here.
 - Query `.plan/session.db` rather than copying dynamic completion state into
   local specifications.
+- Require each todo description to be implementation-ready for GitHub Copilot
+  Auto: exact files/symbols, ordered steps, dependencies, boundaries, and
+  runnable validation.
 - Use source inspection and focused dependency-analysis evidence before moving
   ownership or declaring a plan obsolete.
-- Update architecture documents only after the deferred source comparison.
+- Update architecture documents after source comparison when package ownership
+  or security-boundary claims change.
