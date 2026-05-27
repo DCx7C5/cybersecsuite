@@ -40,6 +40,7 @@ from .machine import Machine, MachineInfo, MachineManager, sync_default_machines
 from .host import Host, HostInfo, HostManager, sync_default_hosts
 from .pathfs import PathFS, PathFSInfo, PathFSManager, sync_default_paths
 from .usage import ApiUsageLog
+from .qol import QoLSettingsModel
 
 __all__ = [
     "BaseModel",
@@ -79,4 +80,5 @@ __all__ = [
     "PathFSManager",
     "sync_default_paths",
     "ApiUsageLog",
+    "QoLSettingsModel",
 ]
