@@ -11,7 +11,7 @@ from css.core.logger import getLogger
 from typing import AsyncGenerator, Any
 
 from css.core import pipe
-from css.core.pipeline import ExecuteStage, ObserveStage
+from css.core.routing.pipeline import ExecuteStage, ObserveStage
 from css.modules.agents import AgentExecutor
 from css.modules.triage import classify
 from css.modules.strategies import route

@@ -7,13 +7,17 @@ without requiring Pydantic BaseModel.
 This module is the deliberate interoperability boundary: application request
 and response values remain ``msgspec.Struct`` instances, while FastAPI still
 requires a Pydantic-core schema hook for response-model/OpenAPI generation.
+
+``GetCoreSchemaHandler`` is a local Protocol (see ``_pydantic_compat.py``)
+rather than imported from ``pydantic``, so that ``pydantic`` is not a
+direct dependency for the sake of a single type hint.
 """
 
 from typing import Any
 
 import msgspec
-from pydantic import GetCoreSchemaHandler
-from pydantic_core import CoreSchema
+
+from ._pydantic_compat import CoreSchema, GetCoreSchemaHandler
 
 
 class BaseEndpoint(msgspec.Struct, kw_only=True, frozen=True):

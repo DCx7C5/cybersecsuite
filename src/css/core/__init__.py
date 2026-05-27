@@ -35,7 +35,7 @@ from .types.base_entity import BaseEntity, BaseAgent, BaseRole, BaseSkill, BaseT
 from .types.base_protocols import BaseCommunicator
 
 # Pipeline infrastructure (Phase 6 T6.5)
-from .pipeline import pipe, Stage, PassthroughStage, BufferStage, FilterStage, MapStage, ExecuteStage, ObserveStage
+from .routing.pipeline import pipe, Stage, PassthroughStage, BufferStage, FilterStage, MapStage, ExecuteStage, ObserveStage
 
 # NOTE: Concrete entities (Account, Agent, Role, Skill, Tool) should not be
 # re-exported from core/__init__ to avoid circular imports. Import them from
