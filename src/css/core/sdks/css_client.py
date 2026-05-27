@@ -48,9 +48,10 @@ class CSSLLMClient:
             print(chunk.content)
     """
 
-    def __init__(self) -> None:
+    def __init__(self, qol_injector: Any | None = None) -> None:
         self._registry: SDKRegistry = SDKRegistry()
         self._model_registry = get_model_registry()
+        self._qol_injector = qol_injector
         self._register_builtin_sdks()
 
     @staticmethod
@@ -238,6 +239,53 @@ class CSSLLMClient:
         normalized_provider_id = self._normalize_provider_id(provider_id)
         return await self._registry.get(normalized_provider_id, **kwargs)
 
+    def _resolve_qol_messages(
+        self,
+        messages: list[Any],
+        kwargs: dict[str, Any],
+    ) -> tuple[list[Any], dict[str, Any]]:
+        injector = self._qol_injector
+        if injector is None:
+            return messages, kwargs
+
+        from css.core.settings.qol import QoLSettings as _QS
+
+        qol_settings: _QS | None = kwargs.pop("qol_settings", None)
+        if qol_settings is None:
+            qol_agent = kwargs.pop("qol_agent", None)
+            if qol_agent is not None:
+                from css.core.types.qol_registry import qol_preset_registry
+                binding_name = qol_preset_registry.get_binding(str(qol_agent))
+                if binding_name is not None:
+                    preset = qol_preset_registry.get(binding_name)
+                    if preset is not None:
+                        qol_settings = preset
+
+        if qol_settings is None:
+            qol_user_id = kwargs.pop("qol_user_id", None)
+            if qol_user_id is not None:
+                from css.core.types.qol_settings import QoLSettingsManager
+                import asyncio
+                try:
+                    mgr = QoLSettingsManager()
+                    resolved = asyncio.get_event_loop().run_until_complete(
+                        mgr.cascade_resolve(
+                            user_id=str(qol_user_id),
+                            session_id=kwargs.pop("qol_session_id", None),
+                            project_id=kwargs.pop("qol_project_id", None),
+                        )
+                    )
+                    qol_settings = resolved
+                except Exception:
+                    pass
+
+        if qol_settings is None or not qol_settings.enabled_toggles:
+            return messages, kwargs
+
+        injected, metadata = injector.inject_into_messages(messages, qol_settings)
+        kwargs["_qol_metadata"] = metadata
+        return injected, kwargs
+
     async def call(
         self,
         provider_id: str,
@@ -245,6 +293,7 @@ class CSSLLMClient:
         messages: list[Any],
         **kwargs: Any,
     ) -> AsyncIterator[Any]:
+        messages, kwargs = self._resolve_qol_messages(messages, kwargs)
         normalized_provider_id = self._normalize_provider_id(provider_id)
         if normalized_provider_id in _BROWSER_RELAY_PROVIDER_IDS:
             adapter = BrowserRelayAdapter()
@@ -271,6 +320,7 @@ class CSSLLMClient:
         messages: list[Any],
         **kwargs: Any,
     ) -> LLMResponse:
+        messages, kwargs = self._resolve_qol_messages(messages, kwargs)
         normalized_provider_id = self._normalize_provider_id(provider_id)
         if normalized_provider_id in _BROWSER_RELAY_PROVIDER_IDS:
             return await self._call_buffered_with_relay_priority(

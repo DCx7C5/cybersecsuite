@@ -17,7 +17,18 @@ class BaseModel(Model):
     @override
     def pk(self) -> int:
         """Typed primary-key accessor."""
-        return int(self.id)
+        raw_id = getattr(self, "id", None)
+        if raw_id is None:
+            raise AttributeError("Primary key is not set")
+        return int(raw_id)
+
+    @pk.setter
+    @override
+    def pk(self, value: int | str | None) -> None:
+        """Allow backend executors to assign primary keys."""
+        if value is None:
+            return
+        self.id = int(value)
 
     @property
     def persisted(self) -> bool:

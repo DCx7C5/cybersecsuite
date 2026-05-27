@@ -90,7 +90,7 @@ async def list_models(
 
 @router.post("/chat/completions")
 async def create_chat_completion(payload: dict[str, Any]) -> dict[str, Any]:
-    from css.modules.agents import AgentExecutor
+    from .client import UnifiedLLMClient
 
     if payload.get("stream"):
         raise HTTPException(
@@ -106,17 +106,15 @@ async def create_chat_completion(payload: dict[str, Any]) -> dict[str, Any]:
             detail="messages must be a non-empty list",
         )
 
-    prompt = _extract_prompt(messages)
-    if not prompt:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="no user prompt found in messages",
-        )
-
-    executor = AgentExecutor(provider=provider, model=model)
+    client = UnifiedLLMClient()
     started = time.time()
     try:
-        result = await executor.execute(prompt=prompt, context={"agent_id": "llm-proxy"})
+        result = await client.complete(
+            messages=messages,
+            combo_id=payload.get("combo_id"),
+            provider=provider,
+            model=model,
+        )
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"provider request failed: {exc}") from exc
 

@@ -86,3 +86,11 @@ class QoLSettingsManager:
             return global_settings
         return QoLSettings(enabled_toggles=set(), scope="session")
 
+    async def list_scope_models(
+        self,
+        *,
+        user_id: str,
+        scope: str,
+    ) -> list[QoLSettingsModel]:
+        """Return persisted QoL rows for one user and scope."""
+        return await QoLSettingsModel.filter(user_id=user_id, scope=scope).order_by("scope_id", "id")

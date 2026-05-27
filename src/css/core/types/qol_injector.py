@@ -3,7 +3,8 @@
 from collections.abc import Mapping, Sequence
 from time import time
 
-from css.core.settings.qol import QoLSettings, QoLToggle, validate_toggle_combo
+from css.core.settings.qol import QoLSecurityError, QoLSettings, QoLToggle, validate_toggle_combo
+from .qol_telemetry import QoLTelemetryBridge
 
 _FRAGMENT_TTL_SECONDS = 300.0
 _BLOCK_HEADER = "[OUTPUT-CONTROLS]"
@@ -119,3 +120,45 @@ class QoLInjector:
         last_system["content"] = f"{prior}{separator}{block}"
         copied_messages[last_system_idx] = last_system
         return copied_messages, metadata
+
+    async def inject_into_messages_with_telemetry(
+        self,
+        messages: Sequence[Mapping[str, object]],
+        qol_settings: QoLSettings,
+        token_budget: int = 128,
+        session_id: str | None = None,
+        agent_id: str | None = None,
+    ) -> tuple[list[dict[str, object]], dict[str, object]]:
+        """Inject directives and emit sanitized success/failure/security events."""
+        bridge = QoLTelemetryBridge()
+        started = time()
+        try:
+            injected, metadata = self.inject_into_messages(
+                messages=messages,
+                qol_settings=qol_settings,
+                token_budget=token_budget,
+            )
+            await bridge.emit_injection_success(
+                settings=qol_settings,
+                started_at=started,
+                metadata=metadata,
+                session_id=session_id,
+                agent_id=agent_id,
+            )
+            return injected, metadata
+        except QoLSecurityError as error:
+            await bridge.emit_security_rejected(
+                settings=qol_settings,
+                error=error,
+                session_id=session_id,
+                agent_id=agent_id,
+            )
+            raise
+        except (TypeError, ValueError) as error:
+            await bridge.emit_injection_failure(
+                settings=qol_settings,
+                error=error,
+                session_id=session_id,
+                agent_id=agent_id,
+            )
+            raise

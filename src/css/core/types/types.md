@@ -511,13 +511,13 @@ resolve settings: session -> project -> global
 | `qol-models-msgspec` | done | `QoLToggle` and `QoLSettings` value types. | Implemented surface to validate against tracker. |
 | `qol-dangerous-combos-validator` | done | Toggle-combination validator and security error. | Types. |
 | `qol-builtin-presets` | done | Built-in preset definitions. | Types and validator. |
-| `qol-tortoise-model` | pending | Persisted scoped settings and manager. | ORM conventions. |
-| `qol-preset-registry` | pending | Startup-loaded built-in/user preset registry. | Persistence and presets. |
+| `qol-tortoise-model` | done | Persisted scoped settings and manager. | ORM conventions. |
+| `qol-preset-registry` | done | Startup-loaded built-in/user preset registry. | Persistence and presets. |
 | `qol-injector-service` | done | Prompt directive construction and fragment cache. | Validator/settings resolution. |
 | `qol-unified-client-middleware` | pending | Pre-request integration in unified client. | Injector and Phase 10 client. |
 | `qol-cache-key-toggle-hash` | done | Output-control-sensitive prompt-cache key. | Phase 11 prompt cache and injector. |
 | `qol-a2a-integration` | pending | Scope change propagation. | A2A runtime. |
-| `qol-openobserve-metrics` | pending | Injection events/metrics. | Observability surface. |
+| `qol-openobserve-metrics` | done | Injection events/metrics. | Observability surface. |
 | `qol-rest-endpoints` | pending | Toggle, preset, and agent-binding API. | Persistence/registry. |
 
 ## Executable Owner Contract

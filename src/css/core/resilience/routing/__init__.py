@@ -12,6 +12,7 @@ from .strategy import Strategy, ProviderTier, PROVIDER_TIER_LIST
 from .tier_selector import TierSelector
 from .token_counter import TokenCounter
 from .triage import RequestComplexity, TriageMetrics, analyze_complexity
+from .qwen_triage import QwenTriageRouter, TriageResponse, qwen_triage_router
 
 __all__ = [
     "Strategy",
@@ -41,4 +42,7 @@ __all__ = [
     "RequestComplexity",
     "TriageMetrics",
     "analyze_complexity",
+    "QwenTriageRouter",
+    "TriageResponse",
+    "qwen_triage_router",
 ]

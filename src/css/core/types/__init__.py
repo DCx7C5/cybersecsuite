@@ -123,6 +123,8 @@ from css.core.settings.qol import (
 from .context_management import ContextManagementConfig
 from .qol_injector import QoLInjector, FRAGMENTS
 from .qol_settings import QoLSettingsManager
+from .qol_telemetry import QoLTelemetryBridge
+from .qol_registry import QoLPresetRegistry
 
 # Lazy imports to break circular dependency chains:
 #   types.__init__ → sdks.* → ... → api_services → types.__init__
@@ -269,6 +271,8 @@ __all__ = [
     "toggle_description",
     "QoLInjector",
     "QoLSettingsManager",
+    "QoLTelemetryBridge",
+    "QoLPresetRegistry",
     "FRAGMENTS",
     # error mappers
     "BaseErrorMapper",

@@ -98,6 +98,10 @@ class QueryExecutor:
             )
     
     # ── Internal helpers ─────────────────────────────────────────────
+
+    def _get_client(self) -> Any:
+        from css.modules.llm_proxy.client import UnifiedLLMClient
+        return UnifiedLLMClient()
     
     def _get_prefix(self) -> str:
         return _MODE_PREFIXES.get(self.mode, f"[MODE: {self.mode.upper()}] ")

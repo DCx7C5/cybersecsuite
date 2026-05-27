@@ -46,6 +46,7 @@ from css.core.marketplace.endpoints import router as marketplace_router
 from css.core.marketplace.registry import wire_registry_events
 from css.core.marketplace.seeder import seed_marketplace_on_startup
 from css.core.menu.endpoints import router as menu_router
+from css.core.resilience.routing.endpoints import router as routing_router
 from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 
 
@@ -273,6 +274,12 @@ def create_app() -> FastAPI:
         log.info("Mounted core endpoints: menu")
     except BaseCoreException as menu_mount_error:
         log.warning(f"Failed to mount menu endpoints: {menu_mount_error}")
+
+    try:
+        _app.include_router(routing_router)
+        log.info("Mounted core endpoints: routing")
+    except BaseCoreException as routing_mount_error:
+        log.warning(f"Failed to mount routing endpoints: {routing_mount_error}")
 
     # Auto-discover and mount all modules/*/endpoints.py routers
     mounted = mount_app_routers(_app)

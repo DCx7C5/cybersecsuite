@@ -5,6 +5,7 @@ from .browser_plugin import (
     get_browser_plugin_session_store,
     router as root_router,
 )
+from .client import UnifiedLLMClient
 from .endpoints import router
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "root_router",
     "BrowserPluginSessionStore",
     "get_browser_plugin_session_store",
+    "UnifiedLLMClient",
 ]
