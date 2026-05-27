@@ -1,11 +1,20 @@
 """Dynamic Capability Registry — loads provider capabilities at startup with caching."""
 
+from collections.abc import Awaitable, Callable
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Protocol, runtime_checkable
 
 from css.core.types.base_enums import CapabilityType
 from css.core.types.base_enums import MemorySupportMode
 
 from css.core.logger import getLogger
+
+
+@runtime_checkable
+class _ProviderRegistryProto(Protocol):
+    def list_providers(self) -> list[str]: ...
+    def get_provider(self, name: str) -> Any: ...
 
 logger = getLogger(__name__)
 
@@ -269,20 +278,112 @@ class DynamicCapabilityRegistry:
         """
         Load capabilities from YAML configuration file.
 
-        File path: config/capabilities.yaml (or env var CAPABILITY_CONFIG_PATH)
-        """
-        # stub: YAML config loading — see tracker 'capability-yaml-loading'
-        logger.debug("YAML config loading not yet implemented")
+        File path from CAPABILITY_CONFIG_PATH env var, default config/capabilities.yaml.
+        Format:
+            providers:
+              <name>:
+                models:
+                  <model_id>: {capabilities: [streaming, vision]}
 
-    async def _query_provider_endpoints(self, provider_registry: object) -> None:
+        Silently no-ops if the file does not exist. Overrides env-loaded defaults
+        for any provider/model that appears in the YAML.
+        """
+        import os
+
+        path_str = os.environ.get("CAPABILITY_CONFIG_PATH", "config/capabilities.yaml")
+        config_path = Path(path_str)
+        if not config_path.is_file():
+            logger.debug("No capability config file at %s, skipping YAML load", config_path)
+            return
+
+        try:
+            import yaml
+
+            raw = config_path.read_text(encoding="utf-8")
+            data: dict[str, Any] = yaml.safe_load(raw) or {}
+            providers_data = data.get("providers", {})
+            count = 0
+            for provider_name, provider_cfg in providers_data.items():
+                provider = provider_name.lower()
+                if provider not in self._capabilities:
+                    self._capabilities[provider] = {}
+                models_data = provider_cfg.get("models", {})
+                for model_id, model_cfg in models_data.items():
+                    raw_caps = model_cfg.get("capabilities", [])
+                    parsed: set[CapabilityType] = set()
+                    for c in raw_caps:
+                        try:
+                            parsed.add(CapabilityType(c.upper()))
+                        except (ValueError, AttributeError):
+                            logger.warning("Unknown capability '%s' for %s/%s", c, provider, model_id)
+                    self._capabilities[provider][model_id] = parsed
+                    count += 1
+            logger.debug("Loaded %d model capabilities from %s", count, config_path)
+        except Exception:
+            logger.warning("Failed to load capabilities from %s", config_path, exc_info=True)
+
+    async def _query_provider_endpoints(
+        self,
+        provider_registry: _ProviderRegistryProto,
+    ) -> None:
         """
         Query provider /models endpoints for authoritative capability data.
 
-        Called for each available provider. Requires provider registry instance.
-        Falls back silently if provider endpoints unavailable.
+        Iterates over providers registered in provider_registry and attempts
+        to fetch model lists from their /models endpoints. Falls back silently
+        on any per-provider failure.
 
         Args:
-            provider_registry: ProviderRegistry instance for loading providers
+            provider_registry: ProviderRegistry-like instance with list_providers() and get_provider()
         """
-        # stub: provider endpoint querying — see tracker 'capability-yaml-loading'
-        logger.debug("Provider endpoint querying not yet implemented")
+        if not isinstance(provider_registry, _ProviderRegistryProto):
+            logger.debug("provider_registry does not conform to protocol, skipping endpoint query")
+            return
+
+        providers = provider_registry.list_providers()
+        for provider_name in providers:
+            try:
+                adapter = provider_registry.get_provider(provider_name)
+            except Exception:
+                continue
+
+            get_models: Callable[[], Awaitable[list[Any]]] | None = getattr(
+                adapter, "list_models", None
+            )
+            if get_models is None:
+                continue
+
+            try:
+                models = await get_models()
+            except Exception:
+                logger.debug("Failed to query models for %s, skipping", provider_name)
+                continue
+
+            provider = provider_name.lower()
+            if provider not in self._capabilities:
+                self._capabilities[provider] = {}
+            for model_entry in models:
+                model_id: str | None = None
+                capabilities_raw: list[str] | None = None
+                if isinstance(model_entry, str):
+                    model_id = model_entry
+                elif isinstance(model_entry, dict):
+                    model_id = model_entry.get("id") or model_entry.get("model_id")
+                    capabilities_raw = model_entry.get("capabilities") or model_entry.get("capabilities_raw")
+
+                if not model_id:
+                    continue
+
+                if model_id not in self._capabilities[provider]:
+                    self._capabilities[provider][model_id] = set()
+
+                if capabilities_raw:
+                    for c in capabilities_raw:
+                        try:
+                            self._capabilities[provider][model_id].add(CapabilityType(c.upper()))
+                        except (ValueError, AttributeError):
+                            pass
+
+            logger.debug(
+                "Queried %d models from %s", len(self._capabilities.get(provider, {})), provider_name
+            )

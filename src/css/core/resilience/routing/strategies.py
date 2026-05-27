@@ -34,6 +34,19 @@ def _safe_int(value: object, default: int = 0) -> int:
     return default
 
 
+def _cost_value(target: ResolvedTarget) -> float:
+    raw_cost = target.metadata.get("cost")
+    if raw_cost is not None:
+        return _safe_float(raw_cost, default=float("inf"))
+    raw_input = target.metadata.get("input_cost_per_mtok")
+    raw_output = target.metadata.get("output_cost_per_mtok")
+    input_cost = _safe_float(raw_input, default=0.0)
+    output_cost = _safe_float(raw_output, default=0.0)
+    if input_cost == 0.0 and output_cost == 0.0:
+        return float("inf")
+    return input_cost + output_cost
+
+
 def _to_resolved(t: ComboTarget, combo_id: str = "") -> ResolvedTarget:
     return ResolvedTarget(
         provider=t.provider_id,
@@ -64,7 +77,7 @@ def _apply_strategy(
             return active[idx:] + active[:idx]
 
         case Strategy.COST_OPTIMIZED:
-            return sorted(active, key=lambda t: _safe_float(t.metadata.get("cost")))
+            return sorted(active, key=_cost_value)
 
         case Strategy.WEIGHTED:
             weights = [max(t.weight, 0.01) for t in active]
@@ -144,7 +157,7 @@ def _apply_strategy(
         case Strategy.AUTO:
             return sorted(
                 active,
-                key=lambda t: (_safe_float(t.metadata.get("cost")),),
+                key=lambda t: (_cost_value(t),),
             )
 
 
