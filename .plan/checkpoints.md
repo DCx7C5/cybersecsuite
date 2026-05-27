@@ -948,3 +948,45 @@ previously indicated that `core/workspace` may be obsolete. Before Phase 15
 or Phase 24 filesystem/git lifecycle work begins, choose the canonical owner
 or explicitly retire those tasks; the tracker now prevents accidental
 implementation of the obsolete proposal.
+
+---
+
+## Checkpoint 022 — _GetCoreSchemaHandler Production-Ready Protocol Upgrade (2026-05-27)
+
+**Status**: 🟢 COMMITTED
+
+### Work Done
+
+- Upgraded the inline `_GetCoreSchemaHandler` Protocol in
+  `core/types/base_endpoint.py` from a minimal 6-line stub to a
+  production-ready version:
+  - Added full docstrings matching pydantic's original `GetCoreSchemaHandler`
+    documentation for each method (`__call__`, `generate_schema`,
+    `resolve_ref_schema`) and the `field_name` property.
+  - Added the `_get_types_namespace` method (internal pydantic interface
+    used during type resolution for serializer annotations), typed as
+    `tuple[dict[str, object], ...]`.
+  - Removed the redundant `-> dict[str, object]` return annotation on
+    `__get_pydantic_core_schema__` — the type checker now infers
+    `PlainValidatorFunctionSchema` from the method body, avoiding both
+    `Any` and module-level pydantic imports.
+- Updated `.plan/memory.md` and `.plan/plan.md` to reflect the upgrade.
+- Comitted as `a42f7944 [protocol-prod-ready]`.
+
+### Design Invariants
+
+- No pydantic import at module level (only inlined `from pydantic_core import
+  core_schema` inside the method body, matching FastAPI's transitive
+  dependency).
+- No `Any` (rule 67), no quoted annotations (rule 68).
+- Protocol uses `type` instead of `Any` for `source_type` parameters (more
+  precise, structurally compatible with pydantic's `Any` through contravariance).
+
+### session.db Current State (unchanged from prior checkpoint)
+
+| Metric       | Count |
+|--------------|-------|
+| Total Todos  | 1083  |
+| Done         | 601   |
+| Pending      | 474   |
+| Blocked      | 8     |
