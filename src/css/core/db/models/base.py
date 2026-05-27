@@ -1,31 +1,11 @@
 """Shared abstract base model for Tortoise ORM entities."""
 
-from typing import Any, Generic, Self, TypeVar, override
+from typing import Any, Generic, TypeVar, override
 
 from tortoise.fields import BigIntField
 from tortoise.models import Model
 
 from ..fields import NameField
-
-ModelType = TypeVar("ModelType", bound="BaseModel")
-
-
-class BaseManager(Generic[ModelType]):
-    """Base class for model managers providing common query patterns.
-
-    Subclasses should be instantiated and assigned to model.manager in concrete ORM models.
-    Provides async query helpers for common operations like filtering by active status.
-    """
-
-    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
-        abstract = True
-        # Canonical concrete-model Meta contract:
-        # table = "<table_name>"
-        # table_verbose = "<human singular>"
-        # table_verbose_plural = "<human plural>"
-        # ordering = ["field_a", "field_b"]
-        # indexes = [Index(fields=["field_a", "field_b"])]
-        # unique_together = (("field_a", "field_b"),)
 
 
 class BaseModel(Model):
@@ -37,7 +17,6 @@ class BaseModel(Model):
     @override
     def pk(self) -> int:
         """Typed primary-key accessor."""
-
         return int(self.id)
 
     @property
@@ -111,12 +90,12 @@ class BaseTreeModel(BaseModel):
 
         return self.parent_id is None
 
-    async def ordered_children(self) -> list[Self]:
+    async def ordered_children(self) -> list[BaseTreeModel]:
         """Load direct children in stable tree order."""
 
         return await type(self).filter(parent_id=self.id).order_by("id")
 
-    async def siblings(self, *, include_self: bool = False) -> list[Self]:
+    async def siblings(self, *, include_self: bool = False) -> list[BaseTreeModel]:
         """Load sibling tree nodes."""
 
         nodes = await type(self).filter(parent_id=self.parent_id).order_by("id")

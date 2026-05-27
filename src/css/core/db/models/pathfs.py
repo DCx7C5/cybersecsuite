@@ -7,6 +7,7 @@ import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseTreeModel
 from .mixins import TimestampMixin
 from ..fields import NonNegativeIntField, PathField, LabelField
@@ -128,6 +129,13 @@ class PathFS(BaseTreeModel, TimestampMixin):
             Index(fields=["is_monitored", "last_scanned"]),
         ]
         ordering = ["host_id", "path"]
+
+
+class PathFSSerializer(BaseModelSerializer[PathFS]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = PathFS
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
 
 
 async def sync_default_paths() -> list[PathFS]:

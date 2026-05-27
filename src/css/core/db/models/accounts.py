@@ -14,6 +14,7 @@ Account owns identity/registration/profile/organization tenancy records.
 """
 
 from datetime import datetime
+from typing import cast
 
 import msgspec
 from tortoise import fields
@@ -29,6 +30,7 @@ from css.core.db.fields import (
 )
 from css.core.enums import Role
 
+from css.core.db.serializers import BaseModelSerializer
 from .mixins import TimestampMixin
 
 
@@ -56,7 +58,7 @@ class UserProfileInfo(msgspec.Struct, frozen=True, kw_only=True):
     bio: str
     phone: str | None
     timezone: str
-    preferences: dict
+    preferences: dict[str, object]
     created_at: datetime
     updated_at: datetime
 
@@ -122,9 +124,10 @@ class UserProfile(BaseModel, TimestampMixin):
     preferences = fields.JSONField(default=dict)  # UI theme, notifications, etc.
 
     def to_domain(self) -> UserProfileInfo:
+        account_id = cast(int, getattr(self, "account_id"))
         return UserProfileInfo(
             id=self.id,
-            account_id=self.account_id,
+            account_id=account_id,
             first_name=self.first_name,
             last_name=self.last_name,
             display_name=self.display_name,
@@ -167,7 +170,7 @@ class OrganizationInfo(msgspec.Struct, frozen=True, kw_only=True):
     max_members: int
     is_active: bool
     tier: str
-    metadata: dict
+    metadata: dict[str, object]
     created_at: datetime
     updated_at: datetime
 
@@ -179,7 +182,7 @@ class OrganizationMembershipInfo(msgspec.Struct, frozen=True, kw_only=True):
     organization_id: int
     account_id: int
     role: str
-    permissions: list
+    permissions: list[object]
     invited_by_id: int | None
     joined_at: datetime
     updated_at: datetime
@@ -283,7 +286,7 @@ class OrganizationMembership(BaseModel):
     permissions = fields.JSONField(default=list)
 
     # Metadata
-    invited_by: fields.ForeignKeyRelation[Account] = fields.ForeignKeyField(
+    invited_by: fields.ForeignKeyNullableRelation[Account] = fields.ForeignKeyField(
         "models.Account",
         related_name="invitations_sent",
         on_delete=fields.SET_NULL,
@@ -293,13 +296,16 @@ class OrganizationMembership(BaseModel):
     updated_at = fields.DatetimeField(auto_now=True)
 
     def to_domain(self) -> OrganizationMembershipInfo:
+        organization_id = cast(int, getattr(self, "organization_id"))
+        account_id = cast(int, getattr(self, "account_id"))
+        invited_by_id = cast(int | None, getattr(self, "invited_by_id", None))
         return OrganizationMembershipInfo(
             id=self.id,
-            organization_id=self.organization_id,
-            account_id=self.account_id,
+            organization_id=organization_id,
+            account_id=account_id,
             role=self.role.value if hasattr(self.role, "value") else str(self.role),
             permissions=list(self.permissions or []),
-            invited_by_id=self.invited_by_id,
+            invited_by_id=invited_by_id,
             joined_at=self.joined_at,
             updated_at=self.updated_at,
         )
@@ -356,10 +362,12 @@ class RoleAssignment(BaseModel, TimestampMixin):
     expires_at = fields.DatetimeField(null=True)  # Optional time-bound role
 
     def to_domain(self) -> RoleAssignmentInfo:
+        account_id = cast(int, getattr(self, "account_id"))
+        organization_id = cast(int, getattr(self, "organization_id"))
         return RoleAssignmentInfo(
             id=self.id,
-            account_id=self.account_id,
-            organization_id=self.organization_id,
+            account_id=account_id,
+            organization_id=organization_id,
             role_id=self.role_id,
             scope_level=self.scope_level,
             scope_id=self.scope_id,
@@ -392,10 +400,50 @@ class RoleAssignment(BaseModel, TimestampMixin):
         ]
 
 
+class AccountSerializer(BaseModelSerializer[Account]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Account
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class UserProfileSerializer(BaseModelSerializer[UserProfile]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = UserProfile
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class OrganizationSerializer(BaseModelSerializer[Organization]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Organization
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class OrganizationMembershipSerializer(BaseModelSerializer[OrganizationMembership]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = OrganizationMembership
+        fields = "__all__"
+        read_only_fields = ("id", "joined_at", "updated_at")
+
+
+class RoleAssignmentSerializer(BaseModelSerializer[RoleAssignment]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = RoleAssignment
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at", "activated_at")
+
+
 __all__ = [
     "Account",
     "UserProfile",
     "Organization",
     "OrganizationMembership",
     "RoleAssignment",
+    "AccountSerializer",
+    "UserProfileSerializer",
+    "OrganizationSerializer",
+    "OrganizationMembershipSerializer",
+    "RoleAssignmentSerializer",
 ]

@@ -8,6 +8,7 @@ from css.core.db.models.mixins import TimestampMixin
 from css.core.memory.enums import MemoryEntryKind, MemoryScope, MemoryTier
 from css.core.memory.types import MemoryEntry, MemorySnapshot
 
+from css.core.db.serializers import BaseModelSerializer
 
 def _normalize_snapshot_entries(value: object) -> list[dict[str, object]]:
     if not isinstance(value, list):
@@ -93,3 +94,16 @@ class MemorySnapshotRecord(BaseModel, TimestampMixin):
             metadata=self.metadata or {},
             created_at=self.created_at.isoformat() if self.created_at else "",
         )
+
+class MemoryEntryRecordSerializer(BaseModelSerializer[MemoryEntryRecord]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = MemoryEntryRecord
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at", "entry_id")
+
+
+class MemorySnapshotRecordSerializer(BaseModelSerializer[MemorySnapshotRecord]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = MemorySnapshotRecord
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at", "snapshot_id")

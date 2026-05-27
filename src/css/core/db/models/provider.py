@@ -4,6 +4,7 @@ from typing import override
 
 from tortoise import fields
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .mixins import TimestampMixin
 
@@ -22,3 +23,9 @@ class ApiServiceProvider(BaseModel, TimestampMixin):
     @override
     def __str__(self) -> str:
         return self.name
+
+class ApiServiceProviderSerializer(BaseModelSerializer[ApiServiceProvider]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = ApiServiceProvider
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")

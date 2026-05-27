@@ -9,6 +9,7 @@ from tortoise.indexes import Index
 from css.core.db.fields import DescriptionField, PathField, SlugField
 from css.core.enums import ScopeLevel
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .enums import RedBlueMode
 from .mixins import SoftDeleteMixin, AuditTrailMixin
@@ -513,3 +514,23 @@ class ScopedEntry(BaseModel, SoftDeleteMixin, AuditTrailMixin):
         if level_value is not None:
             changes["scope_level"] = level_value
         return await self.save_changes(**changes)
+
+class AppScopeSerializer(BaseModelSerializer[AppScope]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = AppScope
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class ProjectScopeSerializer(BaseModelSerializer[ProjectScope]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = ProjectScope
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class SessionScopeSerializer(BaseModelSerializer[SessionScope]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = SessionScope
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at", "session_id")

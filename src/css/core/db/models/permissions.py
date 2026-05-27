@@ -9,6 +9,7 @@ from tortoise import fields
 from tortoise.expressions import Q
 from tortoise.indexes import Index
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .mixins import TimestampMixin
 
@@ -341,3 +342,23 @@ class RolePermissionCache(BaseModel):
             permissions=dict(permissions),
             expires_at=now + timedelta(seconds=max(0, ttl_seconds)),
         )
+
+class PermissionGrantSerializer(BaseModelSerializer[PermissionGrant]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = PermissionGrant
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class ScopeSessionSerializer(BaseModelSerializer[ScopeSession]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = ScopeSession
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class RolePermissionCacheSerializer(BaseModelSerializer[RolePermissionCache]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = RolePermissionCache
+        fields = "__all__"
+        read_only_fields = ("id", "created_at")

@@ -1,15 +1,15 @@
-"""User auth API endpoints — login, refresh, logout, API key management (Phase 7).
+"""User authentication API endpoints — login, refresh, logout, API key management (Phase 7).
 
 Endpoints:
-- POST   /api/auth/login          — Username/password → access + refresh tokens
-- POST   /api/auth/refresh        — Refresh token → new access token
-- POST   /api/auth/logout         — Revoke tokens
-- GET    /api/auth/keys           — List API keys
-- POST   /api/auth/keys           — Generate new API key
-- DELETE /api/auth/keys/{id}      — Revoke API key
+- POST   /api/authentication/login          — Username/password → access + refresh tokens
+- POST   /api/authentication/refresh        — Refresh token → new access token
+- POST   /api/authentication/logout         — Revoke tokens
+- GET    /api/authentication/keys           — List API keys
+- POST   /api/authentication/keys           — Generate new API key
+- DELETE /api/authentication/keys/{id}      — Revoke API key
 """
 
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 from css.core.logger import getLogger
 import os
 
@@ -25,7 +25,7 @@ from .manager import (
 
 log = getLogger(__name__)
 
-# Global auth managers (should be DI'd from container in production)
+# Global authentication managers (should be DI'd from container in production)
 _jwt_manager = JWTManager(
     secret_key=os.environ.get("JWT_SECRET_KEY", "dev-secret-key-change-in-production"),
     access_token_expire_minutes=int(os.environ.get("JWT_EXPIRES_MINUTES", "30")),
@@ -36,25 +36,25 @@ _revocation_store = TokenRevocationStore()
 # Request/Response Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class LoginRequest(EndpointModel, kw_only=True):
+class LoginRequest(BaseEndpoint, kw_only=True):
     """Login request with credentials."""
     username: str
     password: str
     scope: list[str] | None = None
 
-class RefreshRequest(EndpointModel, kw_only=True):
+class RefreshRequest(BaseEndpoint, kw_only=True):
     """Refresh token request."""
     refresh_token: str
 
-class LogoutRequest(EndpointModel, kw_only=True):
+class LogoutRequest(BaseEndpoint, kw_only=True):
     """Logout request."""
     access_token: str | None = None
 
-class APIKeyCreateRequest(EndpointModel, kw_only=True):
+class APIKeyCreateRequest(BaseEndpoint, kw_only=True):
     """Request to create API key."""
     note: str | None = None
 
-class APIKeyListResponse(EndpointModel, kw_only=True):
+class APIKeyListResponse(BaseEndpoint, kw_only=True):
     """Response with list of API keys."""
     keys: list[dict]
 
@@ -62,7 +62,7 @@ class APIKeyListResponse(EndpointModel, kw_only=True):
 # Router Setup
 # ─────────────────────────────────────────────────────────────────────────────
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/api/authentication", tags=["authentication"])
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Endpoints

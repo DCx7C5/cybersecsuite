@@ -11,6 +11,7 @@ from tortoise.indexes import Index
 from css.core.db.fields import LabelField
 from css.modules.teams.enums import OrchestratorMode, TeamStatus
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 
 
@@ -206,3 +207,9 @@ class Team(BaseModel):
             Index(fields=["status", "paused_at"]),
         ]
         unique_together = (("session_id", "team_name"),)
+
+class TeamSerializer(BaseModelSerializer[Team]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Team
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")

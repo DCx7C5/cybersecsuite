@@ -11,6 +11,7 @@ import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseUserModel
 from .enums import UserRoles
 
@@ -167,3 +168,9 @@ class User(BaseUserModel):
             Index(fields=["is_active", "username"]),
             Index(fields=["api_key_hash"]),
         ]
+
+class UserSerializer(BaseModelSerializer[User]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = User
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")

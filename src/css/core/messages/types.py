@@ -57,7 +57,7 @@ class LLMResponse(msgspec.Struct, frozen=True, kw_only=True):
 
 
 class ExecutorResult(msgspec.Struct, frozen=True, kw_only=True):
-    """Result from an execution/API call to a provider."""
+    """Result from an execution/api call to a provider."""
 
     status_code: int = 200
     headers: dict[str, str] = msgspec.field(default_factory=dict)

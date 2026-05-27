@@ -9,13 +9,11 @@ and response values remain ``msgspec.Struct`` instances, while FastAPI still
 requires a Pydantic-core schema hook for response-model/OpenAPI generation.
 """
 
-from typing import Any, TYPE_CHECKING
+from typing import Any
 
 import msgspec
-
-if TYPE_CHECKING:
-    from pydantic import GetCoreSchemaHandler
-    from pydantic_core import CoreSchema
+from pydantic import GetCoreSchemaHandler
+from pydantic_core import CoreSchema
 
 
 class BaseEndpoint(msgspec.Struct, kw_only=True, frozen=True):

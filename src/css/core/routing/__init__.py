@@ -1,4 +1,14 @@
-from css.core.pipeline import pipe, Stage, PassthroughStage, BufferStage, FilterStage, MapStage, ExecuteStage, ObserveStage
+
+from css.core.routing.pipeline import (
+    BufferStage,
+    ExecuteStage,
+    FilterStage,
+    MapStage,
+    ObserveStage,
+    PassthroughStage,
+    Stage,
+    pipe,
+)
 
 __all__ = [
     "pipe",

@@ -60,7 +60,6 @@ coverage.xml
 !.venv/bin/
 !**data/
 !/home/daen/Projects/ai-marketplace/index.json
-!pyrightconfig.json
 !pyproject.toml
 !uv.lock
 !docker-compose.yml
@@ -78,7 +77,7 @@ dump.rdb
 resume
 legacy_docs/
 src/legacy/
-
+!pyrightconfig.json
 
 # env
 !.env.example

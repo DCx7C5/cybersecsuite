@@ -13,22 +13,18 @@ static fallback for startup bootstrap.
 
 import pkgutil
 from pathlib import Path
-from typing import Callable, Any, TYPE_CHECKING
+from typing import Callable, Any
 import time
 
+from css.core.db.models.llm_models import LLMModel as _CatalogLLMModel
 from css.core.types.base_meta import AsyncSafeSingletonMeta
 
 from .models import ModelMetadata
 from .enums import ModelCapability
 
-if TYPE_CHECKING:
-    from css.core.db.models.llm_models import LLMModel as _CatalogLLMModel
 
-
-def _catalog_model_cls() -> "type[_CatalogLLMModel]":
-    from css.core.db.models.llm_models import LLMModel
-
-    return LLMModel
+def _catalog_model_cls() -> type[_CatalogLLMModel]:
+    return _CatalogLLMModel
 
 
 def _known_provider_ids() -> set[str]:

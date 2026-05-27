@@ -16,7 +16,7 @@ from typing import Optional
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
-from css.core.types.base_endpoint import EndpointModel
+from css.core.types.base_endpoint import BaseEndpoint
 
 log = getLogger(__name__)
 
@@ -31,7 +31,7 @@ _ph = PasswordHasher()
 # Models
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TokenPayload(EndpointModel, kw_only=True):
+class TokenPayload(BaseEndpoint, kw_only=True):
     """JWT token payload."""
     sub: str
     exp: float
@@ -40,7 +40,7 @@ class TokenPayload(EndpointModel, kw_only=True):
     scopes: list[str] = []
 
 
-class AccessTokenResponse(EndpointModel, kw_only=True):
+class AccessTokenResponse(BaseEndpoint, kw_only=True):
     """Response after token issuance."""
     access_token: str
     refresh_token: str | None = None
@@ -48,7 +48,7 @@ class AccessTokenResponse(EndpointModel, kw_only=True):
     expires_in: int
 
 
-class APIKeyResponse(EndpointModel, kw_only=True):
+class APIKeyResponse(BaseEndpoint, kw_only=True):
     """Response after API key generation."""
     key_id: str
     secret: str

@@ -11,26 +11,22 @@ This enables fast session resumption while ensuring durability.
 from css.core.logger import getLogger
 import msgspec
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Protocol
+from typing import Protocol
 
+from css.core.db.models.memory import MemoryEntryRecord as _MER
+from css.core.db.models.memory import MemorySnapshotRecord as _MSR
 from css.core.sdks.context import ConversationContext
 from css.core.types.base_messages import BaseMessage
 from css.core.types.base_enums import MessageRole
 from css.core.memory.types import MemoryListResult, MemoryQuery
 
-if TYPE_CHECKING:
-    from css.core.db.models.memory import MemoryEntryRecord as _MER
-    from css.core.db.models.memory import MemorySnapshotRecord as _MSR
+
+def _entry_cls() -> type[_MER]:
+    return _MER
 
 
-def _entry_cls() -> "type[_MER]":
-    from css.core.db.models.memory import MemoryEntryRecord
-    return MemoryEntryRecord
-
-
-def _snapshot_cls() -> "type[_MSR]":
-    from css.core.db.models.memory import MemorySnapshotRecord
-    return MemorySnapshotRecord
+def _snapshot_cls() -> type[_MSR]:
+    return _MSR
 
 
 log = getLogger(__name__)

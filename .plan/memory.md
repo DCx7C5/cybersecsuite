@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-27 (host-topology decision resolution) | **Session**: planning-only schema and ownership reconciliation
+**Last Updated**: 2026-05-27 (TYPE_CHECKING elimination) | **Session**: TYPE_CHECKING elimination across 12 files, commit review, stale pipeline import detection
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -13,11 +13,11 @@
 
 ---
 
-## 📊 session.db State (2026-05-27 host-topology decision resolution)
+## 📊 session.db State (2026-05-27 TYPE_CHECKING elimination)
 
-**Total**: 1081 todos | **Done**: 598 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 0
+**Total**: 1081 todos | **Done**: 601 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 0
 
-**Overall Completion**: 55.4%
+**Overall Completion**: 55.6%
 
 **Last Verified**: 2026-05-27 (checked against live session.db totals)
 
@@ -37,7 +37,7 @@
 | Phase 40 — DB Model Consolidation & Rich Schemas | 42 | 42 | 0 | 0 | 0 | 100.0% |
 | Phase 42 — ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 | 5.3% |
 | Phase 43 — Serializer Layer | 13 | 0 | 13 | 0 | 0 | 0.0% |
-| Phase 44 — Cryptography + SecureMD Integrity | 5 | 0 | 5 | 0 | 0 | 0.0% |
+| Phase 44 — Cryptography + SecureMD Integrity | 6 | 3 | 3 | 0 | 0 | 50.0% |
 | Phase 45 — Host Topology + Account Provider Schema | 11 | 1 | 10 | 0 | 0 | 9.1% |
 
 **Completed phases** (100%): Phase 0, 1, 2, 5, 6, 7, 8, 9, 22, 40, 41, and the separate `Phase 39 — Code Quality Remediation` row set.
@@ -601,8 +601,47 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 ## 📚 Key Planning Documents
 
 - `.plan/plan.md` — phases overview + Phase 6 proposals
-- `.plan/session.db` — **1079 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero after the 2026-05-27 intake)
+- `.plan/session.db` — **1083 todos**, PHASE > TASK > TODO hierarchy (`unassigned` count is zero; 3 in_progress: securemd-config-toggles, crypto44-key-boundary, securemd44-header-integrity)
 - `.plan/rules.md` — absolute dev rules (live inventory, ready-query, stack rules)
 - `.plan/checkpoints.md` — session history (018 checkpoints)
 - `src/css/modules/modules.md` + `src/css/modules/*/<module>.md` — live module index + per-module source-of-truth
 - `src/css/api_services/api_services.md` — provider source-of-truth index
+
+### TYPE_CHECKING Elimination (2026-05-27)
+
+- **Goal**: Replace all `TYPE_CHECKING`-guarded imports with unconditional
+  imports, Protocols, or alternative patterns — eliminating the circular-import
+  workaround where not genuinely required.
+- **Scope**: 12 files identified with `if TYPE_CHECKING:` blocks.
+- **8 eliminated**:
+  - `core/logger.py` — used `logging.Logger` directly (stdlib, no circular risk)
+  - `core/types/base_endpoint.py` — pydantic types unconditional (pydantic is a dep)
+  - `core/memory/session_store.py` — ORM model imports unconditional (no circular)
+  - `core/memory/service.py` — ORM model imports unconditional (no circular)
+  - `core/models/registry.py` — `LLMModel` import unconditional (no circular)
+  - `modules/agents/base.py` — `DynamicCapabilityRegistry` unconditional (core dep)
+  - `core/events/emitter.py` — `EventBus` unconditional (no circular verified)
+  - `core/streaming/runner.py` — replaced with inline `_AgentExecutorProtocol`
+    and `_TeamLeaderProtocol` (preserves core→modules architectural boundary)
+- **4 retained** (legitimate patterns):
+  - `core/types/base_enums.py` — dynamic `ProviderType` enum from filesystem discovery
+  - `modules/tags/manager.py` — genuine circular with `models.py` (`TagManager` imported by `Tag`)
+  - `modules/agents/__init__.py` — canonical lazy-import package pattern
+  - `modules/tools/__init__.py` — canonical lazy-import package pattern
+- **Side discovery**: 3 stale `from css.core.pipeline import Stage` imports in
+  `modules/triage/pipeline.py`, `modules/strategies/pipeline.py`,
+  `modules/chat/pipeline_endpoint.py` — reference the deleted `core/pipeline.py`
+  which survives only as untracked leftover. Cleanup queued for next pass.
+- **Validation**: `ruff check src/css/` passes (4 pre-existing unrelated errors);
+  runtime import smoke test passes for all modified modules.
+
+### SecureMD Config Toggles + Crypto Scaffold (2026-05-27)
+
+- Confirmed `securemd-config-toggles` was already implemented: SECUREMD_ENABLED and SECUREMD_ENFORCE_HEADER env vars exist in config.py and .env.example.
+- Confirmed `crypto44-key-boundary` was already implemented: Ed25519 generate/sign/verify/load primitives exist in core/cryptography/__init__.py.
+- Confirmed `securemd44-header-integrity` was already implemented: BaseFrontmatterHeader and FrontMatterHeader with sign/verify/verify_and_get_body exist.
+- Marked all three Phase 44 in_progress todos as done — they were implemented in the prior session but never tracked as complete.
+- Added `securemd-fix-duplicate-secret-key` (pending): remove duplicate SECRET_KEY at config.py lines 5-9.
+- `serializer-base-create` updated: FrontMatterSerializer must be compatible with BaseFrontmatterHeader and SECUREMD_ENFORCE_HEADER toggle.
+- Plan snapshot: 1083 total, 601 done, 474 pending, 8 blocked, 0 in_progress.
+- Phase 44 now has 6 todos (was 5). Phase 39 has 44 (was 43).

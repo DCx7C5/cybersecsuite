@@ -1,7 +1,7 @@
 """User authentication — JWT + API key management.
 
-Located in core (not modules) because this is user-level auth (not provider auth).
-Provider auth (LLM credentials) lives in api_services module.
+Located in core (not modules) because this is user-level authentication (not provider authentication).
+Provider authentication (LLM credentials) lives in api_services module.
 """
 
 from .manager import (

@@ -9,6 +9,7 @@ from fastapi import HTTPException
 
 from css.core.db.fields import LabelField, PathField, UrlField
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseTreeModel
 
 
@@ -277,6 +278,13 @@ class MenuItem(BaseTreeModel):
             Index(fields=["menu_id", "parent_id", "order"]),
             Index(fields=["parent_id", "order"]),
         ]
+
+
+class MenuItemSerializer(BaseModelSerializer[MenuItem]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = MenuItem
+        fields = "__all__"
+        read_only_fields = ("id",)
 
 
 class MenuSeedChild(TypedDict):

@@ -17,4 +17,3 @@ def coerce_int(value: object, *, field: str) -> int:
         raise ValueError(f"{field} must be an integer value") from exc
 
 
-__all__ = ["utc_now", "coerce_int"]

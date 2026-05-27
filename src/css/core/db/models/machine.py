@@ -6,6 +6,7 @@ import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .mixins import TimestampMixin
 from ..fields import NameField, NonNegativeIntField, VersionField, SHA512SumField
@@ -101,6 +102,13 @@ class Machine(BaseModel, TimestampMixin):
             Index(fields=["is_active", "last_seen"]),
         ]
         ordering = ["hostname"]
+
+
+class MachineSerializer(BaseModelSerializer[Machine]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = Machine
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
 
 
 async def sync_default_machines() -> list[Machine]:

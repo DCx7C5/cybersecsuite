@@ -1,9 +1,10 @@
 """Core memory service API for CRUD/search/optimise operations."""
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
 from uuid import uuid4
 
+from css.core.db.models.memory import MemoryEntryRecord as _MER
+from css.core.db.models.memory import MemorySnapshotRecord as _MSR
 from .contracts import MemoryPolicy
 from .session_store import SessionStore
 from .types import (
@@ -19,19 +20,13 @@ from .types import (
     MemoryWriteResult,
 )
 
-if TYPE_CHECKING:
-    from css.core.db.models.memory import MemoryEntryRecord as _MER
-    from css.core.db.models.memory import MemorySnapshotRecord as _MSR
+
+def _record_cls() -> type[_MER]:
+    return _MER
 
 
-def _record_cls() -> "type[_MER]":
-    from css.core.db.models.memory import MemoryEntryRecord
-    return MemoryEntryRecord
-
-
-def _snapshot_cls() -> "type[_MSR]":
-    from css.core.db.models.memory import MemorySnapshotRecord
-    return MemorySnapshotRecord
+def _snapshot_cls() -> type[_MSR]:
+    return _MSR
 
 
 class DefaultMemoryPolicy:

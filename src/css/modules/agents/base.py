@@ -9,12 +9,10 @@ The design uses Protocol (PEP 544) and wires to ProviderRegistry + HttpProviderA
 Replaces Claude SDK hardcode with provider-agnostic execution.
 """
 
+from css.core.capabilities.capability_registry import DynamicCapabilityRegistry
 from css.core.logger import getLogger
-from typing import Protocol, runtime_checkable, TYPE_CHECKING, Any, cast
+from typing import Protocol, runtime_checkable, Any, cast
 from datetime import datetime
-
-if TYPE_CHECKING:
-    from css.core.capabilities.capability_registry import DynamicCapabilityRegistry
 
 from css.core.types.base_messages import BaseMessage
 from css.core.messages.types import LLMResponse

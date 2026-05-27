@@ -1,11 +1,13 @@
 """Multi-orchestrator tracking model and query helpers."""
 
 from datetime import UTC, datetime, timedelta
+from typing import cast
 
 import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .enums import OrchestratorStatus
 
@@ -67,9 +69,10 @@ class OrchestratorInstance(BaseModel):
     manager = OrchestratorInstanceManager()
 
     def to_domain(self) -> OrchestratorInstanceInfo:
+        team_id = cast(int, getattr(self, "team_id"))
         return OrchestratorInstanceInfo(
             id=self.id,
-            team_id=self.team_id,
+            team_id=team_id,
             orchestrator_id=self.orchestrator_id,
             status=self.status.value if hasattr(self.status, "value") else str(self.status),
             heartbeat_at=self.heartbeat_at,
@@ -136,3 +139,9 @@ class OrchestratorInstance(BaseModel):
             Index(fields=["status", "heartbeat_at"]),
             Index(fields=["orchestrator_id"]),
         ]
+
+class OrchestratorInstanceSerializer(BaseModelSerializer[OrchestratorInstance]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = OrchestratorInstance
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")

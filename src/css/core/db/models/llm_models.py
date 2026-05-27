@@ -24,6 +24,7 @@ from css.core.db.fields import (
 from css.core.models.enums import ModelCapability, ModelFamily, ModelProvider
 from css.core.models.models import ModelMetadata, ModelPricing
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .mixins import TimestampMixin
 
@@ -463,3 +464,16 @@ class LLMModelTag(BaseModel, TimestampMixin):
             Index(fields=["llm_model_id", "tag_id"]),
             Index(fields=["tag_id", "llm_model_id"]),
         ]
+
+class LLMModelSerializer(BaseModelSerializer[LLMModel]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = LLMModel
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class LLMModelTagSerializer(BaseModelSerializer[LLMModelTag]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = LLMModelTag
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")

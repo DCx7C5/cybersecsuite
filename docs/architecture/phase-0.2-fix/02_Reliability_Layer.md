@@ -236,7 +236,7 @@ class RetryOrchestrator:
         if any(word in error_str for word in ['connection', 'refused', 'unreachable']):
             return RetryableErrorType.CONNECTION_ERROR
         
-        if any(word in error_str for word in ['401', 'unauthorized', 'auth']):
+        if any(word in error_str for word in ['401', 'unauthorized', 'authentication']):
             return RetryableErrorType.AUTHENTICATION
         
         if any(word in error_str for word in ['400', 'invalid', 'bad request']):

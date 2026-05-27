@@ -1,7 +1,7 @@
 # core/cryptography — Cryptographic Primitive Ownership
 
 **Location**: `src/css/core/cryptography/`
-**Status**: New canonical package; implementation is pending in Phase 44.
+**Status**: New canonical package; Phase 44 crypto44-key-boundary is in_progress. Ed25519 key generation, signing, and verification being implemented.
 **Tracker authority**: `.plan/session.db`; this document owns the executable cryptography specification.
 
 ## Purpose
@@ -16,9 +16,9 @@
 
 | File | Contents / current status |
 |------|---------------------------|
-| `__init__.py` | Empty public package scaffold; exports are pending. |
+| `__init__.py` | Ed25519 primitives: generate_ed25519_keypair(), sign_bytes(), verify_signature(), PEM load helpers. Typed exceptions: CryptographyError, KeyPurposeError. Respects SECUREMD_ENABLED config gate. |
 | `cryptography.md` | This executable owner document. |
-| `../settings/config.py` | Configuration consumer currently exposing incomplete `SECRET_KEY` validation. |
+| `../settings/config.py` | Configuration consumer; now also has SECUREMD_ENABLED and SECUREMD_ENFORCE_HEADER toggles. |
 
 ## Ownership Rule
 
@@ -45,9 +45,11 @@ password, token, document-signing, and field-encryption key.
 
 | Todo ID | Status in `session.db` | Required change |
 |---------|------------------------|-----------------|
-| `crypto44-key-boundary` | pending | Define primitive/key-purpose ownership and fail-closed configuration. |
-| `securemd44-header-integrity` | pending | Consume Ed25519 verification for SecureMD. |
+| `securemd-config-toggles` | in_progress | Add SECUREMD_ENABLED and SECUREMD_ENFORCE_HEADER config toggles. |
+| `crypto44-key-boundary` | in_progress | Implement Ed25519 key generation, sign_bytes(), verify_signature(), PEM load helpers, typed failures. Respects SECUREMD_ENABLED gate. |
+| `securemd44-header-integrity` | in_progress | Consume Ed25519 verification for SecureMD BaseFrontmatterHeader. |
 | `auth-secrets-settings` | pending | Consume the cryptography boundary for encrypted provider credentials. |
+| `securemd-fix-duplicate-secret-key` | pending | Remove duplicate SECRET_KEY at config.py lines 5-9. |
 
 ## Dependencies
 

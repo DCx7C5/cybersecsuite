@@ -1,10 +1,12 @@
 """Canonical team quota ORM model; task assignment/result live in models.tasks."""
 
 from datetime import datetime
+from typing import cast
 
 import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
+from css.core.db.serializers import BaseModelSerializer
 from css.core.db.models.base import BaseModel
 
 
@@ -39,9 +41,10 @@ class TeamQuota(BaseModel):
     daily_reset_at = fields.DatetimeField(null=True)
 
     def to_domain(self) -> TeamQuotaInfo:
+        team_id = cast(int, getattr(self, "team_id"))
         return TeamQuotaInfo(
             id=self.id,
-            team_id=self.team_id,
+            team_id=team_id,
             max_concurrent_tasks=self.max_concurrent_tasks,
             max_daily_tasks=self.max_daily_tasks,
             cpu_quota_percent=self.cpu_quota_percent,
@@ -69,3 +72,9 @@ class TeamQuota(BaseModel):
         indexes = [
             Index(fields=["team_id"]),
         ]
+
+class TeamQuotaSerializer(BaseModelSerializer[TeamQuota]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = TeamQuota
+        fields = "__all__"
+        read_only_fields = ("id",)

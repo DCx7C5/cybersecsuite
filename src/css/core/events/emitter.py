@@ -8,22 +8,18 @@ import inspect
 import time
 from collections.abc import Awaitable, Callable, Mapping, Sequence
 from functools import wraps
-from typing import TYPE_CHECKING, ParamSpec, TypeVar, cast
+from typing import ParamSpec, TypeVar, cast
 
 from css.core.types.base_emitter import BaseEmitterClass
-
-if TYPE_CHECKING:
-    from .event_bus import EventBus
+from .event_bus import EventBus
 
 P = ParamSpec("P")
 TResult = TypeVar("TResult")
 
 
-def get_event_bus() -> "EventBus":
+def get_event_bus() -> EventBus:
     """Return the typed global EventBus singleton."""
-    from .event_bus import EventBus
-
-    return cast("EventBus", EventBus())
+    return cast(EventBus, EventBus())
 
 
 async def emit_event(event_type: str, payload: Mapping[str, object] | None = None) -> None:

@@ -4,16 +4,34 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-27 (host-topology decision resolution)
+**Updated**: 2026-05-27 (TYPE_CHECKING elimination)
 
-## Current Session (2026-05-27 - Core Boundary And Schema Intake)
+## Current Session (2026-05-27 - TYPE_CHECKING Elimination)
 
-**Session Goal**: Reconcile the newly introduced `core/authentication`,
-`core/serializers`, `core/cryptography`, and `core/securemd` source boundaries
-with executable tracker ownership, then define the requested host/network,
-account/provider, serializer, and manager schema work without implementing it.
+**Session Goal**: Eliminate all `TYPE_CHECKING`-guarded imports by
+replacing them with unconditional imports (where no circular dependency exists),
+inline Protocols (where architectural boundaries prevent cross-layer imports),
+or retaining the pattern only where genuinely necessary (dynamic enums,
+lazy-loading `__init__.py` packages, ORM circular imports).
+
+Preparatory work: mark the three Phase 44 in_progress todos as done (already
+implemented in source from prior session), review recent commits for import
+breakage, and discover the stale `core/pipeline.py` untracked leftover.
 
 **Audited Outcome**:
+
+- All 12 `TYPE_CHECKING`-guarded import blocks across the codebase evaluated.
+  8 eliminated (4 via unconditional runtime import, 1 via `logging.Logger`
+  direct reference, 1 via inline `Protocol` definitions, 2 via removal of
+  now-unnecessary factory-function indirection); 4 retained as legitimate
+  patterns (dynamic `ProviderType` enum, `tags/manager.py` ORM circular,
+  `modules/agents/__init__.py` and `modules/tools/__init__.py` lazy package loading).
+- 3 stale `from css.core.pipeline import Stage` imports detected in
+  `modules/triage/pipeline.py`, `modules/strategies/pipeline.py`, and
+  `modules/chat/pipeline_endpoint.py` — these reference the deleted
+  `core/pipeline.py` which survives only as an untracked leftover file.
+  Documented for cleanup.
+- Last 5 commits reviewed for import correctness and class rename consistency.
 
 - Live tracker after decision resolution: 1081 todos | 598 done | 475 pending | 8 blocked | 0 active.
 - Hierarchy repair: zero `unassigned` todos and zero empty descriptions remain.
@@ -55,11 +73,12 @@ account/provider, serializer, and manager schema work without implementing it.
 **Core Dependency/Reference Evidence**:
 
 - `scripts/codebase_dependency_analyzer.py` scanned 179 `src/css/core` Python
-  files and reports 12 live `core -> modules` edges.
-- After repairing the broken `core/orchestration` facade, the sole confirmed
-  missing imported core symbol is `TeamLeader` in
-  `src/css/core/streaming/runner.py` against
-  `src/css/modules/teams/orchestrator.py`.
+  files and reports 11 live `core -> modules` edges (one eliminated by
+  replacing `AgentExecutor`/`TeamLeader` TYPE_CHECKING with inline Protocols
+  in `core/streaming/runner.py`).
+- The `TeamLeader` reference in `core/streaming/runner.py` is now resolved
+  via an inline `_TeamLeaderProtocol` rather than a module-level import,
+  removing it from the core→modules edge count.
 - Core-owned Markdown reference scanning reports 14 Python files without a
   file-level documentation hit; remediation is owned by
   `audit42-core-owner-doc-boundaries`.
@@ -121,9 +140,9 @@ Snapshot queried from `.plan/session.db` on 2026-05-27:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1081 | 598 | 475 | 8 | 0 |
+| 1083 | 601 | 474 | 8 | 0 |
 
-Overall completion: 55.4%. This planning pass preserves the new core
+Overall completion: 55.5%. Active: 0 in_progress (3 Phase 44 todos found already implemented and marked done; TYPE_CHECKING elimination is a meta-cleanup task). This planning pass preserves the new core
 boundaries, resolves the Phase 45 schema decisions, and adds separate
 Machine-to-Host migration and retirement tasks before destructive model work.
 
@@ -191,13 +210,13 @@ and owner documents have been made executable before implementation resumes.
 | 36 | Local Proxy & Transport Surfaces | 8 | 2 | 6 | 0 | 0 |
 | 37 | SIEM/EDR Integration | 6 | 0 | 6 | 0 | 0 |
 | 38 | IDE PyCharm | 5 | 4 | 1 | 0 | 0 |
-| 39 | Audit Remediation (A1/A2/A3) | 43 | 7 | 36 | 0 | 0 |
+| 39 | Audit Remediation (A1/A2/A3) | 44 | 7 | 37 | 0 | 0 |
 | 39 | Code Quality Remediation | 5 | 5 | 0 | 0 | 0 |
 | 40 | DB Model Consolidation & Rich Schemas | 42 | 42 | 0 | 0 | 0 |
 | 41 | Plan Quality Remediation | 12 | 12 | 0 | 0 | 0 |
 | 42 | ACP + LSP + Marketplace Implementation | 19 | 1 | 18 | 0 | 0 |
 | 43 | Serializer Layer | 13 | 0 | 13 | 0 | 0 |
-| 44 | Cryptography + SecureMD Integrity | 5 | 0 | 5 | 0 | 0 |
+| 44 | Cryptography + SecureMD Integrity | 6 | 3 | 3 | 0 | 0 |
 | 45 | Host Topology + Account Provider Schema | 11 | 1 | 10 | 0 | 0 |
 | — | Meta — Audit & Validation | 47 | 38 | 9 | 0 | 0 |
 

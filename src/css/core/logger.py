@@ -4,10 +4,6 @@
 import logging
 import logging.handlers
 import sys
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from logging import Logger
 
 _loggers: dict[str, logging.Logger] = {}
 
@@ -64,7 +60,7 @@ def _ensure_root() -> logging.Logger:
     return root
 
 
-def getLogger(name: str) -> Logger:
+def getLogger(name: str) -> logging.Logger:
     """Get a logger instance, cached for reuse.
 
     Args:

@@ -10,6 +10,7 @@ from tortoise.indexes import Index
 from css.core.events.domain_event import DomainEvent
 from css.core.events.store import EventStore
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 
 
@@ -147,3 +148,9 @@ class DomainEventRecord(BaseModel):
 
         await self.save()
         store.append(self.to_domain_event())
+
+class DomainEventRecordSerializer(BaseModelSerializer[DomainEventRecord]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = DomainEventRecord
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "event_id")

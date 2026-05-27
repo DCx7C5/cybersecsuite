@@ -7,6 +7,7 @@ import msgspec
 from tortoise import fields
 from tortoise.indexes import Index
 
+from css.core.db.serializers import BaseModelSerializer
 from .base import BaseModel
 from .enums import TaskAssignmentStatus, TaskPriority
 
@@ -166,3 +167,16 @@ class TaskResult(BaseModel):
         indexes = [
             Index(fields=["task_assignment_id"]),
         ]
+
+class TaskAssignmentSerializer(BaseModelSerializer[TaskAssignment]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = TaskAssignment
+        fields = "__all__"
+        read_only_fields = ("id", "assigned_at", "updated_at")
+
+
+class TaskResultSerializer(BaseModelSerializer[TaskResult]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = TaskResult
+        fields = "__all__"
+        read_only_fields = ("id", "created_at")

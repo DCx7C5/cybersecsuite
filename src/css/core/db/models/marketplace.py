@@ -17,6 +17,7 @@ from css.core.db.fields import (
     VersionField,
 )
 from css.core.enums import MarketplaceItemStatus, MarketplaceItemType, MarketplaceStatus
+from css.core.db.serializers import BaseModelSerializer
 from . import TimestampMixin
 
 from .base import BaseModel
@@ -336,3 +337,23 @@ class MarketplaceItemTag(BaseModel, TimestampMixin):
             Index(fields=["marketplace_item_id", "tag_id"]),
             Index(fields=["tag_id", "marketplace_item_id"]),
         ]
+
+class MarketplaceMetaSerializer(BaseModelSerializer[MarketplaceMeta]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = MarketplaceMeta
+        fields = "__all__"
+        read_only_fields = ("id",)
+
+
+class MarketplaceItemSerializer(BaseModelSerializer[MarketplaceItem]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = MarketplaceItem
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at", "installed_at")
+
+
+class MarketplaceItemTagSerializer(BaseModelSerializer[MarketplaceItemTag]):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = MarketplaceItemTag
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")

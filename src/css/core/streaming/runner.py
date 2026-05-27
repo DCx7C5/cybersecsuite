@@ -9,15 +9,25 @@ TeamLeader delegation when team_id + orchestrator_id are set.
 
 from css.core.logger import getLogger
 from collections.abc import AsyncGenerator
-from typing import TYPE_CHECKING, override
+from typing import Any, Protocol, override
 import uuid
 from datetime import datetime
 
 from css.core.streaming.client_pool import ClientPool
 
-if TYPE_CHECKING:
-    from css.modules.agents.base import AgentExecutor
-    from css.modules.teams.orchestrator import TeamLeader
+
+class _AgentExecutorProtocol(Protocol):
+    """Minimal protocol for AgentExecutor used by QueryExecutor."""
+    def __init__(self, provider: str, model: str) -> None: ...
+    async def execute(self, prompt: str, **kwargs: object) -> Any: ...
+
+
+class _TeamLeaderProtocol(Protocol):
+    """Minimal protocol for TeamLeader used by QueryExecutor."""
+    def __init__(self, team_id: int, orchestrator_id: str) -> None: ...
+    async def initialize(self) -> None: ...
+    async def delegate(self, query: Any) -> dict[str, Any]: ...
+    async def shutdown(self) -> None: ...
 
 
 logger = getLogger("agents.runner")
@@ -70,8 +80,8 @@ class QueryExecutor:
         self.orchestrator_id = orchestrator_id
         self.provider = provider
         self.model = model
-        self._executor: AgentExecutor | None = None
-        self._team_leader: TeamLeader | None = None
+        self._executor: _AgentExecutorProtocol | None = None
+        self._team_leader: _TeamLeaderProtocol | None = None
         
         # Validate team context (B10)
         self._validate_team_context()
@@ -92,7 +102,7 @@ class QueryExecutor:
     def _get_prefix(self) -> str:
         return _MODE_PREFIXES.get(self.mode, f"[MODE: {self.mode.upper()}] ")
     
-    async def _get_team_leader(self) -> TeamLeader | None:
+    async def _get_team_leader(self) -> _TeamLeaderProtocol | None:
         """Lazily initialize TeamLeader (for Team-based delegation)."""
         if self.team_id is None or self.orchestrator_id is None:
             return None
@@ -104,7 +114,7 @@ class QueryExecutor:
 
         return self._team_leader
 
-    async def _get_executor(self) -> AgentExecutor:
+    async def _get_executor(self) -> _AgentExecutorProtocol:
         """Lazily initialise AgentExecutor (provider-agnostic)."""
         if self._executor is None:
             from css.modules.agents.base import AgentExecutor
