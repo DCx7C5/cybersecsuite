@@ -1,6 +1,7 @@
 """Tests for routing strategy and combo foundation models."""
 
 from css.core.resilience.routing import (
+    BudgetGuard,
     ComboConfig,
     ComboTarget,
     PROVIDER_TIER_LIST,
@@ -78,3 +79,18 @@ def test_tier_selector_security_rule_keeps_only_rank_9_plus() -> None:
     assert selected
     assert selected[-1].name == "S_PLUS"
     assert all(tier.rank >= 9 for tier in selected[:-1])
+
+
+def test_budget_guard_tracks_resets_and_clamps_costs() -> None:
+    guard = BudgetGuard()
+    guard.record_cost("default", 0.25)
+    guard.record_cost("default", -2.0)
+    guard.record_cost("default", None)
+
+    assert guard.check_budget("default", 1.0) is True
+    assert guard.get_spent("default") == 0.25
+    assert guard.get_spent("missing") == 0.0
+    assert guard.get_all()["default"] == 0.25
+
+    guard.reset("default")
+    assert guard.get_spent("default") == 0.0
