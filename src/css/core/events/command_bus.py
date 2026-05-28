@@ -12,6 +12,7 @@ Example flow:
 """
 
 from typing import override
+from css.core.events.instrument import instrument
 from css.core.logger import getLogger
 from datetime import datetime, UTC
 import uuid
@@ -230,6 +231,14 @@ class CommandBus:
             handler: CommandHandler instance
         """
         self.handlers[command_type] = handler
+
+    @instrument("command.dispatch")
+    async def dispatch(self, command: Command) -> list:
+        """Public entrypoint for command dispatch — instrumented.
+
+        Delegates to execute() for handler resolution and event emission.
+        """
+        return await self.execute(command)
 
     async def execute(self, command: Command) -> list:
         """Execute a command and emit resulting events.
