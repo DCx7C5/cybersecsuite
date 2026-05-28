@@ -6,13 +6,13 @@ Source: https://docs.github.com/en/copilot/reference/customization-cheat-sheet
 
 | Feature | What it is | Filename and location |
 |---|---|---|
-| Custom instructions | Always-on context that automatically applies within scope | `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md`, `AGENTS.md`, or personal/org settings via UI |
-| Prompt files | Reusable prompt templates with input variables | `.github/prompts/*.prompt.md` |
-| Custom agents | Specialist persona with its own instructions, tool restrictions, and context | `.github/agents/AGENT-NAME.md`, or user/org equivalents |
-| Subagents | Separate agent spawned by the main agent to handle delegated work | N/A |
-| Agent skills | Folder of instructions, scripts, and resources loaded when relevant | `.github/skills/<skill-name>/SKILL.md` or user equivalents |
-| Hooks | Shell commands that run at specific lifecycle points | `.github/hooks/*.json` |
-| MCP servers | Connections to external systems, APIs, and databases | `mcp.json`, repo settings, or custom-agent `mcp-servers` |
+| [Custom instructions](https://docs.github.com/en/copilot/concepts/prompting/response-customization) | Always-on context that automatically applies within scope | `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md`, `AGENTS.md`, or personal/org settings via UI |
+| [Prompt files](https://docs.github.com/en/copilot/concepts/prompting/response-customization?tool=vscode#about-prompt-files) | Reusable prompt templates with input variables | `.github/prompts/*.prompt.md` |
+| [Custom agents](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-custom-agents) | Specialist persona with its own instructions, tool restrictions, and context | `.github/agents/AGENT-NAME.md`, or user/org equivalents |
+| [Subagents](https://docs.github.com/en/copilot/how-tos/chat-with-copilot/chat-in-ide#using-subagents) | Separate agent spawned by the main agent to handle delegated work | N/A |
+| [Agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills) | Folder of instructions, scripts, and resources loaded when relevant | `.github/skills/<skill-name>/SKILL.md` or user equivalents |
+| [Hooks](https://docs.github.com/en/copilot/concepts/agents/hooks) | Shell commands that run at specific lifecycle points | `.github/hooks/*.json` |
+| [MCP servers](https://docs.github.com/en/copilot/concepts/context/mcp) | Connections to external systems, APIs, and databases | `mcp.json`, repo settings, or custom-agent `mcp-servers` |
 
 ## Usage comparison
 
@@ -43,3 +43,7 @@ Key: ✓ supported, ✗ not supported, P preview
 ## Further reading
 
 - Customization library: https://docs.github.com/en/copilot/tutorials/customization-library
+- Custom instructions support: https://docs.github.com/en/copilot/reference/custom-instructions-support
+- Custom agents config: https://docs.github.com/en/copilot/reference/custom-agents-configuration
+- Hooks reference: https://docs.github.com/en/copilot/reference/hooks-reference
+- MCP docs: https://docs.github.com/en/copilot/concepts/context/mcp
