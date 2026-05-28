@@ -21,10 +21,13 @@ Common frontmatter keys:
 - `mcp-servers`
 - `model`
 - `target`
+- `argument-hint`
+- `handoffs`
 
 ## Current files
 
 - `.github/agents/*.agent.md` imported from `~/.copilot/agents`
+- `.github/agents/css-plan.agent.md`
 - `.github/agents/start-working.agent.md`
 
 ## Key reference
@@ -37,6 +40,8 @@ Common frontmatter keys:
 | `mcp-servers` | YAML MCP server definitions scoped to this agent. |
 | `model` | Optional model override where the surface supports it. |
 | `target` | Optional environment target such as `vscode` or `github-copilot`. |
+| `argument-hint` | Optional IDE-only invocation hint; ignored by Copilot cloud agent. |
+| `handoffs` | Optional IDE-only handoff metadata; ignored by Copilot cloud agent. |
 
 ## Notes
 

@@ -29,6 +29,8 @@ local reference docs for how it is wired together.
 | Agents | `mcp-servers` | Agent-scoped MCP server definitions in YAML form. |
 | Agents | `model` | Optional model override for supported surfaces. |
 | Agents | `target` | Optional environment filter such as `vscode` or `github-copilot`. |
+| Agents | `argument-hint` | Optional IDE-only hint for how to invoke the agent; ignored by cloud agent. |
+| Agents | `handoffs` | Optional IDE-only handoff metadata; ignored by cloud agent. |
 | Hooks | `version` | Hook schema version; currently `1`. |
 | Hooks | `disableAllHooks` | Optional file-level toggle to skip every hook in the file. |
 | Hooks | `hooks` | Object containing lifecycle event arrays such as `sessionStart` and `preToolUse`. |
