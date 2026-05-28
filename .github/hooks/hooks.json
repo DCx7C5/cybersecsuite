@@ -1,8 +1,20 @@
 {
   "version": 1,
   "hooks": {
-    "sessionStart": [],
-    "sessionEnd": [],
+    "sessionStart": [
+      {
+        "type": "prompt",
+        "prompt": "/start-working"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": "printf 'sessionEnd\\n' >> \"${TMPDIR:-/tmp}/copilot-hooks.log\"",
+        "powershell": "\"sessionEnd\" | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
+        "timeoutSec": 5
+      }
+    ],
     "userPromptSubmitted": [],
     "preToolUse": [
       {
@@ -18,8 +30,22 @@
         "timeoutSec": 5
       }
     ],
-    "postToolUse": [],
-    "errorOccurred": [],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "printf 'postToolUse\\n' >> \"${TMPDIR:-/tmp}/copilot-hooks.log\"",
+        "powershell": "\"postToolUse\" | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
+        "timeoutSec": 5
+      }
+    ],
+    "errorOccurred": [
+      {
+        "type": "command",
+        "bash": "printf 'errorOccurred\\n' >> \"${TMPDIR:-/tmp}/copilot-hooks.log\"",
+        "powershell": "\"errorOccurred\" | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
+        "timeoutSec": 5
+      }
+    ],
     "notification": [],
     "permissionRequest": [],
     "postToolUseFailure": [],

@@ -79,4 +79,6 @@ The current repository hook file is:
 
 - `.github/hooks/hooks.json`
 
-It contains a `preToolUse` command hook that logs payloads to a temp file and keeps the other supported events declared as empty arrays.
+It bootstraps each session with `/start-working`, logs `preToolUse`,
+`postToolUse`, `sessionEnd`, and `errorOccurred` events to a temp file,
+and keeps the remaining supported events declared as empty arrays.
