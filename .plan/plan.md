@@ -4,19 +4,23 @@
 Detailed implementation contracts live in the owning Markdown files below
 `src/css/`; this file must not grow back into a second implementation plan.
 
-**Updated**: 2026-05-27 (TYPE_CHECKING cleanup, prompt boundary intake, dependency-edge snapshot)
+**Updated**: 2026-05-28 (Phase 14 instrumentation, user_dialogue module)
 
-## Current Session (2026-05-27 - TYPE_CHECKING Elimination)
+## Current Session (2026-05-28 - Phase 14 Entry/Exit Instrumentation)
 
-**Session Goal**: Eliminate all `TYPE_CHECKING`-guarded imports by
-replacing them with unconditional imports (where no circular dependency exists),
-inline Protocols (where architectural boundaries prevent cross-layer imports),
-or retaining the pattern only where genuinely necessary (dynamic enums,
-lazy-loading `__init__.py` packages, ORM circular imports).
+**Session Goal**: Apply `@instrument` to remaining entry/exit points
+(AgentExecutor.run, CommandBus.dispatch, ToolExecutor.execute) and create
+the `core/user_dialogue` module for user decision prompts.
 
-Preparatory work: mark the three Phase 44 in_progress todos as done (already
-implemented in source from prior session), review recent commits for import
-breakage, and discover the stale `core/pipeline.py` untracked leftover.
+**Completed**:
+- `events-instrument-agent`: AgentExecutor.run() with @instrument('agent.run')
+- `events-instrument-command-bus`: CommandBus.dispatch() with @instrument('command.dispatch')
+- `events-instrument-tool`: AgentToolExecutor.execute() with @instrument('tool.call')
+- `core/user_dialogue/`: new module with CliUserInputCollector, UserInputCollector ABC,
+  QuestionType enums — for asking user decisions (confirm/choose/multi-select/input)
+
+**Reverted** (out-of-scope auto-pick):
+- `events-middleware-fastapi`: reverted, returned to pending
 
 **Audited Outcome**:
 
@@ -165,13 +169,13 @@ Do not reconstruct implementation behavior from this index alone.
 
 ## Tracker Snapshot
 
-Snapshot queried from `.plan/session.db` on 2026-05-27:
+Snapshot queried from `.plan/session.db` on 2026-05-28:
 
 | Total | Done | Pending | Blocked | In progress |
 |------:|-----:|--------:|--------:|------------:|
-| 1085 | 601 | 475 | 8 | 1 |
+| 1085 | 639 | 438 | 8 | 0 |
 
-Overall completion: 55.4%. Active: 1 in_progress (`dep-map-modules-prompts`; TYPE_CHECKING elimination remains a meta-cleanup context). This planning pass preserves the new core
+Overall completion: 58.9%. No active todos.
 boundaries, resolves the Phase 45 schema decisions, and adds separate
 Machine-to-Host migration and retirement tasks before destructive model work.
 
@@ -214,7 +218,7 @@ and owner documents have been made executable before implementation resumes.
 | 11 | Cross-Provider Prompt Caching | 11 | 9 | 1 | 1 | 0 |
 | 12 | QoL Output Controls Migration | 11 | 1 | 10 | 0 | 0 |
 | 13 | Provider Routing & Resilience | 15 | 0 | 15 | 0 | 0 |
-| 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 8 | 10 | 0 | 0 |
+| 14 | Event Hooks & Entry/Exit Instrumentation | 18 | 13 | 5 | 0 | 0 |
 | 15 | Permissions + WorkingDir | 32 | 0 | 31 | 1 | 0 |
 | 16 | Provider SDK Features | 38 | 10 | 28 | 0 | 0 |
 | 17 | Settings & Projects | 43 | 1 | 41 | 1 | 0 |

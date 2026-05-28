@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-27 (runtime execution tracking sync) | **Session**: runtime table workflow/triggers, model-fit claim flow, router script removal
+**Last Updated**: 2026-05-28 (Phase 14 instrumentation, user_dialogue module) | **Session**: @instrument decorator applied to agent/command-bus/tool-executor, user_dialogue module created
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -15,9 +15,9 @@
 
 ## 📊 session.db State (2026-05-27 runtime execution tracking sync)
 
-**Total**: 1085 todos | **Done**: 601 | **Pending**: 475 | **Blocked**: 8 | **In Progress**: 1
+**Total**: 1085 todos | **Done**: 639 | **Pending**: 438 | **Blocked**: 8 | **In Progress**: 0
 
-**Overall Completion**: 55.4%
+**Overall Completion**: 58.9%
 
 **Last Verified**: 2026-05-27 (checked against live session.db totals)
 
@@ -47,6 +47,24 @@
 ---
 
 ## 🔑 Recent Phase Key Points
+
+### Phase 14 Entry/Exit Point Instrumentation & user_dialogue (2026-05-28)
+
+- **Status**: 13/18 Phase 14 todos DONE, 5 pending
+- **Completed this session**:
+  - `events-instrument-agent`: `AgentExecutor.run()` with `@instrument('agent.run')`
+  - `events-instrument-command-bus`: `CommandBus.dispatch()` with `@instrument('command.dispatch')`
+  - `events-instrument-tool`: `AgentToolExecutor.execute()` with `@instrument('tool.call')`
+  - Internal methods renamed to `_execute_single`/`_execute_hybrid_tool`; nested
+    context-manager instrumentation removed to avoid double-counting in hybrid calls.
+  - `tool_call_loop.py` caller updated to use `execute()`.
+- **Reverted** (out-of-scope auto-pick): `events-middleware-fastapi` — returned to pending
+- **New core module**: `src/css/core/user_dialogue/`
+  - `UserInputCollector` ABC with `ask()`, `confirm()`, `choose()`, `multi_select()`
+  - `CliUserInputCollector` — prompts to stderr, reads stdin, supports timeout
+  - `QuestionType` (confirm/choice/multi_select/input), `ConfirmDefault` enums
+  - Designed for future Telegram adapter via `_ask_typed()` override
+  - Clean across ruff, pyright, dependency analyzer
 
 ### Runtime Execution Table + Claim Flow (2026-05-27)
 
