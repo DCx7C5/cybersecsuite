@@ -84,7 +84,7 @@ UnifiedLLMClient request
 | `src/css/core/prompt_cache/anthropic_breakpoints.py` | ✅ DONE | `inject_cache_breakpoints`: ephemeral cache control tokens, `estimate_message_tokens`: heuristic sizing |
 | `src/css/core/prompt_cache/cost_savings_tracker.py` | ✅ DONE | `CostSavingsTracker`: cumulative tracking by provider/source, hourly trends, summary reporting |
 | `src/css/core/prompt_cache/metrics_exporter.py` | PARTIAL | `OpenObserveMetricsExporter` retains unsent events by returning `False`; actual OpenObserve transport remains pending |
-| `src/css/core/types/base_protocols.py` | ✅ DONE | Extended `LLMAdapter` with `cache_capability` property |
+| `src/css/core/base/base_protocols.py` | ✅ DONE | Extended `LLMAdapter` with `cache_capability` property |
 
 Validation checklist:
 ✅ Key separation by provider/model/messages/system_prompt

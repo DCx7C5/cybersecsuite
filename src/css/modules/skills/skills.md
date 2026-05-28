@@ -8,7 +8,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.marketplace` | → integrates | Publish/install skill marketplace items through the bridge surface. |
 | `css.core.tools` | → consumes | Skill execution invokes registered tool contracts. |
@@ -76,7 +76,7 @@ __all__ = ['SkillRegistry']
 ```
 
 **Registry Classes Using AsyncSafeSingletonMeta**:
-- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta`
+- `BaseRegistry` (`core/base/base_registry.py`) - metaclass=AsyncSafeSingletonMeta`
 - `ModelRegistry` (`core/models/registry.py`) - inherits BaseRegistry`
 - `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry`
 - `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta`

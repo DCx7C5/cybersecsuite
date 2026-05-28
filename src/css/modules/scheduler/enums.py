@@ -15,5 +15,3 @@ class TaskType(str, Enum):
     RED_TEAM_DRILL = "red_team_drill"
     CUSTOM = "custom"
 
-
-__all__ = ["TaskType"]

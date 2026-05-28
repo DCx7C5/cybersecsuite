@@ -48,7 +48,7 @@ from css.core.marketplace.registry import wire_registry_events
 from css.core.marketplace.seeder import seed_marketplace_on_startup
 from css.core.menu.endpoints import router as menu_router
 from css.core.resilience.routing.endpoints import router as routing_router
-from css.core.types.qol_endpoints import router as qol_router
+from css.core.base.qol_endpoints import router as qol_router
 from css.core.settings.config import ENVIRONMENT, MARKETPLACE_CONFIG, POSTGRES_DATABASE
 from css.modules.tags.seeds import seed_default_tags
 

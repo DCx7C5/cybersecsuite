@@ -16,8 +16,8 @@ from css.core.exceptions import (
     TimeoutError,
     UnknownError,
 )
-from css.core.types.base_enums import ProviderType
-from css.core.types.base_error_mapper import BaseErrorMapper
+from css.core.base.enums import ProviderType
+from css.core.base.error_mapper import BaseErrorMapper
 
 
 class AnthropicErrorMapper(BaseErrorMapper):

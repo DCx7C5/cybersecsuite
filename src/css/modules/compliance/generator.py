@@ -141,5 +141,3 @@ class ComplianceReportGenerator:
             logger.exception(f"Failed to generate compliance report: {e}")
             raise
 
-
-__all__ = ["ComplianceReportGenerator"]

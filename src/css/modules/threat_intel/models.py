@@ -106,11 +106,3 @@ class IOCMatch(BaseModel):
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         table = "ioc_matches"
 
-
-__all__ = [
-    "IOCType",
-    "ThreatLevel",
-    "IOC",
-    "ThreatFeed",
-    "IOCMatch",
-]

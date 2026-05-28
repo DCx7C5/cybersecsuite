@@ -16,7 +16,7 @@
 
 | File | Contents / current status |
 |------|---------------------------|
-| `header.py` | FrontMatterHeader inheriting from BaseFrontmatterHeader (now in core/types/base_frontmatter_header.py). Fix applied: corrected BaseFrontMatterHeader → BaseFrontmatterHeader reference. |
+| `header.py` | FrontMatterHeader inheriting from BaseFrontmatterHeader (now in core/base/base_frontmatter_header.py). Fix applied: corrected BaseFrontMatterHeader → BaseFrontmatterHeader reference. |
 | `__init__.py` | Re-exports FrontMatterHeader. |
 | `securemd.md` | This executable owner document. |
 
@@ -36,7 +36,7 @@ and downstream content/prompt policy remain required.
 
 ## Current Source Reality
 
-- `BaseFrontmatterHeader` is now implemented in `core/types/base_frontmatter_header.py`.
+- `BaseFrontmatterHeader` is now implemented in `core/base/base_frontmatter_header.py`.
 - `header.py` now correctly inherits `BaseFrontmatterHeader`.
 - `verify_and_get_body()` respects `SECUREMD_ENABLED` config toggle (pass-through when disabled).
 - `BaseFrontmatterHeader.__post_init__()` enforces required unsigned fields (`name`, `description`) and signed-pair integrity (`signature` + `hash`) when enforcement is enabled.
@@ -51,7 +51,7 @@ and downstream content/prompt policy remain required.
 |---------|------------------------|-----------------|
 | `securemd-config-toggles` | done | SECUREMD_ENABLED and SECUREMD_ENFORCE_HEADER env toggles in config.py. |
 | `crypto44-key-boundary` | done | Ed25519 primitives in core/cryptography consumed by SecureMD. |
-| `securemd44-header-integrity` | done | BaseFrontmatterHeader implemented in core/types/base_frontmatter_header.py. FrontMatterHeader re-exports from securemd/header.py. Config-aware sign/verify/verify_and_get_body. |
+| `securemd44-header-integrity` | done | BaseFrontmatterHeader implemented in core/base/base_frontmatter_header.py. FrontMatterHeader re-exports from securemd/header.py. Config-aware sign/verify/verify_and_get_body. |
 | `securemd44-frontmatter-serializer` | pending | Strictly parse/serialize signed Markdown and reject invalid documents. |
 | `securemd44-context-ingestion-gate` | pending | Gate marketplace-origin prompt Markdown before `PromptRenderer`/`AgentExecutor` execution. |
 | `securemd44-security-validation` | pending | Test tamper, wrong-key, malformed and untrusted-publisher rejection. |

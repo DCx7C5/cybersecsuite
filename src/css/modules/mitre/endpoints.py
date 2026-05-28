@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Query, status
 from typing import List, Optional
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from .models import MITRETechnique, ThreatActor, Tactic
 
 router = APIRouter(prefix="/api/mitre", tags=["mitre"])
@@ -71,5 +71,3 @@ async def map_incident_technique(
     # stub: MITRE technique lookup and mapping — see tracker 'mitre-technique-mapping'
     return {"status": "mapped"}
 
-
-__all__ = ["router"]

@@ -1,4 +1,4 @@
-"""All type-related enums for css.core.types.
+"""All type-related enums for css.core.base.
 
 Single source of truth for enums used across the type system.
 All type-related enums live here; other modules re-export if needed.
@@ -138,11 +138,3 @@ class HookErrorStrategy(str, Enum):
     LOG = "log"
     WARN = "warn"
 
-
-__all__ = [
-    "MessageRole",
-    "ProviderType",
-    "CapabilityType",
-    "MemorySupportMode",
-    "HookErrorStrategy",
-]

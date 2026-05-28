@@ -34,7 +34,6 @@ logger = getLogger("modules")
 _MODULES: dict[str, Any] = {}
 _IMPORT_ERRORS: dict[str, Exception] = {}
 
-
 def _discover_modules() -> None:
     """Discover and import all sub-modules (auto-discovery)."""
     modules_dir = Path(__file__).parent
@@ -64,7 +63,6 @@ def _discover_modules() -> None:
             _IMPORT_ERRORS[module_name] = e
             logger.error(f"Error loading module {module_name}: {e}")
 
-
 def get_module(module_name: str) -> Any | None:
     """Get a discovered module by name.
 
@@ -79,13 +77,11 @@ def get_module(module_name: str) -> Any | None:
 
     return _MODULES.get(module_name)
 
-
 def list_modules() -> list[str]:
     """List all successfully discovered modules."""
     if not _MODULES and not _IMPORT_ERRORS:
         _discover_modules()
     return sorted(_MODULES.keys())
-
 
 def list_failed_modules() -> dict[str, Exception]:
     """List modules that failed to import and their errors."""
@@ -93,21 +89,11 @@ def list_failed_modules() -> dict[str, Exception]:
         _discover_modules()
     return _IMPORT_ERRORS.copy()
 
-
 # Perform auto-discovery on import
 _discover_modules()
 
 # Selective re-exports of commonly used modules
 # (Keep this minimal to avoid circular imports)
-__all__ = [
-    # Core orchestration
-    "getLogger",
-    "get_module",
-    "list_modules",
-    "list_failed_modules",
-    # Module shortcuts (optional — users can do "from modules.X import Y" directly)
-]
-
 # Make discovered modules accessible as attributes
 # e.g., modules.orchestration, modules.tasks, modules.teams
 sys.modules[__name__].__dict__.update(

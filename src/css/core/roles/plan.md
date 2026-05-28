@@ -8,7 +8,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.permissions` | ← consumed by | Role grants constrain path/tool authorization policy. |
 | `css.modules.agents` | ← consumed by | Agent role assignment and execution capability checks. |

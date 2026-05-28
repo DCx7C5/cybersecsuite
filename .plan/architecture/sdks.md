@@ -38,7 +38,7 @@ entry point for all LLM calls in the system.
 ## LLMAdapter Protocol
 
 ```python
-# core/types.py/providers/adapter.py
+# core/base.py/providers/adapter.py
 from typing import AsyncIterator, Protocol, runtime_checkable
 import msgspec
 
@@ -190,7 +190,7 @@ Providers: `groq`, `together`, `fireworks`, `deepinfra`, `openrouter`, `deepseek
 Each proprietary provider registers a request/response translator:
 
 ```python
-# core/types.py/providers/http_adapter.py
+# core/base.py/providers/http_adapter.py
 _REQUEST_TRANSLATORS: dict[str, Callable[[CommonRequest], dict]] = {
     "gemini":  _translate_gemini_request,
     "cohere":  _translate_cohere_request,
@@ -354,7 +354,7 @@ class BrowserRelayAdapter:
 ## ProviderSpec Schema (for Type 2)
 
 ```python
-# core/types.py/providers/spec.py
+# core/base.py/providers/spec.py
 class ProviderAuth(msgspec.Struct):
     env_var: str
     header: str = "Authorization"

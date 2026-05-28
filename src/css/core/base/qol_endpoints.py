@@ -5,8 +5,8 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 
 from css.core.settings.qol import QoLToggle, toggle_description, validate_toggle_combo
-from css.core.types.qol_registry import qol_preset_registry
-from css.core.types.qol_settings import QoLSettingsManager
+from css.core.base.qol_registry import qol_preset_registry
+from css.core.base.qol_settings import QoLSettingsManager
 
 router = APIRouter(prefix="/api/qol", tags=["qol"])
 

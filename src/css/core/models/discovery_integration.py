@@ -71,5 +71,3 @@ async def register_model_discovery_providers() -> None:
 
     logger.info("Model discovery providers registered: openrouter, mistral, groq, ollama")
 
-
-__all__ = ["register_model_discovery_providers"]

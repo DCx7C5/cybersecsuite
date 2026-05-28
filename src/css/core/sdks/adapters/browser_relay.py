@@ -244,5 +244,3 @@ class BrowserRelayAdapter:
             "model": model_id or _DEFAULT_BROWSER_RELAY_MODEL,
         }
 
-
-__all__ = ["BrowserRelayAdapter"]

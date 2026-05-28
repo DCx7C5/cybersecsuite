@@ -1,6 +1,6 @@
 """Knowledge base management endpoints."""
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -286,5 +286,3 @@ async def record_search_feedback(
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to record feedback: {str(e)}")
-
-__all__ = ["router"]

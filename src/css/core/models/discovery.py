@@ -388,9 +388,3 @@ def _parse_groq_model(item: dict[str, Any]) -> Optional[ModelMetadata]:
     )
 
 
-__all__ = [
-    "discover_openrouter_models",
-    "discover_ollama_models",
-    "discover_mistral_models",
-    "discover_groq_models",
-]

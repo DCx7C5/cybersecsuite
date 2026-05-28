@@ -11,8 +11,3 @@ class ApprovalDecision(str, Enum):
     REQUIRED = "REQUIRED"
     ALLOWED = "ALLOWED"
     DENIED = "DENIED"
-
-__all__ = [
-    "ApprovalStatus",
-    "ApprovalDecision",
-]

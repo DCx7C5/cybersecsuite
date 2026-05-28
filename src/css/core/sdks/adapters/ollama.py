@@ -10,7 +10,7 @@ from typing import Any
 from ollama import AsyncClient
 from css.core.logger import getLogger
 from css.core.messages.types import LLMResponse, StreamChunk, Tool
-from css.core.types.base_enums import ProviderType
+from css.core.base.enums import ProviderType
 
 logger = getLogger(__name__)
 
@@ -225,5 +225,3 @@ class OllamaAdapter:
             return LLMResponse(text=text, stop_reason=stop_reason, usage=usage)
         return LLMResponse(text=str(response), stop_reason="stop")
 
-
-__all__ = ["OllamaAdapter"]

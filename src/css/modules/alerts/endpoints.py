@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Dict, Optional
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from .models import AlertRule, AlertHistory, ChannelConfig
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
@@ -236,5 +236,3 @@ async def get_alert_details(
         raise HTTPException(status_code=404, detail="Alert not found")
     
     return _orm_to_struct(AlertHistoryResponse, alert)
-
-__all__ = ["router"]

@@ -375,11 +375,3 @@ def instrument_decorator(namespace: str, **metadata: Any) -> Callable[[Callable[
     return decorator
 
 
-__all__ = [
-    "instrument",
-    "instrument_decorator",
-    "_InstrumentBlock",
-    "_wrap_async",
-    "_wrap_sync",
-    "_emit_domain_event",
-]

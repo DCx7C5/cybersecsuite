@@ -95,7 +95,3 @@ class SearchResultSerializer(BaseSerializer[dict[str, object]]):
         }
 
 
-__all__ = [
-    "KnowledgeDocumentSerializer",
-    "SearchResultSerializer",
-]

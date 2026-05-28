@@ -87,7 +87,7 @@ for f, data in d.items():
 {
   "src/css/modules/foo/types.py": {
     "consumed_by": ["src/css/modules/foo/endpoints.py"],
-    "consumes": ["src/css/core/types.py/base_entity.py"],
+    "consumes": ["src/css/core/base.py/base_entity.py"],
     "missing_imported_symbols": [],
     "markdown_references": {
       "file_hits": [{"term": "types.py", "markdown_file": "src/css/modules/foo/foo.md", "line": 42, "snippet": "..."}],
@@ -144,8 +144,8 @@ SELECT id, title, status FROM todos WHERE task = 'TASK_NAME';
 -- Full description of a todo
 SELECT id, title, description FROM todos WHERE id = 'your-todo-id';
 
--- Mark todo in_progress
-UPDATE todos SET status = 'in_progress', updated_at = datetime('now') WHERE id = 'your-todo-id';
+-- Mark todo in_progress (ALWAYS set primary_assigned_model + session_id)
+UPDATE todos SET status = 'in_progress', primary_assigned_model = 'YOUR_MODEL_NAME', session_id = 'YOUR_SESSION_ID', updated_at = datetime('now') WHERE id = 'your-todo-id';
 
 -- Mark todo done
 UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'your-todo-id';
@@ -186,7 +186,7 @@ WHERE status IN ('pending', 'in_progress', 'blocked')
 ORDER BY sort_order, task, id;
 
 -- Claim next todo for a worker/model and move to in_progress
--- Replace MODEL_ID with a concrete model (e.g. claude-haiku-4.5)
+-- Replace MODEL_ID (e.g. claude-haiku-4.5) and SESSION_ID (your current session tag)
 WITH picked AS (
   SELECT t.id
   FROM todos t
@@ -205,11 +205,13 @@ WITH picked AS (
 )
 UPDATE todos
 SET status = 'in_progress',
+    primary_assigned_model = 'MODEL_ID',
+    session_id = 'SESSION_ID',
     updated_at = datetime('now')
 WHERE id = (SELECT id FROM picked);
 
 -- Runtime board (active workers and todo relation)
-SELECT run_id, todo_id, phase, task, title, assigned_model, worker_slot,
+SELECT run_id, todo_id, phase, task, title, assigned_model, session_id, worker_slot,
        started_at, heartbeat_at, note
 FROM runtime
 ORDER BY started_at ASC;
@@ -224,6 +226,12 @@ WHERE run_id = 'todo:TODO_ID';
 `status='in_progress'`.
 When a todo is marked `done` or `blocked` (or moved back to `pending`), its
 `runtime` row must be removed in the same transition.
+
+**Stale-row auto-cleanup**: If a model session crashes and leaves a stale
+runtime row, claiming a new todo with the same `primary_assigned_model`
+automatically deletes the old stale row (same model, different todo ID).
+There is no longer a unique index blocking re-claim — stale cleanup is built
+into the trigger logic.
 
 **⚠️ THERE IS NO `tasks` TABLE. THERE IS NO `completed_at` COLUMN. DO NOT USE THEM.**
 
@@ -254,6 +262,25 @@ open-ended discovery statement as an implementation todo.
 
 This is the most common workflow. Do this for each todo.
 
+### 🔄 RUNTIME LIFECYCLE (mandatory for every instance)
+
+Every instance working on a todo **must** follow this three-phase lifecycle:
+
+```
+ENTER:  SET status='in_progress', primary_assigned_model='YOUR_MODEL', session_id='YOUR_SESSION_ID'  → trigger inserts runtime row
+HEARTBEAT:  UPDATE runtime SET heartbeat_at=datetime('now') WHERE run_id='todo:TODO_ID'  (every ~5 min)
+EXIT:  SET status='done'  → trigger removes runtime row
+```
+
+Each runtime entry is identified by `assigned_model + session_id`. The combination tells you which model instance (which session) owns the todo.
+
+**Rules**:
+- **ENTER** happens in PRE-TODO step 3 — always set `primary_assigned_model` and `session_id` to your exact model name and session tag
+- **HEARTBEAT** runs during ACTIVE step 2 (while implementing) — run periodically or after every significant action
+- **EXIT** happens in POST-TODO step 3 — the `trg_runtime_remove_on_todo_leave` trigger auto-deletes the runtime row
+- If your session crashes mid-work, the **next claim** with the same model name auto-cleans the stale row
+- If you hit a stale runtime row for another model, `DELETE FROM runtime WHERE assigned_model='STUCK_MODEL';` to unblock
+
 ### 🔴 PRE-TODO (run BEFORE starting any todo)
 
 ```sql
@@ -271,9 +298,9 @@ AND NOT EXISTS (
 )
 ORDER BY sort_order, task, id LIMIT 1;
 
--- 3. Mark it in_progress (replace TODO_ID with result from step 2)
+-- 3. Mark it in_progress (replace TODO_ID + set YOUR_MODEL_NAME + YOUR_SESSION_ID)
 UPDATE todos
-SET status = 'in_progress', updated_at = datetime('now')
+SET status = 'in_progress', primary_assigned_model = 'YOUR_MODEL_NAME', session_id = 'YOUR_SESSION_ID', updated_at = datetime('now')
 WHERE id = 'TODO_ID';
 ```
 
@@ -344,9 +371,15 @@ for p in pathlib.Path('src/css/').rglob('*.py'):
 - HTTP clients: always `aiohttp`, NEVER `httpx`
 - Structs/value types: `msgspec.Struct`, not `@dataclass`
 - Event ownership rule for any TODO/TASK/PHASE touching observability or runtime hooks:
-  - Event-emitting classes should inherit `css.core.types.base_emitter.BaseEmitterClass` where practical.
+  - Event-emitting classes should inherit `css.core.base.emitter.BaseEmitterClass` where practical.
   - Observer hooks belong in `src/css/modules/hooks/registry.py` (`@on_event`, fire-and-forget).
   - Mutating/blocking hooks belong in `src/css/modules/hooks/interceptors.py` (`@pre_hook`, `@post_hook`).
+
+**⏱ Heartbeat — run during implementation (every ~5 min or after every significant action)**
+```sql
+UPDATE runtime SET heartbeat_at = datetime('now') WHERE run_id = 'todo:TODO_ID';
+```
+This proves your session is alive and keeps the runtime row valid. If you crash without heartbeating for >30 min, the row is reclaimable by any other worker.
 
 **Step 3 — Lint**
 ```bash
@@ -426,18 +459,18 @@ SELECT phase, COUNT(*), SUM(status='done') FROM todos WHERE phase = 'PHASE_NAME'
 
 **Note**: Do not update `.plan/memory.md` or `.plan/checkpoints.md` here in normal TODO flow. Exception: if you just changed architecture baselines, source-of-truth rules, or tracker structure in a way that would mislead the next session, refresh `.plan/memory.md` immediately.
 
-**Step 3 — Mark done**
+**Step 3 — Mark done (EXIT runtime lifecycle)**
 ```sql
 UPDATE todos SET status = 'done', updated_at = datetime('now') WHERE id = 'TODO_ID';
 
--- Runtime row must be gone after completion
-SELECT COUNT(*) AS runtime_rows
+-- EXIT must be confirmed: runtime row must be gone after completion
+SELECT 'EXIT ' || CASE WHEN COUNT(*) = 0 THEN 'OK' ELSE 'FAIL — runtime row still exists!' END
 FROM runtime
 WHERE todo_id = 'TODO_ID';
 ```
 
 If you transition an active todo to `blocked` or back to `pending`, run the
-same runtime cleanup check (`runtime_rows` must still be `0`).
+same cleanup check (`runtime row must be gone`).
 
 **Step 4 — Commit (logical and atomic)**
 ```bash

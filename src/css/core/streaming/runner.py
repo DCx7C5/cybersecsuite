@@ -136,7 +136,7 @@ class QueryExecutor:
         If team_id + orchestrator_id provided: delegates to TeamLeader.
         Otherwise: uses AgentExecutor (provider-agnostic).
         """
-        from css.core.types import Query
+        from css.core.base import Query
 
         team_leader = await self._get_team_leader()
         if team_leader is not None:

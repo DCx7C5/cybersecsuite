@@ -1,8 +1,8 @@
 import msgspec
 from typing import Any
 
-from .base_frontmatter_header import BaseFrontmatterHeader
-from .base_protocols import BaseCommunicator
+from .frontmatter_header import BaseFrontmatterHeader
+from .protocols import BaseCommunicator
 
 
 # ── Entity-specific header types ──────────────────────────────────────────────

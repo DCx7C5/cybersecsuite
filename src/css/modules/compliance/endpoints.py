@@ -1,6 +1,6 @@
 """Compliance management endpoints — frameworks, controls, mappings, reports."""
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -324,5 +324,3 @@ async def get_latest_report(
         raise HTTPException(status_code=404, detail="No reports found for framework")
     
     return ComplianceReportResponse(**{f: getattr(report, f) for f in ComplianceReportResponse.__struct_fields__})
-
-__all__ = ["router"]

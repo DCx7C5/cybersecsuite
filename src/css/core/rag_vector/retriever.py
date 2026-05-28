@@ -314,5 +314,3 @@ class KnowledgeRetriever:
             logger.exception(f"Document ingestion failed: {e}")
             return {"status": "failed", "error": str(e)}
 
-
-__all__ = ["KnowledgeRetriever"]

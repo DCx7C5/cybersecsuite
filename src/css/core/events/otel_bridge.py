@@ -185,8 +185,3 @@ class EventStoreObserver:
         self._last_observed_count = current_count
         return new_spans
 
-
-__all__ = [
-    "OtelBridge",
-    "EventStoreObserver",
-]

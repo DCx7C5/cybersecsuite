@@ -10,7 +10,7 @@ from pathlib import Path
 import msgspec
 from xai_sdk import AsyncClient
 
-from css.core.types import (
+from css.core.base import (
     BaseMessage,
     MessageRole,
     ModelMetadata,
@@ -20,11 +20,11 @@ from css.core.types import (
     LLMResponse,
 )
 from css.core.exceptions import LLMApiServiceError
-from css.core.types.base_client import BaseApiServiceClient, BaseStreamingHandler
+from css.core.base.client import BaseApiServiceClient, BaseStreamingHandler
 from css.core.errors.mappers import map_provider_error
 from css.core.config import ProviderDefaults
 from css.core.settings import config as settings_config
-from css.core.types.providers import decode_provider_spec_file
+from css.core.base.providers import decode_provider_spec_file
 
 logger = getLogger(__name__)
 

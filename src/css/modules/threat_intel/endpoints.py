@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from .models import IOC, ThreatFeed
 
 router = APIRouter(prefix="/api/threat-intel", tags=["threat-intel"])
@@ -80,5 +80,3 @@ async def create_feed(
     )
     return {"id": feed.id, "status": "created"}
 
-
-__all__ = ["router"]

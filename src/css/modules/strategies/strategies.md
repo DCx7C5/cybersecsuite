@@ -18,7 +18,7 @@ Strategy selection and execution for agent task routing.
 - `strategies-impl` (Phase 19)
 
 ## Dependencies
-- `src/css/core/types/`
+- `src/css/core/base/`
 - `src/css/modules/triage/`
 - `src/css/modules/a2a_google/`
 

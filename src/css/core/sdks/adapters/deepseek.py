@@ -5,10 +5,10 @@ from collections.abc import AsyncIterator
 from typing import Any, override
 
 from css.api_services.deepseek.service import DeepSeekApiService
-from css.core.types.base_client import BaseApiServiceClient
-from css.core.types.base_messages import BaseMessage
+from css.core.base.client import BaseApiServiceClient
+from css.core.base.messages import BaseMessage
 from css.core.messages.types import LLMResponse, ModelMetadata, StreamChunk, Tool
-from css.core.types.base_enums import MessageRole, ProviderType
+from css.core.base.enums import MessageRole, ProviderType
 
 _DEFAULT_DEEPSEEK_MODEL = "deepseek-chat"
 
@@ -236,5 +236,3 @@ class DeepSeekAdapter(BaseApiServiceClient):
             return " ".join(chunks).strip()
         return str(content_obj)
 
-
-__all__ = ["DeepSeekAdapter"]

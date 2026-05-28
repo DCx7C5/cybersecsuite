@@ -77,5 +77,3 @@ class EventStore:
         self._by_kind.clear()
         self._event_keys.clear()
 
-
-__all__ = ["EventStore"]

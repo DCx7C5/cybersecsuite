@@ -8,7 +8,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.modules.agents` | → coordinates | Team membership and per-agent execution assignment. |
 | `css.modules.a2a_internal` | → consumes | Internal task/result communication between team participants. |

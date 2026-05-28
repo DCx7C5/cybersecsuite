@@ -9,7 +9,7 @@ document owns the executable agent-management specification.
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.events` | → consumes | `@instrument("agent.run.{agent_id}")` — Phase 14 entry point |
 | `css.core.permissions` | → consumes | `PermissionChecker.can_tool()` and `require_path()` |

@@ -15,7 +15,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.redis` | → consumes | L2 hot distributed-cache backend. |
 | `css.core.prompt_cache` | ← consumed by | Prompt-response caching shares cache infrastructure without owning general policy. |

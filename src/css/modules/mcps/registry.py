@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import override
 
 from css.core.logger import getLogger
-from css.core.types.base_registry import BaseToggleRegistry
+from css.core.base.registry import BaseToggleRegistry
 
 from .client import McpClient
 from .enums import McpServerStatus
@@ -200,5 +200,3 @@ def _tool_to_dict(tool: object) -> dict[str, object]:
         return dict(vars(tool))
     return {"name": str(tool)}
 
-
-__all__ = ["McpRuntimeRegistry", "get_mcp_registry"]

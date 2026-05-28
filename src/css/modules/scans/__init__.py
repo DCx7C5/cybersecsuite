@@ -2,4 +2,3 @@
 from .enums import ScanType, ScanStatus, SeverityRating
 from .models import Scan, Finding
 from .endpoints import router
-__all__ = ["ScanType", "ScanStatus", "SeverityRating", "Scan", "Finding", "router"]

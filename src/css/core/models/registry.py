@@ -17,7 +17,7 @@ from typing import Callable, Any
 import time
 
 from css.core.db.models.llm_models import LLMModel as _CatalogLLMModel
-from css.core.types.base_meta import AsyncSafeSingletonMeta
+from css.core.base.meta import AsyncSafeSingletonMeta
 
 from .models import ModelMetadata
 from .enums import ModelCapability
@@ -258,5 +258,3 @@ def get_model_registry() -> "ModelRegistry":
     """Return the global ModelRegistry singleton."""
     return ModelRegistry()  # type: ignore[return-value]
 
-
-__all__ = ["ModelRegistry", "DEFAULT_MODELS", "get_model_registry"]

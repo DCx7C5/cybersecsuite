@@ -41,5 +41,3 @@ class CSSModule(Protocol):
         """Optional list of Tortoise ORM models to register."""
         ...
 
-
-__all__ = ["CSSModule"]

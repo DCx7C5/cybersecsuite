@@ -15,8 +15,3 @@ class ConfirmDefault(str, enum.Enum):
     NO = "no"
     NONE = "none"
 
-
-__all__ = [
-    "ConfirmDefault",
-    "QuestionType",
-]

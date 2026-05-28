@@ -15,9 +15,9 @@ from css.core.logger import getLogger
 from typing import Protocol, runtime_checkable, Any, cast
 from datetime import datetime
 
-from css.core.types.base_messages import BaseMessage
+from css.core.base.messages import BaseMessage
 from css.core.messages.types import LLMResponse
-from css.core.types.base_enums import MessageRole
+from css.core.base.enums import MessageRole
 from .models import AgentResult
 from css.core.tools.tool_call_loop import ToolCallLoop
 

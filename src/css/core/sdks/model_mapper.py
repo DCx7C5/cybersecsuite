@@ -184,5 +184,3 @@ class ModelNameMapper:
         _CANONICAL_TO_PROVIDER[canonical_name][provider] = alias
         _PROVIDER_ALIAS_TO_CANONICAL[(provider, alias)] = canonical_name
 
-
-__all__ = ["ModelNameMapper"]

@@ -23,7 +23,6 @@ from .role_types import (
     get,
 )
 
-
 class RoleType:
     """Namespace for built-in role type constants."""
     ORCHESTRATOR = "orchestrator"
@@ -31,50 +30,18 @@ class RoleType:
     TEAM_MEMBER = "team_member"
     PLANNER = "planner"
 
-
 class BaseRoleException(BaseCoreException):
     pass
-
 
 class RoleNotFoundError(BaseRoleException):
     pass
 
-
 class PermissionDeniedError(BaseRoleException):
     pass
-
 
 class InvalidRoleError(BaseRoleException):
     pass
 
 logger = getLogger(__name__)
-
-__all__ = [
-    # Role types
-    "OrchestrationRole",
-    "OrchestratorRole",
-    "TeamLeaderRole",
-    "TeamMemberRole",
-    "PlannerRole",
-    
-    # Built-in roles
-    "ORCHESTRATOR",
-    "TEAM_LEADER",
-    "TEAM_MEMBER",
-    "PLANNER",
-    
-    # Enums
-    "RoleType",
-    "Permission",
-    
-    # Exceptions
-    "BaseRoleException",
-    "RoleNotFoundError",
-    "PermissionDeniedError",
-    "InvalidRoleError",
-    
-    # Functions
-    "get",
-]
 
 logger.info("Roles module loaded")

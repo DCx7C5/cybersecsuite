@@ -14,8 +14,8 @@ Usage::
 from css.core.logger import getLogger
 from pathlib import Path
 
-from css.core.types.base_meta import AsyncSafeSingletonMeta
-from css.core.types.providers import (
+from css.core.base.meta import AsyncSafeSingletonMeta
+from css.core.base.providers import (
     ProviderSpec,
     decode_provider_spec_file,
 )
@@ -144,5 +144,3 @@ def get_registry() -> "ProviderRegistry":
     """Get the global ProviderRegistry singleton."""
     return ProviderRegistry()
 
-
-__all__ = ["ProviderRegistry", "get_registry"]

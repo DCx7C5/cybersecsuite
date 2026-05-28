@@ -20,7 +20,7 @@ async def create_task(
     Args:
         team_id: Team owner
         orchestrator_id: Target orchestrator
-        query: Query object (core.types.Query)
+        query: Query object (core.base.Query)
         priority: Task priority (low/normal/high/critical)
         max_retries: Max retry attempts
         timeout_seconds: Execution timeout
@@ -228,7 +228,7 @@ async def retry_task(task_id: str) -> Task:
 
 def _deserialize_task_scope(payload: dict[str, Any]) -> TaskScope:
     """Deserialize TaskScope from ORM JSON payload."""
-    from css.core.types import Query
+    from css.core.base import Query
     from datetime import datetime
     
     # Reconstruct Query from payload
@@ -264,12 +264,3 @@ def _parse_task_status(status_str: str) -> TaskStatus:
     except ValueError:
         return TaskStatus.PENDING
 
-
-__all__ = [
-    "create_task",
-    "get_task",
-    "list_tasks",
-    "update_task_status",
-    "cancel_task",
-    "retry_task",
-]

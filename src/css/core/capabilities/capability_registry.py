@@ -5,8 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
-from css.core.types.base_enums import CapabilityType
-from css.core.types.base_enums import MemorySupportMode
+from css.core.base.enums import CapabilityType
+from css.core.base.enums import MemorySupportMode
 
 from css.core.logger import getLogger
 

@@ -6,7 +6,7 @@ from css.core.sdks.adapters.browser_relay import BrowserRelayAdapter
 from css.core.sdks.adapters.deepseek import DeepSeekAdapter
 from css.core.sdks.relay_router import RelayAttempt, RelayProviderPolicy
 from css.core.sdks.registry import SDKRegistry
-from css.core.types.base_client import BaseApiServiceClient
+from css.core.base.client import BaseApiServiceClient
 from css.core.messages.types import LLMResponse
 from css.core.utils.token_counter import estimate_message_tokens
 from css.core.models import get_model_registry
@@ -254,7 +254,7 @@ class CSSLLMClient:
         if qol_settings is None:
             qol_agent = kwargs.pop("qol_agent", None)
             if qol_agent is not None:
-                from css.core.types.qol_registry import qol_preset_registry
+                from css.core.base.qol_registry import qol_preset_registry
                 binding_name = qol_preset_registry.get_binding(str(qol_agent))
                 if binding_name is not None:
                     preset = qol_preset_registry.get(binding_name)
@@ -264,7 +264,7 @@ class CSSLLMClient:
         if qol_settings is None:
             qol_user_id = kwargs.pop("qol_user_id", None)
             if qol_user_id is not None:
-                from css.core.types.qol_settings import QoLSettingsManager
+                from css.core.base.qol_settings import QoLSettingsManager
                 import asyncio
                 try:
                     mgr = QoLSettingsManager()

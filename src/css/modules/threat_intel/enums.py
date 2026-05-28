@@ -23,5 +23,3 @@ class ThreatLevel(str, Enum):
     MEDIUM = "medium"
     LOW = "low"
 
-
-__all__ = ["IOCType", "ThreatLevel"]

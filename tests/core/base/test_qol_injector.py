@@ -3,7 +3,7 @@
 import pytest
 
 from css.core.settings.qol import QoLSettings, QoLToggle, QoLSecurityError
-from css.core.types.qol_injector import QoLInjector
+from css.core.base.qol_injector import QoLInjector
 
 
 def test_build_fragment_block_is_deterministic_for_toggle_order() -> None:

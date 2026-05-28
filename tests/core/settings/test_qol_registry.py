@@ -5,8 +5,8 @@ from tortoise import Tortoise
 
 from css.core.events.event_bus import EventBus, event_bus
 from css.core.settings.qol import QoLSettings, QoLToggle
-from css.core.types.qol_registry import QoLPresetRegistry
-from css.core.types.qol_settings import QoLSettingsManager
+from css.core.base.qol_registry import QoLPresetRegistry
+from css.core.base.qol_settings import QoLSettingsManager
 
 
 @pytest.mark.asyncio

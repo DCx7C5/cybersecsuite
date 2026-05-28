@@ -4,7 +4,7 @@
 from typing import Any
 
 from css.modules.a2a_google.enums import ResponseInjectionStrategy
-from css.core.types import BaseMessage
+from css.core.base import BaseMessage
 
 
 class DirectStrategy:

@@ -16,8 +16,8 @@ from typing import Protocol
 from css.core.db.models.memory import MemoryEntryRecord as _MER
 from css.core.db.models.memory import MemorySnapshotRecord as _MSR
 from css.core.sdks.context import ConversationContext
-from css.core.types.base_messages import BaseMessage
-from css.core.types.base_enums import MessageRole
+from css.core.base.messages import BaseMessage
+from css.core.base.enums import MessageRole
 from css.core.memory.types import MemoryListResult, MemoryQuery
 
 

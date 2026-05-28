@@ -2,7 +2,7 @@
 
 import inspect
 
-from css.core.types import ProviderType
+from css.core.base import ProviderType
 
 from .config import RetryStrategy
 

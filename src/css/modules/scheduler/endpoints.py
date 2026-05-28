@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from .models import ScheduledTask
 
 router = APIRouter(prefix="/api/scheduler", tags=["scheduler"])
@@ -75,5 +75,3 @@ async def run_task_now(
     # stub: enqueue to task queue — see tracker 'scheduler-task-queue'
     return {"status": "queued"}
 
-
-__all__ = ["router"]

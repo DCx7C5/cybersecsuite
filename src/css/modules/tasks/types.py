@@ -4,7 +4,7 @@ import msgspec
 from datetime import datetime
 from typing import Any
 
-from css.core.types.base_workflow import BaseTask, BaseTaskScope
+from css.core.base.workflow import BaseTask, BaseTaskScope
 from css.core.query import Query
 from .enums import TaskStatus, TaskPriority
 
@@ -123,5 +123,3 @@ class Task(BaseTask):
             "result": self.result,
             "error": self.error,
         }
-
-__all__ = ["TaskScope", "Task"]

@@ -54,9 +54,9 @@ supports 4 adapter types:
 
 ## Integration Points
 
-- `core/types/__init__.py` re-exports all public symbols from this module
-- `core/types/base_client.py` defines `BaseApiServiceClient` base class
-- `core/types/base_protocols.py` defines `LLMAdapter` Protocol
+- `core/base/__init__.py` re-exports all public symbols from this module
+- `core/base/base_client.py` defines `BaseApiServiceClient` base class
+- `core/base/base_protocols.py` defines `LLMAdapter` Protocol
 - Phase 10 T10.2–T10.5: NativeSDK, HTTP, Ollama, Browser Relay adapters
 - Phase 10 T10.6: `UnifiedLLMClient` routing across all adapter types
 - Phase 10 T10.7: provider-priority browser relay + DeepSeek adapter + web-LLM relay path
@@ -118,7 +118,7 @@ types/protocols, then translated inside supporting adapters.
 
 | Group | Required capability | Primary owners/dependencies |
 |-------|---------------------|-----------------------------|
-| Reasoning and context | `ThinkingConfig`, preflight token estimation, and `ContextManagementConfig`/compaction event handling. | `core/types`, `core/events`, router. |
+| Reasoning and context | `ThinkingConfig`, preflight token estimation, and `ContextManagementConfig`/compaction event handling. | `core/base`, `core/events`, router. |
 | Batch and background | `BatchAdapter`/`BatchJob` for Anthropic/OpenAI batch work; `BackgroundJob` and OpenAI background responses. | Tasks/session persistence and event completion. |
 | Provider-native tools | Anthropic computer use, code execution, web search/fetch, shell/editor tools registered as builtin tools. | `modules/tools`; explicit Phase 15 permissions and Phase 14 interceptor hooks required. |
 | Retrieval and caching | Cohere/Together rerank; Gemini persistent context caching. | Retrieval/cache contracts and telemetry. |

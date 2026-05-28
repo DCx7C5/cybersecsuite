@@ -241,10 +241,3 @@ class ProjectionManager:
         
         log.info(f"Rebuilt projections with {self.event_store.event_count()} events")
 
-
-__all__ = [
-    "Projection",
-    "PermissionsProjection",
-    "AuditTrailProjection",
-    "ProjectionManager",
-]

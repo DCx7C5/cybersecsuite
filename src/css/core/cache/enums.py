@@ -8,5 +8,3 @@ class CacheBackend(str, Enum):
     POSTGRES = "postgres"
     DISK = "disk"
 
-
-__all__ = ["CacheBackend"]

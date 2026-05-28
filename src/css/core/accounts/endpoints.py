@@ -11,7 +11,7 @@ Endpoints:
 - GET    /api/organizations/{org_id}/members  — List org members
 """
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from css.core.logger import getLogger
 
 from fastapi import APIRouter, HTTPException, status
@@ -537,5 +537,3 @@ async def list_organization_members(org_id: int) -> list[MembershipResponse]:
             detail="Failed to list members"
         )
 
-
-__all__ = ["router"]

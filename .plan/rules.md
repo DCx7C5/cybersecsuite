@@ -72,8 +72,8 @@ cat src/css/api_services/api_services.md
 - **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**
 - **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
 - **ABSOLUTE: never use bare `Exception`** — create custom exceptions with help from `src/core/exceptions.py`
-- **ABSOLUTE: use Singleton metaclass patterns from `src/core/types/meta.py`** — no end-of-file instantiation
-- **ABSOLUTE: event-emitting classes should use `src/css/core/types/base_emitter.py::BaseEmitterClass` whenever practical** — keep namespaces and manual event registration consistent
+- **ABSOLUTE: use Singleton metaclass patterns from `src/core/base/meta.py`** — no end-of-file instantiation
+- **ABSOLUTE: event-emitting classes should use `src/css/core/base/base_emitter.py::BaseEmitterClass` whenever practical** — keep namespaces and manual event registration consistent
 - **ABSOLUTE: hook ownership is split and must stay split** — observer hooks live in `src/css/modules/hooks/registry.py` (`@on_event`), mutating/blocking hooks live in `src/css/modules/hooks/interceptors.py` (`@pre_hook` / `@post_hook`)
 - **ABSOLUTE: use explicit imports `from X import Y` where applicable, and do not create `"Expected type XY, got None instead"` warnings**
 
@@ -346,7 +346,7 @@ class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all
 
 **Migration rule (Phase 6 P1)**: *When you touch a `@dataclass` value type, convert it to `msgspec.Struct`.* Don't mass-migrate — only on touch.
 
-**Status**: `base_entity.py`, `base_header.py`, `base_client.py` still mix both → tracked in Phase 4 refactor todos. `core/types/context.py` uses `@dataclass + BaseModel` → tracked as `gap-context-antipattern` (Phase 15).
+**Status**: `base_entity.py`, `base_header.py`, `base_client.py` still mix both → tracked in Phase 4 refactor todos. `core/base/context.py` uses `@dataclass + BaseModel` → tracked as `gap-context-antipattern` (Phase 15).
 
 ---
 
@@ -360,7 +360,7 @@ class SessionContext(msgspec.Struct, frozen=True):   # Phase 6 P1 target for all
 
 ### Core Organization
 - ✅ Each subdir follows consistent file/function/class/variable naming patterns
-- ✅ Entities moved: core/types/entities/ → modules/*/types.py
+- ✅ Entities moved: core/base/entities/ → modules/*/types.py
 - **Current**: 1/8 subdirs (13%)
 
 ### Entity Consolidation

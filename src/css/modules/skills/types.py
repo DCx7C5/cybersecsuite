@@ -2,8 +2,8 @@
 from datetime import datetime
 from typing import Literal
 
-from css.core.types.base_entity import BaseSkill
-from css.core.types.base_entity import BaseSkillHeader
+from css.core.base.entity import BaseSkill
+from css.core.base.entity import BaseSkillHeader
 
 
 class Skill(BaseSkill, frozen=True):

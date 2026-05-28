@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from .models import (
     Incident,
     IncidentTimeline,
@@ -372,5 +372,3 @@ async def update_incident_task(
     
     await task.update_from_dict(update_data).save()
     return _orm_to_struct(IncidentTaskResponse, task)
-
-__all__ = ["router"]

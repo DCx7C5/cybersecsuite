@@ -11,8 +11,8 @@ from functools import partial
 from typing import TypeAlias, override
 
 from css.core.logger import getLogger
-from css.core.types.base_registry import BaseRegistry
-from css.core.types.base_meta import singleton
+from css.core.base.registry import BaseRegistry
+from css.core.base.meta import singleton
 from .base import BaseHookClass
 
 logger = getLogger(__name__)
@@ -183,10 +183,3 @@ def on_event(pattern: str, *, priority: int = 50) -> Callable[[HookHandler], Hoo
     """Decorator shortcut for registering event hooks."""
     return HookRegistry().on(pattern, priority=priority)
 
-
-__all__ = [
-    "HookRegistry",
-    "HookRegistration",
-    "hook_registry",
-    "on_event",
-]

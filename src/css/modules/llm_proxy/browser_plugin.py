@@ -7,7 +7,7 @@ import uuid
 
 from fastapi import APIRouter, Body, HTTPException, Query, status
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 
 RequestStatus = Literal["pending", "in_progress", "completed", "failed", "expired"]
 
@@ -472,13 +472,3 @@ async def fetch_result(
         usage=result["usage"] if result is not None else None,
     )
 
-
-__all__ = [
-    "BrowserPluginSessionStore",
-    "get_browser_plugin_session_store",
-    "register_plugin",
-    "submit_injection",
-    "fetch_next_injection",
-    "fetch_result",
-    "router",
-]

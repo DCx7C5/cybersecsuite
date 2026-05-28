@@ -8,7 +8,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.events` | → consumes | `@instrument("command.{CommandName}")` — Phase 14 entry point 2 |
 

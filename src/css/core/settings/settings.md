@@ -32,7 +32,7 @@ DB-backed runtime configuration registry — sits on top of `config.py` (static 
 
 | Component                      | Direction     | Relationship                                                              |
 |--------------------------------|---------------|---------------------------------------------------------------------------|
-| `css.core.types` (settings.py) | → consumes    | `SettingDefinition`, `SettingScope`, `SettingCategory`                    |
+| `css.core.base` (settings.py) | → consumes    | `SettingDefinition`, `SettingScope`, `SettingCategory`                    |
 | `css.core.db`                  | → consumes    | `SettingRecord` ORM model (T17.1)                                         |
 | `config.py`                    | → consumes    | Bootstrap values → seeded into DB on first startup                        |
 | `@cache`                       | → consumes    | Redis for `css:settings:{scope}:{scope_id}:{key}` (CACHE_CONFIG_TTL=3600) |
@@ -169,7 +169,7 @@ The todo identifiers below map to the tracker; verify their live status in
 |-------------------------------|--------------------------------------------------------|---------|
 | `settings-db-model`           | SettingRecord Tortoise ORM model                       | pending |
 | `settings-db-migration`       | DB migration for settings table                        | pending |
-| `settings-definition-struct`  | SettingDefinition + enums in core/types                | pending |
+| `settings-definition-struct`  | SettingDefinition + enums in core/base                | pending |
 | `settings-registry-class`     | SettingsRegistry class                                 | pending |
 | `settings-registry-singleton` | SETTINGS_REGISTRY singleton + DEFAULT_SETTINGS wire-up | pending |
 | `settings-manager-core`       | SettingsManager get/set/reset/get_all                  | pending |
@@ -199,7 +199,7 @@ The todo identifiers below map to the tracker; verify their live status in
 | `src/css/core/settings/defaults.py`, `src/css/core/settings/profiles/development.yaml`, `src/css/core/settings/profiles/red_team.yaml`, `src/css/core/settings/profiles/blue_team.yaml`, `src/css/core/settings/profiles/purple_team.yaml`, `src/css/core/settings/profiles/minimal.yaml` | Planned definitions and named profiles. |
 | `src/css/core/settings/routes.py` | Planned `/api/settings/*` router. |
 | `src/css/api_services/ai21/service.py`, `src/css/api_services/anthropic/service.py`, `src/css/api_services/cerebras/service.py`, `src/css/api_services/cloudflare/service.py`, `src/css/api_services/cohere/service.py`, `src/css/api_services/deepinfra/service.py`, `src/css/api_services/deepseek/service.py`, `src/css/api_services/fireworks/service.py`, `src/css/api_services/gemini/service.py`, `src/css/api_services/github/service.py`, `src/css/api_services/groq/service.py`, `src/css/api_services/huggingface/service.py`, `src/css/api_services/lambda_api/service.py`, `src/css/api_services/mistral/service.py`, `src/css/api_services/nscale/service.py`, `src/css/api_services/nvidia/service.py`, `src/css/api_services/ollama/service.py`, `src/css/api_services/openai/service.py`, `src/css/api_services/openrouter/service.py`, `src/css/api_services/perplexity/service.py`, `src/css/api_services/sambanova/service.py`, `src/css/api_services/together/service.py`, `src/css/api_services/xai/service.py` | Provider runtime import-cutover consumers. |
-| `src/css/api_services/__init__.py`, `src/css/api_services/ollama/compat.py`, `src/css/api_services/opencode/service.py`, `src/css/core/marketplace/__init__.py`, `src/css/core/marketplace/cache.py`, `src/css/core/types/base_client.py` | Remaining runtime import-cutover consumers. |
+| `src/css/api_services/__init__.py`, `src/css/api_services/ollama/compat.py`, `src/css/api_services/opencode/service.py`, `src/css/core/marketplace/__init__.py`, `src/css/core/marketplace/cache.py`, `src/css/core/base/base_client.py` | Remaining runtime import-cutover consumers. |
 
 ### Sequencing And Import-Cutover Boundary
 

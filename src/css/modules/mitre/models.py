@@ -126,10 +126,3 @@ class IncidentTechniqueMaping(BaseModel):
         table = "incident_technique_mappings"
         unique_together = (("incident_id", "technique_id"),)
 
-
-__all__ = [
-    "Tactic",
-    "MITRETechnique",
-    "ThreatActor",
-    "IncidentTechniqueMaping",
-]

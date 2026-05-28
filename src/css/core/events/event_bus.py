@@ -5,7 +5,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any, TypeAlias
 
 from css.core.logger import getLogger
-from css.core.types.base_meta import AsyncSafeSingletonMeta
+from css.core.base.meta import AsyncSafeSingletonMeta
 
 logger = getLogger(__name__)
 

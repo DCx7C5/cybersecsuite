@@ -456,4 +456,4 @@ Incoming HTTP request
 ### Implementation guardrail
 
 - Classes that emit runtime or lifecycle events should inherit
-  `css.core.types.base_emitter.BaseEmitterClass` where practical.
+  `css.core.base.emitter.BaseEmitterClass` where practical.

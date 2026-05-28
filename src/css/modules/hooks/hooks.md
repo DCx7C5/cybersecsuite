@@ -47,7 +47,7 @@ hook implementation detail.
 
 - Base hook contract: `BaseHookClass` in `modules/hooks/base.py` (`msgspec.Struct`, frozen)
 - Registry base contract: `BaseRegistry[HookRegistration]`
-- Singleton pattern: `@singleton(auto_instantiate=True)` from `css.core.types.meta`
+- Singleton pattern: `@singleton(auto_instantiate=True)` from `css.core.base.meta`
 - Hook execution: timeout-bounded chain, `priority` ascending
 - Error isolation: handler failures are logged and do not break event emission
 - Wildcards are runtime-global: `@on_event("*")` sees all emitted events (not only predefined constants)
@@ -59,7 +59,7 @@ hook implementation detail.
 ## Checklist
 
 - [x] `modules-hooks-registry-base` — `HookRegistry` follows `BaseRegistry` contract
-- [x] `modules-hooks-singleton-pattern` — singleton pattern from `core/types/meta.py`
+- [x] `modules-hooks-singleton-pattern` — singleton pattern from `core/base/meta.py`
 - [x] `modules-hooks-event-consumer` — consumes `core/events/event_bus`
 - [x] `modules-hooks-on-event-decorator` — decorator registration in module scope
 - [x] `modules-hooks-interceptor-chain` — pre/post mutating interceptors (Phase 14 T14.5)

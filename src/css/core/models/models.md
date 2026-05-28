@@ -11,7 +11,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.api_services.*` | ← consumed by | All 22 provider SDKs registered in this registry |
 | `css.core.events` | → consumes | `@instrument("llm.call.{provider}.{model}")` — Phase 14 |
@@ -88,7 +88,7 @@ implementation must follow the current `msgspec.Struct` rule.
 
 ## Module Pattern
 
-**Note**: `ModelRegistry` uses `AsyncSafeSingletonMeta` (defined in `core/types/base_registry.py`).
+**Note**: `ModelRegistry` uses `AsyncSafeSingletonMeta` (defined in `core/base/base_registry.py`).
 
 ```python
 # src/css/core/models/__init__.py
@@ -105,7 +105,7 @@ __all__ = ['ModelRegistry']
 ```
 
 **Registry Classes Using AsyncSafeSingletonMeta**:
-- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta
+- `BaseRegistry` (`core/base/base_registry.py`) - metaclass=AsyncSafeSingletonMeta
 - `ModelRegistry` (`core/models/registry.py`) - inherits BaseRegistry
 - `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry
 - `BaseToolRegistry` (`core/tools/base.py`) - metaclass=AsyncSafeSingletonMeta

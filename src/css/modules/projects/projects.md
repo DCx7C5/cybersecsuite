@@ -31,7 +31,7 @@ owner is explicitly confirmed.
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` (projects.py) | → consumes | `ProjectRecord` frozen `msgspec.Struct` value type |
+| `css.core.base` (projects.py) | → consumes | `ProjectRecord` frozen `msgspec.Struct` value type |
 | `css.core.db` | → consumes | `ProjectRecord` + `ProjectSessionRecord` ORM models |
 | `@settings` | → integrates | Project-level setting overrides via `SettingsManager.get(..., scope=PROJECT)` |
 | Session/output-directory owner | ← consumed by | Ownership unresolved: no implemented `core/workspace/` package was found during documentation cleanup; retain the integration requirement pending source reconciliation. |
@@ -149,7 +149,7 @@ owner, and settings persistence before implementing filesystem synchronization.
 |---------|-------------|--------|
 | `projects-db-model` | ProjectRecord + ProjectSessionRecord Tortoise ORM | pending |
 | `projects-db-migration` | DB migration | pending |
-| `projects-record-struct` | ProjectRecord frozen `msgspec.Struct` in `core/types` | pending |
+| `projects-record-struct` | ProjectRecord frozen `msgspec.Struct` in `core/base` | pending |
 | `projects-manager-crud` | CRUD + find_by_path | pending |
 | `projects-manager-sessions` | Session linking methods | pending |
 | `projects-manager-fs-sync` | Filesystem metadata sync | pending |
@@ -164,7 +164,7 @@ owner, and settings persistence before implementing filesystem synchronization.
 | `src/css/modules/projects/models.py` | Existing `Project`, `ProjectFile`; inspect before adding tracker-planned records. |
 | `src/css/modules/projects/manager.py` | Planned `ProjectManager` CRUD/session-link operations. |
 | `src/css/modules/projects/routes.py` | Planned `/api/projects/*` handlers. |
-| `src/css/core/types/projects.py` | Planned immutable project response/value structs if retained after existing model inspection. |
+| `src/css/core/base/projects.py` | Planned immutable project response/value structs if retained after existing model inspection. |
 | `src/css/modules/sessions/` | Planned canonical session association owner; currently a stub contract only. |
 
 1. Reconcile existing `Project`/`ProjectFile` with the tracker-planned

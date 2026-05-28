@@ -12,7 +12,7 @@
 
 | Component               | Relationship                                                                | Direction     |
 |-------------------------|-----------------------------------------------------------------------------|---------------|
-| `css.core.types`        | Base types, Protocol contracts — ALL providers import from here             | → consumes    |
+| `css.core.base`        | Base types, Protocol contracts — ALL providers import from here             | → consumes    |
 | `css.core.resilience`   | `RetryOrchestrator` wraps every provider call via `retry_wrapper.py`        | → consumes    |
 | `css.core.models`       | `UnifiedLLMClient` routes to provider SDKs via registry                     | ← consumed by |
 | `css.core.events`       | `@instrument("llm.call.{provider}.{model}")` on all calls — Phase 14        | ← wrapped by  |
@@ -332,7 +332,7 @@ before any Copilot OAuth/device-flow implementation is wired.
 | `src/css/api_services/ollama/service.py` | Current `OllamaApiService` chat/service adapter. |
 | `src/css/api_services/ollama/types.py` and `src/css/api_services/ollama/compat.py` | Current Ollama values and compatibility adapter. |
 | `src/css/api_services/ollama/manager.py` | Planned `OllamaModelManager` beside the existing provider surfaces. |
-| `src/css/core/types/base_protocols.py` | Planned optional provider-feature protocol additions; unsupported providers need not implement them. |
+| `src/css/core/base/base_protocols.py` | Planned optional provider-feature protocol additions; unsupported providers need not implement them. |
 
 ### Live Todo Map
 

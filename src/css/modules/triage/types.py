@@ -10,5 +10,3 @@ class TriageMetadata(msgspec.Struct, frozen=True, kw_only=True):
     severity: SeverityLevel = SeverityLevel.MEDIUM
     confidence: float = 0.0
 
-
-__all__ = ["TriageMetadata"]

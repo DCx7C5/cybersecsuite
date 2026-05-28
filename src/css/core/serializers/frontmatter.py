@@ -10,8 +10,8 @@ from typing import override
 
 import msgspec.yaml
 
-from css.core.types.base_frontmatter_header import BaseFrontmatterHeader
-from css.core.types.base_serializer import BaseSerializer
+from css.core.base.frontmatter_header import BaseFrontmatterHeader
+from css.core.base.serializer import BaseSerializer
 
 
 _FM_DELIMITER = "---"

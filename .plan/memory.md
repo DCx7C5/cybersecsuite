@@ -1,6 +1,6 @@
 # Planning Memory & Session State
 
-**Last Updated**: 2026-05-28 (Phase 14 instrumentation, user_dialogue module) | **Session**: @instrument decorator applied to agent/command-bus/tool-executor, user_dialogue module created
+**Last Updated**: 2026-05-28 (Phase 14 instrumentation, user_dialogue module, runtime staleness fix, session_id column, core/types→base rename) | **Session**: @instrument decorator applied to agent/command-bus/tool-executor, user_dialogue module created, runtime stale-row auto-cleanup, session_id added to runtime/todos tables, core/types/ → core/base/ rename + base_ prefix removal
 
 ⚠️ **CRITICAL**: `.plan/` is the working directory. NEVER use `~/.copilot/` as working dir.  
 ⚠️ **CRITICAL**: session.db MUST use PHASE > TASK > TODO hierarchy (see rules.md).  
@@ -13,7 +13,7 @@
 
 ---
 
-## 📊 session.db State (2026-05-27 runtime execution tracking sync)
+## 📊 session.db State (2026-05-28 runtime stale-row auto-cleanup)
 
 **Total**: 1085 todos | **Done**: 639 | **Pending**: 438 | **Blocked**: 8 | **In Progress**: 0
 
@@ -66,7 +66,7 @@
   - Designed for future Telegram adapter via `_ask_typed()` override
   - Clean across ruff, pyright, dependency analyzer
 
-### Runtime Execution Table + Claim Flow (2026-05-27)
+### Runtime Execution Table + Claim Flow (2026-05-28 stale fix)
 
 - Removed `scripts/todo_model_router.py`; execution tracking is now DB-native.
 - Added `.plan/session.db::runtime` with triggers that auto-sync active rows
@@ -75,6 +75,18 @@
   `in_progress` (`done`, `blocked`, or back to `pending`).
 - Worker flow now uses SQL claim/update patterns tied to model-fit metadata and
   runtime row inspection/heartbeat.
+- **2026-05-28 fix**: Dropped `runtime_one_active_per_model` unique index. The
+  index caused hard failures when a model session crashed — the stale runtime
+  row blocked re-claim with the same model name. Rewrote `trg_runtime_sync_on_*`
+  triggers to auto-delete stale rows for the same `assigned_model` before
+  INSERT. Claim flow now sets `primary_assigned_model` atomically with
+  `status='in_progress'` so the runtime row is correctly assigned from the
+  start.
+- **2026-05-28 session_id column**: Added `session_id TEXT DEFAULT ''` to both
+  `todos` and `runtime` tables. The ENTER trigger now copies `session_id` from
+  the todo into the runtime row. Runtime entries are identified by
+  `assigned_model + session_id` (model + session combo). All claim queries and
+  lifecycle docs updated to include `session_id`.
 
 ### Phase 11 Cross-Provider Prompt Caching (2026-05-26) PARTIAL (9/11)
 
@@ -485,24 +497,24 @@
 ### ✅ Phase 4 Entity Migrations (Completed 2026-05-05)
 
 Session completed 7 Phase 4 entity migration todos:
-- `phase4-verify-imports`: Core module imports verified (css.core.types, css.core.db, css.core.events, css.modules.roles all functional)
+- `phase4-verify-imports`: Core module imports verified (css.core.base, css.core.db, css.core.events, css.modules.roles all functional)
 - `types-option-c-accounts`: Account entity moved to `src/css/core/accounts/types.py`
 - `types-option-c-agents`: Agent entity moved to `src/css/modules/agents/types.py`
 - `types-option-c-permissions`: Role entity added to `src/css/core/permissions/types.py` with built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER)
 - `types-option-c-skills`: Skill entity moved to `src/css/modules/skills/types.py`
 - `types-option-c-tools`: Tool entity moved to `src/css/modules/tools/types.py` + 5 helper classes (ToolParameter, ToolReturnType, ToolSchema, HybridToolSchema, ManagedTool)
-- `types-option-c-reimport`: Updated `src/css/core/types/__init__.py` to import entities from new module locations
+- `types-option-c-reimport`: Updated `src/css/core/base/__init__.py` to import entities from new module locations
 
 **QA Verification**: ✅ PASS
 - All 5 new entity files in correct locations with proper Python syntax
 - All module __init__.py files export entities via __all__
-- Import chain verified: css.core.types → css.modules.*.types (no circular imports)
-- Base classes (BaseAgent, BaseRole, BaseSkill, BaseTool) remain in core/types/entities/ as expected
+- Import chain verified: css.core.base → css.modules.*.types (no circular imports)
+- Base classes (BaseAgent, BaseRole, BaseSkill, BaseTool) remain in core/base/entities/ as expected
 - Old entity files still preserved for Phase 4 cleanup (types-option-c-cleanup todo)
 - All changes passed ruff linting
 
 **Files Modified**:
-- src/css/core/types/__init__.py (updated imports)
+- src/css/core/base/__init__.py (updated imports)
 - src/css/core/accounts/__init__.py (new)
 - src/css/modules/agents/__init__.py (updated)
 - src/css/core/permissions/__init__.py (updated)
@@ -532,7 +544,7 @@ Completed TODOs: `db-dedupe-enums`, `db-fix-tooltype-enum-empty`, `db-delete-tea
 - **10 inter-module connection gaps** found in full audit (Gaps A–J)
 - **Gap A** (CRITICAL): `css.core.session` missing — already tracked as `session-context-create` in Phase 15
 - **Gap B** (HIGH): ORM models missing — ProjectRecord, McpServerConfigRecord, PromptDefinitionRecord
-- **Gap C** (HIGH): `core/types/projects.py` missing — projects/plan.md references it
+- **Gap C** (HIGH): `core/base/projects.py` missing — projects/plan.md references it
 - **Gap D** (BLOCKED): `context.py` uses `@dataclass + BaseModel` anti-pattern on 4 classes
 - **Gap E** (BLOCKED): `ScopeLevel` defined independently in 3 places (core/db, scopes, permissions)
 - **Gap H/I**: 8 modules still have placeholder integration tables; `chat` and `triage` still need formalized matrices, while `llm_proxy` and `workflows` are already covered
@@ -643,7 +655,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
 - **Scope**: 12 files identified with `if TYPE_CHECKING:` blocks.
 - **8 eliminated**:
   - `core/logger.py` — used `logging.Logger` directly (stdlib, no circular risk)
-  - `core/types/base_endpoint.py` — pydantic types moved to inline
+  - `core/base/base_endpoint.py` — pydantic types moved to inline
     `_GetCoreSchemaHandler` Protocol; later upgraded to production-ready
     version with full docstrings (matching pydantic's originals), all
     interface methods (including `_get_types_namespace`), and removed
@@ -658,7 +670,7 @@ All 5 approved. Tasks under `Phase 6 — Architecture Overhaul` in session.db.
   - `core/streaming/runner.py` — replaced with inline `_AgentExecutorProtocol`
     and `_TeamLeaderProtocol` (preserves core→modules architectural boundary)
 - **4 retained** (legitimate patterns):
-  - `core/types/base_enums.py` — dynamic `ProviderType` enum from filesystem discovery
+  - `core/base/base_enums.py` — dynamic `ProviderType` enum from filesystem discovery
   - `modules/tags/manager.py` — genuine circular with `models.py` (`TagManager` imported by `Tag`)
   - `modules/agents/__init__.py` — canonical lazy-import package pattern
   - `modules/tools/__init__.py` — canonical lazy-import package pattern

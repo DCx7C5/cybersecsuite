@@ -142,11 +142,3 @@ class ChannelConfig(BaseModel, TimestampMixin):
         table = "alert_channel_configs"
         unique_together = (("organization_id", "channel_type"),)
 
-
-__all__ = [
-    "AlertSeverity",
-    "AlertChannel",
-    "AlertRule",
-    "AlertHistory",
-    "ChannelConfig",
-]

@@ -37,7 +37,7 @@ Prompts are:
 | `css.core.marketplace` | ← catalogues | `MarketplaceItemType.prompt` items point to PromptDefinition |
 | `css.modules.agents` | → consumes | Agents resolve prompt IDs → rendered strings at runtime |
 | `css.modules.tags` | → consumes | Prompts are taggable (tags module manages tag entities) |
-| `css.core.types.query` | → feeds | `Query.prompt` field populated from rendered PromptDefinition |
+| `css.core.base.query` | → feeds | `Query.prompt` field populated from rendered PromptDefinition |
 | `css.core.db` | → persists to | Tortoise ORM PromptDefinition model |
 | `css.core.prompt` | ↔ planned boundary | Verified marketplace-origin Markdown ingestion boundary; package currently scaffold-only |
 

@@ -4,7 +4,7 @@ from typing import override
 from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 
-from css.core.types.base_client import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
+from css.core.base.client import BaseApiServiceClient, StreamChunk, BaseMessage, Tool, ModelMetadata
 from .types import OllamaConfig, OllamaExecutionContext
 
 

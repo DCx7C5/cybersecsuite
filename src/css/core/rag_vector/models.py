@@ -216,13 +216,3 @@ class SearchLog(BaseModel):
         table = "knowledge_search_log"
         ordering = ["-searched_at"]
 
-
-__all__ = [
-    "DocumentType",
-    "DocumentStatus",
-    "KnowledgeDocument",
-    "KnowledgeDocumentTag",
-    "KnowledgeIndex",
-    "KnowledgeTag",
-    "SearchLog",
-]

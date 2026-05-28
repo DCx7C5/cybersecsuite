@@ -7,11 +7,3 @@ from .browser_plugin import (
 )
 from .client import UnifiedLLMClient
 from .endpoints import router
-
-__all__ = [
-    "router",
-    "root_router",
-    "BrowserPluginSessionStore",
-    "get_browser_plugin_session_store",
-    "UnifiedLLMClient",
-]

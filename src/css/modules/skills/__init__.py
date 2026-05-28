@@ -3,5 +3,4 @@
 from .base import BaseSkill
 from .types import Skill
 from .registry import SkillRegistry
-
-__all__ = ["Skill", "BaseSkill", "SkillRegistry"]
+from .marketplace_bridge import skill_to_marketplace_item, get_skill_marketplace_item

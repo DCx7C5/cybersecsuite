@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock
 
 from css.api_services.xai.service import xAIApiService
 from css.core.exceptions import LLMApiServiceError, AuthError, RateLimitError, TimeoutError, GatewayError
-from css.core.types import ProviderType
+from css.core.base import ProviderType
 
 
 class _FakeRpcError(grpc.RpcError):

@@ -20,5 +20,3 @@ def get_otel_config() -> OTelConfig:
         exporter_endpoint=endpoint if endpoint else None,
     )
 
-
-__all__ = ["OTelConfig", "get_otel_config"]

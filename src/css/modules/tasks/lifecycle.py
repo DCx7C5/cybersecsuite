@@ -103,5 +103,3 @@ class TaskLifecycle:
         task.assigned_member_id = None
         task.assigned_at = None
 
-
-__all__ = ["TaskLifecycle"]

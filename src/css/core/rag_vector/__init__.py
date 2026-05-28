@@ -17,19 +17,4 @@ from .models import (
 )
 from .retriever import KnowledgeRetriever
 from .endpoints import router
-
-__all__ = [
-    "DocumentStatus",
-    "DocumentType",
-    "KnowledgeDocument",
-    "KnowledgeDocumentTag",
-    "KnowledgeIndex",
-    "KnowledgeTag",
-    "RelevanceFeedback",
-    "SearchLog",
-    "SearchType",
-    "SourceType",
-    "TagCategory",
-    "KnowledgeRetriever",
-    "router",
-]
+from .serializers import KnowledgeDocumentSerializer, SearchResultSerializer

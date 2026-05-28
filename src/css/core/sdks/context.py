@@ -10,7 +10,7 @@ import msgspec
 from datetime import datetime, timezone
 from typing import Any
 
-from css.core.types.base_messages import BaseMessage
+from css.core.base.messages import BaseMessage
 
 
 class ConversationContext(msgspec.Struct, frozen=True, kw_only=True):

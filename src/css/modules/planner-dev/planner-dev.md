@@ -9,7 +9,7 @@ document owns the executable planner specification.
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models for plan persistence |
 | Session/output-directory owner | → consumes | Confirmed owner creates planner-mode output and its plan template. |
 | `css.modules.tasks` | ← provides to | Plan steps become @tasks tasks |

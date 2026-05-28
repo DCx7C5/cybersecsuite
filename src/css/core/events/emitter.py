@@ -10,7 +10,7 @@ from collections.abc import Awaitable, Callable, Mapping, Sequence
 from functools import wraps
 from typing import ParamSpec, TypeVar, cast
 
-from css.core.types.base_emitter import BaseEmitterClass
+from css.core.base.emitter import BaseEmitterClass
 from .event_bus import EventBus
 
 P = ParamSpec("P")

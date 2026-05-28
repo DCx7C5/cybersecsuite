@@ -2,7 +2,7 @@ import pytest
 from tortoise import Tortoise
 
 from css.core.settings.qol import QoLSettings, QoLToggle
-from css.core.types.qol_settings import QoLSettingsManager
+from css.core.base.qol_settings import QoLSettingsManager
 
 
 @pytest.mark.asyncio

@@ -4,7 +4,7 @@ from css.core.logger import getLogger
 
 import msgspec
 
-from .base_enums import MessageRole
+from .enums import MessageRole
 
 logger = getLogger(__name__)
 

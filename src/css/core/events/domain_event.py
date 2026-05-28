@@ -120,13 +120,3 @@ def event_permission_granted(
         },
     )
 
-
-__all__ = [
-    "DomainEvent",
-    "event_team_spawned",
-    "event_team_shutdown",
-    "event_task_delegated",
-    "event_task_completed",
-    "event_task_failed",
-    "event_permission_granted",
-]

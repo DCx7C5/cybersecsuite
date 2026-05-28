@@ -11,7 +11,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.events` | → consumes | Stream events via @events HookRegistry (fire-and-forget) |
 | `core/pipeline.py` | ↔ integrates | Canonical shared stage primitives (`pipe`, `Stage`, and pipeline composition contracts). |

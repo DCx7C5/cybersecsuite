@@ -50,6 +50,3 @@ class CliUserInputCollector(UserInputCollector):
         print(hint, end=" ", file=sys.stderr, flush=True)
 
 
-__all__ = [
-    "CliUserInputCollector",
-]

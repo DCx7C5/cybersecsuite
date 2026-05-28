@@ -94,7 +94,3 @@ class UserInputCollector(ABC):
     ) -> str:
         ...
 
-
-__all__ = [
-    "UserInputCollector",
-]

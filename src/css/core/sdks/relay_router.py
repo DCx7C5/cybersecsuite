@@ -57,9 +57,3 @@ class RelayProviderPolicy(msgspec.Struct, frozen=True, kw_only=True):
             return cls()
         return cls(provider_order=list(provider_order))
 
-
-__all__ = [
-    "DEFAULT_RELAY_PROVIDER_ORDER",
-    "RelayAttempt",
-    "RelayProviderPolicy",
-]

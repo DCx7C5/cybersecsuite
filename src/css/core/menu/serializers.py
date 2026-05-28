@@ -49,5 +49,3 @@ class MenuItemTreeSerializer(BaseModelSerializer[MenuItem]):
         ]
         return base
 
-
-__all__ = ["MenuItemTreeSerializer"]

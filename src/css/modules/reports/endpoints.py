@@ -5,7 +5,7 @@ import uuid
 from typing import Any
 
 import msgspec
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from fastapi import APIRouter, HTTPException, Query, status
 
 from .generator import ReportGenerator

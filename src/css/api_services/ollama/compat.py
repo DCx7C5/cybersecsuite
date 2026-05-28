@@ -15,7 +15,7 @@ from css.core.logger import getLogger
 from collections.abc import AsyncIterator
 import json
 
-from css.core.types import (
+from css.core.base import (
     BaseApiServiceClient,
     StreamChunk,
     BaseMessage,

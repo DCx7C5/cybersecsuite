@@ -56,4 +56,4 @@ Cache use is intentionally selective, not universal.
 - If a module defines `Enum` classes, they belong in `enums.py`.
 - `hooks` module plan lives at `src/css/modules/hooks/hooks.md`.
 - Keep hook responsibilities split: `@on_event` in `hooks/registry.py`; mutating/blocking `@pre_hook` and `@post_hook` in `hooks/interceptors.py`.
-- When a module class emits runtime events, use `css.core.types.base_emitter.BaseEmitterClass` where practical.
+- When a module class emits runtime events, use `css.core.base.emitter.BaseEmitterClass` where practical.

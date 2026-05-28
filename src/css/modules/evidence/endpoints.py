@@ -1,6 +1,6 @@
 """Evidence management endpoints — chain-of-custody, collection, verification."""
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, Query, status
 from datetime import datetime, timezone
@@ -347,5 +347,3 @@ def _validate_chain(events: list[EvidenceChain]) -> tuple[bool, str]:
     # For now, just check structural integrity
     
     return True, "valid"
-
-__all__ = ["router"]

@@ -6,7 +6,7 @@ from typing import override,  Any
 from collections.abc import AsyncIterator
 
 from anthropic import AsyncAnthropic
-from css.core.types import (
+from css.core.base import (
     BaseMessage,
     MessageRole,
     ModelMetadata,
@@ -15,7 +15,7 @@ from css.core.types import (
     Tool,
     LLMResponse,
 )
-from css.core.types.base_client import BaseApiServiceClient, BaseStreamingHandler
+from css.core.base.client import BaseApiServiceClient, BaseStreamingHandler
 from css.core.config import ProviderDefaults
 
 

@@ -2,7 +2,7 @@
 
 from collections.abc import AsyncIterator
 
-from css.core.types import (
+from css.core.base import (
     BaseApiServiceClient,
     BaseMessage,
     LLMResponse,

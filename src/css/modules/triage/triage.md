@@ -177,13 +177,13 @@ response = await client.call(
 - **Missing**: `get_models()`, `call()` implementations
 - **Blocker**: Must complete before Phase 3A.1 triage implementation
 
-### UniversalLLMClient (core/types/universal_client.py)
+### UniversalLLMClient (core/base/universal_client.py)
 - **Pattern**: SDKRegistry with lazy-load + caching
 - **Status**: ✅ Ready
 - **Pre-registration**: `register_sdk("local-ollama", OllamaClient)`
 - **Usage**:
 ```python
-from css.core.types.universal_client import UniversalLLMClient
+from css.core.base.universal_client import UniversalLLMClient
 
 client = UniversalLLMClient()
 ollama = await client.get("local-ollama")
@@ -366,7 +366,7 @@ class TriageEngine(ABC):
 from .base import TriageEngine
 from .models import TriageRequest, TriageDecision
 from .exceptions import *
-from css.core.types.universal_client import UniversalLLMClient
+from css.core.base.universal_client import UniversalLLMClient
 
 class QwenTriageEngine(TriageEngine):
     """Triage engine using Qwen3 0.6B via Ollama."""

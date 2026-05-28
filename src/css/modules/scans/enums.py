@@ -36,5 +36,3 @@ class SeverityRating(str, Enum):
     LOW = "low"
     INFO = "info"
 
-
-__all__ = ["ScanType", "ScanStatus", "SeverityRating"]

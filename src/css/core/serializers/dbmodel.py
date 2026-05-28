@@ -9,7 +9,7 @@ coupling; model-specific serializers in ``css.core.db.models`` use
 
 from typing import Any, override
 
-from css.core.types.base_serializer import BaseSerializer
+from css.core.base.serializer import BaseSerializer
 
 
 class DBModelSerializer(BaseSerializer):

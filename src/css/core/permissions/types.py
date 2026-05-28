@@ -5,8 +5,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from css.core.enums import ScopeLevel
-from css.core.types.base_entity import BaseRole
-from css.core.types.base_entity import BaseRoleHeader
+from css.core.base.entity import BaseRole
+from css.core.base.entity import BaseRoleHeader
 from .enums import PathOp
 
 class PermissionPolicy(msgspec.Struct, frozen=True, kw_only=True):

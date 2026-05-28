@@ -6,7 +6,7 @@ from collections.abc import Awaitable, Callable
 from datetime import datetime
 from typing import Generic, TypeVar
 
-from css.core.types.base_enums import ProviderType
+from css.core.base.enums import ProviderType
 from css.core.errors.mappers import map_provider_error
 
 from .config import RetryConfig, RetryStrategy, RetryableErrorType

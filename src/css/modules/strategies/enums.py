@@ -10,5 +10,3 @@ class QueryComplexity(str, Enum):
     MODERATE = "moderate"  # Routing decision, classification -> PREPEND
     COMPLEX = "complex"    # Multi-step reasoning, synthesis -> CHAIN
 
-
-__all__ = ["QueryComplexity"]

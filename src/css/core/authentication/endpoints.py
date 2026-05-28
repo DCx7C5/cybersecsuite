@@ -9,7 +9,7 @@ Endpoints:
 - DELETE /api/authentication/keys/{id}      — Revoke API key
 """
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from css.core.logger import getLogger
 import os
 
@@ -284,5 +284,3 @@ async def delete_api_key(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete API key"
         )
-
-__all__ = ["router"]

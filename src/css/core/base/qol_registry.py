@@ -5,7 +5,7 @@ from typing import cast
 
 from css.core.events.event_bus import EventBus, event_bus
 from css.core.settings.qol import BUILTIN_PRESETS, QoLSettings
-from css.core.types.qol_settings import QoLSettingsManager
+from css.core.base.qol_settings import QoLSettingsManager
 
 
 class QoLPresetRegistry:

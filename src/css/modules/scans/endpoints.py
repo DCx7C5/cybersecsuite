@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional
 from datetime import datetime, timezone
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 from .models import Scan, Finding
 
 router = APIRouter(prefix="/api/scans", tags=["scans"])
@@ -78,5 +78,3 @@ async def list_findings(
     findings = await Finding.filter(scan_id=scan.id).all()
     return [FindingResponse(**{f: getattr(fnd, f) for f in FindingResponse.__struct_fields__}) for fnd in findings]
 
-
-__all__ = ["router"]

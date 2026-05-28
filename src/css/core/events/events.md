@@ -8,7 +8,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | `DomainEventRecord` Tortoise ORM model |
 | `css.core.events.store` | → consumes | `EventStore.append()` + `replay()` |
 | `css.core.events.otel_bridge` | → consumes | `OtelBridge.run()` background task |
@@ -118,7 +118,7 @@ src/css/core/events/
 
 ```python
 from css.core.events import HookBlockedError, HookContext, event, instrument, on_event, pre_hook
-from css.core.types.base_emitter import BaseEmitterClass
+from css.core.base.emitter import BaseEmitterClass
 
 # 1. Namespaced lifecycle decorators on event-emitting classes
 class QueryService(BaseEmitterClass):

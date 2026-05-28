@@ -43,7 +43,7 @@ state:
 
 Provider child directories under `api_services/` are intentionally governed by
 `api_services/api_services.md`; internal helper subdirectories such as
-`core/db/fields/`, `core/sdks/adapters/`, and `core/types/providers/` are
+`core/db/fields/`, `core/sdks/adapters/`, and `core/base/providers/` are
 governed by their parent core document unless they later acquire independent
 work queues.
 
@@ -60,7 +60,7 @@ work queues.
 | Cache/prompt cache | `core/cache/plan.md`, `core/prompt_cache/prompt_cache.md`, `core/redis/plan.md` | Generic and provider-aware caching. |
 | Models/capabilities/SDKs | `core/models/models.md`, `core/capabilities/plan.md`, `core/sdks/sdks.md` | Provider/model dispatch and advanced SDK capabilities. |
 | Routing/resilience | `core/resilience/resilience.md` | Retry, failure handling, and Phase 13 expansion. |
-| Types/QoL | `core/types/types.md` | Shared types and Phase 12 output-control contract. |
+| Types/QoL | `core/base/types.md` | Shared types and Phase 12 output-control contract. |
 | Permissions/roles | `core/permissions/permissions.md`, `core/roles/plan.md` | Access control and role boundaries. |
 | Settings/menu/templates | `core/settings/settings.md`, `core/menu/menu.md`, `core/templates/plan.md` | Runtime configuration, navigation, and frontend foundation. |
 | Marketplace/tools | `core/marketplace/marketplace.md`, `core/tools/tools.md` | Marketplace core ownership and shared execution surface. |

@@ -16,5 +16,3 @@ class SiemSource(str, Enum):
     SENTINELONE = "sentinelone"
     GENERIC = "generic"
 
-
-__all__ = ["SiemSeverity", "SiemSource"]

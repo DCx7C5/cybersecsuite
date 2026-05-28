@@ -44,7 +44,7 @@ from css.api_services.opencode import OpenCodeApiService
 from css.api_services.ollama import OllamaApiService, OllamaClientCompat
 
 # Error mapping (Issue #3)
-from css.core.types.base_error_mapper import BaseErrorMapper
+from css.core.base.error_mapper import BaseErrorMapper
 from css.core.errors.mappers import (
     map_provider_error,
     AnthropicErrorMapper,
@@ -88,49 +88,9 @@ PROVIDERS = {
     "lambda": LambdaApiService,
 }
 
-
 def get_service(provider_name: str, **kwargs):
     """Get API service instance for provider."""
     service_class = PROVIDERS.get(provider_name)
     if not service_class:
         raise ValueError(f"Unknown provider: {provider_name}")
     return service_class(**kwargs)
-
-
-__all__ = [
-    "AnthropicApiService",
-    "OpenAIApiService",
-    "DeepSeekApiService",
-    "GroqApiService",
-    "GeminiApiService",
-    "MistralApiService",
-    "xAIApiService",
-    "NVIDIAApiService",
-    "OpenRouterApiService",
-    "CerebrasApiService",
-    "TogetherApiService",
-    "GITHUBApiService",
-    "CloudflareApiService",
-    "FIREWORKSApiService",
-    "OpenCodeApiService",
-    "CohereApiService",
-    "PerplexityApiService",
-    "SambaNovaApiService",
-    "DeepInfraApiService",
-    "AI21ApiService",
-    "HuggingfaceApiService",
-    "OllamaApiService",
-    "OllamaClientCompat",
-    "NscaleApiService",
-    "LambdaApiService",
-    "PROVIDERS",
-    "get_service",
-    # Error mapping (Issue #3)
-    "map_provider_error",
-    "BaseErrorMapper",
-    "AnthropicErrorMapper",
-    "OpenAIErrorMapper",
-    "OllamaErrorMapper",
-    "GeminiErrorMapper",
-    "GroqErrorMapper",
-]

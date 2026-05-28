@@ -262,7 +262,7 @@ Implementation detail is intentionally routed to these local documents:
 | 0-9, 40 | `src/css/core/db/models/postgres-models.md`, `src/css/core/db/postgres-db.md`, relevant core/module owner docs |
 | 10, 16 | `src/css/core/sdks/sdks.md`, `src/css/api_services/api_services.md`, `src/css/core/models/models.md` |
 | 11 | `src/css/core/prompt_cache/prompt_cache.md` |
-| 12 | `src/css/core/types/types.md` |
+| 12 | `src/css/core/base/types.md` |
 | 13 | `src/css/core/resilience/resilience.md` |
 | 14 | `src/css/core/events/events.md`, `src/css/modules/hooks/hooks.md` |
 | 15 | `src/css/core/permissions/permissions.md`, `src/css/modules/sessions/sessions.md` |
@@ -288,7 +288,7 @@ Implementation detail is intentionally routed to these local documents:
 | 37 | `src/css/modules/siem/siem.md` |
 | 38 | `src/css/modules/jetbrains/jetbrains.md` |
 | 42 | `src/css/modules/acp/acp.md`, `src/css/modules/mcps/mcps.md`, `src/css/core/marketplace/marketplace.md`, `src/css/modules/approvals/approvals.md`, `src/css/modules/jetbrains/jetbrains.md` (legacy bridge) |
-| 43 | `src/css/core/serializers/serializers.md`, `src/css/core/types/types.md`, relevant serializer consumer owner docs |
+| 43 | `src/css/core/serializers/serializers.md`, `src/css/core/base/types.md`, relevant serializer consumer owner docs |
 | 44 | `src/css/core/cryptography/cryptography.md`, `src/css/core/securemd/securemd.md`, `src/css/core/prompt/prompt.md`, `.plan/architecture/securemd-architecture.md` |
 | 45 | `src/css/core/db/models/postgres-models.md`, `src/css/core/db/postgres-db.md`, `src/css/core/accounts/accounts.md`, `src/css/core/serializers/serializers.md` |
 
@@ -300,7 +300,7 @@ unrelated code:
 | Detail removed from the former central plan | New or expanded owner |
 |---------------------------------------------|-----------------------|
 | Prompt-cache execution design | `src/css/core/prompt_cache/prompt_cache.md` |
-| QoL output-control contract | `src/css/core/types/types.md` |
+| QoL output-control contract | `src/css/core/base/types.md` |
 | Routing strategies, tiers and resilience sequence | `src/css/core/resilience/resilience.md` |
 | Provider SDK capability expansion | `src/css/core/sdks/sdks.md` |
 | Frontend foundation execution contract | `src/css/core/templates/plan.md` |

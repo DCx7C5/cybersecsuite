@@ -36,8 +36,3 @@ class ApprovalRequest(BaseModel, TimestampMixin):
             models.Index(fields=["expires_at"]),  # type: ignore[reportPrivateImportUsage]
         ]
 
-
-__all__ = [
-    "ApprovalStatus",
-    "ApprovalRequest",
-]

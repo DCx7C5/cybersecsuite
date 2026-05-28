@@ -105,5 +105,3 @@ class PermissionChecker:
 # Module-level singleton — imported by tools executor and agent executor.
 permission_checker = PermissionChecker()
 
-
-__all__ = ["PermissionChecker", "permission_checker"]

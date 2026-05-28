@@ -5,7 +5,7 @@ from typing import Any
 
 import msgspec
 
-from css.core.types.base_enums import MemorySupportMode, ProviderType
+from css.core.base.enums import MemorySupportMode, ProviderType
 
 
 class Tool(msgspec.Struct, frozen=True, kw_only=True):

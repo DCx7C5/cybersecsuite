@@ -482,7 +482,7 @@ live status and implementation instructions are authoritative in
 | `src/css/core/accounts/accounts.md` | ❌ Thin | Three-file overview only; no todo IDs, no method signatures, and no numbered execution contract. |
 | `src/css/core/auth/auth.md` | ⚠️ Partial | Numbered requirements exist, but there are no owned todo IDs and the package-ownership guidance conflicts with the pending auth todo path. |
 | `src/css/core/events/events.md` | ✅ Rich | Package layout, symbols, API examples, checklist-owned todo IDs, acceptance gates, and current-state notes are detailed enough to implement without follow-up questions. |
-| `src/css/core/types/types.md` | ❌ Thin | Large but stale: old Pydantic/entity audit content dominates, and the pending QoL todo map is not backed by current file-level implementation contracts. |
+| `src/css/core/base/types.md` | ❌ Thin | Large but stale: old Pydantic/entity audit content dominates, and the pending QoL todo map is not backed by current file-level implementation contracts. |
 | `src/css/core/sdks/sdks.md` | ⚠️ Partial | Good file/class inventory, provider-priority contract, and todo status list; still lacks exact `src/...` paths for every pending file and explicit validation steps. |
 | `src/css/core/resilience/resilience.md` | ❌ Thin | Architecture summary only; no owned todo ID table, no exact routing package file map, and no validation contract per pending routing todo. |
 | `src/css/core/settings/settings.md` | ⚠️ Partial | Exact file layout, APIs, DB schema, and todo IDs are strong, but implementation sequencing is not step-by-step and the document includes partially stale ownership/completion notes. |
@@ -508,7 +508,7 @@ live status and implementation instructions are authoritative in
 - `src/css/core/memory/memory.md` — ⚠️ Partial: Strong file/class inventory and validation notes, but step-by-step contracts are prose-only and only a subset of pending Phase 20 todo IDs are tracked.
 - `src/css/core/accounts/accounts.md` — ❌ Thin: Three-file overview only; no todo IDs, no method signatures, and no numbered execution contract.
 - `src/css/core/auth/auth.md` — ⚠️ Partial: Numbered requirements exist, but there are no owned todo IDs and the package-ownership guidance conflicts with the pending auth todo path.
-- `src/css/core/types/types.md` — ❌ Thin: Large but stale: old Pydantic/entity audit content dominates, and the pending QoL todo map is not backed by current file-level implementation contracts.
+- `src/css/core/base/types.md` — ❌ Thin: Large but stale: old Pydantic/entity audit content dominates, and the pending QoL todo map is not backed by current file-level implementation contracts.
 - `src/css/core/sdks/sdks.md` — ⚠️ Partial: Good file/class inventory, provider-priority contract, and todo status list; still lacks exact `src/...` paths for every pending file and explicit validation steps.
 - `src/css/core/resilience/resilience.md` — ❌ Thin: Architecture summary only; no owned todo ID table, no exact routing package file map, and no validation contract per pending routing todo.
 - `src/css/core/settings/settings.md` — ⚠️ Partial: Exact file layout, APIs, DB schema, and todo IDs are strong, but implementation sequencing is not step-by-step and the document includes partially stale ownership/completion notes.
@@ -547,4 +547,4 @@ live status and implementation instructions are authoritative in
 2. Apply one required todo-description template in `session.db`: exact `src/...` paths, named symbols, numbered steps, validation block, and explicit dependencies/preconditions.
 3. Normalize owner docs to the same template: file map, symbol/method signatures, numbered contract, owned todo ID table, and a live status-sync note pulled from `session.db`.
 4. Resolve the path/ownership contradictions called out in section C first (`auth`, `chat`, `otel/telemetry`, `settings` import cleanup), then update both tracker text and owner docs together.
-5. Prioritize the thinnest owner docs for enrichment: `core/types`, `core/marketplace`, `core/accounts`, `core/resilience`, `core/rag_graph`, `modules/agents`, `modules/sessions`, `modules/workflows`, and `api_services`.
+5. Prioritize the thinnest owner docs for enrichment: `core/base`, `core/marketplace`, `core/accounts`, `core/resilience`, `core/rag_graph`, `modules/agents`, `modules/sessions`, `modules/workflows`, and `api_services`.

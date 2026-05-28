@@ -19,26 +19,21 @@ from cryptography.hazmat.primitives.serialization import (
 )
 from cryptography.exceptions import InvalidSignature
 
-
 class CryptographyError(Exception):
     """Base failure for cryptography operations."""
 
-
 class KeyPurposeError(CryptographyError):
     """Raised when a key is used for a purpose it was not configured for."""
-
 
 def generate_ed25519_keypair() -> tuple[Ed25519PrivateKey, Ed25519PublicKey]:
     """Generate a new Ed25519 key pair."""
     private_key = Ed25519PrivateKey.generate()
     return private_key, private_key.public_key()
 
-
 def sign_bytes(private_key: Ed25519PrivateKey, data: bytes) -> str:
     """Sign bytes with an Ed25519 private key, returning an uppercase hex signature."""
     signature = private_key.sign(data)
     return signature.hex().upper()
-
 
 def verify_signature(
     public_key: Ed25519PublicKey, data: bytes, signature_hex: str
@@ -56,7 +51,6 @@ def verify_signature(
     except (InvalidSignature, ValueError):
         return False
 
-
 def load_private_key_from_pem(pem_data: bytes) -> Ed25519PrivateKey:
     """Load an Ed25519 private key from PEM-encoded bytes."""
     key = load_pem_private_key(pem_data, password=None)
@@ -64,14 +58,12 @@ def load_private_key_from_pem(pem_data: bytes) -> Ed25519PrivateKey:
         raise KeyPurposeError("Expected Ed25519 private key")
     return key
 
-
 def load_public_key_from_pem(pem_data: bytes) -> Ed25519PublicKey:
     """Load an Ed25519 public key from PEM-encoded bytes."""
     key = load_pem_public_key(pem_data)
     if not isinstance(key, Ed25519PublicKey):
         raise KeyPurposeError("Expected Ed25519 public key")
     return key
-
 
 def private_key_to_pem(key: Ed25519PrivateKey) -> bytes:
     """Serialize an Ed25519 private key to PEM bytes."""
@@ -81,23 +73,9 @@ def private_key_to_pem(key: Ed25519PrivateKey) -> bytes:
         encryption_algorithm=NoEncryption(),
     )
 
-
 def public_key_to_pem(key: Ed25519PublicKey) -> bytes:
     """Serialize an Ed25519 public key to PEM bytes."""
     return key.public_bytes(
         encoding=Encoding.PEM,
         format=PublicFormat.SubjectPublicKeyInfo,
     )
-
-
-__all__ = [
-    "CryptographyError",
-    "KeyPurposeError",
-    "generate_ed25519_keypair",
-    "sign_bytes",
-    "verify_signature",
-    "load_private_key_from_pem",
-    "load_public_key_from_pem",
-    "private_key_to_pem",
-    "public_key_to_pem",
-]

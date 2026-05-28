@@ -1,6 +1,6 @@
 """SecureMD FrontMatterHeader — re-export of the canonical base type."""
 
-from css.core.types.base_frontmatter_header import BaseFrontmatterHeader
+from css.core.base.frontmatter_header import BaseFrontmatterHeader
 
 
 class FrontMatterHeader(BaseFrontmatterHeader, frozen=True):

@@ -105,11 +105,3 @@ class Finding(BaseModel, TimestampMixin):
         table = "scan_findings"
         unique_together = (("scan_id", "finding_id"),)
 
-
-__all__ = [
-    "ScanType",
-    "ScanStatus",
-    "SeverityRating",
-    "Scan",
-    "Finding",
-]

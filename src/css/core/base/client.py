@@ -8,8 +8,8 @@ from collections.abc import AsyncIterator, Awaitable
 from aiohttp import ClientSession
 
 from css.core.config import ProviderDefaults
-from .base_enums import ProviderType
-from .base_messages import BaseMessage
+from .enums import ProviderType
+from .messages import BaseMessage
 from css.core.messages.types import Tool, ModelMetadata, StreamChunk, LLMResponse
 
 

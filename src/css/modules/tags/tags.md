@@ -8,7 +8,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.core.marketplace` | ← consumed by | Marketplace item classification/filtering junctions. |
 | `css.core.models` | ← consumed by | Model metadata tag filtering when runtime wiring is complete. |

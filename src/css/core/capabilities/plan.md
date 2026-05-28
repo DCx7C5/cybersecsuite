@@ -10,7 +10,7 @@
 
 | Component | Direction | Relationship |
 |-----------|-----------|--------------|
-| `css.core.types` | → consumes | Base types, Protocol contracts |
+| `css.core.base` | → consumes | Base types, Protocol contracts |
 | `css.core.db` | → consumes | ORM models (if applicable) |
 | `css.api_services.*` | → consumes | Provider metadata/endpoints queried during discovery. |
 | `css.core.cache` | → consumes | Discovery-result TTL cache and invalidation. |

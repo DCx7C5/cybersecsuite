@@ -130,7 +130,7 @@ Built multi-orchestrator coordination layer: orchestrator lifecycle management, 
 
 ### Files Created
 - `src/css/core/db/models/orchestrator.py` (OrchestratorInstance ORM)
-- `src/css/core/types/entities/orchestrator.py` (Orchestrator dataclass)
+- `src/css/core/base/entities/orchestrator.py` (Orchestrator dataclass)
 - `src/css/modules/orchestration/` (9 new files)
 
 ### Key Decisions
@@ -173,9 +173,9 @@ Phase 2 completed: SDK Pattern & Response, UniversalLLMClient registry + lazy-lo
 
 ### Files Created/Modified
 - `src/css/modules/roles/role_types.py` (140 lines)
-- `src/css/core/types/universal_client.py` (220 lines)
+- `src/css/core/base/universal_client.py` (220 lines)
 - `src/css/modules/roles/__init__.py` (updated)
-- `src/css/core/types/api_services.py` (updated)
+- `src/css/core/base/api_services.py` (updated)
 - `src/css/modules/__init__.py` (updated, auto-discovery)
 
 ### Key Decisions
@@ -224,14 +224,14 @@ Current navigation is `.plan/plan.md`; current status is in
 **Deep Codebase Inspection**:
 - Read all 22 architecture docs + 48 plan.md files + source listings
 - Identified 5 types.py/base.py antipatterns across codebase
-- Read all 31 files in core/types/ directory
+- Read all 31 files in core/base/ directory
 
 **5 Anti-Patterns Documented (Phase 3/4)**:
 1. Empty base.py: `agents/base.py`, `skills/base.py` → delete
 2. `__all__` in 20+ wrong files → move to `__init__.py` only
 3. `@dataclass + ABC` in `base_entity.py`, `base_header.py` → remove @dataclass
 4. base.py size violations: tools (9 LOC merge), cache (293 LOC split)
-5. core/types/ soup: 9 orphans, 1 god file (280 LOC/11 classes) → full reorganisation
+5. core/base/ soup: 9 orphans, 1 god file (280 LOC/11 classes) → full reorganisation
 
 **5 Architecture Proposals Approved (Phase 6)**:
 1. **Protocol-first + msgspec.Struct** — Kill ABC/dataclass mixing; 10-40× faster serialization
@@ -316,7 +316,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 **Code fixes**:
 - `legacy/hooks/events.py`: Added `HookContext` re-export (was documented, not implemented)
 - `legacy/hooks/recovery_hooks.py`: `from hooks.events` → `from .events` (relative import)
-- `legacy/hooks/__init__.py`: Import `HookContext` from `css.core.types.hook_events`
+- `legacy/hooks/__init__.py`: Import `HookContext` from `css.core.base.hook_events`
 - `tests/unit/test_recovery_hooks.py` + `test_streaming_hooks.py` + `test_registry_instrumentation_integration.py`: Fixed stale `css.core.registries.hooks` → `legacy.registries.hooks`
 - Deleted `agents/base.py`, `skills/base.py` (both 0 LOC, no references)
 
@@ -424,8 +424,8 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 |-----|-------|------|
 | A (CRITICAL) | `css.core.session` | File doesn't exist; `session-context-create` already tracked in Phase 15 |
 | B (HIGH) | `core/db/models/` | ORM models missing: ProjectRecord, McpServerConfigRecord, PromptDefinitionRecord |
-| C (HIGH) | `core/types/projects.py` | Missing — `projects/projects.md` requires it |
-| D (HIGH, BLOCKED) | `core/types/context.py` | `@dataclass + BaseModel` anti-pattern on 4 classes |
+| C (HIGH) | `core/base/projects.py` | Missing — `projects/projects.md` requires it |
+| D (HIGH, BLOCKED) | `core/base/context.py` | `@dataclass + BaseModel` anti-pattern on 4 classes |
 | E (HIGH, BLOCKED) | `permissions.ScopeLevel` | 3 independent definitions of same enum |
 | F (MEDIUM) | `agents/agents.md` | Stale `project_dir`, missing `prompts` row |
 | G (MEDIUM) | `events/events.md` | Missing project.*, settings.changed, mcp.call.* event namespaces |
@@ -435,7 +435,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 
 ### Two BLOCKED Todos Need User Decision
 1. **`gap-scopelevel-deduplicate`**: 3 independent `ScopeLevel` enums. Proposed: `core/db/enums` = source of truth; permissions re-exports from there; scopes deleted (Phase 15).
-2. **`gap-context-antipattern`**: `context.py` uses `@dataclass + BaseModel` on 4 classes (anti-pattern #3). Proposed: replace all 4 with `msgspec.Struct`. Currently only re-exported from `core/types/__init__.py` — not yet used by any module.
+2. **`gap-context-antipattern`**: `context.py` uses `@dataclass + BaseModel` on 4 classes (anti-pattern #3). Proposed: replace all 4 with `msgspec.Struct`. Currently only re-exported from `core/base/__init__.py` — not yet used by any module.
 
 ### Key Technical Findings
 - `ScopeLevel` exists in: `core/db/enums.py` AND `/enums.py` AND `core/permissions/enums.py`
@@ -452,25 +452,25 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 ### Work Done
 
 **7 Phase 4 Entity Migration Todos Completed**:
-1. `phase4-verify-imports` — Core module imports verified (css.core.types, css.core.db, css.core.events, css.modules.roles)
+1. `phase4-verify-imports` — Core module imports verified (css.core.base, css.core.db, css.core.events, css.modules.roles)
 2. `types-option-c-accounts` — Account entity moved to `src/css/core/accounts/types.py`
 3. `types-option-c-agents` — Agent entity moved to `src/css/modules/agents/types.py`
 4. `types-option-c-permissions` — Role entity added to `src/css/core/permissions/types.py` with built-in singletons
 5. `types-option-c-skills` — Skill entity moved to `src/css/modules/skills/types.py`
 6. `types-option-c-tools` — Tool entity moved to `src/css/modules/tools/types.py` + 5 helper classes
-7. `types-option-c-reimport` — Updated `src/css/core/types/__init__.py` to import entities from new module locations
+7. `types-option-c-reimport` — Updated `src/css/core/base/__init__.py` to import entities from new module locations
 
 **Comprehensive QA Review Performed**:
 - ✅ All 5 new entity files in correct locations with valid Python syntax
 - ✅ All module __init__.py files export entities via __all__
-- ✅ Import chain verified working: css.core.types → css.modules.*.types (no circular imports)
-- ✅ Base classes (BaseAgent, BaseRole, BaseSkill, BaseTool) remain in core/types/entities/ as designed
+- ✅ Import chain verified working: css.core.base → css.modules.*.types (no circular imports)
+- ✅ Base classes (BaseAgent, BaseRole, BaseSkill, BaseTool) remain in core/base/entities/ as designed
 - ✅ Old entity files preserved in original locations (for types-option-c-cleanup todo later)
 - ✅ All changes passed ruff linting checks
 - ✅ Documentation complete with proper docstrings
 
 ### Files Modified (7 total)
-- `src/css/core/types/__init__.py` (updated imports from new module locations)
+- `src/css/core/base/__init__.py` (updated imports from new module locations)
 - `src/css/core/accounts/__init__.py` (new)
 - `src/css/core/accounts/types.py` (new)
 - `src/css/modules/agents/__init__.py` (new)
@@ -495,7 +495,7 @@ See: `plan.md` for Phase 6 section | `memory.md` for full state | `session.db` f
 3. **Role entity**: Built-in singletons (ORCHESTRATOR, TEAM_MODE, WORKER) + REGISTRY dict + get() factory
 4. **Skill entity**: 4 fields (status, install_path, installed_at) + 3 properties (is_installed, has_update, is_deprecated)
 5. **Tool entity**: Main class + 5 helper classes (ToolParameter, ToolReturnType, ToolSchema, HybridToolSchema, ManagedTool)
-6. **Import pattern**: Entities now import from css.core.types.base and css.core.types.headers (no circular deps)
+6. **Import pattern**: Entities now import from css.core.base.base and css.core.base.headers (no circular deps)
 
 ### Verification Checklist (ALL PASS ✅)
 1. ✅ File structure verification
@@ -958,7 +958,7 @@ implementation of the obsolete proposal.
 ### Work Done
 
 - Upgraded the inline `_GetCoreSchemaHandler` Protocol in
-  `core/types/base_endpoint.py` from a minimal 6-line stub to a
+  `core/base/base_endpoint.py` from a minimal 6-line stub to a
   production-ready version:
   - Added full docstrings matching pydantic's original `GetCoreSchemaHandler`
     documentation for each method (`__call__`, `generate_schema`,

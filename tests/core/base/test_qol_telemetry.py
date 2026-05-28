@@ -1,8 +1,8 @@
 import pytest
 
 from css.core.settings.qol import QoLSecurityError, QoLSettings, QoLToggle
-from css.core.types.qol_injector import QoLInjector
-from css.core.types.qol_telemetry import QoLTelemetryBridge
+from css.core.base.qol_injector import QoLInjector
+from css.core.base.qol_telemetry import QoLTelemetryBridge
 
 
 def test_success_payload_is_sanitized() -> None:
@@ -33,7 +33,7 @@ async def test_injector_emits_success_event(monkeypatch: pytest.MonkeyPatch) -> 
     async def _emit(event_type: str, payload: dict[str, object]) -> None:
         captured.append((event_type, payload))
 
-    monkeypatch.setattr("css.core.types.qol_telemetry.emit_event", _emit)
+    monkeypatch.setattr("css.core.base.qol_telemetry.emit_event", _emit)
     injector = QoLInjector()
     settings = QoLSettings(enabled_toggles={QoLToggle.NO_CHAT}, scope="session")
 
@@ -56,7 +56,7 @@ async def test_injector_emits_security_rejected_event(monkeypatch: pytest.Monkey
     async def _emit(event_type: str, payload: dict[str, object]) -> None:
         captured.append((event_type, payload))
 
-    monkeypatch.setattr("css.core.types.qol_telemetry.emit_event", _emit)
+    monkeypatch.setattr("css.core.base.qol_telemetry.emit_event", _emit)
     injector = QoLInjector()
     invalid = QoLSettings(
         enabled_toggles={QoLToggle.FILE_ONLY, QoLToggle.APPEND_AUDIT_TRAIL},
@@ -78,7 +78,7 @@ async def test_exporter_failure_is_non_fatal(monkeypatch: pytest.MonkeyPatch) ->
     async def _emit(_event_type: str, _payload: dict[str, object]) -> None:
         raise RuntimeError("telemetry backend down")
 
-    monkeypatch.setattr("css.core.types.qol_telemetry.emit_event", _emit)
+    monkeypatch.setattr("css.core.base.qol_telemetry.emit_event", _emit)
     bridge = QoLTelemetryBridge()
     ok = await bridge.emit_injection_success(
         settings=QoLSettings(enabled_toggles={QoLToggle.NO_CHAT}, scope="session"),
@@ -95,7 +95,7 @@ async def test_emit_injection_failure_event(monkeypatch: pytest.MonkeyPatch) -> 
     async def _emit(event_type: str, payload: dict[str, object]) -> None:
         captured.append((event_type, payload))
 
-    monkeypatch.setattr("css.core.types.qol_telemetry.emit_event", _emit)
+    monkeypatch.setattr("css.core.base.qol_telemetry.emit_event", _emit)
     bridge = QoLTelemetryBridge()
     ok = await bridge.emit_injection_failure(
         settings=QoLSettings(enabled_toggles={QoLToggle.NO_CHAT}, scope="session"),

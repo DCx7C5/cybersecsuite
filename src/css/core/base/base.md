@@ -1,12 +1,12 @@
-# @types — Core Type Definitions
+# @base — Core Base Definitions
 
 **Tracking rule**: `.plan/session.db` is authoritative for todo state. This
-local document is the executable implementation specification for `core/types`;
+local document is the executable implementation specification for `core/base`;
 this documentation-movement pass intentionally does not edit the tracker.
 
 ---
 
-**Location**: `src/css/core/types/`
+**Location**: `src/css/core/base/`
 
 **Responsibility**: Base classes, enums, and `msgspec.Struct` value/API contracts used across all modules.
 
@@ -29,7 +29,7 @@ Core types module exports:
 ### 0. **base_serializer.py** - Ownership Moved, Reconciliation Pending (Phase 43)
 
 `src/css/core/serializers/` is now the canonical serializer owner.
-`core/types/base_serializer.py` is currently a placeholder compatibility
+`core/base/base_serializer.py` is currently a placeholder compatibility
 surface whose docstring points to the removed `core/db/serializers.py`; it is
 not evidence of an implemented base contract.
 
@@ -115,7 +115,7 @@ class Tool:
 ```
 
 **Registry Classes Using AsyncSafeSingletonMeta**:
-- `BaseRegistry` (`core/types/base_registry.py`) - metaclass=AsyncSafeSingletonMeta, no ABC
+- `BaseRegistry` (`core/base/base_registry.py`) - metaclass=AsyncSafeSingletonMeta, no ABC
 - `ModelRegistry` (`core/models/registry.py`) - metaclass=AsyncSafeSingletonMeta directly
 - `MarketplaceItemRegistry` (`core/marketplace/registry.py`) - inherits BaseRegistry
 - `ProviderRegistry` (`api_services/registry.py`) - metaclass=AsyncSafeSingletonMeta
@@ -303,7 +303,7 @@ class BaseLocalSDK(BaseApiServiceClient, ABC):
 
 ## Import Structure
 
-**File**: `src/css/core/types/__init__.py`
+**File**: `src/css/core/base/__init__.py`
 
 ```python
 """Core types.py for CyberSecSuite — base classes, enums, data models."""
@@ -423,7 +423,7 @@ __all__ = [
 
 ```python
 # src/css/modules/capabilities/__init__.py
-from css.core.types import CapabilityType, ModelCapabilities
+from css.core.base import CapabilityType, ModelCapabilities
 
 # Create capability check
 caps = ModelCapabilities(
@@ -441,8 +441,8 @@ caps = ModelCapabilities(
 
 ```python
 # src/css/modules/chat/endpoints.py
-from css.core.types import BaseMessage, MessageRole
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base import BaseMessage, MessageRole
+from css.core.base.endpoint import BaseEndpoint
 
 
 # Receive message
@@ -531,12 +531,12 @@ record later in this file. Current source uses split `base_*` files and
 
 | Path | Current or planned symbols |
 |------|----------------------------|
-| `src/css/core/types/context_management.py` | `ContextManagementConfig` struct with `auto_compact_at_tokens`, `clear_thinking_on_compact`, `custom_summary_prompt`. |
+| `src/css/core/base/context_management.py` | `ContextManagementConfig` struct with `auto_compact_at_tokens`, `clear_thinking_on_compact`, `custom_summary_prompt`. |
 | `src/css/core/settings/qol.py` | Existing `QoLToggle`, `QoLSettings`; add `BUILTIN_PRESETS`, `QoLSecurityError`, `validate_toggle_combo()`. |
-| `src/css/core/types/qol_injector.py` | Planned `QoLInjector.build_fragment_block()`, `inject_into_messages()`, `inject_into_system()`. |
-| `src/css/core/types/qol_registry.py` | Planned `QoLPresetRegistry.get()`, `list_all()`, `reload()`, `invalidate()`. |
-| `src/css/core/types/qol_settings.py` | Planned `QoLSettingsManager.get_for_scope()`, `save_settings()`, `cascade_resolve()`. |
-| `src/css/core/types/qol_endpoints.py` | Planned core-owned QoL settings/preset router if ASGI mounting policy confirms this location. |
+| `src/css/core/base/qol_injector.py` | Planned `QoLInjector.build_fragment_block()`, `inject_into_messages()`, `inject_into_system()`. |
+| `src/css/core/base/qol_registry.py` | Planned `QoLPresetRegistry.get()`, `list_all()`, `reload()`, `invalidate()`. |
+| `src/css/core/base/qol_settings.py` | Planned `QoLSettingsManager.get_for_scope()`, `save_settings()`, `cascade_resolve()`. |
+| `src/css/core/base/qol_endpoints.py` | Planned core-owned QoL settings/preset router if ASGI mounting policy confirms this location. |
 | `src/css/core/db/models/qol.py` | Planned `QoLSettingsModel` persistence record. |
 | `src/css/core/sdks/css_client.py` | Planned injection point in `CSSLLMClient.call()` and `call_buffered()`. |
 | `src/css/core/prompt_cache/exact_cache.py` | Planned prompt-cache key consumer of `toggle_hash(settings)` once the cache runtime is created. |

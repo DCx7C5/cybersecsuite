@@ -12,7 +12,7 @@ under a dedicated `/ws/*` surface.
 from css.core.logger import getLogger
 import json
 
-from css.core.types.base_endpoint import BaseEndpoint
+from css.core.base.endpoint import BaseEndpoint
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
 
@@ -297,5 +297,3 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str) -> None
         except Exception:
             pass
 
-
-__all__ = ["router"]

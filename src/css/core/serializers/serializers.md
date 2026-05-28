@@ -37,7 +37,7 @@ responses, and SecureMD frontmatter/Markdown parsing. It also owns all
 
 - `dbmodel.py`, `json.py`, `frontmatter.py`, and `markdown.py` contain
   placeholder subclasses only; `__init__.py` exposes no public contract.
-- `core/types/base_serializer.py` is a placeholder whose ownership text still
+- `core/base/base_serializer.py` is a placeholder whose ownership text still
   points at the removed DB serializer module.
 - Current DB model, menu, and retrieval consumers import
   `css.core.db.serializers`, which no longer resolves; `host.py` additionally

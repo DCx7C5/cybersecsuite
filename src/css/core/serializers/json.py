@@ -8,7 +8,7 @@ from typing import Any, override
 
 import msgspec
 
-from css.core.types.base_serializer import BaseSerializer
+from css.core.base.serializer import BaseSerializer
 
 
 class JSONSerializer(BaseSerializer):

@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 
 import msgspec
 
-from css.core.types.base_enums import CapabilityType, MemorySupportMode
+from css.core.base.enums import CapabilityType, MemorySupportMode
 
 
 class Capability(msgspec.Struct, frozen=True, kw_only=True):

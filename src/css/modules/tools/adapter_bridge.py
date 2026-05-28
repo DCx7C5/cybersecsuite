@@ -1,6 +1,6 @@
 """Bridge adapter builtin tools into ToolRegistry.
 
-Converts adapter-provided `Tool` objects (core/types/base_messages)
+Converts adapter-provided `Tool` objects (core/base/messages)
 to `ToolSchema` objects and registers them with ToolRegistry.
 """
 
@@ -89,5 +89,3 @@ def register_adapter_tools(registry: ToolRegistry | None = None) -> None:
         except Exception as exc:
             logger.warning("Failed to register builtin tools for %s: %s", provider_id, exc)
 
-
-__all__ = ["register_adapter_tools"]
