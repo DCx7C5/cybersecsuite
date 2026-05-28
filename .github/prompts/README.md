@@ -26,6 +26,7 @@ Prompt text goes here.
 ## Current files
 
 - `.github/prompts/review-plan.prompt.md`
+- `.github/prompts/start-working.prompt.md`
 
 ## Notes
 
