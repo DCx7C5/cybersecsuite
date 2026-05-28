@@ -159,7 +159,7 @@ async with instrument("tool.call", tool_id="nmap"):
 - [x] `p6-events-otel-bridge` — OtelBridge (Redis → OTEL spans)
 
 ### Phase 14 T14.1–T14.5 (instrumentation + interceptors)
-- [ ] `events-instrument-decorator` — @instrument(namespace) + ContextVar
+- [x] `events-instrument-decorator` — @instrument(namespace) + ContextVar
 - [x] `events-event-bus-module` — Wire singletons in __init__.py + lifespan
 - [ ] `events-middleware-fastapi` — EventInstrumentationMiddleware
 - [ ] `events-instrument-command-bus` — CommandBus.execute wired

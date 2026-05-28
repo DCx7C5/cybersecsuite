@@ -7,7 +7,7 @@ from .enums import PathOp
 from .types import Role, PermissionPolicy, ScopeContext, TokenPayload, ToolGrant
 from .checker import PermissionChecker, permission_checker
 from .exceptions import (
-    PermissionError,
+    BasePermissionError,
     PermissionDenied,
     TokenInvalid,
     ScopeContextError,
@@ -28,7 +28,7 @@ __all__ = [
     "ToolGrant",
     "PermissionChecker",
     "permission_checker",
-    "PermissionError",
+    "BasePermissionError",
     "PermissionDenied",
     "TokenInvalid",
     "ScopeContextError",

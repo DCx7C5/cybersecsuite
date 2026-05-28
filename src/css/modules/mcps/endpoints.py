@@ -50,14 +50,14 @@ async def start_mcp_server(server_id: str) -> dict[str, object]:
         config = record.to_schema()
 
         # Check if already connected
-        if server_id in _registry._connections:
+        if server_id in _registry.connections:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"MCP server already connected: {server_id}",
             )
 
         # Register config if not already registered
-        if server_id not in _registry._servers:
+        if server_id not in _registry.servers:
             await _registry.register(server_id, config)
 
         # Connect to server
@@ -103,7 +103,7 @@ async def stop_mcp_server(server_id: str) -> dict[str, object]:
         HTTPException 500: Disconnection failed
     """
     try:
-        if server_id not in _registry._connections:
+        if server_id not in _registry.connections:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"MCP server not connected: {server_id}",
@@ -149,7 +149,7 @@ async def restart_mcp_server(server_id: str) -> dict[str, object]:
     """
     try:
         # Stop if connected
-        if server_id in _registry._connections:
+        if server_id in _registry.connections:
             await _registry.disconnect(server_id)
 
         # Load persisted config from database
@@ -163,7 +163,7 @@ async def restart_mcp_server(server_id: str) -> dict[str, object]:
         config = record.to_schema()
 
         # Register config if not already registered
-        if server_id not in _registry._servers:
+        if server_id not in _registry.servers:
             await _registry.register(server_id, config)
 
         # Connect to server
@@ -214,7 +214,7 @@ async def get_mcp_server_status(server_id: str) -> dict[str, object]:
         )
 
     config = record.to_schema()
-    is_connected = server_id in _registry._connections
+    is_connected = server_id in _registry.connections
 
     return {
         "server_id": server_id,
@@ -244,7 +244,7 @@ async def list_mcp_servers() -> list[dict[str, object]]:
     result = []
     for record in records:
         config = record.to_schema()
-        is_connected = record.server_id in _registry._connections
+        is_connected = record.server_id in _registry.connections
 
         result.append({
             "server_id": record.server_id,

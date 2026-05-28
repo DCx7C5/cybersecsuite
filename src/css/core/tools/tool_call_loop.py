@@ -61,7 +61,7 @@ class ToolCallLoop:
                 tool_id, params, call_id = self._extract_tool_call(call)
                 if not tool_id:
                     continue
-                result = await self._tool_executor.execute_tool(
+                result = await self._tool_executor.execute(
                     agent_id=agent_id,
                     tool_id=tool_id,
                     params=params,

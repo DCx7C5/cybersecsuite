@@ -178,6 +178,14 @@ class McpRuntimeRegistry(BaseToggleRegistry[McpServerConfig]):
                 except Exception as e:
                     logger.warning(f"Failed to auto-connect to {server_id}: {e}")
 
+    @property
+    def connections(self):
+        return self._connections
+
+    @property
+    def servers(self):
+        return self._servers
+
 
 def get_mcp_registry() -> McpRuntimeRegistry:
     """Return the global McpRuntimeRegistry singleton."""

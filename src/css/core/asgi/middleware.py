@@ -50,9 +50,20 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
 
     @override
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        from css.core.events.otel_context import (
+            TraceContextExtractor,
+            clear_correlation_id,
+            set_correlation_id,
+        )
+
+        corr_id = TraceContextExtractor.extract_correlation_id(dict(request.headers))
+        set_correlation_id(corr_id or None)
+
         path = request.url.path
         if should_skip_path(path, _SKIP_PREFIXES):
-            return await call_next(request)
+            response = await call_next(request)
+            clear_correlation_id()
+            return response
 
         key = normalize_path_patterns(path, _ID_PATTERNS)
         t0 = time.perf_counter()
@@ -69,6 +80,7 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
                 "http.latency.%s %sms [%s] %s",
                 key, latency_ms, request.method, status,
             )
+        clear_correlation_id()
         return response
 
 

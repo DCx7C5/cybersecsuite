@@ -3,33 +3,33 @@
 from css.core.exceptions import BaseCoreException
 
 
-class PermissionError(BaseCoreException):
+class BasePermissionError(BaseCoreException):
     """Base exception for permission-related errors."""
     pass
 
 
-class PermissionDenied(PermissionError):
+class PermissionDenied(BasePermissionError):
     """Raised when an operation is not permitted."""
     pass
 
 
-class TokenInvalid(PermissionError):
+class TokenInvalid(BasePermissionError):
     """Raised when a token is invalid or expired."""
     pass
 
 
-class ScopeContextError(PermissionError):
+class ScopeContextError(BasePermissionError):
     """Raised when scope context is invalid."""
     pass
 
 
-class RoleNotFound(PermissionError):
+class RoleNotFound(BasePermissionError):
     """Raised when a role is not found."""
     pass
 
 
 __all__ = [
-    "PermissionError",
+    "BasePermissionError",
     "PermissionDenied",
     "TokenInvalid",
     "ScopeContextError",

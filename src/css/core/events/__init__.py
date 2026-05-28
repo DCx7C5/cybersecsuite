@@ -26,6 +26,13 @@ from .domain_event import (
 from .event_bus import EventBus, event_bus
 from .emitter import EventEmitterMixin, NamespacedEventEmitter, emit_event, emit_events, event, get_event_bus
 from .instrument import instrument, instrument_decorator
+from .otel_context import (
+    TraceContextExtractor,
+    clear_correlation_id,
+    correlation_id_ctx,
+    get_correlation_id,
+    set_correlation_id,
+)
 from .otel_bridge import EventStoreObserver, OtelBridge
 from .projections import (
     AuditTrailProjection,
@@ -117,6 +124,11 @@ __all__ = [
     "event",
     "instrument",
     "instrument_decorator",
+    "correlation_id_ctx",
+    "set_correlation_id",
+    "get_correlation_id",
+    "clear_correlation_id",
+    "TraceContextExtractor",
     "NamespacedEventEmitter",
     "EventEmitterMixin",
     "configure_event_runtime",

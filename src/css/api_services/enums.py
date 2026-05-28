@@ -62,3 +62,11 @@ def discover_provider_ids() -> tuple[str, ...]:
         if provider_dir.is_dir() and not provider_dir.name.startswith("_")
     }
     return tuple(sorted(providers))
+
+
+# Define ProviderType dynamically based on filesystem discovery
+ProviderType = Enum(
+    "ProviderType",
+    {pid.upper(): pid for pid in discover_provider_ids()},
+    type=str,
+)
