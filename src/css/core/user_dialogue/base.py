@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from css.core.user_communication.enums import QuestionType
+from css.core.user_dialogue.enums import QuestionType
 
 
 class UserInputCollector(ABC):

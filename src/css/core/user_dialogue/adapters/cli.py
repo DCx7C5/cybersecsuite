@@ -5,8 +5,8 @@ import sys
 from typing import override
 
 from css.core.logger import getLogger
-from css.core.user_communication.base import UserInputCollector
-from css.core.user_communication.enums import QuestionType
+from css.core.user_dialogue.base import UserInputCollector
+from css.core.user_dialogue.enums import QuestionType
 
 logger = getLogger(__name__)
 
