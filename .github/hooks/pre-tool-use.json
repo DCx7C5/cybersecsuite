@@ -1,6 +1,9 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [],
+    "sessionEnd": [],
+    "userPromptSubmitted": [],
     "preToolUse": [
       {
         "type": "command",
@@ -8,6 +11,15 @@
         "powershell": "($input | Out-String) | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
         "timeoutSec": 5
       }
-    ]
+    ],
+    "postToolUse": [],
+    "errorOccurred": [],
+    "notification": [],
+    "permissionRequest": [],
+    "postToolUseFailure": [],
+    "preCompact": [],
+    "agentStop": [],
+    "subagentStart": [],
+    "subagentStop": []
   }
 }
