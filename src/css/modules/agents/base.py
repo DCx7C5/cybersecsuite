@@ -10,6 +10,7 @@ Replaces Claude SDK hardcode with provider-agnostic execution.
 """
 
 from css.core.capabilities.capability_registry import DynamicCapabilityRegistry
+from css.core.events.instrument import instrument
 from css.core.logger import getLogger
 from typing import Protocol, runtime_checkable, Any, cast
 from datetime import datetime
@@ -101,6 +102,20 @@ class AgentExecutor:
             registry = get_registry()
             self._adapter = cast(BufferedProvider, registry.get_provider(self.provider))
         return self._adapter
+    
+    @instrument("agent.run")
+    async def run(
+        self,
+        prompt: str,
+        context: dict[str, object] | None = None,
+        system: str | None = None,
+        **kwargs: object,
+    ) -> AgentResult:
+        """Public entrypoint — decorated for lifecycle instrumentation.
+        
+        Delegates to execute() for the actual provider call and tool loop.
+        """
+        return await self.execute(prompt, context=context, system=system, **kwargs)
     
     async def execute(
         self,
