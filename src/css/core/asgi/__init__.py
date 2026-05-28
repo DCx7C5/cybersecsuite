@@ -1,12 +1,11 @@
 """ASGI application and middleware for CyberSecSuite."""
 
 from .app import app
-from .middleware import EventInstrumentationMiddleware, HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
+from .middleware import TelemetryMiddleware, HTTPSRedirectMiddleware, RateLimitMiddleware
 
 __all__ = [
     "app",
-    "EventInstrumentationMiddleware",
+    "TelemetryMiddleware",
     "HTTPSRedirectMiddleware",
     "RateLimitMiddleware",
-    "TelemetryMiddleware",
 ]

@@ -1,4 +1,4 @@
-"""Starlette ASGI middleware for telemetry, HTTPS redirect, rate limiting, and event instrumentation."""
+"""Starlette ASGI middleware for telemetry, HTTPS redirect, and rate limiting."""
 
 
 from typing import override
@@ -14,7 +14,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, RedirectResponse
 
-from css.core.events.instrument import instrument
 from css.core.logger import getLogger
 
 PathPattern = tuple[re.Pattern, str]
@@ -151,15 +150,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         response.headers["X-RateLimit-Team-Limit"] = str(self.team_limit)
         response.headers["X-RateLimit-Provider-Limit"] = str(self.provider_limit)
         return response
-
-
-class EventInstrumentationMiddleware(BaseHTTPMiddleware):
-    """Emit lifecycle events for every HTTP request via @instrument."""
-
-    @override
-    @instrument("http.request")
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        return await call_next(request)
 
 
 class HTTPSRedirectMiddleware:
