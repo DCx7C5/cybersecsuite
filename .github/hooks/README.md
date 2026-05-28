@@ -78,7 +78,8 @@ When using `matcher`, use the exact tool names from the docs:
 
 It bootstraps each session with `/start-working`, logs `preToolUse`,
 `postToolUse`, `sessionEnd`, and `errorOccurred` events to a temp file,
-and keeps the remaining supported events declared as empty arrays.
+adds a `subagentStart` reminder for the `CSS Plan` agent, and keeps the
+remaining supported events declared as empty arrays.
 
 ## Key reference
 

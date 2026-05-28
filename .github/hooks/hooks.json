@@ -51,7 +51,15 @@
     "postToolUseFailure": [],
     "preCompact": [],
     "agentStop": [],
-    "subagentStart": [],
+    "subagentStart": [
+      {
+        "type": "command",
+        "matcher": "CSS Plan",
+        "bash": "printf '{\"additionalContext\":\"CSS Plan started. Read .plan/rules.md and .plan/development-workflow.md before drafting the plan.\"}'",
+        "powershell": "\"{\\\"additionalContext\\\":\\\"CSS Plan started. Read .plan/rules.md and .plan/development-workflow.md before drafting the plan.\\\"}\"",
+        "timeoutSec": 5
+      }
+    ],
     "subagentStop": []
   }
 }
