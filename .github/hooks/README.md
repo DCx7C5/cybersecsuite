@@ -2,11 +2,10 @@
 
 Repository-level Copilot hook configuration lives in `.github/hooks/*.json`.
 
-## Canonical docs
-
-Use these docs as the source of truth when adding or reviewing hooks:
+## Official docs
 
 - [Hooks reference](https://docs.github.com/en/copilot/reference/hooks-reference)
+- [Hooks concept](https://docs.github.com/en/copilot/concepts/agents/hooks)
 - [Tool names for hook matching](https://docs.github.com/en/copilot/reference/hooks-reference#tool-names-for-hook-matching)
 - [Hook configuration format](https://docs.github.com/en/copilot/reference/hooks-reference#hook-configuration-format)
 - [Hook events](https://docs.github.com/en/copilot/reference/hooks-reference#hook-events)
@@ -16,9 +15,9 @@ Use these docs as the source of truth when adding or reviewing hooks:
 - [Exit codes for command hooks](https://docs.github.com/en/copilot/reference/hooks-reference#exit-codes-for-command-hooks)
 - [Disable all hooks](https://docs.github.com/en/copilot/reference/hooks-reference#disable-all-hooks)
 
-## Header checklist
+## File format
 
-Every hook JSON file should start with:
+Every hook JSON file starts with:
 
 ```json
 {
@@ -34,7 +33,7 @@ Every hook JSON file should start with:
 }
 ```
 
-You can also declare any of these supported event keys:
+Supported event keys:
 
 - `agentStop`
 - `errorOccurred`
@@ -75,10 +74,29 @@ When using `matcher`, use the exact tool names from the docs:
 
 ## Current repo example
 
-The current repository hook file is:
-
 - `.github/hooks/hooks.json`
 
 It bootstraps each session with `/start-working`, logs `preToolUse`,
 `postToolUse`, `sessionEnd`, and `errorOccurred` events to a temp file,
 and keeps the remaining supported events declared as empty arrays.
+
+## Key reference
+
+| Key | Description |
+|---|---|
+| `version` | JSON schema version; currently `1`. |
+| `disableAllHooks` | Optional top-level flag to disable the hooks in one file. |
+| `hooks` | Object that maps lifecycle events to hook entry arrays. |
+| `sessionStart` | Runs when a session starts. |
+| `sessionEnd` | Runs when a session ends. |
+| `userPromptSubmitted` | Runs when the user submits a prompt. |
+| `preToolUse` | Runs before a tool executes and can allow, deny, or modify it. |
+| `postToolUse` | Runs after a successful tool call. |
+| `postToolUseFailure` | Runs after a failed tool call. |
+| `errorOccurred` | Runs when execution errors occur. |
+| `agentStop` | Runs when the main agent finishes a turn. |
+| `subagentStart` | Runs when a subagent starts. |
+| `subagentStop` | Runs when a subagent ends. |
+| `notification` | Runs on CLI notifications. |
+| `permissionRequest` | Runs before permission handling. |
+| `preCompact` | Runs before context compaction. |
