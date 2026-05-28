@@ -34,7 +34,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from css.core.asgi.middleware import HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
+from css.core.asgi.middleware import EventInstrumentationMiddleware, HTTPSRedirectMiddleware, RateLimitMiddleware, TelemetryMiddleware
 from css.core.db.models.menu import sync_default_menu_items
 from css.core.events import configure_event_runtime, shutdown_event_runtime
 from css.core.exceptions import BaseCoreException
@@ -261,6 +261,7 @@ def create_app() -> FastAPI:
     _app.add_middleware(HTTPSRedirectMiddleware, tls_enabled=TLS_AVAILABLE)
     _app.add_middleware(TelemetryMiddleware)
     _app.add_middleware(RateLimitMiddleware)
+    _app.add_middleware(EventInstrumentationMiddleware)
 
     # Health check
     @_app.get("/health", tags=["core"])
