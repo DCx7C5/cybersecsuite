@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "tee -a \"${TMPDIR:-/tmp}/copilot-hooks.log\" >/dev/null",
+        "powershell": "($input | Out-String) | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}
