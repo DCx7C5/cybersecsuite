@@ -1,7 +1,9 @@
 # @approvals - Human Approval Workflow Plan
 Approval workflows remain module-owned and integrate with `core/permissions`; they are not folded into the core package by assumption.
 
-**Status**: Planned Phase 26 module; runtime package not yet implemented.
+**Status**: Phase 26 in progress; `__init__.py`, `enums.py`, `models.py` created.
+
+**Last Updated**: 2026-05-28
 
 
 ## Purpose
@@ -30,6 +32,18 @@ tool request -> permission/policy evaluation
 - `ApprovalDecision`: `REQUIRED`, `ALLOWED`, `DENIED`
 
 Value types use `msgspec.Struct`; ORM entities use `BaseModel` and semantic field helpers where applicable.
+
+## File Inventory
+
+| File | Status | Notes |
+|------|--------|-------|
+| `__init__.py` | ✅ DONE | Exports `ApprovalStatus`, `ApprovalDecision` |
+| `enums.py` | ✅ DONE | `ApprovalStatus` (PENDING/APPROVED/REJECTED/EXPIRED), `ApprovalDecision` (REQUIRED/ALLOWED/DENIED) |
+| `models.py` | ✅ DONE | `ApprovalRequest` ORM model with session/agent/action/status/expiry indexes |
+| `models.py` (policy) | ⏳ PENDING | Separate `approval-policy-orm` todo |
+| `types.py` | ⏳ PENDING | `ApprovalRequest` + `ApprovalPolicy` msgspec.Structs (`approval-protocol` todo) |
+| `endpoints.py` | ⏳ PENDING | FastAPI router (`approval-endpoints` todo) |
+| `exceptions.py` | ⏳ PENDING | Custom exceptions
 
 ## Required Runtime Surfaces
 
