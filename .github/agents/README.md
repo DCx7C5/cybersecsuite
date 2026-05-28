@@ -4,6 +4,7 @@ Repository-level custom agents live in `.github/agents/*.agent.md`.
 
 ## Current files
 
+- `.github/agents/*.agent.md` imported from `~/.copilot/agents`
 - `.github/agents/start-working.agent.md`
 
 ## Notes
