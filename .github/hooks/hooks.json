@@ -10,6 +10,12 @@
         "bash": "tee -a \"${TMPDIR:-/tmp}/copilot-hooks.log\" >/dev/null",
         "powershell": "($input | Out-String) | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
         "timeoutSec": 5
+      },
+      {
+        "type": "command",
+        "bash": "printf 'test hook: preToolUse\\n' >> \"${TMPDIR:-/tmp}/copilot-hooks.log\"",
+        "powershell": "\"test hook: preToolUse\" | Add-Content -Path (Join-Path $env:TEMP 'copilot-hooks.log')",
+        "timeoutSec": 5
       }
     ],
     "postToolUse": [],

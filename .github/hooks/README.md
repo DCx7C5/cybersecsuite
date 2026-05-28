@@ -77,6 +77,6 @@ When using `matcher`, use the exact tool names from the docs:
 
 The current repository hook file is:
 
-- `.github/hooks/pre-tool-use.json`
+- `.github/hooks/hooks.json`
 
 It contains a `preToolUse` command hook that logs payloads to a temp file and keeps the other supported events declared as empty arrays.
