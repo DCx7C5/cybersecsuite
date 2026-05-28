@@ -75,11 +75,13 @@ When using `matcher`, use the exact tool names from the docs:
 ## Current repo example
 
 - `.github/hooks/hooks.json`
+- `.github/rules/hooks/*.md`
+- `.github/scripts/load_hook_rules.py`
 
-It bootstraps each session with `/start-working`, logs `preToolUse`,
-`postToolUse`, `sessionEnd`, and `errorOccurred` events to a temp file,
-adds a `subagentStart` reminder for the `CSS Plan` agent, and keeps the
-remaining supported events declared as empty arrays.
+It loads hook-specific Markdown rules for `sessionStart` and
+`subagentStart`, logs `preToolUse`, `postToolUse`, `sessionEnd`, and
+`errorOccurred` events to a temp file, and keeps the remaining supported
+events declared as empty arrays.
 
 ## Key reference
 

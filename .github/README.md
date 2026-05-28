@@ -12,6 +12,7 @@ local reference docs for how it is wired together.
 | Prompt files | `.github/prompts/*.prompt.md` | [Prompt files](https://docs.github.com/en/copilot/concepts/prompting/response-customization?tool=vscode#about-prompt-files) |
 | Custom agents | `.github/agents/*.agent.md` | [Custom agents](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-custom-agents) |
 | Hooks | `.github/hooks/*.json` | [Hooks](https://docs.github.com/en/copilot/concepts/agents/hooks) |
+| Hook rules | `.github/rules/hooks/*.md` | Hook-local rule text loaded by repo scripts |
 | MCP / external tools | `mcp.json`, agent `mcp-servers` | [MCP](https://docs.github.com/en/copilot/concepts/context/mcp) |
 | Cheat sheet | `.github/customization-cheat-sheet.md` | [Customization cheat sheet](https://docs.github.com/en/copilot/reference/customization-cheat-sheet) |
 
@@ -59,6 +60,7 @@ local reference docs for how it is wired together.
 - `.github/prompts/README.md`
 - `.github/agents/README.md`
 - `.github/hooks/README.md`
+- `.github/rules/hooks/README.md`
 - `.github/scripts/README.md`
 
 ## Recommended startup order

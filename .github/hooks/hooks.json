@@ -1,10 +1,12 @@
 {
-  "version": 1,
-  "hooks": {
+    "version": 1,
+    "hooks": {
     "sessionStart": [
       {
-        "type": "prompt",
-        "prompt": "/start-working"
+        "type": "command",
+        "bash": "python .github/scripts/load_hook_rules.py sessionStart",
+        "powershell": "python .github/scripts/load_hook_rules.py sessionStart",
+        "timeoutSec": 5
       }
     ],
     "sessionEnd": [
@@ -54,9 +56,8 @@
     "subagentStart": [
       {
         "type": "command",
-        "matcher": "CSS Plan",
-        "bash": "printf '{\"additionalContext\":\"CSS Plan started. Read .plan/rules.md and .plan/development-workflow.md before drafting the plan.\"}'",
-        "powershell": "\"{\\\"additionalContext\\\":\\\"CSS Plan started. Read .plan/rules.md and .plan/development-workflow.md before drafting the plan.\\\"}\"",
+        "bash": "python .github/scripts/load_hook_rules.py subagentStart",
+        "powershell": "python .github/scripts/load_hook_rules.py subagentStart",
         "timeoutSec": 5
       }
     ],
