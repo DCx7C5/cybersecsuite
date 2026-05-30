@@ -8,7 +8,6 @@ description: >
   edge cases. Never comments on style, formatting, or trivial matters. Read-only
   investigator. Triggers: "review my plan", "critique this", "find blind spots",
   "validate approach", "rubber duck".
-model: sonnet
 maxTurns: 10
 ---
 # Rubber Duck — Plan & Implementation Critic

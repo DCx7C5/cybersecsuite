@@ -2,12 +2,12 @@
 
 **⚠️ CRITICAL**: Read this file completely before touching any code. Follow every step exactly. No shortcuts.
 
-**Project root**: `/home/daen/Projects/cybersecsuite/`
-**Plan directory**: `/home/daen/Projects/cybersecsuite/.plan/`
-**Source directory**: `/home/daen/Projects/cybersecsuite/src/css/`
-**Python venv**: `/home/daen/Projects/cybersecsuite/.venv/bin/python`
+**Project root**: `.`
+**Plan directory**: `.plan/`
+**Source directory**: `src/css/`
+**Python venv**: `.venv/bin/python`
 **Type checker**: `uvx basedpyright --project pyrightconfig.json` (default scope = touched files or smallest touched directory)
-**Type-checker config**: `/home/daen/Projects/cybersecsuite/pyrightconfig.json`
+**Type-checker config**: `pyrightconfig.json`
 
 ---
 

@@ -79,7 +79,7 @@ async def audit_hook(
     agent_id = input_data.get("agent_id", "")
     logger.info("TOOL_CALL tools=%s agents=%s id=%s", tool_name, agent_id, tool_use_id)
 
-    hooks_dir = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "/home/daen/Projects/AI")
+    hooks_dir = os.environ.get("CYBERSEC_AI_HOOKS_DIR", "~/Projects/AI")
     if hooks_dir not in sys.path:
         sys.path.insert(0, hooks_dir)
 

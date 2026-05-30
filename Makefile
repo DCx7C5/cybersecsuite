@@ -5,7 +5,7 @@
 SHELL       := /bin/bash
 PROJECT_DIR := $(shell pwd)
 SRC_DIR     := $(PROJECT_DIR)/src
-HOOKS_DIR   := /home/daen/Projects/AI
+HOOKS_DIR   := ~/Projects/AI
 PYTHON_PATH := $(SRC_DIR):$(HOOKS_DIR)
 UV          := uv
 UVICORN_HOST ?= 127.0.0.1

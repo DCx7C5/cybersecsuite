@@ -1,7 +1,6 @@
 ---
 name: python-code-reviewer
 description: "Python-specialized code reviewer for cybersecsuite. Reviews Python code across async/await, Tortoise ORM, FastAPI, Pydantic v2, cryptography (Ed25519/BLAKE2b/Argon2id), A2A protocol, uv dependency management, and pytest. Includes automated code analysis, security scanning, best practice checking, and review report generation. Use when reviewing Python pull requests, auditing crypto implementations, validating ORM patterns, or ensuring cybersecsuite coding standards."
-model: sonnet
 maxTurns: 30
 tools:
   - Read

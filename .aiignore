@@ -59,7 +59,7 @@ coverage.xml
 
 !.venv/bin/
 !**data/
-!/home/daen/Projects/ai-marketplace/index.json
+!~/Projects/ai-marketplace/index.json
 !pyproject.toml
 !uv.lock
 !docker-compose.yml

@@ -10,7 +10,7 @@ If you are an AI agent starting a new session, do this **in order**:
 
 ```bash
 # 1. Go to project root
-cd /home/daen/Projects/cybersecsuite
+cd .
 
 # 2. Check what is in progress (finish these first)
 sqlite3 .plan/session.db "SELECT id, title FROM todos WHERE status = 'in_progress';"
@@ -38,59 +38,60 @@ cat src/css/api_services/api_services.md
 
 ---
 
-# CRITICAL MOST IMPORTANT RULES NEVER FORGET:
+# CRITICAL MOST IMPORTANT RULES NEVER FORGET (memorize every single rule, they can't be broken):
 
 ## Environment
-- **ABSOLUTE: your new workingdir is `.plan/`. `~/.{claude,copilot}` are all obsolete.**
-- **ABSOLUTE: you track TODOs, TASKs & PHASEs in `.plan/session.db`** 
-- **ABSOLUTE: use `.venv/bin/` or source `.venv/bin/activate`**
-- **ABSOLUTE: start app with `python manage.py ...`**
-- **ABSOLUTE: use docker compose to manage databases**
-- **ABSOLUTE: use `scripts/codebase_dependency_analyzer.py` as often as possible. Pipe into `| jq ''`**
-- **ABSOLUTE: rule violations are fixed on the fly, or if implications are too heavy, a TODO in session.db is created.**
+- **your new workingdir is `.plan/`. `~/.{claude,copilot}` are all obsolete.**
+- **you track TODOs, TASKs & PHASEs in `.plan/session.db`** 
+- **use `.venv/bin/` or source `.venv/bin/activate`**
+- **start app with `python manage.py ...`**
+- **use docker compose to manage databases**
+- **use `scripts/codebase_dependency_analyzer.py` as often as possible. Pipe into `| jq ''`**
+- **rule violations are fixed on the fly, or if implications are too heavy, a TODO in session.db is created.**
 
 ## Session & Project Planning
-- **ABSOLUTE: Git track everything. use worktrees for parallel working subagents if possible**
-- **ABSOLUTE: `.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
-- **ABSOLUTE: active execution ownership lives in `.plan/session.db::runtime`** — every worker/task in progress must map to one runtime row linked to `todos.id`, and that row must be removed immediately when the todo leaves `in_progress` (done/blocked/pending)
-- **ABSOLUTE: local planning Markdown exists across `src/css/` and must stay synchronized with `session.db` during work** — read the nearest file first (`<module>.md` in modules, nearest `plan.md` elsewhere) so each area document reflects current todos and milestones
-- **ABSOLUTE: every TODO and implementation instruction must be executable by GitHub Copilot Auto without guesswork** — name exact target files and symbols, ordered implementation steps, prerequisites/dependencies, out-of-scope boundaries, and runnable validation; do not leave open-ended discovery as the implementation contract
-- **ABSOLUTE: there is no backwards compatibility requirement** — if your changes make code deprecated, delete the deprecated code directly
-- **ABSOLUTE: use lazy imports only when clearly justified, and preserve existing directory, file, and content patterns when adding or changing code**
+- **Git track everything. use worktrees for parallel working subagents if possible**
+- **`.plan/plan.md` is the session workspace plan, and [.plan/session.db](session.db) is the only progress tracker** — use `plan.md` for high-level session planning only, and record every todo status change in `session.db`, not only in markdown
+- **active execution ownership lives in `.plan/session.db::runtime`** — every worker/task in progress must map to one runtime row linked to `todos.id`, and that row must be removed immediately when the todo leaves `in_progress` (done/blocked/pending)
+- **local planning Markdown exists across `src/css/` and must stay synchronized with `session.db` during work** — read the nearest file first (`<module>.md` in modules, nearest `plan.md` elsewhere) so each area document reflects current todos and milestones
+- **every TODO and implementation instruction must be executable by GitHub Copilot Auto without guesswork** — name exact target files and symbols, ordered implementation steps, prerequisites/dependencies, out-of-scope boundaries, and runnable validation; do not leave open-ended discovery as the implementation contract
+- **use repository-relative paths only in todos, plans, docs, and command examples** — never include absolute paths (for example `/abs/path/...`) that may expose user or host information
+- **there is no backwards compatibility requirement** — if your changes make code deprecated, delete the deprecated code directly
+- **use lazy imports only when clearly justified, and preserve existing directory, file, and content patterns when adding or changing code**
 
 ## Code & Execution
-- **ABSOLUTE: never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
-- **ABSOLUTE: `@dataclass` is legacy, and `@dataclass + ABC` is forbidden** — when you touch one, migrate it toward `msgspec.Struct`, and fix mixed patterns immediately
-- **ABSOLUTE: keep chat responses bare and under 500 words unless impossible**
-- **ABSOLUTE: explicitly announce every TODO, TASK, or PHASE completion, give every tool execution a clear headline, and always end with a normal summary**
-- **ABSOLUTE: always prefer async Python whenever possible**
-- **ABSOLUTE: we never use try: except: for imports, make sure missing package is installed via uv, updated and synced**
-- **ABSOLUTE: avoid `Any` and never use typing comments** — prefer exact `TypedDict`s over `Any`, and never use typing in comments like `# type: ...`
-- **ABSOLUTE: never quote type annotations** — write `PathFS | None`, NOT `"PathFS | None"` — string annotations are unnecessary without `from __future__ import annotations` and make code less readable. Only use quotes for forward references when circular imports demand it (e.g., self-referencing ForeignKeyField)
-- **ABSOLUTE: use the required stack choices** — `bun`, not `npm`; `aiohttp`, not `httpx`
-- **ABSOLUTE: follow OOP best practices, avoid OOP antipatterns** - depending on context
-- **ABSOLUTE: we never use the python `global` variable. if we find it in existing code we create a TODO for it**
-- **ABSOLUTE: never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
-- **ABSOLUTE: never use bare `Exception`** — create custom exceptions with help from `src/core/exceptions.py`
-- **ABSOLUTE: use Singleton metaclass patterns from `src/core/base/meta.py`** — no end-of-file instantiation
-- **ABSOLUTE: event-emitting classes should use `src/css/core/base/base_emitter.py::BaseEmitterClass` whenever practical** — keep namespaces and manual event registration consistent
-- **ABSOLUTE: hook ownership is split and must stay split** — observer hooks live in `src/css/modules/hooks/registry.py` (`@on_event`), mutating/blocking hooks live in `src/css/modules/hooks/interceptors.py` (`@pre_hook` / `@post_hook`)
-- **ABSOLUTE: use explicit imports `from X import Y` where applicable, and do not create `"Expected type XY, got None instead"` warnings**
+- **never add `Co-authored-by:` to any new commit** — historical commits contain it; do not amend history to remove it, but all future commits must omit it entirely
+- **`@dataclass` is legacy, and `@dataclass + ABC` is forbidden** — when you touch one, migrate it toward `msgspec.Struct`, and fix mixed patterns immediately
+- **keep chat responses bare and under 500 words unless impossible**
+- **explicitly announce every TODO, TASK, or PHASE completion, give every tool execution a clear headline, and always end with a normal summary**
+- **always prefer async Python whenever possible**
+- **we never use try: except: for imports, make sure missing package is installed via uv, updated and synced**
+- **avoid `Any` and never use typing comments** — prefer exact `TypedDict`s over `Any`, and never use typing in comments like `# type: ...`
+- **never quote type annotations** — write `PathFS | None`, NOT `"PathFS | None"` — string annotations are unnecessary without `from __future__ import annotations` and make code less readable. Only use quotes for forward references when circular imports demand it (e.g., self-referencing ForeignKeyField)
+- **use the required stack choices** — `bun`, not `npm`; `aiohttp`, not `httpx`
+- **follow OOP best practices, avoid OOP antipatterns** - depending on context
+- **we never use the python `global` variable. if we find it in existing code we create a TODO for it**
+- **never use `from __future__ import annotations`, it's an already built-in feature in newer Python versions**
+- **never use bare `Exception`** — create custom exceptions with help from `src/core/exceptions.py`
+- **use Singleton metaclass patterns from `src/core/base/meta.py`** — no end-of-file instantiation
+- **event-emitting classes should use `src/css/core/base/base_emitter.py::BaseEmitterClass` whenever practical** — keep namespaces and manual event registration consistent
+- **hook ownership is split and must stay split** — observer hooks live in `src/css/modules/hooks/registry.py` (`@on_event`), mutating/blocking hooks live in `src/css/modules/hooks/interceptors.py` (`@pre_hook` / `@post_hook`)
+- **use explicit imports `from X import Y` where applicable, and do not create `"Expected type XY, got None instead"` warnings**
 
 ## Architecture & Structure
-- **ABSOLUTE: deletion of a module or whole directory is never a solution to a problem**
-- **ABSOLUTE: planning hierarchy is always PHASE > TASK > TODO** — every new TODO must belong to exactly one TASK and exactly one PHASE
-- **ABSOLUTE: [.plan/](../.plan) is the working directory, and [.venv/bin/](../.venv/bin) is the Python entry point**
-- **ABSOLUTE: follow existing directory, documentation, and code patterns, and use [.plan/architecture/*.md](architecture) plus the nearest local planning markdown as the architecture source of truth**
-- **ABSOLUTE: use `src/css/core/settings/config.py` `MODULES` list (line 17) as the canonical module import-order reference** — for ordering disputes, doc updates, or loader-order decisions, this list wins.
+- **deletion of a module or whole directory is never a solution to a problem**
+- **planning hierarchy is always PHASE > TASK > TODO** — every new TODO must belong to exactly one TASK and exactly one PHASE
+- **[.plan/](../.plan) is the working directory, and [.venv/bin/](../.venv/bin) is the Python entry point**
+- **follow existing directory, documentation, and code patterns, and use [.plan/architecture/*.md](architecture) plus the nearest local planning markdown as the architecture source of truth**
+- **use `src/css/core/settings/config.py` `MODULES` list (line 17) as the canonical module import-order reference** — for ordering disputes, doc updates, or loader-order decisions, this list wins.
 
 ## Workflow & Tooling
-- **ABSOLUTE: read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
-- **ABSOLUTE: in PLAN MODE, keep `.plan/plan.md`, relevant `.plan/architecture/*.md`, and local planning Markdown synchronized with [.plan/session.db](session.db) while working**
-- **ABSOLUTE: update `memory.md` and `checkpoints.md` at the end of every PHASE** — not after every task and not only at end-of-session
-- **ABSOLUTE: exception for `memory.md`** — refresh it immediately after major architecture, source-of-truth, or tracker-structure changes that would otherwise mislead the next session
-- **ABSOLUTE: never hallucinate; if unsure, ask the user before proceeding**
-- **ABSOLUTE: make multiple logical and atomic commits**
+- **read and follow [.plan/development-workflow.md](development-workflow.md) for every applicable task**
+- **in PLAN MODE, keep `.plan/plan.md`, relevant `.plan/architecture/*.md`, and local planning Markdown synchronized with [.plan/session.db](session.db) while working**
+- **update `memory.md` and `checkpoints.md` at the end of every PHASE** — not after every task and not only at end-of-session
+- **exception for `memory.md`** — refresh it immediately after major architecture, source-of-truth, or tracker-structure changes that would otherwise mislead the next session
+- **never hallucinate; if unsure, ask the user before proceeding**
+- **make multiple logical and atomic commits**
 
 # CRITICAL RULES ABOVE: APPLY AND CONFIRM EVERY SINGLE ONE AFTER YOU HAVE COMPLETELY READ THIS FILE
 
@@ -158,7 +159,7 @@ cat src/css/api_services/api_services.md
 docker-compose up -d
 
 # Start ASGI app directly (NOT in Docker)
-cd /home/daen/Projects/cybersecsuite
+cd .
 source .venv/bin/activate
 CACHE_DIR=/tmp/css-cache LOG_DIR=/tmp/css-logs python manage.py serve --reload
 # → uvicorn css.core.asgi.app:app --reload on port 8000
@@ -178,22 +179,7 @@ cd src/frontend && bun run dev
 
 > **Docker is infra-only** — `cybersec-dashboard`, `cybersec-frontend`, `cybersec-proxy`, `cybersec-ollama` are removed/legacy. The ASGI app and frontend run directly via `manage.py` + `bun`. Ollama runs natively via `OllamaProcessManager` (see `core/ollama/`).
 
-### llama-cpp-python (CUDA — Pascal/GTX 10xx series, sm_61)
 
-llama-cpp-python requires a manual build step for CUDA support. Run this **once** after `uv sync`:
-
-```bash
-uv pip install llama-cpp-python --reinstall --no-cache-dir --force-reinstall
-```
-
-> ⚠️ `sm_61` = Pascal architecture (GTX 1060/1070/1080 etc.). Do NOT change this for other GPU generations.
-
-### manage.py Commands
-```bash
-python manage.py serve [--reload] [--port 8000]   # start ASGI
-python manage.py init-db                           # drop + generate_schemas(safe=False) + seed
-python manage.py shell                             # async REPL
-```
 
 ---
 
@@ -623,5 +609,7 @@ Tool       → modules/tools/types.py
 
 # **GODRULE: REMEMBER CRITICAL RULE SECTION ABOVE !!!!!**
 # **GODRULE: USE WORKFLOWS IN `.plan/development-workflow.md`!!!**
+# **CONFIRM, THAT YOU APPLY AND STICK TO THE CRITICAL RULES ABOVE!!!**
 
 ---
+

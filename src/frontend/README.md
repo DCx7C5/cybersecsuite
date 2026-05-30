@@ -6,12 +6,12 @@ React + TypeScript + Vite frontend for CyberSecSuite.
 
 1. Start backend on port `8000`:
    ```bash
-   cd /home/daen/Projects/cybersecsuite
+   cd ~/Projects/cybersecsuite
    .venv/bin/python manage.py serve --port 8000
    ```
 2. Start the Vite frontend:
    ```bash
-   cd /home/daen/Projects/cybersecsuite/src/frontend
+   cd ~/Projects/cybersecsuite/src/frontend
    bun run dev
    ```
 
